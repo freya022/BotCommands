@@ -11,7 +11,7 @@ interface LocalizationMap {
     /**
      * Returns the effective locale of this localization map.
      *
-     * **Note:** this doesn't need to be the locale passed by [LocalizationMapProvider.fromBundleOrParent].
+     * **Note:** This doesn't need to be the locale passed by [LocalizationMapProvider.fromBundleOrParent].
      */
     val effectiveLocale: Locale
 

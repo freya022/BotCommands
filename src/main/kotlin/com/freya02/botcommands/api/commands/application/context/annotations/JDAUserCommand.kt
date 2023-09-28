@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
+import com.freya02.botcommands.api.core.entities.UserUnion
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -15,7 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * Declares this function as a user context command.
  *
  * The targeted function must have a [GlobalUserEvent] or a [GuildUserEvent],
- * with the only accepted [options][ContextOption] being [Member] and [User],
+ * with the only accepted [options][ContextOption] being [Member], [User] and [UserUnion],
  * which will be the *targeted* entity.
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
@@ -49,7 +50,7 @@ annotation class JDAUserCommand(
      * Specifies whether the application command is disabled for everyone but administrators by default,
      * so that administrators can further configure the command.
      *
-     * **Note:** you cannot use this with [UserPermissions].
+     * **Note:** You cannot use this with [UserPermissions].
      *
      * **Default:** false
      *

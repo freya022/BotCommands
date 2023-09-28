@@ -19,7 +19,7 @@ interface ITopLevelApplicationCommandBuilder {
      * Specifies whether the application command is disabled for everyone but administrators by default,
      * so that administrators can further configure the command.
      *
-     * **Note:** you cannot use this with [UserPermissions].
+     * **Note:** You cannot use this with [UserPermissions].
      *
      * For example, maybe you want a ban command to be usable by someone who has a certain role,
      * but which doesn't have the [BAN_MEMBERS][Permission.BAN_MEMBERS] permission,

@@ -15,27 +15,33 @@ import java.time.Duration as JavaDuration
 /**
  * Allows components to have timeouts.
  *
- * After the timeout has expired, the component will be deleted from the database.
+ * The component will be deleted from the database on expiration.
  *
- * If the component is a group, then all of its owned components will also be deleted.
+ * **Note:** Components inside groups cannot have timeouts.
  *
- * If the component is inside a group, then all the group's components will also be deleted.
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
  *
- * **Components inside groups cannot have timeouts**.
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
  */
 interface ITimeoutableComponent {
-    val timeout: ComponentTimeout? //No need to use specific types in sub-interfaces as they're internal
+    val timeout: ComponentTimeout?
 
     /**
      * Sets the timeout on this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
@@ -46,13 +52,16 @@ interface ITimeoutableComponent {
     /**
      * Sets the timeout on this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
      * @param timeout The duration of the timeout
      */
@@ -62,13 +71,16 @@ interface ITimeoutableComponent {
     /**
      * Sets the timeout on this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
      * @param timeout The duration of the timeout
      */
@@ -88,17 +100,22 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given timeout handler name with its arguments to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * The data passed is transformed with [toString][Object.toString] except [snowflakes][ISnowflake] which get their IDs stored.
+     * ### Timeout data
+     * The data passed is transformed with [toString][Object.toString],
+     * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * **As always**, the data can only be reconstructed if a suitable [ComponentParameterResolver] exists for the type.
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
@@ -111,17 +128,22 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given timeout handler name with its arguments to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * The data passed is transformed with [toString][Object.toString] except [snowflakes][ISnowflake] which get their IDs stored.
+     * ### Timeout data
+     * The data passed is transformed with [toString][Object.toString],
+     * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * **As always**, the data can only be reconstructed if a suitable [ComponentParameterResolver] exists for the type.
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
@@ -133,17 +155,22 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given timeout handler name with its arguments to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * The data passed is transformed with [toString][Object.toString] except [snowflakes][ISnowflake] which get their IDs stored.
+     * ### Timeout data
+     * The data passed is transformed with [toString][Object.toString],
+     * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * **As always**, the data can only be reconstructed if a suitable [ComponentParameterResolver] exists for the type.
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
@@ -164,16 +191,20 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given handler to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
      * @param timeout The duration before timeout
      * @param handler The handler to run when the button is clicked
@@ -184,16 +215,20 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given handler to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
@@ -205,18 +240,23 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given handler to this component.
      *
-     * After the timeout has expired, the component will be deleted from the database.
+     * The component will be deleted from the database on expiration.
      *
-     * If the component is a group, then all of its owned components will also be deleted.
+     * **Note:** Components inside groups cannot have timeouts.
      *
-     * If the component is inside a group, then all the group's components will also be deleted.
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
-     * **Components inside groups cannot have timeouts**.
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
-     * You can still use [User.ref] and such from JDA-KTX to circumvent this issue.
+     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+     * even though it will return you an outdated object if the entity cannot be found anymore.
      *
      * @param timeout The duration of the timeout
      * @param handler The handler to run when the button is clicked

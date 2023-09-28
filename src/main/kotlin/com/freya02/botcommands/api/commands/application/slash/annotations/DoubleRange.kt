@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 /**
  * Sets the minimum and maximum values on the specified [@SlashOption][SlashOption].
  *
- * **Note:** this is only for floating point number types!
+ * **Note:** This is only for floating point number types!
  *
  * @see SlashCommandOptionBuilder.valueRange DSL equivalent
  */

@@ -11,7 +11,7 @@ import io.github.bucket4j.ConsumptionProbe
 /**
  * Default [RateLimiter] implementation, based on [DefaultRateLimitHandler] and [DefaultBucketAccessor].
  *
- * **Note:** the rate limit message won't be deleted in a private channel,
+ * **Note:** The rate limit message won't be deleted in a private channel,
  * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
  *
  * @param scope          Scope of the rate limit, see [RateLimitScope] values.

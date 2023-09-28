@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
  *
  * You can configure how many arguments are required with [numRequired].
  *
- * **Note:** you are limited to 1 vararg parameter in text commands.
+ * **Note:** You are limited to one vararg parameter in text commands.
  *
  * @see SlashCommandBuilder.optionVararg
  * @see SlashCommandBuilder.inlineClassOptionVararg

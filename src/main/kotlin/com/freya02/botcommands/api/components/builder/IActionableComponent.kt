@@ -59,10 +59,11 @@ interface IPersistentActionableComponent : IActionableComponent {
     /**
      * Binds the given handler name with its arguments to this component.
      *
-     * The data passed is transformed with [toString][Object.toString]
+     * ### Handler data
+     * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * **As always**, the data can only be reconstructed if a suitable [ComponentParameterResolver] exists for the type.
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -73,10 +74,11 @@ interface IPersistentActionableComponent : IActionableComponent {
     /**
      * Binds the given handler name with its arguments to this component.
      *
-     * The data passed is transformed with [toString][Object.toString]
+     * ### Handler data
+     * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * **As always**, the data can only be reconstructed if a suitable [ComponentParameterResolver] exists for the type.
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -94,8 +96,9 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
     /**
      * Binds the given handler to this component.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
      * @param handler The handler to run when the button is clicked
      */
@@ -104,8 +107,9 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
     /**
      * Binds the given handler to this component.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
      * @param handler The handler to run when the button is clicked
      */
@@ -114,10 +118,12 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
     /**
      * Binds the given handler to this component.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
-     * You can still use [User.ref] and such from JDA-KTX to circumvent this issue.
+     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+     * even though it will return you an outdated object if the entity cannot be found anymore.
      *
      * @param handler The handler to run when the button is clicked
      */
@@ -127,10 +133,12 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
     /**
      * Binds the given handler to this component.
      *
-     * **Be sure not to capture JDA entities in such handlers
-     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
      *
-     * You can still use [User.ref] and such from JDA-KTX to circumvent this issue.
+     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+     * even though it will return you an outdated object if the entity cannot be found anymore.
      *
      * @param handler The handler to run when the button is clicked
      */
@@ -138,90 +146,310 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
     fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
 
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Captured entities
+ * Pay *extra* attention to not capture JDA entities in such handlers
+ * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+ *
+ * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+ * even though it will return you an outdated object if the entity cannot be found anymore.
+ */
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }

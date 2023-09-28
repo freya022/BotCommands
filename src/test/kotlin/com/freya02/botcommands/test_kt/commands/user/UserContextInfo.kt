@@ -11,10 +11,10 @@ import com.freya02.botcommands.api.commands.application.context.annotations.Cont
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.core.entities.UserUnion
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @Command
@@ -37,10 +37,10 @@ class UserContextInfo : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDAUserCommand(scope = CommandScope.GUILD, name = "User info (annotated)")
+    @JDAUserCommand(scope = CommandScope.GLOBAL, name = "User info (annotated)")
     fun onUserContextInfo(
         event: GuildUserEvent,
-        @ContextOption user: User,
+        @ContextOption user: UserUnion,
         @GeneratedOption userTag: String
     ) {
         event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()
@@ -48,7 +48,7 @@ class UserContextInfo : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD, ::onUserContextInfo) {
+        guildApplicationCommandManager.userCommand("User info", CommandScope.GLOBAL, ::onUserContextInfo) {
             option("user")
 
             generatedOption("userTag") {

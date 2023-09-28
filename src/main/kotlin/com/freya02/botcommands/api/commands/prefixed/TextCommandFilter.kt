@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * Filters are tested right before the command gets executed (i.e., after the permissions/rate limits... were checked).
  *
- * **Note:** this runs on every [command variation][TextCommandBuilder.variation].
+ * **Note:** This runs on every [command variation][TextCommandBuilder.variation].
  *
  * **Usage**: Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].

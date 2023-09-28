@@ -93,7 +93,7 @@ annotation class RateLimit(
     /**
      * Whether the rate limit message should be deleted after the rate limit has expired.
      *
-     * **Note:** the rate limit message won't be deleted in a private channel,
+     * **Note:** The rate limit message won't be deleted in a private channel,
      * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
      *
      * **Default:** `true`
