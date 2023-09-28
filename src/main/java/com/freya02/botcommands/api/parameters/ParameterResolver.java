@@ -5,6 +5,8 @@ import com.freya02.botcommands.api.core.entities.InputUser;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
+import mu.KLogger;
+import mu.KotlinLoggingKt;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -12,7 +14,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 /**
  * Base class for parameter resolvers used in regex commands, application commands and buttons callbacks
@@ -48,7 +49,7 @@ import org.slf4j.Logger;
 @SuppressWarnings("unused") //T is used for the inheritance constraint
 @InterfacedService(acceptMultiple = true)
 public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
-	protected final Logger LOGGER = Logging.getLogger(this);
+	protected final KLogger LOGGER = KotlinLoggingKt.toKLogger(Logging.getLogger(this));
 
 	private final KClass<R> jvmErasure;
 
