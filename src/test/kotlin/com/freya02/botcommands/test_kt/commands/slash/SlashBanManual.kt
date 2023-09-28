@@ -9,9 +9,9 @@ import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
+import com.freya02.botcommands.api.core.entities.UserUnion
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
-import net.dv8tion.jda.api.entities.User
 
 @Command
 class SlashBanManual : ApplicationCommand() {
@@ -19,7 +19,7 @@ class SlashBanManual : ApplicationCommand() {
     @JDASlashCommand(name = "ban_annotated", defaultLocked = true, scope = CommandScope.GUILD)
     suspend fun onSlashBan(
         event: GuildSlashEvent,
-        @SlashOption target: User,
+        @SlashOption target: UserUnion,
         @SlashOption reason: String = "Banned by ${event.user.asTag}"
     ) {
         event.reply_(

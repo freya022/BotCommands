@@ -12,6 +12,7 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.api.core.entities.UserUnion
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.lazy
@@ -20,7 +21,6 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.minutes
@@ -95,8 +95,8 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
-    fun onFirstButtonClicked(event: ButtonEvent, double: Double, member: Member) {
-        event.reply_("Persistent button clicked, double: $double, member: ${member.user.asTag}", ephemeral = true).queue()
+    fun onFirstButtonClicked(event: ButtonEvent, double: Double, userUnion: UserUnion) {
+        event.reply_("Persistent button clicked, double: $double, member: ${userUnion.asTag}", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)
