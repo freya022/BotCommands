@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
-import com.freya02.botcommands.internal.commands.prefixed.TextUtils
+import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.coroutines.await
@@ -48,7 +48,7 @@ class UserResolver : ParameterResolver<UserResolver, User>(User::class),
             //Fastpath for mentioned entities passed in the message
             val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
 
-            TextUtils.findEntitySuspend(id, event.message.mentions.users) { event.jda.retrieveUserById(id).await() }
+            event.message.mentions.users.findEntity(id) { event.jda.retrieveUserById(id).await() }
         }.onErrorResponseException { e ->
             LOGGER.error("Could not resolve user: {}", e.meaning)
         }.getOrNull()

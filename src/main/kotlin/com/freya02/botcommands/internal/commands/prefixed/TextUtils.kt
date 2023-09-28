@@ -106,8 +106,9 @@ object TextUtils {
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
 
-    suspend fun <T : IMentionable> findEntitySuspend(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
-        collection.find { user -> user.idLong == id } ?: valueSupplier()
+    @JvmSynthetic
+    inline fun <T : IMentionable> Collection<T>.findEntity(id: Long, valueSupplier: () -> T): T =
+        find { user -> user.idLong == id } ?: valueSupplier()
 
     fun CommandPath.getSpacedPath(): String = getFullPath(' ')
 
