@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 
 public class Main {
     private static final String MAIN_PACKAGE_NAME = "io.github.freya022.bot";
-    private static final String BOT_NAME = "BotTemplate";
 
     public static void main(String[] args) {
         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.LOGBACK_CONFIG_PATH.toAbsolutePath().toString());
@@ -46,7 +45,7 @@ public class Main {
                 builder.applicationCommands(applicationCommands -> {
                     // Check command updates based on Discord's commands.
                     // This is only useful during development,
-                    // as you can develop on multiple machines. (but not simultaneously!)
+                    // as you can develop on multiple machines (but not simultaneously!).
                     // Using this in production is only going to waste API requests.
                     applicationCommands.enableOnlineAppCommandChecks(Environment.IS_DEV);
 
