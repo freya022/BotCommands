@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
 //This checker works on all classes from the user packages, but only on "services" of internal classes
-class ResolverSupertypeChecker : ClassGraphProcessor {
+internal class ResolverSupertypeChecker internal constructor(): ClassGraphProcessor {
     private val errorMessages: MutableList<String> = arrayListOf()
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>) {
