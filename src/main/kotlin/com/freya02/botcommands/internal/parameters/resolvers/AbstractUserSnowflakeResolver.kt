@@ -2,19 +2,19 @@ package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.core.entities.UserUnion
-import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
 import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.core.entities.UserUnionImpl
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import dev.minn.jda.ktx.coroutines.await
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -22,87 +22,76 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
-@Resolver
-internal class UserUnionResolver internal constructor(): ParameterResolver<UserUnionResolver, UserUnion>(UserUnion::class),
-    RegexParameterResolver<UserUnionResolver, UserUnion>,
-    SlashParameterResolver<UserUnionResolver, UserUnion>,
-    ComponentParameterResolver<UserUnionResolver, UserUnion>,
-    UserContextParameterResolver<UserUnionResolver, UserUnion> {
+internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeResolver<T, R>, R : UserSnowflake>(
+    clazz: KClass<R>
+) : ParameterResolver<T, R>(clazz),
+    RegexParameterResolver<T, R>,
+    SlashParameterResolver<T, R>,
+    ComponentParameterResolver<T, R>,
+    UserContextParameterResolver<T, R> {
 
-    override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
-    override val testExample: String = "<@1234>"
+    final override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
+    final override val testExample: String = "<@1234>"
 
-    override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
+    final override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
         return event.member.asMention
     }
 
-    override val optionType: OptionType = OptionType.USER
+    final override val optionType: OptionType = OptionType.USER
 
-    override suspend fun resolveSuspend(
+    final override suspend fun resolveSuspend(
         context: BContext,
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): UserUnion? {
+    ): R? {
         val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
-        return retrieveUserUnionOrNull(id, event.message)
+        return retrieveOrNull(id, event.message)
     }
 
-    override fun resolve(
+    final override fun resolve(
         context: BContext,
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
-    ): UserUnion = UserUnionImpl(optionMapping.asUser, optionMapping.asMember)
+    ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
-    override suspend fun resolveSuspend(
+    final override suspend fun resolveSuspend(
         context: BContext,
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String
-    ): UserUnion? {
+    ): R? {
         val id = arg.toLongOrNull() ?: throwUser("Invalid user id: $arg")
-        return retrieveUserUnionOrNull(id, event.message)
+        return retrieveOrNull(id, event.message)
     }
 
-    override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): UserUnion =
-        UserUnionImpl(event.target, event.targetMember)
+    final override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): R? =
+        transformEntities(event.target, event.targetMember)
 
-    private suspend fun retrieveUserUnionOrNull(
-        userId: Long,
-        message: Message
-    ): UserUnion? {
+    private suspend fun retrieveOrNull(userId: Long, message: Message): R? {
         val guild = if (message.isFromGuild) message.guild else null
         val memberResult = runCatching {
             if (guild == null)
                 return@runCatching null
-            message.mentions.members.findEntity(userId) { guild.retrieveMemberById(userId).await() }.let(::UserUnionImpl)
+            message.mentions.members.findEntity(userId) { guild.retrieveMemberById(userId).await() }.let { transformEntities(it.user, it) }
         }
         memberResult.getOrNull()?.let { return it }
 
         val userResult = runCatching {
-            message.mentions.users.findEntity(userId) { message.jda.retrieveUserById(userId).await() }.let(::UserUnionImpl)
+            message.mentions.users.findEntity(userId) { message.jda.retrieveUserById(userId).await() }.let { transformEntities(it, null) }
         }
         if (userResult.isSuccess) return userResult.getOrThrow()
 
-        memberResult.onFailure {
-            LOGGER.debug(
-                "Could not resolve member of user union in {} ({}): {} (regex command, may not be an error)",
-                guild!!.name,
-                guild.idLong,
-                it.message
-            )
-        }
-
-        userResult.onFailure {
-            LOGGER.debug(
-                "Could not resolve user of user union: {} (regex command, may not be an error)",
-                it.message
-            )
+        if (memberResult.isFailure) {
+            LOGGER.trace { "Could not resolve input user in ${guild!!.name} (${guild.idLong}): ${memberResult.exceptionOrNull()!!.message} / ${userResult.exceptionOrNull()!!.message}" }
         }
 
         return null
     }
+
+    protected abstract fun transformEntities(user: User, member: Member?): R?
 }

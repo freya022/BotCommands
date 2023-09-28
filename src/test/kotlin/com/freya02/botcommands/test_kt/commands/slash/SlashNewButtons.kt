@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.core.entities.UserUnion
+import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.lazy
@@ -95,8 +95,8 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
-    fun onFirstButtonClicked(event: ButtonEvent, double: Double, userUnion: UserUnion) {
-        event.reply_("Persistent button clicked, double: $double, member: ${userUnion.asTag}", ephemeral = true).queue()
+    fun onFirstButtonClicked(event: ButtonEvent, double: Double, inputUser: InputUser) {
+        event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)

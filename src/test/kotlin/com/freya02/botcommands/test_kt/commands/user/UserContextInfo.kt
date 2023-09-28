@@ -11,7 +11,7 @@ import com.freya02.botcommands.api.commands.application.context.annotations.Cont
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
-import com.freya02.botcommands.api.core.entities.UserUnion
+import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
@@ -40,7 +40,7 @@ class UserContextInfo : ApplicationCommand() {
     @JDAUserCommand(scope = CommandScope.GLOBAL, name = "User info (annotated)")
     fun onUserContextInfo(
         event: GuildUserEvent,
-        @ContextOption user: UserUnion,
+        @ContextOption user: InputUser,
         @GeneratedOption userTag: String
     ) {
         event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()

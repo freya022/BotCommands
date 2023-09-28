@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.commands.application.context.user.GlobalUserE
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import com.freya02.botcommands.api.core.entities.UserUnion
+import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
@@ -71,7 +71,7 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
      * Declares the supplied function as a user context command.
      *
      * The targeted function must have a [GlobalUserEvent] or a [GuildUserEvent],
-     * with the only accepted [options][ContextOption] being [Member], [User] and [UserUnion],
+     * with the only accepted [options][ContextOption] being [Member], [User] and [InputUser],
      * which will be the *targeted* entity.
      *
      * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
