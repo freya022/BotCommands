@@ -1,0 +1,19 @@
+{
+  "ban": {
+    "outputs": {
+      "defaultReason": "No reason supplied",
+      "confirmationMessage": "Do you really want to ban {userMention}?",
+      "timeout": "Timeout",
+      "success": "{userMention} has been banned, {time} {unit} of messages were deleted, reason: '{reason}'",
+      "cancelled": "The ban has been cancelled"
+    },
+    "errors": {
+      "bot.interactError": "I can't ban {userMention}",
+      "user.interactError": "You cannot ban {userMention}"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  }
+}

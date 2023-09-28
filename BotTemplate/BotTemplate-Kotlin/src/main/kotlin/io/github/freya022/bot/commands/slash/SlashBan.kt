@@ -1,6 +1,5 @@
 package io.github.freya022.bot.commands.slash
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.annotations.BotPermissions
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
@@ -24,7 +23,6 @@ import com.freya02.botcommands.api.localization.context.replaceLocalized
 import com.freya02.botcommands.api.localization.context.replyLocalizedEphemeral
 import io.github.freya022.bot.commands.FrontendChooser
 import io.github.freya022.bot.commands.SimpleFrontend
-import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
@@ -45,7 +43,7 @@ data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
 }
 
 @BService
-class SlashBan(private val context: BContext, private val componentsService: Components, private val banService: BanService) {
+class SlashBan(private val componentsService: Components) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,

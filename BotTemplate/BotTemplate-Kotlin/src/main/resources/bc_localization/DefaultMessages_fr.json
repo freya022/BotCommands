@@ -1,0 +1,4 @@
+{
+  "user.perm.error.message": "Tu n'as pas les permissions pour faire ceci.",
+  "bot.perm.error.message": "Je n'ai pas les permissions requises : {permissions}"
+}

@@ -20,7 +20,7 @@ import ch.qos.logback.classic.ClassicConstants as LogbackConstants
 private val logger by lazy { KotlinLogging.logger {} } // Must not load before system property is set
 
 private const val mainPackageName = "io.github.freya022.bot"
-private const val botName = "ExampleBot"
+private const val botName = "BotTemplate"
 
 object Main {
     @JvmStatic

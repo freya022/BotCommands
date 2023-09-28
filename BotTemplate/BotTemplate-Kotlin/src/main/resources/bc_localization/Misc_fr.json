@@ -1,0 +1,8 @@
+{
+  "time_unit": {
+    "SECONDS": "{time, choice, 0#secondes|1#seconde|1<secondes}",
+    "MINUTES": "{time, choice, 0#minutes|1#minute|1<minutes}",
+    "HOURS": "{time, choice, 0#heures|1#heure|1<heures}",
+    "DAYS": "{time, choice, 0#jours|1#jour|1<jours}"
+  }
+}

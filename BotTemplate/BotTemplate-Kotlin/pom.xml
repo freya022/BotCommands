@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.freya022</groupId>
-    <artifactId>ExampleBot</artifactId>
-    <version>1.0</version>
+    <artifactId>BotTemplate</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,11 +27,6 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
-                <configuration>
-                    <args>
-                        -Xcontext-receivers
-                    </args>
-                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -93,6 +88,30 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>io.github.freya022.bot.Main</mainClass>
+                                </transformer>
+                            </transformers>
+
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <finalName>BotTemplate</finalName>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Debug pattern -->
+            <!--<pattern>%d{HH:mm:ss.SSS} %boldCyan(%-26.-26thread) %boldRed(%-36.-36class{36}) %boldRed(#%-24.-24method{24}) %boldRed(L%-5.-5line) %boldYellow(%-20.-20logger{0}) %highlight(%-6level) %msg%n%throwable</pattern>-->
+            <!-- Normal pattern, no stack frames -->
+            <pattern>%d{HH:mm:ss.SSS} %boldCyan(%-26.-26thread) %boldYellow(%-20.-20logger{0}) %highlight(%-6level) %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/latest.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/logs-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 90 days' worth of history capped at 3GB total size -->
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-26.-26thread %-36.-36class{36} #%-24.-24method{24} L%-5.-5line %-20.-20logger{0} %-6level %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="net.dv8tion.jda" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.zaxxer.hikari" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.freya02.botcommands" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Logging queries, set to trace to enable -->
+    <logger name="com.freya02.botcommands.api.core.db.KPreparedStatement" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

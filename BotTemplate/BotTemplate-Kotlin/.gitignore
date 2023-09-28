@@ -1,0 +1,12 @@
+# Default ignored files
+/.idea/workspace.xml
+
+*.iml
+.idea
+target
+
+# You don't want your actual config to be public
+/dev-config
+
+# You don't want the dev data to show up either
+/dev-data
