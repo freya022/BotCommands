@@ -1,6 +1,7 @@
 package io.github.freya022.bot
 
 import com.freya02.botcommands.api.core.BBuilder
+import com.freya02.botcommands.api.core.config.DevConfig
 import com.freya02.botcommands.api.core.utils.namedDefaultScope
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
@@ -73,6 +74,7 @@ object Main {
                     // This is only useful during development,
                     // as you can develop on multiple machines. (but not simultaneously!)
                     // Using this in production is only going to waste API requests.
+                    @OptIn(DevConfig::class)
                     onlineAppCommandCheckEnabled = Environment.isDev
 
                     // Guilds in which `@Test` commands will be inserted

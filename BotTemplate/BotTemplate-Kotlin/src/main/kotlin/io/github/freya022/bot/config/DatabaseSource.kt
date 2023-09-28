@@ -1,20 +1,19 @@
 package io.github.freya022.bot.config
 
-import com.freya02.botcommands.api.core.db.ConnectionSupplier
+import com.freya02.botcommands.api.core.db.HikariSourceSupplier
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
 import org.flywaydb.core.Flyway
-import java.sql.Connection
 import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger { }
 
 // Interfaced service used to retrieve an SQL Connection
 @BService
-class DatabaseSource(config: Config) : ConnectionSupplier {
-    private val source = HikariDataSource(HikariConfig().apply {
+class DatabaseSource(config: Config) : HikariSourceSupplier {
+    override val source = HikariDataSource(HikariConfig().apply {
         jdbcUrl = config.databaseConfig.url
         username = config.databaseConfig.user
         password = config.databaseConfig.password
@@ -31,10 +30,6 @@ class DatabaseSource(config: Config) : ConnectionSupplier {
 
         logger.info("Created database source")
     }
-
-    override fun getMaxConnections(): Int = source.maximumPoolSize
-
-    override fun getConnection(): Connection = source.connection
 
     private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure()
         .dataSource(source)
