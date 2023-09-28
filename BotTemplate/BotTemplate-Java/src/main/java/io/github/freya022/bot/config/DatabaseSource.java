@@ -1,7 +1,7 @@
 package io.github.freya022.bot.config;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.core.db.ConnectionSupplier;
+import com.freya02.botcommands.api.core.db.HikariSourceSupplier;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -9,12 +9,9 @@ import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 // Interfaced service used to retrieve an SQL Connection
 @BService
-public class DatabaseSource implements ConnectionSupplier {
+public class DatabaseSource implements HikariSourceSupplier {
     private static final Logger LOGGER = Logging.getLogger();
 
     private final HikariDataSource source;
@@ -46,14 +43,9 @@ public class DatabaseSource implements ConnectionSupplier {
                 .load();
     }
 
-    @Override
-    public int getMaxConnections() {
-        return source.getMaximumPoolSize();
-    }
-
     @NotNull
     @Override
-    public Connection getConnection() throws SQLException {
-        return source.getConnection();
+    public HikariDataSource getSource() {
+        return source;
     }
 }

@@ -25,17 +25,17 @@ public class Main {
             final Config config = Config.getInstance();
             BBuilder.newBuilder(builder -> {
                 if (Environment.IS_DEV) {
-                    builder.setDisableExceptionsInDMs(true);
-                    builder.setDisableAutocompleteCache(true);
+                    builder.disableExceptionsInDMs(true);
+                    builder.disableAutocompleteCache(true);
                 }
 
-                builder.getOwnerIds().addAll(config.getOwnerIds());
+                builder.addOwners(config.getOwnerIds());
 
                 builder.addSearchPath(MAIN_PACKAGE_NAME);
 
                 builder.textCommands(textCommands -> {
                     //Use ping as prefix if configured
-                    textCommands.setUsePingAsPrefix(config.getPrefixes().contains("<ping>"));
+                    textCommands.usePingAsPrefix(config.getPrefixes().contains("<ping>"));
 
                     for (String prefix : config.getPrefixes()) {
                         if (prefix.equals("<ping>")) continue;
@@ -48,7 +48,7 @@ public class Main {
                     // This is only useful during development,
                     // as you can develop on multiple machines. (but not simultaneously!)
                     // Using this in production is only going to waste API requests.
-                    applicationCommands.setOnlineAppCommandCheckEnabled(Environment.IS_DEV);
+                    applicationCommands.enableOnlineAppCommandChecks(Environment.IS_DEV);
 
                     // Guilds in which @Test commands will be inserted
                     applicationCommands.getTestGuildIds().addAll(config.getTestGuildIds());
@@ -58,7 +58,7 @@ public class Main {
                 });
 
                 builder.components(components -> {
-                    components.setUseComponents(true);
+                    components.useComponents(true);
                 });
             });
 

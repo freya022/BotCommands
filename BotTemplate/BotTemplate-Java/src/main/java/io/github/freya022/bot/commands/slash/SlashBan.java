@@ -108,7 +108,6 @@ public class SlashBan extends ApplicationCommand {
                                     .flatMap(x -> event.getHook().deleteOriginal())
                                     .queue();
                         });
-                        return null;
                     }, cancelButton, confirmButton);
 
                     event.reply(localizationContext.localize("outputs.confirmationMessage", entry("userMention", target.getAsMention())))
