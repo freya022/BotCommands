@@ -10,12 +10,12 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.components.Button;
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.core.entities.InputUser;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext;
 import io.github.freya022.bot.helpers.LocalizationHelper;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -43,79 +43,74 @@ public class SlashBan extends ApplicationCommand {
     public void onSlashBan(
             GuildSlashEvent event,
             @LocalizationBundle(value = "Commands", prefix = "ban") AppLocalizationContext localizationContext,
-            @SlashOption(description = "The user to ban") User target,
+            @SlashOption(description = "The user to ban") InputUser target,
             @SlashOption(description = "The timeframe of messages to delete with the specified unit") Long time,
             @SlashOption(description = "The unit of the delete timeframe", usePredefinedChoices = true) TimeUnit unit,
             @SlashOption(description = "The reason for the ban") @Nullable String reason
     ) {
         final String finalReason = reason != null ? reason : localizationContext.localize("outputs.defaultReason");
 
-        event.getGuild()
-                .retrieveMember(target)
-                .mapToResult()
-                .queue(targetMemberResult -> {
-                    if (targetMemberResult.isSuccess()) {
-                        final Member targetMember = targetMemberResult.get();
-                        if (!event.getMember().canInteract(targetMember)) {
-                            event.reply(localizationContext.localize("errors.user.interactError", entry("userMention", targetMember.getAsMention())))
-                                    .setEphemeral(true)
-                                    .queue();
-                            return;
-                        } else if (!event.getGuild().getSelfMember().canInteract(targetMember)) {
-                            event.reply(localizationContext.localize("errors.bot.interactError", entry("userMention", targetMember.getAsMention())))
-                                    .setEphemeral(true)
-                                    .queue();
-                            return;
-                        }
-                    }
+        final Member targetMember = target.getMember();
+        if (targetMember != null) {
+            if (!event.getMember().canInteract(targetMember)) {
+                event.reply(localizationContext.localize("errors.user.interactError", entry("userMention", targetMember.getAsMention())))
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            } else if (!event.getGuild().getSelfMember().canInteract(targetMember)) {
+                event.reply(localizationContext.localize("errors.bot.interactError", entry("userMention", targetMember.getAsMention())))
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+        }
 
-                    final Button cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel"), builder -> {
-                        // Restrict button to caller, not necessary since this is an ephemeral reply tho
-                        builder.addUserIds(event.getUser().getIdLong());
-                        builder.setOneUse(true);
+        final Button cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel"), builder -> {
+            // Restrict button to caller, not necessary since this is an ephemeral reply tho
+            builder.addUsers(event.getUser());
+            builder.setOneUse(true);
 
-                        builder.bindTo(buttonEvent -> {
-                            LOGGER.debug("Ban cancelled for {}", target.getId());
-                            buttonEvent.editMessage(localizationContext.localize("outputs.cancelled"))
-                                    .setComponents()
-                                    .queue();
+            builder.bindTo(buttonEvent -> {
+                LOGGER.debug("Ban cancelled for {}", target.getId());
+                buttonEvent.editMessage(localizationContext.localize("outputs.cancelled"))
+                        .setComponents()
+                        .queue();
 
-                            //Cancel logic
-                        });
-                    });
+                //Cancel logic
+            });
+        });
 
-                    final Button confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm"), builder -> {
-                        // Restrict button to caller, not necessary since this is an ephemeral reply tho
-                        builder.addUserIds(event.getUser().getIdLong());
-                        builder.setOneUse(true);
+        final Button confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm"), builder -> {
+            // Restrict button to caller, not necessary since this is an ephemeral reply tho
+            builder.addUsers(event.getUser());
+            builder.setOneUse(true);
 
-                        builder.bindTo(buttonEvent -> {
-                            LOGGER.debug("Ban confirmed for {}, {} {} of messages were deleted, reason: '{}'", target.getId(), time, unit, finalReason);
-                            buttonEvent.editMessage(localizationContext.localize(
-                                    "outputs.success",
-                                    entry("userMention", target.getAsMention()),
-                                    entry("time", time),
-                                    entry("unit", localizationHelper.localize(time, unit, localizationContext)),
-                                    entry("reason", finalReason)
-                            )).setComponents().queue();
+            builder.bindTo(buttonEvent -> {
+                LOGGER.debug("Ban confirmed for {}, {} {} of messages were deleted, reason: '{}'", target.getId(), time, unit, finalReason);
+                buttonEvent.editMessage(localizationContext.localize(
+                        "outputs.success",
+                        entry("userMention", target.getAsMention()),
+                        entry("time", time),
+                        entry("unit", localizationHelper.localize(time, unit, localizationContext)),
+                        entry("reason", finalReason)
+                )).setComponents().queue();
 
-                            //Ban logic
-                        });
-                    });
+                //Ban logic
+            });
+        });
 
-                    componentsService.newEphemeralGroup(builder -> {
-                        builder.timeout(1, TimeUnit.MINUTES, () -> {
-                            event.getHook().editOriginal(localizationContext.localize("outputs.timeout"))
-                                    .delay(Duration.ofSeconds(5))
-                                    .flatMap(x -> event.getHook().deleteOriginal())
-                                    .queue();
-                        });
-                    }, cancelButton, confirmButton);
+        componentsService.newEphemeralGroup(builder -> {
+            builder.timeout(1, TimeUnit.MINUTES, () -> {
+                event.getHook().editOriginal(localizationContext.localize("outputs.timeout"))
+                        .delay(Duration.ofSeconds(5))
+                        .flatMap(x -> event.getHook().deleteOriginal())
+                        .queue();
+            });
+        }, cancelButton, confirmButton);
 
-                    event.reply(localizationContext.localize("outputs.confirmationMessage", entry("userMention", target.getAsMention())))
-                            .addActionRow(cancelButton, confirmButton)
-                            .setEphemeral(true)
-                            .queue();
-                });
+        event.reply(localizationContext.localize("outputs.confirmationMessage", entry("userMention", target.getAsMention())))
+                .addActionRow(cancelButton, confirmButton)
+                .setEphemeral(true)
+                .queue();
     }
 }

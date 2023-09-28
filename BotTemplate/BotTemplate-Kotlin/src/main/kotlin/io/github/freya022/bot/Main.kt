@@ -90,7 +90,7 @@ object Main {
                 }
             }
 
-            // There is no JDABuilder going on here, it's taken care of in JDAService
+            // There is no JDABuilder going on here, it's taken care of in Bot
 
             logger.info("Loaded bot")
         } catch (e: Exception) {

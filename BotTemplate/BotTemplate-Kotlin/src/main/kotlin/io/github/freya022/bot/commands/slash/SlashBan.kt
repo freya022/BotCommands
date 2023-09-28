@@ -12,10 +12,10 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.SlashO
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.utils.delay
-import com.freya02.botcommands.api.core.utils.retrieveMemberOrNull
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.editLocalized
@@ -27,7 +27,6 @@ import io.github.freya022.bot.resolvers.localize
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
@@ -48,11 +47,11 @@ class SlashBan(private val componentsService: Components) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
-        target: User,
+        target: InputUser,
         timeframe: DeleteTimeframe,
         reason: String = localizationContext.localize("outputs.defaultReason")
     ) {
-        event.guild.retrieveMemberOrNull(target)?.let { targetMember ->
+        target.member?.let { targetMember ->
             if (!event.member.canInteract(targetMember)) {
                 return event.replyLocalizedEphemeral(localizationContext, "errors.user.interactError", "userMention" to target.asMention).queue()
             } else if (!event.guild.selfMember.canInteract(targetMember)) {
@@ -160,7 +159,7 @@ class SlashBanSimplifiedFront(private val banImpl: SlashBan) : ApplicationComman
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
-        @SlashOption(description = "The user to ban") target: User,
+        @SlashOption(description = "The user to ban") target: InputUser,
         @SlashOption(description = "The timeframe of messages to delete with the specified unit") time: Long,
         @SlashOption(description = "The unit of the delete timeframe", usePredefinedChoices = true) unit: TimeUnit,
         @SlashOption(description = "The reason for the ban") reason: String = localizationContext.localize("outputs.defaultReason")
