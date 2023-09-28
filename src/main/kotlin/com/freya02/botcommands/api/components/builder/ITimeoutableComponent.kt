@@ -16,6 +16,7 @@ import java.time.Duration as JavaDuration
  * Allows components to have timeouts.
  *
  * After the timeout has expired, the component will be deleted from the database.
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
  *
  * If the component is a group, then all of its owned components will also be deleted.
  *
@@ -30,6 +31,7 @@ interface ITimeoutableComponent {
      * Sets the timeout on this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -47,6 +49,7 @@ interface ITimeoutableComponent {
      * Sets the timeout on this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -63,6 +66,7 @@ interface ITimeoutableComponent {
      * Sets the timeout on this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -89,6 +93,7 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * Binds the given timeout handler name with its arguments to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -112,6 +117,7 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * Binds the given timeout handler name with its arguments to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -134,6 +140,7 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * Binds the given timeout handler name with its arguments to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -165,6 +172,7 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * Binds the given handler to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -185,6 +193,7 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * Binds the given handler to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
@@ -206,6 +215,7 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * Binds the given handler to this component.
      *
      * After the timeout has expired, the component will be deleted from the database.
+     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
      *
      * If the component is a group, then all of its owned components will also be deleted.
      *
