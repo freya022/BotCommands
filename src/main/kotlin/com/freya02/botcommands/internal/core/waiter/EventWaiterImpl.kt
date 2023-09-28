@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.JDAImpl
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Predicate
@@ -56,7 +57,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     internal fun <T : Event> submit(waitingEvent: WaitingEvent<T>): CompletableFuture<T> {
         val future = waitingEvent.completableFuture
         if (waitingEvent.timeout != null) {
-            future.orTimeout(waitingEvent.timeout, waitingEvent.timeoutUnit)
+            future.orTimeout(waitingEvent.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         }
 
         val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() }

@@ -109,7 +109,7 @@ object Resolvers {
         e: Class<E>,
         values: Array<out E>,
         nameFunction: EnumNameFunction<E> = EnumNameFunction { it.toHumanName() }
-    ): ParameterResolver<*, *> {
+    ): ParameterResolver<*, E> {
         return EnumResolver(e, values, nameFunction)
     }
 
@@ -145,6 +145,6 @@ object Resolvers {
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),
     noinline nameFunction: (e: E) -> String = { it.toHumanName() }
-): ParameterResolver<*, *> = Resolvers.enumResolver(E::class.java, values, nameFunction)
+): ParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, nameFunction)
 
 fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)

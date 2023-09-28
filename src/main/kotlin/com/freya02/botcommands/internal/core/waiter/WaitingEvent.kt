@@ -3,9 +3,9 @@ package com.freya02.botcommands.internal.core.waiter
 import com.freya02.botcommands.api.core.waiter.CompletedFutureEvent
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.function.Predicate
+import kotlin.time.Duration
 
 internal class WaitingEvent<T : Event> internal constructor(
     val eventType: Class<T>,
@@ -14,8 +14,7 @@ internal class WaitingEvent<T : Event> internal constructor(
     val onSuccess: Consumer<T>?,
     val onTimeout: Runnable?,
     val onCancelled: Runnable?,
-    val timeout: Long?,
-    val timeoutUnit: TimeUnit?
+    val timeout: Duration?
 ) {
     val completableFuture = CompletableFuture<T>()
 }

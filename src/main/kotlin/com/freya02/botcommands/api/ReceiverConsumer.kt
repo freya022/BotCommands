@@ -20,11 +20,3 @@ fun interface ReceiverConsumer<T> : (T) -> Unit {
         fun <T> noop(): ReceiverConsumer<T> = NOOP as ReceiverConsumer<T>
     }
 }
-
-//TODO replace with Kotlin's apply
-@Deprecated("Replaced with Kotlin's apply")
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T, R : T> R.apply(block: ReceiverConsumer<T>): R {
-    block.applyTo(this)
-    return this
-}

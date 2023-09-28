@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.modals.ModalTimeoutInfo
 import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.internal.utils.Checks
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
@@ -29,9 +29,11 @@ internal class ModalBuilderImpl internal constructor(
         return bindTo { handler.accept(it) }
     }
 
-    override fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilderImpl = this.also {
-        Checks.positive(timeout, "Timeout")
-        timeoutInfo = ModalTimeoutInfo(timeout, unit, onTimeout)
+    override fun setTimeout(timeout: Duration, onTimeout: Runnable): ModalBuilder = this.also {
+        require(!timeout.isZero && !timeout.isNegative) {
+            "Timeout must be positive"
+        }
+        timeoutInfo = ModalTimeoutInfo(timeout.toMillis(), TimeUnit.MILLISECONDS, onTimeout)
     }
 
     override fun setId(customId: String): ModalBuilderImpl = this.also {

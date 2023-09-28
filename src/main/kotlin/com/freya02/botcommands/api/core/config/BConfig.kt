@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -18,6 +17,7 @@ import com.freya02.botcommands.internal.core.config.ConfigDSL
 import kotlinx.coroutines.debug.DebugProbes
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @InjectedService
 interface BConfig {
@@ -35,7 +35,7 @@ interface BConfig {
     /**
      * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
      *
-     * This could be useful when testing methods that use autocomplete caching, while using hotswap.
+     * This could be useful when testing methods that use autocomplete caching while using hotswap.
      *
      * Default: `false`
      */
@@ -43,12 +43,12 @@ interface BConfig {
 
     /**
      * Whether transactions should trigger a coroutine dump & thread dump
-     * when running longer than the [max transaction duration][ConnectionSupplier.getMaxTransactionDuration]
+     * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
      *
      * **Note:** you need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
      * do not forget to turn off [DebugProbes.enableCreationStackTraces] in production environments.
      *
-     * @see ConnectionSupplier.getMaxTransactionDuration
+     * @see ConnectionSupplier.maxTransactionDuration
      * @see DebugProbes
      * @see DebugProbes.enableCreationStackTraces
      */
@@ -101,12 +101,17 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override val ownerIds: MutableSet<Long> = HashSet()
 
+    @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+    @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
 
     @set:DevConfig
+    @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false
+    @set:JvmName("logQueries")
     override var logQueries: Boolean = true
+    @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
@@ -120,43 +125,63 @@ class BConfigBuilder internal constructor() : BConfig {
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder(serviceConfig)
     override val componentsConfig = BComponentsConfigBuilder()
+    @get:JvmSynthetic
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
-     * Adds owners, they can access the commands annotated with [RequireOwner]
+     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
      *
      * @param ownerIds Owners Long IDs to add
      */
-    fun addOwners(vararg ownerIds: Long) {
-        this.ownerIds += ownerIds.asList()
+    fun addOwners(vararg ownerIds: Long) = addOwners(ownerIds.asList())
+
+    /**
+     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
+     *
+     * @param ownerIds Owners Long IDs to add
+     */
+    fun addOwners(ownerIds: Collection<Long>) {
+        this.ownerIds += ownerIds
     }
 
-    //TODO take javadoc from master
     /**
-     * Adds the commands of this packages in this builder, all classes with valid annotations will be added<br></br>
-     * **You can have up to 2 nested sub-folders in the specified package**, this means you can have your package structure like this:
+     * Adds this package for class discovery.
+     * All services, commands, handlers, listeners, etc... will be read from these packages.
      *
-     * ```
-     * |
-     * |__slash
-     * |  |
-     * |  |__fun
-     * |     |
-     * |     |__Meme.java
-     * |        Fish.java
-     * |        ...
-     * |
-     * |__regular
-     * |
-     * |__moderation
-     * |
-     * |__Ban.java
-     * Mute.java
-     * ...
+     * **Tip:**: you can have your package structure such as:
+     *
+     * ```text
+     * commands/
+     * ├─ common/
+     * │  ├─ fun/
+     * │  │  ├─ CommonFish.java
+     * │  │  ├─ CommonMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ CommonBan.java
+     * ├─ slash/
+     * │  ├─ fun/
+     * │  │  ├─ SlashFish.java
+     * │  │  ├─ SlashMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ SlashBan.java
+     * ├─ text/
+     * │  ├─ fun/
+     * │  │  ├─ TextFish.java
+     * │  │  ├─ TextMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ TextBan.java
      * ```
      *
-     * @param commandPackageName The package name where all the commands are, ex: com.freya02.bot.commands
-     * @return This builder for chaining convenience
+     * The `common` package would have code that works for both the text and the slash commands,
+     * such as the methods that take the event's data (the command caller, guild, channel, parameters... instead of the event itself),
+     * and then return a [MessageCreateData] that lets you generate the message output, without actually knowing how to send the reply.
+     *
+     * This is only beneficial if you plan on having the same logic
+     * for multiple input types (text / slash commands, for example).
+     *
+     * @param commandPackageName The package name such as `io.github.freya022.bot.commands`
+     *
+     * @see addClass
      */
     fun addSearchPath(commandPackageName: String) {
         packages.add(commandPackageName)
@@ -167,7 +192,7 @@ class BConfigBuilder internal constructor() : BConfig {
     }
 
     @JvmSynthetic
-    inline fun <reified T> addClass() {
+    inline fun <reified T : Any> addClass() {
         addClass(T::class.java)
     }
 
@@ -175,6 +200,7 @@ class BConfigBuilder internal constructor() : BConfig {
         serviceConfig.apply(block)
     }
 
+    @JvmSynthetic
     fun coroutineScopes(block: ReceiverConsumer<BCoroutineScopesConfigBuilder>) {
         coroutineScopesConfig.apply(block)
     }

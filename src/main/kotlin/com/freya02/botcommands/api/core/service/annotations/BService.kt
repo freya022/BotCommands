@@ -7,11 +7,13 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 /**
  * Marks this class as a service, or this function as a service factory.
  *
- * Service factories must be declared in a service class, or an `object`.
+ * Service factories must be static, or declared in a service class, or an `object`.
  *
  * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
  *
  * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
+ *
+ * **Note 2:** Service factories are prioritized over class annotations, see [ServicePriority] for more details.
  *
  * **Warning:** Top-level functions are not processed, you must have them in an object/class.
  *
@@ -47,7 +49,12 @@ annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * The priority of this service.
      *
-     * Higher value = Will be loaded first/shown first in interfaces service lists
+     * Higher value = Will be loaded first/shown first in interfaced services lists.
+     *
+     * By default, service providers are sorted:
+     * - By their priority
+     * - If at the same priority, service factories are prioritized
+     * - By their name (ascending alphabetical order)
      *
      * @see ServicePriority @ServicePriority
      */

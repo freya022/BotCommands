@@ -46,8 +46,15 @@ internal interface ServiceProvider : Comparable<ServiceProvider> {
 
     override fun compareTo(other: ServiceProvider): Int {
         // Reverse order
-        val priorityCmp = -priority.compareTo(other.priority)
-        if (priorityCmp != 0) return priorityCmp
+        val priorityCmp = priority.compareTo(other.priority)
+        if (priorityCmp != 0) return -priorityCmp
+
+        // Prioritize service coming from service factories
+        if (this is FunctionServiceProvider && other !is FunctionServiceProvider) {
+            return -1
+        } else if (other is FunctionServiceProvider && this !is FunctionServiceProvider) {
+            return 1
+        }
 
         return name.compareTo(other.name)
     }
@@ -214,7 +221,7 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl,
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
                 ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { (_, errorMessage) ->
-                    throwUser(this, "Could not run function as the declaring class isn't an object, and service creation failed: $errorMessage")
+                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed: $errorMessage")
                 }
             args[instanceParameter] = instance
 

@@ -33,11 +33,14 @@ interface BTextConfig {
 
 @ConfigDSL
 class BTextConfigBuilder internal constructor() : BTextConfig {
+    @set:JvmName("usePingAsPrefix")
     override var usePingAsPrefix: Boolean = false
-    override var prefixes: MutableList<String> = mutableListOf()
+    override val prefixes: MutableList<String> = mutableListOf()
 
+    @set:JvmName("disableHelp")
     override var isHelpDisabled: Boolean = false
-    override val showSuggestions: Boolean = false
+    @set:JvmName("showSuggestions")
+    override var showSuggestions: Boolean = false
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {
