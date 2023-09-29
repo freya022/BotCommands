@@ -33,6 +33,8 @@ and available to other classes.
 
 These services can all have a name, in case you want multiple services of the same type, but want to differentiate them.
 
+**Note:** Service factories are prioritized over annotated classes.
+
 **Kotlin note:** Service factories can be top-level functions.
 
 ### Conditional services
@@ -133,6 +135,9 @@ Rate limits can be used with:
   using them is as simple as using `@RateLimitReference` for annotated commands,
   or `#rateLimitReference` for DSL commands and components.
 
+A bucket token can be added back by using your event's `#cancelRateLimit()`, 
+which effectively cancels the rate limit applied before entering any handler.
+
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
 
@@ -155,7 +160,14 @@ You can also refer to [the example JDA service](examples/src/main/kotlin/io/gith
 ## New database utils
 A `Database` interface has been added, this is mostly useful for Kotlin users and only serves as a very basic abstraction for transactions.
 
-You might find helpful how the framework logs the queries going through it, with the timings, if you enable the `TRACE` logging level. 
+You might find helpful how the framework logs the queries going through it, with the timings, if you enable the `TRACE` logging level.
+
+### Long transaction reporting
+Additionally, if `BConfig#dumpLongTransactions` is enabled, 
+the framework will report transactions taking longer than `ConnectionSupplier#maxTransactionDuration`,
+and will trigger a coroutine / thread dump.
+
+**Note:** Coroutine dumps require `kotlinx-coroutines-debug`, see `BConfig#dumpLongTransactions` for more details.
 
 ## New components
 The `Components` utility class is now a service, which means you can get it either in your constructor, or in your handler.
@@ -221,9 +233,13 @@ As briefly explained above, localization has been moved from the framework event
 
 Naturally, `AppLocalizationContext` can only be used with interactions (application commands, components, modals), while `TextLocalizationContext` can be used in interactions and `MessageReceivedEvent` handlers.
 
-These parameters must be annotated with `@LocalizationBundle`, as to specify where to take the translations from, and with what prefix.
+These parameters must be annotated with `@LocalizationBundle`, as to specify where to take the translations from, 
+and optionally, with what prefix.
 
-You can specify as many of them as you'd like, as well as construct them manually using the static methods.
+You can specify as many of them as you'd like, as well as construct them manually using the static methods, 
+or use `switchBundle` which changes the target bundle and clears the prefix.
+
+In addition, `#localize[X]orNull` can help you return `null` in case the given localization path does not exist.
 
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
 
@@ -231,3 +247,16 @@ You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/c
 
 ### Command / Component filters
 Filters now support coroutines and are run right before their target should have been executed.
+
+### Extension functions
+Several top-level and extension functions have been added, such as:
+- [Member retrieval, temporary message content warning suppressing, message/hook send/edit/replaceWith, overloads using Kotlin's Duration](src/main/kotlin/com/freya02/botcommands/api/core/utils/JDA.kt)
+- [Error response handling/ignoring](src/main/kotlin/com/freya02/botcommands/api/core/utils/ErrorResponses.kt)
+- [Resource reading, named coroutine scopes](src/main/kotlin/com/freya02/botcommands/api/core/utils/Utils.kt)
+
+### Input user parameters
+A `InputUser` interface, extending `User`, provides a way for you to get a Member (null if not available) 
+alongside the non-null User, without retrieving.
+
+This is particularly useful for commands that work for both `User`s and `Member`s, 
+but where having a `Member` triggers additional checks, such as in ban commands.
