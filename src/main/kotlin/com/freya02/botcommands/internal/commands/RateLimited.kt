@@ -2,11 +2,14 @@ package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.ratelimit.CancellableRateLimitImpl
+import com.freya02.botcommands.internal.commands.ratelimit.NullCancellableRateLimit
 import com.freya02.botcommands.internal.components.data.ComponentData
 import io.github.bucket4j.Bucket
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -18,7 +21,7 @@ internal sealed interface RateLimited {
     val rateLimitInfo: RateLimitInfo?
 }
 
-internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend () -> Boolean) {
+internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
@@ -29,11 +32,11 @@ internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: Mes
             rateLimitInfo.limiter.onRateLimit(context, event, this, probe)
         }
     } else {
-        block()
+        block(NullCancellableRateLimit)
     }
 }
 
-internal suspend fun ApplicationCommandInfo.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend () -> Boolean) {
+internal suspend fun ApplicationCommandInfo.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
@@ -44,11 +47,11 @@ internal suspend fun ApplicationCommandInfo.withRateLimit(context: BContext, eve
             rateLimitInfo.limiter.onRateLimit(context, event, this, probe)
         }
     } else {
-        block()
+        block(NullCancellableRateLimit)
     }
 }
 
-internal suspend fun ComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, isNotOwner: Boolean, block: suspend () -> Boolean) {
+internal suspend fun ComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = this.rateLimitGroup?.let { context.getService<RateLimitContainer>()[it] }
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event)
@@ -59,13 +62,14 @@ internal suspend fun ComponentData.withRateLimit(context: BContext, event: Gener
             rateLimitInfo.limiter.onRateLimit(context, event, probe)
         }
     } else {
-        block()
+        block(NullCancellableRateLimit)
     }
 }
 
-private suspend inline fun runRateLimited(crossinline block: suspend () -> Boolean, bucket: Bucket) {
+private suspend inline fun runRateLimited(crossinline block: suspend (CancellableRateLimit) -> Boolean, bucket: Bucket) {
     try {
-        block()
+        val rateLimitedEvent = CancellableRateLimitImpl()
+        block(rateLimitedEvent)
     } catch (e: Throwable) {
         bucket.addTokens(1)
         throw e
