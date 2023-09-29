@@ -36,7 +36,6 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
      *
      * @param bucketFactory  the bucket factory to use in [RateLimiterFactory]
      * @param limiterFactory the [RateLimiter] factory in charge of handling buckets and rate limits
-     * @param group          the "name" of the rate limiter, defaults to the command's path
      * @param block          further configures the [RateLimitBuilder]
      *
      * @throws IllegalStateException If a rate limiter with the same group exists
@@ -48,10 +47,9 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
     fun rateLimit(
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
-        group: String = path.fullPath,
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ) {
-        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(group, bucketFactory, limiterFactory, block)
+        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(path.fullPath, bucketFactory, limiterFactory, block)
     }
 
     /**
@@ -68,4 +66,4 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
 }
 
 fun CommandBuilder.cooldown(scope: RateLimitScope, duration: Duration, block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()) =
-    rateLimit(BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope), block = block)
+    rateLimit(BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope), block)
