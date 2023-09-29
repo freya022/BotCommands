@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
-import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.context.annotations.ContextOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
+import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.api.parameters.ParameterType
@@ -39,7 +39,7 @@ class UserContextInfo : ApplicationCommand() {
 
     @JDAUserCommand(scope = CommandScope.GLOBAL, name = "User info (annotated)")
     fun onUserContextInfo(
-        event: GuildUserEvent,
+        event: GlobalUserEvent,
         @ContextOption user: InputUser,
         @GeneratedOption userTag: String
     ) {
@@ -47,8 +47,8 @@ class UserContextInfo : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.userCommand("User info", CommandScope.GLOBAL, ::onUserContextInfo) {
+    fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
+        applicationCommandManager.userCommand("User info", CommandScope.GLOBAL, ::onUserContextInfo) {
             option("user")
 
             generatedOption("userTag") {

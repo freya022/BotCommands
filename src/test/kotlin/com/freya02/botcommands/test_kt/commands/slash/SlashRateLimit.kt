@@ -37,7 +37,12 @@ class SlashRateLimit(private val components: Components) : ApplicationCommand() 
         val button = components.ephemeralButton(ButtonStyle.PRIMARY, "Retry (5 clicks in 1 minute)") {
             rateLimitReference(retryRateLimitGroup)
             bindTo { event ->
-                event.reply_("ok", ephemeral = true).queue()
+                if (Math.random() > 0.5) {
+                    event.cancelRateLimit()
+                    event.reply_("token added back, try again", ephemeral = true).queue()
+                } else {
+                    event.reply_("ok", ephemeral = true).queue()
+                }
             }
         }
         event.reply_(components = button.into(), ephemeral = true).queue()
