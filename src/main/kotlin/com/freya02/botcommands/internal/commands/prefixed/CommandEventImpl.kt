@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.exceptions.BadIdException
 import com.freya02.botcommands.api.commands.prefixed.exceptions.NoIdException
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.utils.RichTextFinder
 import com.freya02.botcommands.api.utils.RichTextFinder.RichText
@@ -27,8 +28,9 @@ internal class CommandEventImpl private constructor(
     context: BContextImpl,
     private val event: MessageReceivedEvent,
     argumentsStr: String?,
-    private val arguments: MutableList<Any>
-) : CommandEvent(context, event, argumentsStr) {
+    private val arguments: MutableList<Any>,
+    cancellableRateLimit: CancellableRateLimit
+) : CommandEvent(context, event, argumentsStr, cancellableRateLimit) {
     override fun getArguments(): List<Any> = arguments
 
     override fun <T> hasNext(clazz: Class<T>): Boolean {
@@ -125,7 +127,8 @@ internal class CommandEventImpl private constructor(
         internal suspend fun create(
             context: BContextImpl,
             event: MessageReceivedEvent,
-            argumentsStr: String?
+            argumentsStr: String?,
+            cancellableRateLimit: CancellableRateLimit
         ): CommandEventImpl {
             val arguments: MutableList<Any> = arrayListOf()
             RichTextFinder(argumentsStr, true, false, true, false)
@@ -135,7 +138,7 @@ internal class CommandEventImpl private constructor(
                     processText(arguments, event.guild, substring, type)
                 }
 
-            return CommandEventImpl(context, event, argumentsStr, arguments)
+            return CommandEventImpl(context, event, argumentsStr, arguments, cancellableRateLimit)
         }
 
         private suspend fun processText(arguments: MutableList<Any>, guild: Guild, substring: String, type: RichTextType) {

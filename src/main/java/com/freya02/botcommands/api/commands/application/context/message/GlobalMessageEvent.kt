@@ -1,21 +1,12 @@
-package com.freya02.botcommands.api.commands.application.context.message;
+package com.freya02.botcommands.api.commands.application.context.message
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.internal.BContextImpl;
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 
-public class GlobalMessageEvent extends MessageContextInteractionEvent {
-	private final BContext context;
-
-	public GlobalMessageEvent(BContextImpl context, MessageContextInteractionEvent event) {
-		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
-
-		this.context = context;
-	}
-
-	@NotNull
-	public BContext getContext() {
-		return context;
-	}
-}
+open class GlobalMessageEvent internal constructor(
+    val context: BContext,
+    event: MessageContextInteractionEvent,
+    cancellableRateLimit: CancellableRateLimit
+) : MessageContextInteractionEvent(event.jda, event.responseNumber, event.interaction),
+    CancellableRateLimit by cancellableRateLimit

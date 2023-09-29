@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
 import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
  *     <li>Adding a reaction to indicate command success/failure</li>
  * </ul>
  */
-public abstract class BaseCommandEvent extends MessageReceivedEvent {
+public abstract class BaseCommandEvent extends MessageReceivedEvent implements CancellableRateLimit {
 	private final BContext context;
 
 	public BaseCommandEvent(@NotNull BContextImpl context, @NotNull JDA api, long responseNumber, @NotNull Message message) {

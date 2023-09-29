@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.commands.prefixed;
 
 import com.freya02.botcommands.api.commands.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.commands.prefixed.exceptions.NoIdException;
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -24,8 +25,8 @@ import java.util.NoSuchElementException;
  * @see BaseCommandEvent
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
-	public CommandEvent(BContextImpl context, MessageReceivedEvent event, String args) {
-		super(context, event, args);
+	public CommandEvent(BContextImpl context, MessageReceivedEvent event, String args, CancellableRateLimit cancellableRateLimit) {
+		super(context, event, args, cancellableRateLimit);
 	}
 
 	/**

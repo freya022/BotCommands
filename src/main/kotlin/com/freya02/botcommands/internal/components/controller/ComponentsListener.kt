@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.components.controller
 
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -69,7 +70,7 @@ internal class ComponentsListener(
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
-            component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) {
+            component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
                 component.constraints?.let { constraints ->
                     if (!constraints.isAllowed(event)) {
                         event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
@@ -94,7 +95,7 @@ internal class ComponentsListener(
 
                 when (component) {
                     is PersistentComponentData -> {
-                        transformEvent(event)?.let { evt ->
+                        transformEvent(event, cancellableRateLimit)?.let { evt ->
                             resumeCoroutines(component, evt)
 
                             val (handlerName, userData) = component.handler ?: return@withRateLimit true
@@ -111,7 +112,7 @@ internal class ComponentsListener(
                         }
                     }
                     is EphemeralComponentData -> {
-                        transformEvent(event)?.let { evt ->
+                        transformEvent(event, cancellableRateLimit)?.let { evt ->
                             resumeCoroutines(component, evt)
 
                             val ephemeralHandler = component.handler ?: return@withRateLimit true
@@ -143,11 +144,14 @@ internal class ComponentsListener(
         }
     }
 
-    private fun transformEvent(event: GenericComponentInteractionCreateEvent): GenericComponentInteractionCreateEvent? {
+    private fun transformEvent(
+        event: GenericComponentInteractionCreateEvent,
+        cancellableRateLimit: CancellableRateLimit
+    ): GenericComponentInteractionCreateEvent? {
         return when (event) {
-            is ButtonInteractionEvent -> ButtonEvent(context, event)
-            is StringSelectInteractionEvent -> StringSelectEvent(context, event)
-            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event)
+            is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit)
+            is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit)
             else -> {
                 logger.warn("Unhandled component event: ${event::class.simpleName}")
                 null

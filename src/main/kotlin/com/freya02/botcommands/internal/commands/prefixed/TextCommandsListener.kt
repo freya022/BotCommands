@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
@@ -77,11 +78,11 @@ internal class TextCommandsListener internal constructor(
                     return@launch
                 }
 
-                commandInfo.withRateLimit(context, event, isNotOwner) {
+                commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, commandInfo, isNotOwner)) {
                         false
                     } else {
-                        tryVariations(event, commandInfo, content, args)
+                        tryVariations(event, commandInfo, content, args, cancellableRateLimit)
                     }
                 }
             } catch (e: Throwable) {
@@ -94,10 +95,11 @@ internal class TextCommandsListener internal constructor(
         event: MessageReceivedEvent,
         commandInfo: TextCommandInfo,
         content: String,
-        args: String
+        args: String,
+        cancellableRateLimit: CancellableRateLimit
     ): Boolean {
         commandInfo.variations.forEach {
-            val bcEvent = it.createEvent(event, args)
+            val bcEvent = it.createEvent(event, args, cancellableRateLimit)
 
             // null on a fallback command
             val pattern = it.completePattern
@@ -122,7 +124,7 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, ""), commandInfo)
+        helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, "", cancellableRateLimit), commandInfo)
         return false
     }
 

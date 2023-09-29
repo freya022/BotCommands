@@ -41,11 +41,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
                 }
 
                 val isNotOwner = !context.isOwner(event.user.idLong)
-                slashCommand.withRateLimit(context, event, isNotOwner) {
+                slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, slashCommand, isNotOwner)) {
                         false
                     } else {
-                        slashCommand.execute(event)
+                        slashCommand.execute(event, cancellableRateLimit)
                     }
                 }
             } catch (e: Throwable) {
@@ -66,11 +66,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
                 }
 
                 val isNotOwner = !context.isOwner(event.user.idLong)
-                userCommand.withRateLimit(context, event, isNotOwner) {
+                userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, userCommand, isNotOwner)) {
                         false
                     } else {
-                        userCommand.execute(event)
+                        userCommand.execute(event, cancellableRateLimit)
                     }
                 }
             } catch (e: Throwable) {
@@ -91,11 +91,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
                 }
 
                 val isNotOwner = !context.isOwner(event.user.idLong)
-                messageCommand.withRateLimit(context, event, isNotOwner) {
+                messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, messageCommand, isNotOwner)) {
                         false
                     } else {
-                        messageCommand.execute(event)
+                        messageCommand.execute(event, cancellableRateLimit)
                     }
                 }
             } catch (e: Throwable) {

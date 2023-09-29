@@ -67,11 +67,13 @@ internal suspend fun ComponentData.withRateLimit(context: BContext, event: Gener
 }
 
 private suspend inline fun runRateLimited(crossinline block: suspend (CancellableRateLimit) -> Boolean, bucket: Bucket) {
+    val cancellableRateLimit = CancellableRateLimitImpl(bucket)
     try {
-        val rateLimitedEvent = CancellableRateLimitImpl()
-        block(rateLimitedEvent)
+        if (!block(cancellableRateLimit)) {
+            cancellableRateLimit.cancelRateLimit()
+        }
     } catch (e: Throwable) {
-        bucket.addTokens(1)
+        cancellableRateLimit.cancelRateLimit()
         throw e
     }
 }

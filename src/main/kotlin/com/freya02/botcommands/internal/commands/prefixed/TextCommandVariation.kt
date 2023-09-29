@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
@@ -45,9 +46,9 @@ class TextCommandVariation internal constructor(
         }
     }
 
-    internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String): BaseCommandEvent = when {
-        useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
-        else -> BaseCommandEventImpl(context, jdaEvent, args)
+    internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String, cancellableRateLimit: CancellableRateLimit): BaseCommandEvent = when {
+        useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args, cancellableRateLimit)
+        else -> BaseCommandEventImpl(context, jdaEvent, args, cancellableRateLimit)
     }
 
     internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<Option, Any?>? {

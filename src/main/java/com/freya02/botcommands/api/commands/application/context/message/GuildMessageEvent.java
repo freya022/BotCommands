@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application.context.message;
 
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -7,8 +8,8 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import org.jetbrains.annotations.NotNull;
 
 public class GuildMessageEvent extends GlobalMessageEvent {
-	public GuildMessageEvent(BContextImpl context, MessageContextInteractionEvent event) {
-		super(context, event);
+	public GuildMessageEvent(BContextImpl context, MessageContextInteractionEvent event, CancellableRateLimit cancellableRateLimit) {
+		super(context, event, cancellableRateLimit);
 
 		if (!event.isFromGuild())
 			throw new IllegalStateException("Event is not from a Guild");

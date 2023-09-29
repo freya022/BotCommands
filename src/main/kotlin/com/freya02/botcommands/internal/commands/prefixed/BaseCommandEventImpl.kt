@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.utils.EmojiUtils
 import com.freya02.botcommands.internal.BContextImpl
@@ -23,8 +24,11 @@ private val logger = KotlinLogging.logger<BaseCommandEvent>()
 internal open class BaseCommandEventImpl(
     context: BContextImpl,
     event: MessageReceivedEvent,
-    arguments: String
-) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message) {
+    arguments: String,
+    cancellableRateLimit: CancellableRateLimit
+) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message),
+    CancellableRateLimit by cancellableRateLimit {
+
     private val argumentsStr: String = arguments
 
     override fun getArgumentsStrList(): List<String> = when {

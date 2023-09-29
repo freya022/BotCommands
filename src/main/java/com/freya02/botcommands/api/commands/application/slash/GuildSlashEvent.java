@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash;
 
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.commands.application.slash.GlobalSlashEventImpl;
 import net.dv8tion.jda.api.entities.Guild;
@@ -8,8 +9,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jetbrains.annotations.NotNull;
 
 public class GuildSlashEvent extends GlobalSlashEventImpl {
-	public GuildSlashEvent(@NotNull BContextImpl context, @NotNull SlashCommandInteractionEvent event) {
-		super(context, event);
+	public GuildSlashEvent(@NotNull BContextImpl context, @NotNull SlashCommandInteractionEvent event, @NotNull CancellableRateLimit cancellableRateLimit) {
+		super(context, event, cancellableRateLimit);
 
 		if (!event.isFromGuild()) throw new IllegalArgumentException("Event is not from a guild");
 	}

@@ -1,16 +1,12 @@
-package com.freya02.botcommands.api.commands.application.slash;
+package com.freya02.botcommands.api.commands.application.slash
 
-import com.freya02.botcommands.api.BContext;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent {
-	public GlobalSlashEvent(@NotNull JDA api, long responseNumber, @NotNull SlashCommandInteraction interaction) {
-		super(api, responseNumber, interaction);
-	}
-
-	@NotNull
-	public abstract BContext getContext();
-}
+abstract class GlobalSlashEvent internal constructor(
+    val context: BContext,
+    event: SlashCommandInteractionEvent,
+    cancellableRateLimit: CancellableRateLimit
+) : SlashCommandInteractionEvent(event.jda, event.responseNumber, event.interaction),
+    CancellableRateLimit by cancellableRateLimit

@@ -1,13 +1,14 @@
 package com.freya02.botcommands.api.commands.application.context.user;
 
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildUserEvent extends GlobalUserEvent {
-	public GuildUserEvent(BContextImpl context, UserContextInteractionEvent event) {
-		super(context, event);
+	public GuildUserEvent(BContextImpl context, UserContextInteractionEvent event, CancellableRateLimit cancellableRateLimit) {
+		super(context, event, cancellableRateLimit);
 
 		if (!event.isFromGuild())
 			throw new IllegalStateException("Event is not from a Guild");

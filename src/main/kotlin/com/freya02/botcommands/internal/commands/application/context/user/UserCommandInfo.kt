@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.application.context.user
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
+import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
@@ -40,10 +41,10 @@ class UserCommandInfo internal constructor(
         }
     }
 
-    internal suspend fun execute(jdaEvent: UserContextInteractionEvent): Boolean {
+    internal suspend fun execute(jdaEvent: UserContextInteractionEvent, cancellableRateLimit: CancellableRateLimit): Boolean {
         val event = when {
-            isGuildOnly -> GuildUserEvent(context, jdaEvent)
-            else -> GlobalUserEvent(context, jdaEvent)
+            isGuildOnly -> GuildUserEvent(context, jdaEvent, cancellableRateLimit)
+            else -> GlobalUserEvent(context, jdaEvent, cancellableRateLimit)
         }
 
         val optionValues = parameters.mapOptions { option ->
