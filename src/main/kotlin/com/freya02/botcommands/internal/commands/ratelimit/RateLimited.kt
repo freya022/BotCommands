@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands
+package com.freya02.botcommands.internal.commands.ratelimit
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.CommandPath
@@ -8,15 +8,13 @@ import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.commands.ratelimit.CancellableRateLimitImpl
-import com.freya02.botcommands.internal.commands.ratelimit.NullCancellableRateLimit
 import com.freya02.botcommands.internal.components.data.ComponentData
 import io.github.bucket4j.Bucket
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-internal sealed interface RateLimited {
+internal interface RateLimited {
     val path: CommandPath
     val rateLimitInfo: RateLimitInfo?
 }
@@ -66,7 +64,7 @@ internal suspend fun ComponentData.withRateLimit(context: BContext, event: Gener
     }
 }
 
-private suspend inline fun runRateLimited(crossinline block: suspend (CancellableRateLimit) -> Boolean, bucket: Bucket) {
+private suspend inline fun runRateLimited(noinline block: suspend (CancellableRateLimit) -> Boolean, bucket: Bucket) {
     val cancellableRateLimit = CancellableRateLimitImpl(bucket)
     try {
         if (!block(cancellableRateLimit)) {

@@ -15,7 +15,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
-import com.freya02.botcommands.internal.commands.withRateLimit
+import com.freya02.botcommands.internal.commands.ratelimit.withRateLimit
 import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch

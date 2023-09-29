@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import com.freya02.botcommands.internal.commands.ratelimit.RateLimited
 import net.dv8tion.jda.api.Permission
 import java.util.*
 
