@@ -41,10 +41,7 @@ internal class Version private constructor(
         private val versionPattern = Regex("""(\d+)\.(\d+)\.(\d+)(?:-(\w+)\.(\d+))?(?:_\w*)?""")
         private val classifiers = listOf("alpha", "beta")
 
-        @JvmStatic
         fun checkVersions() {
-            logger.debug("Loading BotCommands ${BCInfo.VERSION} ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}")
-
             val requiredJdaVersionStr = BCInfo.BUILD_JDA_VERSION
             val requiredJdaVersion = getOrNull(requiredJdaVersionStr) ?: let {
                 logger.warn("Unrecognized built-with JDA version: $requiredJdaVersionStr")

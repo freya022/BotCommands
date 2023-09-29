@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core
 
+import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.annotations.Command
@@ -18,6 +19,7 @@ import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
@@ -113,6 +115,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
 
     private fun build(manager: CoroutineEventManager) {
         runBlocking(manager.coroutineContext) {
+            logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
             Version.checkVersions()
 
             val context = BContextImpl(config, manager)
