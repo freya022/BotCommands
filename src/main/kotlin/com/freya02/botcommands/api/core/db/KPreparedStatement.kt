@@ -27,7 +27,9 @@ class KPreparedStatement @PublishedApi internal constructor(
     }
 
     private inline fun <R> withLoggedParametrizedQuery(params: Array<out Any?>, block: () -> R): R {
-        if (!database.config.logQueries || !logger.isTraceEnabled) {
+        val isTraceLogEnabled = database.config.logQueries && logger.isTraceEnabled
+        val isQueryThresholdSet = database.config.queryLogThreshold.isFinite() && database.config.queryLogThreshold.isPositive()
+        if (!isTraceLogEnabled && !isQueryThresholdSet) {
             setParameters(params)
             return block()
         } else {
@@ -38,10 +40,17 @@ class KPreparedStatement @PublishedApi internal constructor(
             }
 
             val result = timedValue.value
-            logger.trace {
+            if (isTraceLogEnabled) {
+                logger.trace {
+                    val duration = timedValue.duration
+                    val prefix = if (result.isSuccess) "Ran" else "Failed"
+                    "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery"
+                }
+            }
+            if (isQueryThresholdSet && timedValue.duration > database.config.queryLogThreshold) {
                 val duration = timedValue.duration
                 val prefix = if (result.isSuccess) "Ran" else "Failed"
-                "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery"
+                logger.warn("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery")
             }
 
             return result.getOrThrow()

@@ -12,6 +12,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 object Main {
@@ -34,6 +35,7 @@ object Main {
 
         BBuilder.newBuilder(manager) {
             disableExceptionsInDMs = true
+            queryLogThreshold = 250.milliseconds
 
             addSearchPath("com.freya02.botcommands.test_kt")
 

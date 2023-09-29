@@ -18,6 +18,9 @@ import kotlinx.coroutines.debug.DebugProbes
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 @InjectedService
 interface BConfig {
@@ -54,9 +57,7 @@ interface BConfig {
      */
     val dumpLongTransactions: Boolean
     /**
-     * Determines whether the SQL queries should be logged
-     *
-     * **SQL queries will be logged on TRACE**
+     * Determines whether *all* SQL queries should be logged on `TRACE`.
      *
      * Default: `true`
      */
@@ -67,6 +68,10 @@ interface BConfig {
      * Default: `true`
      */
     val logQueryParameters: Boolean
+    /**
+     * The duration a query has to run for it to be logged on `WARN`.
+     */
+    val queryLogThreshold: Duration
 
     /**
      * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
@@ -113,6 +118,12 @@ class BConfigBuilder internal constructor() : BConfig {
     override var logQueries: Boolean = true
     @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
+    @set:JvmSynthetic
+    override var queryLogThreshold: Duration = Duration.INFINITE
+
+    fun setQueryLogThreshold(duration: JavaDuration) {
+        this.queryLogThreshold = duration.toKotlinDuration()
+    }
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
@@ -231,6 +242,7 @@ class BConfigBuilder internal constructor() : BConfig {
         override val dumpLongTransactions = this@BConfigBuilder.dumpLongTransactions
         override val logQueries = this@BConfigBuilder.logQueries
         override val logQueryParameters = this@BConfigBuilder.logQueryParameters
+        override val queryLogThreshold = this@BConfigBuilder.queryLogThreshold
         override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
         override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
         override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
