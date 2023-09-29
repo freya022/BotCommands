@@ -53,7 +53,7 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEve
             Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${GUILD_T::class.simpleName} as to benefit from non-null getters")
         }
     } else if (eventType.isSubclassOf(GUILD_T::class)) {
-        throwUser("Cannot use ${GUILD_T::class.simpleName} on a global application command")
+        throwUser(kFunction, "Cannot use ${GUILD_T::class.simpleName} on a global application command")
     }
 }
 
