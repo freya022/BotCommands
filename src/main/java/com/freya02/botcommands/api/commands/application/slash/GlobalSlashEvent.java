@@ -11,5 +11,6 @@ public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent {
 		super(api, responseNumber, interaction);
 	}
 
+	@NotNull
 	public abstract BContext getContext();
 }

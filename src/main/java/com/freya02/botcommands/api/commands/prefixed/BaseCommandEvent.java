@@ -41,6 +41,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 		this.context = context;
 	}
 
+	@NotNull
 	public BContext getContext() {
 		return context;
 	}
