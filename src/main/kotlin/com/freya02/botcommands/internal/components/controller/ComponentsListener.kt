@@ -78,7 +78,7 @@ internal class ComponentsListener(
                 }
 
                 for (filter in filters) {
-                    if (!filter.isAcceptedSuspend(event)) {
+                    if (!filter.isAcceptedSuspend(event, (component as? PersistentComponentData)?.handler?.handlerName)) {
                         if (event.isAcknowledged) {
                             logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
                         } else {

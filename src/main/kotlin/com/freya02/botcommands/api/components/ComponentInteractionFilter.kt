@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.components
 
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
@@ -64,23 +66,29 @@ interface ComponentInteractionFilter {
      *
      * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
      *
+     * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
+     *                    might be null if there is no handler defined, or is ephemeral.
+     *
      * @return `true` if the component interaction can run, `false` otherwise
      *
      * @see ComponentInteractionFilter
      */
     @JvmSynthetic
-    suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent): Boolean =
-        isAccepted(event)
+    suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
+        isAccepted(event, handlerName)
 
     /**
      * Returns whether the component interaction should be accepted or not.
      *
      * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
      *
+     * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
+     *                    might be null if there is no handler defined, or is ephemeral.
+     *
      * @return `true` if the component interaction can run, `false` otherwise
      *
      * @see ComponentInteractionFilter
      */
-    fun isAccepted(event: GenericComponentInteractionCreateEvent): Boolean =
+    fun isAccepted(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
