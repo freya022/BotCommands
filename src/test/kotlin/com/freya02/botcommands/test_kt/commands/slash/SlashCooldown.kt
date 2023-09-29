@@ -8,8 +8,7 @@ import com.freya02.botcommands.api.commands.application.GlobalApplicationCommand
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.commands.ratelimit.RateLimiter
-import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import com.freya02.botcommands.api.commands.builder.cooldown
 import dev.minn.jda.ktx.messages.reply_
 import java.time.temporal.ChronoUnit
 import kotlin.time.Duration.Companion.seconds
@@ -25,7 +24,7 @@ class SlashCooldown : ApplicationCommand() {
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
         globalApplicationCommandManager.slashCommand("cooldown", function = ::onSlashCooldown) {
-            rateLimit(BucketFactory.ofCooldown(5.seconds), RateLimiter.defaultFactory(RateLimitScope.GUILD))
+            cooldown(RateLimitScope.GUILD, 5.seconds)
         }
     }
 }

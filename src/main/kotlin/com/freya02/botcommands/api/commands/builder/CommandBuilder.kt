@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
 import net.dv8tion.jda.api.Permission
 import java.util.*
+import kotlin.time.Duration
 
 @CommandDSL
 abstract class CommandBuilder internal constructor(protected val context: BContextImpl, override val name: String) : INamedCommand {
@@ -65,3 +66,6 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
             ?: throw NoSuchElementException("Could not find a rate limiter for '$group'")
     }
 }
+
+fun CommandBuilder.cooldown(scope: RateLimitScope, duration: Duration, block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()) =
+    rateLimit(BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope), block = block)
