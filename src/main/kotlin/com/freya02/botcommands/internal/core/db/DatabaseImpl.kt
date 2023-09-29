@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 import kotlin.time.toKotlinDuration
 
@@ -51,16 +50,28 @@ internal class DatabaseImpl internal constructor(
         }
     }
 
-    override suspend fun fetchConnection(readOnly: Boolean): Connection = semaphore.withPermit {
-        connectionSupplier.getConnection().also {
-            if (!::baseSchema.isInitialized) {
-                baseSchema = it.schema
-            } else {
-                // Reset schema as it isn't done by HikariCP
-                // in situations where a schema isn't set on the connection pool
-                it.schema = baseSchema
+    override suspend fun fetchConnection(readOnly: Boolean): Connection {
+        semaphore.acquire()
+        return connectionSupplier.getConnection()
+            .let {
+                object : Connection by it {
+                    override fun close() {
+                        try {
+                            it.close()
+                        } finally {
+                            semaphore.release()
+                        }
+                    }
+                }
+            }.also { connection ->
+                if (!::baseSchema.isInitialized) {
+                    baseSchema = connection.schema
+                } else {
+                    // Reset schema as it isn't done by HikariCP
+                    // in situations where a schema isn't set on the connection pool
+                    connection.schema = baseSchema
+                }
+                connection.isReadOnly = readOnly
             }
-            it.isReadOnly = readOnly
-        }
     }
 }
