@@ -5,7 +5,7 @@ name: Deploy Javadocs to Pages
 
 on:
   push:
-    branches: ["master"]
+    branches: ["2.X"]
     paths:       
       - 'pom.xml'
       - 'src/main/**.java'

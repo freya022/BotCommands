@@ -1,7 +1,7 @@
 <img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
 
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=2)](#getting-the-library)
-[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?color=red&label=Pre-release)](https://github.com/freya022/BotCommands/tree/3.0.0-dev#readme)
+[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?color=red&label=Pre-release)](https://github.com/freya022/BotCommands/tree/3.X#readme)
 [![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/jda-discord/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
@@ -10,7 +10,7 @@
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/jda-discord/JDA) library.
 
-*Note: V3 pre-releases are out, if you want to try V3 out, checkout [this README](https://github.com/freya022/BotCommands/tree/3.0.0-dev#readme), the [examples](https://github.com/freya022/BotCommands/tree/3.0.0-dev/examples) and the [pre-releases](https://github.com/freya022/BotCommands/releases)*
+*Note: V3 pre-releases are out, if you want to try V3 out, checkout [this README](https://github.com/freya022/BotCommands/tree/3.X#readme), the [examples](https://github.com/freya022/BotCommands/tree/3.X/examples) and the [pre-releases](https://github.com/freya022/BotCommands/releases)*
 
 ## Features
 
