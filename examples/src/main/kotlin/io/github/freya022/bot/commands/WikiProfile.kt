@@ -5,6 +5,8 @@ import com.freya02.botcommands.api.core.service.CustomConditionChecker
 import com.freya02.botcommands.api.core.service.annotations.Condition
 
 object ProfileChecker : CustomConditionChecker<WikiProfile> {
+    // NOTE: When changing wiki source code, the wiki downloads snippets at build time,
+    // and must be rebuilt for the changes to be taken into account
     private val currentProfile = WikiProfile.Profile.KOTLIN_DSL
 
     override val annotationType: Class<WikiProfile> = WikiProfile::class.java

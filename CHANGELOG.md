@@ -10,7 +10,7 @@ they should still be usable by Java users.
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
 
 You can also refer to the [examples](examples) 
-and bot templates ([Java](BotTemplate/BotTemplate-Java) / [Kotlin](BotTemplate/BotTemplate-Kotlin)) 
+and bot templates ([Java](https://github.com/freya022/BotCommands-Template-Java/tree/3.X) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/tree/3.X)) 
 in order to have an idea on how V3 is supposed to be used.
 
 ## Kotlin support

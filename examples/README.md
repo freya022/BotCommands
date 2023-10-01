@@ -29,7 +29,7 @@ You can then just run the `Main` class.
 
 ### Starting your own bot
 If you are seeking for a bot you can set up yourself, 
-you can look at the bot templates ([Java](../BotTemplate/BotTemplate-Java) / [Kotlin](../BotTemplate/BotTemplate-Kotlin)).
+you can look at the bot templates on [the wiki](https://freya022.github.io/BotCommands-Wiki/dev/setup/getting-started/#using-the-bot-template).
 
 ## Examples
 
