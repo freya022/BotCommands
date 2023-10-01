@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - master # This will take "legacy/v2" once V3 is released
+      - 2.X
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
@@ -12,7 +12,7 @@ on:
       - 'src/test/**.kt'
   push:
     branches: 
-      - master
+      - 2.X
     paths:
       - 'pom.xml'
       - 'src/main/**.java'

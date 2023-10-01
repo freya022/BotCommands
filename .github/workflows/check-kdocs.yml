@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - 3.0.0-dev # This will be moved to master once released
+      - 3.X
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
@@ -12,7 +12,7 @@ on:
       - 'src/test/**.kt'
   push:
     branches: 
-      - 3.0.0-dev
+      - 3.X
     paths: 
       - 'pom.xml'
       - 'src/main/**.java'
