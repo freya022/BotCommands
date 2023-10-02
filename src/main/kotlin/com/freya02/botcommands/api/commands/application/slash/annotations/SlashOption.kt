@@ -11,11 +11,12 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import org.jetbrains.annotations.Nullable
 
+//TODO keep an eye out for this wiki link
 /**
  * Sets a parameter as a slash command option from Discord.
  *
  * Option names can be inferred from the parameter's name,
- * see the [Wiki about inferred option names](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
+ * see the [Wiki about inferred option names](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/)
  * for more details.
  *
  * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
@@ -46,8 +47,9 @@ annotation class SlashOption(
      * This can be localized, see [LocalizationFunction] on how options are mapped.
      *
      * This is optional if the parameter name is found,
-     * see [the wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/) for more details.
+     * see [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/) for more details.
      */
+    //TODO keep an eye out for this wiki link
     val name: String = "",
 
     /**
