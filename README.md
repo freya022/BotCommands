@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/jda-discord/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
-[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
+[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/2.X)
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/jda-discord/JDA) library.
@@ -131,17 +131,17 @@ commandsBuilder.build(
 ```
 
 ## How do I make commands ?
-See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-slash-commands/Slash-commands/), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
+See the [wiki](https://freya022.github.io/BotCommands-Wiki/2.X/using-commands/using-slash-commands/Slash-commands/), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
 
 ## Some debugging tools
 
-- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/Logging)
+- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/2.X/Logging)
 - There are also some switches in `DebugBuilder`, if you ever need them
 - To test your application commands you can use the `@Test` annotation
 
 ## Replacing help content
 
-See the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Prefixed-commands/#replacing-help-content)
+See the [wiki page](https://freya022.github.io/BotCommands-Wiki/2.X/using-commands/Prefixed-commands/#replacing-help-content)
 
 ## Examples
 

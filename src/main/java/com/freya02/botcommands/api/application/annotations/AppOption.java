@@ -40,7 +40,7 @@ public @interface AppOption {
 	 *
 	 * <p>
 	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped.
-	 * <br>This is optional if the parameter name is found, see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
+	 * <br>This is optional if the parameter name is found, see <a href="https://freya022.github.io/BotCommands-Wiki/2.X/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
 	 *
 	 * @return Name of the option
 	 */
