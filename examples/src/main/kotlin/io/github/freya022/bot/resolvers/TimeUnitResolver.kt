@@ -4,10 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.localization.context.LocalizationContext
 import com.freya02.botcommands.api.localization.to
-import com.freya02.botcommands.api.parameters.ParameterResolver
-import com.freya02.botcommands.api.parameters.Resolvers
-import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import com.freya02.botcommands.api.parameters.enumResolver
+import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.bot.switches.WikiDetailProfile
 import io.github.freya022.bot.switches.WikiLanguage
@@ -44,7 +41,7 @@ object TimeUnitResolver :
         return listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)
             // The Resolvers class helps us by providing resolvers for any enum type.
             // We're just using the helper method to change an enum value to a more natural name.
-            .map { Choice(Resolvers.toHumanName(it), it.name) }
+            .map { Choice(it.toHumanName(), it.name) }
     }
 
     override suspend fun resolveSuspend(
