@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
-import com.freya02.botcommands.api.parameters.Resolvers.toHumanName
+import com.freya02.botcommands.api.parameters.Resolvers
 import io.github.freya022.bot.switches.WikiCommandProfile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
@@ -24,7 +24,7 @@ class SlashConvertKotlin : ApplicationCommand() {
                 return listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)
                     // The Resolvers class helps us by providing resolvers for any enum type.
                     // We're just using the helper method to change an enum value to a more natural name.
-                    .map { Choice(toHumanName(it), it.name) }
+                    .map { Choice(Resolvers.toHumanName(it), it.name) }
             }
         }
 
@@ -66,7 +66,7 @@ class SlashConvertKotlinDsl {
                 choices = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)
                     // The Resolvers class helps us by providing resolvers for any enum type.
                     // We're just using the helper method to change an enum value to a more natural name.
-                    .map { Choice(toHumanName(it), it.name) }
+                    .map { Choice(Resolvers.toHumanName(it), it.name) }
             }
 
             option("to") {
@@ -75,7 +75,7 @@ class SlashConvertKotlinDsl {
                 choices = listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)
                     // The Resolvers class helps us by providing resolvers for any enum type.
                     // We're just using the helper method to change an enum value to a more natural name.
-                    .map { Choice(toHumanName(it), it.name) }
+                    .map { Choice(Resolvers.toHumanName(it), it.name) }
             }
         }
     }
