@@ -64,8 +64,8 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * The option's choices.
      *
-     * The choices returned by this method will have their name and values localized
-     * if they are present in the BotCommands resource bundles
+     * The choices returned by this method will have their name localized
+     * if they are present in the [localization bundles][BApplicationConfigBuilder.addLocalizations].
      *
      * @see SlashParameterResolver.getPredefinedChoices
      *

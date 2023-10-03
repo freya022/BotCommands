@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import net.dv8tion.jda.api.entities.Guild
@@ -24,7 +25,8 @@ interface GuildApplicationSettings {
      * Returns the choices available for this command path,
      * on the specific `optionIndex` (option index starts at 0 and are composed of only the parameters annotated with [@SlashOption][SlashOption]).
      *
-     * The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles
+     * The choices returned by this method will have their name localized
+     * if they are present in the [localization bundles][BApplicationConfigBuilder.addLocalizations].
      *
      * @param guild       The [Guild] in which the command is, might be `null` for global commands with choices
      * @param commandPath The [CommandPath] of the command, this is composed of it's name and optionally of its group and subcommand name
