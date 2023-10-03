@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.*
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.core.utils.nullIfEmpty
@@ -140,7 +139,7 @@ internal class SlashCommandAutoBuilder(
         val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
         manager.slashCommand(name, annotation.scope, if (isTopLevel) metadata.func.castFunction() else null) {
             isDefaultLocked = annotation.defaultLocked
-            description = getEffectiveDescription(annotation)
+            description = annotation.description
 
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
@@ -237,7 +236,7 @@ internal class SlashCommandAutoBuilder(
 
     context(SlashCommandBuilder)
     private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: SlashOption) {
-        description = getEffectiveDescription(optionAnnotation)
+        description = optionAnnotation.description
 
         kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
         kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
@@ -259,24 +258,6 @@ internal class SlashCommandAutoBuilder(
         if (optionAnnotation.autocomplete.isNotEmpty()) {
             autocompleteReference(optionAnnotation.autocomplete)
         }
-    }
-
-    context(TopLevelSlashCommandBuilder)
-    private fun getEffectiveDescription(annotation: JDASlashCommand): String {
-        val joinedPath = path.getFullPath('.')
-        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.description")
-        if (rootLocalization != null) return rootLocalization
-
-        return annotation.description
-    }
-
-    context(SlashCommandBuilder, SlashCommandOptionBuilder)
-    private fun getEffectiveDescription(optionAnnotation: SlashOption): String {
-        val joinedPath = path.getFullPath('.')
-        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.options.${this@SlashCommandOptionBuilder.optionName}.description")
-        if (rootLocalization != null) return rootLocalization
-
-        return optionAnnotation.description.nullIfEmpty() ?: "No description"
     }
 
     private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
