@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.concurrent.TimeUnit
 
 @WikiProfile(WikiProfile.Profile.KOTLIN)
-// --8<-- [start:convert_kotlin]
+// --8<-- [start:convert-kotlin]
 @Command
 class SlashConvertKotlin : ApplicationCommand() {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
@@ -41,10 +41,10 @@ class SlashConvertKotlin : ApplicationCommand() {
         event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
     }
 }
-// --8<-- [end:convert_kotlin]
+// --8<-- [end:convert-kotlin]
 
 @WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
-// --8<-- [start:convert_kotlin_dsl]
+// --8<-- [start:convert-kotlin_dsl]
 @Command
 class SlashConvertKotlinDsl {
     fun onSlashConvert(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
@@ -80,4 +80,4 @@ class SlashConvertKotlinDsl {
         }
     }
 }
-// --8<-- [end:convert_kotlin_dsl]
+// --8<-- [end:convert-kotlin_dsl]

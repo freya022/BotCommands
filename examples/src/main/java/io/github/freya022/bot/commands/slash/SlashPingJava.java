@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import io.github.freya022.bot.commands.WikiProfile;
 
 @WikiProfile(WikiProfile.Profile.JAVA)
-// --8<-- [start:ping_java]
+// --8<-- [start:ping-java]
 @Command
 public class SlashPingJava extends ApplicationCommand {
     // Default scope is global, guild-only (GUILD_NO_DM)
@@ -20,4 +20,4 @@ public class SlashPingJava extends ApplicationCommand {
         });
     }
 }
-// --8<-- [end:ping_java]
+// --8<-- [end:ping-java]

@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 
 @WikiProfile(WikiProfile.Profile.KOTLIN)
-// --8<-- [start:convert_kotlin]
+// --8<-- [start:create_time-kotlin]
 @Command
 class SlashCreateTimeKotlin : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
@@ -46,10 +46,10 @@ class SlashCreateTimeKotlin : ApplicationCommand() {
         event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").queue()
     }
 }
-// --8<-- [end:convert_kotlin]
+// --8<-- [end:create_time-kotlin]
 
 @WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
-// --8<-- [start:convert_kotlin_dsl]
+// --8<-- [start:create_time-kotlin_dsl]
 @Command
 class SlashCreateTimeKotlinDsl {
     fun onSlashCreateTime(event: GuildSlashEvent, timestamp: Instant) {
@@ -70,4 +70,4 @@ class SlashCreateTimeKotlinDsl {
         }
     }
 }
-// --8<-- [end:convert_kotlin_dsl]
+// --8<-- [end:create_time-kotlin_dsl]

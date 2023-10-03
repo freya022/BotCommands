@@ -11,7 +11,7 @@ import io.github.freya022.bot.commands.WikiProfile
 import java.util.concurrent.TimeUnit
 
 @WikiProfile(WikiProfile.Profile.KOTLIN)
-// --8<-- [start:convert_simplified_kotlin]
+// --8<-- [start:convert_simplified-kotlin]
 @Command
 class SlashConvertSimplifiedKotlin : ApplicationCommand() {
     @JDASlashCommand(name = "convert_simplified", description = "Convert time to another unit")
@@ -24,10 +24,10 @@ class SlashConvertSimplifiedKotlin : ApplicationCommand() {
         event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
     }
 }
-// --8<-- [end:convert_simplified_kotlin]
+// --8<-- [end:convert_simplified-kotlin]
 
 @WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
-// --8<-- [start:convert_simplified_kotlin_dsl]
+// --8<-- [start:convert_simplified-kotlin_dsl]
 @Command
 class SlashConvertSimplifiedKotlinDsl {
     fun onSlashConvertSimplified(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
@@ -57,4 +57,4 @@ class SlashConvertSimplifiedKotlinDsl {
         }
     }
 }
-// --8<-- [end:convert_simplified_kotlin_dsl]
+// --8<-- [end:convert_simplified-kotlin_dsl]

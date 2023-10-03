@@ -10,7 +10,7 @@ import io.github.freya022.bot.commands.WikiProfile;
 import java.util.concurrent.TimeUnit;
 
 @WikiProfile(WikiProfile.Profile.JAVA)
-// --8<-- [start:convert_simplified_java]
+// --8<-- [start:convert_simplified-java]
 @Command
 public class SlashConvertSimplifiedJava extends ApplicationCommand {
     @JDASlashCommand(name = "convert_simplified", description = "Convert time to another unit")
@@ -23,4 +23,4 @@ public class SlashConvertSimplifiedJava extends ApplicationCommand {
         event.reply(to.convert(time, from) + " " + to.toString().toLowerCase()).queue();
     }
 }
-// --8<-- [end:convert_simplified_java]
+// --8<-- [end:convert_simplified-java]

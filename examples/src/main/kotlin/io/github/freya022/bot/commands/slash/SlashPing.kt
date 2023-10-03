@@ -10,7 +10,7 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.bot.commands.WikiProfile
 
 @WikiProfile(WikiProfile.Profile.KOTLIN)
-// --8<-- [start:ping_kotlin]
+// --8<-- [start:ping-kotlin]
 @Command
 class SlashPingKotlin : ApplicationCommand() {
     // Default scope is global, guild-only (GUILD_NO_DM)
@@ -22,10 +22,10 @@ class SlashPingKotlin : ApplicationCommand() {
         event.hook.editOriginal("Pong! $ping ms").queue()
     }
 }
-// --8<-- [end:ping_kotlin]
+// --8<-- [end:ping-kotlin]
 
 @WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
-// --8<-- [start:ping_kotlin_dsl]
+// --8<-- [start:ping-kotlin_dsl]
 @Command
 class SlashPingKotlinDsl {
     suspend fun onSlashPing(event: GuildSlashEvent) {
@@ -43,4 +43,4 @@ class SlashPingKotlinDsl {
         }
     }
 }
-// --8<-- [end:ping_kotlin_dsl]
+// --8<-- [end:ping-kotlin_dsl]

@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.SlashO
 import io.github.freya022.bot.commands.WikiProfile
 
 @WikiProfile(WikiProfile.Profile.KOTLIN)
-// --8<-- [start:say_kotlin]
+// --8<-- [start:say-kotlin]
 @Command
 class SlashSayKotlin : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Says something")
@@ -18,10 +18,10 @@ class SlashSayKotlin : ApplicationCommand() {
         event.reply(content).queue()
     }
 }
-// --8<-- [end:say_kotlin]
+// --8<-- [end:say-kotlin]
 
 @WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
-// --8<-- [start:say_kotlin_dsl]
+// --8<-- [start:say-kotlin_dsl]
 @Command
 class SlashSayKotlinDsl {
     fun onSlashSay(event: GuildSlashEvent, content: String) {
@@ -39,4 +39,4 @@ class SlashSayKotlinDsl {
         }
     }
 }
-// --8<-- [end:say_kotlin_dsl]
+// --8<-- [end:say-kotlin_dsl]

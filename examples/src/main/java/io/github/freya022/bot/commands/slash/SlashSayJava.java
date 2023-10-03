@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.SlashO
 import io.github.freya022.bot.commands.WikiProfile;
 
 @WikiProfile(WikiProfile.Profile.JAVA)
-// --8<-- [start:say_java]
+// --8<-- [start:say-java]
 @Command
 public class SlashSayJava extends ApplicationCommand {
     @JDASlashCommand(name = "say", description = "Says something")
@@ -16,4 +16,4 @@ public class SlashSayJava extends ApplicationCommand {
         event.reply(content).queue();
     }
 }
-// --8<-- [end:say_java]
+// --8<-- [end:say-java]

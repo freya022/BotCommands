@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Instant;
 
 @WikiProfile(WikiProfile.Profile.JAVA)
-// --8<-- [start:create_time_java]
+// --8<-- [start:create_time-java]
 @Command
 public class SlashCreateTimeJava extends ApplicationCommand {
     @NotNull
@@ -49,4 +49,4 @@ public class SlashCreateTimeJava extends ApplicationCommand {
         event.reply("I was created on " + TimeFormat.DATE_TIME_SHORT.format(timestamp)).queue();
     }
 }
-// --8<-- [end:create_time_java]
+// --8<-- [end:create_time-java]

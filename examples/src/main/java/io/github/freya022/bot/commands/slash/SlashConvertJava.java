@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @WikiProfile(WikiProfile.Profile.JAVA)
-// --8<-- [start:convert_java]
+// --8<-- [start:convert-java]
 @Command
 public class SlashConvertJava extends ApplicationCommand {
     @NotNull
@@ -47,4 +47,4 @@ public class SlashConvertJava extends ApplicationCommand {
         event.reply(to.convert(time, from) + " " + to.name().toLowerCase()).queue();
     }
 }
-// --8<-- [end:convert_java]
+// --8<-- [end:convert-java]
