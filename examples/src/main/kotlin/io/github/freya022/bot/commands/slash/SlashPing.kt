@@ -7,9 +7,9 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.bot.commands.WikiProfile
+import io.github.freya022.bot.commands.WikiCommandProfile
 
-@WikiProfile(WikiProfile.Profile.KOTLIN)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:ping-kotlin]
 @Command
 class SlashPingKotlin : ApplicationCommand() {
@@ -24,7 +24,7 @@ class SlashPingKotlin : ApplicationCommand() {
 }
 // --8<-- [end:ping-kotlin]
 
-@WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:ping-kotlin_dsl]
 @Command
 class SlashPingKotlinDsl {

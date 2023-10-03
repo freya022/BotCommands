@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.parameters.ParameterType;
-import io.github.freya022.bot.commands.WikiProfile;
+import io.github.freya022.bot.commands.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 
-@WikiProfile(WikiProfile.Profile.JAVA)
+@WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:create_time-java]
 @Command
 public class SlashCreateTimeJava extends ApplicationCommand {

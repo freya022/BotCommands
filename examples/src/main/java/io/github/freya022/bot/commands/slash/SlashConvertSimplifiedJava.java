@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import io.github.freya022.bot.commands.WikiProfile;
+import io.github.freya022.bot.commands.WikiCommandProfile;
 
 import java.util.concurrent.TimeUnit;
 
-@WikiProfile(WikiProfile.Profile.JAVA)
+@WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:convert_simplified-java]
 @Command
 public class SlashConvertSimplifiedJava extends ApplicationCommand {

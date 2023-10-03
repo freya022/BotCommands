@@ -7,10 +7,10 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.bot.commands.WikiProfile
+import io.github.freya022.bot.commands.WikiCommandProfile
 import java.util.concurrent.TimeUnit
 
-@WikiProfile(WikiProfile.Profile.KOTLIN)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:convert_simplified-kotlin]
 @Command
 class SlashConvertSimplifiedKotlin : ApplicationCommand() {
@@ -26,7 +26,7 @@ class SlashConvertSimplifiedKotlin : ApplicationCommand() {
 }
 // --8<-- [end:convert_simplified-kotlin]
 
-@WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:convert_simplified-kotlin_dsl]
 @Command
 class SlashConvertSimplifiedKotlinDsl {

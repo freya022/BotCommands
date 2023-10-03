@@ -10,12 +10,12 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.parameters.ParameterType
-import io.github.freya022.bot.commands.WikiProfile
+import io.github.freya022.bot.commands.WikiCommandProfile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 
-@WikiProfile(WikiProfile.Profile.KOTLIN)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:create_time-kotlin]
 @Command
 class SlashCreateTimeKotlin : ApplicationCommand() {
@@ -48,7 +48,7 @@ class SlashCreateTimeKotlin : ApplicationCommand() {
 }
 // --8<-- [end:create_time-kotlin]
 
-@WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:create_time-kotlin_dsl]
 @Command
 class SlashCreateTimeKotlinDsl {

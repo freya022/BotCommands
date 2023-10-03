@@ -9,12 +9,12 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.parameters.Resolvers.toHumanName
-import io.github.freya022.bot.commands.WikiProfile
+import io.github.freya022.bot.commands.WikiCommandProfile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.concurrent.TimeUnit
 
-@WikiProfile(WikiProfile.Profile.KOTLIN)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:convert-kotlin]
 @Command
 class SlashConvertKotlin : ApplicationCommand() {
@@ -43,7 +43,7 @@ class SlashConvertKotlin : ApplicationCommand() {
 }
 // --8<-- [end:convert-kotlin]
 
-@WikiProfile(WikiProfile.Profile.KOTLIN_DSL)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:convert-kotlin_dsl]
 @Command
 class SlashConvertKotlinDsl {

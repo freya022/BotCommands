@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.parameters.Resolvers;
-import io.github.freya022.bot.commands.WikiProfile;
+import io.github.freya022.bot.commands.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-@WikiProfile(WikiProfile.Profile.JAVA)
+@WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:convert-java]
 @Command
 public class SlashConvertJava extends ApplicationCommand {
