@@ -1,4 +1,13 @@
 {
+  // --8<-- [start:default_description-json]
+  "say_default_description": {
+    "description": "Says something",
+    "options": {
+      "content.description": "What to say"
+    }
+  }
+  // --8<-- [end:default_description-json]
+  ,
   "ban": {
     "outputs": {
       "defaultReason": "No reason supplied",

@@ -82,6 +82,12 @@ object Main {
 
                     // Add french localization for application commands
                     addLocalizations("Commands", DiscordLocale.FRENCH)
+
+                    // (this is solely for wiki purposes)
+                    // --8<-- [start:add_root_bundle_for_descriptions]
+                    // Add root localization for default slash command descriptions
+                    addLocalizations("Commands")
+                    // --8<-- [end:add_root_bundle_for_descriptions]
                 }
 
                 components {
