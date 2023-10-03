@@ -136,7 +136,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     }
 
     serviceContainer.context.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
-        val annotation = customCondition.getCondition(checkedClass.java)
+        val annotation = customCondition.getCondition(this)
         if (annotation != null) {
             val checker = customCondition.checker
             checker.checkServiceAvailability(serviceContainer.context, checkedClass.java, annotation)
