@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.parameters.Resolvers.toHumanName
-import io.github.freya022.bot.commands.WikiCommandProfile
+import io.github.freya022.bot.switches.WikiCommandProfile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.concurrent.TimeUnit

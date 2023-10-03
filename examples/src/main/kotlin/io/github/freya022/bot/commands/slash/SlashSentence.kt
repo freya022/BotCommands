@@ -13,8 +13,8 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.bot.commands.FrontendChooser
-import io.github.freya022.bot.commands.SimpleFrontend
+import io.github.freya022.bot.switches.FrontendChooser
+import io.github.freya022.bot.switches.SimpleFrontend
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 

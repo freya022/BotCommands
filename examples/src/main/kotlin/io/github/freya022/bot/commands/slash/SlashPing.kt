@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.bot.commands.WikiCommandProfile
+import io.github.freya022.bot.switches.WikiCommandProfile
 
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:ping-kotlin]

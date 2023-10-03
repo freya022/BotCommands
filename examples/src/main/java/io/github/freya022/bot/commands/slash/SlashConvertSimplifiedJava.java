@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import io.github.freya022.bot.commands.WikiCommandProfile;
+import io.github.freya022.bot.switches.WikiCommandProfile;
 
 import java.util.concurrent.TimeUnit;
 

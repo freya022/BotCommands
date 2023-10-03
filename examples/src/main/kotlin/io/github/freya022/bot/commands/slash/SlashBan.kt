@@ -22,10 +22,10 @@ import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.editLocalized
 import com.freya02.botcommands.api.localization.context.replaceLocalized
 import com.freya02.botcommands.api.localization.context.replyLocalizedEphemeral
-import io.github.freya022.bot.commands.FrontendChooser
-import io.github.freya022.bot.commands.SimpleFrontend
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
+import io.github.freya022.bot.switches.FrontendChooser
+import io.github.freya022.bot.switches.SimpleFrontend
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission

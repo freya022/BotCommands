@@ -1,17 +1,17 @@
-package io.github.freya022.bot.commands
+package io.github.freya022.bot.switches
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.CustomConditionChecker
 import com.freya02.botcommands.api.core.service.annotations.Condition
 
-object WikiCommandProfileChecker : CustomConditionChecker<WikiCommandProfile> {
+object WikiDetailProfileChecker : CustomConditionChecker<WikiDetailProfile> {
     // NOTE: When changing wiki source code, the wiki downloads snippets at build time,
     // and must be rebuilt for the changes to be taken into account
-    private val currentProfile = WikiCommandProfile.Profile.KOTLIN_DSL
+    private val currentProfile = WikiDetailProfile.Profile.SIMPLIFIED
 
-    override val annotationType: Class<WikiCommandProfile> = WikiCommandProfile::class.java
+    override val annotationType: Class<WikiDetailProfile> = WikiDetailProfile::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: WikiCommandProfile): String? {
+    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: WikiDetailProfile): String? {
         val serviceProfile = annotation.profile
         if (serviceProfile == currentProfile) {
             return null
@@ -22,11 +22,10 @@ object WikiCommandProfileChecker : CustomConditionChecker<WikiCommandProfile> {
 }
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-@Condition(WikiCommandProfileChecker::class, fail = false)
-annotation class WikiCommandProfile(@get:JvmName("value") val profile: Profile) {
+@Condition(WikiDetailProfileChecker::class, fail = false)
+annotation class WikiDetailProfile(@get:JvmName("value") val profile: Profile) {
     enum class Profile {
-        JAVA,
-        KOTLIN,
-        KOTLIN_DSL
+        SIMPLIFIED,
+        DETAILED
     }
 }

@@ -11,8 +11,8 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.VarArg
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.bot.commands.FrontendChooser
-import io.github.freya022.bot.commands.SimpleFrontend
+import io.github.freya022.bot.switches.FrontendChooser
+import io.github.freya022.bot.switches.SimpleFrontend
 
 @BService
 class SlashChoose {
