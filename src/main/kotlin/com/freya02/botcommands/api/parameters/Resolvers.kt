@@ -69,6 +69,10 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
         arg: String
     ): E = values.first { it.name == arg }
     //endregion
+
+    override fun toString(): String {
+        return "EnumResolver(values=${values.contentToString()}, nameFunction=$nameFunction)"
+    }
 }
 
 fun interface EnumNameFunction<E : Enum<E>> {

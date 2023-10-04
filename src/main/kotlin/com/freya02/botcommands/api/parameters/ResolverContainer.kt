@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
+import com.freya02.botcommands.api.core.utils.shortQualifiedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.utils.runInitialization
@@ -43,7 +44,13 @@ class ResolverContainer internal constructor(
     }
 
     fun <R : Any> addResolverFactory(resolver: ParameterResolverFactory<*, R>) {
-        factories[resolver.jvmErasure]?.let { throwUser("Resolver for ${resolver.jvmErasure.qualifiedName} already exists") }
+        factories[resolver.jvmErasure]?.let {
+            throwUser("""
+                Tried to add a resolver for ${resolver.jvmErasure.shortQualifiedName} but one already exists:
+                $resolver
+                $it
+            """.trimIndent())
+        }
 
         factories[resolver.jvmErasure] = resolver
     }
