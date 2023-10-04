@@ -30,6 +30,7 @@ import kotlin.reflect.KFunction
 
 class SlashCommandOptionBuilder internal constructor(
     private val context: BContextImpl,
+    internal val commandBuilder: SlashCommandBuilder,
     optionParameter: OptionParameter,
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {

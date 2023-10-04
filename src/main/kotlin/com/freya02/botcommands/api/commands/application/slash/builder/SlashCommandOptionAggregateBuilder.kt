@@ -11,12 +11,13 @@ import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder internal constructor(
     private val context: BContextImpl,
+    private val commandBuilder: SlashCommandBuilder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        this += SlashCommandOptionBuilder(context, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
+        this += SlashCommandOptionBuilder(context, commandBuilder, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 
     override fun customOption(declaredName: String) {
@@ -41,5 +42,5 @@ class SlashCommandOptionAggregateBuilder internal constructor(
     }
 
     override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
-        SlashCommandOptionAggregateBuilder(context, aggregatorParameter, aggregator)
+        SlashCommandOptionAggregateBuilder(context, commandBuilder, aggregatorParameter, aggregator)
 }

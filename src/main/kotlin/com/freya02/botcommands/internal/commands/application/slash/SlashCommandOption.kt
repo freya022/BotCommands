@@ -40,7 +40,7 @@ class SlashCommandOption(
     val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
 
     init {
-        val rootDescription = LocalizationUtils.getOptionRootDescription(slashCommandInfo.context, slashCommandInfo, optionBuilder)
+        val rootDescription = LocalizationUtils.getOptionRootDescription(slashCommandInfo.context, optionBuilder)
         description = if (optionBuilder.description !== SlashCommandBuilder.DEFAULT_DESCRIPTION) {
             // If a description was set, then use it, but check if a root description was found too
             if (rootDescription != null) {

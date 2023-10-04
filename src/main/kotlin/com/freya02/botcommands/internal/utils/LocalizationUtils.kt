@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import java.util.*
 
 internal object LocalizationUtils {
@@ -14,8 +13,8 @@ internal object LocalizationUtils {
         return getRootLocalization(context, "$joinedPath.description")
     }
 
-    internal fun getOptionRootDescription(context: BContextImpl, info: SlashCommandInfo, optionBuilder: SlashCommandOptionBuilder): String? {
-        val joinedPath = info.path.getFullPath('.')
+    internal fun getOptionRootDescription(context: BContextImpl, optionBuilder: SlashCommandOptionBuilder): String? {
+        val joinedPath = optionBuilder.commandBuilder.path.getFullPath('.')
         return getRootLocalization(context, "$joinedPath.options.${optionBuilder.optionName}.description")
     }
 

@@ -107,7 +107,7 @@ abstract class SlashCommandBuilder internal constructor(
     override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilder {
         if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
 
-        return SlashCommandOptionAggregateBuilder(context, aggregatorParameter, aggregator)
+        return SlashCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
     }
 
     companion object {
