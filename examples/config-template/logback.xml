@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<configuration scan="true"> <!-- Reloads every minute -->
     <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -27,16 +27,19 @@
         </encoder>
     </appender>
 
+    <!-- JDA logging -->
     <logger name="net.dv8tion.jda" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
 
+    <!-- HikariCP logging -->
     <logger name="com.zaxxer.hikari" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
 
+    <!-- BotCommands logging -->
     <logger name="com.freya02.botcommands" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
@@ -48,6 +51,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
+    <!-- All the remaining loggers -->
     <root level="debug">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>

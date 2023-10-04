@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true"> <!-- A complete logback.xml can be found at https://freya022.github.io/BotCommands-Wiki/Logging/  -->
+<configuration scan="true"> <!-- Reloads every minute -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %boldCyan(%-26.-26thread) %boldYellow(%-20.-20logger{0}) %highlight(%-6level) %msg%n%throwable</pattern>
         </encoder>
     </appender>
 
+    <!-- JDA logging -->
     <logger name="net.dv8tion.jda" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
+    <!-- HikariCP logging -->
     <logger name="com.zaxxer.hikari" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
+    <!-- BotCommands logging -->
     <logger name="com.freya02.botcommands" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
@@ -23,6 +26,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
+    <!-- All the remaining loggers -->
     <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>

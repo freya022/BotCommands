@@ -146,11 +146,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.4.11</version>
         </dependency>
-        <dependency>
-            <groupId>io.github.microutils</groupId>
-            <artifactId>kotlin-logging-jvm</artifactId>
-            <version>3.0.5</version>
-        </dependency>
 
         <!-- Needed for components, otherwise optional - You must use PostgreSQL -->
         <dependency>
