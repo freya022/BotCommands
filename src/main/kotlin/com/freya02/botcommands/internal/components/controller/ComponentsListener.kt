@@ -14,7 +14,6 @@ import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.commands.ratelimit.withRateLimit
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerOption
@@ -26,6 +25,7 @@ import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.core.ExceptionHandler
 import com.freya02.botcommands.internal.core.db.InternalDatabase
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType

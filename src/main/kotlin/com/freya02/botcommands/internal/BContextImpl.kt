@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.service.*
+import com.freya02.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import com.freya02.botcommands.internal.utils.unwrap
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking

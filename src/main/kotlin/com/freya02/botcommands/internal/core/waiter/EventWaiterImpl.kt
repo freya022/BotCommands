@@ -11,7 +11,7 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.core.waiter.EventWaiter
 import com.freya02.botcommands.api.core.waiter.EventWaiterBuilder
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.ExceptionHandler
+import com.freya02.botcommands.internal.core.ExceptionHandler
 import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import com.freya02.botcommands.internal.utils.throwInternal
 import mu.KotlinLogging

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.localization
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.DefaultMessagesSupplier
