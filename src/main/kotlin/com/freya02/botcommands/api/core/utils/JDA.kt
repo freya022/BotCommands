@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.utils
 
-import com.freya02.botcommands.api.DefaultMessages
+import com.freya02.botcommands.api.localization.DefaultMessages
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission

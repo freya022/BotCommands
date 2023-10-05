@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.BContext.Status
-import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
@@ -14,6 +13,7 @@ import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.api.core.utils.logger
+import com.freya02.botcommands.api.localization.DefaultMessages
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler

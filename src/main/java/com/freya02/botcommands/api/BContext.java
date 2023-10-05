@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.core.config.*;
 import com.freya02.botcommands.api.core.service.ServiceContainer;
 import com.freya02.botcommands.api.core.service.ServiceResult;
 import com.freya02.botcommands.api.core.service.annotations.InjectedService;
+import com.freya02.botcommands.api.localization.DefaultMessages;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -132,7 +133,7 @@ public interface BContext {
 	}
 
 	@NotNull
-	DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale);
+    DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale);
 
 	/**
 	 * Returns the {@link DefaultMessages} instance for this Guild's locale

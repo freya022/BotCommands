@@ -1,10 +1,8 @@
-package com.freya02.botcommands.api;
+package com.freya02.botcommands.api.localization;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW;
 import com.freya02.botcommands.api.core.SettingsProvider;
-import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.LocalizationService;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
 import com.freya02.botcommands.internal.utils.ExceptionsKt;
