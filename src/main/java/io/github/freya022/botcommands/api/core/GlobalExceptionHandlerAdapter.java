@@ -40,21 +40,21 @@ public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHa
 		handle(event, throwable);
 	}
 
-	public void handle(Event event, @NotNull Throwable throwable) {}
+	public void handle(@Nullable Event event, @NotNull Throwable throwable) {}
 
-	public void handle(MessageReceivedEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull MessageReceivedEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(SlashCommandInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull SlashCommandInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(MessageContextInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull MessageContextInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(UserContextInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull UserContextInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(ModalInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull ModalInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(ButtonInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull ButtonInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(StringSelectInteractionEvent event, Throwable throwable) {}
+	public void handle(@NotNull StringSelectInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(EntitySelectInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(@NotNull EntitySelectInteractionEvent event, @NotNull Throwable throwable) {}
 }
