@@ -1,8 +1,8 @@
 package com.freya02.botcommands.test_kt.commands.text
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService

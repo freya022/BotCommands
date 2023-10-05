@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -8,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAU
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.api.core.utils.shortSignature

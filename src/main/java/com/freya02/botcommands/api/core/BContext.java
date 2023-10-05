@@ -1,12 +1,8 @@
-package com.freya02.botcommands.api;
+package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
-import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
-import com.freya02.botcommands.api.core.GlobalExceptionHandler;
-import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.core.config.*;
 import com.freya02.botcommands.api.core.service.ServiceContainer;
 import com.freya02.botcommands.api.core.service.ServiceResult;

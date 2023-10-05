@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping

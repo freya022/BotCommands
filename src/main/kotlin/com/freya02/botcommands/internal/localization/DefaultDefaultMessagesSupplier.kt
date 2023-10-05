@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.DefaultMessagesSupplier
 import com.freya02.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.interactions.DiscordLocale

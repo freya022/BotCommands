@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.service
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import java.lang.reflect.Executable

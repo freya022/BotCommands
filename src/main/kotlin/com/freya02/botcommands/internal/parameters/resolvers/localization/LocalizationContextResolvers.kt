@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.parameters.resolvers.localization
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.api.parameters.ICustomResolver

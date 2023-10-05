@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BCInfo
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.core.config.BConfigBuilder

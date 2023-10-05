@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isService

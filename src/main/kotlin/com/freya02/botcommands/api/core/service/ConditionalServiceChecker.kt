@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.service
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 
 /**

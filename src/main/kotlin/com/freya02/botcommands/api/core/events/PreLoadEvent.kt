@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.events
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 
 /**
  * Indicates the framework status changed to [BContext.Status.PRE_LOAD].

@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.components.controller
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
 import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import com.freya02.botcommands.api.components.ComponentGroup
 import com.freya02.botcommands.api.components.IdentifiableComponent
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.lazy

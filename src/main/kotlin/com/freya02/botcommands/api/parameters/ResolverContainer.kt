@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer

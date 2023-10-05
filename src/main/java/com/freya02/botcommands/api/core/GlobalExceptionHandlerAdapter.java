@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.core;
 
-import com.freya02.botcommands.api.BContext;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;

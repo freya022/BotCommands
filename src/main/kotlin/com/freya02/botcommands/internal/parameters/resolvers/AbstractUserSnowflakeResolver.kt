@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.internal.Usability.UnusableReason.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
