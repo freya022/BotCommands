@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.ratelimit.handler
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
+import com.freya02.botcommands.api.commands.ratelimit.RateLimitScope
 import com.freya02.botcommands.api.core.utils.namedDefaultScope
 import com.freya02.botcommands.api.core.utils.runIgnoringResponse
 import com.freya02.botcommands.api.localization.DefaultMessages

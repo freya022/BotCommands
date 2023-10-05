@@ -2,13 +2,9 @@ package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.annotations.RateLimit
 import com.freya02.botcommands.api.commands.annotations.RateLimitReference
-import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
-import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
-import com.freya02.botcommands.api.commands.ratelimit.RateLimiter
-import com.freya02.botcommands.api.commands.ratelimit.RateLimiterFactory
+import com.freya02.botcommands.api.commands.ratelimit.*
 import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.service.getService
