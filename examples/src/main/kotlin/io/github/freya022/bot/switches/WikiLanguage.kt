@@ -1,8 +1,8 @@
 package io.github.freya022.bot.switches
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.service.CustomConditionChecker
-import com.freya02.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 object WikiLanguageChecker : CustomConditionChecker<WikiLanguage> {
     // NOTE: When changing wiki source code, the wiki downloads snippets at build time,

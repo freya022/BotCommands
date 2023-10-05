@@ -1,7 +1,7 @@
 package io.github.freya022.bot
 
-import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ReadyEvent
 

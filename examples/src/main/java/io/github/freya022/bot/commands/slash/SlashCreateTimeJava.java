@@ -1,13 +1,13 @@
 package io.github.freya022.bot.commands.slash;
 
-import com.freya02.botcommands.api.commands.CommandPath;
-import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
-import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
-import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.parameters.ParameterType;
+import io.github.freya022.botcommands.api.commands.CommandPath;
+import io.github.freya022.botcommands.api.commands.annotations.Command;
+import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
+import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import io.github.freya022.botcommands.api.parameters.ParameterType;
 import io.github.freya022.bot.switches.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.TimeFormat;

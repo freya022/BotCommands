@@ -48,8 +48,7 @@ which enables this annotation to represent a custom condition for service creati
 
 You can also specify if failure of these annotations throws an exception.
 
-An example can be found [here](src/test/kotlin/com/freya02/botcommands/test_kt/services/MyDevService.kt), 
-[here](src/test/kotlin/com/freya02/botcommands/test_kt/services/ProfileChecker.kt) and [here](src/test/kotlin/com/freya02/botcommands/test_kt/services/annotations/RequireProfile.kt)
+An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/switches/WikiLanguage.kt).
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>
@@ -219,12 +218,12 @@ while also letting you easily transform a value into its displayed string.
 The API has been improved to allow a more detailed loading mechanism, 
 as to let you easily extend the API, such as adding support for new formats (like HOCON), or new file structures:
 
-| Name                                                                                                                                     | Function                                                                                                                                                                                                                                                                                                  |
-|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [LocalizationMapProvider](src/main/java/com/freya02/botcommands/api/localization/providers/LocalizationMapProvider.java)                 | Responsible for getting a `LocalizationMap` for a given base name and locale, using a broader locale is allowed. <br/>The provider can merge multiple maps as well as modify the base name. <br/>All providers can be found by using `LocalizationService#getMappingProviders`.                           |
-| [LocalizationMapReader](src/main/java/com/freya02/botcommands/api/localization/readers/LocalizationMapReader.java)                       | Responsible for reading a given localization map for a given bundle name (base name + locale). <br/>It is allowed to create any type of `LocalizationTemplate`, but is **not** allowed to use a different name or locale. <br/>All readers can be found by using `LocalizationService#getMappingReaders`. |
-| [LocalizationMapTemplate](src/main/kotlin/com/freya02/botcommands/api/localization/LocalizationTemplate.kt)                              | Represents a localization template, i.e., the entire string with parameters in it.                                                                                                                                                                                                                        |
-| [FormattableArgumentFactory](src/main/kotlin/com/freya02/botcommands/api/localization/arguments/factories/FormattableArgumentFactory.kt) | Responsible for creating `FormattableArgument`s based on an argument found in a template. <br/>All factories can be found by using `LocalizationService#getFormattableArgumentFactories`.                                                                                                                 |
+| Name                                                                                                                                            | Function                                                                                                                                                                                                                                                                                                  |
+|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [LocalizationMapProvider](src/main/java/io/github/freya022/botcommands/api/localization/providers/LocalizationMapProvider.java)                 | Responsible for getting a `LocalizationMap` for a given base name and locale, using a broader locale is allowed. <br/>The provider can merge multiple maps as well as modify the base name. <br/>All providers can be found by using `LocalizationService#getMappingProviders`.                           |
+| [LocalizationMapReader](src/main/java/io/github/freya022/botcommands/api/localization/readers/LocalizationMapReader.java)                       | Responsible for reading a given localization map for a given bundle name (base name + locale). <br/>It is allowed to create any type of `LocalizationTemplate`, but is **not** allowed to use a different name or locale. <br/>All readers can be found by using `LocalizationService#getMappingReaders`. |
+| [LocalizationMapTemplate](src/main/kotlin/io/github/freya022/botcommands/api/localization/LocalizationTemplate.kt)                              | Represents a localization template, i.e., the entire string with parameters in it.                                                                                                                                                                                                                        |
+| [FormattableArgumentFactory](src/main/kotlin/io/github/freya022/botcommands/api/localization/arguments/factories/FormattableArgumentFactory.kt) | Responsible for creating `FormattableArgument`s based on an argument found in a template. <br/>All factories can be found by using `LocalizationService#getFormattableArgumentFactories`.                                                                                                                 |
 
 The old `Localization` factory is now `LocalizationService`.
 
@@ -250,9 +249,9 @@ Filters now support coroutines and are run right before their target should have
 
 ### Extension functions
 Several top-level and extension functions have been added, such as:
-- [Member retrieval, temporary message content warning suppressing, message/hook send/edit/replaceWith, overloads using Kotlin's Duration](src/main/kotlin/com/freya02/botcommands/api/core/utils/JDA.kt)
-- [Error response handling/ignoring](src/main/kotlin/com/freya02/botcommands/api/core/utils/ErrorResponses.kt)
-- [Resource reading, named coroutine scopes](src/main/kotlin/com/freya02/botcommands/api/core/utils/Utils.kt)
+- [Member retrieval, temporary message content warning suppressing, message/hook send/edit/replaceWith, overloads using Kotlin's Duration](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/JDA.kt)
+- [Error response handling/ignoring](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/ErrorResponses.kt)
+- [Resource reading, named coroutine scopes](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/Utils.kt)
 
 ### Input user parameters
 A `InputUser` interface, extending `User`, provides a way for you to get a Member (null if not available) 

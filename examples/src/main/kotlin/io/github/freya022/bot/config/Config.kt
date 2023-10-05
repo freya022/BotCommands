@@ -1,6 +1,6 @@
 package io.github.freya022.bot.config
 
-import com.freya02.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import com.google.gson.Gson
 import mu.KotlinLogging
 import java.nio.file.Path

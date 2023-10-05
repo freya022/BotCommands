@@ -40,13 +40,13 @@
     </logger>
 
     <!-- BotCommands logging -->
-    <logger name="com.freya02.botcommands" level="info" additivity="false">
+    <logger name="io.github.freya022.botcommands" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
 
     <!-- Logging queries, set to trace to enable -->
-    <logger name="com.freya02.botcommands.api.core.db.KPreparedStatement" level="info" additivity="false">
+    <logger name="io.github.freya022.botcommands.api.core.db.KPreparedStatement" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>

@@ -1,8 +1,8 @@
 package io.github.freya022.bot
 
-import com.freya02.botcommands.api.core.BBuilder
-import com.freya02.botcommands.api.core.config.DevConfig
-import com.freya02.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.botcommands.api.core.BBuilder
+import io.github.freya022.botcommands.api.core.config.DevConfig
+import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.bot.config.Config

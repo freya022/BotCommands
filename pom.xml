@@ -86,7 +86,7 @@
                                     <lineSuffix>#L</lineSuffix>
                                 </link>
                             </sourceLinks>
-                            <suppressedFiles>${project.basedir}/src/main/java/com/freya02/botcommands/api/$BCInfo.java</suppressedFiles>
+                            <suppressedFiles>${project.basedir}/src/main/java/io/github/freya022/botcommands/api/$BCInfo.java</suppressedFiles>
                             <sourceDirectories>
                                 <dir>${project.basedir}/src/main/java</dir>
                                 <dir>${project.build.directory}/generated-sources</dir>
@@ -246,7 +246,7 @@
             <plugin>
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>8f0b3bee26</version>
+                <version>6982f2720d</version>
                 <executions>
                     <execution>
                         <goals>
@@ -309,7 +309,7 @@
                         <compilerArg>-parameters</compilerArg>
                     </compilerArgs>
                     <excludes>
-                        <exclude>com/freya02/botcommands/api/$BCInfo.java</exclude>
+                        <exclude>io/github/freya022/botcommands/api/$BCInfo.java</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -371,7 +371,7 @@
                             <goal>jar-no-fork</goal>
                         </goals>
                         <configuration>
-                            <excludes>com/freya02/botcommands/api/$BCInfo.java</excludes>
+                            <excludes>io/github/freya022/botcommands/api/$BCInfo.java</excludes>
                         </configuration>
                     </execution>
                 </executions>

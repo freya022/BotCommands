@@ -1,9 +1,9 @@
 package io.github.freya022.bot.commands.ban
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.service.DynamicSupplier
-import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability
-import com.freya02.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.botcommands.api.core.service.DynamicSupplier
+import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import kotlin.reflect.KClass
 
 @BService // Just a marker, not required

@@ -1,13 +1,13 @@
 package io.github.freya022.bot.commands.slash
 
-import com.freya02.botcommands.api.commands.annotations.Command
-import com.freya02.botcommands.api.commands.application.ApplicationCommand
-import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.components.Button
-import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.components.annotations.JDAButtonListener
-import com.freya02.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.components.Button
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.into

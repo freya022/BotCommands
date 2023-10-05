@@ -1,7 +1,7 @@
 package io.github.freya022.bot.config
 
-import com.freya02.botcommands.api.core.db.HikariSourceSupplier
-import com.freya02.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging

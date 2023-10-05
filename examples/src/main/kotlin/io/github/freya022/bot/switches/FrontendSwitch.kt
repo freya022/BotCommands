@@ -1,7 +1,7 @@
 package io.github.freya022.bot.switches
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 
 annotation class SimpleFrontend
 

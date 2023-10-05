@@ -1,11 +1,11 @@
 package io.github.freya022.bot.resolvers;
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.core.service.annotations.Resolver;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.Resolvers;
-import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
+import io.github.freya022.botcommands.api.BContext;
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
+import io.github.freya022.botcommands.api.parameters.ParameterResolver;
+import io.github.freya022.botcommands.api.parameters.Resolvers;
+import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.bot.switches.WikiDetailProfile;
 import io.github.freya022.bot.switches.WikiLanguage;
 import net.dv8tion.jda.api.entities.Guild;
