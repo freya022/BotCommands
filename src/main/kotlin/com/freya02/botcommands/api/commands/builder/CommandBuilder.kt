@@ -9,10 +9,10 @@ import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDecla
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.enumSetOf
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import com.freya02.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.time.Duration

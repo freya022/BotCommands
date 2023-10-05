@@ -4,10 +4,10 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.VarArg
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import com.freya02.botcommands.internal.utils.findDeclarationName

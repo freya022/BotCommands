@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.commands.application.GlobalApplicationCommand
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.overwriteBytes
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
@@ -17,6 +16,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashSubcomma
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.asScopeString
 import com.freya02.botcommands.internal.utils.rethrowUser
 import dev.minn.jda.ktx.coroutines.await

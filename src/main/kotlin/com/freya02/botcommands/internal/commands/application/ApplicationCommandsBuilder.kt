@@ -8,9 +8,9 @@ import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.joinAsList
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
 import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl

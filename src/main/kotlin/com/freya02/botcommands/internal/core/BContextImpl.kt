@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer

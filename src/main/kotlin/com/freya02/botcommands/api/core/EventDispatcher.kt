@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getServiceOrNull
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.core.exceptions.InternalException

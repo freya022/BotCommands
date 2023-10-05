@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application.localization
 
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.LocalizationService
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.SingleLogger
 import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale

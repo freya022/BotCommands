@@ -8,8 +8,8 @@ import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.utils.RichTextFinder
 import com.freya02.botcommands.api.utils.RichTextFinder.RichText
 import com.freya02.botcommands.api.utils.RichTextType
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
+import com.freya02.botcommands.internal.core.BContextImpl
 import dev.minn.jda.ktx.coroutines.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.*

@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.core.service.lazy
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

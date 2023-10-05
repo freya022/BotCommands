@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.components
 
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.transformParameters

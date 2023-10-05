@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import com.freya02.botcommands.api.core.BContext;
 import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
 import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
-import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.core.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;

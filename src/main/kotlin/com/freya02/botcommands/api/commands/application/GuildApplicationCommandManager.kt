@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application
 
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.Guild
 

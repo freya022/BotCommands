@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference

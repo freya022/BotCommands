@@ -15,8 +15,8 @@ import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType

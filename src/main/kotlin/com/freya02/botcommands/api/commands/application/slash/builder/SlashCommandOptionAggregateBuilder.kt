@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction

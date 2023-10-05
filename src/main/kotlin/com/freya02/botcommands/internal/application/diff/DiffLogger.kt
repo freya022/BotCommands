@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.application.diff
 
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger.Companion.logger
+import com.freya02.botcommands.internal.core.BContextImpl
 import mu.KotlinLogging
 
 internal interface DiffLogger {

@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.api.parameters.ResolverContainer
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import mu.KotlinLogging

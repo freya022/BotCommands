@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.core.reflection
 
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSingleAggregator
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.throwInternal

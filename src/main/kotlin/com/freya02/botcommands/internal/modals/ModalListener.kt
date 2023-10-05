@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.ExceptionHandler
 import com.freya02.botcommands.internal.utils.throwUser
 import dev.minn.jda.ktx.messages.reply_

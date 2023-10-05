@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(

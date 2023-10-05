@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.core.utils.isConstructor
 import com.freya02.botcommands.api.core.utils.isStatic
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.throwInternal

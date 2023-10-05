@@ -11,8 +11,8 @@ import com.freya02.botcommands.api.core.events.PreLoadEvent
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.Version
+import com.freya02.botcommands.internal.core.BContextImpl
+import com.freya02.botcommands.internal.core.Version
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
