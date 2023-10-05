@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
@@ -34,7 +33,7 @@ public class BooleanResolver
 
 	@Override
 	@Nullable
-	public Boolean resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Boolean resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return parseBoolean(args[0]);
 	}
 
@@ -64,13 +63,13 @@ public class BooleanResolver
 
 	@Override
 	@Nullable
-	public Boolean resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Boolean resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsBoolean();
 	}
 
 	@Override
 	@Nullable
-	public Boolean resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Boolean resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return parseBoolean(arg);
 	}
 

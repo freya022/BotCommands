@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.api.commands.prefixed;
 import io.github.freya022.botcommands.api.commands.prefixed.exceptions.BadIdException;
 import io.github.freya022.botcommands.api.commands.prefixed.exceptions.NoIdException;
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit;
+import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
-import io.github.freya022.botcommands.internal.core.BContextImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  * @see BaseCommandEvent
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
-	public CommandEvent(BContextImpl context, MessageReceivedEvent event, String args, CancellableRateLimit cancellableRateLimit) {
+	public CommandEvent(BContext context, MessageReceivedEvent event, String args, CancellableRateLimit cancellableRateLimit) {
 		super(context, event, args, cancellableRateLimit);
 	}
 

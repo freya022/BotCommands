@@ -11,12 +11,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -29,7 +29,7 @@ import java.util.*
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionBuilder internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     internal val commandBuilder: SlashCommandBuilder,
     optionParameter: OptionParameter,
     val optionName: String

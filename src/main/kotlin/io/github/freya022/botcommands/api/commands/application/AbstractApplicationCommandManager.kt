@@ -12,16 +12,16 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Glob
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import kotlin.reflect.KFunction
 
-sealed class AbstractApplicationCommandManager(private val context: BContextImpl) {
+sealed class AbstractApplicationCommandManager(private val context: BContext) {
     private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         @JvmSynthetic get() = commandMap.map

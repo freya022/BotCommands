@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
@@ -38,7 +37,7 @@ public class RoleResolver
 
 	@Override
 	@Nullable
-	public Role resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
 
 		return event.getGuild().getRoleById(args[0]);
@@ -73,13 +72,13 @@ public class RoleResolver
 
 	@Override
 	@Nullable
-	public Role resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Role resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsRole();
 	}
 
 	@Override
 	@Nullable
-	public Role resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Role resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
 
 		return event.getGuild().getRoleById(arg);

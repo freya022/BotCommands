@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
@@ -34,7 +33,7 @@ public class DoubleResolver
 
 	@Override
 	@Nullable
-	public Double resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Double resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		try {
 			return Double.valueOf(args[0]);
 		} catch (NumberFormatException e) {
@@ -68,7 +67,7 @@ public class DoubleResolver
 
 	@Override
 	@Nullable
-	public Double resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Double resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
 			return optionMapping.getAsDouble();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
@@ -78,7 +77,7 @@ public class DoubleResolver
 
 	@Override
 	@Nullable
-	public Double resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Double resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return Double.valueOf(arg);
 	}
 }

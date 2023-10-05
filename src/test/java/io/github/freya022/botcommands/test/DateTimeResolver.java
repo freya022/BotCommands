@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.test;
 
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
@@ -29,7 +28,7 @@ class DateTimeResolver
 
 	@Override
 	@Nullable
-	public LocalDateTime resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public LocalDateTime resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return LocalDateTime.ofEpochSecond(optionMapping.getAsLong(), 0, ZoneOffset.UTC);
 	}
 }

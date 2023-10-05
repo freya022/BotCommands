@@ -195,12 +195,12 @@ internal class ComponentsListener(
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
+                option.resolver.resolveSuspend(descriptor, event, userDataIterator.next())
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, descriptor, event)
+                option.resolver.resolveSuspend(descriptor, event)
             }
             else -> throwInternal("${option.optionType} has not been implemented")
         }

@@ -2,9 +2,7 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.ID
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
-import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
@@ -17,27 +15,18 @@ interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
     /**
      * Returns a resolved object from this text command interaction
      *
-     * @param context   The [BContext] of this bot
      * @param variation The text command variation of the command being executed
      * @param event     The event of the received message
      * @param args      The text arguments of this command, extracted with [pattern]
      *
      * @return The resolved option mapping
      */
-    fun resolve(
-        context: BContext,
-        variation: TextCommandVariation,
-        event: MessageReceivedEvent,
-        args: Array<String?>
-    ): R? = throwUser("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
+    fun resolve(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>): R? =
+        throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
-    suspend fun resolveSuspend(
-        context: BContext,
-        variation: TextCommandVariation,
-        event: MessageReceivedEvent,
-        args: Array<String?>
-    ) = resolve(context, variation, event, args)
+    suspend fun resolveSuspend(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>) =
+        resolve(variation, event, args)
 
     /**
      * Returns the pattern required to recognize this parameter

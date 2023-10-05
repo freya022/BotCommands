@@ -5,12 +5,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
@@ -29,7 +29,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 abstract class SlashCommandInfo internal constructor(
-    val context: BContextImpl,
+    val context: BContext,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     builder
@@ -104,7 +104,7 @@ abstract class SlashCommandInfo internal constructor(
                 val optionMapping = event.getOption(optionName)
 
                 if (optionMapping != null) {
-                    val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
+                    val resolved = option.resolver.resolveSuspend(this, event, optionMapping)
                     if (resolved == null) {
                         //Only use the generic message if the user didn't handle this situation
                         if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
@@ -135,7 +135,7 @@ abstract class SlashCommandInfo internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption

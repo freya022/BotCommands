@@ -3,11 +3,11 @@ package io.github.freya022.botcommands.api.commands.prefixed.builder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -18,7 +18,7 @@ import kotlin.reflect.full.primaryConstructor
 
 @CommandDSL
 class TextCommandVariationBuilder internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     function: KFunction<Any>
 ) : IBuilderFunctionHolder<Any> {
     override val function: KFunction<Any> = function.reflectReference()

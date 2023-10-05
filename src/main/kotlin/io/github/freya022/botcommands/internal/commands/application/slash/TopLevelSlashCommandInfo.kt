@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.mixins.ITopLevelSlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.mixins.TopLevelSlashCommandInfoMixin
-import io.github.freya022.botcommands.internal.core.BContextImpl
 
 class TopLevelSlashCommandInfo internal constructor(
-    context: BContextImpl,
+    context: BContext,
     builder: TopLevelSlashCommandBuilder
 ) : SlashCommandInfo(context, builder),
     ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(builder) {

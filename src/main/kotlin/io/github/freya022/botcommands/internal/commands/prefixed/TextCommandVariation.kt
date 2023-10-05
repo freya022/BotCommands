@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 class TextCommandVariation internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo {
@@ -100,7 +100,7 @@ class TextCommandVariation internal constructor(
                 }
 
                 if (found == groupCount) { //Found all the groups
-                    val resolved = option.resolver.resolveSuspend(context, this, event, groups)
+                    val resolved = option.resolver.resolveSuspend(this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
                     if (resolved == null && !option.isOptionalOrNullable) {
@@ -122,7 +122,7 @@ class TextCommandVariation internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
 
             OptionType.GENERATED -> {

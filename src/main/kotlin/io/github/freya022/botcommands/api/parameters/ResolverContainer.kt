@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.runInitialization
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -23,7 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 @BService
 class ResolverContainer internal constructor(
-    context: BContextImpl,
+    context: BContext,
     private val serviceContainer: ServiceContainer
 ) {
     private val logger = KotlinLogging.logger { }
@@ -105,7 +104,7 @@ class ResolverContainer internal constructor(
     }
 
     private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
-        override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
+        override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 
     internal companion object {

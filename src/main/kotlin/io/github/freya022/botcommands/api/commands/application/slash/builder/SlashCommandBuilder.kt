@@ -3,10 +3,10 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -17,7 +17,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 
 abstract class SlashCommandBuilder internal constructor(
-    context: BContextImpl,
+    context: BContext,
     name: String,
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(context, name, function ?: fakeSlashFunction) {

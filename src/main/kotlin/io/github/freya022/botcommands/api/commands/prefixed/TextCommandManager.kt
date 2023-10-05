@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.api.commands.prefixed
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
-import io.github.freya022.botcommands.internal.core.BContextImpl
 
-class TextCommandManager internal constructor(private val context: BContextImpl) {
+class TextCommandManager internal constructor(private val context: BContext) {
     @get:JvmSynthetic
     internal val textCommands: SimpleCommandMap<TopLevelTextCommandInfo> = SimpleCommandMap(null)
 

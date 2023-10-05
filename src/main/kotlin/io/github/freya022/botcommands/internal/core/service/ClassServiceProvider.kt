@@ -40,7 +40,7 @@ internal class ClassServiceProvider(
 
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
+            val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
                 //Return error message
                 InstantiabilityType.NOT_INSTANTIABLE -> return ErrorType.DYNAMIC_NOT_INSTANTIABLE.toError(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
@@ -71,7 +71,7 @@ internal class ClassServiceProvider(
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
+            val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
                 //Return error message
                 InstantiabilityType.NOT_INSTANTIABLE -> ErrorType.DYNAMIC_NOT_INSTANTIABLE.toResult<Any>(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
@@ -80,7 +80,7 @@ internal class ClassServiceProvider(
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return instance
                 InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation {
-                    dynamicSupplier.get(serviceContainer.context, clazz)
+                    dynamicSupplier.get(clazz)
                 }
             }
         }

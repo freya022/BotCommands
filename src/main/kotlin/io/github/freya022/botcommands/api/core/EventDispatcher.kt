@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.core.*
 import io.github.freya022.botcommands.internal.core.exceptions.InitializationException
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.getParameters
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters

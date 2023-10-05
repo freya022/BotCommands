@@ -4,13 +4,13 @@ import io.github.freya022.botcommands.api.commands.application.context.builder.U
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import kotlin.reflect.full.callSuspendBy
 
 class UserCommandInfo internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     builder: UserCommandBuilder
 ) : ApplicationCommandInfo(builder),
     ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(builder) {
@@ -67,12 +67,12 @@ class UserCommandInfo internal constructor(
             OptionType.OPTION -> {
                 option as UserContextCommandOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption

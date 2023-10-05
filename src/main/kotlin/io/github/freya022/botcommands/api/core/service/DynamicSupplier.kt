@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.service
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -37,7 +36,7 @@ interface DynamicSupplier {
      * @see Instantiability.InstantiabilityType
      * @see ReflectionUtils
      */
-    fun getInstantiability(context: BContext, clazz: KClass<*>): Instantiability
+    fun getInstantiability(clazz: KClass<*>): Instantiability
 
     /**
      * Returns an instance of the requested service.
@@ -47,5 +46,5 @@ interface DynamicSupplier {
      * @see Instantiability.InstantiabilityType
      * @see ReflectionUtils
      */
-    fun get(context: BContext, clazz: KClass<*>): Any
+    fun get(clazz: KClass<*>): Any
 }

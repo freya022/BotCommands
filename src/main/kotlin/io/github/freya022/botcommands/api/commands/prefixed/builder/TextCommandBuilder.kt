@@ -7,14 +7,14 @@ import io.github.freya022.botcommands.api.commands.prefixed.TextCommand
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.NSFW
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.NSFWStrategy
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
-abstract class TextCommandBuilder internal constructor(context: BContextImpl, name: String) : CommandBuilder(context, name) {
+abstract class TextCommandBuilder internal constructor(context: BContext, name: String) : CommandBuilder(context, name) {
     internal val subcommands: MutableList<TextSubcommandBuilder> = arrayListOf()
 
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
