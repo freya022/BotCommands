@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.GlobalExceptionHandlerAdapter;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
