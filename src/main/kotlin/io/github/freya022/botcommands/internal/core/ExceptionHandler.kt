@@ -10,7 +10,7 @@ internal class ExceptionHandler(private val context: BContext, private val logge
         val unreflectedException = e.unwrap()
         val handler = context.globalExceptionHandler
         if (handler != null) {
-            handler.onException(context, event, unreflectedException)
+            handler.onException(event, unreflectedException)
             return
         }
 

@@ -18,43 +18,43 @@ import org.jetbrains.annotations.Nullable;
  * @see GlobalExceptionHandler
  */
 public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHandler {
-	public final void onException(@NotNull BContext context, @Nullable Event event, @NotNull Throwable throwable) {
+	public final void onException(@Nullable Event event, @NotNull Throwable throwable) {
 		if (event instanceof MessageReceivedEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof SlashCommandInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof MessageContextInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof UserContextInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof ButtonInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof StringSelectInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof EntitySelectInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		} else if (event instanceof ModalInteractionEvent e) {
-			handle(context, e, throwable);
+			handle(e, throwable);
 		}
 
-		handle(context, event, throwable);
+		handle(event, throwable);
 	}
 
-	public void handle(@NotNull BContext context, Event event, @NotNull Throwable throwable) {}
+	public void handle(Event event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, MessageReceivedEvent event, @NotNull Throwable throwable) {}
+	public void handle(MessageReceivedEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, SlashCommandInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(SlashCommandInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, MessageContextInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(MessageContextInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, UserContextInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(UserContextInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, ModalInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(ModalInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, ButtonInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(ButtonInteractionEvent event, @NotNull Throwable throwable) {}
 
-	public void handle(@NotNull BContext context, StringSelectInteractionEvent event, Throwable throwable) {}
+	public void handle(StringSelectInteractionEvent event, Throwable throwable) {}
 
-	public void handle(BContext context, EntitySelectInteractionEvent event, @NotNull Throwable throwable) {}
+	public void handle(EntitySelectInteractionEvent event, @NotNull Throwable throwable) {}
 }
