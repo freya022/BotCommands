@@ -6,11 +6,11 @@ import io.github.freya022.botcommands.api.commands.application.slash.Application
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.api.core.BContext
 import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
-    context: BContextImpl,
+    context: BContext,
     name: String,
     function: KFunction<Any>
 ) : ExecutableCommandBuilder<T, Any>(context, name, function) {

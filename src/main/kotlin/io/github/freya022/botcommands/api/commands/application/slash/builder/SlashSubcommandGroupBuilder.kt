@@ -3,19 +3,19 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder.Companion.DEFAULT_DESCRIPTION
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
 @CommandDSL
-class SlashSubcommandGroupBuilder internal constructor(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
+class SlashSubcommandGroupBuilder internal constructor(private val context: BContext, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
 

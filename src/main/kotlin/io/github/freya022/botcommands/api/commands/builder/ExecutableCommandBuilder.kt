@@ -1,15 +1,15 @@
 package io.github.freya022.botcommands.api.commands.builder
 
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
 abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> internal constructor(
-    context: BContextImpl,
+    context: BContext,
     name: String,
     function: KFunction<R>
 ) : CommandBuilder(context, name), IBuilderFunctionHolder<R> {

@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
-class AutocompleteInfo internal constructor(context: BContextImpl, builder: AutocompleteInfoBuilder) {
+class AutocompleteInfo internal constructor(context: BContext, builder: AutocompleteInfoBuilder) {
     val name: String = builder.name
     val eventFunction = builder.function.toMemberEventFunction<CommandAutoCompleteInteractionEvent, _>(context)
     val mode: AutocompleteMode = builder.mode

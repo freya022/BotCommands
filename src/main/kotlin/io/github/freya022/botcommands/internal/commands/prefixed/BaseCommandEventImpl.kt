@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.utils.EmojiUtils
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -22,7 +22,7 @@ import javax.annotation.CheckReturnValue
 private val logger = KotlinLogging.logger<BaseCommandEvent>()
 
 internal open class BaseCommandEventImpl(
-    context: BContextImpl,
+    context: BContext,
     event: MessageReceivedEvent,
     arguments: String,
     cancellableRateLimit: CancellableRateLimit

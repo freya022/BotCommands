@@ -7,10 +7,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.api.core.BContext
 import kotlin.reflect.KFunction
 
-class AutocompleteInfoBuilder internal constructor(private val context: BContextImpl, val name: String, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
+class AutocompleteInfoBuilder internal constructor(private val context: BContext, val name: String, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
     /**
      * Sets the [autocomplete mode][AutocompleteMode].
      *

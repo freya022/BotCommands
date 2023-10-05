@@ -4,13 +4,13 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     private val commandBuilder: SlashCommandBuilder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>

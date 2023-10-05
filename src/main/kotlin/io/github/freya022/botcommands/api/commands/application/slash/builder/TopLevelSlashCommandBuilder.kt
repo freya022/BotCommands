@@ -5,17 +5,17 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
 class TopLevelSlashCommandBuilder internal constructor(
-    context: BContextImpl,
+    context: BContext,
     name: String,
     function: KFunction<Any>?,
     scope: CommandScope

@@ -5,12 +5,12 @@ import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.exceptions.BadIdException
 import io.github.freya022.botcommands.api.commands.prefixed.exceptions.NoIdException
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.findEntity
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -25,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers
 private val logger = KotlinLogging.logger<CommandEvent>()
 
 internal class CommandEventImpl private constructor(
-    context: BContextImpl,
+    context: BContext,
     private val event: MessageReceivedEvent,
     argumentsStr: String?,
     private val arguments: MutableList<Any>,
@@ -125,7 +125,7 @@ internal class CommandEventImpl private constructor(
         private operator fun RichText.component2(): RichTextType = type
 
         internal suspend fun create(
-            context: BContextImpl,
+            context: BContext,
             event: MessageReceivedEvent,
             argumentsStr: String?,
             cancellableRateLimit: CancellableRateLimit

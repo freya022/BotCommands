@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.api.commands.application.context.user;
 
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit;
-import io.github.freya022.botcommands.internal.core.BContextImpl;
+import io.github.freya022.botcommands.api.core.BContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildUserEvent extends GlobalUserEvent {
-	public GuildUserEvent(BContextImpl context, UserContextInteractionEvent event, CancellableRateLimit cancellableRateLimit) {
+	public GuildUserEvent(BContext context, UserContextInteractionEvent event, CancellableRateLimit cancellableRateLimit) {
 		super(context, event, cancellableRateLimit);
 
 		if (!event.isFromGuild())

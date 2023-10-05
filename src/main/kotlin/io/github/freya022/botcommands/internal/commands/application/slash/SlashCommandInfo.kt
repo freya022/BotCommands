@@ -5,12 +5,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
@@ -29,7 +29,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 abstract class SlashCommandInfo internal constructor(
-    val context: BContextImpl,
+    val context: BContext,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     builder

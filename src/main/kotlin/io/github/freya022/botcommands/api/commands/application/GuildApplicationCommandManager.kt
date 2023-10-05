@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.Guild
 
-class GuildApplicationCommandManager internal constructor(context: BContextImpl, val guild: Guild): AbstractApplicationCommandManager(context) {
+class GuildApplicationCommandManager internal constructor(context: BContext, val guild: Guild): AbstractApplicationCommandManager(context) {
     override fun isValidScope(scope: CommandScope): Boolean = !scope.isGlobal
 
     override fun checkScope(scope: CommandScope) {

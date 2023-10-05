@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal
 
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.commands.builder.GeneratedOptionBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
 import io.github.freya022.botcommands.api.core.service.getService
@@ -10,7 +11,6 @@ import io.github.freya022.botcommands.api.parameters.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.ParameterWrapper
 import io.github.freya022.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
@@ -22,7 +22,7 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 
 internal object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
-        context: BContextImpl,
+        context: BContext,
         aggregateBuilder: OptionAggregateBuilder<*>,
         config: Configuration<T, R>
     ): List<Option> {

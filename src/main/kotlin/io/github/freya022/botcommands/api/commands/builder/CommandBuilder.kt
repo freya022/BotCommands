@@ -7,18 +7,18 @@ import io.github.freya022.botcommands.api.commands.annotations.RateLimitReferenc
 import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.time.Duration
 
 @CommandDSL
-abstract class CommandBuilder internal constructor(protected val context: BContextImpl, override val name: String) : INamedCommand {
+abstract class CommandBuilder internal constructor(protected val context: BContext, override val name: String) : INamedCommand {
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 

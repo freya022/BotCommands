@@ -181,29 +181,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
     }
 
-    internal fun getFunctionService(function: KFunction<*>): Any = when {
-        function.isConstructor -> throwInternal(
-            function,
-            "Tried to get a function's instance but was a constructor, this should have been checked beforehand"
-        )
-        function.isStatic -> throwInternal(
-            function,
-            "Tried to get a function's instance but was static, this should have been checked beforehand"
-        )
-        else -> tryGetService(function.declaringClass).getOrThrow()
-    }
-
-    internal fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
-        function.isConstructor || function.isStatic -> null
-        else -> tryGetService(function.declaringClass).getOrNull()
-    }
-
-    internal fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
-        return types.map {
-            map[it] ?: getService(it)
-        }
-    }
-
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
         val providers = context.serviceProviders.findAllForType(clazz)
         if (providers.isEmpty())
@@ -234,4 +211,27 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             val clazzServiceStart = kClass.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
             return@filter requestedServiceStart == clazzServiceStart
         }
+}
+
+internal fun ServiceContainer.getFunctionService(function: KFunction<*>): Any = when {
+    function.isConstructor -> throwInternal(
+        function,
+        "Tried to get a function's instance but was a constructor, this should have been checked beforehand"
+    )
+    function.isStatic -> throwInternal(
+        function,
+        "Tried to get a function's instance but was static, this should have been checked beforehand"
+    )
+    else -> tryGetService(function.declaringClass).getOrThrow()
+}
+
+internal fun ServiceContainer.getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
+    function.isConstructor || function.isStatic -> null
+    else -> tryGetService(function.declaringClass).getOrNull()
+}
+
+internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
+    return types.map {
+        map[it] ?: getService(it)
+    }
 }

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -8,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.runInitialization
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 @BService
 class ResolverContainer internal constructor(
-    context: BContextImpl,
+    context: BContext,
     private val serviceContainer: ServiceContainer
 ) {
     private val logger = KotlinLogging.logger { }

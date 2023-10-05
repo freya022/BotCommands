@@ -5,10 +5,11 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
+import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
 import io.github.freya022.botcommands.internal.utils.requireUser
@@ -33,7 +34,7 @@ class MemberEventFunction<T : Event, R> internal constructor(
         }
     }
 
-    internal constructor(context: BContextImpl, boundFunction: KFunction<R>, eventClass: KClass<T>) : this(
+    internal constructor(context: BContext, boundFunction: KFunction<R>, eventClass: KClass<T>) : this(
         boundFunction = boundFunction,
         instanceSupplier = { context.serviceContainer.getFunctionService(boundFunction) },
         eventClass = eventClass
@@ -60,10 +61,10 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEve
 internal inline fun <reified T : Event> ClassPathFunction.toMemberEventFunction() =
     MemberEventFunction(function, instanceSupplier = { instance }, T::class)
 
-internal inline fun <reified T : Event, R> KFunction<R>.toMemberEventFunction(context: BContextImpl) =
+internal inline fun <reified T : Event, R> KFunction<R>.toMemberEventFunction(context: BContext) =
     MemberEventFunction(context, this, T::class)
 
-internal inline fun <reified T : Event, R> IBuilderFunctionHolder<R>.toMemberEventFunction(context: BContextImpl): MemberEventFunction<T, R> {
+internal inline fun <reified T : Event, R> IBuilderFunctionHolder<R>.toMemberEventFunction(context: BContext): MemberEventFunction<T, R> {
     if (this is ExecutableCommandBuilder<*, *>) {
         requireUser(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"

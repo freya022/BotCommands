@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 class TextCommandVariation internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo {

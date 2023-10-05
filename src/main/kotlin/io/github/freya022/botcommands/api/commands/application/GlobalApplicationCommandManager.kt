@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 
-class GlobalApplicationCommandManager internal constructor(context: BContextImpl): AbstractApplicationCommandManager(context) {
+class GlobalApplicationCommandManager internal constructor(context: BContext): AbstractApplicationCommandManager(context) {
     override fun isValidScope(scope: CommandScope) = scope.isGlobal
 
     override fun checkScope(scope: CommandScope) {
