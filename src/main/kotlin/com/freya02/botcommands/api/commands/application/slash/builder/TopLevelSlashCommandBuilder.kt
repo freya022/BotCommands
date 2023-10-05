@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction

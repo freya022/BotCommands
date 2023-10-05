@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test_kt.services
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.CustomConditionChecker
 import com.freya02.botcommands.test_kt.services.annotations.RequireProfile
 

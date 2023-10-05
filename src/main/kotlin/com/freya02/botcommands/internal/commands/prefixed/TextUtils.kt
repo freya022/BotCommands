@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass

@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.Hidden
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.NSFWStrategy
+import com.freya02.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer

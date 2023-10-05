@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelApplicationCommandBuilderMixin
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 

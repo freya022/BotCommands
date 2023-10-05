@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.localization
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.localization.arguments.FormattableArgument

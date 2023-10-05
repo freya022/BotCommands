@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.utils.joinAsList

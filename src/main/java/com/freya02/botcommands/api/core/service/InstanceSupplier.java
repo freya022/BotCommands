@@ -1,5 +1,6 @@
-package com.freya02.botcommands.api;
+package com.freya02.botcommands.api.core.service;
 
+import com.freya02.botcommands.api.core.BContext;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import org.jetbrains.annotations.NotNull;
 

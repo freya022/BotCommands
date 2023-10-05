@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.mixins.ITopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.mixins.TopLevelSlashCommandInfoMixin
+import com.freya02.botcommands.internal.core.BContextImpl
 
 class TopLevelSlashCommandInfo internal constructor(
     context: BContextImpl,

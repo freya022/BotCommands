@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent

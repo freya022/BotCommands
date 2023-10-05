@@ -1,6 +1,5 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
@@ -14,6 +13,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.parameters.ParameterType
 import net.dv8tion.jda.api.entities.Guild

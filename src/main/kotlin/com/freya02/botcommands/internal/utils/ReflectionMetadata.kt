@@ -6,8 +6,8 @@ import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.annotations.Condition
 import com.freya02.botcommands.api.core.utils.javaMethodOrConstructor
 import com.freya02.botcommands.api.core.utils.shortSignature
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandsPresenceChecker
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.HandlersPresenceChecker
 import com.freya02.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function

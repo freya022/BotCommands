@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer
@@ -8,8 +8,8 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
 import com.freya02.botcommands.api.core.utils.shortQualifiedName
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.runInitialization
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser

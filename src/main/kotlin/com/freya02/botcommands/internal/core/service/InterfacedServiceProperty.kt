@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.getServiceOrNull

@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.ratelimit
 
-import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketAccessor
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.commands.ratelimit.bucket.DefaultBucketAccessor

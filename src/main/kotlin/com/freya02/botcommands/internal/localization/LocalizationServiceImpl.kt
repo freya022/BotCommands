@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.logger

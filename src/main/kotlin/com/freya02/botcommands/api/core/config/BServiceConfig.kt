@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.InstanceSupplier
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.core.annotations.Handler
+import com.freya02.botcommands.api.core.service.InstanceSupplier
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.annotations
 
-import com.freya02.botcommands.api.commands.RateLimitScope
+import com.freya02.botcommands.api.commands.ratelimit.RateLimitScope
 import java.time.temporal.ChronoUnit
 
 /**

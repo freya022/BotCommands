@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application
 
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.throwUser
 
 class GlobalApplicationCommandManager internal constructor(context: BContextImpl): AbstractApplicationCommandManager(context) {

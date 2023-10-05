@@ -1,6 +1,6 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.internal.utils.unwrap
 import mu.KLogger
 import net.dv8tion.jda.api.events.Event

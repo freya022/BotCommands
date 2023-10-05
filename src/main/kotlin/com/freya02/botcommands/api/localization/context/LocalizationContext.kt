@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.localization.context
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService

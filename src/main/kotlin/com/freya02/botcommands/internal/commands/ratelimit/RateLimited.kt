@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.commands.ratelimit
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo

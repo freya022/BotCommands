@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.ratelimit.bucket
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
+import com.freya02.botcommands.api.commands.ratelimit.RateLimitScope
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.utils.throwInternal

@@ -13,9 +13,9 @@ import com.freya02.botcommands.api.commands.application.context.user.GuildUserEv
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.core.entities.InputUser
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
+import com.freya02.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User

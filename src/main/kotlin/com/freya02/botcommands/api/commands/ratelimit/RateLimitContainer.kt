@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.commands.ratelimit
 
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.annotations.RateLimit
 import com.freya02.botcommands.api.commands.annotations.RateLimitReference

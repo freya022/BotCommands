@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
+import com.freya02.botcommands.internal.core.BContextImpl
 
 class TopLevelTextCommandBuilder internal constructor(context: BContextImpl, name: String) : TextCommandBuilder(context, name) {
     override val parentInstance: INamedCommand? = null

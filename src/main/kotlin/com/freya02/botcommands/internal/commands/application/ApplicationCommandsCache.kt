@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.DefaultObjectMapper
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
+import com.freya02.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.build.CommandData

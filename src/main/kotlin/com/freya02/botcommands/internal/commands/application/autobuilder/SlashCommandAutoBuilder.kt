@@ -15,9 +15,9 @@ import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.api.parameters.ResolverContainer
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters

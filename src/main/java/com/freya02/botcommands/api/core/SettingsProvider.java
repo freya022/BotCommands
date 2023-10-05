@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.core;
 
-import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.localization.DefaultMessages;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;

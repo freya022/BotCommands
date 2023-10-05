@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application.context.message;
 
 import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit;
-import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.core.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;

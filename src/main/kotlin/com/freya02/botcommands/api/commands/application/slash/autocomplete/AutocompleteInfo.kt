@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete
 
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 

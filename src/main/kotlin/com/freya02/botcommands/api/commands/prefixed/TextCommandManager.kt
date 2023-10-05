@@ -3,9 +3,9 @@ package com.freya02.botcommands.api.commands.prefixed
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.config.BConfigBuilder
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
+import com.freya02.botcommands.internal.core.BContextImpl
 
 class TextCommandManager internal constructor(private val context: BContextImpl) {
     @get:JvmSynthetic

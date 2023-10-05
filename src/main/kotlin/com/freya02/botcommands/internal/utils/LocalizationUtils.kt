@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.LocalizationService
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import java.util.*
 
 internal object LocalizationUtils {

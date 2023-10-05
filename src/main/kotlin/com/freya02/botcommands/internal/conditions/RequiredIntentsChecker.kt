@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.conditions
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.JDAService
 import com.freya02.botcommands.api.core.conditions.RequiredIntents
 import com.freya02.botcommands.api.core.service.CustomConditionChecker

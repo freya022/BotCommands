@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet

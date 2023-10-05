@@ -4,13 +4,13 @@ import com.freya02.botcommands.api.commands.application.context.builder.UserComm
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.ratelimit.CancellableRateLimit
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.reflection.checkEventScope

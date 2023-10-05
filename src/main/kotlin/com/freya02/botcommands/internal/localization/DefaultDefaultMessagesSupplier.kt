@@ -1,8 +1,8 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.DefaultMessages
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.DefaultMessagesSupplier
+import com.freya02.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
@@ -11,6 +11,11 @@ class DefaultDefaultMessagesSupplier(private val context: BContext) : DefaultMes
     private val localeDefaultMessagesMap: MutableMap<DiscordLocale, DefaultMessages> = EnumMap(DiscordLocale::class.java)
 
     override fun get(discordLocale: DiscordLocale): DefaultMessages {
-        return localeDefaultMessagesMap.computeIfAbsent(discordLocale) { DefaultMessages(context, Locale.forLanguageTag(it.locale)) }
+        return localeDefaultMessagesMap.computeIfAbsent(discordLocale) {
+            DefaultMessages(
+                context,
+                Locale.forLanguageTag(it.locale)
+            )
+        }
     }
 }

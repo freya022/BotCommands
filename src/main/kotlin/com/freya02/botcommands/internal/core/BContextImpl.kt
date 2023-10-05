@@ -1,12 +1,10 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.BContext.Status
-import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.api.core.*
+import com.freya02.botcommands.api.core.BContext.Status
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
@@ -14,11 +12,13 @@ import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.api.core.utils.logger
+import com.freya02.botcommands.api.localization.DefaultMessages
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.service.*
+import com.freya02.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import com.freya02.botcommands.internal.utils.unwrap
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking

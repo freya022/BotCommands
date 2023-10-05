@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
@@ -8,6 +7,7 @@ import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
+import com.freya02.botcommands.api.core.BContext
 import com.freya02.botcommands.api.core.config.BTextConfig
 import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
@@ -15,9 +15,9 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceName
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.handle
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.Usability
+import com.freya02.botcommands.internal.commands.Usability
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch

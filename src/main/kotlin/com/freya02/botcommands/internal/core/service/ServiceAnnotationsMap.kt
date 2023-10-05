@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.core.utils.toImmutableMap
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser

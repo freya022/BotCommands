@@ -6,8 +6,8 @@ import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
+import com.freya02.botcommands.internal.core.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature

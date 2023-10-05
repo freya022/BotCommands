@@ -11,11 +11,11 @@ import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.getMissingPermissions
 import com.freya02.botcommands.api.core.utils.runIgnoringResponse
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.ExceptionHandler
-import com.freya02.botcommands.internal.Usability
-import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.commands.Usability
+import com.freya02.botcommands.internal.commands.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.ratelimit.withRateLimit
+import com.freya02.botcommands.internal.core.BContextImpl
+import com.freya02.botcommands.internal.core.ExceptionHandler
 import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
