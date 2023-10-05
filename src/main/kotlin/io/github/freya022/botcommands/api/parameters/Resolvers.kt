@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -39,7 +38,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     }
 
     override suspend fun resolveSuspend(
-        context: BContext,
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
@@ -54,7 +52,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     }
 
     override suspend fun resolveSuspend(
-        context: BContext,
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
@@ -63,7 +60,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
 
     //region Component
     override suspend fun resolveSuspend(
-        context: BContext,
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String

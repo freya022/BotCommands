@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -105,7 +104,7 @@ class ResolverContainer internal constructor(
     }
 
     private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
-        override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
+        override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 
     internal companion object {

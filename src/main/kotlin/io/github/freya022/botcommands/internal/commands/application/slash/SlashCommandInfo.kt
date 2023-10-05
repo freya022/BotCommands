@@ -104,7 +104,7 @@ abstract class SlashCommandInfo internal constructor(
                 val optionMapping = event.getOption(optionName)
 
                 if (optionMapping != null) {
-                    val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
+                    val resolved = option.resolver.resolveSuspend(this, event, optionMapping)
                     if (resolved == null) {
                         //Only use the generic message if the user didn't handle this situation
                         if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
@@ -135,7 +135,7 @@ abstract class SlashCommandInfo internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
@@ -12,19 +11,17 @@ interface ComponentParameterResolver<T, R> where T : ParameterResolver<T, R>,
     /**
      * Returns a resolved object from this component interaction
      *
-     * @param context    The [BContext] of this bot
      * @param descriptor The component description of the component being executed
      * @param event      The event of this component interaction
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, descriptor: ComponentDescriptor, event: GenericComponentInteractionCreateEvent, arg: String): R? =
+    fun resolve(descriptor: ComponentDescriptor, event: GenericComponentInteractionCreateEvent, arg: String): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(
-        context: BContext,
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String
-    ) = resolve(context, descriptor, event, arg)
+    ) = resolve(descriptor, event, arg)
 }

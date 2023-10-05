@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
@@ -29,7 +28,7 @@ public class MentionableResolver
 
 	@Override
 	@Nullable
-	public IMentionable resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public IMentionable resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsMentionable();
 	}
 }

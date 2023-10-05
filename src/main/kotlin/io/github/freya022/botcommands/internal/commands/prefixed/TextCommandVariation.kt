@@ -100,7 +100,7 @@ class TextCommandVariation internal constructor(
                 }
 
                 if (found == groupCount) { //Found all the groups
-                    val resolved = option.resolver.resolveSuspend(context, this, event, groups)
+                    val resolved = option.resolver.resolveSuspend(this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
                     if (resolved == null && !option.isOptionalOrNullable) {
@@ -122,7 +122,7 @@ class TextCommandVariation internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
 
             OptionType.GENERATED -> {

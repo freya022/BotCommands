@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -43,16 +42,15 @@ interface SlashParameterResolver<T, R> where T : ParameterResolver<T, R>,
      *
      * **Note:** If the value is not resolvable, the bot should reply with an error message.
      *
-     * @param context       The [BContext] of this bot
      * @param info          The slash command info of the command being executed
      * @param event         The event of this interaction, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]
      * @param optionMapping The [OptionMapping] to be resolved
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
+    fun resolve(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
-    suspend fun resolveSuspend(context: BContext, info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping) =
-        resolve(context, info, event, optionMapping)
+    suspend fun resolveSuspend(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping) =
+        resolve(info, event, optionMapping)
 }

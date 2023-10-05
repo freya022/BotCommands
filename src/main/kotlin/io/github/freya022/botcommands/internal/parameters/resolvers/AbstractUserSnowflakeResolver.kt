@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -43,7 +42,6 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     final override val optionType: OptionType = OptionType.USER
 
     final override suspend fun resolveSuspend(
-        context: BContext,
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
@@ -53,14 +51,12 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     }
 
     final override fun resolve(
-        context: BContext,
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
     final override suspend fun resolveSuspend(
-        context: BContext,
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String
@@ -69,7 +65,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         return retrieveOrNull(id, event.message)
     }
 
-    final override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): R? =
+    final override fun resolve(info: UserCommandInfo, event: UserContextInteractionEvent): R? =
         transformEntities(event.target, event.targetMember)
 
     private suspend fun retrieveOrNull(userId: Long, message: Message): R? {

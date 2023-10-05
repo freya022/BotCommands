@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.othertests;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.RegexParameterResolver;
 import io.github.freya022.botcommands.internal.commands.prefixed.CommandPattern;
@@ -93,7 +92,7 @@ public class CommandPatternTest {
 
         @Nullable
         @Override
-        public Object resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String[] args) {
+        public Object resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String[] args) {
             return null;
         }
 

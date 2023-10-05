@@ -67,12 +67,12 @@ class UserCommandInfo internal constructor(
             OptionType.OPTION -> {
                 option as UserContextCommandOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption
