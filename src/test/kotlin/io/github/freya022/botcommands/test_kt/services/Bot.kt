@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.test_kt.services
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.test.Config
+import io.github.freya022.botcommands.test_kt.config.Config
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent

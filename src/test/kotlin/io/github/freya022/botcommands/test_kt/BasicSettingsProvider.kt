@@ -1,29 +1,22 @@
-package io.github.freya022.botcommands.test;
+package io.github.freya022.botcommands.test_kt
 
-import io.github.freya022.botcommands.api.core.SettingsProvider;
-import io.github.freya022.botcommands.api.core.service.annotations.BService;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import io.github.freya022.botcommands.api.core.SettingsProvider
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @BService
-public class BasicSettingsProvider implements SettingsProvider {
-	@Override
-	@NotNull
-	public DiscordLocale getLocale(@Nullable Guild guild) {
-		if (guild != null) {
-			if (guild.getIdLong() == 722891685755093072L) {
-				return DiscordLocale.ENGLISH_UK; //not default on my system
-			}
-		}
+class BasicSettingsProvider : SettingsProvider {
+    override fun getLocale(guild: Guild?): DiscordLocale {
+        if (guild?.idLong == 722891685755093072L) {
+            return DiscordLocale.ENGLISH_UK //not default on my system
+        }
 
-		return SettingsProvider.super.getLocale(guild);
-	}
+        return super.getLocale(guild)
+    }
 
-	@Override
-	public boolean doesUserConsentNSFW(@NotNull User user) {
-		return true;
-	}
+    override fun doesUserConsentNSFW(user: User): Boolean {
+        return true
+    }
 }

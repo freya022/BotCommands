@@ -1,36 +1,49 @@
 package io.github.freya022.botcommands.test_kt
 
+import ch.qos.logback.classic.ClassicConstants
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import dev.minn.jda.ktx.events.getDefaultScope
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.botcommands.api.core.BBuilder
 import io.github.freya022.botcommands.api.core.config.DevConfig
-import io.github.freya022.botcommands.test.BasicSettingsProvider
-import io.github.freya022.botcommands.test.Config
-import io.github.freya022.botcommands.test.TestDB
+import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.botcommands.test_kt.config.Environment
+import kotlinx.coroutines.cancel
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
+import kotlin.io.path.absolutePathString
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 object Main {
-    private val logger = KotlinLogging.logger { }
+    private val logger by lazy { KotlinLogging.logger { } }
 
     @JvmStatic
     fun main(args: Array<out String>) {
-        //stacktrace-decoroutinator seems to have issues when reloading with hotswap agent
-        if ("-XX:HotswapAgent=fatjar" !in ManagementFactory.getRuntimeMXBean().inputArguments) {
-            DecoroutinatorRuntime.load()
-        } else {
-            logger.info("Skipping stacktrace-decoroutinator as HotswapAgent is active")
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
+        logger.info("Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}")
+
+        // I use hotswap agent in order to update my code without restarting the bot
+        // Of course this only supports modifying existing code
+        // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
+
+        // stacktrace-decoroutinator has issues when reloading with hotswap agent
+        when {
+            "-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments ->
+                logger.info("Skipping stacktrace-decoroutinator as enhanced hotswap is active")
+
+            "--no-decoroutinator" in args ->
+                logger.info("Skipping stacktrace-decoroutinator as --no-decoroutinator is specified")
+
+            else -> DecoroutinatorRuntime.load()
         }
 
-        val scope = getDefaultScope()
+        // Create a scope for our event manager
+        val scope = namedDefaultScope("BC Test Coroutine", 4)
         val manager = CoroutineEventManager(scope, 1.minutes)
         manager.listener<ShutdownEvent> {
-            this.cancel() //"this" is a scope delegate
+            scope.cancel()
         }
 
         BBuilder.newBuilder(manager) {
@@ -38,11 +51,6 @@ object Main {
             queryLogThreshold = 250.milliseconds
 
             addSearchPath("io.github.freya022.botcommands.test_kt")
-
-            //Still kept in the java test package
-            addClass<Config>()
-            addClass<TestDB>()
-            addClass<BasicSettingsProvider>()
 
             @OptIn(DevConfig::class)
             dumpLongTransactions = true
