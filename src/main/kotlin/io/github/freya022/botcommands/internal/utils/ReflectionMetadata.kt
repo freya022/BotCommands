@@ -7,11 +7,13 @@ import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import mu.KotlinLogging
 import java.lang.reflect.Executable
 import java.util.*
 import kotlin.coroutines.Continuation
@@ -24,6 +26,8 @@ import kotlin.reflect.jvm.jvmName
 private typealias IsNullableAnnotated = Boolean
 
 internal object ReflectionMetadata {
+    private val logger = KotlinLogging.logger { }
+
     private class ClassMetadata(val sourceFile: String)
     private class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
 
@@ -51,6 +55,11 @@ internal object ReflectionMetadata {
         //This is a requirement for ClassGraph to work correctly
         if (packages.isEmpty()) {
             throwUser("You must specify at least 1 package to scan classes from")
+        }
+
+        logger.debug { "Scanning packages: ${config.packages.joinToString()}" }
+        if (config.classes.isNotEmpty()) {
+            logger.debug { "Scanning additional classes: ${config.classes.joinToString { it.simpleNestedName }}" }
         }
 
         val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
