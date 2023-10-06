@@ -168,7 +168,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             .mapNotNull {
                 val serviceResult = tryGetService(it, clazz)
                 serviceResult.serviceError?.let { serviceError ->
-                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
+                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}):\n${serviceError.toSimpleString()}"
                     if (interfacedServiceErrors.add(warnMessage)) {
                         logger.debug(warnMessage)
                     }

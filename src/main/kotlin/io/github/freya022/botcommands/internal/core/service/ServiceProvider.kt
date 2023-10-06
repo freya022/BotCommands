@@ -31,7 +31,7 @@ internal typealias ProviderName = String
 
 internal data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 
-internal interface ServiceProvider : Comparable<ServiceProvider> {
+internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val name: String
     val providerKey: ProviderName
     val primaryType: KClass<*>

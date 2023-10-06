@@ -18,6 +18,23 @@ import kotlin.reflect.full.isSubclassOf
 
 @BService(priority = Int.MAX_VALUE)
 internal class InstantiableServiceAnnotationsMap internal constructor(private val context: BContextImpl) {
+    private class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {
+        val acceptMultiple = annotation.acceptMultiple
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as InterfacedType
+
+            return clazz == other.clazz
+        }
+
+        override fun hashCode(): Int {
+            return clazz.hashCode()
+        }
+    }
+
     //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
     private val map: Map<KClass<out Annotation>, Map<KClass<*>, Annotation>> = context.serviceAnnotationsMap
         .toImmutableMap()
@@ -44,37 +61,43 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
 
     init {
-        val singularTypeToImplementationsMap = hashMapOf<KClass<*>, MutableSet<ServiceProvider>>()
+        val typeToImplementations = hashMapOf<InterfacedType, MutableSet<ServiceProvider>>()
         getAllInstantiableClasses().forEach { kClass ->
             // For each service, take their implemented interfaced services
             // and put them in a map as to figure out if multiple - instantiable - implementation exists
             val provider = context.serviceProviders.findForType(kClass)
                 ?: throwInternal("Could not find back service provider for ${kClass.simpleNestedName}")
+            val interfacedTypes = provider.types.mapNotNull { clazz ->
+                clazz.findAnnotation<InterfacedService>()?.let { InterfacedType(clazz, it) }
+            }
+            //Only check those implementing an interfaced service
+            if (interfacedTypes.isEmpty()) return@forEach
             if (provider.canInstantiate(context.serviceContainer) != null) return@forEach
 
-            provider.types
-                // Keep single-implementation interfaced services.
-                // Do not take non-interfaced services as single-implementations,
-                // as they can use names to differentiate each others
-                .filter { it.findAnnotation<InterfacedService>()?.acceptMultiple == false }
-                .forEach { interfacedServiceType ->
-                    singularTypeToImplementationsMap
-                        .computeIfAbsent(interfacedServiceType) { hashSetOf() }
-                        .add(provider)
-                }
+            interfacedTypes.forEach { interfacedType ->
+                typeToImplementations
+                    .computeIfAbsent(interfacedType) { hashSetOf() }
+                    .add(provider)
+            }
         }
 
-        val nonUniqueImplementations = singularTypeToImplementationsMap.filterValues { it.size > 1 }
+        val nonUniqueImplementations = typeToImplementations
+            // Only keep single-implementation interfaced service which have multiple implementations
+            .filter { (interfacedType, providers) -> !interfacedType.acceptMultiple && providers.size > 1 }
         if (nonUniqueImplementations.isNotEmpty()) {
             val message = buildString {
                 appendLine("Interfaced services with 'acceptMultiple = false' cannot have multiple implementations, " +
                         "please adjust your services so at most one implementation is instantiable:")
 
                 nonUniqueImplementations.forEach { (interfacedServiceType, implementations) ->
-                    appendLine("${interfacedServiceType.simpleNestedName}: ${implementations.joinToString { it.providerKey }}")
+                    appendLine("${interfacedServiceType.clazz.simpleNestedName}: ${implementations.joinToString { it.providerKey }}")
                 }
             }
             throw IllegalStateException(message)
+        }
+
+        typeToImplementations.forEach { (interfacedType, providers) ->
+            logger.debug { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
         }
     }
 
