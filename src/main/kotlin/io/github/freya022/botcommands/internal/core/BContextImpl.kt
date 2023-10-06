@@ -11,6 +11,8 @@ import io.github.freya022.botcommands.api.core.config.putConfigInServices
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.lazyOrElse
+import io.github.freya022.botcommands.api.core.service.lazyOrNull
 import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.localization.DefaultMessages
@@ -68,12 +70,12 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
     }
 
-    private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier(this) }
-    private val _settingsProvider by serviceContainer.nullableInterfacedService<SettingsProvider>()
-    private val _globalExceptionHandler by serviceContainer.nullableInterfacedService<GlobalExceptionHandler>()
-    private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _> { DefaultEmbedSupplier.Default() }
-    private val _defaultEmbedFooterIconSupplier by serviceContainer.interfacedService<DefaultEmbedFooterIconSupplier, _> { DefaultEmbedFooterIconSupplier.Default() }
-    private val _helpBuilderConsumer by serviceContainer.nullableInterfacedService<HelpBuilderConsumer>()
+    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.lazyOrElse { DefaultDefaultMessagesSupplier(this) }
+    private val _settingsProvider: SettingsProvider? by serviceContainer.lazyOrNull()
+    private val _globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.lazyOrNull()
+    private val _defaultEmbedSupplier: DefaultEmbedSupplier by serviceContainer.lazyOrElse { DefaultEmbedSupplier.Default() }
+    private val _defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by serviceContainer.lazyOrElse { DefaultEmbedFooterIconSupplier.Default() }
+    private val _helpBuilderConsumer: HelpBuilderConsumer? by serviceContainer.lazyOrNull()
 
     override fun getConfig() = config
 

@@ -100,11 +100,22 @@ inline fun <reified T : Any> BContext.getInterfacedServices() = serviceContainer
  */
 inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInterfacedServices(T::class)
 
+//region Lazy service retrieval
+// The U type parameter is used so the caller
+// cannot accidentally request a service with the type of what the block returns
+// as the block return type is most likely not a service, and thus will fail the initial service retrieval
 inline fun <reified R : Any> ServiceContainer.lazy(): Lazy<R> = lazy { this.getService(R::class) }
+inline fun <reified R : Any> ServiceContainer.lazyOrNull(): Lazy<R?> = lazy { this.getServiceOrNull(R::class) }
+inline fun <reified R : Any, U : R> ServiceContainer.lazyOrElse(crossinline block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(R::class) ?: block() }
 
 fun <R : Any> ServiceContainer.lazy(clazz: KClass<R>): Lazy<R> = lazy { this.getService(clazz) }
+fun <R : Any> ServiceContainer.lazyOrNull(clazz: KClass<R>): Lazy<R?> = lazy { this.getServiceOrNull(clazz) }
+fun <R : Any, U : R> ServiceContainer.lazyOrElse(clazz: KClass<R>, block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(clazz) ?: block() }
 
 inline fun <reified R : Any> ServiceContainer.lazy(name: String): Lazy<R> = lazy { this.getService(name, R::class) }
+inline fun <reified R : Any> ServiceContainer.lazyOrNull(name: String): Lazy<R?> = lazy { this.getServiceOrNull(name, R::class) }
+inline fun <reified R : Any, U : R> ServiceContainer.lazyOrElse(name: String, crossinline block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(name, R::class) ?: block() }
+//endregion
 
 inline operator fun <reified T : Any> ServiceContainer.getValue(thisRef: Any?, prop: KProperty<*>): T {
     return getService(T::class.java)
