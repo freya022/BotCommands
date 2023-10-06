@@ -1,6 +1,10 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.classgraph.ClassInfo
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
+import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -15,6 +19,7 @@ import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.jvmName
 
 @BService(priority = Int.MAX_VALUE)
 internal class InstantiableServiceAnnotationsMap internal constructor(private val context: BContextImpl) {
@@ -147,4 +152,24 @@ internal class ServiceAnnotationsMap private constructor(
     }
 
     internal fun toImmutableMap() = map.mapValues { it.value.toImmutableMap() }.toImmutableMap()
+}
+
+internal class ServiceAnnotationsMapProcessor internal constructor(
+    private val config: BConfig,
+    private val serviceAnnotationsMap: ServiceAnnotationsMap
+) : ClassGraphProcessor {
+    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        //Fill map with all the @Command, @Resolver, etc... declarations
+        if (isService) {
+            classInfo.annotationInfo.forEach { annotationInfo ->
+                if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
+                    serviceAnnotationsMap.put(
+                        annotationReceiver = kClass,
+                        annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
+                        annotation = annotationInfo.loadClassAndInstantiate()
+                    )
+                }
+            }
+        }
+    }
 }

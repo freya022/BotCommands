@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isService
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -21,7 +20,7 @@ import kotlin.reflect.full.isSubclassOf
 internal class ResolverSupertypeChecker internal constructor(): ClassGraphProcessor {
     private val errorMessages: MutableList<String> = arrayListOf()
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>) {
+    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
         val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
         if (isResolverAnnotated && !isResolverSubclass) {
@@ -45,15 +44,14 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,
-        kClass: KClass<*>
+        kClass: KClass<*>,
+        isServiceFactory: Boolean
     ) {
         if (method !is Method) return
 
-        val isServiceAnnotated = methodInfo.isService(context.config)
-
         val isResolverAnnotated = methodInfo.hasAnnotation(Resolver::class.java)
         val isResolverReturnType = ParameterResolver::class.java.isAssignableFrom(method.returnType)
-        if (!isResolverAnnotated && isResolverReturnType && isServiceAnnotated) {
+        if (!isResolverAnnotated && isResolverReturnType && isServiceFactory) {
             // Not annotated as a resolver
             errorMessages += "Resolver ${methodInfo.shortSignature} needs to be annotated with @${Resolver::class.simpleNestedName}"
             return
@@ -65,7 +63,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         val isResolverFactoryAnnotated = methodInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactoryReturnType = ParameterResolverFactory::class.java.isAssignableFrom(method.returnType)
-        if (!isResolverFactoryAnnotated && isResolverFactoryReturnType && isServiceAnnotated) {
+        if (!isResolverFactoryAnnotated && isResolverFactoryReturnType && isServiceFactory) {
             // Not annotated as a resolver
             errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
             return

@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
+import io.github.freya022.botcommands.internal.core.service.ServiceAnnotationsMapProcessor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import mu.KotlinLogging
@@ -93,7 +94,7 @@ internal object ReflectionMetadata {
 
         val lowercaseInnerClassRegex = Regex("\\$[a-z]")
         val classGraphProcessors = context.config.classGraphProcessors +
-                listOf(context.serviceProviders, context.customConditionsContainer) +
+                listOf(context.serviceProviders, context.customConditionsContainer, ServiceAnnotationsMapProcessor(config, context.serviceAnnotationsMap)) +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
         return scanned.flatMap { (_, classes) ->
             classes
@@ -113,23 +114,6 @@ internal object ReflectionMetadata {
                     return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
                 }
                 .processClasses(context, classGraphProcessors)
-                .map { classInfo ->
-                    val kClass = classInfo.loadClass().kotlin
-                    //Fill map with all the @Command, @Resolver, etc... declarations
-                    if (classInfo.isService(config)) {
-                        classInfo.annotationInfo.forEach { annotationInfo ->
-                            if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
-                                context.serviceAnnotationsMap.put(
-                                    annotationReceiver = kClass,
-                                    annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
-                                    annotation = annotationInfo.loadClassAndInstantiate()
-                                )
-                            }
-                        }
-                    }
-
-                    kClass
-                }
         }.also {
             classGraphProcessors.forEach { it.postProcess(context) }
             scanned.forEach { (scanResult, _) -> scanResult.close() }
@@ -146,17 +130,17 @@ internal object ReflectionMetadata {
         }
     }
 
-    internal fun ClassInfo.isService(config: BConfig) =
+    private fun ClassInfo.isService(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
-    internal fun MethodInfo.isService(config: BConfig) =
+    private fun MethodInfo.isService(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
 
-    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
-        return onEach { classInfo ->
+    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<KClass<*>> {
+        return map { classInfo ->
             try {
                 val kClass = classInfo.loadClass().kotlin
 
@@ -175,12 +159,16 @@ internal object ReflectionMetadata {
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-                    classGraphProcessors.forEach { it.processMethod(context, methodInfo, method, classInfo, kClass) }
+                    val isServiceFactory = methodInfo.isService(context.config)
+                    classGraphProcessors.forEach { it.processMethod(context, methodInfo, method, classInfo, kClass, isServiceFactory) }
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
-                classGraphProcessors.forEach { it.processClass(context, classInfo, kClass) }
+                val isService = classInfo.isService(context.config)
+                classGraphProcessors.forEach { it.processClass(context, classInfo, kClass, isService) }
+
+                kClass
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
