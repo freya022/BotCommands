@@ -33,7 +33,7 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>) {
+    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val commandDeclarations = classInfo.declaredMethodInfo
             .filterNot { it.isSynthetic }

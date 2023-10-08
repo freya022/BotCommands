@@ -22,7 +22,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     private val _customConditionCheckers: MutableList<CustomConditionInfo> = arrayListOf()
     internal val customConditionCheckers: List<CustomConditionInfo> get() = _customConditionCheckers
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>) {
+    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         // kClass is the condition, i.e., the meta-annotated class
 
         if (classInfo.annotationInfo.directOnly().containsName(Condition::class.jvmName)) {
