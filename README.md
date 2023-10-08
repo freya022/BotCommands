@@ -55,8 +55,11 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
 * A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
-* (Recommended) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/)
+* (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
+
+You can then head over to [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/setup/getting-started/) 
+to get using a bot template.
 
 [//]: # (TODO keep an eye out for this wiki link)
 
@@ -84,60 +87,97 @@ dependencies {
 }
 ```
 
-Alternatively, you can use jitpack to use snapshot versions, you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information
+Alternatively, you can use Jitpack to use **snapshot** versions, 
+you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
 
-### Building / Installing manually
+## Sample usage
+Here is how you would create a slash command that sends a message in a specified channel.
+<details>
+<summary>Kotlin</summary>
 
-While I don't recommend, you can see [BUILDING.md](BUILDING.md)
-
-## How to use
-You will need to build the framework first:<br>
-Kotlin:
 ```kt
-// Create a scope for our event manager
-val scope = getDefaultScope()
-val manager = CoroutineEventManager(scope, 1.minutes)
-manager.listener<ShutdownEvent> {
-  scope.cancel()
-}
-
-BBuilder.newBuilder(manager) {
-  addOwners(1234L)
-
-  addSearchPath("io.github.freya022.bot")
-
-  textCommands {
-    usePingAsPrefix = true
-  }
+@Command
+class SlashSay : ApplicationCommand() {
+    @JDASlashCommand(name = "say", description = "Sends a message in a channel")
+    suspend fun onSlashSay(
+        event: GuildSlashEvent,
+        @SlashOption(description = "Channel to send the message in") channel: TextChannel,
+        @SlashOption(description = "What to say") content: String
+    ) {
+        event.reply_("Done!", ephemeral = true)
+            .delay(5.seconds)
+            .flatMap(InteractionHook::deleteOriginal)
+            .queue()
+        channel.sendMessage(content).await()
+    }
 }
 ```
+</details>
 
-Java:
+<details>
+<summary>Kotlin (DSL)</summary>
+
+```kt
+@Command
+class SlashSayDsl {
+    suspend fun onSlashSay(
+        event: GuildSlashEvent,
+        channel: TextChannel,
+        content: String
+    ) {
+        event.reply_("Done!", ephemeral = true)
+            .delay(5.seconds)
+            .flatMap(InteractionHook::deleteOriginal)
+            .queue()
+        channel.sendMessage(content).await()
+    }
+  
+    @AppDeclaration
+    fun declare(manager: GlobalApplicationCommandManager) {
+        manager.slashCommand("say_dsl", function = ::onSlashSay) {
+            description = "Sends a message in a channel"
+      
+            option("channel") {
+                description = "Channel to send the message in"
+            }
+      
+            option("content") {
+                 description = "What to say"
+            }
+        }
+    }
+}
+```
+</details>
+
+<details>
+<summary>Java</summary>
+
 ```java
-BBuilder.newBuilder(builder -> {
-    builder.addOwners(1234L);
-    
-    builder.addSearchPath("io.github.freya022.bot");
-    
-    builder.textCommands(textCommands -> {
-        textCommands.setUsePingAsPrefix(true);
-    });
-});
+@Command
+public class SlashSay extends ApplicationCommand {
+    @JDASlashCommand(name = "say", description = "Sends a message in a channel")
+    public void onSlashSay(
+            GuildSlashEvent event,
+            @SlashOption(description = "Channel to send the message in") TextChannel channel,
+            @SlashOption(description = "What to say") String content
+    ) {
+        event.reply("Done!")
+                .setEphemeral(true)
+                .delay(Duration.ofSeconds(5))
+                .flatMap(InteractionHook::deleteOriginal)
+                .queue();
+        channel.sendMessage(content).queue();
+    }
+}
 ```
-
-You can then either build JDA after, or create a JDA service,
-which will get started automatically, as any other service.
-You can refer to the bot template ([Java](https://github.com/freya022/BotCommands-Template-Java/blob/3.X/src/main/java/io/github/freya022/bot/Bot.java) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/blob/3.X/src/main/kotlin/io/github/freya022/bot/Bot.kt)) for more details.
-
-## Template bot
-
-To get started with the framework, you can take a look at [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/setup/getting-started/#using-the-bot-template)
+</details>
 
 ## Examples
 
-You can find a more complete bot example in the [examples](examples) folder.
+You can find a number of feature demonstrations in the [examples subproject](examples).
 
-## Some debugging tools
+## Debugging tips
 
 - Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/3.X/setup/logging/)
 - Look at the switches in `BDebugConfig`
@@ -157,3 +197,7 @@ You can find a more complete bot example in the [examples](examples) folder.
 ## Support
 
 Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
+
+## Building / Installing manually
+
+While I don't recommend, you can see [BUILDING.md](BUILDING.md)
