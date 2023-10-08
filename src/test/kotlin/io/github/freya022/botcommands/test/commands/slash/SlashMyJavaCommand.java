@@ -60,7 +60,7 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 		return super.getOptionChoices(guild, commandPath, optionName);
 	}
 
-	@AutocompleteHandler(name = SlashMyCommand.autocompleteHandlerName)
+	@AutocompleteHandler(SlashMyCommand.autocompleteHandlerName)
 	@CacheAutocomplete(cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY)
 	public Collection<Choice> runAutocompleteJava(CommandAutoCompleteInteractionEvent event, String stringOption, @Nullable Double doubleOption) {
 		return List.of(new Choice("test, string: " + stringOption + ", double: " + doubleOption, "test"));

@@ -37,12 +37,12 @@ internal object AnnotationUtils {
         val set: EnumSet<Permission> = enumSetOf()
         val annotation = func.findAnnotation<UserPermissions>() ?: return set
 
-        val methodValue = annotation.value
-        set += methodValue
+        val methodPermissions = annotation.permissions
+        set += methodPermissions
 
         if (annotation.append) {
-            val classValue = func.declaringClass.findAnnotation<UserPermissions>()?.value ?: emptyArray()
-            set += classValue
+            val classPermissions = func.declaringClass.findAnnotation<UserPermissions>()?.permissions ?: emptyArray()
+            set += classPermissions
         }
 
         return set
@@ -52,12 +52,12 @@ internal object AnnotationUtils {
         val set: EnumSet<Permission> = enumSetOf()
         val annotation = func.findAnnotation<BotPermissions>() ?: return set
 
-        val methodValue = annotation.value
-        set += methodValue
+        val methodPermissions = annotation.permissions
+        set += methodPermissions
 
         if (annotation.append) {
-            val classValue = func.declaringClass.findAnnotation<BotPermissions>()?.value ?: emptyArray()
-            set += classValue
+            val classPermissions = func.declaringClass.findAnnotation<BotPermissions>()?.permissions ?: emptyArray()
+            set += classPermissions
         }
 
         return set

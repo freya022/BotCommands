@@ -17,5 +17,5 @@ annotation class ModalInput(
      * The name of the modal input.<br>
      * Must match the input name provided in, for example, [Modals.createTextInput].
      */
-    val name: String
+    @get:JvmName("value") val name: String
 )

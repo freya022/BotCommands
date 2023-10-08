@@ -56,7 +56,7 @@ annotation class AutocompleteHandler(
      *
      * The name must be unique, another handler cannot share it.
      */
-    val name: String,
+    @get:JvmName("value") val name: String,
 
     /**
      * Sets the [autocomplete mode][AutocompleteMode].

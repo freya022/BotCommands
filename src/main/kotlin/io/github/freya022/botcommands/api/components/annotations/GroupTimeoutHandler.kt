@@ -10,4 +10,4 @@ import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
  * - First parameter is a [GroupTimeoutData]
  */
 @Target(AnnotationTarget.FUNCTION)
-annotation class GroupTimeoutHandler(val name: String)
+annotation class GroupTimeoutHandler(@get:JvmName("value") val name: String)
