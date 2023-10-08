@@ -25,6 +25,8 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see DynamicSupplier
  *
+ * @see JDAService
+ *
  * @see DefaultMessagesSupplier
  *
  * @see SettingsProvider

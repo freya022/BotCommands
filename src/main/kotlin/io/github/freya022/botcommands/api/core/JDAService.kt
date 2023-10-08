@@ -43,7 +43,11 @@ import java.util.*
 @InterfacedService(acceptMultiple = false)
 abstract class JDAService {
     /**
-     * The intents used by your bot.
+     * The intents used by your bot,
+     * must be passed as the entire list of intents your bot will use,
+     * i.e., JDABuilder's create(Light/Default) methods and similar for shard managers.
+     *
+     * @see defaultIntents
      */
     abstract val intents: Set<GatewayIntent>
 
@@ -66,6 +70,11 @@ abstract class JDAService {
     internal fun onReadyEvent(event: BReadyEvent, eventManager: IEventManager) = createJDA(event, eventManager)
 
     companion object {
+        /**
+         * Returns the default JDA intents.
+         *
+         * @see GatewayIntent.DEFAULT
+         */
         @JvmStatic
         val defaultIntents: EnumSet<GatewayIntent>
             get() = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
