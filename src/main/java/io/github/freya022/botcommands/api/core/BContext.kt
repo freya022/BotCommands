@@ -1,249 +1,223 @@
-package io.github.freya022.botcommands.api.core;
+package io.github.freya022.botcommands.api.core
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext;
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer;
-import io.github.freya022.botcommands.api.core.config.*;
-import io.github.freya022.botcommands.api.core.service.ServiceContainer;
-import io.github.freya022.botcommands.api.core.service.ServiceResult;
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService;
-import io.github.freya022.botcommands.api.localization.DefaultMessages;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.Interaction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-import java.util.List;
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
+import io.github.freya022.botcommands.api.core.config.*
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.ServiceResult
+import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.localization.DefaultMessages
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.Interaction
 
 @InjectedService
-public interface BContext {
-	@NotNull
-	BConfig getConfig();
+interface BContext {
+    enum class Status {
+        PRE_LOAD,
+        LOAD,
+        POST_LOAD,
+        READY
+    }
 
-	@NotNull
-	default BApplicationConfig getApplicationConfig() {
-		return getConfig().getApplicationConfig();
-	}
+    //region Configs
+    val config: BConfig
+    val applicationConfig: BApplicationConfig
+        get() = config.applicationConfig
+    val componentsConfig: BComponentsConfig
+        get() = config.componentsConfig
+    val coroutineScopesConfig: BCoroutineScopesConfig
+        get() = config.coroutineScopesConfig
+    val debugConfig: BDebugConfig
+        get() = config.debugConfig
+    val serviceConfig: BServiceConfig
+        get() = config.serviceConfig
+    val textConfig: BTextConfig
+        get() = config.textConfig
+    //endregion
 
-	@NotNull
-	default BComponentsConfig getComponentsConfig() {
-		return getConfig().getComponentsConfig();
-	}
+    //region Services
+    //TODO docs
+    val serviceContainer: ServiceContainer
 
-	@NotNull
-	default BCoroutineScopesConfig getCoroutineScopesConfig() {
-		return getConfig().getCoroutineScopesConfig();
-	}
+    //TODO docs
+    fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = serviceContainer.tryGetService(clazz)
 
-	@NotNull
-	default BDebugConfig getDebugConfig() {
-		return getConfig().getDebugConfig();
-	}
+    //TODO docs
+    fun <T : Any> getService(clazz: Class<T>): T = serviceContainer.getService(clazz)
 
-	@NotNull
-	default BServiceConfig getServiceConfig() {
-		return getConfig().getServiceConfig();
-	}
+    //TODO docs
+    fun putService(service: Any): Unit = serviceContainer.putService(service)
+    //endregion
 
-	@NotNull
-	default BTextConfig getTextConfig() {
-		return getConfig().getTextConfig();
-	}
+    //TODO docs
+    val eventDispatcher: EventDispatcher
 
-	//TODO docs
-	@NotNull
-    ServiceContainer getServiceContainer();
+    /**
+     * Returns the JDA instance associated with this context
+     *
+     * @return the JDA instance of this context
+     */
+    val jda: JDA get() = getService<JDA>()
 
-	default <T> ServiceResult<T> tryGetService(@NotNull Class<T> clazz) {
-		return getServiceContainer().tryGetService(clazz);
-	}
+    //TODO docs
+    val status: Status
 
-	//TODO docs
-	@NotNull
-	default <T> T getService(@NotNull Class<T> clazz) {
-		return getServiceContainer().getService(clazz);
-	}
+    /**
+     * Returns the IDs of the bot owners
+     *
+     * @return the IDs of the bot owners
+     */
+    val ownerIds: Collection<Long> get() = config.ownerIds
 
-	//TODO docs
-	default <T> void putService(@NotNull T service) {
-		getServiceContainer().putService(service);
-	}
+    val defaultMessagesSupplier: DefaultMessagesSupplier
 
-	/**
-	 * Returns the JDA instance associated with this context
-	 *
-	 * @return the JDA instance of this context
-	 */
-	@NotNull
-	JDA getJDA();
+    /**
+     * Returns the [SettingsProvider] for this context
+     *
+     * @return The current [SettingsProvider]
+     */
+    val settingsProvider: SettingsProvider?
 
-	@NotNull
-	Status getStatus();
+    /**
+     * Returns the [global exception handler][GlobalExceptionHandler], used to handle errors caught by the framework.
+     *
+     * @return The global exception handler
+     * @see GlobalExceptionHandler
+     */
+    val globalExceptionHandler: GlobalExceptionHandler?
 
-	/**
-	 * Returns the full list of prefixes used to trigger the bot
-	 *
-	 * @return Full list of prefixes
-	 */
-	@NotNull
-	List<String> getPrefixes();
+    /**
+     * Tells whether this user is an owner or not.
+     *
+     * @param userId ID of the user
+     * @return `true` if the user is an owner
+     */
+    fun isOwner(userId: Long): Boolean = userId in ownerIds
 
-	/**
-	 * @return Whether the bot will respond to its own ping
-	 */
-	boolean isPingAsPrefix();
+    fun getDefaultMessages(locale: DiscordLocale): DefaultMessages = defaultMessagesSupplier.get(locale)
 
-	/**
-	 * Returns the preferred prefix for triggering this bot
-	 *
-	 * @return The preferred prefix
-	 */
-	@NotNull
-	default String getPrefix() {
-		if (isPingAsPrefix()) {
-			return getJDA().getSelfUser().getAsMention() + " ";
-		}
+    /**
+     * Returns the [DefaultMessages] instance for this Guild's locale
+     *
+     * @param guild The Guild to take the locale from
+     *
+     * @return The [DefaultMessages] instance with the Guild's locale
+     */
+    fun getDefaultMessages(guild: Guild?): DefaultMessages {
+        return getDefaultMessages(getEffectiveLocale(guild))
+    }
 
-		return getPrefixes().get(0);
-	}
+    /**
+     * Returns the [DefaultMessages] instance for this user's locale
+     *
+     * @param interaction The Interaction to take the user's locale from
+     *
+     * @return The [DefaultMessages] instance with the user's locale
+     */
+    fun getDefaultMessages(interaction: Interaction): DefaultMessages {
+        return getDefaultMessages(interaction.userLocale)
+    }
 
-	/**
-	 * Returns a list of IDs of the bot owners
-	 *
-	 * @return a list of IDs of the bot owners
-	 */
-	@NotNull
-	Collection<Long> getOwnerIds();
+    /**
+     * Sends an exception message to the unique bot owner, retrieved via [JDA.retrieveApplicationInfo]
+     *
+     * @param message The message describing the context
+     * @param t       An optional exception
+     */
+    fun dispatchException(message: String, t: Throwable?)
 
-	/**
-	 * Tells whether this user is an owner or not
-	 *
-	 * @param userId ID of the user
-	 * @return {@code true} if the user is an owner
-	 */
-	default boolean isOwner(long userId) {
-		return getOwnerIds().contains(userId);
-	}
+    /**
+     * Returns the [DiscordLocale] for the specified [Guild]
+     *
+     * @param guild The [Guild] in which to take the [DiscordLocale] from
+     *
+     * @return The [DiscordLocale] of the [Guild]
+     */
+    fun getEffectiveLocale(guild: Guild?): DiscordLocale {
+        if (guild != null && guild.features.contains("COMMUNITY")) {
+            return guild.locale
+        }
 
-	@NotNull
-    DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale);
+        return settingsProvider?.getLocale(guild)
+            //Discord default
+            ?: return DiscordLocale.ENGLISH_US
+    }
 
-	/**
-	 * Returns the {@link DefaultMessages} instance for this Guild's locale
-	 *
-	 * @param guild The Guild to take the locale from
-	 *
-	 * @return The {@link DefaultMessages} instance with the Guild's locale
-	 */
-	@NotNull
-	default DefaultMessages getDefaultMessages(@Nullable Guild guild) {
-		return getDefaultMessages(getEffectiveLocale(guild));
-	}
+    //region Text commands
+    //TODO docs
+    val textCommandsContext: TextCommandsContext
 
-	/**
-	 * Returns the {@link DefaultMessages} instance for this user's locale
-	 *
-	 * @param interaction The Interaction to take the user's locale from
-	 *
-	 * @return The {@link DefaultMessages} instance with the user's locale
-	 */
-	@NotNull
-	default DefaultMessages getDefaultMessages(@NotNull Interaction interaction) {
-		return getDefaultMessages(interaction.getUserLocale());
-	}
+    /**
+     * Returns the full list of prefixes used to trigger the bot.
+     *
+     * This does not include ping-as-prefix.
+     *
+     * @return Full list of prefixes
+     */
+    val prefixes: List<String> get() = textConfig.prefixes
 
-	/**
-	 * Returns the application commands context, this is for user/message/slash commands and related methods
-	 *
-	 * @return The {@link ApplicationCommandsContext} object
-	 */
-	@NotNull
-	ApplicationCommandsContext getApplicationCommandsContext();
+    /**
+     * @return `true` if the bot responds to its own mention.
+     */
+    val isPingAsPrefix: Boolean get() = textConfig.usePingAsPrefix
 
-	/**
-	 * Returns the {@link DefaultEmbedSupplier}
-	 *
-	 * @return The {@link DefaultEmbedSupplier}
-	 * @see DefaultEmbedSupplier
-	 */
-	@NotNull
-	DefaultEmbedSupplier getDefaultEmbedSupplier();
+    /**
+     * Returns the preferred prefix for triggering this bot
+     *
+     * @return The preferred prefix
+     */
+    val prefix: String
+        get() = when {
+            isPingAsPrefix -> jda.selfUser.asMention + " "
+            else -> prefixes.first()
+        }
 
-	/**
-	 * Returns the {@link DefaultEmbedFooterIconSupplier}
-	 *
-	 * @return The {@link DefaultEmbedFooterIconSupplier}
-	 * @see DefaultEmbedFooterIconSupplier
-	 */
-	@NotNull
-	DefaultEmbedFooterIconSupplier getDefaultFooterIconSupplier();
+    //TODO docs
+    /**
+     * Returns the [DefaultEmbedSupplier]
+     *
+     * @return The [DefaultEmbedSupplier]
+     * @see DefaultEmbedSupplier
+     */
+    val defaultEmbedSupplier: DefaultEmbedSupplier
 
-	/**
-	 * Sends an exception message to the unique bot owner, retrieved via {@link JDA#retrieveApplicationInfo()}
-	 *
-	 * @param message The message describing the context
-	 * @param t       An optional exception
-	 */
-	void dispatchException(@NotNull String message, @Nullable Throwable t);
+    //TODO docs
+    /**
+     * Returns the [DefaultEmbedFooterIconSupplier]
+     *
+     * @return The [DefaultEmbedFooterIconSupplier]
+     * @see DefaultEmbedFooterIconSupplier
+     */
+    val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier
 
-	/**
-	 * Returns the {@link SettingsProvider} for this context
-	 *
-	 * @return The current {@link SettingsProvider}
-	 */
-	@Nullable
-	SettingsProvider getSettingsProvider();
+    /**
+     * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it
+     *
+     * @return The help builder consumer
+     */
+    val helpBuilderConsumer: HelpBuilderConsumer?
+    //endregion
 
-	/**
-	 * Returns the {@link DiscordLocale} for the specified {@link Guild}
-	 *
-	 * @param guild The {@link Guild} in which to take the {@link DiscordLocale} from
-	 *
-	 * @return The {@link DiscordLocale} of the {@link Guild}
-	 */
-	@NotNull
-	default DiscordLocale getEffectiveLocale(@Nullable Guild guild) {
-		if (guild != null && guild.getFeatures().contains("COMMUNITY")) {
-			return guild.getLocale();
-		}
+    //region Application commands
+    /**
+     * Returns the application commands context, this is for user/message/slash commands and related methods
+     *
+     * @return The [ApplicationCommandsContext] object
+     */
+    val applicationCommandsContext: ApplicationCommandsContext
 
-		final SettingsProvider provider = getSettingsProvider();
-		if (provider == null) return DiscordLocale.ENGLISH_US; //Discord default
-
-		return provider.getLocale(guild);
-	}
-
-	/**
-	 * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it
-	 *
-	 * @return The help builder consumer
-	 */
-	HelpBuilderConsumer getHelpBuilderConsumer();
-
-	/**
-	 * Returns the {@link GlobalExceptionHandler global exception handler}, used to handle errors caught by the framework.
-	 *
-	 * @return The global exception handler
-	 * @see GlobalExceptionHandler
-	 */
-	@Nullable
-	GlobalExceptionHandler getGlobalExceptionHandler();
-
-	/**
-	 * Invalides the autocomplete cache of the specified autocomplete handler
-	 * <br>This means that the cache of this autocomplete handler will be fully cleared
-	 *
-	 * @param autocompleteHandlerName The name of the autocomplete handler, supplied at {@link AutocompleteHandler#name()}
-	 */
-	void invalidateAutocompleteCache(String autocompleteHandlerName);
-
-	enum Status {
-		PRE_LOAD,
-		LOAD,
-		POST_LOAD,
-		READY
-	}
+    /**
+     * Invalidates the autocomplete cache of the specified autocomplete handler.
+     *
+     * This means that the cache of this autocomplete handler will be fully cleared.
+     *
+     * @param autocompleteHandlerName The name of the autocomplete handler, supplied at [AutocompleteHandler.name]
+     */
+    fun invalidateAutocompleteCache(autocompleteHandlerName: String)
+    //endregion
 }

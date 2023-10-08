@@ -3,10 +3,10 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 
-internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
+class TextCommandsContextImpl internal constructor() : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
 
-    fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
+    internal fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.put(name, commandInfo)?.let {
                 throwUser(commandInfo.variations.first().function, "Text command with path '${commandInfo.path}' already exists")
