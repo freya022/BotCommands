@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.InjectedServi
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.future.asDeferred
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 
@@ -68,6 +70,9 @@ interface ApplicationCommandsContext {
      * @param force Whether the commands should be updated no matter what
      *
      * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
+     *
+     * @see CompletableFuture.asDeferred
+     * @see Deferred.await
      */
     fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult>
 
@@ -81,6 +86,9 @@ interface ApplicationCommandsContext {
      * @param force Whether the commands should be updated no matter what
      *
      * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
+     *
+     * @see CompletableFuture.asDeferred
+     * @see Deferred.await
      */
     fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
 }

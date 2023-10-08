@@ -10,7 +10,8 @@ import io.github.freya022.botcommands.internal.commands.application.context.mess
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
@@ -47,19 +48,15 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
     }
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return CompletableFuture<CommandUpdateResult>().also {
-            context.coroutineScopesConfig.commandUpdateScope.launch {
-                it.complete(context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force))
-            }
-        }
+        return context.coroutineScopesConfig.commandUpdateScope.async {
+            context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force)
+        }.asCompletableFuture()
     }
 
     override fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return CompletableFuture<CommandUpdateResult>().also {
-            context.coroutineScopesConfig.commandUpdateScope.launch {
-                it.complete(context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force))
-            }
-        }
+        return context.coroutineScopesConfig.commandUpdateScope.async {
+            context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force)
+        }.asCompletableFuture()
     }
 
     private fun getGuildKey(guild: Guild?): Long {
