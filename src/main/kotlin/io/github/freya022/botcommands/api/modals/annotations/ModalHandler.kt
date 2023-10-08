@@ -31,5 +31,5 @@ annotation class ModalHandler(
      * The name of the handler,
      * which must be the same handler name as in [Modals.create]
      */
-    val name: String
+    @get:JvmName("value") val name: String
 )

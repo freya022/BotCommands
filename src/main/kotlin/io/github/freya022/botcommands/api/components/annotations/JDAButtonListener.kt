@@ -40,5 +40,5 @@ annotation class JDAButtonListener(
      * Name of the button listener.<br>
      * This is used to find back the handler method after a button has been clicked.
      */
-    val name: String
+    @get:JvmName("value") val name: String
 ) 

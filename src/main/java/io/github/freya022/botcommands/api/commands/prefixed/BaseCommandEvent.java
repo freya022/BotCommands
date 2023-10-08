@@ -107,7 +107,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements C
 	public abstract EmbedBuilder getDefaultEmbed();
 
 	/**
-	 * Returns the default embed footer icon, equivalent to {@link BContext#getDefaultFooterIconSupplier() BContext.getDefaultFooterIconSupplier().get()}
+	 * Returns the default embed footer icon, equivalent to {@link BContext#getDefaultEmbedFooterIconSupplier() BContext.getDefaultFooterIconSupplier().get()}
 	 *
 	 * @return Default embed footer icon of the bot
 	 */

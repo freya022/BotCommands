@@ -10,4 +10,4 @@ import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
  * - First parameter is a [ComponentTimeoutData]
  */
 @Target(AnnotationTarget.FUNCTION)
-annotation class ComponentTimeoutHandler(val name: String)
+annotation class ComponentTimeoutHandler(@get:JvmName("value") val name: String)

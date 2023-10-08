@@ -9,121 +9,80 @@ import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.putConfigInServices
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
+import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.service.lazyOrElse
-import io.github.freya022.botcommands.api.core.service.lazyOrNull
-import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.utils.logger
-import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.core.service.*
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.IEventManager
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
+import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.minutes
 
+//TODO internal
 @InjectedService
-class BContextImpl internal constructor(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
-    private val serviceContainer: ServiceContainerImpl
+    override val serviceContainer: ServiceContainerImpl = ServiceContainerImpl(this) //Puts itself
+
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
     internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
-    val eventDispatcher: EventDispatcher by lazy { getService<EventDispatcher>() }
-
-    private var status: Status = Status.PRE_LOAD
-
-    private var nextExceptionDispatch: Long = 0
-
-    internal val textCommandsContext = TextCommandsContextImpl()
-
-    private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
     init {
-        serviceContainer = ServiceContainerImpl(this) //Puts itself
-
         serviceContainer.putService(this)
         serviceContainer.putServiceAs<BContext>(this)
+
+        serviceContainer.putService(serviceContainer)
+        serviceContainer.putServiceAs<ServiceContainer>(serviceContainer)
 
         serviceContainer.putService(eventManager)
         serviceContainer.putServiceAs<IEventManager>(eventManager) //Should be used if JDA is constructed as a service
 
         config.putConfigInServices(serviceContainer)
+    }
 
-        serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
+    override val eventDispatcher: EventDispatcher by lazy { getService<EventDispatcher>() }
+
+    override var status: Status = Status.PRE_LOAD
+        private set
+
+    override val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.lazyOrElse { DefaultDefaultMessagesSupplier(this) }
+
+    override val settingsProvider: SettingsProvider? by serviceContainer.lazyOrNull()
+    override val globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.lazyOrNull()
+
+    override val textCommandsContext = TextCommandsContextImpl()
+    override val defaultEmbedSupplier: DefaultEmbedSupplier by serviceContainer.lazyOrElse { DefaultEmbedSupplier.Default() }
+    override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by serviceContainer.lazyOrElse { DefaultEmbedFooterIconSupplier.Default() }
+    override val helpBuilderConsumer: HelpBuilderConsumer? by serviceContainer.lazyOrNull()
+
+    override val applicationCommandsContext = ApplicationCommandsContextImpl(this)
+
+    init {
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
+        serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
+
+        measureNanoTime {
+            ReflectionMetadata.runScan(this)
+        }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
     }
 
-    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.lazyOrElse { DefaultDefaultMessagesSupplier(this) }
-    private val _settingsProvider: SettingsProvider? by serviceContainer.lazyOrNull()
-    private val _globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.lazyOrNull()
-    private val _defaultEmbedSupplier: DefaultEmbedSupplier by serviceContainer.lazyOrElse { DefaultEmbedSupplier.Default() }
-    private val _defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by serviceContainer.lazyOrElse { DefaultEmbedFooterIconSupplier.Default() }
-    private val _helpBuilderConsumer: HelpBuilderConsumer? by serviceContainer.lazyOrNull()
-
-    override fun getConfig() = config
-
-    override fun getServiceContainer(): ServiceContainerImpl = serviceContainer
-
-    override fun getJDA(): JDA {
-        return serviceContainer.getService(JDA::class)
-    }
-
-    override fun getStatus(): Status = status
-
-    internal fun setStatus(newStatus: Status) {
-        val oldStatus = this.status
-        this.status = newStatus
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(oldStatus, newStatus)) }
-    }
-
-    override fun getPrefixes(): List<String> = config.textConfig.prefixes
-
-    override fun isPingAsPrefix(): Boolean = config.textConfig.usePingAsPrefix
-
-    override fun getOwnerIds(): Collection<Long> {
-        return config.ownerIds
-    }
-
-    override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
-        return _defaultMessagesSupplier.get(locale)
-    }
-
-    override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {
-        return applicationCommandsContext
-    }
-
-    override fun getDefaultEmbedSupplier(): DefaultEmbedSupplier {
-        return _defaultEmbedSupplier
-    }
-
-    override fun getDefaultFooterIconSupplier(): DefaultEmbedFooterIconSupplier {
-        return _defaultEmbedFooterIconSupplier
-    }
-
-    private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
-        return getService<AutocompleteHandlerContainer>()[autocompleteHandlerName]
-    }
-
-    override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
-        getAutocompleteHandler(autocompleteHandlerName)?.invalidate()
-    }
+    private var nextExceptionDispatch: Long = 0
 
     override fun dispatchException(message: String, t: Throwable?) {
         if (config.disableExceptionsInDMs) return //Don't send DM exceptions in dev mode
@@ -144,7 +103,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
                             when {
                                 acc.length + s.length <= Message.MAX_CONTENT_LENGTH - 256 -> acc + s + "\n"
                                 else -> acc
-                            } 
+                            }
                         }.trimEnd()
                 }```"
             }
@@ -162,15 +121,13 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
         }
     }
 
-    override fun getSettingsProvider(): SettingsProvider? {
-        return _settingsProvider
+    override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
+        getService<AutocompleteHandlerContainer>()[autocompleteHandlerName]?.invalidate()
     }
 
-    override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {
-        return _helpBuilderConsumer
-    }
-
-    override fun getGlobalExceptionHandler(): GlobalExceptionHandler? {
-        return _globalExceptionHandler
+    internal fun setStatus(newStatus: Status) {
+        val oldStatus = this.status
+        this.status = newStatus
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(oldStatus, newStatus)) }
     }
 }

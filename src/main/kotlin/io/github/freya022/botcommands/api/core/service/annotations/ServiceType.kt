@@ -18,5 +18,5 @@ annotation class ServiceType(
     /**
      * The additional types to register this service as, must be supertypes of this service
      */
-    vararg val types: KClass<*>
+    @get:JvmName("value") vararg val types: KClass<*>
 )

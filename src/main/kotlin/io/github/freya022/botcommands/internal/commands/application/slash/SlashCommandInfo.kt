@@ -68,7 +68,7 @@ abstract class SlashCommandInfo internal constructor(
     internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cancellableRateLimit: CancellableRateLimit): Boolean {
         val event = when {
             topLevelInstance.isGuildOnly -> GuildSlashEvent(context, jdaEvent, cancellableRateLimit)
-            else -> GlobalSlashEventImpl(context, jdaEvent, cancellableRateLimit)
+            else -> GlobalSlashEvent(context, jdaEvent, cancellableRateLimit)
         }
 
         val objects = getSlashOptions(event, parameters) ?: return false

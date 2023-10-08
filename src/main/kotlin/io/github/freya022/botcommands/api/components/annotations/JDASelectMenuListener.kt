@@ -41,5 +41,5 @@ annotation class JDASelectMenuListener(
      * Name of the select menu listener.<br>
      * This is used to find back the handler method after a select menu has been clicked
      */
-    val name: String
+    @get:JvmName("value") val name: String
 ) 

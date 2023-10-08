@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -37,11 +38,16 @@ import java.util.*
  *
  * @see createJDA
  * @see InterfacedService @InterfacedService
+ * @see RequiredIntents @RequiredIntents
  */
 @InterfacedService(acceptMultiple = false)
 abstract class JDAService {
     /**
-     * The intents used by your bot.
+     * The intents used by your bot,
+     * must be passed as the entire list of intents your bot will use,
+     * i.e., JDABuilder's create(Light/Default) methods and similar for shard managers.
+     *
+     * @see defaultIntents
      */
     abstract val intents: Set<GatewayIntent>
 
@@ -64,6 +70,11 @@ abstract class JDAService {
     internal fun onReadyEvent(event: BReadyEvent, eventManager: IEventManager) = createJDA(event, eventManager)
 
     companion object {
+        /**
+         * Returns the default JDA intents.
+         *
+         * @see GatewayIntent.DEFAULT
+         */
         @JvmStatic
         val defaultIntents: EnumSet<GatewayIntent>
             get() = GatewayIntent.getIntents(GatewayIntent.DEFAULT)

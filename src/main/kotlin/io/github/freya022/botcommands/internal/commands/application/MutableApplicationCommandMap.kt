@@ -12,7 +12,7 @@ import java.util.*
 import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
-class MutableApplicationCommandMap(
+internal class MutableApplicationCommandMap internal constructor(
     private val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
 ) : ApplicationCommandMap() {
     override fun getRawTypeMap() = rawTypeMap
@@ -29,13 +29,13 @@ class MutableApplicationCommandMap(
         return getTypeMap(CommandType.MESSAGE)
     }
 
-    fun <T : ApplicationCommandInfo> computeIfAbsent(
+    internal fun <T : ApplicationCommandInfo> computeIfAbsent(
         type: CommandType,
         path: CommandPath,
         mappingFunction: Function<CommandPath, T>
     ): T = getTypeMap<T>(type).computeIfAbsent(path, mappingFunction)
 
-    fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
+    internal fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
     override operator fun plus(map: ApplicationCommandMap): MutableApplicationCommandMap {
         val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
@@ -56,8 +56,8 @@ class MutableApplicationCommandMap(
         return super.getTypeMap<T>(type) as MutableCommandMap<T>
     }
 
-    companion object {
-        fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
+    internal companion object {
+        internal fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
                 val type = when (info) {
                     is MessageCommandInfo -> CommandType.MESSAGE

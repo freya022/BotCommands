@@ -7,4 +7,4 @@ import net.dv8tion.jda.api.Permission
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class BotPermissions(vararg val value: Permission = [], val append: Boolean = false)
+annotation class BotPermissions(@get:JvmName("value") vararg val permissions: Permission = [], val append: Boolean = false)

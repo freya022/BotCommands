@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-abstract class GlobalSlashEvent internal constructor(
+open class GlobalSlashEvent internal constructor(
     val context: BContext,
     event: SlashCommandInteractionEvent,
     cancellableRateLimit: CancellableRateLimit

@@ -25,17 +25,20 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
         if (isResolverAnnotated && !isResolverSubclass) {
             errorMessages += "Resolver ${classInfo.shortSignature} needs to extend ${ParameterResolver::class.simpleNestedName}"
-            //TODO add early returns in all CG processors as to avoid unnecessary checks after
+            return
         } else if (!isResolverAnnotated && isResolverSubclass) {
             errorMessages +=  "Resolver ${classInfo.shortSignature} needs to be annotated with @${Resolver::class.simpleNestedName}"
+            return
         }
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
         if (isResolverFactoryAnnotated && !isResolverFactorySubclass) {
             errorMessages += "Resolver factory ${classInfo.shortSignature} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
+            return
         } else if (!isResolverFactoryAnnotated && isResolverFactorySubclass) {
             errorMessages += "Resolver factory ${classInfo.shortSignature} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
+            return
         }
     }
 
@@ -75,7 +78,6 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     }
 
     override fun postProcess(context: BContext) {
-        //TODO replace these patterns by "check" in all CG processors
         if (errorMessages.isNotEmpty()) {
             throw IllegalStateException('\n' + errorMessages.joinAsList())
         }

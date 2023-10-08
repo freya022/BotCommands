@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
+import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import kotlin.reflect.KClass
@@ -18,6 +19,8 @@ import kotlin.reflect.KClass
  *
  * @see BService @BService
  * @see CustomConditionChecker
+ *
+ * @see RequiredIntents @RequiredIntents
  */
 @MustBeDocumented
 @Target(AnnotationTarget.ANNOTATION_CLASS)

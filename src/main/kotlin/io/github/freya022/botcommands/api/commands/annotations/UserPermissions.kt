@@ -7,4 +7,4 @@ import net.dv8tion.jda.api.Permission
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class UserPermissions(vararg val value: Permission = [], val append: Boolean = false)
+annotation class UserPermissions(@get:JvmName("value") vararg val permissions: Permission = [], val append: Boolean = false)

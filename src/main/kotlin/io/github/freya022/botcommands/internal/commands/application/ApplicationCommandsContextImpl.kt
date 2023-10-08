@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import gnu.trove.TCollections
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
@@ -11,12 +10,17 @@ import io.github.freya022.botcommands.internal.commands.application.context.mess
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
+//TODO internal
 class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
-    private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
+    private val writeLock = ReentrantLock()
+    private val liveApplicationCommandInfoMap = TLongObjectHashMap<ApplicationCommandMap>()
 
     override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
         getLiveApplicationCommandsMap(guild).findSlashCommand(path)
@@ -39,24 +43,20 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
         else -> getLiveApplicationCommandsMap(null) + getLiveApplicationCommandsMap(guild)
     }
 
-    fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap) {
+    fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap): Unit = writeLock.withLock {
         liveApplicationCommandInfoMap.put(getGuildKey(guild), map)
     }
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return CompletableFuture<CommandUpdateResult>().also {
-            context.coroutineScopesConfig.commandUpdateScope.launch {
-                it.complete(context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force))
-            }
-        }
+        return context.coroutineScopesConfig.commandUpdateScope.async {
+            context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force)
+        }.asCompletableFuture()
     }
 
     override fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return CompletableFuture<CommandUpdateResult>().also {
-            context.coroutineScopesConfig.commandUpdateScope.launch {
-                it.complete(context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force))
-            }
-        }
+        return context.coroutineScopesConfig.commandUpdateScope.async {
+            context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force)
+        }.asCompletableFuture()
     }
 
     private fun getGuildKey(guild: Guild?): Long {

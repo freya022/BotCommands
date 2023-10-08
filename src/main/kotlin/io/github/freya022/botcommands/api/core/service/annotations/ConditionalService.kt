@@ -21,5 +21,5 @@ annotation class ConditionalService(
     /**
      * Classes which implement [ConditionalServiceChecker], all checks must pass for this service to be instantiated.
      */
-    vararg val checks: KClass<out ConditionalServiceChecker>
+    @get:JvmName("value") vararg val checks: KClass<out ConditionalServiceChecker>
 )

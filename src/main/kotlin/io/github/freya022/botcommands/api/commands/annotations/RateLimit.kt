@@ -135,4 +135,4 @@ annotation class RateLimit(
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class RateLimitReference(val group: String)
+annotation class RateLimitReference(@get:JvmName("value") val group: String)
