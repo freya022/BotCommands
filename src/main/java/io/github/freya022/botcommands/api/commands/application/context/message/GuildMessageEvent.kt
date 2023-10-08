@@ -1,53 +1,48 @@
-package io.github.freya022.botcommands.api.commands.application.context.message;
+package io.github.freya022.botcommands.api.commands.application.context.message
 
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit;
-import io.github.freya022.botcommands.api.core.BContext;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 
-public class GuildMessageEvent extends GlobalMessageEvent {
-	public GuildMessageEvent(BContext context, MessageContextInteractionEvent event, CancellableRateLimit cancellableRateLimit) {
-		super(context, event, cancellableRateLimit);
+class GuildMessageEvent internal constructor(
+    context: BContext,
+    event: MessageContextInteractionEvent,
+    cancellableRateLimit: CancellableRateLimit
+) : GlobalMessageEvent(context, event, cancellableRateLimit) {
+    init {
+        if (!event.isFromGuild)
+            throwInternal("Event is not from a Guild")
+    }
 
-		if (!event.isFromGuild())
-			throw new IllegalStateException("Event is not from a Guild");
-	}
+    /**
+     * Always `true` for this guild-only event.
+     */
+    override fun isFromGuild(): Boolean {
+        return true
+    }
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * <br><b>This is always true for this guild-only event</b>
-	 */
-	@Override
-	public boolean isFromGuild() {
-		return true;
-	}
+    /**
+     * The [Member] who caused this interaction.
+     *
+     * Never null for this guild-only event.
+     *
+     * @return The [Member]
+     */
+    override fun getMember(): Member {
+        return super.getMember()!!
+    }
 
-	/**
-	 * The {@link Member} who caused this interaction.
-	 * <br>This is not null as this object is not constructed if the interaction isn't in a Guild.
-	 *
-	 * @return The {@link Member}
-	 */
-	@SuppressWarnings("ConstantConditions")
-	@NotNull
-	@Override
-	public Member getMember() {
-		return super.getMember();
-	}
-
-	/**
-	 * The {@link Guild} this interaction happened in.
-	 * <br>This is not null as this object is not constructed if the interaction isn't in a Guild.
-	 *
-	 * @return The {@link Guild}
-	 */
-	@SuppressWarnings("ConstantConditions")
-	@NotNull
-	@Override
-	public Guild getGuild() {
-		return super.getGuild();
-	}
+    /**
+     * The [Guild] this interaction happened in.
+     *
+     * Never null for this guild-only event.
+     *
+     * @return The [Guild]
+     */
+    override fun getGuild(): Guild {
+        return super.getGuild()!!
+    }
 }
