@@ -1,15 +1,17 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.freya022.botcommands.api.core.service.*
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.INVALID_TYPE
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.NO_PROVIDER
+import io.github.freya022.botcommands.api.core.service.ServiceResult
+import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.isConstructor
 import io.github.freya022.botcommands.api.core.utils.isStatic
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import mu.KotlinLogging
@@ -21,7 +23,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
-import kotlin.system.measureNanoTime
 import kotlin.time.DurationUnit
 
 internal class ServiceCreationStack {
@@ -56,17 +57,6 @@ private val logger = KotlinLogging.logger<ServiceContainer>()
 class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
     private val lock = ReentrantLock()
     private val serviceCreationStack = ServiceCreationStack()
-
-    internal val classes: List<KClass<*>>
-
-    init {
-        measureNanoTime {
-            this.classes = ReflectionMetadata.runScan(context)
-        }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
-
-        putService(this)
-        putServiceAs<ServiceContainer>(this)
-    }
 
     internal fun loadServices(requestedStart: ServiceStart) {
         getLoadableService(requestedStart).forEach { clazz -> getService(clazz) }

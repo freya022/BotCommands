@@ -9,17 +9,15 @@ import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.putConfigInServices
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
+import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.service.lazyOrElse
-import io.github.freya022.botcommands.api.core.service.lazyOrNull
-import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.core.service.*
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -30,6 +28,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.ErrorResponse
+import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.minutes
 
 //TODO internal
@@ -39,20 +38,23 @@ class BContextImpl internal constructor(override val config: BConfig, val eventM
 
     override val serviceContainer: ServiceContainerImpl = ServiceContainerImpl(this) //Puts itself
 
+    internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
+    internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
+    internal val serviceProviders = ServiceProviders()
+    internal val customConditionsContainer = CustomConditionsContainer()
+
     init {
         serviceContainer.putService(this)
         serviceContainer.putServiceAs<BContext>(this)
+
+        serviceContainer.putService(serviceContainer)
+        serviceContainer.putServiceAs<ServiceContainer>(serviceContainer)
 
         serviceContainer.putService(eventManager)
         serviceContainer.putServiceAs<IEventManager>(eventManager) //Should be used if JDA is constructed as a service
 
         config.putConfigInServices(serviceContainer)
     }
-
-    internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
-    internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
-    internal val serviceProviders = ServiceProviders()
-    internal val customConditionsContainer = CustomConditionsContainer()
 
     override val eventDispatcher: EventDispatcher by lazy { getService<EventDispatcher>() }
 
@@ -74,6 +76,10 @@ class BContextImpl internal constructor(override val config: BConfig, val eventM
     init {
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
         serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
+
+        measureNanoTime {
+            ReflectionMetadata.runScan(this)
+        }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
     }
 
     private var nextExceptionDispatch: Long = 0
