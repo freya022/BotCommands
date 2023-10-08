@@ -50,7 +50,7 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(context: BContextImpl): List<KClass<*>> {
+    internal fun runScan(context: BContextImpl) {
         val config = context.config
         val packages = config.packages
         //This is a requirement for ClassGraph to work correctly
@@ -96,7 +96,7 @@ internal object ReflectionMetadata {
         val classGraphProcessors = context.config.classGraphProcessors +
                 listOf(context.serviceProviders, context.customConditionsContainer, ServiceAnnotationsMapProcessor(config, context.serviceAnnotationsMap)) +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
-        return scanned.flatMap { (_, classes) ->
+        return scanned.forEach { (_, classes) ->
             classes
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
@@ -139,8 +139,8 @@ internal object ReflectionMetadata {
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
 
-    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<KClass<*>> {
-        return map { classInfo ->
+    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
+        return onEach { classInfo ->
             try {
                 val kClass = classInfo.loadClass().kotlin
 
@@ -167,8 +167,6 @@ internal object ReflectionMetadata {
 
                 val isService = classInfo.isService(context.config)
                 classGraphProcessors.forEach { it.processClass(context, classInfo, kClass, isService) }
-
-                kClass
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
