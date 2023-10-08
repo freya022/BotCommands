@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -37,6 +38,7 @@ import java.util.*
  *
  * @see createJDA
  * @see InterfacedService @InterfacedService
+ * @see RequiredIntents @RequiredIntents
  */
 @InterfacedService(acceptMultiple = false)
 abstract class JDAService {
