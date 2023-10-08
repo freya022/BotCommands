@@ -1,93 +1,86 @@
-package io.github.freya022.botcommands.api.commands.application;
+package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.commands.CommandPath;
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService;
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo;
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import io.github.freya022.botcommands.api.commands.CommandList
+import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import net.dv8tion.jda.api.entities.Guild
+import java.util.concurrent.CompletableFuture
 
-import java.util.concurrent.CompletableFuture;
-
+/**
+ * Helps to get application commands of a specific scope, find application commands with their name and update commands.
+ */
 @InjectedService
-public interface ApplicationCommandsContext {
-	/**
-	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild
-	 *
-	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param path  Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
-	 *
-	 * @return The {@link SlashCommandInfo} object of the slash command
-	 */
-	@Nullable
-	SlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path);
+interface ApplicationCommandsContext {
+    /**
+     * Returns the [SlashCommandInfo] with the specified path,
+     * if it is published in that scope, either in the guild, or globally.
+     *
+     * @param guild The guild from which to get the commands, can be `null` for global commands
+     * @param path  Full path of the slash command (Examples: `ban` ; `info user` ; `ban user perm`)
+     */
+    fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo?
 
-	/**
-	 * Returns the {@link UserCommandInfo} object of the specified user context command name, in the specific guild
-	 *
-	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param name  Name of the user context command
-	 *
-	 * @return The {@link UserCommandInfo} object of the user context command
-	 */
-	@Nullable
-	UserCommandInfo findLiveUserCommand(@Nullable Guild guild, @NotNull String name);
+    /**
+     * Returns the [UserCommandInfo] with the specified name,
+     * if it is published in that scope, either in the guild, or globally.
+     *
+     * @param guild The guild from which to get the commands, can be `null` for global commands
+     * @param name  Name of the user context command
+     */
+    fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo?
 
-	/**
-	 * Returns the {@link MessageCommandInfo} object of the specified message context command name, in the specific guild
-	 *
-	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param name  Name of the message context command
-	 *
-	 * @return The {@link MessageCommandInfo} object of the message context command
-	 */
-	@Nullable
-	MessageCommandInfo findLiveMessageCommand(@Nullable Guild guild, @NotNull String name);
+    /**
+     * Returns the [MessageCommandInfo] with the specified name,
+     * if it is published in that scope, either in the guild, or globally.
+     *
+     * @param guild The guild from which to get the commands, can be `null` for global commands
+     * @param name  Name of the message context command
+     */
+    fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo?
 
-	/**
-	 * Returns the live application commands for the specific guild
-	 *
-	 * @param guild The guild in which to query the commands, can be {@code null} for global commands
-	 *
-	 * @return The {@link ApplicationCommandMap} of the specific guild
-	 */
-	@NotNull ApplicationCommandMap getLiveApplicationCommandsMap(@Nullable Guild guild);
+    /**
+     * Returns the application commands currently pushed in the specified guild's scope.
+     *
+     * If a guild is specified, the global commands will not be included,
+     * use [getEffectiveApplicationCommandsMap] instead.
+     *
+     * @param guild The guild from which to get the commands, can be `null` for global commands
+     *
+     * @see getEffectiveApplicationCommandsMap
+     */
+    fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap
 
-	/**
-	 * Returns the effective application commands available for the specific guild.
-	 *
-	 * @param guild The guild in which to query the commands, can be {@code null} for global commands
-	 *
-	 * @return The {@link ApplicationCommandMap} of the specific guild
-	 */
-	@NotNull ApplicationCommandMap getEffectiveApplicationCommandsMap(@Nullable Guild guild);
+    /**
+     * Returns the effective application commands available for the specific guild.
+     *
+     * @param guild The guild in which to query the commands, can be `null` for global commands
+     *
+     * @return The [ApplicationCommandMap] of the specific guild
+     */
+    fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap
 
-	/**
-	 * Updates the application commands for the global scope <br><br>
-	 *
-	 * @param force Whether the commands should be updated no matter what
-	 *
-	 * @return A {@link CompletableFuture CompletableFuture}&lt;{@link CommandUpdateResult}&gt;
-	 */
-	@NotNull
-	CompletableFuture<CommandUpdateResult> updateGlobalApplicationCommands(boolean force);
+    /**
+     * Updates the application commands for the global scope.
+     *
+     * @param force Whether the commands should be updated no matter what
+     *
+     * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
+     */
+    fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult>
 
-	/**
-	 * Updates the application commands in the specified guild
-	 *
-	 * <p>Why you could call this method:
-	 * <ul>
-	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
-	 * </ul>
-	 *
-	 * @param guild The guild which needs to be updated
-	 * @param force Whether the commands should be updated no matter what
-	 *
-	 * @return A {@link CompletableFuture CompletableFuture}&lt;{@link CommandUpdateResult}&gt;
-	 */
-	@NotNull
-	CompletableFuture<CommandUpdateResult> updateGuildApplicationCommands(@NotNull Guild guild, boolean force);
+    /**
+     * Updates the application commands in the specified guild.
+     *
+     * A use case may be to remove a command from a guild while the bot is running
+     * (either by filtering with [CommandList] or not running a DSL declaration).
+     *
+     * @param guild The guild which needs to be updated
+     * @param force Whether the commands should be updated no matter what
+     *
+     * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
+     */
+    fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
 }

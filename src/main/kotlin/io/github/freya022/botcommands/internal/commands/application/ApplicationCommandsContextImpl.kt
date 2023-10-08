@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 
+//TODO internal
 class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
 

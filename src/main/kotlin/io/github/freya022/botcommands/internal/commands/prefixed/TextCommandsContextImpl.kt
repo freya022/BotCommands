@@ -3,8 +3,12 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 
+//TODO internal
 class TextCommandsContextImpl internal constructor() : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
+
+    override val rootCommands: Collection<TopLevelTextCommandInfo>
+        get() = textCommandMap.values.toList()
 
     internal fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
@@ -14,7 +18,7 @@ class TextCommandsContextImpl internal constructor() : TextCommandsContext {
         }
     }
 
-    fun findTextCommand(words: List<String>): TextCommandInfo? {
+    override fun findTextCommand(words: List<String>): TextCommandInfo? {
         val initial: TextCommandInfo = textCommandMap[words.first()] ?: return null
         return words
             .drop(1) //First word is already resolved
@@ -23,12 +27,8 @@ class TextCommandsContextImpl internal constructor() : TextCommandsContext {
             }
     }
 
-    fun findTextSubcommands(words: List<String>): Collection<TextCommandInfo> {
+    override fun findTextSubcommands(words: List<String>): Collection<TextCommandInfo> {
         val command = findTextCommand(words) ?: return emptyList()
         return command.subcommands.values
-    }
-
-    override fun getRootCommands(): Collection<TopLevelTextCommandInfo> {
-        return textCommandMap.values
     }
 }
