@@ -15,11 +15,14 @@ internal object RequiredIntentsChecker : CustomConditionChecker<RequiredIntents>
         checkedClass: Class<*>,
         annotation: RequiredIntents
     ): String? {
-        context.getServiceOrNull<JDAService>()?.let { jdaService ->
-            val missingIntents = annotation.intents.asList() - jdaService.intents
-            if (missingIntents.isNotEmpty()) {
-                return "${checkedClass.simpleNestedName} requires missing intents: $missingIntents"
-            }
+        val jdaService = context.getServiceOrNull<JDAService>()
+        checkNotNull(jdaService) {
+            "A JDAService instance must be present in order to use @${RequiredIntents::class.simpleName}"
+        }
+
+        val missingIntents = annotation.intents.asList() - jdaService.intents
+        if (missingIntents.isNotEmpty()) {
+            return "${checkedClass.simpleNestedName} requires missing intents: $missingIntents"
         }
 
         return null
