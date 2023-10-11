@@ -19,9 +19,9 @@ import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import kotlin.reflect.full.callSuspend
@@ -70,7 +70,7 @@ internal class ApplicationCommandsBuilder(
                 }
             }
 
-        logger.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
+        logger.debug { "Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions" }
         if (globalDeclarationFunctions.isNotEmpty()) {
             logger.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinAsList { it.function.shortSignature } }
         }
@@ -85,7 +85,7 @@ internal class ApplicationCommandsBuilder(
         try {
             updateCatching(null) { updateGlobalCommands() }
         } catch (e: Throwable) {
-            logger.error("An error occurred while updating global commands", e)
+            logger.error(e) { "An error occurred while updating global commands" }
         }
     }
 
@@ -103,12 +103,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal fun handleGuildCommandUpdateException(guild: Guild, t: Throwable) {
-        logger.error(
-            "Encountered an exception while updating commands for guild '{}' ({})",
-            guild.name,
-            guild.id,
-            t
-        )
+        logger.error(t) { "Encountered an exception while updating commands for guild '${guild.name}' (${guild.id})" }
     }
 
     internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult = globalUpdateMutex.withLock {
@@ -130,9 +125,9 @@ internal class ApplicationCommandsBuilder(
         val needsUpdate = force || globalUpdater.shouldUpdateCommands()
         if (needsUpdate) {
             globalUpdater.updateCommands()
-            logger.debug("Global commands were{} updated ({})", getForceString(force), getCheckTypeString())
+            logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
         } else {
-            logger.debug("Global commands does not have to be updated ({})", getCheckTypeString())
+            logger.debug { "Global commands does not have to be updated (${getCheckTypeString()})" }
         }
 
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
@@ -170,13 +165,9 @@ internal class ApplicationCommandsBuilder(
             val needsUpdate = force || guildUpdater.shouldUpdateCommands()
             if (needsUpdate) {
                 guildUpdater.updateCommands()
-                logger.debug(
-                    "Guild '${guild.name}' (${guild.id}) commands were{} updated ({})",
-                    getForceString(force),
-                    getCheckTypeString()
-                )
+                logger.debug { "Guild '${guild.name}' (${guild.id}) commands were${getForceString(force)} updated (${getCheckTypeString()})" }
             } else {
-                logger.debug("Guild '${guild.name}' (${guild.id}) commands does not have to be updated ({})", getCheckTypeString())
+                logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated (${getCheckTypeString()})" }
             }
 
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())
@@ -197,12 +188,12 @@ internal class ApplicationCommandsBuilder(
         block().also { result ->
             if (result.updateExceptions.isNotEmpty()) {
                 when {
-                    guild != null -> logger.error("Errors occurred while registering commands for guild '{}' ({})", guild.name, guild.id)
-                    else -> logger.error("Errors occurred while registering commands:")
+                    guild != null -> logger.error { "Errors occurred while registering commands for guild '${guild.name}' (${guild.id})" }
+                    else -> logger.error { "Errors occurred while registering commands:" }
                 }
 
                 result.updateExceptions.forEach { updateException ->
-                    logger.error("Function: {}", updateException.function.shortSignature, updateException.throwable)
+                    logger.error(updateException.throwable) { "Function: ${updateException.function.shortSignature}" }
                 }
             }
         }

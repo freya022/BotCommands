@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.flywaydb.core.Flyway
 import kotlin.time.Duration.Companion.seconds
 
@@ -28,7 +28,7 @@ class DatabaseSource(config: Config) : HikariSourceSupplier {
 
         //You can use the same function for your database, you just have to change the schema and scripts location
 
-        logger.info("Created database source")
+        logger.info { "Created database source" }
     }
 
     private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure()

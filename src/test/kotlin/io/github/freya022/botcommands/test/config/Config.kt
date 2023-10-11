@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.test.config
 
 import com.google.gson.Gson
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
@@ -26,7 +26,7 @@ data class Config(val token: String,
 
         @get:BService
         val instance: Config by lazy {
-            logger.info("Loading configuration at ${configFilePath.absolutePathString()}")
+            logger.info { "Loading configuration at ${configFilePath.absolutePathString()}" }
 
             return@lazy Gson().fromJson(configFilePath.readText(), Config::class.java)
         }

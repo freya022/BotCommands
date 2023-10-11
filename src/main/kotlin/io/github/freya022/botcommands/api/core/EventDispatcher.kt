@@ -15,8 +15,8 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -154,7 +154,7 @@ class EventDispatcher internal constructor(
                     function.callSuspend(instance, event, *eventHandlerFunction.parameters)
                 }
                 if (result == null) {
-                    logger.debug("Event of type ${event.javaClass.simpleName} timed out.")
+                    logger.debug { "Event of type ${event.javaClass.simpleName} timed out." }
                 }
             } else {
                 function.callSuspend(instance, event, *eventHandlerFunction.parameters)
@@ -233,8 +233,8 @@ class EventDispatcher internal constructor(
         }
     }
 
-    private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
-        "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
-        e.unwrap()
-    )
+    private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) =
+        logger.error(e.unwrap()) {
+            "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}"
+        }
 }

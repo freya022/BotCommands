@@ -20,8 +20,8 @@ import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -45,17 +45,17 @@ internal class HelpCommand internal constructor(private val context: BContextImp
             return when {
                 // A user-defined help command was found
                 helpCommands.isNotEmpty() -> {
-                    logger.debug("Using a custom 'help' text command implementation")
+                    logger.debug { "Using a custom 'help' text command implementation" }
                     "An user supplied IHelpCommand interfaced service is already active (${helpCommands.first()::class.simpleNestedName})"
                 }
                 // No user-defined help command, try to use ours
                 else -> when {
                     context.textConfig.isHelpDisabled -> {
-                        logger.debug("Using no 'help' text command implementation")
+                        logger.debug { "Using no 'help' text command implementation" }
                         "The help command was disabled in ${BTextConfig::isHelpDisabled.referenceString}"
                     }
                     else -> {
-                        logger.debug("Using built-in help command")
+                        logger.debug { "Using built-in help command" }
                         null
                     }
                 }

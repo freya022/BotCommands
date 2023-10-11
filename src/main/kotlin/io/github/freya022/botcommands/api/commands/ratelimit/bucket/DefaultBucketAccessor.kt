@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -82,8 +82,10 @@ class DefaultBucketAccessor(
     }
 
     private fun fallbackUserKey(user: UserSnowflake): RateLimitKey {
-        logger.warn("Tried to get an invalid rate limit bucket, rate limiters outside of guilds must only use the ${RateLimitScope.USER} scope. " +
-                "Returning an user bucket instead.")
+        logger.warn {
+            "Tried to get an invalid rate limit bucket, rate limiters outside of guilds must only use the ${RateLimitScope.USER} scope. " +
+                    "Returning an user bucket instead."
+        }
         return RateLimitKey(null, user.idLong)
     }
 }

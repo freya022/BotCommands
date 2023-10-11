@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.core
 import io.github.classgraph.ClassGraph
 import io.github.freya022.botcommands.api.core.events.BEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
 import kotlin.reflect.KClass
@@ -26,6 +26,6 @@ internal class EventTreeService internal constructor() {
         }
 
     internal fun getSubclasses(kClass: KClass<*>): List<KClass<*>> = map[kClass] ?: emptyList<KClass<*>>().also {
-        logger.warn("Unknown event type: ${kClass.jvmName}")
+        logger.warn { "Unknown event type: ${kClass.jvmName}" }
     }
 }

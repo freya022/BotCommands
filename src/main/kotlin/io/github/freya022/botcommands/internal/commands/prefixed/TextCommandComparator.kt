@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.met
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.math.min
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
@@ -35,12 +35,9 @@ internal class TextCommandComparator(private val context: BContextImpl) : Compar
         val order2 = o2.annotation.order
         if (order1 != 0 && order2 != 0) {
             if (order1 == order2) {
-                logger.warn(
-                    "Method {} and {} have the same order ({})",
-                    o1.func.shortSignatureNoSrc,
-                    o2.func.shortSignatureNoSrc,
-                    order1
-                )
+                logger.warn {
+                    "Method ${o1.func.shortSignatureNoSrc} and ${o2.func.shortSignatureNoSrc} have the same order (${order1})"
+                }
             }
 
             return order1.compareTo(order2)

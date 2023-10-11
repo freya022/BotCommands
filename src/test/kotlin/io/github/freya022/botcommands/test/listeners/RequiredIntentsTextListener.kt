@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 
@@ -15,6 +15,6 @@ private val logger = KotlinLogging.logger { }
 class RequiredIntentsTextListener {
     @BEventListener
     fun onMessage(event: MessageReceivedEvent) {
-        logger.trace("Received message in ${this.javaClass.simpleNestedName}" )
+        logger.trace { "Received message in ${this.javaClass.simpleNestedName}" }
     }
 }

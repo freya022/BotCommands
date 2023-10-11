@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.internal.core.service.getParameters
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -48,7 +48,7 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
                 function.call(instance, this, *args.toTypedArray())
             }
 
-        if (logger.isTraceEnabled) {
+        if (logger.isTraceEnabled()) {
             logger.trace {
                 "Loaded ${map.size} rate limiters with:\n${declarators.joinAsList { it.function.shortSignature }}"
             }

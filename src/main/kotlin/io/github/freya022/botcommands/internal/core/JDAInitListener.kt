@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -30,7 +30,7 @@ internal data object JDAInitListener {
                         - Building JDA in a service annotated with @${BService::class.simpleName}(start = ServiceStart.READY)
                 """.trimIndent()
             )
-            logger.error("An exception occurred while initializing the framework", exception)
+            logger.error(exception) { "An exception occurred while initializing the framework" }
 
             Runtime.getRuntime().halt(112) //No choice, the events are async and can't stop initialization
         }

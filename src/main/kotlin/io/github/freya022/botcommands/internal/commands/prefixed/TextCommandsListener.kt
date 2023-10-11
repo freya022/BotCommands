@@ -18,8 +18,8 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -46,10 +46,7 @@ internal class TextCommandsListener internal constructor(
 
         if (!event.isFromGuild) return
 
-        val member = event.member ?: let {
-            logger.error("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
-            return
-        }
+        val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
 
         val isBotMentioned = event.message.mentions.isMentioned(event.jda.selfUser)
         if (GatewayIntent.MESSAGE_CONTENT !in event.jda.gatewayIntents && !isBotMentioned) return

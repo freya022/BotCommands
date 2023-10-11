@@ -15,8 +15,8 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -128,22 +128,22 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
         }
 
         if (context.applicationConfig.onlineAppCommandCheckEnabled) {
-            logger.warn(
+            logger.warn {
                 """
                     An application command could not be recognized even though online command check was performed. An update will be forced.
                     Please check if you have another bot instance running as it could have replaced the current command set.
                     Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
                 """.trimIndent()
-            )
+            }
             if (guild != null) {
                 context.applicationCommandsContext.updateGuildApplicationCommands(guild, force = true).whenComplete { _, e ->
                     if (e != null)
-                        logger.error("An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing", e)
+                        logger.error(e) { "An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing" }
                 }
             } else {
                 context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
                     if (e != null)
-                        logger.error("An exception occurred while trying to update global commands after a command was missing", e)
+                        logger.error(e) { "An exception occurred while trying to update global commands after a command was missing" }
                 }
             }
         }

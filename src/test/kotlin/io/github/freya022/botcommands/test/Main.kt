@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.core.BBuilder
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.test.config.Environment
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.cancel
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
@@ -22,7 +22,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<out String>) {
         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
-        logger.info("Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}")
+        logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
         // I use hotswap agent in order to update my code without restarting the bot
         // Of course this only supports modifying existing code
@@ -31,10 +31,10 @@ object Main {
         // stacktrace-decoroutinator has issues when reloading with hotswap agent
         when {
             "-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments ->
-                logger.info("Skipping stacktrace-decoroutinator as enhanced hotswap is active")
+                logger.info { "Skipping stacktrace-decoroutinator as enhanced hotswap is active" }
 
             "--no-decoroutinator" in args ->
-                logger.info("Skipping stacktrace-decoroutinator as --no-decoroutinator is specified")
+                logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
 
             else -> DecoroutinatorRuntime.load()
         }

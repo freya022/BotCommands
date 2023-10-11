@@ -4,12 +4,12 @@ import io.github.freya022.botcommands.api.Logging
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import org.intellij.lang.annotations.Language
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -130,7 +130,7 @@ internal fun createCoroutineDump(): String? = when {
         outputStream.toByteArray().decodeToString()
     }
     else -> {
-        logger.warn("Skipping coroutine dump as debug probes are not installed, use DebugProbes#install from kotlinx-coroutines-debug")
+        logger.warn { "Skipping coroutine dump as debug probes are not installed, use DebugProbes#install from kotlinx-coroutines-debug" }
         null
     }
 }
