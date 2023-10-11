@@ -13,8 +13,9 @@ internal val KProperty<*>.referenceString: String
             ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
         return (callableReference.owner as KClass<*>).simpleNestedName + "." + this.name
     }
-internal val Class<*>.shortSignature: String
+
+internal val Class<*>.shortQualifiedReference: String
     get() = "$shortQualifiedName($sourceFile:0)"
 
-internal val KClass<*>.shortSignature: String
-    get() = this.java.shortSignature
+internal val KClass<*>.shortQualifiedReference: String
+    get() = this.java.shortQualifiedReference
