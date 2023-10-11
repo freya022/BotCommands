@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDecl
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortSignature
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
@@ -42,7 +42,7 @@ class CommandsPresenceChecker : ClassGraphProcessor {
             }
 
         if (isCommand && commandDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortSignature
+            noDeclarationClasses += classInfo.shortQualifiedReference
         } else if (!isCommand && commandDeclarations.isNotEmpty()) {
             // If there is no command annotation but command declarations were found
             noAnnotationMethods += commandDeclarations

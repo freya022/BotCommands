@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -41,7 +42,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
             }
 
         if (isHandler && handlerDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortSignature
+            noDeclarationClasses += classInfo.shortQualifiedReference
         } else if (!isService && handlerDeclarations.isNotEmpty()) {
             // If there is no handler annotation but handler declarations were found
             noAnnotationMethods += handlerDeclarations

@@ -27,5 +27,5 @@ val MethodInfo.shortSignature: String
         return "$shortSignatureNoSrc: $returnType ($source)"
     }
 
-val ClassInfo.shortSignature: String
+val ClassInfo.shortQualifiedReference: String
     get() = "$shortQualifiedName($sourceFile:0)"

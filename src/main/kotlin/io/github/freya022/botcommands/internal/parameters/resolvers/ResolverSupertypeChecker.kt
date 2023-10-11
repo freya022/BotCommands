@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -24,20 +25,20 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
         val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
         if (isResolverAnnotated && !isResolverSubclass) {
-            errorMessages += "Resolver ${classInfo.shortSignature} needs to extend ${ParameterResolver::class.simpleNestedName}"
+            errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to extend ${ParameterResolver::class.simpleNestedName}"
             return
         } else if (!isResolverAnnotated && isResolverSubclass) {
-            errorMessages +=  "Resolver ${classInfo.shortSignature} needs to be annotated with @${Resolver::class.simpleNestedName}"
+            errorMessages +=  "Resolver ${classInfo.shortQualifiedReference} needs to be annotated with @${Resolver::class.simpleNestedName}"
             return
         }
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
         if (isResolverFactoryAnnotated && !isResolverFactorySubclass) {
-            errorMessages += "Resolver factory ${classInfo.shortSignature} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
+            errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
             return
         } else if (!isResolverFactoryAnnotated && isResolverFactorySubclass) {
-            errorMessages += "Resolver factory ${classInfo.shortSignature} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
+            errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
             return
         }
     }
