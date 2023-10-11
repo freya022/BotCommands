@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
+import io.github.freya022.botcommands.internal.utils.referenceString
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import java.sql.Connection

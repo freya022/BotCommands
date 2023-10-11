@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.utils.ButtonContent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
+import io.github.freya022.botcommands.internal.utils.referenceString
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging

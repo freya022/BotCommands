@@ -11,8 +11,8 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashU
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
 import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent

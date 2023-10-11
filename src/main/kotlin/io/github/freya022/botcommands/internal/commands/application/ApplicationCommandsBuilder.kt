@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.getParameters
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.Mutex

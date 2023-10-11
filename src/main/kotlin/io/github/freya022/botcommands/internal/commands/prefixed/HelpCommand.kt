@@ -19,7 +19,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
+import io.github.freya022.botcommands.internal.utils.referenceString
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder

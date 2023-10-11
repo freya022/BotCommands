@@ -19,8 +19,8 @@ import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command

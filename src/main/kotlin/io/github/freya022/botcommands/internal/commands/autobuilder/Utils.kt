@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.Com
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.AnnotationUtils
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
