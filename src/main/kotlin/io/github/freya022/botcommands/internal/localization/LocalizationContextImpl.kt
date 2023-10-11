@@ -77,9 +77,9 @@ internal class LocalizationContextImpl(
         return template.localize(*entries)
     }
 
-    private fun getLocalization(locale: DiscordLocale) =
-        localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
-            ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$locale', the root bundle should have been checked")
+    private fun getLocalization(discordLocale: DiscordLocale) =
+        localizationService.getInstance(localizationBundle, discordLocale.toLocale())
+            ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$discordLocale', the root bundle should have been checked")
 
     private fun getEffectivePath(localizationPath: String) = when (localizationPrefix) {
         null -> localizationPath

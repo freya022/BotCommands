@@ -119,7 +119,7 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
-        _baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales.map { Locale.forLanguageTag(it.locale) }
+        _baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales.map(DiscordLocale::toLocale)
     }
 
     /**

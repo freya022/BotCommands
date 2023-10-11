@@ -12,10 +12,7 @@ class DefaultDefaultMessagesSupplier(private val context: BContext) : DefaultMes
 
     override fun get(discordLocale: DiscordLocale): DefaultMessages {
         return localeDefaultMessagesMap.computeIfAbsent(discordLocale) {
-            DefaultMessages(
-                context,
-                Locale.forLanguageTag(it.locale)
-            )
+            DefaultMessages(context, it.toLocale())
         }
     }
 }
