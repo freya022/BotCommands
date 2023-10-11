@@ -184,12 +184,12 @@ You can find a number of feature demonstrations in the [examples subproject](exa
 
 ## Live templates
 
-If you use IntelliJ, you can use the "live templates" provided in [this zip file](BotCommands%203.X%20Live%20Templates.zip),
-which will help you make commands and other handlers with predefined templates, for both Kotlin and Java.
+IntelliJ IDEA users can use [live templates](https://www.jetbrains.com/help/idea/using-live-templates.html) provided in [this zip file](BotCommands%203.X%20Live%20Templates.zip),
+helping you make commands and other handlers with predefined templates, for both Kotlin and Java, 
+keeping a consistent naming scheme and acting as a cheatsheet.
 
 For example, if you type `slashCommand` in your class, this will generate a slash command 
-and guide you through the declaration. 
-This helps you keep a consistent naming scheme and act as a cheatsheet.
+and guide you through the declaration.
 
 A list of live template can be found in `Settings > Editor > Live Templates`,
 in the `BotCommands 3.X - [Language]` group.
