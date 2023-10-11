@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.core.BBuilder
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.test.config.Environment
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.cancel
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory

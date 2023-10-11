@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.core.SingleLogger
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

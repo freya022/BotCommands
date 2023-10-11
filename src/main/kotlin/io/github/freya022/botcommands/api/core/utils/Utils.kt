@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.events.getDefaultScope
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.slf4j.toKLogger
 import kotlinx.coroutines.*
-import mu.KLogger
-import mu.KotlinLogging
-import mu.toKLogger
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.util.concurrent.Executors

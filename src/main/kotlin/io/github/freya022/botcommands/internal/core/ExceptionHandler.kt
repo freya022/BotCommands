@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.unwrap
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
 import net.dv8tion.jda.api.events.Event
 
 internal class ExceptionHandler(private val context: BContext, private val logger: KLogger) {

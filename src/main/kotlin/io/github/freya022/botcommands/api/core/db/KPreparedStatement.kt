@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.core.db
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import java.sql.PreparedStatement
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue

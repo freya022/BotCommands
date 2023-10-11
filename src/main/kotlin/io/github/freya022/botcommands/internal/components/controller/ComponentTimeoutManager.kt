@@ -17,11 +17,11 @@ import io.github.freya022.botcommands.internal.components.repositories.Component
 import io.github.freya022.botcommands.internal.components.repositories.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.reflection.MemberFunction
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import mu.KotlinLogging
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure

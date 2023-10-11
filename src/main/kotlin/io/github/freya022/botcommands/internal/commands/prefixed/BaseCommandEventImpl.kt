@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.utils.EmojiUtils
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message

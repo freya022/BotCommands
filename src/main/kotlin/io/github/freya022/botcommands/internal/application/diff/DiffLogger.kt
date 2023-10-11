@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.application.diff
 
 import io.github.freya022.botcommands.internal.application.diff.DiffLogger.Companion.logger
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 internal interface DiffLogger {
     fun trace(indent: Int, formatStr: String, vararg objects: Any?)

@@ -19,8 +19,8 @@ import io.github.freya022.botcommands.internal.core.service.*
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User

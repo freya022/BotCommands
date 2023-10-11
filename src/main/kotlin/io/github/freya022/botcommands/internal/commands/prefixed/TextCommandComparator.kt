@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.met
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.math.min
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure

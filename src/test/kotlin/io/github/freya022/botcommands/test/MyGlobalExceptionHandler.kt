@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.test
 
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandlerAdapter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 
 @BService

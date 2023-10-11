@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
 import io.github.freya022.botcommands.internal.core.service.ServiceAnnotationsMapProcessor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
 import java.util.*
 import kotlin.coroutines.Continuation
