@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -110,31 +111,32 @@ class SlashCommandOptionBuilder internal constructor(
      * Declares an autocomplete function for slash command options.
      *
      * The name of the handler must be unique,
-     * I recommend naming them like: `YourClassSimpleName: AutocompletedField`<br>
-     * Example: `SlashTag: tagName`
+     * I recommend naming them like: `YourClassSimpleName: AutocompletedField` such as `SlashTag: tagName`.
      *
      * Requirements:
      *  - The method must be public
      *  - The method must be non-static
      *  - The first parameter must be [CommandAutoCompleteInteractionEvent]
      *
-     * The annotated method returns a [List] of the following types:
-     *  - String, Long, Double -> Choice(String, String), uses fuzzy matching to give the best choices first
-     *  - Choice -> keep the same choice, same order as provided
-     *  - T (the type of your choice) -> Transformer -> Choice, same order as provided<br>
-     *    i.e. this means that an [AutocompleteTransformer] will be used to transform the items of your list, while preserving the order.
+     * The annotated method must returns a [List], which gets processed differently based on its element type:
+     *  - `String`, `Long`, `Double`: Makes a choice where `name` == `value`,
+     *  uses fuzzy matching to give the best choices first
+     *  - `Choice`: Keeps the same choices in the same order, does not do any matching.
+     *  - Any type supported by an [AutocompleteTransformer]: Keeps the same order after transformation.
      *
-     * You can add more List element types with [BApplicationConfigBuilder.registerAutocompleteTransformer]
+     * You can add more List element types by having a service implementing [AutocompleteTransformer],
+     * or with [BApplicationConfigBuilder.registerAutocompleteTransformer].
      *
-     * ## State aware autocomplete
+     * ## State-aware autocomplete
      * You can also use state-aware autocomplete,
-     * as you can retrieve parameters the user has **already** entered.
+     * meaning you can get what the user has inserted in other options.
      *
      * The requirements are as follows:
-     *  - The parameters must be named the same as in the original slash command
-     *  - The parameters of the same name must have the same type as the original slash command
+     *  - The parameters must be named the same as in the original slash command.
+     *  - The parameters of the same name must have the same type as the original slash command.
+     *  - The parameters can be in any order, include custom parameters or omit options.
      *
-     * You are free to add custom options, or omit parameters.
+     * **Note:** Parameters refers to method parameters, not Discord options.
      *
      * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or be in an existing [@Command][Command] class.
      *
