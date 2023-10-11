@@ -59,7 +59,7 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
 
 You can then head over to [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/setup/getting-started/) 
-to get using a bot template.
+to get started using a bot template.
 
 [//]: # (TODO keep an eye out for this wiki link)
 
@@ -182,17 +182,19 @@ You can find a number of feature demonstrations in the [examples subproject](exa
 - Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/3.X/setup/logging/)
 - Look at the switches in `BDebugConfig`
 
-[//]: # (TODO update live templates)
-[//]: # (## Live templates)
+## Live templates
 
-[//]: # ()
-[//]: # (If you use IntelliJ, you can use the "live templates" provided [in live_templates.zip]&#40;live_templates.zip&#41;, this will help you make commands and handlers with predefined templates and ask you to complete them)
+If you use IntelliJ, you can use the "live templates" provided in [this zip file](BotCommands%203.X%20Live%20Templates.zip),
+which will help you make commands and other handlers with predefined templates, for both Kotlin and Java.
 
-[//]: # ()
-[//]: # (For example: if you type `slash` in your class, this will generate a slash command declaration and ask you to complete the command name, description, etc... Of course there are many more templates, you can see all of these in `Settings > Editor > Live Templates` and in the `BotCommands` group )
+For example, if you type `slashCommand` in your class, this will generate a slash command 
+and guide you through the declaration. 
+This helps you keep a consistent naming scheme and act as a cheatsheet.
 
-[//]: # ()
-[//]: # (If you don't know how to install live templates, you can follow [this guide from JetBrains]&#40;https://www.jetbrains.com/help/idea/sharing-live-templates.html#import&#41;)
+A list of live template can be found in `Settings > Editor > Live Templates`,
+in the `BotCommands 3.X - [Language]` group.
+
+For an installation guide, you can follow [this guide from JetBrains](https://www.jetbrains.com/help/idea/sharing-live-templates.html#import).
 
 ## Support
 
