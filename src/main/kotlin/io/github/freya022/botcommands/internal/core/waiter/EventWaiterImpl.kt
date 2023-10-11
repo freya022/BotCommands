@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.api.core.waiter.EventWaiterBuilder
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.referenceString
+import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -140,7 +140,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
                     Enabled intents: ${jdaIntents.joinToString { it.name }}
                     Intents needed: ${neededIntents.joinToString { it.name }}
                     Missing intents: ${missingIntents.joinToString { it.name }}
-                    If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.referenceString}
+                    If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.reference}
                     See ${eventType.simpleNestedName} for more detail
                 """.trimIndent()
             }

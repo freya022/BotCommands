@@ -64,7 +64,7 @@ internal class ComponentsListener(
 
             val componentId = event.componentId.toIntOrNull()
                 ?: return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
-                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.referenceString}" }
+                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
