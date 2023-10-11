@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.test.listeners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 private val logger = KotlinLogging.logger { }
@@ -12,6 +12,6 @@ private val logger = KotlinLogging.logger { }
 class DisabledTextListener {
     @BEventListener
     fun onMessage(event: MessageReceivedEvent) {
-        logger.trace("Received message in ${this.javaClass.simpleNestedName}" )
+        logger.trace { "Received message in ${this.javaClass.simpleNestedName}" }
     }
 }

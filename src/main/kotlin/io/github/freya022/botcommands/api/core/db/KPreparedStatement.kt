@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.core.db
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import java.sql.PreparedStatement
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
@@ -27,7 +27,7 @@ class KPreparedStatement @PublishedApi internal constructor(
     }
 
     private inline fun <R> withLoggedParametrizedQuery(params: Array<out Any?>, block: () -> R): R {
-        val isTraceLogEnabled = database.config.logQueries && logger.isTraceEnabled
+        val isTraceLogEnabled = database.config.logQueries && logger.isTraceEnabled()
         val isQueryThresholdSet = database.config.queryLogThreshold.isFinite() && database.config.queryLogThreshold.isPositive()
         if (!isTraceLogEnabled && !isQueryThresholdSet) {
             setParameters(params)
@@ -50,7 +50,7 @@ class KPreparedStatement @PublishedApi internal constructor(
             if (isQueryThresholdSet && timedValue.duration > database.config.queryLogThreshold) {
                 val duration = timedValue.duration
                 val prefix = if (result.isSuccess) "Ran" else "Failed"
-                logger.warn("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery")
+                logger.warn { "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery" }
             }
 
             return result.getOrThrow()

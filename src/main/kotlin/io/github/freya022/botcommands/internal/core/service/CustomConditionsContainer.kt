@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveRefe
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
 import io.github.freya022.botcommands.internal.utils.createSingleton
 import io.github.freya022.botcommands.internal.utils.requireUser
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmName

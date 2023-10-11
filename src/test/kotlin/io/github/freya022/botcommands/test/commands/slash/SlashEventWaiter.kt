@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.api.core.waiter.await
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException

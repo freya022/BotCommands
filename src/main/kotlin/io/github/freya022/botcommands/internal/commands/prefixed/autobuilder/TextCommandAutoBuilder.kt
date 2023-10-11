@@ -29,7 +29,7 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -92,7 +92,7 @@ internal class TextCommandAutoBuilder(
             try {
                 processCommand(manager, container)
             } catch (e: Exception) {
-                logger.error("An exception occurred while registering annotated text command '${container.name}'", e)
+                logger.error(e) { "An exception occurred while registering annotated text command '${container.name}'" }
             }
         }
     }

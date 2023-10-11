@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunc
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.isSubclassOf

@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.internal.core.service.getParameters
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 
@@ -38,7 +38,7 @@ internal class TextCommandsBuilder(
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(TextCommandManager::class))
 
-        logger.debug("Loaded ${declarationFunctions.size} text command declaration functions")
+        logger.debug { "Loaded ${declarationFunctions.size} text command declaration functions" }
         if (declarationFunctions.isNotEmpty()) {
             logger.trace { "Text command declaration functions:\n" + declarationFunctions.joinAsList { it.function.shortSignature } }
         }
@@ -54,7 +54,7 @@ internal class TextCommandsBuilder(
 
             manager.textCommands.map.values.forEach { context.textCommandsContext.addTextCommand(it) }
         } catch (e: Throwable) {
-            logger.error("An error occurred while updating global commands", e)
+            logger.error(e) { "An error occurred while updating global commands" }
         }
     }
 

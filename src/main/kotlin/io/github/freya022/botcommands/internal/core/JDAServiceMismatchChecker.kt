@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 
@@ -19,14 +19,14 @@ internal object JDAServiceMismatchChecker {
             val jdaIntents = event.jda.gatewayIntents
             val jdaServiceIntents = jdaService.intents
             if (jdaIntents != jdaServiceIntents) {
-                logger.warn(
+                logger.warn {
                     """
                         The intents given in JDAService and JDA should be the same!
                         JDA intents: $jdaIntents
                         JDAService intents: $jdaServiceIntents
                         Hint: you should pass ${JDAService::intents.referenceString} to your builder
                     """.trimIndent()
-                )
+                }
             }
         }
     }

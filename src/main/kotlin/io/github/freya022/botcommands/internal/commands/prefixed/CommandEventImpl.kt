@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.findEntity
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -166,11 +166,9 @@ internal class CommandEventImpl private constructor(
                 if (mentionable != null) {
                     arguments.add(mentionable)
                 } else {
-                    logger.error(
-                        "Unresolved mentionable : '{}' of type {}, maybe you haven't enabled a cache flag / intent ?",
-                        substring,
-                        type.name
-                    )
+                    logger.error {
+                        "Unresolved mentionable : '${substring}' of type ${type.name}, maybe you haven't enabled a cache flag / intent ?"
+                    }
                 }
             } else if (substring.isNotEmpty()) {
                 arguments.addAll(substring.split(' ').dropLastWhile { it.isEmpty() })

@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -160,7 +160,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                 serviceResult.serviceError?.let { serviceError ->
                     val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}):\n${serviceError.toSimpleString()}"
                     if (interfacedServiceErrors.add(warnMessage)) {
-                        logger.debug(warnMessage)
+                        logger.debug { warnMessage }
                     }
                 }
                 serviceResult.getOrNull()

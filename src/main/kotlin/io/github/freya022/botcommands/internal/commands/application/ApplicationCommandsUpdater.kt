@@ -20,9 +20,9 @@ import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowUser
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -74,7 +74,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
             else -> {
                 if (Files.notExists(commandsCachePath)) {
-                    logger.trace("Updating commands because cache file does not exists")
+                    logger.trace { "Updating commands because cache file does not exists" }
                     return true
                 }
 
@@ -87,7 +87,7 @@ internal class ApplicationCommandsUpdater private constructor(
         val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
-                logger.trace("Updating commands because content is not equal")
+                logger.trace { "Updating commands because content is not equal" }
 
                 if (context.debugConfig.enableApplicationDiffsLogs) {
                     logger.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
@@ -194,7 +194,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun printPushedCommandData(commands: List<Command>, guild: Guild?) {
-        if (!logger.isTraceEnabled) return
+        if (!logger.isTraceEnabled()) return
 
         logger.trace {
             val commandNumber = commands.size

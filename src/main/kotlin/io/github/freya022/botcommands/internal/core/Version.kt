@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 
 // This really needs to not be critical
@@ -44,13 +44,13 @@ internal class Version private constructor(
         fun checkVersions() {
             val requiredJdaVersionStr = BCInfo.BUILD_JDA_VERSION
             val requiredJdaVersion = getOrNull(requiredJdaVersionStr) ?: let {
-                logger.warn("Unrecognized built-with JDA version: $requiredJdaVersionStr")
+                logger.warn { "Unrecognized built-with JDA version: $requiredJdaVersionStr" }
                 return
             }
 
             val currentJdaVersionStr = JDAInfo.VERSION
             val currentJdaVersion = getOrNull(currentJdaVersionStr) ?: let {
-                logger.warn("Unrecognized JDA version: $currentJdaVersionStr")
+                logger.warn { "Unrecognized JDA version: $currentJdaVersionStr" }
                 return
             }
 

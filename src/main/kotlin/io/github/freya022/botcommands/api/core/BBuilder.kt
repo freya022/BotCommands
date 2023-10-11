@@ -15,9 +15,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.Version
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
@@ -120,11 +120,11 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             val context = BContextImpl(config, manager)
 
             if (context.ownerIds.isEmpty())
-                logger.info("No owner ID specified, exceptions won't be sent to owners")
+                logger.info { "No owner ID specified, exceptions won't be sent to owners" }
             if (config.disableExceptionsInDMs)
-                logger.info("Configuration disabled sending exception in bot owners DMs")
+                logger.info { "Configuration disabled sending exception in bot owners DMs" }
             if (config.disableAutocompleteCache)
-                logger.info("Configuration disabled autocomplete cache, except forced caches")
+                logger.info { "Configuration disabled autocomplete cache, except forced caches" }
 
             context.serviceContainer.loadServices(ServiceStart.DEFAULT)
 

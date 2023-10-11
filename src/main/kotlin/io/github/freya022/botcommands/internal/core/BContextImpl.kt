@@ -19,8 +19,8 @@ import io.github.freya022.botcommands.internal.core.service.*
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -116,7 +116,7 @@ class BContextImpl internal constructor(override val config: BConfig, val eventM
                 }
                 .queue(
                     null,
-                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn("Could not send exception DM to owner") }
+                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn { "Could not send exception DM to owner" } }
                 )
         }
     }

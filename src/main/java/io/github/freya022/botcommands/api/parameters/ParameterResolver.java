@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.Logging;
 import io.github.freya022.botcommands.api.core.entities.InputUser;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.core.utils.ReflectionUtils;
+import io.github.oshai.kotlinlogging.KLogger;
+import io.github.oshai.kotlinlogging.slf4j.Slf4jExtensionsKt;
 import kotlin.reflect.KClass;
-import mu.KLogger;
-import mu.KotlinLoggingKt;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -49,7 +49,7 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused") //T is used for the inheritance constraint
 @InterfacedService(acceptMultiple = true)
 public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
-	protected final KLogger LOGGER = KotlinLoggingKt.toKLogger(Logging.getLogger(this));
+	protected final KLogger LOGGER = Slf4jExtensionsKt.toKLogger(Logging.getLogger(this));
 
 	private final KClass<R> jvmErasure;
 
