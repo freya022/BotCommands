@@ -15,7 +15,7 @@ internal class ExceptionHandler(private val context: BContext, private val logge
         }
 
         val errorMessage = "Uncaught exception in $locationDescription"
-        logger.error(errorMessage, unreflectedException)
+        logger.error(unreflectedException) { errorMessage }
         context.dispatchException(errorMessage, unreflectedException)
     }
 }

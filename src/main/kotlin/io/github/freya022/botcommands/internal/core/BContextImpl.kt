@@ -116,7 +116,7 @@ class BContextImpl internal constructor(override val config: BConfig, val eventM
                 }
                 .queue(
                     null,
-                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn("Could not send exception DM to owner") }
+                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn { "Could not send exception DM to owner" } }
                 )
         }
     }

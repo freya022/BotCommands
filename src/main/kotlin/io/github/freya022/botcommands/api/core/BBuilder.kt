@@ -120,11 +120,11 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             val context = BContextImpl(config, manager)
 
             if (context.ownerIds.isEmpty())
-                logger.info("No owner ID specified, exceptions won't be sent to owners")
+                logger.info { "No owner ID specified, exceptions won't be sent to owners" }
             if (config.disableExceptionsInDMs)
-                logger.info("Configuration disabled sending exception in bot owners DMs")
+                logger.info { "Configuration disabled sending exception in bot owners DMs" }
             if (config.disableAutocompleteCache)
-                logger.info("Configuration disabled autocomplete cache, except forced caches")
+                logger.info { "Configuration disabled autocomplete cache, except forced caches" }
 
             context.serviceContainer.loadServices(ServiceStart.DEFAULT)
 

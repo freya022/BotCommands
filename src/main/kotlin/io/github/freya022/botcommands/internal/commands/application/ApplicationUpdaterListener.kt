@@ -16,13 +16,13 @@ internal class ApplicationUpdaterListener(private val applicationCommandsBuilder
 
     @BEventListener
     suspend fun onGuildAvailable(event: GuildAvailableEvent) {
-        logger.trace("Trying to force update commands due to an unavailable guild becoming available")
+        logger.trace { "Trying to force update commands due to an unavailable guild becoming available" }
         tryUpdate(event.guild, force = true)
     }
 
     @BEventListener
     suspend fun onGuildJoin(event: GuildJoinEvent) {
-        logger.trace("Trying to force update commands due to a joined guild")
+        logger.trace { "Trying to force update commands due to a joined guild" }
         tryUpdate(event.guild, force = true)
     }
 

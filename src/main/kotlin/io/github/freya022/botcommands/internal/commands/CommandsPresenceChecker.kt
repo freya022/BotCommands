@@ -51,15 +51,13 @@ class CommandsPresenceChecker : ClassGraphProcessor {
 
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
-            logger.warn("Some classes annotated with @${Command::class.simpleNestedName} were found to have no command declarations:\n${
-                noDeclarationClasses.joinAsList()
-            }")
+            logger.warn {
+                "Some classes annotated with @${Command::class.simpleNestedName} were found to have no command declarations:\n${noDeclarationClasses.joinAsList()}"
+            }
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some command declarations do not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${
-                noAnnotationMethods.joinAsList()
-            }")
+            throw IllegalStateException("Some command declarations do not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${noAnnotationMethods.joinAsList()}")
         }
     }
 }

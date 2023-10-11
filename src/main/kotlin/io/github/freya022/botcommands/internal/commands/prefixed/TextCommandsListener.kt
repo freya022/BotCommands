@@ -46,10 +46,7 @@ internal class TextCommandsListener internal constructor(
 
         if (!event.isFromGuild) return
 
-        val member = event.member ?: let {
-            logger.error("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
-            return
-        }
+        val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
 
         val isBotMentioned = event.message.mentions.isMentioned(event.jda.selfUser)
         if (GatewayIntent.MESSAGE_CONTENT !in event.jda.gatewayIntents && !isBotMentioned) return

@@ -39,7 +39,7 @@ internal open class BaseCommandEventImpl(
     override fun getArgumentsStr(): String = argumentsStr
 
     override fun reportError(message: String, e: Throwable) {
-        channel.sendMessage(message).queue(null) { t: Throwable? -> logger.error("Could not send message to channel : {}", message, t) }
+        channel.sendMessage(message).queue(null) { t: Throwable? -> logger.error(t) { "Could not send message to channel : $message" } }
         context.dispatchException(message, e)
     }
 

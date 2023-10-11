@@ -166,11 +166,9 @@ internal class CommandEventImpl private constructor(
                 if (mentionable != null) {
                     arguments.add(mentionable)
                 } else {
-                    logger.error(
-                        "Unresolved mentionable : '{}' of type {}, maybe you haven't enabled a cache flag / intent ?",
-                        substring,
-                        type.name
-                    )
+                    logger.error {
+                        "Unresolved mentionable : '${substring}' of type ${type.name}, maybe you haven't enabled a cache flag / intent ?"
+                    }
                 }
             } else if (substring.isNotEmpty()) {
                 arguments.addAll(substring.split(' ').dropLastWhile { it.isEmpty() })

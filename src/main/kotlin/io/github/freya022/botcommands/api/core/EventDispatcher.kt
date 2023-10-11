@@ -154,7 +154,7 @@ class EventDispatcher internal constructor(
                     function.callSuspend(instance, event, *eventHandlerFunction.parameters)
                 }
                 if (result == null) {
-                    logger.debug("Event of type ${event.javaClass.simpleName} timed out.")
+                    logger.debug { "Event of type ${event.javaClass.simpleName} timed out." }
                 }
             } else {
                 function.callSuspend(instance, event, *eventHandlerFunction.parameters)
@@ -233,8 +233,8 @@ class EventDispatcher internal constructor(
         }
     }
 
-    private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
-        "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
-        e.unwrap()
-    )
+    private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) =
+        logger.error(e.unwrap()) {
+            "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}"
+        }
 }

@@ -74,7 +74,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
             else -> {
                 if (Files.notExists(commandsCachePath)) {
-                    logger.trace("Updating commands because cache file does not exists")
+                    logger.trace { "Updating commands because cache file does not exists" }
                     return true
                 }
 
@@ -87,7 +87,7 @@ internal class ApplicationCommandsUpdater private constructor(
         val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
-                logger.trace("Updating commands because content is not equal")
+                logger.trace { "Updating commands because content is not equal" }
 
                 if (context.debugConfig.enableApplicationDiffsLogs) {
                     logger.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
@@ -194,7 +194,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun printPushedCommandData(commands: List<Command>, guild: Guild?) {
-        if (!logger.isTraceEnabled) return
+        if (!logger.isTraceEnabled()) return
 
         logger.trace {
             val commandNumber = commands.size

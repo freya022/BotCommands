@@ -24,12 +24,9 @@ internal class BCLocalizationFunction(private val context: BContextImpl) : Local
                 if (instance != null) {
                     if (instance.effectiveLocale !== locale) {
                         SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), instance.effectiveLocale.toLanguageTag()) {
-                            logger.warn(
-                                "Localization bundle '{}' with locale '{}' was specified to be valid but was not found, falling back to '{}'",
-                                baseName,
-                                locale,
-                                instance.effectiveLocale
-                            )
+                            logger.warn {
+                                "Localization bundle '${baseName}' with locale '${locale}' was specified to be valid but was not found, falling back to '${instance.effectiveLocale}'"
+                            }
                         }
                     }
 
@@ -38,17 +35,14 @@ internal class BCLocalizationFunction(private val context: BContextImpl) : Local
                         map[locale.toDiscordLocale()] = template.localize()
                     } else if (context.debugConfig.enabledMissingLocalizationLogs) {
                         SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), localizationKey) {
-                            logger.warn(
-                                "Localization template '{}' could not be found in bundle '{}' with locale '{}' or below",
-                                localizationKey,
-                                baseName,
-                                locale
-                            )
+                            logger.warn {
+                                "Localization template '${localizationKey}' could not be found in bundle '${baseName}' with locale '${locale}' or below"
+                            }
                         }
                     }
                 } else {
                     SingleLogger.current().tryLog(baseName, locale.toLanguageTag()) {
-                        logger.warn("Localization bundle '{}' with locale '{}' was specified to be valid but was not found.", baseName, locale)
+                        logger.warn { "Localization bundle '${baseName}' with locale '${locale}' was specified to be valid but was not found." }
                     }
                 }
             }

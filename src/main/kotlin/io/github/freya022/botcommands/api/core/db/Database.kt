@@ -130,7 +130,7 @@ internal fun createCoroutineDump(): String? = when {
         outputStream.toByteArray().decodeToString()
     }
     else -> {
-        logger.warn("Skipping coroutine dump as debug probes are not installed, use DebugProbes#install from kotlinx-coroutines-debug")
+        logger.warn { "Skipping coroutine dump as debug probes are not installed, use DebugProbes#install from kotlinx-coroutines-debug" }
         null
     }
 }

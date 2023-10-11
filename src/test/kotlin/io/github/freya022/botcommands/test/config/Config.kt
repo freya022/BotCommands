@@ -26,7 +26,7 @@ data class Config(val token: String,
 
         @get:BService
         val instance: Config by lazy {
-            logger.info("Loading configuration at ${configFilePath.absolutePathString()}")
+            logger.info { "Loading configuration at ${configFilePath.absolutePathString()}" }
 
             return@lazy Gson().fromJson(configFilePath.readText(), Config::class.java)
         }

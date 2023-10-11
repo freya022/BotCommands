@@ -53,9 +53,9 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                         throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 
                     UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
-                        if (logger.isTraceEnabled) {
+                        if (logger.isTraceEnabled()) {
                             logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
-                        } else if (logger.isDebugEnabled) {
+                        } else if (logger.isDebugEnabled()) {
                             logger.debug { "Service ${clazz.simpleNestedName} not loaded: ${serviceError.toSimpleString()}" }
                         }
                     }
@@ -145,7 +145,7 @@ internal class ServiceAnnotationsMap private constructor(
     internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>, annotation: A) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
         if (annotationReceiver in instanceAnnotationMap) {
-            logger.warn("An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'")
+            logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
             return
         }
         instanceAnnotationMap.putIfAbsent(annotationReceiver, annotation)

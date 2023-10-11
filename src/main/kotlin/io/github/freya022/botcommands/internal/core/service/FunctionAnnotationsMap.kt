@@ -40,7 +40,7 @@ internal class FunctionAnnotationsMap(context: BContextImpl, instantiableService
     private fun <A : Annotation> put(context: BContextImpl, kClass: KClass<*>, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
         if (annotationReceiver in instanceAnnotationMap) {
-            logger.warn("An annotation instance of type '${annotationType.simpleNestedName}' already exists on function '${annotationReceiver.shortSignature}'")
+            logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on function '${annotationReceiver.shortSignature}'" }
             return
         }
         instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, kClass, annotationReceiver)

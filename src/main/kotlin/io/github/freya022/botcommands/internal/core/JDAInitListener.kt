@@ -30,7 +30,7 @@ internal data object JDAInitListener {
                         - Building JDA in a service annotated with @${BService::class.simpleName}(start = ServiceStart.READY)
                 """.trimIndent()
             )
-            logger.error("An exception occurred while initializing the framework", exception)
+            logger.error(exception) { "An exception occurred while initializing the framework" }
 
             Runtime.getRuntime().halt(112) //No choice, the events are async and can't stop initialization
         }

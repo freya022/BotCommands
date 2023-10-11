@@ -47,10 +47,7 @@ internal class ComponentTimeoutManager(
             timeoutMap.remove(id)
 
             val component = componentRepository.getComponent(id)
-            if (component == null) {
-                logger.warn("Component $id was still timeout scheduled after being deleted")
-                return@launch
-            }
+                ?: return@launch logger.warn { "Component $id was still timeout scheduled after being deleted" }
 
             //Will also cancel timeouts of related components
             componentController.deleteComponent(component, isTimeout = true)
@@ -62,14 +59,12 @@ internal class ComponentTimeoutManager(
                 is PersistentTimeout -> {
                     val handlerName = componentTimeout.handlerName ?: return@launch
                     val handler = when (component.componentType) {
-                        ComponentType.GROUP -> groupTimeoutHandlers[handlerName] ?: let {
-                            logger.warn("Could not find group timeout handler: $handlerName")
-                            return@launch
-                        }
-                        else -> componentTimeoutHandlers[handlerName] ?: let {
-                            logger.warn("Could not find component timeout handler: $handlerName")
-                            return@launch
-                        }
+                        ComponentType.GROUP ->
+                            groupTimeoutHandlers[handlerName]
+                                ?: return@launch logger.warn { "Could not find group timeout handler: $handlerName" }
+                        else ->
+                            componentTimeoutHandlers[handlerName]
+                                ?: return@launch logger.warn { "Could not find component timeout handler: $handlerName" }
                     }
 
                     val firstParameter: Any = when (component.componentType) {

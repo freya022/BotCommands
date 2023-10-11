@@ -92,7 +92,7 @@ internal class TextCommandAutoBuilder(
             try {
                 processCommand(manager, container)
             } catch (e: Exception) {
-                logger.error("An exception occurred while registering annotated text command '${container.name}'", e)
+                logger.error(e) { "An exception occurred while registering annotated text command '${container.name}'" }
             }
         }
     }

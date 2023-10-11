@@ -19,14 +19,14 @@ internal object JDAServiceMismatchChecker {
             val jdaIntents = event.jda.gatewayIntents
             val jdaServiceIntents = jdaService.intents
             if (jdaIntents != jdaServiceIntents) {
-                logger.warn(
+                logger.warn {
                     """
                         The intents given in JDAService and JDA should be the same!
                         JDA intents: $jdaIntents
                         JDAService intents: $jdaServiceIntents
                         Hint: you should pass ${JDAService::intents.referenceString} to your builder
                     """.trimIndent()
-                )
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<out String>) {
         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
-        logger.info("Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}")
+        logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
         // I use hotswap agent in order to update my code without restarting the bot
         // Of course this only supports modifying existing code
@@ -31,10 +31,10 @@ object Main {
         // stacktrace-decoroutinator has issues when reloading with hotswap agent
         when {
             "-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments ->
-                logger.info("Skipping stacktrace-decoroutinator as enhanced hotswap is active")
+                logger.info { "Skipping stacktrace-decoroutinator as enhanced hotswap is active" }
 
             "--no-decoroutinator" in args ->
-                logger.info("Skipping stacktrace-decoroutinator as --no-decoroutinator is specified")
+                logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
 
             else -> DecoroutinatorRuntime.load()
         }

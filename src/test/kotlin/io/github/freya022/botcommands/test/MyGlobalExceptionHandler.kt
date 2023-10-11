@@ -10,6 +10,6 @@ object MyGlobalExceptionHandler : GlobalExceptionHandlerAdapter() {
     private val logger = KotlinLogging.logger { }
 
     override fun handle(event: Event?, throwable: Throwable) {
-        logger.error("Custom exception handling", throwable)
+        logger.error(throwable) { "Custom exception handling" }
     }
 }

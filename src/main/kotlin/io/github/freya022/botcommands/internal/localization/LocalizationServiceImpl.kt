@@ -54,7 +54,8 @@ internal class LocalizationServiceImpl internal constructor(
     private fun retrieveLocalization(baseName: String, targetLocale: Locale): LocalizationImpl? {
         return when (val localizationMap = localizationMapProviders.cycleProvidersWithParents(baseName, targetLocale)) {
             null -> {
-                if (SingleLogger.current().tryLog(baseName)) logger.warn("Could not find localization resources for '{}'", baseName)
+                if (SingleLogger.current().tryLog(baseName))
+                    logger.warn { "Could not find localization resources for '${baseName}'" }
 
                 null
             }
@@ -62,10 +63,10 @@ internal class LocalizationServiceImpl internal constructor(
                 if (localizationMap.effectiveLocale != targetLocale) { //Not default
                     if (localizationMap.effectiveLocale.toString().isEmpty()) { //neutral lang
                         if (SingleLogger.current().tryLog(baseName, targetLocale.toLanguageTag()))
-                            logger.warn("Unable to find bundle '{}' with locale '{}', falling back to neutral lang", baseName, targetLocale)
+                            logger.warn { "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to neutral lang" }
                     } else {
                         if (SingleLogger.current().tryLog(baseName, targetLocale.toLanguageTag(), localizationMap.effectiveLocale.toLanguageTag()))
-                            logger.warn("Unable to find bundle '{}' with locale '{}', falling back to '{}'", baseName, targetLocale, localizationMap.effectiveLocale)
+                            logger.warn { "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to '${localizationMap.effectiveLocale}'" }
                     }
                 }
 

@@ -134,7 +134,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         val neededIntents = GatewayIntent.fromEvents(eventType)
         val missingIntents = neededIntents - jdaIntents
         if (missingIntents.isNotEmpty() && warnedEventTypes.add(eventType)) {
-            logger.warn(
+            logger.warn {
                 """
                     Cannot listen to a ${eventType.simpleNestedName} as there are missing intents:
                     Enabled intents: ${jdaIntents.joinToString { it.name }}
@@ -143,7 +143,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
                     If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.referenceString}
                     See ${eventType.simpleNestedName} for more detail
                 """.trimIndent()
-            )
+            }
         }
 
         if (RawGatewayEvent::class.java.isAssignableFrom(eventType)) {

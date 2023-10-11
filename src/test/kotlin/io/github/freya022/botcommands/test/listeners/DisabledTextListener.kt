@@ -12,6 +12,6 @@ private val logger = KotlinLogging.logger { }
 class DisabledTextListener {
     @BEventListener
     fun onMessage(event: MessageReceivedEvent) {
-        logger.trace("Received message in ${this.javaClass.simpleNestedName}" )
+        logger.trace { "Received message in ${this.javaClass.simpleNestedName}" }
     }
 }

@@ -50,9 +50,9 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
 
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
-            logger.warn("Some classes annotated with @${Handler::class.simpleNestedName} were found to have no handler declarations:\n${
-                noDeclarationClasses.joinAsList()
-            }")
+            logger.warn {
+                "Some classes annotated with @${Handler::class.simpleNestedName} were found to have no handler declarations:\n${noDeclarationClasses.joinAsList()}"
+            }
         }
 
         if (noAnnotationMethods.isNotEmpty()) {

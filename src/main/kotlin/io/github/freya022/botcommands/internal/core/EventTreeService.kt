@@ -26,6 +26,6 @@ internal class EventTreeService internal constructor() {
         }
 
     internal fun getSubclasses(kClass: KClass<*>): List<KClass<*>> = map[kClass] ?: emptyList<KClass<*>>().also {
-        logger.warn("Unknown event type: ${kClass.jvmName}")
+        logger.warn { "Unknown event type: ${kClass.jvmName}" }
     }
 }

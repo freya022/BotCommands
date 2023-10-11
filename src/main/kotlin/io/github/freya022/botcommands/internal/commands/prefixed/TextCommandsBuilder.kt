@@ -38,7 +38,7 @@ internal class TextCommandsBuilder(
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(TextCommandManager::class))
 
-        logger.debug("Loaded ${declarationFunctions.size} text command declaration functions")
+        logger.debug { "Loaded ${declarationFunctions.size} text command declaration functions" }
         if (declarationFunctions.isNotEmpty()) {
             logger.trace { "Text command declaration functions:\n" + declarationFunctions.joinAsList { it.function.shortSignature } }
         }
@@ -54,7 +54,7 @@ internal class TextCommandsBuilder(
 
             manager.textCommands.map.values.forEach { context.textCommandsContext.addTextCommand(it) }
         } catch (e: Throwable) {
-            logger.error("An error occurred while updating global commands", e)
+            logger.error(e) { "An error occurred while updating global commands" }
         }
     }
 

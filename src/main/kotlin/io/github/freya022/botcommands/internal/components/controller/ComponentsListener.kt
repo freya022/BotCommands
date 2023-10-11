@@ -153,7 +153,7 @@ internal class ComponentsListener(
             is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit)
             is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit)
             else -> {
-                logger.warn("Unhandled component event: ${event::class.simpleName}")
+                logger.warn { "Unhandled component event: ${event::class.simpleName}" }
                 null
             }
         }
