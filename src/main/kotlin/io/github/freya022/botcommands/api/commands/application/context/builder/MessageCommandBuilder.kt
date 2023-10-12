@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.context.builder
 
+import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
@@ -18,6 +19,7 @@ class MessageCommandBuilder internal constructor(
 ) : ApplicationCommandBuilder<MessageCommandOptionAggregateBuilder>(context, name, function),
     ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
 
+    override val type: CommandType = CommandType.MESSAGE_CONTEXT
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 

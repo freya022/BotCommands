@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.builder
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.*
@@ -19,6 +20,8 @@ import kotlin.time.Duration
 
 @CommandDSL
 abstract class CommandBuilder internal constructor(protected val context: BContext, override val name: String) : INamedCommand {
+    internal abstract val type: CommandType
+
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
@@ -45,7 +48,7 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ) {
-        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(path.fullPath, bucketFactory, limiterFactory, block)
+        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit("$type: ${path.fullPath}", bucketFactory, limiterFactory, block)
     }
 
     /**

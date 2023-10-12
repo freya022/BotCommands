@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.prefixed.builder
 
+import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.NSFWStrategyBuilder
@@ -15,6 +16,7 @@ import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
 abstract class TextCommandBuilder internal constructor(context: BContext, name: String) : CommandBuilder(context, name) {
+    override val type: CommandType = CommandType.TEXT
     internal val subcommands: MutableList<TextSubcommandBuilder> = arrayListOf()
 
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
@@ -72,7 +74,6 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
         subcommands += TextSubcommandBuilder(context, name, this).apply(block)
     }
 
-    @JvmOverloads
     fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {}) {
         variations += TextCommandVariationBuilder(context, function).apply(block)
     }

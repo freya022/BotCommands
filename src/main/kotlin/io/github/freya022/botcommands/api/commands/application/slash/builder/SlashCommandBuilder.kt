@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
+import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
@@ -21,6 +22,8 @@ abstract class SlashCommandBuilder internal constructor(
     name: String,
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(context, name, function ?: fakeSlashFunction) {
+    override val type: CommandType = CommandType.SLASH
+
     /**
      * Short description of the command displayed on Discord.
      *
