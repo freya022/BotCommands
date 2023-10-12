@@ -27,8 +27,8 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
-class ModalHandlerInfo(
-    val context: BContextImpl,
+class ModalHandlerInfo internal constructor(
+    context: BContextImpl,
     override val eventFunction: MemberEventFunction<ModalInteractionEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>

@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.putConfigInServices
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.*
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
@@ -31,9 +30,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.minutes
 
-//TODO internal
-@InjectedService
-class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+internal class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
     override val serviceContainer: ServiceContainerImpl = ServiceContainerImpl(this) //Puts itself

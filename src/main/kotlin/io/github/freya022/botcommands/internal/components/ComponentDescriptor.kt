@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.jvm.jvmErasure
 
-class ComponentDescriptor(
+class ComponentDescriptor internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberEventFunction<GenericComponentInteractionCreateEvent, *>
 ) : IExecutableInteractionInfo {
