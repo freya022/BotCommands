@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
@@ -29,13 +28,19 @@ object TextUtils {
         }
 
         val prefix = event.context.prefix
-        for ((i, variation) in commandInfo.variations.withIndex()) {
-            val commandOptions = variation.parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
+        commandInfo.variations.forEachIndexed { i, variation ->
+            val commandOptionsByParameters = buildMap(variation.parameters.size * 2) {
+                variation.parameters.forEach {
+                    val allOptions = it.allOptions.filterIsInstance<TextCommandOption>()
+                    if (allOptions.isNotEmpty())
+                        this[it] = allOptions
+                }
+            }
 
             val syntax = StringBuilder("**Syntax**: $prefix$name ")
             val example = StringBuilder("**Example**: $prefix$name ")
 
-            if (commandOptions.isNotEmpty()) {
+            commandOptionsByParameters.forEach { (parameter, commandOptions) ->
                 val needsQuote = commandOptions.hasMultipleQuotable()
 
                 for (commandOption in commandOptions) {
@@ -45,14 +50,22 @@ object TextUtils {
                     val argExample = getArgExample(needsQuote, commandOption, event)
 
                     val isOptional = commandOption.isOptionalOrNullable
-                    syntax.append(if (isOptional) '[' else '`').append(argName).append(if (isOptional) ']' else '`').append(' ')
+                    syntax.append(if (isOptional) '[' else '`')
+                    syntax.append(argName)
+                    if (parameter.isVararg) syntax.append("...")
+                    syntax.append(if (isOptional) ']' else '`')
+                    syntax.append(' ')
+
                     example.append(argExample).append(' ')
+
+                    // Only insert one option is the containing parameter is a vararg
+                    if (parameter.isVararg) break
                 }
             }
 
             val effectiveCandidateDescription = when (description) {
                 DEFAULT_DESCRIPTION -> ""
-                else -> "**Description**: $description\n"
+                else -> "" //TODO use per-variant description, not per-command
             }
 
             if (commandInfo.variations.size == 1) {
@@ -62,7 +75,7 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo.path.components)
+        val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
