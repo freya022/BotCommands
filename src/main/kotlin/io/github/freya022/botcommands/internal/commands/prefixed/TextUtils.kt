@@ -19,60 +19,55 @@ object TextUtils {
         val author = if (!builder.isEmpty) builder.build().author else null
         when {
             author != null -> builder.setAuthor(author.name + " – '" + name + "' command", author.url, author.iconUrl)
-            else -> builder.setAuthor("'$name' command")
+            else -> builder.setAuthor("${event.jda.selfUser.effectiveName} - $name", null, event.jda.selfUser.effectiveAvatarUrl)
         }
 
         val description = commandInfo.description
         if (description != DEFAULT_DESCRIPTION) {
-            builder.addField("Description", description, false)
+            builder.appendDescription(description)
         }
 
         val prefix = event.context.prefix
-        commandInfo.variations.forEachIndexed { i, variation ->
-            val commandOptionsByParameters = buildMap(variation.parameters.size * 2) {
-                variation.parameters.forEach {
-                    val allOptions = it.allOptions.filterIsInstance<TextCommandOption>()
-                    if (allOptions.isNotEmpty())
-                        this[it] = allOptions
+        fun buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+            append(prefix)
+            append(name)
+            append(' ')
+
+            commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
+                val boxedType = commandOption.type.jvmErasure
+                val argName = getArgName(hasMultipleQuotable, commandOption, boxedType)
+
+                append(if (isOptional) '[' else '`')
+                append(argName)
+                if (commandOption.isVararg) append("...")
+                append(if (isOptional) ']' else '`')
+                append(' ')
+            }
+        }
+
+        fun buildExample(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+            append(prefix)
+            append(name)
+            append(' ')
+
+            commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
+                append(getArgExample(hasMultipleQuotable, commandOption, event))
+                append(' ')
+            }
+        }
+
+        if (commandInfo.variations.size == 1) {
+            val commandOptionsByParameters = commandInfo.variations.single().getCommandOptionsByParameters()
+            builder.appendDescription("\n**Usage:** ${buildUsage(commandOptionsByParameters)}")
+        } else {
+            builder.addField("Usages", buildString {
+                commandInfo.variations.forEachIndexed { i, variation ->
+                    val commandOptionsByParameters = variation.getCommandOptionsByParameters()
+                    appendLine("${i + 1}. ${buildUsage(commandOptionsByParameters)}")
+                    //TODO description
+                    appendLine("  - **Example:** ${buildExample(commandOptionsByParameters)}")
                 }
-            }
-
-            val syntax = StringBuilder("**Syntax**: $prefix$name ")
-            val example = StringBuilder("**Example**: $prefix$name ")
-
-            commandOptionsByParameters.forEach { (parameter, commandOptions) ->
-                val needsQuote = commandOptions.hasMultipleQuotable()
-
-                for (commandOption in commandOptions) {
-                    val boxedType = commandOption.type.jvmErasure
-
-                    val argName = getArgName(needsQuote, commandOption, boxedType)
-                    val argExample = getArgExample(needsQuote, commandOption, event)
-
-                    val isOptional = commandOption.isOptionalOrNullable
-                    syntax.append(if (isOptional) '[' else '`')
-                    syntax.append(argName)
-                    if (parameter.isVararg) syntax.append("...")
-                    syntax.append(if (isOptional) ']' else '`')
-                    syntax.append(' ')
-
-                    example.append(argExample).append(' ')
-
-                    // Only insert one option is the containing parameter is a vararg
-                    if (parameter.isVararg) break
-                }
-            }
-
-            val effectiveCandidateDescription = when (description) {
-                DEFAULT_DESCRIPTION -> ""
-                else -> "" //TODO use per-variant description, not per-command
-            }
-
-            if (commandInfo.variations.size == 1) {
-                builder.addField("Usage", "$effectiveCandidateDescription$syntax\n$example", false)
-            } else if (commandInfo.variations.size > 1) {
-                builder.addField("Overload #${i + 1}", "$effectiveCandidateDescription$syntax\n$example", false)
-            }
+            }, false)
         }
 
         val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
@@ -113,7 +108,34 @@ object TextUtils {
 
     @JvmStatic
     fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
-        count { p -> p.resolver is QuotableRegexParameterResolver } > 1
+        count { o -> o.resolver is QuotableRegexParameterResolver } > 1
+
+    @JvmStatic
+    fun TextCommandVariation.getCommandOptionsByParameters() = buildMap(parameters.size * 2) {
+        parameters.forEach {
+            val allOptions = it.allOptions.filterIsInstance<TextCommandOption>()
+            if (allOptions.isNotEmpty())
+                this[it] = allOptions
+        }
+    }
+
+    /**
+     * Only runs one option from a vararg parameter
+     */
+    @JvmStatic
+    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, hasMultipleQuotable: Boolean, isOptional: Boolean) -> Unit) {
+        forEach { (parameter, commandOptions) ->
+            val hasMultipleQuotable = commandOptions.hasMultipleQuotable()
+
+            for (commandOption in commandOptions) {
+                val isOptional = commandOption.isOptionalOrNullable
+                block(commandOption, hasMultipleQuotable, isOptional)
+
+                // Only run on one option if the containing parameter is a vararg
+                if (parameter.isVararg) break
+            }
+        }
+    }
 
     @JvmStatic
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =

@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.utils.delay
 import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
@@ -24,10 +25,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
 import java.util.*
+import kotlin.time.Duration.Companion.minutes
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -76,12 +80,12 @@ internal class HelpCommand internal constructor(private val context: BContextImp
             return
         }
 
-        sendCommandHelp(event, commandInfo)
+        sendCommandHelp(event, commandInfo, temporary = false)
     }
 
     override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
         context.coroutineScopesConfig.textCommandsScope.launch {
-            sendCommandHelp(event, commandInfo)
+            sendCommandHelp(event, commandInfo, temporary = true)
         }
     }
 
@@ -101,7 +105,7 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         }.getOrThrow()
     }
 
-    private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
+    private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo, temporary: Boolean) {
         val member = event.member
         val usability = Usability.of(context, commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
         if (usability.isNotShowable) {
@@ -110,7 +114,14 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         }
 
         val embed = generateCommandHelp(event, commandInfo)
-        event.respond(embed.build()).queue()
+        if (temporary) {
+            event.respond(embed.build())
+                .delay(1.minutes)
+                .flatMap(Message::delete)
+                .queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE, ErrorResponse.MISSING_ACCESS, ErrorResponse.MISSING_PERMISSIONS))
+        } else {
+            event.respond(embed.build()).queue()
+        }
     }
 
     private fun generateGlobalHelp(member: Member, channel: GuildMessageChannel): EmbedBuilder {
