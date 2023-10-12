@@ -17,8 +17,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-//TODO internal
-class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
+internal class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
     private val writeLock = ReentrantLock()
     private val liveApplicationCommandInfoMap = TLongObjectHashMap<ApplicationCommandMap>()
 

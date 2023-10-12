@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.minutes
 internal class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
-    override val serviceContainer: ServiceContainerImpl = ServiceContainerImpl(this) //Puts itself
+    override val serviceContainer = ServiceContainerImpl(this) //Puts itself
 
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
     internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()

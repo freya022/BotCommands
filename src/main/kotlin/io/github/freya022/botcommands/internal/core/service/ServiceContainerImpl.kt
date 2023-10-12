@@ -54,7 +54,7 @@ internal class ServiceCreationStack {
 
 private val logger = KotlinLogging.logger<ServiceContainer>()
 
-class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
+internal class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
     private val lock = ReentrantLock()
     private val serviceCreationStack = ServiceCreationStack()
 
