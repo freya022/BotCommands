@@ -33,7 +33,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val isHandler = classInfo.hasAnnotation(Handler::class.java)
-        val isService = isHandler || isCommand
+        val isHandlerOrCommand = isHandler || isCommand
 
         val handlerDeclarations = classInfo.declaredMethodInfo
             .filterNot { it.isSynthetic }
@@ -43,7 +43,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
 
         if (isHandler && handlerDeclarations.isEmpty()) {
             noDeclarationClasses += classInfo.shortQualifiedReference
-        } else if (!isService && handlerDeclarations.isNotEmpty()) {
+        } else if (!isHandlerOrCommand && handlerDeclarations.isNotEmpty()) {
             // If there is no handler annotation but handler declarations were found
             noAnnotationMethods += handlerDeclarations
         }
