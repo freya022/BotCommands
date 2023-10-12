@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentHandler
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -457,7 +458,7 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
 @PublishedApi
 internal fun IPersistentActionableComponent.bindToCallable(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>, data: List<Any?>, block: ReceiverConsumer<PersistentHandlerBuilder>) {
     val name = findHandlerName(func, eventType)
-        ?: throwUser(func, "Could not find @${JDAButtonListener::class.simpleName} or @${JDASelectMenuListener::class.simpleName}")
+        ?: throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
     this.bindTo(handlerName = name) {
         apply(block)
         passData(data)

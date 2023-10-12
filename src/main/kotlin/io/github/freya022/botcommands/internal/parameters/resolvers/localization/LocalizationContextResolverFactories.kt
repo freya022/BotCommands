@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterWrapper
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import io.github.freya022.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -47,7 +48,7 @@ internal object LocalizationContextResolverFactories {
         val parameter = parameterWrapper.parameter ?: throwInternal("Tried to get localization context on a null parameter")
         val parameterFunction = parameter.function
         val annotation = parameter.findAnnotation<LocalizationBundle>()
-            ?: throwUser(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with @${LocalizationBundle::class.simpleName}")
+            ?: throwUser(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with ${annotationRef<LocalizationBundle>()}")
 
         val firstParamErasure = parameterFunction.valueParameters.first().type.jvmErasure
         requireUser(firstParamErasure.isSubclassOfAny(*requiredEventTypes), parameterFunction) {

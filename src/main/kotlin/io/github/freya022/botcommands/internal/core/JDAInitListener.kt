@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.locks.ReentrantLock
@@ -26,8 +27,9 @@ internal data object JDAInitListener {
                 """
                     A JDA instance was constructed before the framework had finished initializing
                     Possible solutions include:
+                        - (Recommended) Use a service extending JDAService
                         - Building JDA after BBuilder has returned
-                        - Building JDA in a service annotated with @${BService::class.simpleName}(start = ServiceStart.READY)
+                        - Building JDA in a service annotated with ${annotationRef<BService>()}(start = ServiceStart.READY)
                 """.trimIndent()
             )
             logger.error(exception) { "An exception occurred while initializing the framework" }

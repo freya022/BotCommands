@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.internal.core.options.builder.InternalAggr
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -57,7 +58,7 @@ internal object CommandOptions {
                         is ICustomResolver<*, *> -> CustomMethodOption(optionBuilder.optionParameter, resolver)
                         else -> throwUser(
                             optionBuilder.owner,
-                            "Expected a resolver of type ${ICustomResolver::class.simpleNestedName} but ${resolver.javaClass.simpleNestedName} does not support it"
+                            "Expected a resolver of type ${classRef<ICustomResolver<*, *>>()} but ${resolver.javaClass.simpleNestedName} does not support it"
                         )
                     }
                 }

@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.utils.annotationRef
 
 internal object RequiredIntentsChecker : CustomConditionChecker<RequiredIntents> {
     override val annotationType: Class<RequiredIntents> = RequiredIntents::class.java
@@ -17,7 +18,7 @@ internal object RequiredIntentsChecker : CustomConditionChecker<RequiredIntents>
     ): String? {
         val jdaService = context.getServiceOrNull<JDAService>()
         checkNotNull(jdaService) {
-            "A JDAService instance must be present in order to use @${RequiredIntents::class.simpleName}"
+            "A JDAService instance must be present in order to use ${annotationRef<RequiredIntents>()}"
         }
 
         val missingIntents = annotation.intents.asList() - jdaService.intents

@@ -6,12 +6,9 @@ import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
-import io.github.freya022.botcommands.internal.utils.createSingleton
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -105,7 +102,7 @@ internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>): Set<KClas
     val interfacedServiceTypes = returnType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
     val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes)
     if (existingServiceTypes.isNotEmpty()) {
-        logger.warn { "Instance of ${returnType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in @${ServiceType::class.simpleNestedName}, source: $this" }
+        logger.warn { "Instance of ${returnType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
     }
 
     return explicitTypes + interfacedServiceTypes

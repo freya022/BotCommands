@@ -16,10 +16,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.utils.AnnotationUtils
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -95,7 +92,7 @@ internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 
 internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
     if (func.hasAnnotation<NSFW>()) {
-        throwUser(func, "@${NSFW::class.simpleName} can only be used on text commands, use the #nsfw method on your annotation instead")
+        throwUser(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
 
     nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw")

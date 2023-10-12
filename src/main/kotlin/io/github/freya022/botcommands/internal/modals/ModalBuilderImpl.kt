@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.modals.Modal
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.ModalTimeoutInfo
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.time.Duration
@@ -49,7 +50,7 @@ internal class ModalBuilderImpl internal constructor(
                 val id = actionComponent.id ?: throwInternal("Non identifiable components should have been filtered")
 
                 val data = modalMaps.consumeInput(id)
-                    ?: throw IllegalStateException("Modal component with id '$id' could not be found in the inputs created with the '${Modals::class.simpleName}' class")
+                    ?: throw IllegalStateException("Modal component with id '$id' could not be found in the inputs created with the '${classRef<Modals>()}' class")
                 id to data
             }
 
