@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.internal.utils
 
-import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
+import io.github.freya022.botcommands.api.core.utils.isConstructor
+import io.github.freya022.botcommands.api.core.utils.isStatic
+import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
@@ -84,19 +86,6 @@ internal object ReflectionUtils {
     internal val KCallable<*>.nonEventParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf(Event::class) }
 
-    internal val KFunction<*>.shortSignatureNoSrc: String
-        get() = getSignature(returnType = true, source = false)
-
-    internal val KFunction<*>.shortSignature: String
-        get() = getSignature(returnType = true)
-
-    internal val KProperty<*>.referenceString: String
-        get() {
-            val callableReference = (this as? CallableReference)
-                ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
-            return (callableReference.owner as KClass<*>).simpleNestedName + "." + this.name
-        }
-
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
 
     internal val KType.collectionElementType: KType?
@@ -133,12 +122,6 @@ internal fun KParameter.findOptionName(): String =
 
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
-
-internal val Class<*>.shortSignature: String
-    get() = "$shortQualifiedName($sourceFile:0)"
-
-internal val KClass<*>.shortSignature: String
-    get() = this.java.shortSignature
 
 internal fun <T : Any> KClass<T>.createSingleton(): T {
     val instance = this.objectInstance

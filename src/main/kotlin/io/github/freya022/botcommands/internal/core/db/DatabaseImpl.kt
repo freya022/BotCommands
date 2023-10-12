@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
+import io.github.freya022.botcommands.internal.utils.reference
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import java.sql.Connection
@@ -32,7 +32,7 @@ internal class DatabaseImpl internal constructor(
     init {
         if (config.dumpLongTransactions) {
             check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
-                "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.referenceString} is enabled"
+                "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.reference} is enabled"
             }
         }
 

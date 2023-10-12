@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunc
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.full.findAnnotation
 

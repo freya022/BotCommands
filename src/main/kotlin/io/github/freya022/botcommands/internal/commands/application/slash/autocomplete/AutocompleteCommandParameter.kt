@@ -8,8 +8,8 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName

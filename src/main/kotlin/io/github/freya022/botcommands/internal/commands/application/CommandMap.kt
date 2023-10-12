@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
 import java.util.*
 

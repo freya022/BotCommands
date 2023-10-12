@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.math.min
 import kotlin.reflect.KParameter

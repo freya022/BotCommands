@@ -8,9 +8,10 @@ import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.createSingleton
 import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -38,7 +39,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
                     append(annotationTypeGetter.shortSignature)
                     append(" : ")
                     appendLine("Condition @$conditionName uses ${customConditionType.simpleNestedName} but its implementation requires @${checkerAnnotationType.simpleNestedName}")
-                    append("\tHint: ${customConditionType.simpleNestedName} should implement ${CustomConditionChecker::class.simpleNestedName}<$conditionName>")
+                    append("\tHint: ${customConditionType.simpleNestedName} should implement ${classRef<CustomConditionChecker<*>>()}<$conditionName>")
                 }
             }
 

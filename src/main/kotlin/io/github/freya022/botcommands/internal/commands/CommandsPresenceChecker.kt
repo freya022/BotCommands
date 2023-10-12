@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDecl
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortSignature
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
@@ -42,7 +42,7 @@ class CommandsPresenceChecker : ClassGraphProcessor {
             }
 
         if (isCommand && commandDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortSignature
+            noDeclarationClasses += classInfo.shortQualifiedReference
         } else if (!isCommand && commandDeclarations.isNotEmpty()) {
             // If there is no command annotation but command declarations were found
             noAnnotationMethods += commandDeclarations
@@ -52,12 +52,12 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
-                "Some classes annotated with @${Command::class.simpleNestedName} were found to have no command declarations:\n${noDeclarationClasses.joinAsList()}"
+                "Some classes annotated with ${annotationRef<Command>()} were found to have no command declarations:\n${noDeclarationClasses.joinAsList()}"
             }
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some command declarations do not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${noAnnotationMethods.joinAsList()}")
+            throw IllegalStateException("Some command declarations do not have their declaring class annotated with ${annotationRef<Command>()}:\n${noAnnotationMethods.joinAsList()}")
         }
     }
 }

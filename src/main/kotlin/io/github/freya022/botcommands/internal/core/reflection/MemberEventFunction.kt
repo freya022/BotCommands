@@ -11,8 +11,9 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashU
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -51,10 +52,10 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEve
     val eventType = eventParameter.type.jvmErasure
     if (builder.topLevelBuilder.scope.isGuildOnly) {
         if (!eventType.isSubclassOf(GUILD_T::class)) {
-            Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${GUILD_T::class.simpleName} as to benefit from non-null getters")
+            Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${classRef<GUILD_T>()} as to benefit from non-null getters")
         }
     } else if (eventType.isSubclassOf(GUILD_T::class)) {
-        throwUser(kFunction, "Cannot use ${GUILD_T::class.simpleName} on a global application command")
+        throwUser(kFunction, "Cannot use ${classRef<GUILD_T>()} on a global application command")
     }
 }
 

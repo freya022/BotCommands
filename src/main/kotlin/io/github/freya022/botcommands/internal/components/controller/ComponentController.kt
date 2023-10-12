@@ -10,9 +10,9 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.lazy
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -40,7 +40,7 @@ internal class ComponentController(
     fun createComponent(builder: BaseComponentBuilder): String {
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
-                "Rate limit group '$rateLimitGroup' was not registered using @${RateLimitDeclaration::class.simpleNestedName}"
+                "Rate limit group '$rateLimitGroup' was not registered using ${annotationRef<RateLimitDeclaration>()}"
             }
         }
 

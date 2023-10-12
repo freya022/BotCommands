@@ -19,8 +19,9 @@ import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -66,7 +67,7 @@ internal class AutocompleteHandler(
                     .getInterfacedServices<AutocompleteTransformer<Any>>()
                     .firstOrNull { it.elementType == collectionElementType.java }
                     ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
-                            "you may also check the docs for ${AutocompleteHandler::class.simpleName} and ${AutocompleteTransformer::class.simpleName}")
+                            "you may also check the docs for ${classRef<AutocompleteHandler>()} and ${classRef<AutocompleteTransformer<*>>()}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }

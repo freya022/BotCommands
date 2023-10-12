@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import java.time.Duration
 import kotlin.reflect.KFunction
@@ -29,7 +29,7 @@ fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
     val rateLimitAnnotation = findAnnotation<RateLimit>() ?: this.declaringClass.findAnnotation<RateLimit>()
     val cooldownAnnotation = findAnnotation<Cooldown>() ?: this.declaringClass.findAnnotation<Cooldown>()
     requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
-        "Cannot use both @${Cooldown::class.simpleNestedName} and @${RateLimit::class.simpleNestedName}"
+        "Cannot use both ${annotationRef<Cooldown>()} and ${annotationRef<RateLimit>()}"
     }
 
     return if (rateLimitAnnotation != null) {

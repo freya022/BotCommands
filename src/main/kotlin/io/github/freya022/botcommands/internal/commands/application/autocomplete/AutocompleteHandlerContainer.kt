@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.autocomplet
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

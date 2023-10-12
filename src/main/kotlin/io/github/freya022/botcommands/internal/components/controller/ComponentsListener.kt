@@ -33,8 +33,6 @@ import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.referenceString
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -66,7 +64,7 @@ internal class ComponentsListener(
 
             val componentId = event.componentId.toIntOrNull()
                 ?: return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
-                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.referenceString}" }
+                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.core.service
 
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.shortSignature
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KFunction

@@ -81,7 +81,7 @@ internal abstract class FunctionFilter {
 
         inline fun <reified A : Annotation> annotation() = object : FunctionFilter() {
             override val errorMessage: String
-                get() = "Function must be annotated with @${A::class.simpleNestedName}"
+                get() = "Function must be annotated with ${annotationRef<A>()}"
 
             override fun filter(function: Function): Boolean = function.hasAnnotation<A>()
         }

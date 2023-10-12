@@ -10,9 +10,10 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
 import io.github.freya022.botcommands.api.core.utils.shortSignature
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
@@ -41,7 +42,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
             }
 
         if (isHandler && handlerDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortSignature
+            noDeclarationClasses += classInfo.shortQualifiedReference
         } else if (!isService && handlerDeclarations.isNotEmpty()) {
             // If there is no handler annotation but handler declarations were found
             noAnnotationMethods += handlerDeclarations
@@ -51,12 +52,12 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
-                "Some classes annotated with @${Handler::class.simpleNestedName} were found to have no handler declarations:\n${noDeclarationClasses.joinAsList()}"
+                "Some classes annotated with ${annotationRef<Handler>()} were found to have no handler declarations:\n${noDeclarationClasses.joinAsList()}"
             }
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some handler declarations do not have their declaring class annotated with @${Handler::class.simpleNestedName}:\n${
+            throw IllegalStateException("Some handler declarations do not have their declaring class annotated with ${annotationRef<Handler>()}:\n${
                 noAnnotationMethods.joinAsList { it.shortSignature }
             }")
         }
