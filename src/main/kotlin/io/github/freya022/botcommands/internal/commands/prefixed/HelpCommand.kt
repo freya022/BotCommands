@@ -135,7 +135,7 @@ internal class HelpCommand internal constructor(private val context: BContextImp
             if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
                 categoryBuilderMap
                     .computeIfAbsent(cmd.category) { StringJoiner("\n") }
-                    .add("**${cmd.name}** : ${cmd.description}")
+                    .add("**${cmd.name}** : ${cmd.description ?: "No description"}")
             }
         }
 

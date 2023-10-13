@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -79,9 +80,39 @@ annotation class JDATextCommand(
     val aliases: Array<String> = [],
 
     /**
-     * Short description of the command displayed in the help command
+     * Short description of the command, displayed in the description of the built-in help command.
+     *
+     * This description can only be set once for a given command path.
      *
      * @see TextCommandBuilder.description DSL equivalent
      */
-    val description: String = TextCommandBuilder.DEFAULT_DESCRIPTION
+    val generalDescription: String = "",
+
+    /**
+     * Short description of the command displayed in the built-in help command,
+     * below the command usage.
+     *
+     * @see TextCommandVariationBuilder.description DSL equivalent
+     */
+    val description: String = "",
+
+    /**
+     * Usage string for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see TextCommandVariationBuilder.usage DSL equivalent
+     */
+    val usage: String = "",
+
+    /**
+     * Example command for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see TextCommandVariationBuilder.example DSL equivalent
+     */
+    val example: String = ""
 )

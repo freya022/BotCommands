@@ -36,12 +36,35 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 @BService
 internal class TextCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
-    private val logger = KotlinLogging.logger { }
+    // The dominating metadata will set attributes on the top level command, such as the general description
+    private object MetadataDominatorComparator : Comparator<TextFunctionMetadata> {
+        private var warned = false
+
+        override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
+            return if (b.annotation.generalDescription.isNotBlank()) {
+                if (!warned && a.annotation.generalDescription.isNotBlank()) {
+                    warned = true
+                    logger.warn {
+                        """
+                            Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
+                            See ${a.func.shortSignature}
+                            See ${b.func.shortSignature}
+                        """.trimIndent()
+                    }
+                }
+                1 //B is superior
+            } else {
+                0
+            }
+        }
+    }
 
     private val functions: List<TextFunctionMetadata>
 
@@ -61,6 +84,7 @@ internal class TextCommandAutoBuilder(
 
                 TextFunctionMetadata(it, annotation, path)
             }
+            .sortedWith(MetadataDominatorComparator)
     }
 
     fun declare(manager: TextCommandManager) {
@@ -150,6 +174,10 @@ internal class TextCommandAutoBuilder(
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         processOptions(metadata.func, metadata.instance, metadata.path)
+
+        description = metadata.annotation.description.nullIfEmpty()
+        usage = metadata.annotation.usage.nullIfEmpty()
+        example = metadata.annotation.example.nullIfEmpty()
     }
 
     private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
@@ -166,7 +194,7 @@ internal class TextCommandAutoBuilder(
         }
 
         aliases = annotation.aliases.toMutableList()
-        description = annotation.description
+        description = annotation.generalDescription.nullIfEmpty()
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()

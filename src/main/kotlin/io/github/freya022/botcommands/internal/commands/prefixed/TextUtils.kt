@@ -2,14 +2,16 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
+    private val logger = KotlinLogging.logger { }
+
     @JvmStatic
     fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
@@ -22,50 +24,58 @@ object TextUtils {
             else -> builder.setAuthor("${event.jda.selfUser.effectiveName} - $name", null, event.jda.selfUser.effectiveAvatarUrl)
         }
 
-        val description = commandInfo.description
-        if (description != DEFAULT_DESCRIPTION) {
-            builder.appendDescription(description)
-        }
+        commandInfo.description?.let { builder.appendDescription(it) }
 
         val prefix = event.context.prefix
-        fun buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+        fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
             append(prefix)
             append(name)
             append(' ')
 
-            commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
-                val boxedType = commandOption.type.jvmErasure
-                val argName = getArgName(hasMultipleQuotable, commandOption, boxedType)
+            if (usage != null) {
+                append(usage)
+            } else {
+                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
+                    val boxedType = commandOption.type.jvmErasure
+                    val argName = getArgName(hasMultipleQuotable, commandOption, boxedType)
 
-                append(if (isOptional) '[' else '`')
-                append(argName)
-                if (commandOption.isVararg) append("...")
-                append(if (isOptional) ']' else '`')
-                append(' ')
+                    append(if (isOptional) '[' else '`')
+                    append(argName)
+                    if (commandOption.isVararg) append("...")
+                    append(if (isOptional) ']' else '`')
+                    append(' ')
+                }
             }
         }
 
-        fun buildExample(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+        fun TextCommandVariation.buildExample(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
             append(prefix)
             append(name)
             append(' ')
 
-            commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
-                append(getArgExample(hasMultipleQuotable, commandOption, event))
-                append(' ')
+            if (example != null) {
+                append(example)
+            } else {
+                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
+                    append(getArgExample(hasMultipleQuotable, commandOption, event))
+                    append(' ')
+                }
             }
         }
 
         if (commandInfo.variations.size == 1) {
-            val commandOptionsByParameters = commandInfo.variations.single().getCommandOptionsByParameters()
-            builder.appendDescription("\n**Usage:** ${buildUsage(commandOptionsByParameters)}")
+            val variation = commandInfo.variations.single()
+            val commandOptionsByParameters = variation.getCommandOptionsByParameters()
+            variation.description?.let { builder.appendDescription("\n$it") }
+            builder.appendDescription("\n**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
+            builder.appendDescription("\n**Example:** ${variation.buildExample(commandOptionsByParameters)}")
         } else {
             builder.addField("Usages", buildString {
                 commandInfo.variations.forEachIndexed { i, variation ->
                     val commandOptionsByParameters = variation.getCommandOptionsByParameters()
-                    appendLine("${i + 1}. ${buildUsage(commandOptionsByParameters)}")
-                    //TODO description
-                    appendLine("  - **Example:** ${buildExample(commandOptionsByParameters)}")
+                    appendLine("${i + 1}. ${variation.buildUsage(commandOptionsByParameters)}")
+                    variation.description?.let { appendLine("  - $it") }
+                    appendLine("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
                 }
             }, false)
         }
@@ -74,7 +84,7 @@ object TextUtils {
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + (subcommandInfo.description ?: "No description")
                 }
 
             builder.addField("Subcommands", subcommandHelp, false)
