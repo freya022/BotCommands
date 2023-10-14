@@ -3,14 +3,14 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
-    private val logger = KotlinLogging.logger { }
+    private const val USAGE_MAX_LENGTH = 512
+    private const val EXAMPLE_MAX_LENGTH = 1024
 
     @JvmStatic
     fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
@@ -37,13 +37,21 @@ object TextUtils {
             } else {
                 commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
                     val boxedType = commandOption.type.jvmErasure
-                    val argName = getArgName(hasMultipleQuotable, commandOption, boxedType)
+                    val argUsagePart = buildString {
+                        append(if (isOptional) '[' else '`')
+                        append(getArgName(hasMultipleQuotable, commandOption, boxedType))
+                        if (commandOption.isVararg) append("...")
+                        append(if (isOptional) ']' else '`')
+                        append(' ')
+                    }
 
-                    append(if (isOptional) '[' else '`')
-                    append(argName)
-                    if (commandOption.isVararg) append("...")
-                    append(if (isOptional) ']' else '`')
-                    append(' ')
+                    if (length + argUsagePart.length + 4 /* truncated */ < USAGE_MAX_LENGTH) {
+                        append(argUsagePart)
+                        true
+                    } else {
+                        append(" ...")
+                        false
+                    }
                 }
             }
         }
@@ -57,8 +65,15 @@ object TextUtils {
                 append(example)
             } else {
                 commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
-                    append(getArgExample(hasMultipleQuotable, commandOption, event))
-                    append(' ')
+                    val argExample = getArgExample(hasMultipleQuotable, commandOption, event)
+                    if (length + argExample.length + 1 /* space */ + 4 /* truncated */ < EXAMPLE_MAX_LENGTH) {
+                        append(argExample)
+                        append(' ')
+                        true
+                    } else {
+                        append(" ...")
+                        false
+                    }
                 }
             }
         }
@@ -70,14 +85,15 @@ object TextUtils {
             builder.appendDescription("\n**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
             builder.appendDescription("\n**Example:** ${variation.buildExample(commandOptionsByParameters)}")
         } else {
-            builder.addField("Usages", buildString {
-                commandInfo.variations.forEachIndexed { i, variation ->
+            builder.appendDescription("\n### Usages:\n")
+            builder.appendDescription(commandInfo.variations.mapIndexed { i, variation ->
+                buildString {
                     val commandOptionsByParameters = variation.getCommandOptionsByParameters()
                     appendLine("${i + 1}. ${variation.buildUsage(commandOptionsByParameters)}")
                     variation.description?.let { appendLine("  - $it") }
-                    appendLine("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
+                    append("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
                 }
-            }, false)
+            }.joinToString(separator = "\n"))
         }
 
         val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
@@ -133,13 +149,15 @@ object TextUtils {
      * Only runs one option from a vararg parameter
      */
     @JvmStatic
-    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, hasMultipleQuotable: Boolean, isOptional: Boolean) -> Unit) {
+    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, hasMultipleQuotable: Boolean, isOptional: Boolean) -> Boolean) {
         forEach { (parameter, commandOptions) ->
             val hasMultipleQuotable = commandOptions.hasMultipleQuotable()
 
             for (commandOption in commandOptions) {
                 val isOptional = commandOption.isOptionalOrNullable
-                block(commandOption, hasMultipleQuotable, isOptional)
+                if (!block(commandOption, hasMultipleQuotable, isOptional)) {
+                    return
+                }
 
                 // Only run on one option if the containing parameter is a vararg
                 if (parameter.isVararg) break
