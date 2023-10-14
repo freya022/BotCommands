@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
+import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
@@ -13,32 +14,45 @@ object TextUtils {
     private const val EXAMPLE_MAX_LENGTH = 1024
 
     @JvmStatic
-    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
-        val builder = event.defaultEmbed
+    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder = InlineEmbed(event.defaultEmbed).apply {
+        val spacedPath = commandInfo.path.getSpacedPath()
 
-        val name = commandInfo.path.getSpacedPath()
-
-        val author = if (!builder.isEmpty) builder.build().author else null
-        when {
-            author != null -> builder.setAuthor("${author.name} – '$name' command", author.url, author.iconUrl)
-            else -> builder.setAuthor("${event.jda.selfUser.effectiveName} - $name", null, event.jda.selfUser.effectiveAvatarUrl)
+        val author = builder.takeUnless { builder.isEmpty }
+            ?.build()
+            ?.author
+        if (author != null) {
+            author {
+                name = "${author.name} – '$spacedPath' command"
+                url = author.url
+                iconUrl = author.iconUrl
+            }
+        } else {
+            author(name = "${event.jda.selfUser.effectiveName} - $spacedPath", iconUrl = event.jda.selfUser.effectiveAvatarUrl)
         }
 
-        builder.appendDescription(generateDescription(commandInfo, event))
+        description = description.orEmpty() + generateDescription(commandInfo, event)
 
         val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
         if (textSubcommands.isNotEmpty()) {
-            val subcommandHelp = textSubcommands
-                .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + (subcommandInfo.description ?: "No description")
+            field(name = "Subcommands", inline = false) {
+                value = buildString {
+                    addSubcommands(textSubcommands)
                 }
-
-            builder.addField("Subcommands", subcommandHelp, false)
+            }
         }
 
         commandInfo.detailedDescription?.accept(builder)
+    }.builder
 
-        return builder
+    private fun StringBuilder.addSubcommands(textSubcommands: Collection<TextCommandInfo>, depth: Int = 1) {
+        textSubcommands.forEach { subcommandInfo ->
+            val pathComponent = subcommandInfo.path.getSpacedPath()
+            append("**$pathComponent**")
+            subcommandInfo.description?.let { append(": $it") }
+            appendLine()
+
+            addSubcommands(subcommandInfo.subcommands.values, depth + 1)
+        }
     }
 
     private fun generateDescription(commandInfo: TextCommandInfo, event: BaseCommandEvent) = buildString {
