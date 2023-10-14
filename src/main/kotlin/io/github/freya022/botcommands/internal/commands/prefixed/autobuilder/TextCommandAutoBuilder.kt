@@ -76,11 +76,7 @@ internal class TextCommandAutoBuilder(
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
-                    if (path.group != null && path.nameCount == 2) {
-                        throwUser(func, "Slash commands with groups need to have their subcommand name set")
-                    }
-                }
+                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
 
                 TextFunctionMetadata(it, annotation, path)
             }

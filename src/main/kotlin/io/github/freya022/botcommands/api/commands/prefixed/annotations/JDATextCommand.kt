@@ -43,24 +43,29 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDATextCommand(
+    //TODO refactor using a vararg path
     /**
-     * Primary name of the command, **must not contain any spaces**
-     *
-     * @see JDATextCommand.name DSL equivalent
+     * Primary name of the command, **must not contain any spaces**.
      */
     val name: String,
 
     /**
-     * Group name of the command, **must not contain any spaces**
+     * Group name of the command, **must not contain any spaces**.
      *
-     * @see JDATextCommand.group DSL equivalent
+     * This does not have the same meaning as the group of slash commands,
+     * here a group is simply the 1st subcommand.
+     *
+     * @see TextCommandBuilder.subcommand DSL equivalent
      */
     val group: String = "",
 
     /**
-     * Subcommand name of the command, **must not contain any spaces**
+     * Subcommand name of the command, **must not contain any spaces**.
      *
-     * @see JDATextCommand.subcommand DSL equivalent
+     * This does not have the same meaning as the subcommand of slash commands,
+     * here a subcommand is simply the 2nd or 3rd subcommand.
+     *
+     * @see TextCommandBuilder.subcommand DSL equivalent
      */
     val subcommand: String = "",
 
