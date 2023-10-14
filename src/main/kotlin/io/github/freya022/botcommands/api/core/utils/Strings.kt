@@ -5,6 +5,11 @@ fun String.nullIfEmpty(): String? = when {
     else -> this
 }
 
+fun String.nullIfBlank(): String? = when {
+    isBlank() -> null
+    else -> this
+}
+
 fun <T> Iterable<T>.joinWithQuote(transform: ((T) -> CharSequence)? = null) = joinToString(separator = "', '", prefix = "'", postfix = "'", transform = transform)
 
 fun <T> Iterable<T>.joinAsList(transform: ((T) -> CharSequence)? = null) = joinToString(prefix = " - ", separator = "\n - ", transform = transform)

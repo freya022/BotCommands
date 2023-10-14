@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.core.utils.nullIfEmpty
+import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
@@ -45,7 +45,7 @@ internal class SlashCommandAutoBuilder(
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
+                val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank()).also { path ->
                     if (path.group != null && path.nameCount == 2) {
                         throwUser(func, "Slash commands with groups need to have their subcommand name set")
                     }
@@ -208,7 +208,7 @@ internal class SlashCommandAutoBuilder(
                     )
                 }
                 else -> {
-                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.toDiscordString()
+                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName.toDiscordString()
                     if (kParameter.type.jvmErasure.isValue) {
                         val inlineClassType = kParameter.type.jvmErasure.java
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {

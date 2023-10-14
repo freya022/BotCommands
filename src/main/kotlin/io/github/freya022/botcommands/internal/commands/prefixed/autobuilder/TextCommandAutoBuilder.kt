@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandV
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.computeIfAbsentOrNull
-import io.github.freya022.botcommands.api.core.utils.nullIfEmpty
+import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
@@ -77,7 +77,7 @@ internal class TextCommandAutoBuilder(
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
+                val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank())
 
                 TextFunctionMetadata(it, annotation, path)
             }
@@ -172,9 +172,9 @@ internal class TextCommandAutoBuilder(
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         processOptions(metadata.func, metadata.instance, metadata.path)
 
-        description = metadata.annotation.description.nullIfEmpty()
-        usage = metadata.annotation.usage.nullIfEmpty()
-        example = metadata.annotation.example.nullIfEmpty()
+        description = metadata.annotation.description.nullIfBlank()
+        usage = metadata.annotation.usage.nullIfBlank()
+        example = metadata.annotation.example.nullIfBlank()
     }
 
     private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
@@ -191,7 +191,7 @@ internal class TextCommandAutoBuilder(
         }
 
         aliases = annotation.aliases.toMutableList()
-        description = annotation.generalDescription.nullIfEmpty()
+        description = annotation.generalDescription.nullIfBlank()
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()
@@ -224,7 +224,7 @@ internal class TextCommandAutoBuilder(
                     )
                 }
                 else -> {
-                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName
+                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName
                     if (kParameter.type.jvmErasure.isValue) {
                         val inlineClassType = kParameter.type.jvmErasure.java
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
@@ -252,7 +252,7 @@ internal class TextCommandAutoBuilder(
     }
 
     private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
-        helpExample = optionAnnotation.example.nullIfEmpty()
+        helpExample = optionAnnotation.example.nullIfBlank()
         isId = kParameter.hasAnnotation<ID>()
     }
 
