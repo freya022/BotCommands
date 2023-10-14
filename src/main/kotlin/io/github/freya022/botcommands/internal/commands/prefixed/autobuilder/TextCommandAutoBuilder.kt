@@ -61,7 +61,8 @@ internal class TextCommandAutoBuilder(
                 }
                 1 //B is superior
             } else {
-                0
+                // Metadata containers need to be constructed first
+                a.path.nameCount.compareTo(b.path.nameCount)
             }
         }
     }
