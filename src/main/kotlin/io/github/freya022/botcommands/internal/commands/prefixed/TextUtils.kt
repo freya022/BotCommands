@@ -20,11 +20,31 @@ object TextUtils {
 
         val author = if (!builder.isEmpty) builder.build().author else null
         when {
-            author != null -> builder.setAuthor(author.name + " – '" + name + "' command", author.url, author.iconUrl)
+            author != null -> builder.setAuthor("${author.name} – '$name' command", author.url, author.iconUrl)
             else -> builder.setAuthor("${event.jda.selfUser.effectiveName} - $name", null, event.jda.selfUser.effectiveAvatarUrl)
         }
 
-        commandInfo.description?.let { builder.appendDescription(it) }
+        builder.appendDescription(generateDescription(commandInfo, event))
+
+        val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
+        if (textSubcommands.isNotEmpty()) {
+            val subcommandHelp = textSubcommands
+                .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
+                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + (subcommandInfo.description ?: "No description")
+                }
+
+            builder.addField("Subcommands", subcommandHelp, false)
+        }
+
+        commandInfo.detailedDescription?.accept(builder)
+
+        return builder
+    }
+
+    private fun generateDescription(commandInfo: TextCommandInfo, event: BaseCommandEvent) = buildString {
+        val name = commandInfo.path.getSpacedPath()
+
+        commandInfo.description?.let { appendLine(it) }
 
         val prefix = event.context.prefix
         fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
@@ -81,34 +101,18 @@ object TextUtils {
         if (commandInfo.variations.size == 1) {
             val variation = commandInfo.variations.single()
             val commandOptionsByParameters = variation.getCommandOptionsByParameters()
-            variation.description?.let { builder.appendDescription("\n$it") }
-            builder.appendDescription("\n**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
-            builder.appendDescription("\n**Example:** ${variation.buildExample(commandOptionsByParameters)}")
+            variation.description?.let { appendLine(it) }
+            appendLine("**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
+            appendLine("**Example:** ${variation.buildExample(commandOptionsByParameters)}")
         } else {
-            builder.appendDescription("\n### Usages:\n")
-            builder.appendDescription(commandInfo.variations.mapIndexed { i, variation ->
-                buildString {
-                    val commandOptionsByParameters = variation.getCommandOptionsByParameters()
-                    appendLine("${i + 1}. ${variation.buildUsage(commandOptionsByParameters)}")
-                    variation.description?.let { appendLine("  - $it") }
-                    append("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
-                }
-            }.joinToString(separator = "\n"))
+            appendLine("\n### Usages:\n")
+            commandInfo.variations.forEachIndexed { i, variation ->
+                val commandOptionsByParameters = variation.getCommandOptionsByParameters()
+                appendLine("${i + 1}. ${variation.buildUsage(commandOptionsByParameters)}")
+                variation.description?.let { appendLine("  - $it") }
+                appendLine("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
+            }
         }
-
-        val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
-        if (textSubcommands.isNotEmpty()) {
-            val subcommandHelp = textSubcommands
-                .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + (subcommandInfo.description ?: "No description")
-                }
-
-            builder.addField("Subcommands", subcommandHelp, false)
-        }
-
-        commandInfo.detailedDescription?.accept(builder)
-
-        return builder
     }
 
     private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, event: BaseCommandEvent): String {
