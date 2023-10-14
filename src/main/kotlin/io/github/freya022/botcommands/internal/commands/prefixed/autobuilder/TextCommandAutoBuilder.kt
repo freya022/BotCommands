@@ -42,6 +42,13 @@ internal class TextCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
+    private class TextCommandContainer(val name: String) {
+        val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
+        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
+
+        val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
+    }
+
     // The dominating metadata will set attributes on the top level command, such as the general description
     private object MetadataDominatorComparator : Comparator<TextFunctionMetadata> {
         private var warned = false
@@ -246,12 +253,5 @@ internal class TextCommandAutoBuilder(
     private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
         helpExample = optionAnnotation.example.nullIfBlank()
         isId = kParameter.hasAnnotation<ID>()
-    }
-
-    private class TextCommandContainer(val name: String) {
-        val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
-        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
-
-        val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 }
