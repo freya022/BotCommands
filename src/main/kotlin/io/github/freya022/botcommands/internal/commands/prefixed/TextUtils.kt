@@ -32,7 +32,7 @@ object TextUtils {
 
         description = description.orEmpty() + generateDescription(commandInfo, event)
 
-        val textSubcommands = event.context.textCommandsContext.findTextSubcommands(commandInfo.path.components)
+        val textSubcommands = commandInfo.subcommands.values
         if (textSubcommands.isNotEmpty()) {
             field(name = "Subcommands", inline = false) {
                 value = buildString {
