@@ -14,8 +14,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandO
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.computeIfAbsentOrNull
-import io.github.freya022.botcommands.api.core.utils.nullIfEmpty
+import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
@@ -36,12 +35,43 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 @BService
 internal class TextCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
-    private val logger = KotlinLogging.logger { }
+    private class TextCommandContainer(val name: String) {
+        val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
+        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
+
+        val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
+    }
+
+    // The dominating metadata will set attributes on the top level command, such as the general description
+    private object MetadataDominatorComparator : Comparator<TextFunctionMetadata> {
+        private var warned = false
+
+        override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
+            return if (b.annotation.generalDescription.isNotBlank()) {
+                if (!warned && a.annotation.generalDescription.isNotBlank()) {
+                    warned = true
+                    logger.warn {
+                        """
+                            Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
+                            See ${a.func.shortSignature}
+                            See ${b.func.shortSignature}
+                        """.trimIndent()
+                    }
+                }
+                1 //B is superior
+            } else {
+                // Metadata containers need to be constructed first
+                a.path.nameCount.compareTo(b.path.nameCount)
+            }
+        }
+    }
 
     private val functions: List<TextFunctionMetadata>
 
@@ -53,35 +83,25 @@ internal class TextCommandAutoBuilder(
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
-                    if (path.group != null && path.nameCount == 2) {
-                        throwUser(func, "Slash commands with groups need to have their subcommand name set")
-                    }
-                }
+                val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank())
 
                 TextFunctionMetadata(it, annotation, path)
             }
+            .sortedWith(MetadataDominatorComparator)
     }
 
     fun declare(manager: TextCommandManager) {
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
         functions.forEachWithDelayedExceptions { metadata ->
-            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it, metadata) }
+            // Checking if a (sub)command exists is not possible,
+            // as it would require checking if two functions are the same commands
+            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it) }
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
-                else -> {
-                    val split = metadata.path.components
-                    // Navigate to the subcommand that's going to hold the command
-                    split
-                        .drop(1) //Skip first component as it is the initial step
-                        .dropLast(1) //Navigate text command containers until n-1 path component
-                        .fold(firstContainer) { acc, s ->
-                            acc.subcommands.computeIfAbsent(s) { TextCommandContainer(s, null) }
-                        }
-                        .subcommands //Only put metadata on the last path component as this is what the annotation applies on
-                        .computeIfAbsentOrNull(split.last()) { TextCommandContainer(it, metadata) }
-                        ?: throwUser(metadata.func, "Text subcommand with path '${metadata.path}' already exists")
+                // Navigate to the subcommand that's going to hold the command
+                else -> metadata.path.components.drop(1).fold(firstContainer) { acc, subName ->
+                    acc.subcommands.computeIfAbsent(subName) { TextCommandContainer(it) }
                 }
             }
 
@@ -150,6 +170,10 @@ internal class TextCommandAutoBuilder(
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         processOptions(metadata.func, metadata.instance, metadata.path)
+
+        description = metadata.annotation.description.nullIfBlank()
+        usage = metadata.annotation.usage.nullIfBlank()
+        example = metadata.annotation.example.nullIfBlank()
     }
 
     private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
@@ -166,7 +190,7 @@ internal class TextCommandAutoBuilder(
         }
 
         aliases = annotation.aliases.toMutableList()
-        description = annotation.description
+        description = annotation.generalDescription.nullIfBlank()
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()
@@ -199,7 +223,7 @@ internal class TextCommandAutoBuilder(
                     )
                 }
                 else -> {
-                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName
+                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName
                     if (kParameter.type.jvmErasure.isValue) {
                         val inlineClassType = kParameter.type.jvmErasure.java
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
@@ -227,15 +251,7 @@ internal class TextCommandAutoBuilder(
     }
 
     private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
-        helpExample = optionAnnotation.example.nullIfEmpty()
+        helpExample = optionAnnotation.example.nullIfBlank()
         isId = kParameter.hasAnnotation<ID>()
-    }
-
-    /**
-     * @param metadata This is only the metadata of the first method encountered with the annotation
-     */
-    private class TextCommandContainer(val name: String, val metadata: TextFunctionMetadata?) {
-        val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
-        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
     }
 }

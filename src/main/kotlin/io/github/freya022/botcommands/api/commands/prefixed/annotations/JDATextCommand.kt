@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -42,24 +43,29 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDATextCommand(
+    //TODO refactor using a vararg path
     /**
-     * Primary name of the command, **must not contain any spaces**
-     *
-     * @see JDATextCommand.name DSL equivalent
+     * Primary name of the command, **must not contain any spaces**.
      */
     val name: String,
 
     /**
-     * Group name of the command, **must not contain any spaces**
+     * Group name of the command, **must not contain any spaces**.
      *
-     * @see JDATextCommand.group DSL equivalent
+     * This does not have the same meaning as the group of slash commands,
+     * here a group is simply the 1st subcommand.
+     *
+     * @see TextCommandBuilder.subcommand DSL equivalent
      */
     val group: String = "",
 
     /**
-     * Subcommand name of the command, **must not contain any spaces**
+     * Subcommand name of the command, **must not contain any spaces**.
      *
-     * @see JDATextCommand.subcommand DSL equivalent
+     * This does not have the same meaning as the subcommand of slash commands,
+     * here a subcommand is simply the 2nd or 3rd subcommand.
+     *
+     * @see TextCommandBuilder.subcommand DSL equivalent
      */
     val subcommand: String = "",
 
@@ -79,9 +85,39 @@ annotation class JDATextCommand(
     val aliases: Array<String> = [],
 
     /**
-     * Short description of the command displayed in the help command
+     * Short description of the command, displayed in the description of the built-in help command.
+     *
+     * This description can only be set once for a given command path.
      *
      * @see TextCommandBuilder.description DSL equivalent
      */
-    val description: String = TextCommandBuilder.DEFAULT_DESCRIPTION
+    val generalDescription: String = "",
+
+    /**
+     * Short description of the command displayed in the built-in help command,
+     * below the command usage.
+     *
+     * @see TextCommandVariationBuilder.description DSL equivalent
+     */
+    val description: String = "",
+
+    /**
+     * Usage string for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see TextCommandVariationBuilder.usage DSL equivalent
+     */
+    val usage: String = "",
+
+    /**
+     * Example command for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see TextCommandVariationBuilder.example DSL equivalent
+     */
+    val example: String = ""
 )

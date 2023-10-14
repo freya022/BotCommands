@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers.localizatio
 
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
-import io.github.freya022.botcommands.api.core.utils.nullIfEmpty
+import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -58,7 +58,7 @@ internal object LocalizationContextResolverFactories {
         return LocalizationContextImpl(
             localizationService,
             localizationBundle = annotation.value,
-            localizationPrefix = annotation.prefix.nullIfEmpty(),
+            localizationPrefix = annotation.prefix.nullIfBlank(),
             _guildLocale = null,
             _userLocale = null
         )

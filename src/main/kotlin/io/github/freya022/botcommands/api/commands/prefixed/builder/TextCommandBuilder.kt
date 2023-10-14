@@ -33,11 +33,11 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
     var aliases: MutableList<String> = arrayListOf()
 
     /**
-     * Short description of the command displayed in the help command
+     * Short description of the command, displayed in the description of the built-in help command.
      *
-     * @see JDATextCommand.description
+     * @see JDATextCommand.generalDescription
      */
-    var description = DEFAULT_DESCRIPTION
+    var description: String? = null
 
     /**
      * Marks this text command as only usable by the bot owners.

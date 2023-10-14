@@ -18,7 +18,7 @@ sealed class TextCommandInfo(
 
     val aliases: List<String> = builder.aliases
 
-    val description: String = builder.description
+    val description: String? = builder.description
 
     val nsfwStrategy: NSFWStrategy? = builder.nsfwStrategy
     val isOwnerRequired: Boolean = builder.ownerRequired

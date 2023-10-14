@@ -1,80 +1,128 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
+import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
+    private const val USAGE_MAX_LENGTH = 512
+    private const val EXAMPLE_MAX_LENGTH = 1024
+
     @JvmStatic
-    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
-        val builder = event.defaultEmbed
+    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder = InlineEmbed(event.defaultEmbed).apply {
+        val spacedPath = commandInfo.path.getSpacedPath()
 
-        val name = commandInfo.path.getSpacedPath()
-
-        val author = if (!builder.isEmpty) builder.build().author else null
-        when {
-            author != null -> builder.setAuthor(author.name + " – '" + name + "' command", author.url, author.iconUrl)
-            else -> builder.setAuthor("'$name' command")
+        val author = builder.takeUnless { builder.isEmpty }
+            ?.build()
+            ?.author
+        if (author != null) {
+            author {
+                name = "${author.name} – '$spacedPath' command"
+                url = author.url
+                iconUrl = author.iconUrl
+            }
+        } else {
+            author(name = "${event.jda.selfUser.effectiveName} - $spacedPath", iconUrl = event.jda.selfUser.effectiveAvatarUrl)
         }
 
-        val description = commandInfo.description
-        if (description != DEFAULT_DESCRIPTION) {
-            builder.addField("Description", description, false)
-        }
+        description = description.orEmpty() + generateDescription(commandInfo, event)
 
-        val prefix = event.context.prefix
-        for ((i, variation) in commandInfo.variations.withIndex()) {
-            val commandOptions = variation.parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
-
-            val syntax = StringBuilder("**Syntax**: $prefix$name ")
-            val example = StringBuilder("**Example**: $prefix$name ")
-
-            if (commandOptions.isNotEmpty()) {
-                val needsQuote = commandOptions.hasMultipleQuotable()
-
-                for (commandOption in commandOptions) {
-                    val boxedType = commandOption.type.jvmErasure
-
-                    val argName = getArgName(needsQuote, commandOption, boxedType)
-                    val argExample = getArgExample(needsQuote, commandOption, event)
-
-                    val isOptional = commandOption.isOptionalOrNullable
-                    syntax.append(if (isOptional) '[' else '`').append(argName).append(if (isOptional) ']' else '`').append(' ')
-                    example.append(argExample).append(' ')
-                }
-            }
-
-            val effectiveCandidateDescription = when (description) {
-                DEFAULT_DESCRIPTION -> ""
-                else -> "**Description**: $description\n"
-            }
-
-            if (commandInfo.variations.size == 1) {
-                builder.addField("Usage", "$effectiveCandidateDescription$syntax\n$example", false)
-            } else if (commandInfo.variations.size > 1) {
-                builder.addField("Overload #${i + 1}", "$effectiveCandidateDescription$syntax\n$example", false)
-            }
-        }
-
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo.path.components)
+        val textSubcommands = commandInfo.subcommands.values
         if (textSubcommands.isNotEmpty()) {
-            val subcommandHelp = textSubcommands
-                .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+            field(name = "Subcommands", inline = false) {
+                value = buildString {
+                    addSubcommands(textSubcommands)
                 }
-
-            builder.addField("Subcommands", subcommandHelp, false)
+            }
         }
 
         commandInfo.detailedDescription?.accept(builder)
+    }.builder
 
-        return builder
+    private fun StringBuilder.addSubcommands(textSubcommands: Collection<TextCommandInfo>, depth: Int = 1) {
+        textSubcommands.forEach { subcommandInfo ->
+            val pathComponent = subcommandInfo.path.getSpacedPath()
+            append("**$pathComponent**")
+            subcommandInfo.description?.let { append(": $it") }
+            appendLine()
+
+            addSubcommands(subcommandInfo.subcommands.values, depth + 1)
+        }
+    }
+
+    private fun generateDescription(commandInfo: TextCommandInfo, event: BaseCommandEvent) = buildString {
+        val name = commandInfo.path.getSpacedPath()
+
+        commandInfo.description?.let { appendLine(it) }
+
+        fun StringBuilder.tryAppendSpaced(text: String, limit: Int): Boolean {
+            return if (length + text.length + 4 /* truncated */ < limit) {
+                append(text)
+                true
+            } else {
+                append(" ...")
+                false
+            }
+        }
+
+        val prefix = event.context.prefix
+        fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+            append(prefix)
+            append(name)
+            append(' ')
+
+            if (usage != null) {
+                append(usage)
+            } else {
+                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
+                    val boxedType = commandOption.type.jvmErasure
+                    val argUsagePart = buildString {
+                        append(if (isOptional) '[' else '`')
+                        append(getArgName(hasMultipleQuotable, commandOption, boxedType))
+                        if (commandOption.isVararg) append("...")
+                        append(if (isOptional) ']' else '`')
+                    }
+
+                    tryAppendSpaced(argUsagePart, USAGE_MAX_LENGTH)
+                }
+            }
+        }
+
+        fun TextCommandVariation.buildExample(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
+            append(prefix)
+            append(name)
+            append(' ')
+
+            if (example != null) {
+                append(example)
+            } else {
+                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
+                    val argExample = getArgExample(hasMultipleQuotable, commandOption, event)
+                    tryAppendSpaced(argExample, EXAMPLE_MAX_LENGTH)
+                }
+            }
+        }
+
+        if (commandInfo.variations.size == 1) {
+            val variation = commandInfo.variations.single()
+            val commandOptionsByParameters = variation.getCommandOptionsByParameters()
+            variation.description?.let { appendLine(it) }
+            appendLine("**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
+            appendLine("**Example:** ${variation.buildExample(commandOptionsByParameters)}")
+        } else {
+            appendLine("\n### Usages:\n")
+            commandInfo.variations.forEachIndexed { i, variation ->
+                val commandOptionsByParameters = variation.getCommandOptionsByParameters()
+                appendLine("${i + 1}. ${variation.buildUsage(commandOptionsByParameters)}")
+                variation.description?.let { appendLine("  - $it") }
+                appendLine("  - **Example:** ${variation.buildExample(commandOptionsByParameters)}")
+            }
+        }
     }
 
     private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, event: BaseCommandEvent): String {
@@ -100,7 +148,36 @@ object TextUtils {
 
     @JvmStatic
     fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
-        count { p -> p.resolver is QuotableRegexParameterResolver } > 1
+        count { o -> o.resolver is QuotableRegexParameterResolver } > 1
+
+    @JvmStatic
+    fun TextCommandVariation.getCommandOptionsByParameters() = buildMap(parameters.size * 2) {
+        parameters.forEach {
+            val allOptions = it.allOptions.filterIsInstance<TextCommandOption>()
+            if (allOptions.isNotEmpty())
+                this[it] = allOptions
+        }
+    }
+
+    /**
+     * Only runs one option from a vararg parameter
+     */
+    @JvmStatic
+    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, hasMultipleQuotable: Boolean, isOptional: Boolean) -> Boolean) {
+        forEach { (parameter, commandOptions) ->
+            val hasMultipleQuotable = commandOptions.hasMultipleQuotable()
+
+            for (commandOption in commandOptions) {
+                val isOptional = commandOption.isOptionalOrNullable
+                if (!block(commandOption, hasMultipleQuotable, isOptional)) {
+                    return
+                }
+
+                // Only run on one option if the containing parameter is a vararg
+                if (parameter.isVararg) break
+            }
+        }
+    }
 
     @JvmStatic
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.prefixed.builder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -29,6 +30,34 @@ class TextCommandVariationBuilder internal constructor(
 
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
+
+    /**
+     * Short description of the command displayed in the built-in help command,
+     * below the command usage.
+     *
+     * @see JDATextCommand.description
+     */
+    var description: String? = null
+
+    /**
+     * Usage string for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see JDATextCommand.usage
+     */
+    var usage: String? = null
+
+    /**
+     * Example command for this command variation,
+     * the built-in help command already sets the prefix and command name, with a space at the end.
+     *
+     * If not set, the built-in help command will generate a string out of the options.
+     *
+     * @see JDATextCommand.example
+     */
+    var example: String? = null
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

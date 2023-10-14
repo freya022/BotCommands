@@ -29,6 +29,10 @@ class TextCommandVariation internal constructor(
     override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
+    val description: String? = builder.description
+    val usage: String? = builder.usage
+    val example: String? = builder.example
+
     val completePattern: Regex?
 
     private val useTokenizedEvent: Boolean
