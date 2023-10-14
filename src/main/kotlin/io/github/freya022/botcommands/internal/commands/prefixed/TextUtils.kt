@@ -60,6 +60,16 @@ object TextUtils {
 
         commandInfo.description?.let { appendLine(it) }
 
+        fun StringBuilder.tryAppendSpaced(text: String, limit: Int): Boolean {
+            return if (length + text.length + 4 /* truncated */ < limit) {
+                append(text)
+                true
+            } else {
+                append(" ...")
+                false
+            }
+        }
+
         val prefix = event.context.prefix
         fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
             append(prefix)
@@ -76,16 +86,9 @@ object TextUtils {
                         append(getArgName(hasMultipleQuotable, commandOption, boxedType))
                         if (commandOption.isVararg) append("...")
                         append(if (isOptional) ']' else '`')
-                        append(' ')
                     }
 
-                    if (length + argUsagePart.length + 4 /* truncated */ < USAGE_MAX_LENGTH) {
-                        append(argUsagePart)
-                        true
-                    } else {
-                        append(" ...")
-                        false
-                    }
+                    tryAppendSpaced(argUsagePart, USAGE_MAX_LENGTH)
                 }
             }
         }
@@ -100,14 +103,7 @@ object TextUtils {
             } else {
                 commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
                     val argExample = getArgExample(hasMultipleQuotable, commandOption, event)
-                    if (length + argExample.length + 1 /* space */ + 4 /* truncated */ < EXAMPLE_MAX_LENGTH) {
-                        append(argExample)
-                        append(' ')
-                        true
-                    } else {
-                        append(" ...")
-                        false
-                    }
+                    tryAppendSpaced(argExample, EXAMPLE_MAX_LENGTH)
                 }
             }
         }
