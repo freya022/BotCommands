@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandO
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.computeIfAbsentOrNull
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
@@ -88,21 +87,14 @@ internal class TextCommandAutoBuilder(
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
         functions.forEachWithDelayedExceptions { metadata ->
-            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it, metadata) }
+            // Checking if a (sub)command exists is not possible,
+            // as it would require checking if two functions are the same commands
+            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it) }
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
-                else -> {
-                    val split = metadata.path.components
-                    // Navigate to the subcommand that's going to hold the command
-                    split
-                        .drop(1) //Skip first component as it is the initial step
-                        .dropLast(1) //Navigate text command containers until n-1 path component
-                        .fold(firstContainer) { acc, s ->
-                            acc.subcommands.computeIfAbsent(s) { TextCommandContainer(s, null) }
-                        }
-                        .subcommands //Only put metadata on the last path component as this is what the annotation applies on
-                        .computeIfAbsentOrNull(split.last()) { TextCommandContainer(it, metadata) }
-                        ?: throwUser(metadata.func, "Text subcommand with path '${metadata.path}' already exists")
+                // Navigate to the subcommand that's going to hold the command
+                else -> metadata.path.components.drop(1).fold(firstContainer) { acc, subName ->
+                    acc.subcommands.computeIfAbsent(subName) { TextCommandContainer(it) }
                 }
             }
 
@@ -256,11 +248,10 @@ internal class TextCommandAutoBuilder(
         isId = kParameter.hasAnnotation<ID>()
     }
 
-    /**
-     * @param metadata This is only the metadata of the first method encountered with the annotation
-     */
-    private class TextCommandContainer(val name: String, val metadata: TextFunctionMetadata?) {
+    private class TextCommandContainer(val name: String) {
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
         val variations: MutableList<TextFunctionMetadata> = arrayListOf()
+
+        val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 }
