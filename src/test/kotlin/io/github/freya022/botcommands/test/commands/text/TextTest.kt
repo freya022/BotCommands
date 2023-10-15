@@ -29,7 +29,7 @@ class TextTest : TextCommand() {
         return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
     }
 
-    @JDATextCommand(name = "test_annotated")
+    @JDATextCommand(path = ["test_annotated"])
     fun onTextTestFallback(
         event: BaseCommandEvent,
         context: BContext,
@@ -42,7 +42,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(name = "test_annotated")
+    @JDATextCommand(path = ["test_annotated"])
     fun onTextTest(
         event: BaseCommandEvent,
         @TextOption text: String,
@@ -56,7 +56,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(name = "test_annotated", subcommand = "subcommand")
+    @JDATextCommand(path = ["test_annotated", "subcommand"])
     fun onTextTestSubcommand(
         event: BaseCommandEvent,
         @TextOption number: Double

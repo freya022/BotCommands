@@ -83,7 +83,7 @@ internal class TextCommandAutoBuilder(
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank())
+                val path = CommandPath.of(annotation.path.asList())
 
                 TextFunctionMetadata(it, annotation, path)
             }

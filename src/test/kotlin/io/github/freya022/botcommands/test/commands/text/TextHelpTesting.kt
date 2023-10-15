@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 
 @Command
 class TextHelpTesting : TextCommand() {
-    @JDATextCommand(name = "help_testing")
+    @JDATextCommand(path = ["help_testing"])
     fun onTextHelpTesting(event: BaseCommandEvent,
                           @TextOption boolean: Boolean,
                           @TextOption double: Double,

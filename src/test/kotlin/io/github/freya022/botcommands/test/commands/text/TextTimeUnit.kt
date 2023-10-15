@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 @Command
 class TextTimeUnit : TextCommand() {
-    @JDATextCommand(name = "time_unit")
+    @JDATextCommand(path = ["time_unit"])
     fun onTextTimeUnit(
         event: BaseCommandEvent,
         @TextOption timeUnit: TimeUnit,

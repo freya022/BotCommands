@@ -2,9 +2,11 @@ package io.github.freya022.botcommands.api.commands;
 
 import io.github.freya022.botcommands.internal.commands.CommandPathImpl;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a path of a command, each path component is delimited with a space, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getFullCommandName()}.
@@ -29,22 +31,22 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	@NotNull
 	static CommandPath of(@NotNull String path) {
-		final String[] components = path.split(" ");
-		for (String component : components) {
-			Checks.matches(component, Checks.ALPHANUMERIC_WITH_DASH, "Path component");
-		}
-
-		return of(components);
+		return of(Arrays.asList(path.split(" ")));
 	}
 
 	@NotNull
 	static CommandPath of(@NotNull String @NotNull ... components) {
-		if (components.length == 1) {
-			return new CommandPathImpl(components[0], null, null);
-		} else if (components.length == 2) {
-			return new CommandPathImpl(components[0], null, components[1]);
-		} else if (components.length == 3) {
-			return new CommandPathImpl(components[0], components[1], components[2]);
+		return of(Arrays.asList(components));
+	}
+
+	@NotNull
+	static CommandPath of(@NotNull List<@NotNull String> components) {
+		if (components.size() == 1) {
+			return new CommandPathImpl(components.get(0), null, null);
+		} else if (components.size() == 2) {
+			return new CommandPathImpl(components.get(0), null, components.get(1));
+		} else if (components.size() == 3) {
+			return new CommandPathImpl(components.get(0), components.get(1), components.get(2));
 		} else {
 			throw new IllegalArgumentException("Invalid path: '" + String.join(" ", components) + "'");
 		}
@@ -140,7 +142,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	/**
 	 * Returns the JDA path representation of this CommandPath
 	 *
-	 * @return The command path with / in between each component
+	 * @return The command path with space in between each component
 	 */
 	@NotNull
 	String toString();
