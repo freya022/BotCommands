@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
 @Command
 @Dependencies(Components::class)
 class TextDelay : TextCommand() {
-    @JDATextCommand(name = "delay")
+    @JDATextCommand(path = ["delay"])
     suspend fun runDelay(event: BaseCommandEvent, components: Components) {
         val millis = measureTimeMillis {
             delay(1000)

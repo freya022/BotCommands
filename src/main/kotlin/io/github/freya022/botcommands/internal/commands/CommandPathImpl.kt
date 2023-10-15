@@ -13,8 +13,8 @@ internal class CommandPathImpl internal constructor(
     private val count: Int
 
     init {
-        if (group != null) Checks.notBlank(group, "Subcommand group name")
-        if (subname != null) Checks.notBlank(subname, "Subcommand name")
+        if (group != null) Checks.matches(group, Checks.ALPHANUMERIC_WITH_DASH, "Subcommand group name")
+        if (subname != null) Checks.matches(subname, Checks.ALPHANUMERIC_WITH_DASH, "Subcommand name")
 
         val components = listOfNotNull(name, group, subname)
 

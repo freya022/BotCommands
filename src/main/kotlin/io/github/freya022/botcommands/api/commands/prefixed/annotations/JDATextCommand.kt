@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandV
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.internal.utils.Checks
 
 /**
  * Declares this function as a text command.
@@ -43,31 +44,11 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDATextCommand(
-    //TODO refactor using a vararg path
     /**
-     * Primary name of the command, **must not contain any spaces**.
+     * Path components of the command,
+     * limited to three components and composed of [`a-zA-Z1-9_-`][Checks.ALPHANUMERIC_WITH_DASH]
      */
-    val name: String,
-
-    /**
-     * Group name of the command, **must not contain any spaces**.
-     *
-     * This does not have the same meaning as the group of slash commands,
-     * here a group is simply the 1st subcommand.
-     *
-     * @see TextCommandBuilder.subcommand DSL equivalent
-     */
-    val group: String = "",
-
-    /**
-     * Subcommand name of the command, **must not contain any spaces**.
-     *
-     * This does not have the same meaning as the subcommand of slash commands,
-     * here a subcommand is simply the 2nd or 3rd subcommand.
-     *
-     * @see TextCommandBuilder.subcommand DSL equivalent
-     */
-    val subcommand: String = "",
+    val path: Array<out String>,
 
     /**
      * Specifies the priority of this text command variation (1 is the most important)

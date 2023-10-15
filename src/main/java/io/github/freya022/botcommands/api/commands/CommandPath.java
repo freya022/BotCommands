@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands;
 
 import io.github.freya022.botcommands.internal.commands.CommandPathImpl;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,12 +31,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	@NotNull
 	static CommandPath of(@NotNull String path) {
-		final String[] components = path.split(" ");
-		for (String component : components) {
-			Checks.matches(component, Checks.ALPHANUMERIC_WITH_DASH, "Path component");
-		}
-
-		return of(components);
+		return of(Arrays.asList(path.split(" ")));
 	}
 
 	@NotNull
@@ -148,7 +142,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	/**
 	 * Returns the JDA path representation of this CommandPath
 	 *
-	 * @return The command path with / in between each component
+	 * @return The command path with space in between each component
 	 */
 	@NotNull
 	String toString();
