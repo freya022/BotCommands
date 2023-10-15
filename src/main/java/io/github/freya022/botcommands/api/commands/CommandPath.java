@@ -6,6 +6,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Represents a path of a command, each path component is delimited with a space, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getFullCommandName()}.
  * <br>The different components are name, group and subcommand.
@@ -39,12 +42,17 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	@NotNull
 	static CommandPath of(@NotNull String @NotNull ... components) {
-		if (components.length == 1) {
-			return new CommandPathImpl(components[0], null, null);
-		} else if (components.length == 2) {
-			return new CommandPathImpl(components[0], null, components[1]);
-		} else if (components.length == 3) {
-			return new CommandPathImpl(components[0], components[1], components[2]);
+		return of(Arrays.asList(components));
+	}
+
+	@NotNull
+	static CommandPath of(@NotNull List<@NotNull String> components) {
+		if (components.size() == 1) {
+			return new CommandPathImpl(components.get(0), null, null);
+		} else if (components.size() == 2) {
+			return new CommandPathImpl(components.get(0), null, components.get(1));
+		} else if (components.size() == 3) {
+			return new CommandPathImpl(components.get(0), components.get(1), components.get(2));
 		} else {
 			throw new IllegalArgumentException("Invalid path: '" + String.join(" ", components) + "'");
 		}
