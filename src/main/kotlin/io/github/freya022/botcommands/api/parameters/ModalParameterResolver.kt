@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 
-interface ModalParameterResolver<T, R> where T : ParameterResolver<T, R>,
-                                             T : ModalParameterResolver<T, R> {
+interface ModalParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
+                                                   T : ModalParameterResolver<T, R> {
     /**
      * Returns a resolved object for this [ModalMapping]
      *

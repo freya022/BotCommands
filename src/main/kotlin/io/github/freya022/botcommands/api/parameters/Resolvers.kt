@@ -23,7 +23,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     private val values: Array<out E>,
     private val nameFunction: EnumNameFunction<E>
 ) :
-    ParameterResolver<EnumResolver<E>, E>(e),
+    ClassParameterResolver<EnumResolver<E>, E>(e),
     RegexParameterResolver<EnumResolver<E>, E>,
     SlashParameterResolver<EnumResolver<E>, E>,
     ComponentParameterResolver<EnumResolver<E>, E> {

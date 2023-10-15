@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.parameters.ParameterResolver;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Resolver
 public class MentionableResolver
-		extends ParameterResolver<MentionableResolver, IMentionable>
+		extends ClassParameterResolver<MentionableResolver, IMentionable>
 		implements SlashParameterResolver<MentionableResolver, IMentionable> {
 
 	public MentionableResolver() {

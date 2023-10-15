@@ -15,8 +15,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 /**
  * Interface which indicates this class can resolve parameters for application commands
  */
-interface SlashParameterResolver<T, R> where T : ParameterResolver<T, R>,
-                                             T : SlashParameterResolver<T, R> {
+interface SlashParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
+                                                   T : SlashParameterResolver<T, R> {
     /**
      * Returns the supported [OptionType] for this slash command parameter
      *

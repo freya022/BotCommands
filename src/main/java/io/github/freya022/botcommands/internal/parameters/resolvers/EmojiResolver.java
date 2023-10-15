@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.RegexParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class EmojiResolver
-		extends ParameterResolver<EmojiResolver, Emoji>
+		extends ClassParameterResolver<EmojiResolver, Emoji>
 		implements RegexParameterResolver<EmojiResolver, Emoji>,
 		           SlashParameterResolver<EmojiResolver, Emoji>,
 		           ComponentParameterResolver<EmojiResolver, Emoji> {

@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 /**
  * Interface which indicates this class can resolve parameters for component interactions.
  */
-interface ComponentParameterResolver<T, R> where T : ParameterResolver<T, R>,
-                                                 T : ComponentParameterResolver<T, R> {
+interface ComponentParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
+                                                       T : ComponentParameterResolver<T, R> {
     /**
      * Returns a resolved object from this component interaction
      *

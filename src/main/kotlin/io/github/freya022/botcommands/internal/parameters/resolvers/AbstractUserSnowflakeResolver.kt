@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.findE
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -24,9 +25,11 @@ import java.util.regex.Pattern
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
+private val logger = KotlinLogging.logger { }
+
 internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeResolver<T, R>, R : UserSnowflake>(
     clazz: KClass<R>
-) : ParameterResolver<T, R>(clazz),
+) : ClassParameterResolver<T, R>(clazz),
     RegexParameterResolver<T, R>,
     SlashParameterResolver<T, R>,
     ComponentParameterResolver<T, R>,
@@ -83,7 +86,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         if (userResult.isSuccess) return userResult.getOrThrow()
 
         if (memberResult.isFailure) {
-            LOGGER.trace { "Could not resolve input user in ${guild!!.name} (${guild.idLong}): ${memberResult.exceptionOrNull()!!.message} / ${userResult.exceptionOrNull()!!.message}" }
+            logger.trace { "Could not resolve input user in ${guild!!.name} (${guild.idLong}): ${memberResult.exceptionOrNull()!!.message} / ${userResult.exceptionOrNull()!!.message}" }
         }
 
         return null

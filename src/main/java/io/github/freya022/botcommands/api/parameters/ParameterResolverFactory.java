@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.core.utils.ReflectionKt;
 import io.github.freya022.botcommands.api.core.utils.ReflectionUtils;
+import kotlin.NotImplementedError;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,17 +57,18 @@ public abstract class ParameterResolverFactory<T extends ParameterResolver<?, R>
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static <T extends ParameterResolver<?, R>, R> ParameterResolverFactory<T, R> singleton(T resolver) {
-		return new ParameterResolverFactory<>(resolver.getClass(), ReflectionUtils.toJava(resolver.getJvmErasure())) {
-			@NotNull
-			@Override
-			public T get(@NotNull ParameterWrapper parameter) {
-				return resolver;
-			}
-
-			@Override
-			public String toString() {
-				return "SingletonParameterResolverFactory(resolver=" + resolver + ")";
-			}
-		};
+		throw new NotImplementedError();
+//		return new ParameterResolverFactory<>(resolver.getClass(), ReflectionUtils.toJava(resolver.getJvmErasure())) {
+//			@NotNull
+//			@Override
+//			public T get(@NotNull ParameterWrapper parameter) {
+//				return resolver;
+//			}
+//
+//			@Override
+//			public String toString() {
+//				return "SingletonParameterResolverFactory(resolver=" + resolver + ")";
+//			}
+//		};
 	}
 }

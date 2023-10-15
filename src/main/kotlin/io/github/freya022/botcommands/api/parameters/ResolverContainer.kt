@@ -103,7 +103,7 @@ class ResolverContainer internal constructor(
         return resolver::class.isSubclassOfAny(compatibleInterfaces)
     }
 
-    private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
+    private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
         override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 

@@ -10,8 +10,8 @@ import kotlin.reflect.KParameter
 /**
  * Interface which indicates this class can resolve parameters for regex commands
  */
-interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
-                                             T : RegexParameterResolver<T, R> {
+interface RegexParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
+                                                   T : RegexParameterResolver<T, R> {
     /**
      * Returns a resolved object from this text command interaction
      *
