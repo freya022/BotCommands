@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent

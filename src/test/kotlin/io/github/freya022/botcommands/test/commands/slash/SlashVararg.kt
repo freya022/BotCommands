@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
@@ -8,7 +9,6 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
 
 @Command
 class SlashVararg : ApplicationCommand() {

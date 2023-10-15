@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.commands.prefixed.builder
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand

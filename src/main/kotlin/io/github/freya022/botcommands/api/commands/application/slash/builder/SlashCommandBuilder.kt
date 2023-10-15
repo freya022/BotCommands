@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.VarArgs
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
