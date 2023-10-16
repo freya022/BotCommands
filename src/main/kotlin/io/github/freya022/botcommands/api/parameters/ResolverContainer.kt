@@ -41,7 +41,7 @@ class ResolverContainer internal constructor(
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
 
-        addResolverFactory(ParameterResolverFactory.fromClassParameterResolver(resolver))
+        addResolverFactory(resolver.toResolverFactory())
     }
 
     fun <R : Any> addResolverFactory(resolver: ParameterResolverFactory<*, R>) {
@@ -102,7 +102,7 @@ class ResolverContainer internal constructor(
                     parameter.throwUser("Parameter #${parameter.index} of type '${erasure.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
                 }
 
-                ParameterResolverFactory.fromClassParameterResolver(ServiceCustomResolver(serviceResult.getOrThrow()))
+                ServiceCustomResolver(serviceResult.getOrThrow()).toResolverFactory()
             }
         }.get(parameter)
     }

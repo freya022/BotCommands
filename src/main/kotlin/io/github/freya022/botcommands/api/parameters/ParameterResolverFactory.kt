@@ -22,26 +22,24 @@ abstract class ParameterResolverFactory<T : ParameterResolver<*, R>, R : Any>(va
     override fun toString(): String {
         return "ParameterResolverFactory(resolverType=${resolverType.shortQualifiedName})"
     }
+}
 
-    companion object {
-        fun <T : ClassParameterResolver<*, R>, R : Any> fromClassParameterResolver(resolver: T): ParameterResolverFactory<*, R> {
-            return ClassParameterResolverFactoryAdapter(resolver)
-        }
+private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<T, R>, R : Any>(
+    private val resolver: T
+): ParameterResolverFactory<T, R>(resolver::class) {
+    override fun isResolvable(type: KType): Boolean {
+        return resolver.jvmErasure == type.jvmErasure
     }
 
-    private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<T, R>, R : Any>(
-        private val resolver: T
-    ): ParameterResolverFactory<T, R>(resolver::class) {
-        override fun isResolvable(type: KType): Boolean {
-            return resolver.jvmErasure == type.jvmErasure
-        }
-
-        override fun get(parameter: ParameterWrapper): T {
-            return resolver
-        }
-
-        override fun toString(): String {
-            return "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
-        }
+    override fun get(parameter: ParameterWrapper): T {
+        return resolver
     }
+
+    override fun toString(): String {
+        return "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
+    }
+}
+
+internal fun <T : ClassParameterResolver<*, R>, R : Any> T.toResolverFactory(): ParameterResolverFactory<*, R> {
+    return ClassParameterResolverFactoryAdapter(this)
 }
