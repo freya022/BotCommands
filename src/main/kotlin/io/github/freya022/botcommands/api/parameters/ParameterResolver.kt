@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 /**
- * Base class for parameter resolvers used in regex commands, application commands and component callbacks.
+ * Base class for parameter resolvers used in regex commands, application commands, and component callbacks.
  *
  * Parameters supported by default:
  * - [String]
@@ -30,6 +30,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * You can also check loaded parameter resolvers in the logs on the `trace` level.
  *
+ * @see ClassParameterResolver
+ *
  * @see RegexParameterResolver
  * @see QuotableRegexParameterResolver
  * @see ComponentParameterResolver
@@ -39,4 +41,4 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * @see ICustomResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolver<T : ParameterResolver<T, R>, R : Any>
+sealed class ParameterResolver<T : ParameterResolver<T, R>, R : Any>

@@ -18,7 +18,7 @@ internal class TextCommandComparator(private val context: BContextImpl) : Compar
     private val TextFunctionMetadata.optionParameters
         get() = func.nonInstanceParameters
             .drop(1)
-            .filter { context.getService<ResolverContainer>().getResolverOrNull(it) is RegexParameterResolver<*, *> }
+            .filter { context.getService<ResolverContainer>().hasResolverOfType<RegexParameterResolver<*, *>>(it) }
 
     //TODO is this correct ? the same old implementation did not function with the new objects.
     override fun compare(o1: TextFunctionMetadata, o2: TextFunctionMetadata): Int {
