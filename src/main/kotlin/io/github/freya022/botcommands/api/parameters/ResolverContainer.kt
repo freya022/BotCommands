@@ -43,7 +43,6 @@ class ResolverContainer internal constructor(
 
         when (resolver) {
             is ClassParameterResolver -> addResolverFactory(resolver.toResolverFactory())
-            is DynamicTypedParameterResolver -> addResolverFactory(resolver.toResolverFactory())
             is TypedParameterResolver -> addResolverFactory(resolver.toResolverFactory())
         }
     }

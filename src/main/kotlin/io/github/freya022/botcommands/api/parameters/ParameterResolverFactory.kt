@@ -47,15 +47,3 @@ private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<T,
 internal fun <T : TypedParameterResolver<*, R>, R : Any> T.toResolverFactory(): ParameterResolverFactory<*, R> {
     return TypedParameterResolverFactoryAdapter(this)
 }
-
-private class DynamicTypedParameterResolverFactoryAdapter<T : DynamicTypedParameterResolver<T, R>, R : Any>(
-    private val resolver: T
-): ParameterResolverFactory<T, R>(resolver::class) {
-    override fun isResolvable(type: KType): Boolean = resolver.isResolvable(type)
-    override fun get(parameter: ParameterWrapper): T = resolver
-    override fun toString(): String = "DynamicTypedParameterResolverFactoryAdapter(resolver=$resolver)"
-}
-
-internal fun <T : DynamicTypedParameterResolver<*, R>, R : Any> T.toResolverFactory(): ParameterResolverFactory<*, R> {
-    return DynamicTypedParameterResolverFactoryAdapter(this)
-}
