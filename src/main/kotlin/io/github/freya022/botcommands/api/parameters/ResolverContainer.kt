@@ -32,16 +32,20 @@ class ResolverContainer internal constructor(
     private val cache: MutableMap<KType, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.getInterfacedServices<ClassParameterResolver<*, *>>().forEach { addResolver(it) }
+        context.getInterfacedServices<ParameterResolver<*, *>>().forEach { addResolver(it) }
         context.getInterfacedServices<ParameterResolverFactory<*, *>>().forEach { addResolverFactory(it) }
     }
 
-    fun <R : Any> addResolver(resolver: ClassParameterResolver<*, R>) {
+    fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
         if (!hasCompatibleInterface(resolver)) {
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
 
-        addResolverFactory(resolver.toResolverFactory())
+        when (resolver) {
+            is ClassParameterResolver -> addResolverFactory(resolver.toResolverFactory())
+            is DynamicTypedParameterResolver -> addResolverFactory(resolver.toResolverFactory())
+            is TypedParameterResolver -> addResolverFactory(resolver.toResolverFactory())
+        }
     }
 
     fun <R : Any> addResolverFactory(resolver: ParameterResolverFactory<*, R>) {
