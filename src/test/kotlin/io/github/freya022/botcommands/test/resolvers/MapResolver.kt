@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.resolvers
 
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ParameterWrapper
@@ -11,7 +12,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 sealed class MapResolver<R : Map<*, *>>(
-    val mapType: KType
+    mapType: KType
 ) : TypedParameterResolver<MapResolver<R>, R>(mapType),
     ICustomResolver<MapResolver<R>, R>
 
@@ -26,11 +27,13 @@ object StringDoubleMapResolver : MapResolver<Map<String, Double>>(typeOf<Map<Str
 object MapResolverFactory : ParameterResolverFactory<MapResolver<*>>(MapResolver::class) {
     private val resolvers = listOf(StringDoubleMapResolver)
 
+    override val supportedTypesStr: List<String> = resolvers.map { it.type.simpleNestedName }
+
     override fun isResolvable(type: KType): Boolean {
-        return resolvers.any { it.mapType == type }
+        return resolvers.any { it.type == type }
     }
 
     override fun get(parameter: ParameterWrapper): MapResolver<*> {
-        return resolvers.first { it.mapType == parameter.type }
+        return resolvers.first { it.type == parameter.type }
     }
 }

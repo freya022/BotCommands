@@ -60,15 +60,12 @@ class ResolverContainer internal constructor(
             logger.trace {
                 val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
                     buildString {
-                        //TODO add "supportedTypesStr" as a debug info
-                        val resolverTypeNames = factories
-                            .map { it.resolverType }
-                            .filter { resolverType -> resolverType.isSubclassOf(interfaceClass) }
-                            .map { it.simpleNestedName }
-                            .sorted()
+                        val factories = factories
+                            .filter { factory -> factory.resolverType.isSubclassOf(interfaceClass) }
+                            .sortedBy { it.resolverType.simpleNestedName }
 
-                        appendLine("${interfaceClass.simpleNestedName} (${resolverTypeNames.size}):")
-                        append(resolverTypeNames.joinAsList(linePrefix = "\t-"))
+                        appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
+                        append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} (${it.supportedTypesStr.joinToString()})" })
                     }
                 }
 
