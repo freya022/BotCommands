@@ -28,12 +28,12 @@ class ResolverContainer internal constructor(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    private val factories: MutableList<ParameterResolverFactory<*, *>> = Collections.synchronizedList(arrayOfSize(50))
-    private val cache: MutableMap<KType, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
+    private val factories: MutableList<ParameterResolverFactory<*>> = Collections.synchronizedList(arrayOfSize(50))
+    private val cache: MutableMap<KType, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
 
     init {
         context.getInterfacedServices<ParameterResolver<*, *>>().forEach { addResolver(it) }
-        context.getInterfacedServices<ParameterResolverFactory<*, *>>().forEach { addResolverFactory(it) }
+        context.getInterfacedServices<ParameterResolverFactory<*>>().forEach { addResolverFactory(it) }
     }
 
     fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
@@ -47,7 +47,7 @@ class ResolverContainer internal constructor(
         }
     }
 
-    fun <R : Any> addResolverFactory(resolver: ParameterResolverFactory<*, R>) {
+    fun addResolverFactory(resolver: ParameterResolverFactory<*>) {
         factories += resolver
     }
 
@@ -78,7 +78,7 @@ class ResolverContainer internal constructor(
     }
 
     @JvmSynthetic
-    internal fun getResolverFactoryOrNull(type: KType): ParameterResolverFactory<*, *>? {
+    internal fun getResolverFactoryOrNull(type: KType): ParameterResolverFactory<*>? {
         val resolvableFactories = factories.filter { it.isResolvable(type) }
         check(resolvableFactories.size <= 1) {
             val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }

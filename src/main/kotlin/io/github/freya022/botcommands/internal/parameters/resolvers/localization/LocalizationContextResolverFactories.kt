@@ -27,7 +27,7 @@ import kotlin.reflect.typeOf
 @ResolverFactory
 internal class AppLocalizationContextResolverFactory(
     private val localizationService: LocalizationService
-) : TypedParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(AppLocalizationContextResolver::class, typeOf<AppLocalizationContext>()) {
+) : TypedParameterResolverFactory<AppLocalizationContextResolver>(AppLocalizationContextResolver::class, typeOf<AppLocalizationContext>()) {
     override fun get(parameter: ParameterWrapper) =
         AppLocalizationContextResolver(getBaseLocalizationContext(
             localizationService, parameter, Interaction::class
@@ -37,7 +37,7 @@ internal class AppLocalizationContextResolverFactory(
 @ResolverFactory
 internal class TextLocalizationContextResolverFactory(
     private val localizationService: LocalizationService
-) : TypedParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContextResolver::class, typeOf<TextLocalizationContext>()) {
+) : TypedParameterResolverFactory<TextLocalizationContextResolver>(TextLocalizationContextResolver::class, typeOf<TextLocalizationContext>()) {
     override fun get(parameter: ParameterWrapper) =
         TextLocalizationContextResolver(getBaseLocalizationContext(
             localizationService, parameter, Interaction::class, MessageReceivedEvent::class

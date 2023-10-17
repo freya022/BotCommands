@@ -18,6 +18,7 @@ import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
+//TODO ignore absent annotations on types returned by parameter resolver factories
 //This checker works on all classes from the user packages, but only on "services" of internal classes
 internal class ResolverSupertypeChecker internal constructor(): ClassGraphProcessor {
     private val errorMessages: MutableList<String> = arrayListOf()
@@ -36,7 +37,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
         if (isResolverFactoryAnnotated && !isResolverFactorySubclass) {
-            errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolverFactory<*, *>>()}"
+            errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
             return
         } else if (!isResolverFactoryAnnotated && isResolverFactorySubclass) {
             errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<ResolverFactory>()}"
@@ -74,7 +75,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
             return
         } else if (isResolverFactoryAnnotated && !isResolverFactoryReturnType) {
             // Wrong return type
-            errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*, *>>()}"
+            errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*>>()}"
             return
         }
     }

@@ -12,7 +12,7 @@ import kotlin.reflect.jvm.jvmErasure
  * @see ParameterResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolverFactory<T : ParameterResolver<*, R>, R : Any>(val resolverType: KClass<out T>) {
+abstract class ParameterResolverFactory<T : ParameterResolver<out T, *>>(val resolverType: KClass<out T>) {
     constructor(resolverType: Class<T>) : this(resolverType.kotlin)
 
     abstract fun isResolvable(type: KType): Boolean
@@ -24,26 +24,26 @@ abstract class ParameterResolverFactory<T : ParameterResolver<*, R>, R : Any>(va
     }
 }
 
-private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<T, R>, R : Any>(
+private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<out T, *>>(
     private val resolver: T
-): ParameterResolverFactory<T, R>(resolver::class) {
+): ParameterResolverFactory<T>(resolver::class) {
     override fun isResolvable(type: KType): Boolean = resolver.jvmErasure == type.jvmErasure
     override fun get(parameter: ParameterWrapper): T = resolver
     override fun toString(): String = "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
 }
 
-internal fun <T : ClassParameterResolver<*, R>, R : Any> T.toResolverFactory(): ParameterResolverFactory<*, R> {
+internal fun <T : ClassParameterResolver<out T, *>> T.toResolverFactory(): ParameterResolverFactory<T> {
     return ClassParameterResolverFactoryAdapter(this)
 }
 
-private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<T, R>, R : Any>(
+private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<out T, *>>(
     private val resolver: T
-): ParameterResolverFactory<T, R>(resolver::class) {
+): ParameterResolverFactory<T>(resolver::class) {
     override fun isResolvable(type: KType): Boolean = resolver.type == type
     override fun get(parameter: ParameterWrapper): T = resolver
     override fun toString(): String = "TypedParameterResolverFactoryAdapter(resolver=$resolver)"
 }
 
-internal fun <T : TypedParameterResolver<*, R>, R : Any> T.toResolverFactory(): ParameterResolverFactory<*, R> {
+internal fun <T : TypedParameterResolver<out T, *>> T.toResolverFactory(): ParameterResolverFactory<T> {
     return TypedParameterResolverFactoryAdapter(this)
 }
