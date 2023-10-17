@@ -102,7 +102,7 @@ class ResolverContainer internal constructor(
                 val serviceResult = serviceContainer.tryGetService(erasure)
 
                 serviceResult.serviceError?.let { serviceError ->
-                    parameter.throwUser("Parameter #${parameter.index} of type '${erasure.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
+                    parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleNestedName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
                 }
 
                 ServiceCustomResolver(serviceResult.getOrThrow()).toResolverFactory()
