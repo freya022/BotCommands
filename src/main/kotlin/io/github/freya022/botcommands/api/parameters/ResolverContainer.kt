@@ -36,7 +36,7 @@ class ResolverContainer internal constructor(
         context.getInterfacedServices<ParameterResolverFactory<*>>().forEach { addResolverFactory(it) }
     }
 
-    fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
+    fun addResolver(resolver: ParameterResolver<*, *>) {
         if (!hasCompatibleInterface(resolver)) {
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
