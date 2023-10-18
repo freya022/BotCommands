@@ -31,8 +31,8 @@ class ResolverContainer internal constructor(
     private val cache: MutableMap<KType, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.getInterfacedServices<ParameterResolver<*, *>>().forEach { addResolver(it) }
-        context.getInterfacedServices<ParameterResolverFactory<*>>().forEach { addResolverFactory(it) }
+        context.getInterfacedServices<ParameterResolver<*, *>>().forEach(::addResolver)
+        context.getInterfacedServices<ParameterResolverFactory<*>>().forEach(::addResolverFactory)
     }
 
     fun addResolver(resolver: ParameterResolver<*, *>) {
