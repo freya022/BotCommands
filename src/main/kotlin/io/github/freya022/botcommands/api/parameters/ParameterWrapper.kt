@@ -17,19 +17,19 @@ data class ParameterWrapper internal constructor(
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 
-    fun toListElementType() = when (type.jvmErasure) {
+    @JvmSynthetic
+    internal fun toListElementType() = when (type.jvmErasure) {
         List::class -> copy(
             type = type.arguments[0].type ?: throwUser("A concrete List element type is required")
         )
         else -> this
     }
 
-    fun throwUser(message: String): Nothing = when (parameter) {
+    @JvmSynthetic
+    internal fun throwUser(message: String): Nothing = when (parameter) {
         null -> utilsThrowUser(message)
         else -> utilsThrowUser(parameter.function, message)
     }
-
-    companion object {
-        fun KParameter.wrap() = ParameterWrapper(this)
-    }
 }
+
+fun KParameter.wrap() = ParameterWrapper(this)
