@@ -1,17 +1,18 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import java.util.regex.Pattern
 
 /**
- * Interface which indicates this class can resolve parameters for regex commands.
+ * Parameter resolver for parameters of [@JDATextCommand][JDATextCommand].
+ *
+ * This resolver is an extension of [RegexParameterResolver], but the regex pattern is quoted to help command parsing.
  */
 interface QuotableRegexParameterResolver<T, R : Any> : RegexParameterResolver<T, R>
         where T : ParameterResolver<T, R>,
               T : QuotableRegexParameterResolver<T, R> {
     /**
-     * Returns a quoted pattern of the parameter resolver
-     *
-     * @return A quoted pattern of the original [regex parameter resolver][RegexParameterResolver]
+     * A quoted pattern of the parameter resolver.
      *
      * @see RegexParameterResolver.pattern
      */

@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
+import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 
 /**
@@ -23,7 +24,8 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
  *  - Select menu listeners must be in the [search path][BConfigBuilder.addSearchPath]
  *  - These handlers also need to have a [StringSelectEvent] or [EntitySelectEvent] as their first argument
  *
- * Supported parameters are in [ParameterResolver].
+ * Supported parameters are in [ParameterResolver],
+ * additional resolvers can be implemented with [ComponentParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  *
