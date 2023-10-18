@@ -75,26 +75,26 @@ class ResolverContainer internal constructor(
     }
 
     @JvmSynthetic
-    internal fun getResolverFactoryOrNull(type: KType): ParameterResolverFactory<*>? {
-        val resolvableFactories = factories.filter { it.isResolvable(type) }
+    internal fun getResolverFactoryOrNull(parameter: ParameterWrapper): ParameterResolverFactory<*>? {
+        val resolvableFactories = factories.filter { it.isResolvable(parameter.type) }
         check(resolvableFactories.size <= 1) {
             val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
-            "Found multiple compatible resolvers for parameter of type ${type}\n$factoryNameList"
+            "Found multiple compatible resolvers for parameter of type ${parameter.type.simpleNestedName}\n$factoryNameList"
         }
 
         return resolvableFactories.firstOrNull()
     }
 
     @JvmSynthetic
-    internal inline fun <reified T : Any> hasResolverOfType(parameter: KParameter): Boolean {
-        val resolverFactory = getResolverFactoryOrNull(parameter.type) ?: return false
+    internal inline fun <reified T : Any> hasResolverOfType(parameter: ParameterWrapper): Boolean {
+        val resolverFactory = getResolverFactoryOrNull(parameter) ?: return false
         return resolverFactory.resolverType.isSubclassOf(T::class)
     }
 
     @JvmSynthetic
     internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
         return cache.computeIfAbsent(parameter.type) { type ->
-            getResolverFactoryOrNull(type) ?: run {
+            getResolverFactoryOrNull(parameter) ?: run {
                 val erasure = parameter.erasure
                 val serviceResult = serviceContainer.tryGetService(erasure)
 
