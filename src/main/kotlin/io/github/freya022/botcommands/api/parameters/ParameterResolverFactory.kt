@@ -25,7 +25,7 @@ abstract class ParameterResolverFactory<T : ParameterResolver<out T, *>>(val res
      */
     abstract val supportedTypesStr: List<String>
 
-    abstract fun isResolvable(type: KType): Boolean
+    abstract fun isResolvable(parameter: ParameterWrapper): Boolean
 
     abstract fun get(parameter: ParameterWrapper): T
 
@@ -39,7 +39,7 @@ private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<ou
 ): ParameterResolverFactory<T>(resolver::class) {
     override val supportedTypesStr: List<String> = listOf(resolver.jvmErasure.simpleNestedName)
 
-    override fun isResolvable(type: KType): Boolean = resolver.jvmErasure == type.jvmErasure
+    override fun isResolvable(parameter: ParameterWrapper): Boolean = resolver.jvmErasure == parameter.erasure
     override fun get(parameter: ParameterWrapper): T = resolver
     override fun toString(): String = "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
 }
@@ -53,7 +53,7 @@ private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<ou
 ): ParameterResolverFactory<T>(resolver::class) {
     override val supportedTypesStr: List<String> = listOf(resolver.type.simpleNestedName)
 
-    override fun isResolvable(type: KType): Boolean = resolver.type == type
+    override fun isResolvable(parameter: ParameterWrapper): Boolean = resolver.type == parameter.type
     override fun get(parameter: ParameterWrapper): T = resolver
     override fun toString(): String = "TypedParameterResolverFactoryAdapter(resolver=$resolver)"
 }

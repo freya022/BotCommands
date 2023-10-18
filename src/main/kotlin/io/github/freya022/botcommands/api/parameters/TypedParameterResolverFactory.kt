@@ -13,7 +13,7 @@ abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
 
     constructor(resolverType: Class<T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
 
-    override fun isResolvable(type: KType): Boolean {
-        return this.type == type
+    override fun isResolvable(parameter: ParameterWrapper): Boolean {
+        return this.type == parameter.type
     }
 }

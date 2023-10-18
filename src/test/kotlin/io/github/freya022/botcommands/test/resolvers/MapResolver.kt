@@ -29,8 +29,8 @@ object MapResolverFactory : ParameterResolverFactory<MapResolver<*>>(MapResolver
 
     override val supportedTypesStr: List<String> = resolvers.map { it.type.simpleNestedName }
 
-    override fun isResolvable(type: KType): Boolean {
-        return resolvers.any { it.type == type }
+    override fun isResolvable(parameter: ParameterWrapper): Boolean {
+        return resolvers.any { it.type == parameter.type }
     }
 
     override fun get(parameter: ParameterWrapper): MapResolver<*> {
