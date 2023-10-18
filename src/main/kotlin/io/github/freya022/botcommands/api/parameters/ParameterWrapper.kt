@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
@@ -13,9 +14,13 @@ class ParameterWrapper private constructor(
     val name: String,
     val parameter: KParameter
 ) {
-    val erasure = type.jvmErasure
+    val erasure: KClass<*> = type.jvmErasure
+    val annotations: List<Annotation> get() = parameter.annotations
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
+
+    fun hasAnnotation(clazz: Class<out Annotation>): Boolean = getAnnotation(clazz) != null
+    fun <A : Annotation> getAnnotation(clazz: Class<out A>): A? = parameter.annotations.filterIsInstance(clazz).firstOrNull()
 
     @JvmSynthetic
     internal fun toListElementType() = when (type.jvmErasure) {
