@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.internal.parameters.resolvers.localization
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
@@ -46,7 +45,7 @@ internal class TextLocalizationContextResolverFactory(
 
 internal object LocalizationContextResolverFactories {
     fun getBaseLocalizationContext(localizationService: LocalizationService, parameterWrapper: ParameterWrapper, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
-        val parameter = parameterWrapper.parameter ?: throwInternal("Tried to get localization context on a null parameter")
+        val parameter = parameterWrapper.parameter
         val parameterFunction = parameter.function
         val annotation = parameter.findAnnotation<LocalizationBundle>()
             ?: throwUser(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with ${annotationRef<LocalizationBundle>()}")

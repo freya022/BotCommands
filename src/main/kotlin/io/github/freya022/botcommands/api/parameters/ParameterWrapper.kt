@@ -7,11 +7,11 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.internal.utils.throwUser as utilsThrowUser
 
-data class ParameterWrapper internal constructor(
+class ParameterWrapper private constructor(
     val type: KType,
     val index: Int,
     val name: String,
-    val parameter: KParameter? /* Nullable in case parameters would be "created" without a function */
+    val parameter: KParameter
 ) {
     val erasure = type.jvmErasure
 
@@ -19,17 +19,40 @@ data class ParameterWrapper internal constructor(
 
     @JvmSynthetic
     internal fun toListElementType() = when (type.jvmErasure) {
-        List::class -> copy(
-            type = type.arguments[0].type ?: throwUser("A concrete List element type is required")
+        List::class -> ParameterWrapper(
+            type = type.arguments[0].type ?: throwUser("A concrete List element type is required"),
+            index = index,
+            name = name,
+            parameter = parameter
         )
         else -> this
     }
 
     @JvmSynthetic
-    internal fun throwUser(message: String): Nothing = when (parameter) {
-        null -> utilsThrowUser(message)
-        else -> utilsThrowUser(parameter.function, message)
+    internal fun throwUser(message: String): Nothing = utilsThrowUser(parameter.function, message)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParameterWrapper
+
+        if (type != other.type) return false
+        if (parameter != other.parameter) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + parameter.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "ParameterWrapper(type=$type, parameter=$parameter)"
     }
 }
 
-fun KParameter.wrap() = ParameterWrapper(this)
+@JvmSynthetic
+internal fun KParameter.wrap() = ParameterWrapper(this)
