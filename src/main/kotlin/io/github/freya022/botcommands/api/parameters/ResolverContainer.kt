@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
-import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
@@ -49,6 +48,7 @@ class ResolverContainer internal constructor(
 
     fun addResolverFactory(resolver: ParameterResolverFactory<*>) {
         factories += resolver
+        cache.clear()
     }
 
     @JvmSynthetic
