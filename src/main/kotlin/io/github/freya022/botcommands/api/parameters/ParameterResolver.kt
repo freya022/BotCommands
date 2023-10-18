@@ -10,14 +10,16 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 /**
- * Base class for parameter resolvers used in regex commands, application commands, and component callbacks.
+ * Base class for parameter resolvers used in text commands, application commands, and component callbacks.
  *
- * Parameters supported by default:
+ * You need to extend [ClassParameterResolver] or [TypedParameterResolver] instead.
+ *
+ * ### Default parameter resolvers
  * - [String]
  *
- * - boolean
- * - long
- * - double
+ * - [Boolean]
+ * - [Long]
+ * - [Double]
  *
  * - [Emoji]
  *
@@ -25,12 +27,14 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * - [User]
  * - [Member]
  * - [InputUser]
- * - [all guild channels subtypes][GuildChannel]
+ * - [All guild channels subtypes][GuildChannel]
  * - [Message] (only message context commands)
  *
  * You can also check loaded parameter resolvers in the logs on the `trace` level.
  *
  * @see ClassParameterResolver
+ *
+ * @see ParameterResolverFactory
  *
  * @see RegexParameterResolver
  * @see QuotableRegexParameterResolver

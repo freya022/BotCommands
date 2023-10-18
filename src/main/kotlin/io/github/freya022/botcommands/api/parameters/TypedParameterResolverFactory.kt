@@ -5,6 +5,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
 
+/**
+ * Specialization of [ParameterResolverFactory] for a specific [KType].
+ *
+ * @see ParameterResolverFactory
+ */
 abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     resolverType: KClass<out T>,
     protected val type: KType
