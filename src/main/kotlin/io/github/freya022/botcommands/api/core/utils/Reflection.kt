@@ -93,6 +93,15 @@ val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
 val KFunction<*>.javaMethodOrConstructor: Executable
     get() = javaMethodOrConstructorOrNull ?: throwInternal(this, "Could not resolve Java method or constructor")
 
+val Class<*>.allSuperclasses: List<Class<*>>
+    get() = buildList {
+        var clazz: Class<*>? = superclass
+        while (clazz != null) {
+            add(clazz)
+            clazz = clazz.superclass
+        }
+    }
+
 fun KFunction<*>.getSignature(
     parameterNames: List<String> = listOf(),
     qualifiedClass: Boolean = false,

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.channels;
 
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.parameters.ParameterResolver;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -17,7 +17,7 @@ import java.util.EnumSet;
 
 @Resolver
 public class ThreadChannelResolver
-		extends ParameterResolver<ThreadChannelResolver, ThreadChannel>
+		extends ClassParameterResolver<ThreadChannelResolver, ThreadChannel>
 		implements SlashParameterResolver<ThreadChannelResolver, ThreadChannel>,
 		           ChannelResolver {
 	private static final EnumSet<ChannelType> THREAD_TYPES = EnumSet.of(ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);

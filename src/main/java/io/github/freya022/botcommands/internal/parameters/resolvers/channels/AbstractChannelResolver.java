@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.channels;
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.RegexParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public abstract class AbstractChannelResolver<T extends GuildChannel>
-		extends ParameterResolver<AbstractChannelResolver<T>, T>
+		extends ClassParameterResolver<AbstractChannelResolver<T>, T>
 		implements RegexParameterResolver<AbstractChannelResolver<T>, T>,
 		           SlashParameterResolver<AbstractChannelResolver<T>, T>,
 		           ComponentParameterResolver<AbstractChannelResolver<T>, T>,

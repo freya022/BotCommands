@@ -2,28 +2,50 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.prefixed.annotations.ID
+import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
+import kotlin.reflect.KType
 
 /**
- * Interface which indicates this class can resolve parameters for regex commands
+ * Parameter resolver for parameters of [@JDATextCommand][JDATextCommand].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
-interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
-                                             T : RegexParameterResolver<T, R> {
+interface RegexParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
+                                                   T : RegexParameterResolver<T, R> {
     /**
-     * Returns a resolved object from this text command interaction
+     * Returns a resolved object from this text command.
      *
-     * @param variation The text command variation of the command being executed
-     * @param event     The event of the received message
-     * @param args      The text arguments of this command, extracted with [pattern]
+     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
      *
-     * @return The resolved option mapping
+     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
+     *
+     * @param variation The text command variation being executed
+     * @param event     The corresponding event
+     * @param args      The arguments of this parameter, extracted with [pattern]
      */
     fun resolve(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
+    /**
+     * Returns a resolved object from this text command.
+     *
+     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
+     *
+     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
+     *
+     * @param variation The text command variation being executed
+     * @param event     The corresponding event
+     * @param args      The arguments of this parameter, extracted with [pattern]
+     */
     @JvmSynthetic
     suspend fun resolveSuspend(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>) =
         resolve(variation, event, args)

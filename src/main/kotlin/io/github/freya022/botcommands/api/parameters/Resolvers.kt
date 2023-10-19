@@ -23,7 +23,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     private val values: Array<out E>,
     private val nameFunction: EnumNameFunction<E>
 ) :
-    ParameterResolver<EnumResolver<E>, E>(e),
+    ClassParameterResolver<EnumResolver<E>, E>(e),
     RegexParameterResolver<EnumResolver<E>, E>,
     SlashParameterResolver<EnumResolver<E>, E>,
     ComponentParameterResolver<EnumResolver<E>, E> {
@@ -109,7 +109,7 @@ object Resolvers {
         e: Class<E>,
         values: Array<out E>,
         nameFunction: EnumNameFunction<E> = EnumNameFunction { it.toHumanName() }
-    ): ParameterResolver<*, E> {
+    ): ClassParameterResolver<*, E> {
         return EnumResolver(e, values, nameFunction)
     }
 
@@ -145,6 +145,6 @@ object Resolvers {
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),
     noinline nameFunction: (e: E) -> String = { it.toHumanName() }
-): ParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, nameFunction)
+): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, nameFunction)
 
 fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)

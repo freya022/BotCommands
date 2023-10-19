@@ -7,6 +7,8 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.parameters.MessageContextParameterResolver
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
@@ -18,6 +20,9 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * which will be the *targeted* message.
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands) for more details.
+ *
+ * Supported parameters are in [ParameterResolver], but only [Message][GlobalMessageEvent.getTarget] is supported by default,
+ * additional resolvers can be implemented with [MessageContextParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
  *

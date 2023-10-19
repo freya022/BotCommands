@@ -8,6 +8,8 @@ import io.github.freya022.botcommands.api.commands.application.context.builder.U
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.UserContextParameterResolver
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -20,6 +22,10 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * which will be the *targeted* entity.
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
+ *
+ * Supported parameters are in [ParameterResolver],
+ * but only [User][GlobalUserEvent.getTarget]/[Member][GlobalUserEvent.getTargetMember] and [InputUser] are supported by default,
+ * additional resolvers can be implemented with [UserContextParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
  *

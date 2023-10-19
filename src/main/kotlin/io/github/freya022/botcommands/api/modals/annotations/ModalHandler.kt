@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.parameters.ModalParameterResolver
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 /**
@@ -19,6 +21,9 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  *  - And finally: Have all your [ModalInput] and custom parameters, in the order you want
  *
  * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
+ *
+ * Supported parameters are in [ParameterResolver],
+ * additional resolvers can be implemented with [ModalParameterResolver].
  *
  * @see ModalData @ModalData
  * @see ModalInput @ModalInput

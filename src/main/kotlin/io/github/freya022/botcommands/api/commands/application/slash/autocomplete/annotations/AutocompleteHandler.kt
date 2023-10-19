@@ -9,6 +9,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 /**
@@ -18,6 +20,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  * I recommend naming them like: `YourClassSimpleName: AutocompletedField` such as `SlashTag: tagName`.
  *
  * Requirements:
+ *  - The declaring class must be annotated with [@Handler][Handler] or be an existing [@Command][Command] class.
  *  - The method must be public
  *  - The method must be non-static
  *  - The first parameter must be [CommandAutoCompleteInteractionEvent]
@@ -42,7 +45,9 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  *
  * **Note:** Parameters refers to method parameters, not Discord options.
  *
- * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or be in an existing [@Command][Command] class.
+ * ## Registering more option types
+ * Supported parameters are in [ParameterResolver],
+ * additional resolvers can be implemented with [SlashParameterResolver].
  *
  * @see SlashOption @SlashOption
  * @see JDASlashCommand @JDASlashCommand

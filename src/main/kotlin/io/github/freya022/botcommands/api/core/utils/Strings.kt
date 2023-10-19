@@ -12,4 +12,4 @@ fun String.nullIfBlank(): String? = when {
 
 fun <T> Iterable<T>.joinWithQuote(transform: ((T) -> CharSequence)? = null) = joinToString(separator = "', '", prefix = "'", postfix = "'", transform = transform)
 
-fun <T> Iterable<T>.joinAsList(transform: ((T) -> CharSequence)? = null) = joinToString(prefix = " - ", separator = "\n - ", transform = transform)
+fun <T> Iterable<T>.joinAsList(linePrefix: String = " -", transform: ((T) -> CharSequence)? = null) = joinToString(prefix = "$linePrefix ", separator = "\n$linePrefix ", transform = transform)

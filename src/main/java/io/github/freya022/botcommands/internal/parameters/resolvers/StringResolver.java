@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class StringResolver
-		extends ParameterResolver<StringResolver, String>
+		extends ClassParameterResolver<StringResolver, String>
 		implements QuotableRegexParameterResolver<StringResolver, String>,
 		           SlashParameterResolver<StringResolver, String>,
 		           ComponentParameterResolver<StringResolver, String>,

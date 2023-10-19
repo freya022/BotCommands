@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandV
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
@@ -25,7 +26,8 @@ import net.dv8tion.jda.internal.utils.Checks
  *  - The method must be in the [search path][BConfigBuilder.addSearchPath]
  *  - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption
  *
- * Input options need to be annotated with [@TextOption][TextOption], see supported types at [ParameterResolver].
+ * Input options need to be annotated with [@TextOption][TextOption], see supported types at [ParameterResolver],
+ * additional resolvers can be implemented with [RegexParameterResolver].
  *
  * @see Command @Command
  * @see TextOption @TextOption

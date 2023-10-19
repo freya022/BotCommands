@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 
 /**
@@ -12,7 +13,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
  *
  * @see BService @BService
  *
- * @see ParameterResolver
+ * @see ClassParameterResolver
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 @Retention(AnnotationRetention.BINARY) //Read by ClassGraph

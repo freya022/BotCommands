@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
@@ -33,7 +34,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups) for more details.
  *
- * Input options need to be annotated with [@SlashOption][SlashOption], see supported types at [ParameterResolver].
+ * Input options need to be annotated with [@SlashOption][SlashOption], see supported types at [ParameterResolver],
+ * additional resolvers can be implemented with [SlashParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
  *
