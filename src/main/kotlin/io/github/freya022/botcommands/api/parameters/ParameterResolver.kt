@@ -32,6 +32,9 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * You can also check loaded parameter resolvers in the logs on the `trace` level.
  *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
+ *
  * @see ClassParameterResolver
  *
  * @see ParameterResolverFactory

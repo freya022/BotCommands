@@ -8,6 +8,11 @@ import kotlin.reflect.KType
 
 /**
  * Parameter resolver for parameters of [@JDAUserCommand][JDAUserCommand].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface UserContextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                                          T : UserContextParameterResolver<T, R> {

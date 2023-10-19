@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -8,7 +9,11 @@ import kotlin.reflect.full.starProjectedType
 /**
  * Specialization of [ParameterResolverFactory] for a specific [KType].
  *
+ * Your implementation needs to be annotated with [@ResolverFactory][ResolverFactory].
+ *
  * @see ParameterResolverFactory
+ *
+ * @param T Type of the returned parameter resolver
  */
 abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     resolverType: KClass<out T>,

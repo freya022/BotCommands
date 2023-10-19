@@ -11,6 +11,11 @@ import kotlin.reflect.KType
 /**
  * Parameter resolver for parameters of [@JDAButtonListener][JDAButtonListener]
  * and [@JDASelectMenuListener][JDASelectMenuListener].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface ComponentParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                                        T : ComponentParameterResolver<T, R> {

@@ -9,6 +9,11 @@ import kotlin.reflect.KType
 
 /**
  * Parameter resolver for parameters of [@ModalHandler][ModalHandler].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface ModalParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                                    T : ModalParameterResolver<T, R> {

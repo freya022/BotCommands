@@ -1,12 +1,17 @@
 package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 /**
  * Factory for [parameter resolvers][ParameterResolver].
+ *
+ * Your implementation needs to be annotated with [@ResolverFactory][ResolverFactory].
+ *
+ * ### How it works
  *
  * A factory determines if a given parameter is supported, if so, a parameter resolver will be created.
  *
@@ -22,6 +27,8 @@ import kotlin.reflect.KType
  * but you can only do that with Kotlin.
  *
  * In case you want to read the annotations, you can use the methods supplied by [ParameterWrapper].
+ *
+ * @param T Type of the returned parameter resolver
  *
  * @see TypedParameterResolverFactory
  * @see ParameterResolver

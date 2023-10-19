@@ -19,6 +19,11 @@ import kotlin.reflect.KType
 
 /**
  * Parameter resolver for parameters of [@JDASlashCommand][JDASlashCommand] and [@AutocompleteHandler][AutocompleteHandler].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface SlashParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                                    T : SlashParameterResolver<T, R> {
@@ -45,11 +50,11 @@ interface SlashParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
      * Returns a resolved object for this [OptionMapping].
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], and the resolver hasn't replied to this interaction,
-     * then the slash command aborts with an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
+     * or [optional][KParameter.isOptional], then the command aborts.
      *
-     * Meaning that if the value is not resolvable,
-     * the bot should reply with its own message to avoid the generic error message.
+     * The resolver should reply to the interaction in case the value is not resolvable.
+     * If the interaction is not replied to,
+     * the handler sends an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
      *
      * @param info          The data of the command being executed
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]

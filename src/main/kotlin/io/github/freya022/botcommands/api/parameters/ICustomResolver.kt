@@ -7,6 +7,11 @@ import kotlin.reflect.KType
 
 /**
  * Parameter resolver for any command/handler parameters which aren't resolvable by other resolvers.
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface ICustomResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                             T : ICustomResolver<T, R> {

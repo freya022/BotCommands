@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandB
 import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
-import io.github.freya022.botcommands.api.parameters.ModalParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
@@ -27,7 +27,7 @@ import net.dv8tion.jda.internal.utils.Checks
  *  - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption
  *
  * Input options need to be annotated with [@TextOption][TextOption], see supported types at [ParameterResolver],
- * additional resolvers can be implemented with [ModalParameterResolver].
+ * additional resolvers can be implemented with [RegexParameterResolver].
  *
  * @see Command @Command
  * @see TextOption @TextOption

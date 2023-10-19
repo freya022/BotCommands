@@ -11,15 +11,21 @@ import kotlin.reflect.KType
 
 /**
  * Parameter resolver for parameters of [@JDATextCommand][JDATextCommand].
+ *
+ * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * @param T Type of the implementation
+ * @param R Type of the returned resolved objects
  */
 interface RegexParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
                                                    T : RegexParameterResolver<T, R> {
-    //TODO link to section of JDATextCommand about variations
     /**
      * Returns a resolved object from this text command.
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
+     *
+     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
      *
      * @param variation The text command variation being executed
      * @param event     The corresponding event
@@ -33,6 +39,8 @@ interface RegexParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
+     *
+     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
      *
      * @param variation The text command variation being executed
      * @param event     The corresponding event
