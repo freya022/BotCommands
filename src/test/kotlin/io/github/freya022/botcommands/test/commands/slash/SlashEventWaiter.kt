@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.api.core.waiter.await
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -12,7 +13,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 private val logger = KotlinLogging.logger { }
 
@@ -37,8 +37,7 @@ class SlashEventWaiter(private val eventWaiter: EventWaiter) : ApplicationComman
             event.hook.editOriginal("You said '$receivedContent'").queue()
         } catch (e: TimeoutException) {
             event.hook.editOriginal("Timeout !")
-                .delay(5.seconds.toJavaDuration())
-                .flatMap { event.hook.deleteOriginal() }
+                .deleteDelayed(event.hook, 5.seconds)
                 .queue()
         }
     }

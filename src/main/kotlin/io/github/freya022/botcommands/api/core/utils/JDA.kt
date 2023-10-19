@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
@@ -24,6 +25,7 @@ import net.dv8tion.jda.internal.entities.ReceivedMessage
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
@@ -126,42 +128,68 @@ fun <T> RestAction<T>.delay(duration: Duration, scheduler: ScheduledExecutorServ
     delay(duration.toJavaDuration(), scheduler)
 
 /**
+ * @see RestAction.timeout
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T : RestAction<*>> T.timeout(duration: Duration): T =
+    timeout(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS) as T
+
+// NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
+//       as coroutines already enable the same behavior using `delay`
+
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageEditAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageCreateAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+/**
  * @see JDA.awaitShutdown
  */
-fun JDA.awaitShutdown(timeout: Duration) = awaitShutdown(timeout.toJavaDuration())
+fun JDA.awaitShutdown(timeout: Duration): Boolean = awaitShutdown(timeout.toJavaDuration())
 
 /**
  * @see Guild.timeoutFor
  */
-fun Guild.timeoutFor(user: UserSnowflake, duration: Duration) = timeoutFor(user, duration.toJavaDuration())
+fun Guild.timeoutFor(user: UserSnowflake, duration: Duration): AuditableRestAction<Void> = timeoutFor(user, duration.toJavaDuration())
 /**
  * @see Member.timeoutFor
  */
-fun Member.timeoutFor(duration: Duration) = timeoutFor(duration.toJavaDuration())
+fun Member.timeoutFor(duration: Duration): AuditableRestAction<Void> = timeoutFor(duration.toJavaDuration())
 
 /**
  * @see TimeFormat.after
  */
-fun TimeFormat.after(duration: Duration) = after(duration.toJavaDuration())
+fun TimeFormat.after(duration: Duration): Timestamp = after(duration.toJavaDuration())
 /**
  * @see TimeFormat.before
  */
-fun TimeFormat.before(duration: Duration) = before(duration.toJavaDuration())
+fun TimeFormat.before(duration: Duration): Timestamp = before(duration.toJavaDuration())
 
 /**
  * @see Timestamp.plus
  */
-operator fun Timestamp.plus(duration: Duration) = plus(duration.toJavaDuration())
+operator fun Timestamp.plus(duration: Duration): Timestamp = plus(duration.toJavaDuration())
 /**
  * @see Timestamp.minus
  */
-operator fun Timestamp.minus(duration: Duration) = minus(duration.toJavaDuration())
+operator fun Timestamp.minus(duration: Duration): Timestamp = minus(duration.toJavaDuration())
 
 /**
  * @see Task.setTimeout
  */
-fun <T> Task<T>.setTimeout(duration: Duration) = setTimeout(duration.toJavaDuration())
+fun <T> Task<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
 /**
  * @see GatewayTask.setTimeout
  */
-fun <T> GatewayTask<T>.setTimeout(duration: Duration) = setTimeout(duration.toJavaDuration())
+fun <T> GatewayTask<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
