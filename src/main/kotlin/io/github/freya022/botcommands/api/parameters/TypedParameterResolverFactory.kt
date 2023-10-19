@@ -21,6 +21,7 @@ abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
 ) : ParameterResolverFactory<T>(resolverType) {
     override val supportedTypesStr: List<String> = listOf(type.simpleNestedName)
 
+    constructor(resolverType: KClass<T>, type: KClass<*>) : this(resolverType, type.starProjectedType)
     constructor(resolverType: Class<T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
 
     override fun isResolvable(parameter: ParameterWrapper): Boolean {
