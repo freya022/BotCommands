@@ -12,10 +12,7 @@ class CustomObjectResolver :
     ClassParameterResolver<CustomObjectResolver, CustomObject>(CustomObject::class),
     ICustomResolver<CustomObjectResolver, CustomObject> {
 
-    override suspend fun resolveSuspend(
-        executableInteractionInfo: IExecutableInteractionInfo,
-        event: Event
-    ): CustomObject {
+    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): CustomObject {
         return CustomObject()
     }
 }

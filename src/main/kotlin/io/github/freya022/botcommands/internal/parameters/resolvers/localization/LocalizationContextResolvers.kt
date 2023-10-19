@@ -15,7 +15,7 @@ internal class AppLocalizationContextResolver(private val baseContext: Localizat
     ClassParameterResolver<AppLocalizationContextResolver, AppLocalizationContext>(AppLocalizationContext::class),
     ICustomResolver<AppLocalizationContextResolver, AppLocalizationContext> {
 
-    override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event): AppLocalizationContext {
+    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): AppLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(event.guildLocale, event.userLocale)
             //MessageReceivedEvent does not provide user locale
@@ -28,7 +28,7 @@ internal class TextLocalizationContextResolver(private val baseContext: Localiza
     ClassParameterResolver<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContext::class),
     ICustomResolver<TextLocalizationContextResolver, TextLocalizationContext> {
 
-    override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event): TextLocalizationContext {
+    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): TextLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(event.guildLocale, event.userLocale)
             is MessageReceivedEvent -> when {

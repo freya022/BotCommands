@@ -112,7 +112,7 @@ class ResolverContainer internal constructor(
     }
 
     private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
-        override suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
+        override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event) = o
     }
 
     internal companion object {

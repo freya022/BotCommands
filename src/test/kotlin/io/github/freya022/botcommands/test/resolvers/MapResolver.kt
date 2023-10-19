@@ -17,10 +17,8 @@ sealed class MapResolver<R : Map<*, *>>(
     ICustomResolver<MapResolver<R>, R>
 
 object StringDoubleMapResolver : MapResolver<Map<String, Double>>(typeOf<Map<String, Double>>()) {
-    override suspend fun resolveSuspend(
-        executableInteractionInfo: IExecutableInteractionInfo,
-        event: Event
-    ): Map<String, Double> = mapOf("lol" to 3.14159)
+    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): Map<String, Double> =
+        mapOf("lol" to 3.14159)
 }
 
 @ResolverFactory

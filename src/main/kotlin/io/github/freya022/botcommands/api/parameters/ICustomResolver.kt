@@ -34,10 +34,10 @@ interface ICustomResolver<T, R : Any> where T : ParameterResolver<T, R>,
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
-     * @param executableInteractionInfo Basic information about the function using this resolver
-     * @param event                     The event this resolver is called from
+     * @param info  Basic information about the function using this resolver
+     * @param event The event this resolver is called from
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(executableInteractionInfo: IExecutableInteractionInfo, event: Event) =
-        resolve(executableInteractionInfo, event)
+    suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event) =
+        resolve(info, event)
 }
