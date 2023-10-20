@@ -5,7 +5,10 @@ import io.github.freya022.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -62,6 +65,41 @@ inline fun <R> suppressContentWarning(block: () -> R): R {
  */
 fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: IPermissionHolder, channel: GuildChannel): Set<Permission> =
     EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
+
+/**
+ * Retrieves a thread by ID in this channel.
+ *
+ * The cached threads are checked first, and then requests are made to search in archived public threads,
+ * and archived (but joined) private threads.
+ *
+ * @throws InsufficientPermissionException If the bot does not have the [Permission.MESSAGE_HISTORY] permission in this channel
+ *
+ * @see Guild.getThreadChannelById
+ * @see IThreadContainer.retrieveArchivedPublicThreadChannels
+ * @see IThreadContainer.retrieveArchivedPrivateJoinedThreadChannels
+ */
+suspend fun IThreadContainer.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
+    // Non-archived threads
+    guild.getThreadChannelById(id)?.let { return it }
+
+    // Archived public threads of the current channel
+    retrieveArchivedPublicThreadChannels()
+        .skipTo(id - 1)
+        .limit(2) //Min limit is 2
+        .await()
+        .firstOrNull { it.idLong == id }
+        ?.let { return it }
+
+    // Archived, joined, private threads of the current channel
+    retrieveArchivedPrivateJoinedThreadChannels()
+        .skipTo(id - 1)
+        .limit(2) //Min limit is 2
+        .await()
+        .firstOrNull { it.idLong == id }
+        ?.let { return it }
+
+    return null
+}
 
 //region Send / Edit / Replace extensions
 /**
