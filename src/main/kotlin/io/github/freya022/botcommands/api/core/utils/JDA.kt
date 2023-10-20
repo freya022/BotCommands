@@ -63,6 +63,7 @@ inline fun <R> suppressContentWarning(block: () -> R): R {
 fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: IPermissionHolder, channel: GuildChannel): Set<Permission> =
     EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
 
+//region Send / Edit / Replace extensions
 /**
  * @see MessageEditData.fromCreateData
  */
@@ -114,7 +115,28 @@ fun InteractionHook.replaceWith(data: MessageCreateData): WebhookMessageEditActi
  */
 fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Message> =
     editOriginal(content).setReplace(true)
+//endregion
 
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageEditAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageCreateAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+// NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
+//       as coroutines already enable the same behavior using `delay`
+
+//region Duration extensions
 /**
  * @see RestAction.delay
  */
@@ -133,25 +155,6 @@ fun <T> RestAction<T>.delay(duration: Duration, scheduler: ScheduledExecutorServ
 @Suppress("UNCHECKED_CAST")
 fun <T : RestAction<*>> T.timeout(duration: Duration): T =
     timeout(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS) as T
-
-// NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
-//       as coroutines already enable the same behavior using `delay`
-
-/**
- * Deletes the original message using the hook after the specified delay.
- *
- * **Note:** This delays the rest action by the given delay.
- */
-fun WebhookMessageEditAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
-    delay(delay).flatMap { hook.deleteOriginal() }
-
-/**
- * Deletes the original message using the hook after the specified delay.
- *
- * **Note:** This delays the rest action by the given delay.
- */
-fun WebhookMessageCreateAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
-    delay(delay).flatMap { hook.deleteOriginal() }
 
 /**
  * @see JDA.awaitShutdown
@@ -193,3 +196,4 @@ fun <T> Task<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.to
  * @see GatewayTask.setTimeout
  */
 fun <T> GatewayTask<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
+//endregion
