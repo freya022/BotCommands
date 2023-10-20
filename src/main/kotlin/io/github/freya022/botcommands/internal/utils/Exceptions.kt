@@ -58,10 +58,6 @@ internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
     }
 }
 
-internal inline fun <reified T> Any.throwMixin(): Nothing {
-    throwInternal("${this::class.simpleName} should implement ${T::class.simpleName}")
-}
-
 internal fun Throwable.unwrap(): Throwable {
     if (this is InvocationTargetException) return targetException
     return this

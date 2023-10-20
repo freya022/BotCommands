@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.mixins
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
-import io.github.freya022.botcommands.internal.utils.throwMixin
+import io.github.freya022.botcommands.internal.utils.downcast
 import io.github.freya022.botcommands.internal.utils.throwUser
 
 open class TopLevelApplicationCommandInfoMixin(
@@ -14,7 +14,7 @@ open class TopLevelApplicationCommandInfoMixin(
     final override val isGuildOnly: Boolean = scope.isGuildOnly
 
     init {
-        builder as? ApplicationCommandBuilder<*> ?: throwMixin<ApplicationCommandBuilder<*>>()
+        downcast<ApplicationCommandBuilder<*>>(builder)
 
         //Administrators manage who can use what; the bot doesn't need to check for user mistakes
         // Why would you ask for a permission
