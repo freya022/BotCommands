@@ -150,6 +150,20 @@ public final class DefaultMessages {
 	}
 
 	/**
+	 * @return Message to display when a channel parameter is not found
+	 */
+	public String getResolverChannelNotFoundMsg() {
+		return getLocalizationTemplate("resolver.channel.not_found.message").localize();
+	}
+
+	/**
+	 * @return Message to display when a channel parameter is not found
+	 */
+	public String getResolverUserNotFoundMsg() {
+		return getLocalizationTemplate("resolver.user.not_found.message").localize();
+	}
+
+	/**
 	 * @return Message to display when a slash command option is unresolvable (only in slash command interactions)
 	 */
 	public String getSlashCommandUnresolvableOptionMsg(String parameterName) {

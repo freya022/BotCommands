@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
+import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
@@ -8,6 +10,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -26,9 +29,7 @@ interface IChannelResolver {
 }
 
 @ResolverFactory
-internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolverFactory.LimitedChannelResolver>(LimitedChannelResolver::class) {
-    private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
-
+internal class ChannelResolverFactory(private val context: BContext) : ParameterResolverFactory<ChannelResolverFactory.LimitedChannelResolver>(LimitedChannelResolver::class) {
     // Only for slash commands where Discord always provides the data
     // Channels such as threads are not easily resolvable when used in text commands / components,
     // let the user use the channel id + thread id to find threads themselves
@@ -57,7 +58,7 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
         //endregion
     }
 
-    internal class ChannelResolver(type: Class<out GuildChannel>, channelTypes: EnumSet<ChannelType>) :
+    internal class ChannelResolver(private val context: BContext, type: Class<out GuildChannel>, channelTypes: EnumSet<ChannelType>) :
         LimitedChannelResolver(type, channelTypes),
         RegexParameterResolver<ChannelResolver, GuildChannel>,
         ComponentParameterResolver<ChannelResolver, GuildChannel> {
@@ -69,7 +70,6 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
         override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String =
             event.channel.asMention
 
-        //TODO customizable error message
         override suspend fun resolveSuspend(
             variation: TextCommandVariation,
             event: MessageReceivedEvent,
@@ -83,11 +83,21 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
             event: GenericComponentInteractionCreateEvent,
             arg: String
         ): GuildChannel? {
-            //TODO customizable error message
             val guild = event.guild ?: throwInternal(descriptor.function, "Cannot resolve a Channel outside of a Guild")
-            return guild.getChannelById(type, arg)
+            val channel = guild.getChannelById(type, arg)
+            if (channel == null) {
+                logger.trace { "Could not find channel of type ${type.simpleNestedName} and id $arg" }
+                event.reply_(context.getDefaultMessages(event).resolverChannelNotFoundMsg, ephemeral = true).queue()
+            }
+
+            return channel
         }
         //endregion
+
+        companion object {
+            private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
+            private val logger = KotlinLogging.logger { }
+        }
     }
 
     override val supportedTypesStr: List<String> = listOf("<out GuildChannel>")
@@ -110,6 +120,6 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
             return LimitedChannelResolver(erasure.java, channelTypes)
         }
 
-        return ChannelResolver(erasure.java, channelTypes)
+        return ChannelResolver(context, erasure.java, channelTypes)
     }
 }
