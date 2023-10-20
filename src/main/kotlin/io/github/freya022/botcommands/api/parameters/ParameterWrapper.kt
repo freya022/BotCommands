@@ -15,6 +15,7 @@ class ParameterWrapper private constructor(
     val parameter: KParameter
 ) {
     val erasure: KClass<*> = type.jvmErasure
+    val javaErasure: Class<*> get() = erasure.java
     val annotations: List<Annotation> get() = parameter.annotations
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
