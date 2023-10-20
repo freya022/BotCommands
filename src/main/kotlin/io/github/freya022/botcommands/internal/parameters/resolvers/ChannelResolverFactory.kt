@@ -25,34 +25,23 @@ interface IChannelResolver {
 }
 
 @ResolverFactory
-internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolverFactory.ChannelResolver>(ChannelResolver::class) {
+internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolverFactory.LimitedChannelResolver>(LimitedChannelResolver::class) {
     private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
 
-    internal class ChannelResolver(private val type: Class<out GuildChannel>, override val channelTypes: EnumSet<ChannelType>) :
-        ClassParameterResolver<ChannelResolver, GuildChannel>(GuildChannel::class),
-        RegexParameterResolver<ChannelResolver, GuildChannel>,
+    // Only for slash commands where Discord always provides the data
+    // Channels such as threads are not easily resolvable when used in text commands / components,
+    // let the user use the channel id + thread id to find threads themselves
+    internal open class LimitedChannelResolver(
+        protected val type: Class<out GuildChannel>,
+        override val channelTypes: EnumSet<ChannelType>
+    ) : ClassParameterResolver<ChannelResolver, GuildChannel>(GuildChannel::class),
         SlashParameterResolver<ChannelResolver, GuildChannel>,
-        ComponentParameterResolver<ChannelResolver, GuildChannel>,
         IChannelResolver {
-
-        //region Text
-        override val pattern: Pattern = channelPattern
-        override val testExample: String = "<#1234>"
-
-        override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String =
-            event.channel.asMention
-
-        //TODO what happens for unknown threads?
-        override suspend fun resolveSuspend(
-            variation: TextCommandVariation,
-            event: MessageReceivedEvent,
-            args: Array<String?>
-        ): GuildChannel? = event.guild.getChannelById(type, args[0]!!)
-        //endregion
 
         //region Slash
         override val optionType: OptionType = OptionType.CHANNEL
 
+        //TODO customizable error message
         override suspend fun resolveSuspend(
             info: SlashCommandInfo,
             event: CommandInteractionPayload,
@@ -64,14 +53,35 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
             return null
         }
         //endregion
+    }
+
+    internal class ChannelResolver(type: Class<out GuildChannel>, channelTypes: EnumSet<ChannelType>) :
+        LimitedChannelResolver(type, channelTypes),
+        RegexParameterResolver<ChannelResolver, GuildChannel>,
+        ComponentParameterResolver<ChannelResolver, GuildChannel> {
+
+        //region Text
+        override val pattern: Pattern = channelPattern
+        override val testExample: String = "<#1234>"
+
+        override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String =
+            event.channel.asMention
+
+        //TODO customizable error message
+        override suspend fun resolveSuspend(
+            variation: TextCommandVariation,
+            event: MessageReceivedEvent,
+            args: Array<String?>
+        ): GuildChannel? = event.guild.getChannelById(type, args[0]!!)
+        //endregion
 
         //region Component
-        //TODO what happens for unknown threads?
         override suspend fun resolveSuspend(
             descriptor: ComponentDescriptor,
             event: GenericComponentInteractionCreateEvent,
             arg: String
         ): GuildChannel? {
+            //TODO customizable error message
             val guild = event.guild ?: throwInternal(descriptor.function, "Cannot resolve a Channel outside of a Guild")
             return guild.getChannelById(type, arg)
         }
@@ -91,9 +101,13 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun get(parameter: ParameterWrapper): ChannelResolver {
+    override fun get(parameter: ParameterWrapper): LimitedChannelResolver {
         val erasure = parameter.erasure as KClass<out GuildChannel>
         val channelTypes = ChannelType.fromInterface(erasure.java)
+        if (channelTypes.any { it.isThread }) {
+            return LimitedChannelResolver(erasure.java, channelTypes)
+        }
+
         return ChannelResolver(erasure.java, channelTypes)
     }
 }
