@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
@@ -41,16 +42,17 @@ internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolve
         //region Slash
         override val optionType: OptionType = OptionType.CHANNEL
 
-        //TODO customizable error message
         override suspend fun resolveSuspend(
             info: SlashCommandInfo,
             event: CommandInteractionPayload,
             optionMapping: OptionMapping
-        ): GuildChannel? {
+        ): GuildChannel {
             val channel = optionMapping.asChannel
-            if (type.isInstance(channel))
+            if (type.isInstance(channel)) {
                 return type.cast(channel)
-            return null
+            } else {
+                throwInternal("A ${optionMapping.channelType} channel option could not be cast into ${type.simpleNestedName}, channel: $channel")
+            }
         }
         //endregion
     }
