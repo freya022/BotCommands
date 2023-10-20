@@ -20,18 +20,20 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
 
-private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
+interface IChannelResolver {
+    val channelTypes: EnumSet<ChannelType>
+}
 
 @ResolverFactory
 internal object ChannelResolverFactory : ParameterResolverFactory<ChannelResolverFactory.ChannelResolver>(ChannelResolver::class) {
-    internal class ChannelResolver(private val type: Class<out GuildChannel>, private val channelTypes: EnumSet<ChannelType>) :
+    private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
+
+    internal class ChannelResolver(private val type: Class<out GuildChannel>, override val channelTypes: EnumSet<ChannelType>) :
         ClassParameterResolver<ChannelResolver, GuildChannel>(GuildChannel::class),
         RegexParameterResolver<ChannelResolver, GuildChannel>,
         SlashParameterResolver<ChannelResolver, GuildChannel>,
         ComponentParameterResolver<ChannelResolver, GuildChannel>,
-        io.github.freya022.botcommands.internal.parameters.resolvers.channels.ChannelResolver {
-
-        override fun getChannelTypes(): EnumSet<ChannelType> = channelTypes
+        IChannelResolver {
 
         //region Text
         override val pattern: Pattern = channelPattern

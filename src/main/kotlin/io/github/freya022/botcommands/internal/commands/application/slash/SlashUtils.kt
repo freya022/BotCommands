@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
-import io.github.freya022.botcommands.internal.parameters.resolvers.channels.ChannelResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.requireUser
@@ -75,7 +75,7 @@ internal object SlashUtils {
             JDAOptionType.CHANNEL -> {
                 //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
                 // Otherwise set the channel types of the option, if available
-                if (option.channelTypes.isEmpty() && resolver is ChannelResolver) {
+                if (option.channelTypes.isEmpty() && resolver is IChannelResolver) {
                     data.setChannelTypes(resolver.channelTypes)
                 } else if (option.channelTypes.isEmpty()) {
                     data.setChannelTypes(option.channelTypes)
