@@ -3,11 +3,11 @@ package io.github.freya022.botcommands.api.core
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.BEvent
+import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.*
-import io.github.freya022.botcommands.internal.core.exceptions.InitializationException
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.core.service.getParameters
@@ -159,10 +159,11 @@ class EventDispatcher internal constructor(
                 function.callSuspend(instance, event, *eventHandlerFunction.parameters)
             }
         } catch (e: InvocationTargetException) {
-            when (e.cause) {
-                is InitializationException -> throw e.cause!!
-                else -> printException(event, eventHandlerFunction, e)
+            if (event is InitializationEvent) {
+                //BBuilder will catch exception as it is the one dispatching the initialization events
+                throw e.cause!!
             }
+            printException(event, eventHandlerFunction, e)
         } catch (e: Throwable) {
             printException(event, eventHandlerFunction, e)
         }

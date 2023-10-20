@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.utils.runInitialization
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -53,7 +52,7 @@ class ResolverContainer internal constructor(
 
     @JvmSynthetic
     @BEventListener
-    internal fun onLoad(event: LoadEvent) = runInitialization {
+    internal fun onLoad(event: LoadEvent) {
         if (factories.isEmpty()) {
             throwInternal("No resolvers/factories were found") //Never happens
         } else {
