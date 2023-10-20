@@ -1,10 +1,9 @@
 package io.github.freya022.botcommands.internal.core
 
-import io.github.freya022.botcommands.api.core.EventDispatcher
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.FirstGuildReadyEvent
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.putServiceAs
 import net.dv8tion.jda.api.JDA
@@ -20,11 +19,7 @@ internal class ReadyListener {
     private var ready = false
 
     @BEventListener(priority = Int.MAX_VALUE)
-    internal suspend fun onConnectEvent(
-        event: StatusChangeEvent,
-        eventDispatcher: EventDispatcher,
-        serviceContainer: ServiceContainer
-    ) {
+    internal suspend fun onConnectEvent(event: StatusChangeEvent, context: BContext) {
         // At this point, JDA should be usable
         if (!connected && event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
             lock.withLock {
@@ -32,23 +27,20 @@ internal class ReadyListener {
                 connected = true
             }
 
-            serviceContainer.putServiceAs(event.jda)
+            context.putServiceAs(event.jda)
 
-            eventDispatcher.dispatchEvent(InjectedJDAEvent(event.jda))
+            context.eventDispatcher.dispatchEvent(InjectedJDAEvent(context, event.jda))
         }
     }
 
     @BEventListener(priority = Int.MAX_VALUE)
-    internal suspend fun onGuildReadyEvent(
-        event: GuildReadyEvent,
-        eventDispatcher: EventDispatcher
-    ) {
+    internal suspend fun onGuildReadyEvent(event: GuildReadyEvent, context: BContext) {
         if (ready) return
         lock.withLock {
             if (ready) return
             ready = true
         }
 
-        eventDispatcher.dispatchEvent(FirstGuildReadyEvent(event))
+        context.eventDispatcher.dispatchEvent(FirstGuildReadyEvent(context, event))
     }
 }

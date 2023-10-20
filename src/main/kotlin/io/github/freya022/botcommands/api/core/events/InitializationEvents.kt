@@ -7,19 +7,19 @@ internal interface InitializationEvent
 /**
  * Indicates the framework status changed to [BContext.Status.PRE_LOAD].
  */
-class PreLoadEvent internal constructor() : BEvent(), InitializationEvent
+class PreLoadEvent internal constructor(context: BContext) : BEvent(context), InitializationEvent
 
 /**
  * Indicates the framework status changed to [BContext.Status.LOAD].
  */
-class LoadEvent internal constructor() : BEvent(), InitializationEvent
+class LoadEvent internal constructor(context: BContext) : BEvent(context), InitializationEvent
 
 /**
  * Indicates the framework status changed to [BContext.Status.POST_LOAD].
  */
-class PostLoadEvent internal constructor() : BEvent(), InitializationEvent
+class PostLoadEvent internal constructor(context: BContext) : BEvent(context), InitializationEvent
 
 /**
  * Indicates the framework status changed to [BContext.Status.READY].
  */
-class BReadyEvent internal constructor() : BEvent(), InitializationEvent
+class BReadyEvent internal constructor(context: BContext) : BEvent(context), InitializationEvent

@@ -125,6 +125,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
     internal fun setStatus(newStatus: Status) {
         val oldStatus = this.status
         this.status = newStatus
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(oldStatus, newStatus)) }
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(this@BContextImpl, oldStatus, newStatus)) }
     }
 }

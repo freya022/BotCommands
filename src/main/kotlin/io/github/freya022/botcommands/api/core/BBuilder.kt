@@ -129,17 +129,17 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             context.serviceContainer.loadServices(ServiceStart.DEFAULT)
 
             context.setStatus(BContext.Status.PRE_LOAD)
-            context.eventDispatcher.dispatchEvent(PreLoadEvent())
+            context.eventDispatcher.dispatchEvent(PreLoadEvent(context))
 
             context.setStatus(BContext.Status.LOAD)
-            context.eventDispatcher.dispatchEvent(LoadEvent())
+            context.eventDispatcher.dispatchEvent(LoadEvent(context))
 
             context.setStatus(BContext.Status.POST_LOAD)
-            context.eventDispatcher.dispatchEvent(PostLoadEvent())
+            context.eventDispatcher.dispatchEvent(PostLoadEvent(context))
 
             context.setStatus(BContext.Status.READY)
             context.serviceContainer.loadServices(ServiceStart.READY)
-            context.eventDispatcher.dispatchEvent(BReadyEvent())
+            context.eventDispatcher.dispatchEvent(BReadyEvent(context))
         }
     }
 }
