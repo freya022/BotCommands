@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.GuildApplicationSettings
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
