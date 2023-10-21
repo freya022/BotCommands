@@ -1,7 +1,10 @@
-package io.github.freya022.botcommands.api.parameters
+package io.github.freya022.botcommands.internal.parameters
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 
 private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<out T, *>>(
     private val resolver: T
