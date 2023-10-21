@@ -166,7 +166,27 @@ and has separated descriptions for the command and the variations themselves.
 
 You can also add per-variant usage and examples, both in annotations and in the DSLs.
 
-[//]: # (TODO add pic)
+<details>
+<summary>Example</summary>
+
+```kt
+@Command
+class TextBan : TextCommand() {
+    @JDATextCommand(path = ["ban"], generalDescription = "Permanently bans an user.")
+    suspend fun onTextBan(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
+
+    @JDATextCommand(path = ["ban"])
+    suspend fun onTextBan(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
+
+    @JDATextCommand(path = ["ban", "temp"], generalDescription = "Temporarily bans an user.")
+    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
+
+    @JDATextCommand(path = ["ban", "temp"])
+    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
+}
+```
+![test](assets/command_help_embed_example.png)
+</details>
 
 ## Async loading
 While V2 had to wait for your entire bot to be loaded, 
