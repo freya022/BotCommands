@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.parameters
+package io.github.freya022.botcommands.api.core.reflect
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KType

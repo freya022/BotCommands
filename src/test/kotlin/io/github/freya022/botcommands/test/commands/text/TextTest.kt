@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.JDATextComma
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.parameters.ParameterType
+import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
 @Command
 class TextTest : TextCommand() {

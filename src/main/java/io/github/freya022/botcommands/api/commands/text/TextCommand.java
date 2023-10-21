@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.Application
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand;
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration;
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
-import io.github.freya022.botcommands.api.parameters.ParameterType;
+import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

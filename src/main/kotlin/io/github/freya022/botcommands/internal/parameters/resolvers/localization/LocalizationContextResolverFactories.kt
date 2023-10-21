@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
@@ -7,7 +8,6 @@ import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
-import io.github.freya022.botcommands.api.parameters.ParameterWrapper
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import io.github.freya022.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext

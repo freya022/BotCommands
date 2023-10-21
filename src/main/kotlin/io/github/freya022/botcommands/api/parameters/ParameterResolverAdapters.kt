@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 
 private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<out T, *>>(

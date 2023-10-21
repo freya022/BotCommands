@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.parameters
+package io.github.freya022.botcommands.api.core.reflect
 
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
