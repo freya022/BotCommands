@@ -11,7 +11,7 @@ Fortunately, annotation-driven features that already existed can still be used w
 
 You can also refer to the [examples](examples) 
 and bot templates ([Java](https://github.com/freya022/BotCommands-Template-Java/tree/3.X) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/tree/3.X)) 
-in order to have an idea on how V3 is supposed to be used.
+to have an idea on how V3 is supposed to be used.
 
 ## Kotlin support
 All commands and handlers support coroutines (except service factories) and default parameters.
@@ -100,7 +100,7 @@ You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/c
 see `aggregate` in `SlashBanDetailedFront#onDeclare`.
 
 ### Vararg options
-Vararg options are a special type of option aggregate, they are essentially an aggregate which generates N options, 
+Vararg options are a special type of option aggregate, they are essentially an aggregate that generates N options, 
 and the aggregator just accepts a `List` and returns it as-is, i.e. your parameter accepts a `List`, not a real vararg.
 
 You can use these with `optionVararg`.
@@ -123,7 +123,7 @@ A [token bucket](https://en.wikipedia.org/wiki/Token_bucket)-based rate limiting
 while `@Cooldown` still exists, `@RateLimit` now lets you define buckets, with multiple bandwidths, 
 letting you create custom rate limiting for each of your command/component handler.
 
-A common example outside classic cooldowns is a spike protected bucket, which in addition to the normal rate limit,
+A common example is a spike protected bucket, which, in addition to the normal rate limit,
 helps you prevent users from spamming a command in a short period of time, 
 forcing them to spread out your resource usage.
 
@@ -150,7 +150,9 @@ You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/c
 on `SlashSentence#onSentencePartAutocomplete`.
 
 ## Async loading
-The library now loads asynchronously, you previously had to wait for your entire bot to be loaded, but now you **must** start the framework before building JDA, which lets you get your stuff started up before the bot goes fully online.
+While V2 had to wait for your entire bot to be loaded, 
+V3 **requires** you to start the framework before building JDA, 
+which lets you get your stuff started up before the bot goes fully online.
 
 Building JDA before the framework will result in an error, I strongly recommend that you use a service which implements `JDAService`.
 
@@ -212,11 +214,11 @@ Resolvers can not only be created from classes, but also from service factories 
 returning an implementation.
 
 For example, the framework provides `Resolver#enumResolver`, which can help you quickly handle any enumeration, 
-while also letting you easily transform a value into its displayed string.
+while also (optionally) letting you transform a value into its displayed string.
 
 ## Enhanced localization API
 The API has been improved to allow a more detailed loading mechanism, 
-as to let you easily extend the API, such as adding support for new formats (like HOCON), or new file structures:
+as to let you extend the API, such as adding support for new formats (like HOCON), or new file structures:
 
 | Name                                                                                                                                            | Function                                                                                                                                                                                                                                                                                                  |
 |-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
