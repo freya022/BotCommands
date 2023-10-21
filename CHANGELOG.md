@@ -13,6 +13,11 @@ You can also refer to the [examples](examples)
 and bot templates ([Java](https://github.com/freya022/BotCommands-Template-Java/tree/3.X) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/tree/3.X)) 
 to have an idea on how V3 is supposed to be used.
 
+## Base package change
+To better align with the Maven coordinates, the base package has changed from `com.freya02` to `io.github.freya022`.
+
+Fixing this should be as simple as using Find & Replace.
+
 ## Kotlin support
 All commands and handlers support coroutines (except service factories) and default parameters.
 
@@ -149,6 +154,20 @@ The slash command DSL also let you configure autocomplete by using `SlashCommand
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 on `SlashSentence#onSentencePartAutocomplete`.
 
+## Text command changes
+
+Text commands no longer have a `name`/`group`/`subcommand`, they have a `path` instead, which is an array of string.
+
+**Note:** Text commands are still limited to three path components.
+
+## New built-in help command
+The command-specific embed has been revamped,
+and has separated descriptions for the command and the variations themselves.
+
+You can also add per-variant usage and examples, both in annotations and in the DSLs.
+
+[//]: # (TODO add pic)
+
 ## Async loading
 While V2 had to wait for your entire bot to be loaded, 
 V3 **requires** you to start the framework before building JDA, 
@@ -198,13 +217,16 @@ they can also have a priority assigned to them, as well as a timeout, used for s
 An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/ReadyListener.kt).
 
 ## Suspend resolvers & resolver factories
-`ParameterResolver` are now type safe and also support coroutines.
+`ParameterResolver` is now type safe and also supports coroutines.
 
 ### Suspending resolvers
 Parameter resolvers in Java can override the usual `resolve` method, while Kotlin users can override the `resolveSuspend` function. This is particularly useful when you need to execute a `RestAction`, so you can await without blocking the thread.
 
 ### Resolver factories
 Resolver factories were also added to enable you to give a parameter resolver based on the parameter of the function.
+
+That way, you can return resolvers based on your own conditions, 
+for example, given the parameter's annotations or generics. 
 
 *This is how `[App/Text]LocalizationContext` are injected, they use factories of `ICustomResolver`,
 and when you put a parameter, they read that parameter for `@LocalizationBundle` and then construct a resolver which gets you the correct localization bundle.*
