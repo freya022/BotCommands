@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.oshai.kotlinlogging.KotlinLogging

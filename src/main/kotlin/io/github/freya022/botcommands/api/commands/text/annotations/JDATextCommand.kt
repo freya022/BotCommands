@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVaria
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import net.dv8tion.jda.internal.utils.Checks
 
 /**

@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.Modals
-import io.github.freya022.botcommands.api.parameters.ModalParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 /**

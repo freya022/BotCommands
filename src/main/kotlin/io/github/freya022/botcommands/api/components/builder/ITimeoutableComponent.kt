@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
-import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User

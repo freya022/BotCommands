@@ -7,9 +7,9 @@ import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBu
 import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.ParameterWrapper
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.wrap
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator

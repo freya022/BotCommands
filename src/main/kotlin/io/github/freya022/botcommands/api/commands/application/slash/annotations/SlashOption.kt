@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import org.jetbrains.annotations.Nullable

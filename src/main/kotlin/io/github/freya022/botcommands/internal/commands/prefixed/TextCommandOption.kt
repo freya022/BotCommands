@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
-import io.github.freya022.botcommands.api.parameters.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.CommandOption
 
 class TextCommandOption(

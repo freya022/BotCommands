@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.test.resolvers
 
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.parameters.ParameterWrapper
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping

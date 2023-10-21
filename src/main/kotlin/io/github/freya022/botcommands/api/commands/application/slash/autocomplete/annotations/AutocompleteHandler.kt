@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 /**

@@ -4,6 +4,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor

@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter

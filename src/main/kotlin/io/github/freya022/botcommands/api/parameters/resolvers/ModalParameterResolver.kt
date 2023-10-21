@@ -1,6 +1,7 @@
-package io.github.freya022.botcommands.api.parameters
+package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping

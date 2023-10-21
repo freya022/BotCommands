@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
-import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 
 /**
  * Annotation for defining a button listener,

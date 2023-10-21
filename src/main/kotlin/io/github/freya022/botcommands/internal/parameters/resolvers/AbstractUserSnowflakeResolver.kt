@@ -2,7 +2,11 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.parameters.*
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation

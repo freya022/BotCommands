@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Glob
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.UserContextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction

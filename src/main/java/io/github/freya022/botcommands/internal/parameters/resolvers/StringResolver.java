@@ -2,7 +2,11 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.parameters.*;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor;
@@ -24,9 +28,9 @@ import java.util.regex.Pattern;
 public class StringResolver
 		extends ClassParameterResolver<StringResolver, String>
 		implements QuotableTextParameterResolver<StringResolver, String>,
-		           SlashParameterResolver<StringResolver, String>,
-		           ComponentParameterResolver<StringResolver, String>,
-		           ModalParameterResolver<StringResolver, String> {
+        SlashParameterResolver<StringResolver, String>,
+        ComponentParameterResolver<StringResolver, String>,
+        ModalParameterResolver<StringResolver, String> {
 
 	public StringResolver() {
 		super(String.class);

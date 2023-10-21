@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
-import io.github.freya022.botcommands.api.parameters.MessageContextParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
