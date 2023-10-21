@@ -14,10 +14,10 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
         private set
 
     override fun timeout(timeout: Duration): T = instance.also {
-        this.timeout = PersistentTimeout(Clock.System.now() + timeout, null, emptyArray())
+        this.timeout = PersistentTimeout.create(Clock.System.now() + timeout)
     }
 
     override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
-        this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, data)
+        this.timeout = PersistentTimeout.create(Clock.System.now() + timeout, handlerName, data.toList())
     }
 }

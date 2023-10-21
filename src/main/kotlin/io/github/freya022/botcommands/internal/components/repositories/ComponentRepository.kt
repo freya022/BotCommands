@@ -193,7 +193,7 @@ internal class ComponentRepository(
                 executeUpdate(
                     groupId,
                     Timestamp.from(timeout.expirationTimestamp.toJavaInstant()),
-                    timeout.handler?.let { ephemeralTimeoutHandlers.put(it) }
+                    timeout.handler?.let(ephemeralTimeoutHandlers::put)
                 )
             }
         } else if (timeout is PersistentTimeout) {
@@ -202,7 +202,7 @@ internal class ComponentRepository(
                     groupId,
                     timeout.expirationTimestamp.toSqlTimestamp(),
                     timeout.handlerName,
-                    timeout.userData
+                    timeout.userData.toTypedArray()
                 )
             }
         }
@@ -283,8 +283,8 @@ internal class ComponentRepository(
         }
 
         val timeout = dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-            PersistentTimeout(
-                timestamp.toInstant().toKotlinInstant(),
+            PersistentTimeout.fromData(
+                timestamp,
                 dbResult["timeout_handler_name"],
                 dbResult["timeout_user_data"]
             )
@@ -366,8 +366,8 @@ internal class ComponentRepository(
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
             dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-                return PersistentTimeout(
-                    timestamp.toInstant().toKotlinInstant(),
+                return PersistentTimeout.fromData(
+                    timestamp,
                     dbResult["timeout_handler_name"],
                     dbResult["timeout_user_data"]
                 )
