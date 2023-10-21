@@ -90,7 +90,7 @@ class TextCommandVariation internal constructor(
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
-                groupsIterator ?: throwInternal("No group iterator passed for a regex command")
+                groupsIterator ?: throwInternal("No group iterator passed for a regex-based text command")
 
                 option as TextCommandOption
 

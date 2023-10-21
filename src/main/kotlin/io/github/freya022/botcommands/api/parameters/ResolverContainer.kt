@@ -116,7 +116,7 @@ class ResolverContainer internal constructor(
 
     internal companion object {
         private val compatibleInterfaces = listOf(
-            RegexParameterResolver::class,
+            TextParameterResolver::class,
             SlashParameterResolver::class,
             ComponentParameterResolver::class,
             UserContextParameterResolver::class,

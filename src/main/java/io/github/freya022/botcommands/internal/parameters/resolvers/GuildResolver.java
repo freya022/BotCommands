@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.RegexParameterResolver;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
+import io.github.freya022.botcommands.api.parameters.TextParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Resolver
 public class GuildResolver
 		extends ClassParameterResolver<GuildResolver, Guild>
-		implements RegexParameterResolver<GuildResolver, Guild>,
+		implements TextParameterResolver<GuildResolver, Guild>,
 		           SlashParameterResolver<GuildResolver, Guild>,
 		           ComponentParameterResolver<GuildResolver, Guild> {
 

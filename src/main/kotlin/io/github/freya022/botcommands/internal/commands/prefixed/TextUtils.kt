@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.parameters.QuotableRegexParameterResolver
+import io.github.freya022.botcommands.api.parameters.QuotableTextParameterResolver
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
@@ -130,7 +130,7 @@ object TextUtils {
             ?: commandOption.resolver.getHelpExample(commandOption.kParameter, event, commandOption.isId)
 
         return when {
-            needsQuote && commandOption.resolver is QuotableRegexParameterResolver -> "\"$example\""
+            needsQuote && commandOption.resolver is QuotableTextParameterResolver -> "\"$example\""
             else -> example
         }
     }
@@ -148,7 +148,7 @@ object TextUtils {
 
     @JvmStatic
     fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
-        count { o -> o.resolver is QuotableRegexParameterResolver } > 1
+        count { o -> o.resolver is QuotableTextParameterResolver } > 1
 
     @JvmStatic
     fun TextCommandVariation.getCommandOptionsByParameters() = buildMap(parameters.size * 2) {

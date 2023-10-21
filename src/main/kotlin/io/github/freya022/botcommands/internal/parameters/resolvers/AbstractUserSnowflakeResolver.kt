@@ -30,7 +30,7 @@ private val logger = KotlinLogging.logger { }
 internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeResolver<T, R>, R : UserSnowflake>(
     clazz: KClass<R>
 ) : ClassParameterResolver<T, R>(clazz),
-    RegexParameterResolver<T, R>,
+    TextParameterResolver<T, R>,
     SlashParameterResolver<T, R>,
     ComponentParameterResolver<T, R>,
     UserContextParameterResolver<T, R> {

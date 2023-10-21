@@ -24,7 +24,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     private val nameFunction: EnumNameFunction<E>
 ) :
     ClassParameterResolver<EnumResolver<E>, E>(e),
-    RegexParameterResolver<EnumResolver<E>, E>,
+    TextParameterResolver<EnumResolver<E>, E>,
     SlashParameterResolver<EnumResolver<E>, E>,
     ComponentParameterResolver<EnumResolver<E>, E> {
 
@@ -80,7 +80,7 @@ fun interface EnumNameFunction<E : Enum<E>> {
  */
 object Resolvers {
     /**
-     * Creates an enum resolver for [text][RegexParameterResolver]/[slash][SlashParameterResolver] commands,
+     * Creates an enum resolver for [text][TextParameterResolver]/[slash][SlashParameterResolver] commands,
      * as well as [component data][ComponentParameterResolver].
      *
      * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
@@ -121,7 +121,7 @@ object Resolvers {
 }
 
 /**
- * Creates an enum resolver for [text][RegexParameterResolver]/[slash][SlashParameterResolver] commands,
+ * Creates an enum resolver for [text][TextParameterResolver]/[slash][SlashParameterResolver] commands,
  * as well as [component data][ComponentParameterResolver].
  *
  * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],

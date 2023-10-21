@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
+import io.github.freya022.botcommands.api.parameters.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -34,7 +34,7 @@ internal object CommandPattern {
     }
 
     class ParameterPattern(
-        resolver: RegexParameterResolver<*, *>,
+        resolver: TextParameterResolver<*, *>,
         val optional: Boolean,
         hasMultipleQuotable: Boolean
     ) {

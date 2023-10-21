@@ -39,8 +39,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * @see ParameterResolverFactory
  *
- * @see RegexParameterResolver
- * @see QuotableRegexParameterResolver
+ * @see TextParameterResolver
+ * @see QuotableTextParameterResolver
  * @see ComponentParameterResolver
  * @see SlashParameterResolver
  * @see MessageContextParameterResolver
