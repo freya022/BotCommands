@@ -242,15 +242,9 @@ internal class ComponentRepository(
     }
 
     suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional(readOnly = true) {
-        preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
+        preparedStatement("select component_id, expiration_timestamp from bc_persistent_timeout") {
             executeQuery().forEach { dbResult ->
-                timeoutManager.scheduleTimeout(
-                    dbResult["component_id"], PersistentTimeout(
-                        dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
-                        dbResult["handler_name"],
-                        dbResult["user_data"]
-                    )
-                )
+                timeoutManager.scheduleTimeout(dbResult["component_id"], dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant())
             }
         }
     }
@@ -423,5 +417,5 @@ internal class ComponentRepository(
         }
     }
 
-    private fun Instant.toSqlTimestamp(): Timestamp? = Timestamp.from(this.toJavaInstant())
+    private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())
 }

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.components.controller
 
-import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
@@ -22,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
@@ -39,9 +39,9 @@ internal class ComponentTimeoutManager(
     private val componentController: ComponentController by serviceContainer.lazy()
     private val timeoutMap = hashMapOf<Int, Job>()
 
-    fun scheduleTimeout(id: Int, timeout: ComponentTimeout) {
+    fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
         timeoutMap[id] = scopesConfig.componentTimeoutScope.launch {
-            delay(timeout.expirationTimestamp - Clock.System.now())
+            delay(expirationTimestamp - Clock.System.now())
 
             //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
             timeoutMap.remove(id)
