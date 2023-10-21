@@ -143,7 +143,8 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Unlike with [PersistentHandlerBuilder.passData], the data passed to the handler will only be [String],
+     * no conversion will happen.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
@@ -170,7 +171,8 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Unlike with [PersistentHandlerBuilder.passData], the data passed to the handler will only be [String],
+     * no conversion will happen.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
