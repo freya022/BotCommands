@@ -54,22 +54,30 @@ internal class TextCommandAutoBuilder(
         private var warned = false
 
         override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
-            return if (b.annotation.generalDescription.isNotBlank()) {
-                if (!warned && a.annotation.generalDescription.isNotBlank()) {
-                    warned = true
-                    logger.warn {
-                        """
+            if (a.annotation.path.contentEquals(b.annotation.path)) {
+                val firstHasGD = a.annotation.generalDescription.isNotBlank()
+                val secondHasGD = b.annotation.generalDescription.isNotBlank()
+                if (firstHasGD && secondHasGD) {
+                    if (!warned) {
+                        warned = true
+                        logger.warn {
+                            """
                             Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
                             See ${a.func.shortSignature}
                             See ${b.func.shortSignature}
                         """.trimIndent()
+                        }
                     }
+                    return 0
+                } else if (secondHasGD) {
+                    return 1 //B is superior
+                } else {
+                    return -1
                 }
-                1 //B is superior
-            } else {
-                // Metadata containers need to be constructed first
-                a.path.nameCount.compareTo(b.path.nameCount)
             }
+
+            // Metadata containers need to be constructed first
+            return a.path.nameCount.compareTo(b.path.nameCount)
         }
     }
 
