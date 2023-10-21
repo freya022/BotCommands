@@ -3,13 +3,13 @@ package io.github.freya022.botcommands.test.commands.text
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
-import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDeclaration
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ParameterType
 

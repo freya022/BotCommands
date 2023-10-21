@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo

@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.Logging
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction

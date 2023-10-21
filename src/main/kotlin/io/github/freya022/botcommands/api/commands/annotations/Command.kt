@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 
 /**

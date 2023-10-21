@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.test.filters
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation

@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.GuildApplicationC
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.NSFW
+import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.ResolverContainer

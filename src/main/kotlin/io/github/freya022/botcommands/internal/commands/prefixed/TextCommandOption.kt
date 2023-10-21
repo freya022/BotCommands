@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.CommandOption
 

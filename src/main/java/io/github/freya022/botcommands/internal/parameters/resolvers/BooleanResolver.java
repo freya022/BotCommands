@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;

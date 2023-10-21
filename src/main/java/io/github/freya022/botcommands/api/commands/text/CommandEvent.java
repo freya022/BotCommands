@@ -1,8 +1,8 @@
-package io.github.freya022.botcommands.api.commands.prefixed;
+package io.github.freya022.botcommands.api.commands.text;
 
-import io.github.freya022.botcommands.api.commands.prefixed.exceptions.BadIdException;
-import io.github.freya022.botcommands.api.commands.prefixed.exceptions.NoIdException;
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit;
+import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException;
+import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;

@@ -3,11 +3,11 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.IHelpCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker

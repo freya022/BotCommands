@@ -1,7 +1,7 @@
-package io.github.freya022.botcommands.api.commands.prefixed.builder
+package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.toDiscordString

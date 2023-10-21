@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.prefixed.annotations
+package io.github.freya022.botcommands.api.commands.text.annotations
 
 /**
  * Specifies the global help description for this command.

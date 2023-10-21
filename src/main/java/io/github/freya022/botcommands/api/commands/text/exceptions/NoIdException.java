@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.prefixed.exceptions;
+package io.github.freya022.botcommands.api.commands.text.exceptions;
 
 public class NoIdException extends Exception {
 	public NoIdException() {

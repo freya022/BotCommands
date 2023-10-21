@@ -1,13 +1,13 @@
-package io.github.freya022.botcommands.api.commands.prefixed.builder
+package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.NSFWStrategyBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.Hidden
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.NSFW
+import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder

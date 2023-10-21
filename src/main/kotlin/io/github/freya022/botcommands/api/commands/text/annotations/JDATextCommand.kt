@@ -1,12 +1,12 @@
-package io.github.freya022.botcommands.api.commands.prefixed.annotations
+package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.ParameterResolver

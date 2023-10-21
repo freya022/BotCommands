@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test
 
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder

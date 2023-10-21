@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.prefixed.builder
+package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.CommandOptionBuilder
 import io.github.freya022.botcommands.internal.parameters.OptionParameter

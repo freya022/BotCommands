@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.localization;
 
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.NSFW;
+import io.github.freya022.botcommands.api.commands.text.annotations.NSFW;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.SettingsProvider;
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;

@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import java.util.regex.Pattern
 
 /**

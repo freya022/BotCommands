@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.ID
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.annotations.ID
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern

@@ -1,7 +1,7 @@
-package io.github.freya022.botcommands.api.commands.prefixed
+package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap

@@ -1,6 +1,6 @@
-package io.github.freya022.botcommands.api.commands.prefixed.annotations
+package io.github.freya022.botcommands.api.commands.text.annotations
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 
 /**
  * Hides a command from help content and execution.

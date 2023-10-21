@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 
 /**
  * Marks this text command as only usable by the bot owners.

@@ -1,11 +1,11 @@
-package io.github.freya022.botcommands.api.commands.prefixed;
+package io.github.freya022.botcommands.api.commands.text;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand;
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextDeclaration;
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand;
+import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration;
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
 import io.github.freya022.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;

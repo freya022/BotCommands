@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.IHelpCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
@@ -58,7 +58,7 @@ internal class TextCommandsListener internal constructor(
         }
         if (content.isNullOrBlank()) return
 
-        logger.trace { "Received prefixed command: $msg" }
+        logger.trace { "Received text command: $msg" }
 
         context.coroutineScopesConfig.textCommandsScope.launch {
             try {

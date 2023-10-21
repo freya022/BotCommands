@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig

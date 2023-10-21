@@ -1,9 +1,9 @@
-package io.github.freya022.botcommands.api.commands.prefixed.builder
+package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
-import io.github.freya022.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL

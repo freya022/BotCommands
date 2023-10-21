@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.prefixed
+package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo

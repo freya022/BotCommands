@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.localization.context
 
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.Localization
