@@ -39,18 +39,7 @@ class SlashCommandOption(
     val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
 
     init {
-        val rootDescription = LocalizationUtils.getOptionRootDescription(slashCommandInfo.context, optionBuilder)
-        description = if (optionBuilder.description.isNotBlank()) {
-            // If a description was set, then use it, but check if a root description was found too
-            if (rootDescription != null) {
-                logger.debug { "An option description was set manually, while a root description was found in a localization bundle, path: '${slashCommandInfo.path}', option: '$declaredName'" }
-            }
-            optionBuilder.description
-        } else {
-            // If a description isn't set, then take the root description if it exists,
-            // otherwise take the builder's default description
-            rootDescription ?: optionBuilder.description
-        }
+        description = LocalizationUtils.getOptionDescription(slashCommandInfo.context, optionBuilder)
 
         if (range != null) {
             if (resolver.optionType != OptionType.NUMBER && resolver.optionType != OptionType.INTEGER) {

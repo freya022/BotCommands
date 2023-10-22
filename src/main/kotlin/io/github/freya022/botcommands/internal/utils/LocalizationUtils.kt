@@ -22,7 +22,7 @@ internal object LocalizationUtils {
         } else {
             // If a description isn't set, then take the root description if it exists,
             // otherwise take the builder's default description
-            rootDescription ?: builderDescription
+            rootDescription ?: builderDescription.ifEmpty { "No description" }
         }
     }
 
@@ -31,7 +31,22 @@ internal object LocalizationUtils {
         return getRootLocalization(context, "$joinedPath.description")
     }
 
-    internal fun getOptionRootDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String? {
+    internal fun getOptionDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String {
+        val rootDescription = getOptionRootDescription(context, optionBuilder)
+        return if (optionBuilder.description.isNotBlank()) {
+            // If a description was set, then use it, but check if a root description was found too
+            if (rootDescription != null) {
+                logger.debug { "An option description was set manually, while a root description was found in a localization bundle, path: '${optionBuilder.commandBuilder.path}', option: '${optionBuilder.optionName}'" }
+            }
+            optionBuilder.description
+        } else {
+            // If a description isn't set, then take the root description if it exists,
+            // otherwise take the builder's default description
+            rootDescription ?: optionBuilder.description.ifEmpty { "No description" }
+        }
+    }
+
+    private fun getOptionRootDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String? {
         val joinedPath = optionBuilder.commandBuilder.path.getFullPath('.')
         return getRootLocalization(context, "$joinedPath.options.${optionBuilder.optionName}.description")
     }
