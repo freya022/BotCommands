@@ -23,7 +23,7 @@ class SlashInlineClassVararg : ApplicationCommand() {
     @AppDeclaration
     fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
         applicationCommandManager.slashCommand("inline_class_vararg", function = ::onSlashAggregate) {
-           inlineClassOptionVararg("inlineList", MyInlineList::class.java, 2, 1, { "item_$it" }) {
+           inlineClassOptionVararg<MyInlineList>("inlineList", 2, 1, { "item_$it" }) {
                description = "Item #$it of inline list"
            }
         }
