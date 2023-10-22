@@ -4,9 +4,11 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
+@CommandDSL
 class MessageCommandOptionAggregateBuilder internal constructor(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>

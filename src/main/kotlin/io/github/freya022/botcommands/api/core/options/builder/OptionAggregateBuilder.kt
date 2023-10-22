@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.options.builder
 
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
+import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
@@ -8,6 +9,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectRefe
 import io.github.freya022.botcommands.internal.utils.requireUser
 import kotlin.reflect.KFunction
 
+@CommandDSL
 abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal constructor(
     val aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
