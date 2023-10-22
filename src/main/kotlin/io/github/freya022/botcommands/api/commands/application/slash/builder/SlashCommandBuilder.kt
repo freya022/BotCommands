@@ -57,7 +57,6 @@ abstract class SlashCommandBuilder internal constructor(
      * @param optionName Name of the option on Discord,
      * transforms all uppercase characters with underscore + lowercase by default
      */
-    @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
@@ -110,7 +109,6 @@ abstract class SlashCommandBuilder internal constructor(
     /**
      * @see VarArgs
      */
-    @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         //Same as in TextCommandVariationBuilder#optionVararg
         varargAggregate(declaredName) {

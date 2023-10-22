@@ -62,7 +62,6 @@ class TextCommandVariationBuilder internal constructor(
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
-    @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
@@ -106,7 +105,6 @@ class TextCommandVariationBuilder internal constructor(
     /**
      * @see VarArgs
      */
-    @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         if (_optionAggregateBuilders.hasVararg())
             throwUser("Cannot have more than 1 vararg in text commands")
@@ -143,7 +141,6 @@ class TextCommandVariationBuilder internal constructor(
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
-    @JvmOverloads
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: TextCommandOptionAggregateBuilder.() -> Unit = {}) {
         _optionAggregateBuilders.aggregate(declaredName, aggregator, block)
     }

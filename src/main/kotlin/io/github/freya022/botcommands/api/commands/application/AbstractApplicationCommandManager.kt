@@ -48,7 +48,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
      *
      * @see JDASlashCommand @JDASlashCommand
      */
-    @JvmOverloads
     fun slashCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         checkScope(scope)
 
@@ -76,7 +75,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
      *
      * @see JDAUserCommand @JDAUserCommand
      */
-    @JvmOverloads
     fun userCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
         checkScope(scope)
 
@@ -103,7 +101,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
      *
      * @see JDAMessageCommand
      */
-    @JvmOverloads
     fun messageCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         checkScope(scope)
 

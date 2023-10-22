@@ -25,7 +25,6 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
      *
      * @see Aggregate @Aggregate
      */
-    @JvmOverloads
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit = {}) {
         _optionAggregateBuilders.aggregate(declaredName, aggregator, block)
     }

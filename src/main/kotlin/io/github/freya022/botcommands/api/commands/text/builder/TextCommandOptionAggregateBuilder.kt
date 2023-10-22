@@ -11,7 +11,6 @@ class TextCommandOptionAggregateBuilder internal constructor(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : OptionAggregateBuilder<TextCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
-    @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
         this += TextCommandOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
@@ -24,7 +23,6 @@ class TextCommandOptionAggregateBuilder internal constructor(
         this += TextGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 
-    @JvmOverloads
     fun nestedOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         //Same as in TextCommandVariationBuilder#optionVararg
         nestedVarargAggregate(declaredName) {
