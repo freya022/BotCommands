@@ -33,10 +33,10 @@ import net.dv8tion.jda.internal.utils.Checks
  * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
  *
  * ### Option types
- * - Input options: Uses [@TextOption][TextOption], see supported types at [ParameterResolver],
- * additional resolvers can be implemented with [TextParameterResolver].
+ * - Input options: Uses [@TextOption][TextOption], supported types are in [ParameterResolver],
+ * additional types can be added by implementing [TextParameterResolver].
  * - [TextLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional resolvers can be implemented with [ICustomResolver].
+ * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
  * @see Category @Category

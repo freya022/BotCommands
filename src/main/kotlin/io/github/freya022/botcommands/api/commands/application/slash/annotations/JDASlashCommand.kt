@@ -30,10 +30,10 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * [GuildSlashEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
  *
  * ### Option types
- * - Input options: Uses [@SlashOption][SlashOption], see supported types at [ParameterResolver],
- * additional resolvers can be implemented with [SlashParameterResolver].
+ * - Input options: Uses [@SlashOption][SlashOption], supported types are in [ParameterResolver],
+ * additional types can be added by implementing [SlashParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional resolvers can be implemented with [ICustomResolver].
+ * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
  * @see SlashOption @SlashOption

@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands) for more details.
  *
- * Supported parameters are in [ParameterResolver], but only [Message][GlobalMessageEvent.getTarget] is supported by default,
- * additional resolvers can be implemented with [MessageContextParameterResolver].
+ * Supported types are in [ParameterResolver], but only [Message][GlobalMessageEvent.getTarget] is supported by default,
+ * additional types can be added by implementing [MessageContextParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
  *

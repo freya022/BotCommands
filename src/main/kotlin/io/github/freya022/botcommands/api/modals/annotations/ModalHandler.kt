@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  *
  * Supported parameters are in [ParameterResolver],
- * additional resolvers can be implemented with [ModalParameterResolver].
+ * additional types can be added by implementing [ModalParameterResolver].
  *
  * @see ModalData @ModalData
  * @see ModalInput @ModalInput

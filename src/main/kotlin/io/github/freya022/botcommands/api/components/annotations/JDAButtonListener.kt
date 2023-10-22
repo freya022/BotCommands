@@ -24,7 +24,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
  *  - These handlers also need to have a [ButtonEvent] as their first argument
  *
  * Supported parameters are in [ParameterResolver],
- * additional resolvers can be implemented with [ComponentParameterResolver].
+ * additional types can be added by implementing [ComponentParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  *

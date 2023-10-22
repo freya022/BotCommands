@@ -40,7 +40,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
      * Declares a custom option, such as an [AppLocalizationContext] (with [@LocalizationBundle][LocalizationBundle])
      * or a service.
      *
-     * Additional resolvers can be implemented with [ICustomResolver].
+     * Additional types can be added by implementing [ICustomResolver].
      *
      * @param declaredName Name of the declared parameter in the [function]
      */

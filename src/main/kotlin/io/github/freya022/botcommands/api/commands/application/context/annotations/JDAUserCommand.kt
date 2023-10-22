@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
  *
- * Supported parameters are in [ParameterResolver],
+ * Supported types are in [ParameterResolver],
  * but only [User][GlobalUserEvent.getTarget]/[Member][GlobalUserEvent.getTargetMember] and [InputUser] are supported by default,
- * additional resolvers can be implemented with [UserContextParameterResolver].
+ * additional types can be added by implementing [UserContextParameterResolver].
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
  *

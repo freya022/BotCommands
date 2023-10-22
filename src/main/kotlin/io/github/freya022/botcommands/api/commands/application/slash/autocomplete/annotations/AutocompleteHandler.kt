@@ -46,8 +46,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  * **Note:** Parameters refers to method parameters, not Discord options.
  *
  * ## Registering more option types
- * Supported parameters are in [ParameterResolver],
- * additional resolvers can be implemented with [SlashParameterResolver].
+ * Supported types are in [ParameterResolver],
+ * additional types can be added by implementing [SlashParameterResolver].
  *
  * @see SlashOption @SlashOption
  * @see JDASlashCommand @JDASlashCommand
