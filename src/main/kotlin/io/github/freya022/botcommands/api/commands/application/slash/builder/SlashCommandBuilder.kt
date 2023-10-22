@@ -127,8 +127,4 @@ abstract class SlashCommandBuilder internal constructor(
 
         return SlashCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
     }
-
-    companion object {
-        internal const val DEFAULT_DESCRIPTION = "No description"
-    }
 }
