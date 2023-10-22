@@ -40,7 +40,7 @@ abstract class SlashCommandBuilder internal constructor(
      *
      * @see JDASlashCommand.description
      */
-    var description: String = DEFAULT_DESCRIPTION
+    var description: String = ""
 
     protected abstract val allowOptions: Boolean
     protected abstract val allowSubcommands: Boolean
@@ -129,6 +129,6 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     companion object {
-        const val DEFAULT_DESCRIPTION = "No description"
+        internal const val DEFAULT_DESCRIPTION = "No description"
     }
 }

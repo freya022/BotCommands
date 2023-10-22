@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -41,7 +40,7 @@ class SlashCommandOption(
 
     init {
         val rootDescription = LocalizationUtils.getOptionRootDescription(slashCommandInfo.context, optionBuilder)
-        description = if (optionBuilder.description != SlashCommandBuilder.DEFAULT_DESCRIPTION) {
+        description = if (optionBuilder.description.isNotBlank()) {
             // If a description was set, then use it, but check if a root description was found too
             if (rootDescription != null) {
                 logger.debug { "An option description was set manually, while a root description was found in a localization bundle, path: '${slashCommandInfo.path}', option: '$declaredName'" }

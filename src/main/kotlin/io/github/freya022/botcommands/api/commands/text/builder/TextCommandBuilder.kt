@@ -89,8 +89,4 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
     fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {
         nsfwStrategy = NSFWStrategyBuilder().apply(block).build()
     }
-
-    companion object {
-        const val DEFAULT_DESCRIPTION = "No description"
-    }
 }

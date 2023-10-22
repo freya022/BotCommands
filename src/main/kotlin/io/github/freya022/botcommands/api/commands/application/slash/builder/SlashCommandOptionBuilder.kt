@@ -50,7 +50,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see SlashOption.usePredefinedChoices
      */
-    var description: String = SlashCommandBuilder.DEFAULT_DESCRIPTION
+    var description: String = ""
 
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].

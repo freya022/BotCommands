@@ -10,7 +10,7 @@ class SlashSubcommandGroupInfo(topLevelInstance: TopLevelSlashCommandInfo, build
     override val name = builder.name
     override val path: CommandPath by lazy { computePath() }
 
-    val description = builder.description
+    val description = builder.description.ifBlank { "No description" }
 
     val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.map.mapValues { it.value.build(topLevelInstance, this) }
 }

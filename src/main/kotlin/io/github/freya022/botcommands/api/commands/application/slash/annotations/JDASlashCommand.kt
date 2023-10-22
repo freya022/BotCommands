@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
@@ -132,5 +131,5 @@ annotation class JDASlashCommand(
      *
      * @see TopLevelSlashCommandBuilder.description DSL equivalent
      */
-    val description: String = SlashCommandBuilder.DEFAULT_DESCRIPTION
+    val description: String = ""
 )

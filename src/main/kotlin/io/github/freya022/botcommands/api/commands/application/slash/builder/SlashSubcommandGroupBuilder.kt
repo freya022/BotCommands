@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
@@ -21,7 +20,7 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
 
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
 
-    var description: String = DEFAULT_DESCRIPTION
+    var description: String = ""
 
     init {
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")

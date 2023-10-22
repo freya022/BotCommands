@@ -71,7 +71,7 @@ annotation class SlashOption(
      *
      * @see SlashCommandOptionBuilder.description DSL equivalent
      */
-    val description: String = SlashCommandBuilder.DEFAULT_DESCRIPTION,
+    val description: String = "",
 
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
