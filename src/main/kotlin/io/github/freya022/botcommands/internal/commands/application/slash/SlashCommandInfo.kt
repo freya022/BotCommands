@@ -42,18 +42,7 @@ abstract class SlashCommandInfo internal constructor(
     init {
         eventFunction.checkEventScope<GuildSlashEvent>(builder)
 
-        val rootDescription = LocalizationUtils.getCommandRootDescription(context, builder)
-        description = if (builder.description.isNotBlank()) {
-            // If a description was set, then use it, but check if a root description was found too
-            if (rootDescription != null) {
-                logger.debug { "A command description was set manually, while a root description was found in a localization bundle, path: '$path'" }
-            }
-            builder.description
-        } else {
-            // If a description isn't set, then take the root description if it exists,
-            // otherwise take the builder's default description
-            rootDescription ?: builder.description
-        }
+        description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
             SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
