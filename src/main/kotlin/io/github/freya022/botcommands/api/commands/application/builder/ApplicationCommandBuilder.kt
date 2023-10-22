@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.builder
 
+import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
@@ -7,6 +8,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
@@ -33,6 +37,11 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     var nsfw: Boolean = false
 
     /**
+     * Declares a custom option, such as an [AppLocalizationContext] (with [@LocalizationBundle][LocalizationBundle])
+     * or a service.
+     *
+     * Additional resolvers can be implemented with [ICustomResolver].
+     *
      * @param declaredName Name of the declared parameter in the [function]
      */
     fun customOption(declaredName: String) {
@@ -42,7 +51,11 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     }
 
     /**
+     * Declares a generated option, the supplier gets called on each command execution.
+     *
      * @param declaredName Name of the declared parameter in the [function]
+     *
+     * @see GeneratedOption @GeneratedOption
      */
     fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
         selfAggregate(declaredName) {

@@ -7,6 +7,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -48,7 +50,12 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     /**
+     * Declares an input option, see supported types at [ParameterResolver],
+     * additional resolvers can be implemented with [SlashParameterResolver].
+     *
      * @param declaredName Name of the declared parameter in the [function]
+     * @param optionName Name of the option on Discord,
+     * transforms all uppercase characters with underscore + lowercase by default
      */
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
@@ -57,6 +64,15 @@ abstract class SlashCommandBuilder internal constructor(
         }
     }
 
+    /**
+     * Declares an input option encapsulated in an inline class, see supported types at [ParameterResolver],
+     * additional resolvers can be implemented with [SlashParameterResolver].
+     *
+     * @param declaredName Name of the declared parameter in the [function]
+     * @param optionName Name of the option on Discord,
+     * transforms all uppercase characters with underscore + lowercase by default
+     * @param clazz
+     */
     fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: Class<*>, block: SlashCommandOptionBuilder.() -> Unit) {
         val aggregatorConstructor = clazz.kotlin.primaryConstructor
             ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
