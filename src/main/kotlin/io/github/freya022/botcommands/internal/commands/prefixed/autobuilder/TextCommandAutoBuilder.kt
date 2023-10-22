@@ -233,7 +233,7 @@ internal class TextCommandAutoBuilder(
                 else -> {
                     val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName
                     if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure.java
+                        val inlineClassType = kParameter.type.jvmErasure
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
                             null -> inlineClassOption(declaredName, optionName, inlineClassType) {
                                 configureOption(kParameter, optionAnnotation)

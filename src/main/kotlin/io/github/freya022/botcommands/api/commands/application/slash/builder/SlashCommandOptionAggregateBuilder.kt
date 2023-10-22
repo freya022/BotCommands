@@ -22,7 +22,7 @@ class SlashCommandOptionAggregateBuilder internal constructor(
      * additional resolvers can be implemented with [SlashParameterResolver].
      *
      * @param declaredName Name of the declared parameter in the aggregator
-     * @param optionName Name of the option on Discord,
+     * @param optionName   Name of the option on Discord,
      * transforms all uppercase characters with underscore + lowercase by default
      */
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {

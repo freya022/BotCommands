@@ -211,7 +211,7 @@ internal class SlashCommandAutoBuilder(
                 else -> {
                     val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName.toDiscordString()
                     if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure.java
+                        val inlineClassType = kParameter.type.jvmErasure
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
                             null -> inlineClassOption(declaredName, optionName, inlineClassType) {
                                 configureOption(guild, instance, kParameter, optionAnnotation)

@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectRefe
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.freya022.botcommands.internal.utils.toDiscordString
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 
@@ -68,8 +69,8 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
-    fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: Class<*>, block: TextCommandOptionBuilder.() -> Unit) {
-        val aggregatorConstructor = clazz.kotlin.primaryConstructor
+    fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: KClass<*>, block: TextCommandOptionBuilder.() -> Unit = {}) {
+        val aggregatorConstructor = clazz.primaryConstructor
             ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
@@ -78,15 +79,15 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
-    inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: TextCommandOptionBuilder.() -> Unit) {
-        inlineClassOption(declaredName, optionName, T::class.java, block)
+    inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: TextCommandOptionBuilder.() -> Unit = {}) {
+        inlineClassOption(declaredName, optionName, T::class, block)
     }
 
     /**
      * @see VarArgs
      */
-    fun inlineClassOptionVararg(declaredName: String, clazz: Class<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
-        val aggregatorConstructor = clazz.kotlin.primaryConstructor
+    fun inlineClassOptionVararg(declaredName: String, clazz: KClass<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
+        val aggregatorConstructor = clazz.primaryConstructor
             ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
@@ -99,7 +100,7 @@ class TextCommandVariationBuilder internal constructor(
      * @see VarArgs
      */
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
-        inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
+        inlineClassOptionVararg(declaredName, T::class, amount, requiredAmount, optionNameSupplier, block)
     }
 
     /**
