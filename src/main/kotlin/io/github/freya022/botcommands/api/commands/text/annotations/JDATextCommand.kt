@@ -1,45 +1,55 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.CommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
  * Declares this function as a text command.
  *
- * Text commands are composed of "variations";
- * functions with the same path form a group of variations.<br>
- * Each variation is run based off its [priority][order],
- * the first variation that has its syntax match against the user input gets executed.
+ * ### Text command variations
+ * A given text command path (such as `ban temp`) is composed of at least one variation;
+ * Each variation has different parameters, and will display separately in the built-in help content.
  *
- * **Requirements:**
- *  - The declaring class must be annotated with [@Command][Command]
- *  - The method must be in the [search path][BConfigBuilder.addSearchPath]
- *  - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption
+ * Each variation runs based off its [priority][order],
+ * the first variation that has a full match against the user input gets executed.
  *
- * Input options need to be annotated with [@TextOption][TextOption], see supported types at [ParameterResolver],
+ * If no regex-based variation (using a [BaseCommandEvent]) matches,
+ * the fallback variation is executed (if a variation using [CommandEvent] exists).
+ *
+ * If no variation matches and there is no fallback,
+ * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
+ *
+ * ### Requirements
+ * - The declaring class must be annotated with [@Command][Command] and extend [TextCommand]
+ * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
+ *
+ * ### Option types
+ * - Input options: Uses [@TextOption][TextOption], see supported types at [ParameterResolver],
  * additional resolvers can be implemented with [TextParameterResolver].
+ * - [TextLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
+ * - Custom options and services: No annotation, additional resolvers can be implemented with [ICustomResolver].
  *
  * @see Command @Command
+ * @see Category @Category
  * @see TextOption @TextOption
  * @see Hidden @Hidden
- * @see ID @ID
+ * @see NSFW @NSFW
  * @see BotPermissions @BotPermissions
  * @see UserPermissions @UserPermissions
  * @see Cooldown @Cooldown
  * @see RateLimit @RateLimit
  * @see Aggregate @Aggregate
  *
- * @see AppDeclaration Declaring text commands using the DSL
+ * @see TextDeclaration Declaring text commands using the DSL
  *
  * @see TextCommandManager.textCommand DSL equivalent
  */
@@ -53,9 +63,12 @@ annotation class JDATextCommand(
     val path: Array<out String>,
 
     /**
-     * Specifies the priority of this text command variation (1 is the most important)
+     * Specifies the priority of this text command variation (1 is the most important).
      *
-     * @see JDATextCommand.order DSL equivalent
+     * By default, if two variations have no order set, parameters are compared between each variation,
+     * if one of them is a [String] but the other is not, the [String] parameter is prioritized.
+     *
+     * If you are using Kotlin, [DSL-declared commands][TextDeclaration] retain the order they are declared in.
      */
     val order: Int = 0,
 

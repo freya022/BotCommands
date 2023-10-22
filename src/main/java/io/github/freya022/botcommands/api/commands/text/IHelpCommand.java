@@ -19,9 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @InterfacedService(acceptMultiple = false)
 public interface IHelpCommand {
 	/**
-	 * Is fired when a command is recognized, but the arguments cannot be resolved on any of the command variants.
-	 *
-	 * <p><b>Be aware: </b>Localization annotations cannot be applied on this method
+	 * Is fired when a command is recognized, but the arguments cannot be resolved on any of the command variations.
 	 *
 	 * @param event       The event of the current command invocation
 	 * @param commandInfo The command info of the command which the user tried to use
