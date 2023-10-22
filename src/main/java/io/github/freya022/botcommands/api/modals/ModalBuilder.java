@@ -18,12 +18,12 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	}
 
 	/**
-	 * Binds the following handler (defined by {@link ModalHandler}) with its arguments
+	 * Binds the following handler (defined by {@link ModalHandler @ModalHandler}) with its arguments
 	 *
 	 * <br>This step is optional if you do not wish to use methods for that
 	 *
-	 * @param handlerName The name of the modal handler, must be the same as your {@link ModalHandler}
-	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData}
+	 * @param handlerName The name of the modal handler, which must be the same as your {@link ModalHandler @ModalHandler}
+	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData @ModalData}
 	 *
 	 * @return This builder for chaining convenience
 	 */
@@ -31,12 +31,12 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	public abstract ModalBuilder bindTo(@NotNull String handlerName, @NotNull List<@Nullable Object> userData);
 
 	/**
-	 * Binds the following handler (defined by {@link ModalHandler}) with its arguments
+	 * Binds the following handler (defined by {@link ModalHandler @ModalHandler}) with its arguments
 	 *
 	 * <br>This step is optional if you do not wish to use methods for that
 	 *
-	 * @param handlerName The name of the modal handler, must be the same as your {@link ModalHandler}
-	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData}
+	 * @param handlerName The name of the modal handler, which must be the same as your {@link ModalHandler @ModalHandler}
+	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData @ModalData}
 	 *
 	 * @return This builder for chaining convenience
 	 */

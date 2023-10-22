@@ -42,7 +42,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
      *
      * Additional types can be added by implementing [ICustomResolver].
      *
-     * @param declaredName Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [command function][function]
      */
     fun customOption(declaredName: String) {
         selfAggregate(declaredName) {
@@ -53,7 +53,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     /**
      * Declares a generated option, the supplier gets called on each command execution.
      *
-     * @param declaredName Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [command function][function]
      *
      * @see GeneratedOption @GeneratedOption
      */

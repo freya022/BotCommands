@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 
 /**
  * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].
@@ -12,6 +13,9 @@ import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
  * You can configure how many arguments are required with [numRequired].
  *
  * **Note:** You are limited to one vararg parameter in text commands.
+ *
+ * @see TextCommandVariationBuilder.optionVararg
+ * @see TextCommandVariationBuilder.inlineClassOptionVararg
  *
  * @see SlashCommandBuilder.optionVararg
  * @see SlashCommandBuilder.inlineClassOptionVararg

@@ -2,29 +2,36 @@ package io.github.freya022.botcommands.api.commands.application.context.annotati
 
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
  * Declares this function as a message context command.
  *
- * The targeted function must have a [GlobalMessageEvent] or a [GuildMessageEvent],
- * with the only accepted [option][ContextOption] being [Message],
- * which will be the *targeted* message.
+ * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands)
+ * for more details.
  *
- * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands) for more details.
+ * ### Requirements
+ * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
+ * - First parameter must be [GlobalMessageEvent] for [global][CommandScope.GLOBAL] commands, or,
+ * [GuildMessageEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
  *
- * Supported types are in [ParameterResolver], but only [Message][GlobalMessageEvent.getTarget] is supported by default,
+ * ### Option types
+ * - Input options: Uses [@ContextOption][ContextOption], supported types are in [ParameterResolver],
+ * but only the targeted [Message][GlobalMessageEvent.getTarget] is supported by default,
  * additional types can be added by implementing [MessageContextParameterResolver].
- *
- * **Requirement:** The declaring class must be annotated with [@Command][Command].
+ * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
+ * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see GlobalMessageEvent.getTarget
  *

@@ -2,32 +2,37 @@ package io.github.freya022.botcommands.api.commands.application.context.annotati
 
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
  * Declares this function as a user context command.
  *
- * The targeted function must have a [GlobalUserEvent] or a [GuildUserEvent],
- * with the only accepted [options][ContextOption] being [Member], [User] and [InputUser],
- * which will be the *targeted* entity.
+ * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands)
+ * for more details.
  *
- * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
+ * ### Requirements
+ * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
+ * - First parameter must be [GlobalUserEvent] for [global][CommandScope.GLOBAL] commands, or,
+ * [GuildUserEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
  *
- * Supported types are in [ParameterResolver],
- * but only [User][GlobalUserEvent.getTarget]/[Member][GlobalUserEvent.getTargetMember] and [InputUser] are supported by default,
+ * ### Option types
+ * - Input options: Uses [@ContextOption][ContextOption], supported types are in [ParameterResolver],
+ * but only the targeted [User][GlobalUserEvent.getTarget]/[Member][GlobalUserEvent.getTargetMember] and [InputUser] are supported by default,
  * additional types can be added by implementing [UserContextParameterResolver].
- *
- * **Requirement:** The declaring class must be annotated with [@Command][Command].
+ * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
+ * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see GlobalUserEvent.getTarget
  * @see GlobalUserEvent.getTargetMember

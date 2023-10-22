@@ -21,7 +21,12 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * Declares multiple options aggregated in a single parameter.
+     *
+     * The aggregator will receive all the options in the declared order and produce a single output.
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param aggregator   The function taking all the options and merging them in a single output
      *
      * @see Aggregate @Aggregate
      */
