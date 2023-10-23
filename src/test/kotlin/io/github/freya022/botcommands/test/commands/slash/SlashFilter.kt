@@ -1,0 +1,25 @@
+package io.github.freya022.botcommands.test.commands.slash
+
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.builder.filter
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.test.filters.InVoiceChannel
+
+@Command
+class SlashFilter {
+    suspend fun onSlashFilter(event: GuildSlashEvent) {
+        event.reply_("OK", ephemeral = true).await()
+    }
+
+    @AppDeclaration
+    fun declare(manager: GlobalApplicationCommandManager) {
+        manager.slashCommand("filter", function = ::onSlashFilter) {
+//            filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()
+            filters += filter<InVoiceChannel>()
+        }
+    }
+}
