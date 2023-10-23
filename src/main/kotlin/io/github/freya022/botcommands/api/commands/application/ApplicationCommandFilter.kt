@@ -80,3 +80,23 @@ interface ApplicationCommandFilter : Filter {
     fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
+
+// TODO this requires the reply to be done after the entire filter evaluation
+//  As there would be an issue when the left side of the "or" fails (and replies) but the right side passes
+//infix fun ApplicationCommandFilter.or(other: ApplicationCommandFilter): ApplicationCommandFilter {
+//    return object : ApplicationCommandFilter {
+//        override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
+//            val isAccepted = this@or.isAcceptedSuspend(event, commandInfo)
+//            return isAccepted || other.isAcceptedSuspend(event, commandInfo)
+//        }
+//    }
+//}
+
+infix fun ApplicationCommandFilter.and(other: ApplicationCommandFilter): ApplicationCommandFilter {
+    return object : ApplicationCommandFilter {
+        override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
+            val isAccepted = this@and.isAcceptedSuspend(event, commandInfo)
+            return isAccepted && other.isAcceptedSuspend(event, commandInfo)
+        }
+    }
+}

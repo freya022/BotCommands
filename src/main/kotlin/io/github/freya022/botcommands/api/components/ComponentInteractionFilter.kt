@@ -93,3 +93,29 @@ interface ComponentInteractionFilter : Filter {
     fun isAccepted(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
+
+// TODO this requires the reply to be done after the entire filter evaluation
+//  As there would be an issue when the left side of the "or" fails (and replies) but the right side passes
+//infix fun ComponentInteractionFilter.or(other: ComponentInteractionFilter): ComponentInteractionFilter {
+//    return object : ComponentInteractionFilter {
+//        override suspend fun isAcceptedSuspend(
+//            event: GenericComponentInteractionCreateEvent,
+//            handlerName: String?
+//        ): Boolean {
+//            val isAccepted = this@or.isAcceptedSuspend(event, handlerName)
+//            return isAccepted || other.isAcceptedSuspend(event, handlerName)
+//        }
+//    }
+//}
+
+infix fun ComponentInteractionFilter.and(other: ComponentInteractionFilter): ComponentInteractionFilter {
+    return object : ComponentInteractionFilter {
+        override suspend fun isAcceptedSuspend(
+            event: GenericComponentInteractionCreateEvent,
+            handlerName: String?
+        ): Boolean {
+            val isAccepted = this@and.isAcceptedSuspend(event, handlerName)
+            return isAccepted && other.isAcceptedSuspend(event, handlerName)
+        }
+    }
+}
