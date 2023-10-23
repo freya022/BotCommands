@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application
 
+import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -53,7 +54,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * @see isAccepted
  */
 @InterfacedService(acceptMultiple = true)
-interface ApplicationCommandFilter {
+interface ApplicationCommandFilter : Filter {
     /**
      * Returns whether the command should be accepted or not.
      *

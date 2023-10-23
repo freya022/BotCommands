@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -60,7 +61,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * @see isAccepted
  */
 @InterfacedService(acceptMultiple = true)
-interface ComponentInteractionFilter {
+interface ComponentInteractionFilter : Filter {
     /**
      * Returns whether the component interaction should be accepted or not.
      *
