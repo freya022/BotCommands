@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
@@ -8,9 +9,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.utils.reference
 import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
@@ -19,6 +23,8 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     function: KFunction<Any>
 ) : ExecutableCommandBuilder<T, Any>(context, name, function) {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
+
+    val filters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     /**
      * Specifies whether the application command is usable in NSFW channels.<br>
@@ -62,4 +68,12 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
             generatedOption(declaredName, generatedValueSupplier)
         }
     }
+}
+
+inline fun <reified T : ApplicationCommandFilter> ApplicationCommandBuilder<*>.filter(): T {
+    val filter = context.getService<T>()
+    require(!filter.global) {
+        "Global filters cannot be used explicitly, see ${Filter::global.reference}"
+    }
+    return filter
 }

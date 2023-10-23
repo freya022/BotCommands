@@ -20,7 +20,7 @@ import java.util.*
 import kotlin.time.Duration
 
 @CommandDSL
-abstract class CommandBuilder internal constructor(protected val context: BContext, override val name: String) : INamedCommand {
+abstract class CommandBuilder internal constructor(val context: BContext, override val name: String) : INamedCommand {
     internal abstract val type: CommandType
 
     var userPermissions: EnumSet<Permission> = enumSetOf()

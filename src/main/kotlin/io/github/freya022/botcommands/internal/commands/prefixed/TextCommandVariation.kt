@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
@@ -28,6 +29,8 @@ class TextCommandVariation internal constructor(
 ) : IExecutableInteractionInfo {
     override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
+
+    val filters: List<TextCommandFilter> = builder.filters
 
     val description: String? = builder.description
     val usage: String? = builder.usage

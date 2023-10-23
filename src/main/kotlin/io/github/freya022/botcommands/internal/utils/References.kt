@@ -7,6 +7,7 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+@PublishedApi
 internal val KProperty<*>.reference: String
     get() {
         val callableReference = (this as? CallableReference)

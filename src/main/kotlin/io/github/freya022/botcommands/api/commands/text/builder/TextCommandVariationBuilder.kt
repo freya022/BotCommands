@@ -2,9 +2,12 @@ package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
@@ -12,6 +15,7 @@ import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVari
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KClass
@@ -20,7 +24,7 @@ import kotlin.reflect.full.primaryConstructor
 
 @CommandDSL
 class TextCommandVariationBuilder internal constructor(
-    private val context: BContext,
+    val context: BContext,
     function: KFunction<Any>
 ) : IBuilderFunctionHolder<Any> {
     override val function: KFunction<Any> = function.reflectReference()
@@ -31,6 +35,8 @@ class TextCommandVariationBuilder internal constructor(
 
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
+
+    val filters: MutableList<TextCommandFilter> = arrayListOf()
 
     /**
      * Short description of the command displayed in the built-in help command,
@@ -153,4 +159,12 @@ class TextCommandVariationBuilder internal constructor(
     internal fun build(info: TextCommandInfo): TextCommandVariation {
         return TextCommandVariation(context, info, this)
     }
+}
+
+inline fun <reified T : TextCommandFilter> TextCommandVariationBuilder.filter(): T {
+    val filter = context.getService<T>()
+    require(!filter.global) {
+        "Global filters cannot be used explicitly, see ${Filter::global.reference}"
+    }
+    return filter
 }
