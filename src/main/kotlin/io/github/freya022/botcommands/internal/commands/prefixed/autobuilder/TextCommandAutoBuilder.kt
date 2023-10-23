@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
@@ -178,6 +179,8 @@ internal class TextCommandAutoBuilder(
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         processOptions(metadata.func, metadata.instance, metadata.path)
+
+        filters += AnnotationUtils.getFilters(context, metadata.func, TextCommandFilter::class)
 
         description = metadata.annotation.description.nullIfBlank()
         usage = metadata.annotation.usage.nullIfBlank()

@@ -1,10 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
@@ -91,6 +88,8 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
 internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 
 internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
+    filters += AnnotationUtils.getFilters(context, func, ApplicationCommandFilter::class)
+
     if (func.hasAnnotation<NSFW>()) {
         throwUser(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
