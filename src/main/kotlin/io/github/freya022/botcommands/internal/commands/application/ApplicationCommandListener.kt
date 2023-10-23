@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
@@ -27,7 +28,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val filters = context.getInterfacedServices<ApplicationCommandFilter>()
+    private val globalFilters = context.getInterfacedServices<ApplicationCommandFilter>()
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -199,7 +200,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
             }
         }
 
-        for (filter in filters) {
+        checkFilters(globalFilters, applicationCommand.filters) { filter ->
             if (!filter.isAcceptedSuspend(event, applicationCommand)) {
                 if (event.isAcknowledged) {
                     logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }

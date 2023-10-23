@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
@@ -38,7 +39,7 @@ internal class TextCommandsListener internal constructor(
 
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val filters = context.getInterfacedServices<TextCommandFilter>()
+    private val globalFilters = context.getInterfacedServices<TextCommandFilter>()
 
     @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
@@ -210,7 +211,7 @@ internal class TextCommandsListener internal constructor(
             ?: return ExecutionResult.CONTINUE //Go to next variation
 
         // At this point, we're sure that the command is executable
-        for (filter in filters) {
+        checkFilters(globalFilters, variation.filters) { filter ->
             if (!filter.isAcceptedSuspend(event, variation, args)) {
                 logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
                 return ExecutionResult.STOP

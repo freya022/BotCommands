@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -55,7 +56,7 @@ internal class ComponentsListener(
     private val logger = KotlinLogging.logger { }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val filters = context.getInterfacedServices<ComponentInteractionFilter>()
+    private val globalFilters = context.getInterfacedServices<ComponentInteractionFilter>()
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
@@ -76,7 +77,7 @@ internal class ComponentsListener(
                     }
                 }
 
-                for (filter in filters) {
+                checkFilters(globalFilters, listOf()) { filter ->
                     if (!filter.isAcceptedSuspend(event, (component as? PersistentComponentData)?.handler?.handlerName)) {
                         if (event.isAcknowledged) {
                             logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
