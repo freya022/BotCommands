@@ -4,15 +4,20 @@ import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -28,7 +33,11 @@ import kotlin.reflect.full.isSubclassOf
  * Allows components to have handlers bound to them.
  */
 interface IActionableComponent {
+    val context: BContext
+
     val handler: ComponentHandler?
+
+    val filters: MutableList<ComponentInteractionFilter>
 
     val rateLimitGroup: String?
 
@@ -40,6 +49,14 @@ interface IActionableComponent {
      * @see RateLimitReference @RateLimitReference
      */
     fun rateLimitReference(group: String)
+}
+
+inline fun <reified T : ComponentInteractionFilter> IActionableComponent.filter(): T {
+    val filter = context.getService<T>()
+    require(!filter.global) {
+        "Global filters cannot be used explicitly, see ${Filter::global.reference}"
+    }
+    return filter
 }
 
 /**

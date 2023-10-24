@@ -12,7 +12,7 @@ class PersistentButtonBuilder internal constructor(
     style: ButtonStyle,
     componentController: ComponentController
 ) : AbstractButtonBuilder(componentController, style),
-    IPersistentActionableComponent by PersistentActionableComponentImpl(),
+    IPersistentActionableComponent by PersistentActionableComponentImpl(componentController.context),
     IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
 }

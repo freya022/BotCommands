@@ -23,7 +23,7 @@ import kotlin.concurrent.withLock
 @BService
 @Dependencies(ComponentRepository::class)
 internal class ComponentController(
-    context: BContext,
+    val context: BContext,
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
