@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.repositories
 
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
@@ -14,6 +15,7 @@ import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.PersistentHandler
+import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
 import io.github.freya022.botcommands.internal.components.controller.ComponentTimeoutManager
 import io.github.freya022.botcommands.internal.components.data.*
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
@@ -34,7 +36,8 @@ import java.sql.Timestamp
 internal class ComponentRepository(
     private val database: InternalDatabase,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,
-    private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers
+    private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
+    private val componentFilters: ComponentFilters
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -46,8 +49,8 @@ internal class ComponentRepository(
         database.transactional {
             // Create base component
             val componentId: Int =
-                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group) VALUES (?, ?, ?, ?) returning component_id") {
-                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup)
+                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?) returning component_id") {
+                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup, builder.filters.map { it.javaClass.name }.toTypedArray())
                         .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
                 }
@@ -84,7 +87,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, one_use, users, roles, permissions, group_id, rate_limit_group
+            select lifetime_type, component_type, one_use, users, roles, permissions, group_id, rate_limit_group, filters
             from bc_component component
                      natural left join bc_component_constraints constraints
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
@@ -100,6 +103,7 @@ internal class ComponentRepository(
                 return@preparedStatement getGroup(id, oneUse)
             }
 
+            val filters = componentFilters.getFilters(dbResult["filters"])
             val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
             val constraints = InteractionConstraints.of(
@@ -113,6 +117,7 @@ internal class ComponentRepository(
                     id,
                     componentType,
                     lifetimeType,
+                    filters,
                     oneUse,
                     rateLimitGroup,
                     constraints,
@@ -122,6 +127,7 @@ internal class ComponentRepository(
                     id,
                     componentType,
                     lifetimeType,
+                    filters,
                     oneUse,
                     rateLimitGroup,
                     constraints,
@@ -135,8 +141,8 @@ internal class ComponentRepository(
         val groupId: Int = runCatching {
             preparedStatement(
                 """
-                insert into bc_component (component_type, lifetime_type, one_use)
-                VALUES (?, ?, false)
+                insert into bc_component (component_type, lifetime_type, one_use, filters)
+                VALUES (?, ?, false, '{}')
                 returning component_id""".trimIndent()
             ) {
                 executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key).readOrNull()!!
@@ -250,6 +256,7 @@ internal class ComponentRepository(
         id: Int,
         componentType: ComponentType,
         lifetimeType: LifetimeType,
+        filters: List<ComponentInteractionFilter>,
         oneUse: Boolean,
         rateLimitGroup: String?,
         constraints: InteractionConstraints,
@@ -268,7 +275,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOrNull()
-            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
+            ?: return PersistentComponentData(id, componentType, lifetimeType, filters, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
             PersistentHandler(
@@ -285,7 +292,7 @@ internal class ComponentRepository(
             )
         }
 
-        PersistentComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
+        PersistentComponentData(id, componentType, lifetimeType, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
@@ -293,6 +300,7 @@ internal class ComponentRepository(
         id: Int,
         componentType: ComponentType,
         lifetimeType: LifetimeType,
+        filters: List<ComponentInteractionFilter>,
         oneUse: Boolean,
         rateLimitGroup: String?,
         constraints: InteractionConstraints,
@@ -309,7 +317,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOrNull()
-            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
+            ?: return EphemeralComponentData(id, componentType, lifetimeType, filters, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
             ephemeralComponentHandlers[handlerId]
@@ -326,7 +334,7 @@ internal class ComponentRepository(
             )
         }
 
-        EphemeralComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
+        EphemeralComponentData(id, componentType, lifetimeType, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)

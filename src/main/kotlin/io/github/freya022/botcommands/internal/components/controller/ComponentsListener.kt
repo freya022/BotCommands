@@ -77,7 +77,7 @@ internal class ComponentsListener(
                     }
                 }
 
-                checkFilters(globalFilters, listOf()) { filter ->
+                checkFilters(globalFilters, component.filters) { filter ->
                     if (!filter.isAcceptedSuspend(event, (component as? PersistentComponentData)?.handler?.handlerName)) {
                         if (event.isAcknowledged) {
                             logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
