@@ -38,7 +38,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             setChannelTypes(ChannelType.VOICE)
             filters += filter<InVoiceChannel>()
             bindTo {
-                it.guild!!.moveVoiceMember(it.member!!, it.values.first() as AudioChannel)
+                it.guild!!.moveVoiceMember(it.member!!, it.values.first() as AudioChannel).await()
                 it.deferEdit().await()
             }
         }

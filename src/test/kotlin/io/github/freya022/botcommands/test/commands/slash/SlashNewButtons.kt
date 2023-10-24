@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
@@ -44,7 +45,10 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
         val kickVoiceButton = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
             filters += filter<InVoiceChannel>()
-            bindTo { it.guild!!.kickVoiceMember(it.member!!) }
+            bindTo {
+                it.guild!!.kickVoiceMember(it.member!!).await()
+                it.deferEdit().await()
+            }
         }
 
         event.reply("OK, button ID: ${persistentButton.id}")
