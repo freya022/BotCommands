@@ -95,11 +95,12 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val oneUse: Boolean = dbResult["one_use"]
-            val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, oneUse, rateLimitGroup)
+                return@preparedStatement getGroup(id, oneUse)
             }
+
+            val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
             val constraints = InteractionConstraints.of(
                 dbResult["users"],
@@ -329,7 +330,7 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun getGroup(id: Int, oneUse: Boolean, rateLimitGroup: String?): ComponentGroupData {
+    private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
         val timeout = getGroupTimeout(id)
 
         val componentIds: List<Int> = preparedStatement(
@@ -342,7 +343,7 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, rateLimitGroup, timeout, componentIds)
+        return ComponentGroupData(id, oneUse, timeout, componentIds)
     }
 
     context(Transaction)
