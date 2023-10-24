@@ -21,7 +21,7 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
 
     inline operator fun <reified R> get(columnLabel: String): R = when {
         R::class.isSubclassOf(List::class) -> (getArray(columnLabel).array as Array<*>).toList() as R
-        R::class == Array::class -> getArray(columnLabel).array as R
+        R::class.java.isArray -> getArray(columnLabel).array as R
         else -> getObject(columnLabel, R::class.java)
     }
 
