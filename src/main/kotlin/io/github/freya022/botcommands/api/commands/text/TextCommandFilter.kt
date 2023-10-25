@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * ### Usage
  * - Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * This is not required if you pass the instance directly to the command builder.
  * - Have exactly one instance of [TextCommandRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].

@@ -23,7 +23,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *
  * ### Usage
  * - Register your instance as a service with [BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations]
+ * (this is required as the service is retrieved when the component is used).
  * - Have exactly one instance of [ComponentInteractionRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a component-specific filter by disabling [global].
