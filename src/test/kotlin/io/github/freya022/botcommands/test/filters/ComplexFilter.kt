@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.test.filters
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
@@ -9,6 +7,9 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -17,34 +18,27 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 object InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
     override val global: Boolean = false
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Boolean {
-        return event.member?.voiceState?.inAudioChannel() ?: false
-    }
+    ): Any? = check(event.member)
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Boolean {
-        val inVoice = event.member?.voiceState?.inAudioChannel() ?: false
-        if (!inVoice) {
-            event.reply_("You must be in a voice channel", ephemeral = true).await()
-        }
-        return inVoice
-    }
+    ): Any? = check(event.member)
 
-    override suspend fun isAcceptedSuspend(
+    override fun check(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Boolean {
-        val inVoice = event.member?.voiceState?.inAudioChannel() ?: false
-        if (!inVoice) {
-            event.reply_("You must be in a voice channel", ephemeral = true).await()
+    ): Any? = check(event.member)
+
+    private fun check(member: Member?): String? {
+        if (member?.voiceState?.inAudioChannel() == true) {
+            return null
         }
-        return inVoice
+        return "You must be in a voice channel"
     }
 }
 
@@ -52,35 +46,27 @@ object InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentIn
 object IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
     override val global: Boolean = false
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Boolean {
-        if (!event.isFromGuild) return false
-        return event.guild.ownerIdLong == event.author.idLong
-    }
+    ): Any? = check(event.guild, event.author)
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Boolean {
-        val isBotOwner = event.guild?.ownerIdLong == event.user.idLong
-        if (!isBotOwner) {
-            event.reply_("You must be the bot owner", ephemeral = true).await()
-        }
-        return isBotOwner
-    }
+    ): Any? = check(event.guild, event.user)
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Boolean {
-        val isBotOwner = event.guild?.ownerIdLong == event.user.idLong
-        if (!isBotOwner) {
-            event.reply_("You must be the bot owner", ephemeral = true).await()
+    ): Any? = check(event.guild, event.user)
+
+    private fun check(guild: Guild?, userSnowflake: UserSnowflake): String? {
+        if (guild?.ownerIdLong != userSnowflake.idLong) {
+            return "You must be the bot owner"
         }
-        return isBotOwner
+        return null
     }
 }
 
@@ -88,33 +74,26 @@ object IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentIntera
 class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
     override val global: Boolean = false
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Boolean {
-        return context.isOwner(event.author.idLong)
-    }
+    ): Any? = check(event.author)
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Boolean {
-        val isOwner = context.isOwner(event.user.idLong)
-        if (!isOwner) {
-            event.reply_("You must be the guild owner", ephemeral = true).await()
-        }
-        return isOwner
-    }
+    ): Any? = check(event.user)
 
-    override suspend fun isAcceptedSuspend(
+    override suspend fun checkSuspend(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Boolean {
-        val isOwner = context.isOwner(event.user.idLong)
-        if (!isOwner) {
-            event.reply_("You must be the guild owner", ephemeral = true).await()
+    ): Any? = check(event.user)
+
+    private fun check(userSnowflake: UserSnowflake): String? {
+        if (!context.isOwner(userSnowflake.idLong)) {
+            return "You must be the bot owner"
         }
-        return isOwner
+        return null
     }
 }
