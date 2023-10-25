@@ -10,6 +10,24 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 /**
+ * Prevents component execution by returning an error object to the component executor.
+ *
+ * Filters run when a component is about to be executed,
+ * i.e., after the constraints/rate limits... were checked.
+ *
+ * With more complex filters such as [`and`][and]/[`or`][or] filters,
+ * a filter returning an error object does not mean a component is rejected.
+ *
+ * Instead, the cause of the error will be passed down to the component executor,
+ * and then given back to the [ComponentInteractionRejectionHandler].
+ *
+ * ### Usage
+ * - Register your instance as a service with [BService]
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Have exactly one instance of [ComponentInteractionRejectionHandler].
+ * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
+ * - (Optional) Set your filter as a component-specific filter by disabling [global].
+ *
  * Filters component interactions (such as buttons and select menus),
  * any filter that returns `false` prevents the interaction from executing.
  *
@@ -20,7 +38,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * **Usage**: Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
- * **Example** - Rejecting component interactions from non-owners:
+ * TODO update examples
+ * ### Example - Rejecting component interactions from non-owners:
  * ```kt
  * @BService
  * class MyComponentFilter(private val config: BConfig) : ComponentInteractionFilter {
@@ -56,41 +75,53 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * }
  * ```
  *
+ * @see ComponentInteractionRejectionHandler
  * @see InterfacedService @InterfacedService
- *
- * @see isAccepted
  */
 @InterfacedService(acceptMultiple = true)
 interface ComponentInteractionFilter : Filter {
-    /**
-     * Returns whether the component interaction should be accepted or not.
-     *
-     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
-     *
-     * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
-     *                    might be null if there is no handler defined, or is ephemeral.
-     *
-     * @return `true` if the component interaction can run, `false` otherwise
-     *
-     * @see ComponentInteractionFilter
-     */
+    //TODO remove in alpha 9
+    @Deprecated(
+        message = "Implement 'checkSuspend' instead, do not return a boolean",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("checkSuspend(event, handlerName)")
+    )
     @JvmSynthetic
     suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
-        isAccepted(event, handlerName)
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
+
+    //TODO remove in alpha 9
+    @Deprecated(
+        message = "Implement 'check' instead, do not return a boolean",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("check(event, handlerName)")
+    )
+    fun isAccepted(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 
     /**
-     * Returns whether the component interaction should be accepted or not.
+     * Returns `null` if this filter should allow the component to be used, or returns your own object if not.
      *
-     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
+     * The object will be passed to your [ComponentInteractionRejectionHandler]
+     * if the component interaction is rejected.
      *
      * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
      *                    might be null if there is no handler defined, or is ephemeral.
-     *
-     * @return `true` if the component interaction can run, `false` otherwise
-     *
-     * @see ComponentInteractionFilter
      */
-    fun isAccepted(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
+    @JvmSynthetic
+    suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): Any? =
+        check(event, handlerName)
+
+    /**
+     * Returns `null` if this filter should allow the component to be used, or returns your own object if not.
+     *
+     * The object will be passed to your [ComponentInteractionRejectionHandler]
+     * if the component interaction is rejected.
+     *
+     * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
+     *                    might be null if there is no handler defined, or is ephemeral.
+     */
+    fun check(event: GenericComponentInteractionCreateEvent, handlerName: String?): Any? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
 
@@ -110,12 +141,19 @@ interface ComponentInteractionFilter : Filter {
 
 infix fun ComponentInteractionFilter.and(other: ComponentInteractionFilter): ComponentInteractionFilter {
     return object : ComponentInteractionFilter {
-        override suspend fun isAcceptedSuspend(
+        override val global: Boolean = false
+
+        override val description: String
+            get() = "(${this@and.description} && ${other.description})"
+
+        override suspend fun checkSuspend(
             event: GenericComponentInteractionCreateEvent,
             handlerName: String?
-        ): Boolean {
-            val isAccepted = this@and.isAcceptedSuspend(event, handlerName)
-            return isAccepted && other.isAcceptedSuspend(event, handlerName)
+        ): Any? {
+            val errorObject = this@and.checkSuspend(event, handlerName)
+            if (errorObject != null)
+                return errorObject
+            return other.checkSuspend(event, handlerName)
         }
     }
 }

@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
@@ -15,6 +16,7 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor
@@ -57,6 +59,11 @@ internal class ComponentsListener(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val globalFilters = context.getInterfacedServices<ComponentInteractionFilter>()
+    private val rejectionHandler = when {
+        globalFilters.isEmpty() -> null
+        else -> context.getServiceOrNull<ComponentInteractionRejectionHandler>()
+            ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler>()} must be available if ${classRef<ComponentInteractionFilter>()} is used")
+    }
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
@@ -69,6 +76,10 @@ internal class ComponentsListener(
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
+            if (component.filters === ComponentFilters.INVALID_FILTERS) {
+                return@launch event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+            }
+
             component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
                 component.constraints?.let { constraints ->
                     if (!constraints.isAllowed(event)) {
@@ -78,7 +89,10 @@ internal class ComponentsListener(
                 }
 
                 checkFilters(globalFilters, component.filters) { filter ->
-                    if (!filter.isAcceptedSuspend(event, (component as? PersistentComponentData)?.handler?.handlerName)) {
+                    val handlerName = (component as? PersistentComponentData)?.handler?.handlerName
+                    val userError = filter.checkSuspend(event, handlerName)
+                    if (userError != null) {
+                        rejectionHandler!!.handleSuspend(event, handlerName, userError)
                         if (event.isAcknowledged) {
                             logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
                         } else {
