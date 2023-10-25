@@ -36,7 +36,7 @@ class TextCommandVariationBuilder internal constructor(
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
-    val filters: MutableList<TextCommandFilter> = arrayListOf()
+    val filters: MutableList<TextCommandFilter<*>> = arrayListOf()
 
     /**
      * Short description of the command displayed in the built-in help command,
@@ -161,7 +161,7 @@ class TextCommandVariationBuilder internal constructor(
     }
 }
 
-inline fun <reified T : TextCommandFilter> TextCommandVariationBuilder.filter(): T {
+inline fun <reified T : TextCommandFilter<*>> TextCommandVariationBuilder.filter(): T {
     val filter = context.getService<T>()
     require(!filter.global) {
         "Global filters cannot be used explicitly, see ${Filter::global.reference}"

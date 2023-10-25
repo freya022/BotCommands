@@ -76,11 +76,13 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * }
  * ```
  *
+ * @param T Type of the error object handled by [ComponentInteractionRejectionHandler]
+ *
  * @see ComponentInteractionRejectionHandler
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface ComponentInteractionFilter : Filter {
+interface ComponentInteractionFilter<T : Any> : Filter {
     //TODO remove in alpha 9
     @Deprecated(
         message = "Implement 'checkSuspend' instead, do not return a boolean",
@@ -110,7 +112,7 @@ interface ComponentInteractionFilter : Filter {
      *                    might be null if there is no handler defined, or is ephemeral.
      */
     @JvmSynthetic
-    suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): Any? =
+    suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): T? =
         check(event, handlerName)
 
     /**
@@ -122,7 +124,7 @@ interface ComponentInteractionFilter : Filter {
      * @param handlerName The persistent handler name, as declared in [JDAButtonListener]/[JDASelectMenuListener],
      *                    might be null if there is no handler defined, or is ephemeral.
      */
-    fun check(event: GenericComponentInteractionCreateEvent, handlerName: String?): Any? =
+    fun check(event: GenericComponentInteractionCreateEvent, handlerName: String?): T? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
 
@@ -140,8 +142,8 @@ interface ComponentInteractionFilter : Filter {
 //    }
 //}
 
-infix fun ComponentInteractionFilter.and(other: ComponentInteractionFilter): ComponentInteractionFilter {
-    return object : ComponentInteractionFilter {
+infix fun <T : Any> ComponentInteractionFilter<T>.and(other: ComponentInteractionFilter<T>): ComponentInteractionFilter<T> {
+    return object : ComponentInteractionFilter<T> {
         override val global: Boolean = false
 
         override val description: String
@@ -150,7 +152,7 @@ infix fun ComponentInteractionFilter.and(other: ComponentInteractionFilter): Com
         override suspend fun checkSuspend(
             event: GenericComponentInteractionCreateEvent,
             handlerName: String?
-        ): Any? {
+        ): T? {
             val errorObject = this@and.checkSuspend(event, handlerName)
             if (errorObject != null)
                 return errorObject

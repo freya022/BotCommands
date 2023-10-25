@@ -30,7 +30,7 @@ class TextCommandVariation internal constructor(
     override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
-    val filters: List<TextCommandFilter> = builder.filters
+    val filters: List<TextCommandFilter<*>> = builder.filters
 
     val description: String? = builder.description
     val usage: String? = builder.usage

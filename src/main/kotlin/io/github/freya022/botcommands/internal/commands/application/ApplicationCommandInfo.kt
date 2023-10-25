@@ -11,6 +11,6 @@ abstract class ApplicationCommandInfo internal constructor(
 ) : AbstractCommandInfo(builder), IExecutableInteractionInfo {
     abstract val topLevelInstance: ITopLevelApplicationCommandInfo
 
-    val filters: List<ApplicationCommandFilter> = builder.filters
+    val filters: List<ApplicationCommandFilter<*>> = builder.filters
     val nsfw: Boolean = builder.nsfw
 }

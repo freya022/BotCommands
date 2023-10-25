@@ -15,14 +15,16 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin)
  *
+ * @param T Type of the error object returned by [ApplicationCommandFilter]
+ *
  * @see ApplicationCommandFilter
  */
 @InterfacedService(acceptMultiple = false)
-interface ApplicationCommandRejectionHandler {
+interface ApplicationCommandRejectionHandler<T : Any> {
     @JvmSynthetic
-    suspend fun handleSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo, userData: Any): Unit =
+    suspend fun handleSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo, userData: T): Unit =
         handle(event, commandInfo, userData)
 
-    fun handle(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo, userData: Any): Unit =
+    fun handle(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo, userData: T): Unit =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'handle' or 'handleSuspend' method")
 }

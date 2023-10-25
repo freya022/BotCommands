@@ -41,17 +41,17 @@ internal class TextCommandsListener internal constructor(
 
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val globalFilters: List<TextCommandFilter>
-    private val rejectionHandler: TextCommandRejectionHandler?
+    private val globalFilters: List<TextCommandFilter<Any>>
+    private val rejectionHandler: TextCommandRejectionHandler<Any>?
 
     init {
-        val filters = context.getInterfacedServices<TextCommandFilter>()
+        val filters = context.getInterfacedServices<TextCommandFilter<Any>>()
         globalFilters = filters.filter { it.global }
 
         rejectionHandler = when {
             globalFilters.isEmpty() -> null
-            else -> context.getServiceOrNull<TextCommandRejectionHandler>()
-                ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler>()} must be available if ${classRef<TextCommandFilter>()} is used")
+            else -> context.getServiceOrNull<TextCommandRejectionHandler<Any>>()
+                ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
         }
     }
 

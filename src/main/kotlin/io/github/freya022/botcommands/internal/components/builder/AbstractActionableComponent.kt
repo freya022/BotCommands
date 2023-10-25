@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.builder.IActionableComponen
 import io.github.freya022.botcommands.api.core.BContext
 
 internal sealed class AbstractActionableComponent(override val context: BContext) : IActionableComponent {
-    override val filters: MutableList<ComponentInteractionFilter> = arrayListOf()
+    override val filters: MutableList<ComponentInteractionFilter<*>> = arrayListOf()
 
     override var rateLimitGroup: String? = null
 

@@ -37,7 +37,7 @@ interface IActionableComponent {
 
     val handler: ComponentHandler?
 
-    val filters: MutableList<ComponentInteractionFilter>
+    val filters: MutableList<ComponentInteractionFilter<*>>
 
     val rateLimitGroup: String?
 
@@ -51,7 +51,7 @@ interface IActionableComponent {
     fun rateLimitReference(group: String)
 }
 
-inline fun <reified T : ComponentInteractionFilter> IActionableComponent.filter(): T {
+inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filter(): T {
     val filter = context.getService<T>()
     require(!filter.global) {
         "Global filters cannot be used explicitly, see ${Filter::global.reference}"

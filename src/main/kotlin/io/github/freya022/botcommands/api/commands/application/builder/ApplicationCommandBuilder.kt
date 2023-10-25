@@ -24,7 +24,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
 ) : ExecutableCommandBuilder<T, Any>(context, name, function) {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
-    val filters: MutableList<ApplicationCommandFilter> = arrayListOf()
+    val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
 
     /**
      * Specifies whether the application command is usable in NSFW channels.<br>
@@ -70,7 +70,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     }
 }
 
-inline fun <reified T : ApplicationCommandFilter> ApplicationCommandBuilder<*>.filter(): T {
+inline fun <reified T : ApplicationCommandFilter<*>> ApplicationCommandBuilder<*>.filter(): T {
     val filter = context.getService<T>()
     require(!filter.global) {
         "Global filters cannot be used explicitly, see ${Filter::global.reference}"

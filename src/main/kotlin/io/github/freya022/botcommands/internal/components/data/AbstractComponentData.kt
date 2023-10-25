@@ -11,7 +11,7 @@ internal sealed class AbstractComponentData(
     componentId: Int,
     componentType: ComponentType,
     lifetimeType: LifetimeType,
-    filters: List<ComponentInteractionFilter>,
+    filters: List<ComponentInteractionFilter<*>>,
     oneUse: Boolean,
     rateLimitGroup: String?,
     handler: ComponentHandler?,

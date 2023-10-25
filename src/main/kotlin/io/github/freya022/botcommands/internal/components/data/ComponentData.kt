@@ -11,7 +11,7 @@ internal sealed class ComponentData(
     val componentId: Int,
     val componentType: ComponentType,
     val lifetimeType: LifetimeType,
-    val filters: List<ComponentInteractionFilter>,
+    val filters: List<ComponentInteractionFilter<*>>,
     val oneUse: Boolean,
     val rateLimitGroup: String?,
     open val handler: ComponentHandler?,

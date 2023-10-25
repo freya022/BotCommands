@@ -59,11 +59,13 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * }
  * ```
  *
+ * @param T Type of the error object handled by [ApplicationCommandRejectionHandler]
+ *
  * @see ApplicationCommandRejectionHandler
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface ApplicationCommandFilter : Filter {
+interface ApplicationCommandFilter<T : Any> : Filter {
     //TODO remove in alpha 9
     @Deprecated(
         message = "Implement 'checkSuspend' instead, do not return a boolean",
@@ -89,7 +91,7 @@ interface ApplicationCommandFilter : Filter {
      * The object will be passed to your [ApplicationCommandRejectionHandler] if the command is rejected.
      */
     @JvmSynthetic
-    suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? =
+    suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): T? =
         check(event, commandInfo)
 
     /**
@@ -97,7 +99,7 @@ interface ApplicationCommandFilter : Filter {
      *
      * The object will be passed to your [ApplicationCommandRejectionHandler] if the command is rejected.
      */
-    fun check(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? =
+    fun check(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): T? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
@@ -112,14 +114,14 @@ interface ApplicationCommandFilter : Filter {
 //    }
 //}
 
-infix fun ApplicationCommandFilter.and(other: ApplicationCommandFilter): ApplicationCommandFilter {
-    return object : ApplicationCommandFilter {
+infix fun <T : Any> ApplicationCommandFilter<T>.and(other: ApplicationCommandFilter<T>): ApplicationCommandFilter<T> {
+    return object : ApplicationCommandFilter<T> {
         override val global: Boolean = false
 
         override val description: String
             get() = "(${this@and.description} && ${other.description})"
 
-        override suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? {
+        override suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): T? {
             val errorObject = this@and.checkSuspend(event, commandInfo)
             if (errorObject != null)
                 return errorObject

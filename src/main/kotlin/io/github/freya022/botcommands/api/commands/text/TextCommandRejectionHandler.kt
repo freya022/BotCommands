@@ -15,14 +15,16 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin)
  *
+ * @param T Type of the error object returned by [TextCommandFilter]
+ *
  * @see TextCommandFilter
  */
 @InterfacedService(acceptMultiple = false)
-interface TextCommandRejectionHandler {
+interface TextCommandRejectionHandler<T : Any> {
     @JvmSynthetic
-    suspend fun handleSuspend(event: MessageReceivedEvent, variation: TextCommandVariation, args: String, userData: Any): Unit =
+    suspend fun handleSuspend(event: MessageReceivedEvent, variation: TextCommandVariation, args: String, userData: T): Unit =
         handle(event, variation, args, userData)
 
-    fun handle(event: MessageReceivedEvent, variation: TextCommandVariation, args: String, userData: Any): Unit =
+    fun handle(event: MessageReceivedEvent, variation: TextCommandVariation, args: String, userData: T): Unit =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'handle' or 'handleSuspend' method")
 }

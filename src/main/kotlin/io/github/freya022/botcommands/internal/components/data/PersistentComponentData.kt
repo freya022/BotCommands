@@ -10,7 +10,7 @@ internal class PersistentComponentData(
     componentId: Int,
     componentType: ComponentType,
     lifetimeType: LifetimeType,
-    filters: List<ComponentInteractionFilter>,
+    filters: List<ComponentInteractionFilter<*>>,
     oneUse: Boolean,
     rateLimitGroup: String?,
     override val handler: PersistentHandler?,

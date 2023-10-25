@@ -14,17 +14,17 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
-class MyCommandFilters : TextCommandFilter, ApplicationCommandFilter {
+class MyCommandFilters : TextCommandFilter<String>, ApplicationCommandFilter<String> {
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Any? = check(event.guildChannel)
+    ): String? = check(event.guildChannel)
 
     override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Any? = check(event.guildChannel)
+    ): String? = check(event.guildChannel)
 
     private fun check(channel: Channel): String? {
         if (channel.idLong != 722891685755093076) {
@@ -35,21 +35,21 @@ class MyCommandFilters : TextCommandFilter, ApplicationCommandFilter {
 }
 
 @BService
-class MyCommandRejectionHandler : TextCommandRejectionHandler, ApplicationCommandRejectionHandler {
+class MyCommandRejectionHandler : TextCommandRejectionHandler<String>, ApplicationCommandRejectionHandler<String> {
     override suspend fun handleSuspend(
         event: MessageReceivedEvent,
         variation: TextCommandVariation,
         args: String,
-        userData: Any
+        userData: String
     ) {
-        event.message.reply(userData as String).await()
+        event.message.reply(userData).await()
     }
 
     override suspend fun handleSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo,
-        userData: Any
+        userData: String
     ) {
-        event.reply_(userData as String, ephemeral = true).await()
+        event.reply_(userData, ephemeral = true).await()
     }
 }

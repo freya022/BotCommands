@@ -30,17 +30,17 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val globalFilters: List<ApplicationCommandFilter>
-    private val rejectionHandler: ApplicationCommandRejectionHandler?
+    private val globalFilters: List<ApplicationCommandFilter<Any>>
+    private val rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 
     init {
-        val filters = context.getInterfacedServices<ApplicationCommandFilter>()
+        val filters = context.getInterfacedServices<ApplicationCommandFilter<Any>>()
         globalFilters = filters.filter { it.global }
 
         rejectionHandler = when {
             filters.isEmpty() -> null
-            else -> context.getServiceOrNull<ApplicationCommandRejectionHandler>()
-                ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler>()} must be available if ${classRef<ApplicationCommandFilter>()} is used")
+            else -> context.getServiceOrNull<ApplicationCommandRejectionHandler<Any>>()
+                ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
         }
     }
 

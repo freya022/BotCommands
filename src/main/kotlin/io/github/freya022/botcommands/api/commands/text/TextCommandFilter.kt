@@ -52,11 +52,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * }
  * ```
  *
+ * @param T Type of the error object handled by [TextCommandRejectionHandler]
+ *
  * @see TextCommandRejectionHandler
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface TextCommandFilter : Filter {
+interface TextCommandFilter<T : Any> : Filter {
     //TODO remove in alpha 9
     @Deprecated(
         message = "Implement 'checkSuspend' instead, do not return a boolean",
@@ -82,7 +84,7 @@ interface TextCommandFilter : Filter {
      * The object will be passed to your [TextCommandRejectionHandler] if the command is rejected.
      */
     @JvmSynthetic
-    suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Any? =
+    suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? =
         check(event, commandVariation, args)
 
     /**
@@ -90,7 +92,7 @@ interface TextCommandFilter : Filter {
      *
      * The object will be passed to your [TextCommandRejectionHandler] if the command is rejected.
      */
-    fun check(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Any? =
+    fun check(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
@@ -105,14 +107,14 @@ interface TextCommandFilter : Filter {
 //    }
 //}
 
-infix fun TextCommandFilter.and(other: TextCommandFilter): TextCommandFilter {
-    return object : TextCommandFilter {
+infix fun <T : Any> TextCommandFilter<T>.and(other: TextCommandFilter<T>): TextCommandFilter<T> {
+    return object : TextCommandFilter<T> {
         override val global: Boolean = false
 
         override val description: String
             get() = "(${this@and.description} && ${other.description})"
 
-        override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Any? {
+        override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? {
             val errorObject = this@and.checkSuspend(event, commandVariation, args)
             if (errorObject != null)
                 return errorObject

@@ -10,10 +10,10 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 internal class ComponentFilters internal constructor(context: BContext) {
-    private val filters: Map<String, ComponentInteractionFilter> =
-        context.getInterfacedServices<ComponentInteractionFilter>().associateBy { it.javaClass.name }
+    private val filters: Map<String, ComponentInteractionFilter<Any>> =
+        context.getInterfacedServices<ComponentInteractionFilter<Any>>().associateBy { it.javaClass.name }
 
-    internal fun getFilters(qualifiedNames: Array<out String>): List<ComponentInteractionFilter> {
+    internal fun getFilters(qualifiedNames: Array<out String>): List<ComponentInteractionFilter<*>> {
         return qualifiedNames.map { qualifiedName ->
             filters[qualifiedName] ?: return run {
                 logger.warn { "Ignoring component interaction due to missing filter: '$qualifiedName'" }
@@ -27,6 +27,6 @@ internal class ComponentFilters internal constructor(context: BContext) {
          * As the component rejection handler is user-managed, we can't make our own filter.
          * So we return this sentinel value, which gets special handling by the listener.
          */
-        internal val INVALID_FILTERS: List<ComponentInteractionFilter> = emptyList()
+        internal val INVALID_FILTERS: List<ComponentInteractionFilter<*>> = emptyList()
     }
 }

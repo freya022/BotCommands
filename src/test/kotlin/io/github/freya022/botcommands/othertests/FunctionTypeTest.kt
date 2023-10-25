@@ -22,7 +22,7 @@ object FunctionTypeTest {
             get() = TODO("Not yet implemented")
         override val handler: ComponentHandler?
             get() = null
-        override val filters: MutableList<ComponentInteractionFilter>
+        override val filters: MutableList<ComponentInteractionFilter<*>>
             get() = arrayListOf()
         override val rateLimitGroup: String? = null
 

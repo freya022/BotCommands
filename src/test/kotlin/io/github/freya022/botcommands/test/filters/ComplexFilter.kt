@@ -15,24 +15,24 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
-object InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+object InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Any? = check(event.member)
+    ): String? = check(event.member)
 
     override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Any? = check(event.member)
+    ): String? = check(event.member)
 
     override fun check(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Any? = check(event.member)
+    ): String? = check(event.member)
 
     private fun check(member: Member?): String? {
         if (member?.voiceState?.inAudioChannel() == true) {
@@ -43,24 +43,24 @@ object InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentIn
 }
 
 @BService
-object IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+object IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Any? = check(event.guild, event.author)
+    ): String? = check(event.guild, event.author)
 
     override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Any? = check(event.guild, event.user)
+    ): String? = check(event.guild, event.user)
 
     override suspend fun checkSuspend(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Any? = check(event.guild, event.user)
+    ): String? = check(event.guild, event.user)
 
     private fun check(guild: Guild?, userSnowflake: UserSnowflake): String? {
         if (guild?.ownerIdLong != userSnowflake.idLong) {
@@ -71,24 +71,24 @@ object IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentIntera
 }
 
 @BService
-class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,
         args: String
-    ): Any? = check(event.author)
+    ): String? = check(event.author)
 
     override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo
-    ): Any? = check(event.user)
+    ): String? = check(event.user)
 
     override suspend fun checkSuspend(
         event: GenericComponentInteractionCreateEvent,
         handlerName: String?
-    ): Any? = check(event.user)
+    ): String? = check(event.user)
 
     private fun check(userSnowflake: UserSnowflake): String? {
         if (!context.isOwner(userSnowflake.idLong)) {
