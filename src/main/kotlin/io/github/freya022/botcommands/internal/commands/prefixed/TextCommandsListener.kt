@@ -6,18 +6,20 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -40,6 +42,11 @@ internal class TextCommandsListener internal constructor(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val globalFilters = context.getInterfacedServices<TextCommandFilter>()
+    private val rejectionHandler = when {
+        globalFilters.isEmpty() -> null
+        else -> context.getServiceOrNull<TextCommandRejectionHandler>()
+            ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler>()} must be available if ${classRef<TextCommandFilter>()} is used")
+    }
 
     @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
@@ -212,8 +219,10 @@ internal class TextCommandsListener internal constructor(
 
         // At this point, we're sure that the command is executable
         checkFilters(globalFilters, variation.filters) { filter ->
-            if (!filter.isAcceptedSuspend(event, variation, args)) {
-                logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
+            val userError = filter.checkSuspend(event, variation, args)
+            if (userError != null) {
+                rejectionHandler!!.handleSuspend(event, variation, args, userError)
+                logger.trace { "${filter.description} rejected text command '$content'" }
                 return ExecutionResult.STOP
             }
         }
