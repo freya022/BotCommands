@@ -58,11 +58,18 @@ internal class ComponentsListener(
     private val logger = KotlinLogging.logger { }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val globalFilters = context.getInterfacedServices<ComponentInteractionFilter>()
-    private val rejectionHandler = when {
-        globalFilters.isEmpty() -> null
-        else -> context.getServiceOrNull<ComponentInteractionRejectionHandler>()
-            ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler>()} must be available if ${classRef<ComponentInteractionFilter>()} is used")
+    private val globalFilters: List<ComponentInteractionFilter>
+    private val rejectionHandler: ComponentInteractionRejectionHandler?
+
+    init {
+        val filters = context.getInterfacedServices<ComponentInteractionFilter>()
+        globalFilters = filters.filter { it.global }
+
+        rejectionHandler = when {
+            globalFilters.isEmpty() -> null
+            else -> context.getServiceOrNull<ComponentInteractionRejectionHandler>()
+                ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler>()} must be available if ${classRef<ComponentInteractionFilter>()} is used")
+        }
     }
 
     @BEventListener

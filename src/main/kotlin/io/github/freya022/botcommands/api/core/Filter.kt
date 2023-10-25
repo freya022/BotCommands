@@ -9,9 +9,6 @@ interface Filter {
 }
 
 internal inline fun <T : Filter> checkFilters(globalFilters: List<T>, commandFilters: List<T>, block: (filter: T) -> Unit) {
-    for (it in globalFilters) {
-        if (!it.global) continue
-        block(it) //Inlined return statements will exit this function
-    }
+    globalFilters.forEach(block) //Inlined return statements will exit this function
     commandFilters.forEach(block)
 }
