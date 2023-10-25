@@ -3,18 +3,20 @@ package io.github.freya022.botcommands.internal.commands.application
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -29,6 +31,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val globalFilters = context.getInterfacedServices<ApplicationCommandFilter>()
+    private val rejectionHandler = when {
+        globalFilters.isEmpty() -> null
+        else -> context.getServiceOrNull<ApplicationCommandRejectionHandler>()
+            ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler>()} must be available if ${classRef<ApplicationCommandFilter>()} is used")
+    }
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -201,11 +208,13 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
         }
 
         checkFilters(globalFilters, applicationCommand.filters) { filter ->
-            if (!filter.isAcceptedSuspend(event, applicationCommand)) {
+            val userError = filter.checkSuspend(event, applicationCommand)
+            if (userError != null) {
+                rejectionHandler!!.handleSuspend(event, applicationCommand, userError)
                 if (event.isAcknowledged) {
-                    logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
+                    logger.trace { "${filter.description} rejected application command '${event.commandString}'" }
                 } else {
-                    logger.error { "${filter::class.simpleNestedName} rejected application command '${event.commandString}' but did not acknowledge the interaction" }
+                    logger.error { "${filter.description} rejected application command '${event.commandString}' but did not acknowledge the interaction" }
                 }
                 return false
             }

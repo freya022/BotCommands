@@ -9,17 +9,26 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 /**
- * Filters application command interactions (such as slash commands and user/message context commands),
- * any filter that returns `false` prevents the command from executing.
+ * Prevents application command execution by returning an error object to the command executor.
  *
- * Filters are tested right before the command gets executed (i.e., after the permissions/rate limits... were checked).
+ * Filters run when an application command is about to be executed,
+ * i.e., after the permissions/rate limits... were checked.
  *
- * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
+ * With more complex filters such as [`and`][and]/[`or`][or] filters,
+ * a filter returning an error object does not mean a command is rejected.
  *
- * **Usage**: Register your instance as a service with [BService]
+ * Instead, the cause of the error will be passed down to the command executor,
+ * and then given back to the [ApplicationCommandRejectionHandler].
+ *
+ * ### Usage
+ * - Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Have exactly one instance of [ApplicationCommandRejectionHandler].
+ * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
+ * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
- * **Example** - Rejecting commands from outside a channel:
+ * TODO update examples
+ * ### Example - Accepting commands only in a single channel:
  * ```kt
  * @BService
  * class MyCommandFilters : ApplicationCommandFilter {
@@ -49,36 +58,46 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * }
  * ```
  *
+ * @see ApplicationCommandRejectionHandler
  * @see InterfacedService @InterfacedService
- *
- * @see isAccepted
  */
 @InterfacedService(acceptMultiple = true)
 interface ApplicationCommandFilter : Filter {
-    /**
-     * Returns whether the command should be accepted or not.
-     *
-     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
-     *
-     * @return `true` if the application command can run, `false` otherwise
-     *
-     * @see ApplicationCommandFilter
-     */
+    //TODO remove in alpha 9
+    @Deprecated(
+        message = "Implement 'checkSuspend' instead, do not return a boolean",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("checkSuspend(event, commandInfo)")
+    )
     @JvmSynthetic
     suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
-        isAccepted(event, commandInfo)
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
+
+    //TODO remove in alpha 9
+    @Deprecated(
+        message = "Implement 'check' instead, do not return a boolean",
+        level = DeprecationLevel.ERROR,
+        replaceWith = ReplaceWith("check(event, commandInfo)")
+    )
+    fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 
     /**
-     * Returns whether the command should be accepted or not.
+     * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
      *
-     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
-     *
-     * @return `true` if the application command can run, `false` otherwise
-     *
-     * @see ApplicationCommandFilter
+     * The object will be passed to your [ApplicationCommandRejectionHandler] if the command is rejected.
      */
-    fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
+    @JvmSynthetic
+    suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? =
+        check(event, commandInfo)
+
+    /**
+     * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
+     *
+     * The object will be passed to your [ApplicationCommandRejectionHandler] if the command is rejected.
+     */
+    fun check(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? =
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
 // TODO this requires the reply to be done after the entire filter evaluation
@@ -94,9 +113,16 @@ interface ApplicationCommandFilter : Filter {
 
 infix fun ApplicationCommandFilter.and(other: ApplicationCommandFilter): ApplicationCommandFilter {
     return object : ApplicationCommandFilter {
-        override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
-            val isAccepted = this@and.isAcceptedSuspend(event, commandInfo)
-            return isAccepted && other.isAcceptedSuspend(event, commandInfo)
+        override val global: Boolean = false
+
+        override val description: String
+            get() = "(${this@and.description} && ${other.description})"
+
+        override suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Any? {
+            val errorObject = this@and.checkSuspend(event, commandInfo)
+            if (errorObject != null)
+                return errorObject
+            return other.checkSuspend(event, commandInfo)
         }
     }
 }
