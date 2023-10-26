@@ -13,7 +13,29 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * ### Usage
  * - Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
- * - Implement either [handle] (Java) or [handleSuspend] (Kotlin)
+ * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
+ *
+ * ### Example - Replying the error string returned by the [ApplicationCommandFilter] example
+ * ```kt
+ * @BService
+ * class MyApplicationCommandRejectionHandler : ApplicationCommandRejectionHandler<String> {
+ *     override suspend fun handleSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo, userData: String) {
+ *         event.reply_(userData, ephemeral = true).await()
+ *     }
+ * }
+ * ```
+ *
+ * <Hr>
+ *
+ * ```java
+ * @BService
+ * public class MyApplicationCommandRejectionHandler implements ApplicationCommandRejectionHandler<String> {
+ *     @Override
+ *     public void handle(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo, @NotNull String userData) {
+ *         event.reply(userData).setEphemeral(true).queue();
+ *     }
+ * }
+ * ```
  *
  * @param T Type of the error object returned by [ApplicationCommandFilter]
  *

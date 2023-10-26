@@ -29,17 +29,15 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
- * TODO update examples
- * ### Example - Accepting commands only in a single channel:
+ * ### Example - Accepting commands only in a single channel
  * ```kt
  * @BService
- * class MyCommandFilters : ApplicationCommandFilter {
- *     override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
- *         if (event.channel?.idLong != 722891685755093076) {
- *             event.reply_("Commands are not allowed in this channel", ephemeral = true).queue()
- *             return false
+ * class MyApplicationCommandFilter : ApplicationCommandFilter<String> {
+ *     override suspend fun checkSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): String? {
+ *         if (event.guildChannel.idLong != 722891685755093076) {
+ *             return "Can only run commands in <#722891685755093076>"
  *         }
- *         return true
+ *         return null
  *     }
  * }
  * ```
@@ -48,14 +46,14 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *
  * ```java
  * @BService
- * public class MyApplicationCommandFilter implements ApplicationCommandFilter {
+ * public class MyApplicationCommandFilter implements ApplicationCommandFilter<String> {
+ *     @Nullable
  *     @Override
- *     public boolean isAccepted(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
- *         if (event.getChannel() == null || event.getChannel().getIdLong() != 722891685755093076L) {
- *             event.reply("Commands are not allowed in this channel").setEphemeral(true).queue();
- *             return false;
+ *     public String check(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
+ *         if (channel.getIdLong() != 722891685755093076L) {
+ *             return "Can only run commands in <#722891685755093076>";
  *         }
- *         return true;
+ *         return null;
  *     }
  * }
  * ```

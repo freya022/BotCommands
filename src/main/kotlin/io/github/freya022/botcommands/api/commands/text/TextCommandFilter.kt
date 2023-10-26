@@ -30,13 +30,15 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
- * TODO update examples
- * ### Example - Accepting commands only in a single channel:
+ * ### Example - Accepting commands only in a single channel
  * ```kt
  * @BService
- * class MyTextCommandFilter : TextCommandFilter {
- *     override suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Boolean {
- *         return event.channel.idLong == 722891685755093076
+ * class MyTextCommandFilter : TextCommandFilter<String> {
+ *     override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? {
+ *         if (event.guildChannel.idLong != 722891685755093076) {
+ *             return "Can only run commands in <#722891685755093076>"
+ *         }
+ *         return null
  *     }
  * }
  * ```
@@ -45,10 +47,14 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * ```java
  * @BService
- * public class MyTextCommandFilter implements TextCommandFilter {
+ * public class MyTextCommandFilter implements TextCommandFilter<String> {
+ *     @Nullable
  *     @Override
- *     public boolean isAccepted(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
- *         return event.getChannel().getIdLong() == 722891685755093076L;
+ *     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
+ *         if (channel.getIdLong() != 722891685755093076L) {
+ *             return "Can only run commands in <#722891685755093076>";
+ *         }
+ *         return null;
  *     }
  * }
  * ```

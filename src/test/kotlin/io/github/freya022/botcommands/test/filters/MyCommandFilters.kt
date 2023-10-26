@@ -9,11 +9,13 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHand
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
+import io.github.freya022.botcommands.test.switches.TestLanguage
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
+@TestLanguage(TestLanguage.Language.KOTLIN)
 class MyCommandFilters : TextCommandFilter<String>, ApplicationCommandFilter<String> {
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
@@ -35,6 +37,7 @@ class MyCommandFilters : TextCommandFilter<String>, ApplicationCommandFilter<Str
 }
 
 @BService
+@TestLanguage(TestLanguage.Language.KOTLIN)
 class MyCommandRejectionHandler : TextCommandRejectionHandler<String>, ApplicationCommandRejectionHandler<String> {
     override suspend fun handleSuspend(
         event: MessageReceivedEvent,

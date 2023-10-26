@@ -39,17 +39,15 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * **Usage**: Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
- * TODO update examples
- * ### Example - Rejecting component interactions from non-owners:
+ * ### Example - Rejecting component interactions from non-owners
  * ```kt
  * @BService
- * class MyComponentFilter(private val config: BConfig) : ComponentInteractionFilter {
- *     override suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent): Boolean {
- *         if (event.user.idLong !in config.ownerIds) {
- *             event.reply_("Only owners are allowed to use components", ephemeral = true).queue()
- *             return false
+ * class MyComponentFilter(private val context: BContext) : ComponentInteractionFilter<String> {
+ *     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
+ *         if (event.channel.idLong == 932902082724380744 && event.user.idLong !in context.ownerIds) {
+ *             return "Only owners are allowed to use components in <#932902082724380744>"
  *         }
- *         return true
+ *         return null
  *     }
  * }
  * ```
@@ -58,20 +56,20 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *
  * ```java
  * @BService
- * public class MyComponentCommandFilter implements ApplicationCommandFilter {
- *     private final BConfig config;
+ * public class MyComponentFilter implements ComponentInteractionFilter<String> {
+ *     private final BContext context;
  *
- *     public MyComponentCommandFilter(BConfig config) {
- *         this.config = config;
+ *     public MyComponentFilter(BContext context) {
+ *         this.context = context;
  *     }
  *
+ *     @Nullable
  *     @Override
- *     public boolean isAccepted(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
- *         if (!config.isOwner(event.getUser().getIdLong())) {
- *             event.reply("Only owners are allowed to use components").setEphemeral(true).queue();
- *             return false;
+ *     public String check(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName) {
+ *         if (event.getChannel().getIdLong() == 932902082724380744L && context.isOwner(event.getUser().getIdLong())) {
+ *             return "Only owners are allowed to use components in <#932902082724380744>";
  *         }
- *         return true;
+ *         return null;
  *     }
  * }
  * ```
