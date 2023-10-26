@@ -30,6 +30,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
+ * **Note:** The execution order of global filters is determined by the priority of the service,
+ * while command-specific filters use the insertion order.
+ *
  * ### Example - Accepting commands only in a single channel
  * ```kt
  * @BService

@@ -29,6 +29,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a component-specific filter by disabling [global].
  *
+ * **Note:** The execution order of global filters is determined by the priority of the service,
+ * while command-specific filters use the insertion order.
+ *
  * Filters component interactions (such as buttons and select menus),
  * any filter that returns `false` prevents the interaction from executing.
  *

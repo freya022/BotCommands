@@ -10,6 +10,8 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.filter
+import io.github.freya022.botcommands.api.components.builder.IActionableComponent
+import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.core.Filter
 import kotlin.reflect.KClass
 
@@ -20,7 +22,8 @@ import kotlin.reflect.KClass
  * - [@JDASlashCommand][JDASlashCommand], [@JDAUserCommand][JDAUserCommand], [@JDAMessageCommand][JDAMessageCommand] -> [ApplicationCommandFilter]
  * - [@JDATextCommand][JDATextCommand] -> [TextCommandFilter]
  *
- * **Note:** This **cannot** be used on component handlers, use the appropriate methods on the builders instead.
+ * **Note:** This **cannot** be used on component handlers,
+ * use the appropriate methods on the builders instead like [IActionableComponent.filter] / [IActionableComponent.addFilter].
  *
  * @see ApplicationCommandFilter
  * @see TextCommandFilter
