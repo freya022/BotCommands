@@ -43,6 +43,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
  * @see RateLimit @RateLimit
+ * @see Filter @Filter
  *
  * @see AppDeclaration Declaring application commands using the DSL
  * @see AbstractApplicationCommandManager.userCommand DSL equivalent

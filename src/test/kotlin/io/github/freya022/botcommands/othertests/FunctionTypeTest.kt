@@ -1,11 +1,13 @@
 package io.github.freya022.botcommands.othertests
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.builder.PersistentHandlerBuilder
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.ComponentHandler
 import java.util.concurrent.TimeUnit
 
@@ -16,8 +18,12 @@ object FunctionTypeTest {
     }
 
     val x = object : IPersistentActionableComponent {
+        override val context: BContext
+            get() = throw UnsupportedOperationException()
         override val handler: ComponentHandler?
             get() = null
+        override val filters: MutableList<ComponentInteractionFilter<*>>
+            get() = arrayListOf()
         override val rateLimitGroup: String? = null
 
         override fun rateLimitReference(group: String) { throw NotImplementedError() }

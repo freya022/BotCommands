@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 
 @BService
@@ -17,7 +18,8 @@ class Bot(private val config: Config) : JDAService() {
 
     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
         DefaultShardManagerBuilder.createLight(config.token, intents).apply {
-            enableCache(CacheFlag.FORUM_TAGS)
+            enableCache(CacheFlag.FORUM_TAGS, CacheFlag.VOICE_STATE)
+            setMemberCachePolicy(MemberCachePolicy.VOICE)
             setActivityProvider { Activity.playing("coroutines go brrr #$it") }
             setEventManagerProvider { eventManager }
             setShardsTotal(2)

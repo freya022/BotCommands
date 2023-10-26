@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -47,7 +46,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * @see UserPermissions @UserPermissions
  * @see Cooldown @Cooldown
  * @see RateLimit @RateLimit
- * @see Aggregate @Aggregate
+ * @see Filter @Filter
  *
  * @see TextDeclaration Declaring text commands using the DSL
  *

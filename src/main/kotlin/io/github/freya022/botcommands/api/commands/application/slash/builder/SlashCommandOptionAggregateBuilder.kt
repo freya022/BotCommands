@@ -8,12 +8,10 @@ import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
-@CommandDSL
 class SlashCommandOptionAggregateBuilder internal constructor(
     private val context: BContext,
     private val commandBuilder: SlashCommandBuilder,
