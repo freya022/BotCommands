@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.components.or
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -96,16 +97,24 @@ interface TextCommandFilter<T : Any> : Filter {
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
-// TODO this requires the reply to be done after the entire filter evaluation
-//  As there would be an issue when the left side of the "or" fails (and replies) but the right side passes
-//infix fun TextCommandFilter.or(other: TextCommandFilter): TextCommandFilter {
-//    return object : TextCommandFilter {
-//        override suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Boolean {
-//            val isAccepted = this@or.isAcceptedSuspend(event, commandVariation, args)
-//            return isAccepted || other.isAcceptedSuspend(event, commandVariation, args)
-//        }
-//    }
-//}
+infix fun <T : Any> TextCommandFilter<T>.or(other: TextCommandFilter<T>): TextCommandFilter<T> {
+    return object : TextCommandFilter<T> {
+        override val global: Boolean = false
+
+        override val description: String
+            get() = "(${this@or.description} || ${other.description})"
+
+        override suspend fun checkSuspend(
+            event: MessageReceivedEvent,
+            commandVariation: TextCommandVariation,
+            args: String
+        ): T? {
+            // Elvis operator short circuits if left condition had no error
+            this@or.checkSuspend(event, commandVariation, args) ?: return null
+            return other.checkSuspend(event, commandVariation, args)
+        }
+    }
+}
 
 infix fun <T : Any> TextCommandFilter<T>.and(other: TextCommandFilter<T>): TextCommandFilter<T> {
     return object : TextCommandFilter<T> {

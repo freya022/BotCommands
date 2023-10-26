@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application
 
+import io.github.freya022.botcommands.api.components.or
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -103,16 +104,23 @@ interface ApplicationCommandFilter<T : Any> : Filter {
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
-// TODO this requires the reply to be done after the entire filter evaluation
-//  As there would be an issue when the left side of the "or" fails (and replies) but the right side passes
-//infix fun ApplicationCommandFilter.or(other: ApplicationCommandFilter): ApplicationCommandFilter {
-//    return object : ApplicationCommandFilter {
-//        override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
-//            val isAccepted = this@or.isAcceptedSuspend(event, commandInfo)
-//            return isAccepted || other.isAcceptedSuspend(event, commandInfo)
-//        }
-//    }
-//}
+infix fun <T : Any> ApplicationCommandFilter<T>.or(other: ApplicationCommandFilter<T>): ApplicationCommandFilter<T> {
+    return object : ApplicationCommandFilter<T> {
+        override val global: Boolean = false
+
+        override val description: String
+            get() = "(${this@or.description} || ${other.description})"
+
+        override suspend fun checkSuspend(
+            event: GenericCommandInteractionEvent,
+            commandInfo: ApplicationCommandInfo
+        ): T? {
+            // Elvis operator short circuits if left condition had no error
+            this@or.checkSuspend(event, commandInfo) ?: return null
+            return other.checkSuspend(event, commandInfo)
+        }
+    }
+}
 
 infix fun <T : Any> ApplicationCommandFilter<T>.and(other: ApplicationCommandFilter<T>): ApplicationCommandFilter<T> {
     return object : ApplicationCommandFilter<T> {
