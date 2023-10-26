@@ -15,7 +15,6 @@ import io.github.freya022.botcommands.internal.utils.classRef
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.system.exitProcess
 
 @BService(priority = Int.MAX_VALUE - 1)
 class FilterGenericCrossChecker(context: BContext) {
@@ -23,8 +22,6 @@ class FilterGenericCrossChecker(context: BContext) {
         checkTypes<TextCommandFilter<*>, TextCommandRejectionHandler<*>>(context)
         checkTypes<ApplicationCommandFilter<*>, ApplicationCommandRejectionHandler<*>>(context)
         checkTypes<ComponentInteractionFilter<*>, ComponentInteractionRejectionHandler<*>>(context)
-
-        exitProcess(0)
     }
 
     private inline fun <reified F : Filter, reified H : Any> checkTypes(context: BContext) {
