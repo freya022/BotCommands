@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -15,7 +14,6 @@ import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVari
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KClass
@@ -162,9 +160,5 @@ class TextCommandVariationBuilder internal constructor(
 }
 
 inline fun <reified T : TextCommandFilter<*>> TextCommandVariationBuilder.filter(): T {
-    val filter = context.getService<T>()
-    require(!filter.global) {
-        "Global filters cannot be used explicitly, see ${Filter::global.reference}"
-    }
-    return filter
+    return context.getService<T>()
 }

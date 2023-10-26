@@ -11,13 +11,11 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -51,9 +49,6 @@ interface IActionableComponent {
     fun rateLimitReference(group: String)
 
     fun addFilter(filter: ComponentInteractionFilter<*>) {
-        require(!filter.global) {
-            "Global filters cannot be used explicitly, see ${Filter::global.reference}"
-        }
         filters += filter
     }
 
@@ -61,11 +56,7 @@ interface IActionableComponent {
 }
 
 inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filter(): T {
-    val filter = context.getService<T>()
-    require(!filter.global) {
-        "Global filters cannot be used explicitly, see ${Filter::global.reference}"
-    }
-    return filter
+    return context.getService<T>()
 }
 
 /**

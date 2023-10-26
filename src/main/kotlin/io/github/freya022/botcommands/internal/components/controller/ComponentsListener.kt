@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
@@ -86,6 +87,12 @@ internal class ComponentsListener(
 
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
                 return@launch event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+            }
+
+            component.filters.onEach { filter ->
+                require(!filter.global) {
+                    "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
+                }
             }
 
             component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
