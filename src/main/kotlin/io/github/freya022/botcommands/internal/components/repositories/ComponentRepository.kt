@@ -50,7 +50,7 @@ internal class ComponentRepository(
             // Create base component
             val componentId: Int =
                 preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?) returning component_id") {
-                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup, builder.filters.map { it.javaClass.name }.toTypedArray())
+                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
                         .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
                 }
@@ -82,6 +82,10 @@ internal class ComponentRepository(
 
             return@transactional componentId
         }
+    }
+
+    private fun getFilterNames(list: List<ComponentInteractionFilter<*>>): Array<out String> {
+        return Array(list.size) { list[it].javaClass.name }
     }
 
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {

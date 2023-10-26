@@ -49,6 +49,15 @@ interface IActionableComponent {
      * @see RateLimitReference @RateLimitReference
      */
     fun rateLimitReference(group: String)
+
+    fun addFilter(filter: ComponentInteractionFilter<*>) {
+        require(!filter.global) {
+            "Global filters cannot be used explicitly, see ${Filter::global.reference}"
+        }
+        filters += filter
+    }
+
+    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>) = addFilter(context.getService(filterType))
 }
 
 inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filter(): T {
