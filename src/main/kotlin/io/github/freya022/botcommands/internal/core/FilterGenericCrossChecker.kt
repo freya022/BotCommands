@@ -26,7 +26,7 @@ class FilterGenericCrossChecker(context: BContext) {
 
     private inline fun <reified F : Filter, reified H : Any> checkTypes(context: BContext) {
         val filterTypes = context.getInterfacedServiceTypes<F>()
-        val rejectionHandlerType = context.getInterfacedServiceTypes<H>().first()
+        val rejectionHandlerType = context.getInterfacedServiceTypes<H>().firstOrNull() ?: return
 
         val filterOutputTypes = filterTypes.map { it.erasureAt<F>(0) }
         check(filterOutputTypes.all { filterOutputTypes.first() == it }) {
