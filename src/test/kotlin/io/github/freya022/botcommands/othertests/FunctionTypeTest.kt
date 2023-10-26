@@ -19,7 +19,7 @@ object FunctionTypeTest {
 
     val x = object : IPersistentActionableComponent {
         override val context: BContext
-            get() = TODO("Not yet implemented")
+            get() = throw UnsupportedOperationException()
         override val handler: ComponentHandler?
             get() = null
         override val filters: MutableList<ComponentInteractionFilter<*>>
