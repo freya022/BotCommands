@@ -41,6 +41,7 @@ internal class TextCommandsListener internal constructor(
 
     private val exceptionHandler = ExceptionHandler(context, logger)
 
+    // Types are crosschecked anyway
     private val globalFilters: List<TextCommandFilter<Any>>
     private val rejectionHandler: TextCommandRejectionHandler<Any>?
 

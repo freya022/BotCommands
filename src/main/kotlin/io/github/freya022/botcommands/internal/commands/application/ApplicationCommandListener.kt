@@ -30,6 +30,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
+    // Types are crosschecked anyway
     private val globalFilters: List<ApplicationCommandFilter<Any>>
     private val rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 
