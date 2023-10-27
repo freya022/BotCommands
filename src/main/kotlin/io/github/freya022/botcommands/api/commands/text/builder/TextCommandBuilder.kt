@@ -4,6 +4,9 @@ import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.NSFWStrategyBuilder
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
@@ -74,6 +77,22 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
         subcommands += TextSubcommandBuilder(context, name, this).apply(block)
     }
 
+    /**
+     * Adds a variation to this text command.
+     *
+     * ### Text command variations
+     * A given text command path (such as `ban temp`) is composed of at least one variation;
+     * Each variation has different parameters, and will display separately in the built-in help content.
+     *
+     * Each variation runs based off insertion order,
+     * the first variation that has a full match against the user input gets executed.
+     *
+     * If no regex-based variation (using a [BaseCommandEvent]) matches,
+     * the fallback variation is executed (if a variation using [CommandEvent] exists).
+     *
+     * If no variation matches and there is no fallback,
+     * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
+     */
     fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {}) {
         variations += TextCommandVariationBuilder(context, function).apply(block)
     }
