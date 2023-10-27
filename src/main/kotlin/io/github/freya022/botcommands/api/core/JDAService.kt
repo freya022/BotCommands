@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.util.*
 
 /**
@@ -50,6 +51,15 @@ abstract class JDAService {
      * @see defaultIntents
      */
     abstract val intents: Set<GatewayIntent>
+
+    /**
+     * The cache flags used by your bot,
+     * must at least be a subset of the cache flags your bot will use.
+     *
+     * To make sure JDA uses these flags,
+     * you can pass these to [JDABuilder.enableCache] / [DefaultShardManagerBuilder.enableCache].
+     */
+    abstract val cacheFlags: Set<CacheFlag>
 
     /**
      * Creates a [JDA] or [ShardManager] instance.
