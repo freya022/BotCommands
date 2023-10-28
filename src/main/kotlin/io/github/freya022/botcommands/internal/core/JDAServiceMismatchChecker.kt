@@ -31,12 +31,12 @@ internal object JDAServiceMismatchChecker {
 
             val jdaCacheFlags = event.jda.cacheFlags
             val jdaServiceCacheFlags = jdaService.cacheFlags
-            if (jdaCacheFlags.containsAll(jdaServiceCacheFlags)) {
+            if (!jdaCacheFlags.containsAll(jdaServiceCacheFlags)) {
                 logger.warn {
                     """
                         The cache flags given in JDAService should at least be a subset of the JDA cache flags!
-                        JDA intents: $jdaIntents
-                        JDAService intents: $jdaServiceIntents
+                        JDA cache flags: $jdaCacheFlags
+                        JDAService cache flags: $jdaServiceCacheFlags
                         Hint: you should pass ${JDAService::cacheFlags.reference} to your builder
                     """.trimIndent()
                 }
