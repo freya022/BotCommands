@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * Filters run when a component is about to be executed,
  * i.e., after the constraints/rate limits... were checked.
  *
- * With more complex filters such as [`and`][and]/[`or`][or] filters,
+ * With more complex filters such as [`and`][and]/[`or`][or] filters (static methods for Java users),
  * a filter returning an error object does not mean a component is rejected.
  *
  * Instead, the cause of the error will be passed down to the component executor,
@@ -127,6 +127,20 @@ interface ComponentInteractionFilter<T : Any> : Filter {
      */
     fun check(event: GenericComponentInteractionCreateEvent, handlerName: String?): T? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
+
+    companion object {
+        @JvmStatic
+        @JvmName("or")
+        fun <T : Any> orJava(left: ComponentInteractionFilter<T>, right: ComponentInteractionFilter<T>): ComponentInteractionFilter<T> {
+            return left or right
+        }
+
+        @JvmStatic
+        @JvmName("and")
+        fun <T : Any> andJava(left: ComponentInteractionFilter<T>, right: ComponentInteractionFilter<T>): ComponentInteractionFilter<T> {
+            return left and right
+        }
+    }
 }
 
 infix fun <T : Any> ComponentInteractionFilter<T>.or(other: ComponentInteractionFilter<T>): ComponentInteractionFilter<T> {

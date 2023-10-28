@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.and
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -17,11 +18,14 @@ import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.components.or
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
+import io.github.freya022.botcommands.test.filters.IsBotOwner
+import io.github.freya022.botcommands.test.filters.IsGuildOwner
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -44,7 +48,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             timeout(5.seconds)
         }
         val kickVoiceButton = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
-            filters += filter<InVoiceChannel>()
+            filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()
             bindTo {
                 it.guild!!.kickVoiceMember(it.member!!).await()
                 it.deferEdit().await()
