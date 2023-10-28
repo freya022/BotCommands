@@ -15,8 +15,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import io.github.freya022.botcommands.test.filters.IsBotOwner
 import io.github.freya022.botcommands.test.filters.IsGuildOwner
+import io.github.freya022.botcommands.test.switches.TestService
 
 @Command
+@TestService
 class SlashFilter : ApplicationCommand() {
     @Filter(InVoiceChannel::class)
     @JDASlashCommand(name = "filter_annotated")

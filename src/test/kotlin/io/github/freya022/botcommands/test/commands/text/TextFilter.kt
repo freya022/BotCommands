@@ -10,8 +10,10 @@ import io.github.freya022.botcommands.api.commands.text.builder.filter
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import io.github.freya022.botcommands.test.filters.IsBotOwner
 import io.github.freya022.botcommands.test.filters.IsGuildOwner
+import io.github.freya022.botcommands.test.switches.TestService
 
 @Command
+@TestService
 class TextFilter : TextCommand() {
     @Filter(InVoiceChannel::class)
     @JDATextCommand(path = ["filter_annotated"])

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.test.switches.TestService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 private val logger = KotlinLogging.logger { }
 
 @BService
+@TestService
 @RequiredIntents(GatewayIntent.MESSAGE_CONTENT)
 class RequiredIntentsTextListener {
     @BEventListener

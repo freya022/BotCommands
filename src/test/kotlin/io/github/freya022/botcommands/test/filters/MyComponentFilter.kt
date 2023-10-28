@@ -7,9 +7,11 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionRejecti
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.test.switches.TestLanguage
+import io.github.freya022.botcommands.test.switches.TestService
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 @BService
+@TestService
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class MyComponentFilter(private val context: BContext) : ComponentInteractionFilter<String> {
     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
@@ -21,6 +23,7 @@ class MyComponentFilter(private val context: BContext) : ComponentInteractionFil
 }
 
 @BService
+@TestService
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class MyComponentRejectionHandler : ComponentInteractionRejectionHandler<String> {
     override suspend fun handleSuspend(

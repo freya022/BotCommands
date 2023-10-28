@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.test.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.asDisabled
+import dev.minn.jda.ktx.messages.into
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -26,6 +27,7 @@ import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import io.github.freya022.botcommands.test.filters.IsBotOwner
 import io.github.freya022.botcommands.test.filters.IsGuildOwner
+import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -42,22 +44,16 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton = persistentGroupTest(event)
         val ephemeralButton = ephemeralGroupTest(event)
-        val noGroupButton = components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
-            oneUse = true
-            bindTo { event.hook.deleteOriginal().queue() }
-            timeout(5.seconds)
-        }
-        val kickVoiceButton = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
-            filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()
-            bindTo {
-                it.guild!!.kickVoiceMember(it.member!!).await()
-                it.deferEdit().await()
+        val row = buildList {
+            this += persistentButton
+            this += ephemeralButton
+            this += noGroupButton(event)
+            if (TestServiceChecker.useTestServices) {
+                this += filteredButton()
             }
-        }
+        }.into()
 
-        event.reply("OK, button ID: ${persistentButton.id}")
-            .addActionRow(persistentButton, ephemeralButton, noGroupButton, kickVoiceButton)
-            .queue()
+        event.reply("OK, button ID: ${persistentButton.id}").setComponents(row).queue()
 
         try {
 //            withTimeout(5.seconds) {
@@ -68,6 +64,21 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             event.hook.send("Too slow", ephemeral = true).queue()
         }
     }
+
+    private fun filteredButton() = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
+        filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()
+        bindTo {
+            it.guild!!.kickVoiceMember(it.member!!).await()
+            it.deferEdit().await()
+        }
+    }
+
+    private fun noGroupButton(event: GuildSlashEvent) =
+        components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
+            oneUse = true
+            bindTo { event.hook.deleteOriginal().queue() }
+            timeout(5.seconds)
+        }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton = components.persistentButton(ButtonStyle.PRIMARY, "Persistent") {

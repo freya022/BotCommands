@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
+import io.github.freya022.botcommands.test.switches.TestService
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
+@TestService
 object InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
@@ -43,6 +45,7 @@ object InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<Stri
 }
 
 @BService
+@TestService
 object IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
@@ -71,6 +74,7 @@ object IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>,
 }
 
 @BService
+@TestService
 class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
