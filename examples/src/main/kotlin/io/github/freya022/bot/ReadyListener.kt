@@ -2,7 +2,7 @@ package io.github.freya022.bot
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.session.ReadyEvent
 
 private val logger = KotlinLogging.logger { }
@@ -12,20 +12,20 @@ private val logger = KotlinLogging.logger { }
 class ReadyListener {
     @BEventListener(priority = 1)
     fun onReadyFirst(event: ReadyEvent) {
-        logger.info("First handling of ReadyEvent")
+        logger.info { "First handling of ReadyEvent" }
 
         val jda = event.jda
 
         //Print some information about the bot
-        logger.info("Bot connected as ${jda.selfUser.name}")
-        logger.info("The bot is present on these guilds :")
+        logger.info { "Bot connected as ${jda.selfUser.name}" }
+        logger.info { "The bot is present on these guilds :" }
         for (guild in jda.guildCache) {
-            logger.info("\t- ${guild.name} (${guild.id})")
+            logger.info { "\t- ${guild.name} (${guild.id})" }
         }
     }
 
     @BEventListener(priority = 0) // Executes after the above listener
     fun onReadyLast(event: ReadyEvent) {
-        logger.info("Last handling of ReadyEvent")
+        logger.info { "Last handling of ReadyEvent" }
     }
 }

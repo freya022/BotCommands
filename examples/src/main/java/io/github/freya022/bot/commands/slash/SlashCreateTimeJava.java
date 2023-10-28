@@ -1,5 +1,6 @@
 package io.github.freya022.bot.commands.slash;
 
+import io.github.freya022.bot.switches.WikiCommandProfile;
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
@@ -8,7 +9,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.Application
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.parameters.ParameterType;
-import io.github.freya022.bot.switches.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class SlashCreateTimeJava extends ApplicationCommand {
             if (optionName.equals("timestamp")) {
                 // Create a snapshot of the instant the command was created
                 final Instant now = Instant.now();
-                // Give back the instant snapshot, as this will be called every time the command is ran
+                // Give back the instant snapshot, as this will be called every time the command runs
                 return event -> now;
             }
         }

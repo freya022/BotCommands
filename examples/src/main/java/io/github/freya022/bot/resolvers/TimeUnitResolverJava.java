@@ -1,13 +1,12 @@
 package io.github.freya022.bot.resolvers;
 
-import io.github.freya022.botcommands.api.BContext;
+import io.github.freya022.bot.switches.WikiDetailProfile;
+import io.github.freya022.bot.switches.WikiLanguage;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.parameters.ParameterResolver;
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.Resolvers;
 import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.bot.switches.WikiDetailProfile;
-import io.github.freya022.bot.switches.WikiLanguage;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 // --8<-- [start:time_unit_resolver-detailed-java]
 @Resolver
 public class TimeUnitResolverJava
-        extends ParameterResolver<TimeUnitResolverJava, TimeUnit>
+        extends ClassParameterResolver<TimeUnitResolverJava, TimeUnit>
         implements SlashParameterResolver<TimeUnitResolverJava, TimeUnit> {
 
     public TimeUnitResolverJava() {
@@ -50,7 +49,7 @@ public class TimeUnitResolverJava
 
     @Nullable
     @Override
-    public TimeUnit resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    public TimeUnit resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
         return TimeUnit.valueOf(optionMapping.getAsString());
     }
 }

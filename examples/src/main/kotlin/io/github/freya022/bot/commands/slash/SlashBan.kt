@@ -1,6 +1,9 @@
 package io.github.freya022.bot.commands.slash
 
-import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.bot.commands.ban.BanService
+import io.github.freya022.bot.resolvers.localize
+import io.github.freya022.bot.switches.FrontendChooser
+import io.github.freya022.bot.switches.SimpleFrontend
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
@@ -16,18 +19,14 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
-import io.github.freya022.botcommands.api.core.utils.delay
+import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.editLocalized
 import io.github.freya022.botcommands.api.localization.context.replaceLocalized
 import io.github.freya022.botcommands.api.localization.context.replyLocalizedEphemeral
-import io.github.freya022.bot.commands.ban.BanService
-import io.github.freya022.bot.resolvers.localize
-import io.github.freya022.bot.switches.FrontendChooser
-import io.github.freya022.bot.switches.SimpleFrontend
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.TimeoutCancellationException
-import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
@@ -45,7 +44,7 @@ data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
 }
 
 @BService
-class SlashBan(private val context: BContext, private val componentsService: Components, private val banService: BanService) {
+class SlashBan(private val componentsService: Components, private val banService: BanService) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
@@ -84,8 +83,7 @@ class SlashBan(private val context: BContext, private val componentsService: Com
             componentGroup.awaitAny()
         } catch (e: TimeoutCancellationException) {
             return event.hook.editLocalized(localizationContext, "outputs.timeout")
-                .delay(5.seconds)
-                .flatMap { event.hook.deleteOriginal() }
+                .deleteDelayed(event.hook, 5.seconds)
                 .queue()
         }
 

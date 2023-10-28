@@ -1,6 +1,5 @@
 package io.github.freya022.bot.commands.ban
 
-import io.github.freya022.botcommands.api.BContext
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -30,7 +29,7 @@ class BanServiceSupplier : DynamicSupplier {
     private val useSql = true
 
     // Determining if this dynamic supplier is capable of giving an instance of the provided class
-    override fun getInstantiability(context: BContext, clazz: KClass<*>): Instantiability {
+    override fun getInstantiability(clazz: KClass<*>): Instantiability {
         if (clazz == BanService::class) {
             return Instantiability.instantiable()
         }
@@ -39,7 +38,7 @@ class BanServiceSupplier : DynamicSupplier {
     }
 
     // Only called if the above function returned class as instantiable
-    override fun get(context: BContext, clazz: KClass<*>) = when {
+    override fun get(clazz: KClass<*>) = when {
         useSql -> SqlBanService()
         else -> JsonBanService()
     }
