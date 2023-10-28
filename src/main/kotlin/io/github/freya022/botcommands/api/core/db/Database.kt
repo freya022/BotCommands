@@ -27,22 +27,6 @@ private val logger = KotlinLogging.logger { }
 
 /**
  * Utility class to use connections given by the [ConnectionSupplier].
- *
- * **Note:** The framework uses its own `bc` schema internally,
- * you will need to create the schema if this is the first time you use the library.
- *
- * **Note 2:** If you use Flyway to manage your database, you can manage the framework's tables with the following snippet:
- * ```kt
- * Flyway.configure()
- *      .dataSource(source)
- *      .schemas("bc")
- *      .locations("bc_database_scripts")
- *      .validateMigrationNaming(true)
- *      .loggers("slf4j")
- *      .load()
- *      .migrate()
- * ```
- * In this case, you do not have to create the `bc` schema manually.
  */
 @InjectedService("Requires a ConnectionSupplier service")
 interface Database {
