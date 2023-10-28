@@ -35,6 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger { }
 
+// --8<-- [start:aggregated_object-kotlin]
 // This data class is practically pointless;
 // this is just to demonstrate how you can group parameters together,
 // so you can benefit from functions/backed properties limited to your parameters,
@@ -42,6 +43,7 @@ private val logger = KotlinLogging.logger { }
 data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
     override fun toString(): String = "$time ${unit.name.lowercase()}"
 }
+// --8<-- [end:aggregated_object-kotlin]
 
 @BService
 class SlashBan(private val componentsService: Components, private val banService: BanService) {
@@ -130,17 +132,19 @@ class SlashBanDetailedFront {
                 description = "The user to ban"
             }
 
-            aggregate("timeframe", ::DeleteTimeframe) {
-                option("time") {
+            // --8<-- [start:declare_aggregate-kotlin_dsl]
+            aggregate(declaredName = "timeframe", aggregator = ::DeleteTimeframe) {
+                option(declaredName = "time") {
                     description = "The timeframe of messages to delete with the specified unit"
                 }
 
-                option("unit") {
+                option(declaredName = "unit") {
                     description = "The unit of the delete timeframe"
 
                     usePredefinedChoices = true
                 }
             }
+            // --8<-- [end:declare_aggregate-kotlin_dsl]
 
             option("reason") {
                 description = "The reason for the ban"
