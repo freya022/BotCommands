@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -23,6 +24,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
+import kotlin.reflect.jvm.jvmName
 import kotlin.time.DurationUnit
 
 internal class ServiceCreationStack {
@@ -59,7 +61,12 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices(requestedStart: ServiceStart) {
-        getLoadableService(requestedStart).forEach { clazz -> getService(clazz) }
+        val providerToClazz = getLoadableService(requestedStart)
+            .associateByTo(TreeMap()) { clazz ->
+                context.serviceProviders.findForType(clazz)
+                    ?: throwInternal("Unable to find back service provider for ${clazz.jvmName}")
+            }
+        providerToClazz.forEach { (provider, clazz) -> tryGetService(provider, clazz).getOrThrow() }
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
