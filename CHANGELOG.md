@@ -142,6 +142,19 @@ Rate limits can be used with:
 A bucket token can be added back by using your event's `#cancelRateLimit()`, 
 which effectively cancels the rate limit applied before entering any handler.
 
+## Improved filters
+
+In addition to being implemented as services, filters can now be used on specific commands / components.
+
+These filters can be declared as global filters, but must override the `global` property with `false`, 
+you can then reference those filters in:
+- `@Filter`: Requires all filters to pass, can only be used on commands
+- The `filters` property of command DSLs, you can even combine filters using `and` and `or`, 
+such as `filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()`
+
+Component filters must be passed while building the components, and have the same usage as for command DSLs.
+Java users can also use the `addFilter` methods.
+
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
 

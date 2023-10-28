@@ -17,8 +17,8 @@ class Bot(private val config: Config) : JDAService() {
     override val intents: Set<GatewayIntent> =
         defaultIntents + GatewayIntent.GUILD_MEMBERS + GatewayIntent.MESSAGE_CONTENT
 
-    override val cacheFlags: Set<CacheFlag>
-        get() = enumSetOf(CacheFlag.FORUM_TAGS, CacheFlag.VOICE_STATE)
+    override val cacheFlags: Set<CacheFlag> =
+        enumSetOf(CacheFlag.FORUM_TAGS, CacheFlag.VOICE_STATE)
 
     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
         DefaultShardManagerBuilder.createLight(config.token, intents).apply {
