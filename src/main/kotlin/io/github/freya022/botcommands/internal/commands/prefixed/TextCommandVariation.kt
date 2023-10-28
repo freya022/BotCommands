@@ -57,6 +57,10 @@ class TextCommandVariation internal constructor(
             parameters.flatMap { it.allOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
         }
+
+        completePattern?.let {
+            logger.trace { "Registered text command variation '$it': ${function.shortSignature}" }
+        }
     }
 
     internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String, cancellableRateLimit: CancellableRateLimit): BaseCommandEvent = when {
