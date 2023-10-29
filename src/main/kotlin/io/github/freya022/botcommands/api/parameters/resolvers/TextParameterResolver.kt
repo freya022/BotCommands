@@ -52,6 +52,14 @@ interface TextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
         resolve(variation, event, args)
 
     /**
+     * The minimum group count to be extracted from the match result.
+     *
+     * This may be overridden if your pattern provides more groups than it actually needs to match a string,
+     * such as patterns with `|`.
+     */
+    val requiredGroups: Int get() = preferredPattern.matcher("").groupCount()
+
+    /**
      * Returns the pattern required to recognize this parameter
      *
      * This is used to compose a larger pattern which will represent an entire command syntax

@@ -12,6 +12,9 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVaria
  *
  * You can configure how many arguments are required with [numRequired].
  *
+ * See [@MentionsString][MentionsString] for a way to get a list of mentionable (user/member/role/channel...)
+ * without a vararg, using a single string.
+ *
  * **Note:** You are limited to one vararg parameter in text commands.
  *
  * @see TextCommandVariationBuilder.optionVararg
@@ -19,6 +22,8 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVaria
  *
  * @see SlashCommandBuilder.optionVararg
  * @see SlashCommandBuilder.inlineClassOptionVararg
+ *
+ * @see MentionsString @MentionsString
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

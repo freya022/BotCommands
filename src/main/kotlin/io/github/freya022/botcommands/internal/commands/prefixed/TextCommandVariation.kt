@@ -57,6 +57,10 @@ class TextCommandVariation internal constructor(
             parameters.flatMap { it.allOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
         }
+
+        completePattern?.let {
+            logger.trace { "Registered text command variation '$it': ${function.shortSignature}" }
+        }
     }
 
     internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String, cancellableRateLimit: CancellableRateLimit): BaseCommandEvent = when {
@@ -112,7 +116,7 @@ class TextCommandVariation internal constructor(
                     }
                 }
 
-                if (found == groupCount) { //Found all the groups
+                if (found >= option.requiredGroups) { //Found all the groups
                     val resolved = option.resolver.resolveSuspend(this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok

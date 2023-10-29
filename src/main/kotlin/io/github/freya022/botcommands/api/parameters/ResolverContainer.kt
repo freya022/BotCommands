@@ -19,7 +19,6 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
-import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 @BService
@@ -30,7 +29,7 @@ class ResolverContainer internal constructor(
     private val logger = KotlinLogging.logger { }
 
     private val factories: MutableList<ParameterResolverFactory<*>> = Collections.synchronizedList(arrayOfSize(50))
-    private val cache: MutableMap<KType, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
+    private val cache: MutableMap<ParameterWrapper, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
 
     init {
         context.getInterfacedServices<ParameterResolver<*, *>>().forEach(::addResolver)
@@ -95,13 +94,13 @@ class ResolverContainer internal constructor(
 
     @JvmSynthetic
     internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
-        return cache.computeIfAbsent(parameter.type) { type ->
-            getResolverFactoryOrNull(parameter) ?: run {
-                val erasure = parameter.erasure
+        return cache.computeIfAbsent(parameter) { wrapper ->
+            getResolverFactoryOrNull(wrapper) ?: run {
+                val erasure = wrapper.erasure
                 val serviceResult = serviceContainer.tryGetService(erasure)
 
                 serviceResult.serviceError?.let { serviceError ->
-                    parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleNestedName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
+                    wrapper.throwUser("Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
                 }
 
                 ServiceCustomResolver(serviceResult.getOrThrow()).toResolverFactory()
@@ -121,10 +120,12 @@ class ResolverContainer internal constructor(
     internal companion object {
         private val compatibleInterfaces = listOf(
             TextParameterResolver::class,
+            QuotableTextParameterResolver::class,
             SlashParameterResolver::class,
             ComponentParameterResolver::class,
             UserContextParameterResolver::class,
             MessageContextParameterResolver::class,
+            ModalParameterResolver::class,
             ICustomResolver::class
         )
     }

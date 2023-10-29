@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
+import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
@@ -131,4 +132,18 @@ internal fun <T : Any> KClass<T>.createSingleton(): T {
         ?: throwUser("Class ${this.simpleNestedName} must either be an object, or have a no-arg constructor (or have only default parameters)")
 
     return constructor.callBy(mapOf())
+}
+
+internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType {
+    val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == T::class }
+        ?: throwInternal("Unable to find the supertype of ${this.simpleNestedName} extending ${T::class.simpleNestedName}")
+    return interfaceType.arguments[index].type!!
+}
+
+internal inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType {
+    if (this.jvmErasure == T::class) {
+        return this.arguments[index].type!!
+    }
+
+    return this.jvmErasure.superErasureAt<T>(index)
 }

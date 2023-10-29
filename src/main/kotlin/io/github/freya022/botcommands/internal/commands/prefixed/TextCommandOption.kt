@@ -9,6 +9,7 @@ class TextCommandOption(
     override val resolver: TextParameterResolver<*, *>
 ) : CommandOption(optionBuilder) {
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
+    val requiredGroups = resolver.requiredGroups
     val helpName: String = optionBuilder.optionName
     val helpExample: String? = optionBuilder.helpExample
     val isId = optionBuilder.isId
