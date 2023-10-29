@@ -2,6 +2,9 @@ package io.github.freya022.botcommands.api.core.reflect
 
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -15,6 +18,7 @@ class ParameterWrapper private constructor(
     val parameter: KParameter
 ) {
     val erasure: KClass<*> = type.jvmErasure
+    val javaErasure: Class<*> get() = erasure.java
     val annotations: List<Annotation> get() = parameter.annotations
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
@@ -35,6 +39,19 @@ class ParameterWrapper private constructor(
 
     @JvmSynthetic
     internal fun throwUser(message: String): Nothing = utilsThrowUser(parameter.function, message)
+
+    @OptIn(ExperimentalContracts::class)
+    @JvmSynthetic
+    internal inline fun requireUser(value: Boolean, lazyMessage: () -> Any?) {
+        contract {
+            returns() implies value
+            callsInPlace(lazyMessage, InvocationKind.AT_MOST_ONCE)
+        }
+
+        if (!value) {
+            utilsThrowUser(parameter.function, lazyMessage().toString())
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
