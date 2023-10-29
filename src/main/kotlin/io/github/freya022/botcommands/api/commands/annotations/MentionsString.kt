@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
  * The target parameter must be of type [List], where the element type is either:
  * - [User]
  * - [Member]
+ * - [InputUser]
  * - Any subtype of [GuildChannel]
  * - [Role]
  * - [Slash commands][SlashCommandReference]
