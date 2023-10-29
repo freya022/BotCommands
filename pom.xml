@@ -423,9 +423,9 @@
             <version>0.4.0</version>
         </dependency>
         <dependency>
-            <groupId>io.github.freya022</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>2f7576cad7</version>
+            <version>5.0.0-beta.17</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

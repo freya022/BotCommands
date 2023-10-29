@@ -1,17 +1,25 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.*
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType.UNKNOWN
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -60,7 +68,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
 
     internal class ChannelResolver(private val context: BContext, type: Class<out GuildChannel>, channelTypes: EnumSet<ChannelType>) :
         LimitedChannelResolver(type, channelTypes),
-        RegexParameterResolver<ChannelResolver, GuildChannel>,
+        TextParameterResolver<ChannelResolver, GuildChannel>,
         ComponentParameterResolver<ChannelResolver, GuildChannel> {
 
         //region Text
@@ -109,17 +117,21 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         erasure as KClass<out GuildChannel>
 
         // Only empty if the type is a GuildChannel but is not a concrete interface
-        return erasure == GuildChannel::class || ChannelType.fromInterface(erasure.java).isNotEmpty()
+        return erasure == GuildChannel::class || channelTypesFrom(erasure.java).isNotEmpty()
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun get(parameter: ParameterWrapper): LimitedChannelResolver {
         val erasure = parameter.erasure as KClass<out GuildChannel>
-        val channelTypes = ChannelType.fromInterface(erasure.java)
+        val channelTypes = channelTypesFrom(erasure.java)
         if (channelTypes.any { it.isThread }) {
             return LimitedChannelResolver(erasure.java, channelTypes)
         }
 
         return ChannelResolver(context, erasure.java, channelTypes)
     }
+}
+
+private fun channelTypesFrom(clazz: Class<out Channel>): EnumSet<ChannelType> {
+    return ChannelType.entries.filterTo(enumSetOf<ChannelType>()) { type -> type.getInterface() == clazz && type != UNKNOWN }
 }
