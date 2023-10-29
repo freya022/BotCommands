@@ -107,6 +107,7 @@ class ModalHandlerInfo internal constructor(
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
                 option.resolver.resolveSuspend(this, event, modalMapping).also { obj ->
+                    // Technically not required, but provides additional info
                     requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
                     }
@@ -119,17 +120,14 @@ class ModalHandlerInfo internal constructor(
                 if (!userDataIterator.hasNext())
                     throwInternal("Mismatch in amount of user data provided by the user and the amount requested by the aggregates, this should have been checked")
 
-                userDataIterator.next().also { userData ->
-                    if (userData == null) return@also
-
+                val userData = userDataIterator.next()
+                if (userData != null) {
                     requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
-                        "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
-                            option.declaredName,
-                            option.type.simpleNestedName,
-                            userData.javaClass.simpleName
-                        )
+                        "The modal user data '${option.declaredName}' is not a valid type (expected a ${option.type.simpleNestedName}, got a ${userData.javaClass.simpleName})"
                     }
                 }
+
+                userData
             }
 
             OptionType.CUSTOM -> {

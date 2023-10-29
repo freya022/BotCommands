@@ -10,6 +10,8 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -34,30 +36,18 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
     /**
      * Declares the supplied function as a slash command.
      *
-     * Discord requires you to have:
-     *  - 1 unique command name, examples:
-     *    - `/nick`
+     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
+     * on which paths are allowed.
      *
-     *  - Multiple commands with the same base name but different subcommand names, examples:
-     *    - `/info user`
-     *    - `/info role`
-     *    - `/info channel`
-     *
-     *  - Multiple subcommands with the same base name and base group but with different subcommand names, examples:
-     *    - `/info simple user`
-     *    - `/info simple role`
-     *    - `/info complete user`
-     *    - `/info complete role`
-     *
-     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups) for more details.
-     *
-     * **Requirement:** The declaring class must be annotated with [@Command][Command].
+     * ### Requirements
+     * - The declaring class must be annotated with [@Command][Command].
+     * - First parameter must be [GlobalSlashEvent] for [global][CommandScope.GLOBAL] commands, or,
+     * [GuildSlashEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
      *
      * @see Command @Command
      *
      * @see JDASlashCommand @JDASlashCommand
      */
-    @JvmOverloads
     fun slashCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         checkScope(scope)
 
@@ -85,7 +75,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
      *
      * @see JDAUserCommand @JDAUserCommand
      */
-    @JvmOverloads
     fun userCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
         checkScope(scope)
 
@@ -112,7 +101,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContext) {
      *
      * @see JDAMessageCommand
      */
-    @JvmOverloads
     fun messageCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         checkScope(scope)
 

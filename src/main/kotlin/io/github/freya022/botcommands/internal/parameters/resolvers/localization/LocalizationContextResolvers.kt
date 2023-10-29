@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers.localizatio
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
-import io.github.freya022.botcommands.api.parameters.ICustomResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal

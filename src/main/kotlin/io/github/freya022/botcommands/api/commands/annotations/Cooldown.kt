@@ -1,12 +1,20 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
+import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.builder.cooldown
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import java.time.temporal.ChronoUnit
 
 /**
  * Add a simple rate limit-based cooldown of this text / application command and components.
  *
+ * ### Cooldown cancellation
+ * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ *
  * @see RateLimit @RateLimit
+ *
+ * @see CommandBuilder.cooldown DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

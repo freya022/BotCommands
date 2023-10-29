@@ -40,7 +40,6 @@ class TopLevelSlashCommandBuilder internal constructor(
      *
      * @see JDASlashCommand.subcommand
      */
-    @JvmOverloads
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
         if (isFunctionSet()) throwUser("Cannot add subcommands as this already contains a function")
         if (!allowSubcommands) throwUser("Cannot add subcommands as this already contains options")

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import kotlin.reflect.KClass

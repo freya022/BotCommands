@@ -11,10 +11,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
-import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
@@ -211,7 +211,7 @@ internal class SlashCommandAutoBuilder(
                 else -> {
                     val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName.toDiscordString()
                     if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure.java
+                        val inlineClassType = kParameter.type.jvmErasure
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
                             null -> inlineClassOption(declaredName, optionName, inlineClassType) {
                                 configureOption(guild, instance, kParameter, optionAnnotation)

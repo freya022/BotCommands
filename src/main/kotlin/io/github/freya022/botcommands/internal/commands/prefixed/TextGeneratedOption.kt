@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextGeneratedOptionBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextGeneratedOptionBuilder
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType

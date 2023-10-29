@@ -5,18 +5,23 @@ import gnu.trove.set.hash.TLongHashSet
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import net.dv8tion.jda.api.Permission
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSubclassOf
+import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterAnnotation
 
 internal object AnnotationUtils {
-    internal fun getEffectiveTestGuildIds(context: BContextImpl, func: KFunction<*>): TLongSet {
+    internal fun getEffectiveTestGuildIds(context: BContext, func: KFunction<*>): TLongSet {
         val set = TLongHashSet(context.applicationConfig.testGuildIds)
         val annotation = func.findAnnotation<Test>() ?: return set
 
@@ -61,6 +66,21 @@ internal object AnnotationUtils {
         }
 
         return set
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    internal fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
+        val filterTypes = hashSetOf<KClass<out Filter>>()
+        func.declaringClass.findAnnotation<FilterAnnotation>()?.let { filterTypes += it.classes }
+        func.findAnnotation<FilterAnnotation>()?.let { filterTypes += it.classes }
+
+        return filterTypes
+            .onEach {
+                require(it.isSubclassOf(filterType)) {
+                    "Filter ${it.simpleNestedName} must implement ${filterType.simpleNestedName}"
+                }
+            }
+            .map { context.getService(it) as T }
     }
 
     @Suppress("UNCHECKED_CAST")

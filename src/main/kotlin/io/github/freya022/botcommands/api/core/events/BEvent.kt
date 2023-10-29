@@ -1,3 +1,5 @@
 package io.github.freya022.botcommands.api.core.events
 
-abstract class BEvent
+import io.github.freya022.botcommands.api.core.BContext
+
+abstract class BEvent internal constructor(val context: BContext)

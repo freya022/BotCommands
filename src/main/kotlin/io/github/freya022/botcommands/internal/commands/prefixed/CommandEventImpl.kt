@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.exceptions.BadIdException
-import io.github.freya022.botcommands.api.commands.prefixed.exceptions.NoIdException
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException
+import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.utils.RichTextFinder

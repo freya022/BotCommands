@@ -9,7 +9,7 @@
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
     <!-- Classifier is optional and can be either alpha or beta -->
     <!-- _DEV is removed by the CI release -->
-    <version>3.0.0-alpha.6_DEV</version>
+    <version>3.0.0-alpha.7_DEV</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps to develop your bots faster</description>
@@ -26,8 +26,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <kotlin.version>1.9.0</kotlin.version>
-        <kotlin.coroutine.version>1.7.2</kotlin.coroutine.version>
+        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.coroutine.version>1.7.3</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -262,9 +262,6 @@
                 <version>${kotlin.version}</version>
                 <configuration>
                     <args>
-                        <arg>-java-parameters</arg>
-                        <arg>-opt-in=kotlin.RequiresOptIn</arg>
-                        <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
                         <arg>-Xjvm-default=all</arg>
                         <arg>-Xcontext-receivers</arg>
                         <arg>-Xlambdas=indy</arg>

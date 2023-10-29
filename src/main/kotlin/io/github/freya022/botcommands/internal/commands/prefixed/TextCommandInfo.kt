@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfo
 import io.github.freya022.botcommands.internal.commands.NSFWStrategy
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand

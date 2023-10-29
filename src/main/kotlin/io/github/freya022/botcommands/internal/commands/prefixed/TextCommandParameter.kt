@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.commands.CommandParameter
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
@@ -20,10 +20,10 @@ class TextCommandParameter(
     override val options = CommandOptions.transform(
         context,
         optionAggregateBuilder,
-        object : CommandOptions.Configuration<TextCommandOptionBuilder, RegexParameterResolver<*, *>> {
+        object : CommandOptions.Configuration<TextCommandOptionBuilder, TextParameterResolver<*, *>> {
             override fun transformOption(
                 optionBuilder: TextCommandOptionBuilder,
-                resolver: RegexParameterResolver<*, *>
+                resolver: TextParameterResolver<*, *>
             ) = TextCommandOption(optionBuilder, resolver)
         }
     )

@@ -9,13 +9,22 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  *
  * Service factories must be static, or declared in a service class, or an `object`.
  *
+ * **Warning:** Top-level functions are not processed, you must have them in an object/class.
+ *
+ * ### Naming scheme
+ *
+ * By default, the services are named as such:
+ * - For classes, the class's *nested* name but with the first letter lowercase.
+ * (e.g., a `ChannelResolver` inside a `ChannelResolverFactory` => `channelResolverFactory.ChannelResolver`)
+ * - For methods, the method's name.
+ *
+ * ### Loading order
+ *
  * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
  *
  * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
  *
  * **Note 2:** Service factories are prioritized over class annotations, see [ServicePriority] for more details.
- *
- * **Warning:** Top-level functions are not processed, you must have them in an object/class.
  *
  * @see InjectedService @InjectedService
  * @see ConditionalService @ConditionalService
@@ -41,7 +50,10 @@ annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * The unique name of this service.
      *
-     * The default is the name of the type the service is inserted as, but with the first letter lowercase.
+     * By default, the services are named as such:
+     * - For classes, the class's *nested* name but with the first letter lowercase.
+     * (e.g., a `ChannelResolver` inside a `ChannelResolverFactory` => `channelResolverFactory.ChannelResolver`)
+     * - For methods, the method's name.
      *
      * @see ServiceName @ServiceName
      */

@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -125,6 +125,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
     internal fun setStatus(newStatus: Status) {
         val oldStatus = this.status
         this.status = newStatus
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(oldStatus, newStatus)) }
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(this@BContextImpl, oldStatus, newStatus)) }
     }
 }

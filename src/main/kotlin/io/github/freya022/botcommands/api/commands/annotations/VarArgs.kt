@@ -2,7 +2,8 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 
 /**
  * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].
@@ -11,10 +12,18 @@ import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextOpti
  *
  * You can configure how many arguments are required with [numRequired].
  *
+ * See [@MentionsString][MentionsString] for a way to get a list of mentionable (user/member/role/channel...)
+ * without a vararg, using a single string.
+ *
  * **Note:** You are limited to one vararg parameter in text commands.
+ *
+ * @see TextCommandVariationBuilder.optionVararg
+ * @see TextCommandVariationBuilder.inlineClassOptionVararg
  *
  * @see SlashCommandBuilder.optionVararg
  * @see SlashCommandBuilder.inlineClassOptionVararg
+ *
+ * @see MentionsString @MentionsString
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

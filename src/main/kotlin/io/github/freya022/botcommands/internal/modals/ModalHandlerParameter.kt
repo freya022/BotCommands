@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.api.parameters.ModalParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction

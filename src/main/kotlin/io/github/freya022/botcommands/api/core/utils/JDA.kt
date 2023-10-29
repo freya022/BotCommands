@@ -5,7 +5,10 @@ import io.github.freya022.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -64,6 +67,42 @@ fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: 
     EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
 
 /**
+ * Retrieves a thread by ID in this channel.
+ *
+ * The cached threads are checked first, and then requests are made to search in archived public threads,
+ * and archived (but joined) private threads.
+ *
+ * @throws InsufficientPermissionException If the bot does not have the [Permission.MESSAGE_HISTORY] permission in this channel
+ *
+ * @see Guild.getThreadChannelById
+ * @see IThreadContainer.retrieveArchivedPublicThreadChannels
+ * @see IThreadContainer.retrieveArchivedPrivateJoinedThreadChannels
+ */
+suspend fun IThreadContainer.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
+    // Non-archived threads
+    guild.getThreadChannelById(id)?.let { return it }
+
+    // Archived public threads of the current channel
+    retrieveArchivedPublicThreadChannels()
+        .skipTo(id - 1)
+        .limit(2) //Min limit is 2
+        .await()
+        .firstOrNull { it.idLong == id }
+        ?.let { return it }
+
+    // Archived, joined, private threads of the current channel
+    retrieveArchivedPrivateJoinedThreadChannels()
+        .skipTo(id - 1)
+        .limit(2) //Min limit is 2
+        .await()
+        .firstOrNull { it.idLong == id }
+        ?.let { return it }
+
+    return null
+}
+
+//region Send / Edit / Replace extensions
+/**
  * @see MessageEditData.fromCreateData
  */
 fun MessageCreateData.toEditData(): MessageEditData =
@@ -114,7 +153,28 @@ fun InteractionHook.replaceWith(data: MessageCreateData): WebhookMessageEditActi
  */
 fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Message> =
     editOriginal(content).setReplace(true)
+//endregion
 
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageEditAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun WebhookMessageCreateAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
+    delay(delay).flatMap { hook.deleteOriginal() }
+
+// NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
+//       as coroutines already enable the same behavior using `delay`
+
+//region Duration extensions
 /**
  * @see RestAction.delay
  */
@@ -133,25 +193,6 @@ fun <T> RestAction<T>.delay(duration: Duration, scheduler: ScheduledExecutorServ
 @Suppress("UNCHECKED_CAST")
 fun <T : RestAction<*>> T.timeout(duration: Duration): T =
     timeout(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS) as T
-
-// NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
-//       as coroutines already enable the same behavior using `delay`
-
-/**
- * Deletes the original message using the hook after the specified delay.
- *
- * **Note:** This delays the rest action by the given delay.
- */
-fun WebhookMessageEditAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
-    delay(delay).flatMap { hook.deleteOriginal() }
-
-/**
- * Deletes the original message using the hook after the specified delay.
- *
- * **Note:** This delays the rest action by the given delay.
- */
-fun WebhookMessageCreateAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
-    delay(delay).flatMap { hook.deleteOriginal() }
 
 /**
  * @see JDA.awaitShutdown
@@ -193,3 +234,4 @@ fun <T> Task<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.to
  * @see GatewayTask.setTimeout
  */
 fun <T> GatewayTask<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
+//endregion

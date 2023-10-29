@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import org.jetbrains.annotations.Nullable
 
 /**

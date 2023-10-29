@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.test.commands.text
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent

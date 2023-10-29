@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
+import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
@@ -21,53 +22,57 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<out String>) {
-        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
-        logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+        try {
+            System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
+            logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
-        // I use hotswap agent in order to update my code without restarting the bot
-        // Of course this only supports modifying existing code
-        // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
+            // I use hotswap agent in order to update my code without restarting the bot
+            // Of course this only supports modifying existing code
+            // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
 
-        // stacktrace-decoroutinator has issues when reloading with hotswap agent
-        when {
-            "-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments ->
+            // stacktrace-decoroutinator has issues when reloading with hotswap agent
+            if ("-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments) {
                 logger.info { "Skipping stacktrace-decoroutinator as enhanced hotswap is active" }
-
-            "--no-decoroutinator" in args ->
+            } else if ("--no-decoroutinator" in args) {
                 logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
-
-            else -> DecoroutinatorRuntime.load()
-        }
-
-        // Create a scope for our event manager
-        val scope = namedDefaultScope("BC Test Coroutine", 4)
-        val manager = CoroutineEventManager(scope, 1.minutes)
-        manager.listener<ShutdownEvent> {
-            scope.cancel()
-        }
-
-        BBuilder.newBuilder(manager) {
-            disableExceptionsInDMs = true
-            queryLogThreshold = 250.milliseconds
-
-            addSearchPath("io.github.freya022.botcommands.test")
-
-            @OptIn(DevConfig::class)
-            dumpLongTransactions = true
-
-            components {
-                useComponents = true
+            } else {
+                DecoroutinatorRuntime.load()
             }
 
-            textCommands {
-                usePingAsPrefix = true
+            // Create a scope for our event manager
+            val scope = namedDefaultScope("BC Test Coroutine", 4)
+            val manager = CoroutineEventManager(scope, 1.minutes)
+            manager.listener<ShutdownEvent> {
+                scope.cancel()
             }
 
-            applicationCommands {
+            BBuilder.newBuilder(manager) {
+                disableExceptionsInDMs = true
+                queryLogThreshold = 250.milliseconds
+
+                addSearchPath("io.github.freya022.botcommands.test")
+
                 @OptIn(DevConfig::class)
-                onlineAppCommandCheckEnabled = true
-                addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
+                dumpLongTransactions = true
+
+                components {
+                    useComponents = true
+                }
+
+                textCommands {
+                    usePingAsPrefix = true
+                }
+
+                applicationCommands {
+                    @OptIn(DevConfig::class)
+                    onlineAppCommandCheckEnabled = true
+
+                    addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
+                }
             }
+        } catch (e: Exception) {
+            logger.error(e) { "Could not start the test bot" }
+            exitProcess(1)
         }
     }
 }

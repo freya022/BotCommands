@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
@@ -13,11 +14,15 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
@@ -29,12 +34,20 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentSelect = persistentGroupTest(event)
         val ephemeralSelect = ephemeralGroupTest(event)
+        val voiceSelect = components.ephemeralEntitySelectMenu(SelectTarget.CHANNEL) {
+            setChannelTypes(ChannelType.VOICE)
+            filters += filter<InVoiceChannel>()
+            bindTo {
+                it.guild!!.moveVoiceMember(it.member!!, it.values.first() as AudioChannel).await()
+                it.deferEdit().await()
+            }
+        }
 
         //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
 //        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
 //        val buttonEvent: ButtonEvent = firstButton.await()
 
-        event.replyComponents(row(persistentSelect), row(ephemeralSelect)).queue()
+        event.replyComponents(row(persistentSelect), row(ephemeralSelect), row(voiceSelect)).queue()
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {

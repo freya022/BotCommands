@@ -29,6 +29,9 @@ private val logger = KotlinLogging.logger { }
  * or annotations such as [@Cooldown][Cooldown], [@RateLimit][RateLimit]
  * and [@RateLimitDeclaration][RateLimitDeclaration].
  *
+ * ### Rate limit cancellation
+ * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ *
  * @see CommandBuilder.rateLimit
  * @see CommandBuilder.rateLimitReference
  * @see RateLimitDeclaration

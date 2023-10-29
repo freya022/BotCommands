@@ -14,7 +14,8 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
  *
  * **Note:** The first parameter can be the event or a subtype of it, but is optional.
  *
- * Can be used on parameters of [ModalHandler], [JDASelectMenuListener] or [JDAButtonListener] functions.
+ * Can be used on parameters of [@ModalHandler][ModalHandler], [@JDASelectMenuListener][JDASelectMenuListener]
+ * or [@JDAButtonListener][JDAButtonListener] functions.
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

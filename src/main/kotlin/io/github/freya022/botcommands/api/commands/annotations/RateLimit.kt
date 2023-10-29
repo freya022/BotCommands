@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
+import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import java.time.temporal.ChronoUnit
@@ -55,6 +57,9 @@ annotation class Refill(
 /**
  * Defines a rate limit for a command / component handler.
  *
+ * ### Rate limit cancellation
+ * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ *
  * ### Example (Kotlin)
  * ```kt
  * @RateLimit(
@@ -80,6 +85,8 @@ annotation class Refill(
  * @see RateLimitScope
  * @see Bandwidth @Bandwidth
  * @see Bucket
+ *
+ * @see CommandBuilder.rateLimit DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
@@ -132,6 +139,7 @@ annotation class RateLimit(
  * ```
  *
  * @see RateLimitContainer.rateLimit
+ * @see CommandBuilder.rateLimitReference DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

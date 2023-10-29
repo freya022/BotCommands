@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 
 class TopLevelTextCommandInfo(
     builder: TopLevelTextCommandBuilder

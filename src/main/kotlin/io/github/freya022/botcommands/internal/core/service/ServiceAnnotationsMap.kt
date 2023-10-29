@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -96,7 +97,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                         "please adjust your services so at most one implementation is instantiable:")
 
                 nonUniqueImplementations.forEach { (interfacedServiceType, implementations) ->
-                    appendLine("${interfacedServiceType.clazz.simpleNestedName}: ${implementations.joinToString { it.providerKey }}")
+                    appendLine("${interfacedServiceType.clazz.simpleNestedName}:\n${implementations.joinAsList { it.providerKey }}")
                 }
             }
             throw IllegalStateException(message)

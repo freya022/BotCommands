@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.events
 
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import net.dv8tion.jda.api.JDA
 
@@ -8,4 +9,4 @@ import net.dv8tion.jda.api.JDA
  *
  * @see FirstGuildReadyEvent
  */
-class InjectedJDAEvent internal constructor(val jda: JDA) : BEvent()
+class InjectedJDAEvent internal constructor(context: BContext, val jda: JDA) : BEvent(context)

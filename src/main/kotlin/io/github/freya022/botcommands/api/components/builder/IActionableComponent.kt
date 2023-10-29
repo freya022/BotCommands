@@ -4,13 +4,16 @@ import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
-import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
@@ -28,7 +31,11 @@ import kotlin.reflect.full.isSubclassOf
  * Allows components to have handlers bound to them.
  */
 interface IActionableComponent {
+    val context: BContext
+
     val handler: ComponentHandler?
+
+    val filters: MutableList<ComponentInteractionFilter<*>>
 
     val rateLimitGroup: String?
 
@@ -40,6 +47,16 @@ interface IActionableComponent {
      * @see RateLimitReference @RateLimitReference
      */
     fun rateLimitReference(group: String)
+
+    fun addFilter(filter: ComponentInteractionFilter<*>) {
+        filters += filter
+    }
+
+    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>) = addFilter(context.getService(filterType))
+}
+
+inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filter(): T {
+    return context.getService<T>()
 }
 
 /**

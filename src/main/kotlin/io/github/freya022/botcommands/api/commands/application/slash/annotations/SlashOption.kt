@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
+import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.GuildApplicationSettings
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import org.jetbrains.annotations.Nullable
@@ -24,6 +26,8 @@ import org.jetbrains.annotations.Nullable
  *
  * @see Optional @Optional
  * @see Nullable @Nullable
+ *
+ * @see Aggregate @Aggregate
  *
  * @see LongRange @LongRange
  * @see DoubleRange @DoubleRange
@@ -67,7 +71,7 @@ annotation class SlashOption(
      *
      * @see SlashCommandOptionBuilder.description DSL equivalent
      */
-    val description: String = SlashCommandBuilder.DEFAULT_DESCRIPTION,
+    val description: String = "",
 
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].

@@ -7,12 +7,15 @@ import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.lazy
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.reference
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -23,7 +26,7 @@ import kotlin.concurrent.withLock
 @BService
 @Dependencies(ComponentRepository::class)
 internal class ComponentController(
-    context: BContext,
+    val context: BContext,
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
@@ -41,6 +44,12 @@ internal class ComponentController(
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
                 "Rate limit group '$rateLimitGroup' was not registered using ${annotationRef<RateLimitDeclaration>()}"
+            }
+        }
+
+        builder.filters.onEach { filter ->
+            require(!filter.global) {
+                "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
             }
         }
 

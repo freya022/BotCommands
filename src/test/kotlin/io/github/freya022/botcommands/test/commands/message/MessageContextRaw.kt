@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
-import io.github.freya022.botcommands.api.parameters.ParameterType
+import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent

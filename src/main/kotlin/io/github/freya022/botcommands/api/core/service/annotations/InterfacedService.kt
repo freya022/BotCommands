@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.prefixed.IHelpCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder

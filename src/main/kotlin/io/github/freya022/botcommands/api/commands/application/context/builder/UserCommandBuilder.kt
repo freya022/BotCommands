@@ -24,7 +24,7 @@ class UserCommandBuilder internal constructor(
     override val parentInstance: INamedCommand? = null
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [command function][function]
      */
     fun option(declaredName: String) {
         selfAggregate(declaredName) {

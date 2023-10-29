@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
@@ -10,14 +11,14 @@ import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.utils.runInitialization
+import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
-import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 @BService
@@ -28,7 +29,7 @@ class ResolverContainer internal constructor(
     private val logger = KotlinLogging.logger { }
 
     private val factories: MutableList<ParameterResolverFactory<*>> = Collections.synchronizedList(arrayOfSize(50))
-    private val cache: MutableMap<KType, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
+    private val cache: MutableMap<ParameterWrapper, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
 
     init {
         context.getInterfacedServices<ParameterResolver<*, *>>().forEach(::addResolver)
@@ -53,7 +54,7 @@ class ResolverContainer internal constructor(
 
     @JvmSynthetic
     @BEventListener
-    internal fun onLoad(event: LoadEvent) = runInitialization {
+    internal fun onLoad(event: LoadEvent) {
         if (factories.isEmpty()) {
             throwInternal("No resolvers/factories were found") //Never happens
         } else {
@@ -93,13 +94,13 @@ class ResolverContainer internal constructor(
 
     @JvmSynthetic
     internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
-        return cache.computeIfAbsent(parameter.type) { type ->
-            getResolverFactoryOrNull(parameter) ?: run {
-                val erasure = parameter.erasure
+        return cache.computeIfAbsent(parameter) { wrapper ->
+            getResolverFactoryOrNull(wrapper) ?: run {
+                val erasure = wrapper.erasure
                 val serviceResult = serviceContainer.tryGetService(erasure)
 
                 serviceResult.serviceError?.let { serviceError ->
-                    parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleNestedName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
+                    wrapper.throwUser("Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
                 }
 
                 ServiceCustomResolver(serviceResult.getOrThrow()).toResolverFactory()
@@ -111,17 +112,20 @@ class ResolverContainer internal constructor(
         return resolver::class.isSubclassOfAny(compatibleInterfaces)
     }
 
-    private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
+    private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class),
+        ICustomResolver<ServiceCustomResolver, Any> {
         override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event) = o
     }
 
     internal companion object {
         private val compatibleInterfaces = listOf(
-            RegexParameterResolver::class,
+            TextParameterResolver::class,
+            QuotableTextParameterResolver::class,
             SlashParameterResolver::class,
             ComponentParameterResolver::class,
             UserContextParameterResolver::class,
             MessageContextParameterResolver::class,
+            ModalParameterResolver::class,
             ICustomResolver::class
         )
     }

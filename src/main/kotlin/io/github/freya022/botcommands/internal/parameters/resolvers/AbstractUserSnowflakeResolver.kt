@@ -2,9 +2,13 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.parameters.*
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
@@ -33,7 +37,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     protected val context: BContext,
     clazz: KClass<R>
 ) : ClassParameterResolver<T, R>(clazz),
-    RegexParameterResolver<T, R>,
+    TextParameterResolver<T, R>,
     SlashParameterResolver<T, R>,
     ComponentParameterResolver<T, R>,
     UserContextParameterResolver<T, R> {

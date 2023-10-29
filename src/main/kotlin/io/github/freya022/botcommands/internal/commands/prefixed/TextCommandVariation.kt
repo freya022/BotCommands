@@ -1,10 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.CommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -29,6 +32,12 @@ class TextCommandVariation internal constructor(
     override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
+    val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
+        require(!filter.global) {
+            "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
+        }
+    }
+
     val description: String? = builder.description
     val usage: String? = builder.usage
     val example: String? = builder.example
@@ -47,6 +56,10 @@ class TextCommandVariation internal constructor(
         completePattern = when {
             parameters.flatMap { it.allOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
+        }
+
+        completePattern?.let {
+            logger.trace { "Registered text command variation '$it': ${function.shortSignature}" }
         }
     }
 
@@ -90,7 +103,7 @@ class TextCommandVariation internal constructor(
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
-                groupsIterator ?: throwInternal("No group iterator passed for a regex command")
+                groupsIterator ?: throwInternal("No group iterator passed for a regex-based text command")
 
                 option as TextCommandOption
 
@@ -103,7 +116,7 @@ class TextCommandVariation internal constructor(
                     }
                 }
 
-                if (found == groupCount) { //Found all the groups
+                if (found >= option.requiredGroups) { //Found all the groups
                     val resolved = option.resolver.resolveSuspend(this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok

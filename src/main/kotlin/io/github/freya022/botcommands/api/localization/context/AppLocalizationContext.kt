@@ -12,7 +12,7 @@ import javax.annotation.CheckReturnValue
  *
  * This interface also includes the user's and the guild's locale by default.
  *
- * While instances of this interface are primarily injected with [LocalizationBundle],
+ * While instances of this interface are primarily injected with [@LocalizationBundle][LocalizationBundle],
  * you can also construct instances of this interface with [LocalizationContext.create].
  *
  * Instances are only injectable if the event is a subclass of either [Interaction].

@@ -9,7 +9,7 @@ import kotlin.math.PI
 
 @Command
 class TextNumber : TextCommand() {
-    @JDATextCommand(name = "number")
+    @JDATextCommand(path = ["number"])
     fun onTextNumber(event: BaseCommandEvent, @TextOption number: Int) {
         event.reply("$number * pi = ${number * PI}").queue()
     }

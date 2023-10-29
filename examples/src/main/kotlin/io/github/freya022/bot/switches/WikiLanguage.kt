@@ -1,6 +1,6 @@
 package io.github.freya022.bot.switches
 
-import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 

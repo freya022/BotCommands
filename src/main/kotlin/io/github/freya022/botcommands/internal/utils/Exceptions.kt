@@ -13,25 +13,19 @@ internal fun throwInternal(message: String): Nothing =
 internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
     throw InternalException("${function.shortSignature} : $message")
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
+internal fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${function.shortSignature} : $message")
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun rethrowUser(function: KFunction<*>, message: String, e: Throwable): Nothing =
+internal fun rethrowUser(function: KFunction<*>, message: String, e: Throwable): Nothing =
     throw RuntimeException("${function.shortSignature} : $message", e)
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun rethrowUser(message: String, e: Throwable): Nothing =
+internal fun rethrowUser(message: String, e: Throwable): Nothing =
     throw RuntimeException(message, e)
 
-@PublishedApi
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwUser(message: String): Nothing =
+internal fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
+internal fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
     null -> throw ServiceException(message)
     else -> throw ServiceException("${function.shortSignature} : $message")
 }
@@ -56,10 +50,6 @@ internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
     if (!value) {
         throwUser(lazyMessage())
     }
-}
-
-internal inline fun <reified T> Any.throwMixin(): Nothing {
-    throwInternal("${this::class.simpleName} should implement ${T::class.simpleName}")
 }
 
 internal fun Throwable.unwrap(): Throwable {

@@ -1,13 +1,15 @@
 package io.github.freya022.bot.resolvers
 
-import io.github.freya022.botcommands.api.BContext
+import io.github.freya022.bot.switches.WikiDetailProfile
+import io.github.freya022.bot.switches.WikiLanguage
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.to
-import io.github.freya022.botcommands.api.parameters.*
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.enumResolver
+import io.github.freya022.botcommands.api.parameters.toHumanName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.bot.switches.WikiDetailProfile
-import io.github.freya022.bot.switches.WikiLanguage
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
@@ -31,12 +33,12 @@ object TimeUnitResolverSimplified {
 // --8<-- [start:time_unit_resolver-detailed-kotlin]
 @Resolver
 object TimeUnitResolver :
-    ParameterResolver<TimeUnitResolver, TimeUnit>(TimeUnit::class),
+    ClassParameterResolver<TimeUnitResolver, TimeUnit>(TimeUnit::class),
     SlashParameterResolver<TimeUnitResolver, TimeUnit> {
 
     override val optionType: OptionType = OptionType.STRING
 
-    // This is all you need to implement in order to support predefined choices
+    // This is all you need to implement to support predefined choices
     override fun getPredefinedChoices(guild: Guild?): Collection<Choice> {
         return listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)
             // The Resolvers class helps us by providing resolvers for any enum type.
@@ -45,7 +47,6 @@ object TimeUnitResolver :
     }
 
     override suspend fun resolveSuspend(
-        context: BContext,
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping

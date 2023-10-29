@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceResult

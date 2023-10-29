@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope;
 import io.github.freya022.botcommands.api.core.BContext;
-import io.github.freya022.botcommands.api.parameters.ParameterType;
+import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;

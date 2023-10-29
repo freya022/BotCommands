@@ -11,7 +11,12 @@ Fortunately, annotation-driven features that already existed can still be used w
 
 You can also refer to the [examples](examples) 
 and bot templates ([Java](https://github.com/freya022/BotCommands-Template-Java/tree/3.X) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/tree/3.X)) 
-in order to have an idea on how V3 is supposed to be used.
+to have an idea on how V3 is supposed to be used.
+
+## Base package change
+To better align with the Maven coordinates, the base package has changed from `com.freya02` to `io.github.freya022`.
+
+Fixing this should be as simple as using Find & Replace.
 
 ## Kotlin support
 All commands and handlers support coroutines (except service factories) and default parameters.
@@ -100,7 +105,7 @@ You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/c
 see `aggregate` in `SlashBanDetailedFront#onDeclare`.
 
 ### Vararg options
-Vararg options are a special type of option aggregate, they are essentially an aggregate which generates N options, 
+Vararg options are a special type of option aggregate, they are essentially an aggregate that generates N options, 
 and the aggregator just accepts a `List` and returns it as-is, i.e. your parameter accepts a `List`, not a real vararg.
 
 You can use these with `optionVararg`.
@@ -123,7 +128,7 @@ A [token bucket](https://en.wikipedia.org/wiki/Token_bucket)-based rate limiting
 while `@Cooldown` still exists, `@RateLimit` now lets you define buckets, with multiple bandwidths, 
 letting you create custom rate limiting for each of your command/component handler.
 
-A common example outside classic cooldowns is a spike protected bucket, which in addition to the normal rate limit,
+A common example is a spike protected bucket, which, in addition to the normal rate limit,
 helps you prevent users from spamming a command in a short period of time, 
 forcing them to spread out your resource usage.
 
@@ -137,6 +142,19 @@ Rate limits can be used with:
 A bucket token can be added back by using your event's `#cancelRateLimit()`, 
 which effectively cancels the rate limit applied before entering any handler.
 
+## Improved filters
+
+In addition to being implemented as services, filters can now be used on specific commands / components.
+
+These filters can be declared as global filters, but must override the `global` property with `false`, 
+you can then reference those filters in:
+- `@Filter`: Requires all filters to pass, can only be used on commands
+- The `filters` property of command DSLs, you can even combine filters using `and` and `or`, 
+such as `filters += (filter<IsBotOwner>() or filter<IsGuildOwner>()) and filter<InVoiceChannel>()`
+
+Component filters must be passed while building the components, and have the same usage as for command DSLs.
+Java users can also use the `addFilter` methods.
+
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
 
@@ -149,8 +167,44 @@ The slash command DSL also let you configure autocomplete by using `SlashCommand
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 on `SlashSentence#onSentencePartAutocomplete`.
 
+## Text command changes
+
+Text commands no longer have a `name`/`group`/`subcommand`, they have a `path` instead, which is an array of string.
+
+**Note:** Text commands are still limited to three path components.
+
+## New built-in help command
+The command-specific embed has been revamped,
+and has separated descriptions for the command and the variations themselves.
+
+You can also add per-variant usage and examples, both in annotations and in the DSLs.
+
+<details>
+<summary>Example</summary>
+
+```kt
+@Command
+class TextBan : TextCommand() {
+    @JDATextCommand(path = ["ban"], generalDescription = "Permanently bans an user.")
+    suspend fun onTextBan(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
+
+    @JDATextCommand(path = ["ban"])
+    suspend fun onTextBan(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
+
+    @JDATextCommand(path = ["ban", "temp"], generalDescription = "Temporarily bans an user.")
+    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
+
+    @JDATextCommand(path = ["ban", "temp"])
+    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
+}
+```
+![test](assets/command_help_embed_example.png)
+</details>
+
 ## Async loading
-The library now loads asynchronously, you previously had to wait for your entire bot to be loaded, but now you **must** start the framework before building JDA, which lets you get your stuff started up before the bot goes fully online.
+While V2 had to wait for your entire bot to be loaded, 
+V3 **requires** you to start the framework before building JDA, 
+which lets you get your stuff started up before the bot goes fully online.
 
 Building JDA before the framework will result in an error, I strongly recommend that you use a service which implements `JDAService`.
 
@@ -196,13 +250,16 @@ they can also have a priority assigned to them, as well as a timeout, used for s
 An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/ReadyListener.kt).
 
 ## Suspend resolvers & resolver factories
-`ParameterResolver` are now type safe and also support coroutines.
+`ParameterResolver` is now type safe and also supports coroutines.
 
 ### Suspending resolvers
 Parameter resolvers in Java can override the usual `resolve` method, while Kotlin users can override the `resolveSuspend` function. This is particularly useful when you need to execute a `RestAction`, so you can await without blocking the thread.
 
 ### Resolver factories
 Resolver factories were also added to enable you to give a parameter resolver based on the parameter of the function.
+
+That way, you can return resolvers based on your own conditions, 
+for example, given the parameter's annotations or generics. 
 
 *This is how `[App/Text]LocalizationContext` are injected, they use factories of `ICustomResolver`,
 and when you put a parameter, they read that parameter for `@LocalizationBundle` and then construct a resolver which gets you the correct localization bundle.*
@@ -212,11 +269,11 @@ Resolvers can not only be created from classes, but also from service factories 
 returning an implementation.
 
 For example, the framework provides `Resolver#enumResolver`, which can help you quickly handle any enumeration, 
-while also letting you easily transform a value into its displayed string.
+while also (optionally) letting you transform a value into its displayed string.
 
 ## Enhanced localization API
 The API has been improved to allow a more detailed loading mechanism, 
-as to let you easily extend the API, such as adding support for new formats (like HOCON), or new file structures:
+as to let you extend the API, such as adding support for new formats (like HOCON), or new file structures:
 
 | Name                                                                                                                                            | Function                                                                                                                                                                                                                                                                                                  |
 |-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

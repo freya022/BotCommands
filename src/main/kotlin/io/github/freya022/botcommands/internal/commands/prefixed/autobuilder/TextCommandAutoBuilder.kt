@@ -5,17 +5,18 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandManager
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.*
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.annotations.*
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
+import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
-import io.github.freya022.botcommands.api.parameters.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
 import io.github.freya022.botcommands.internal.commands.autobuilder.fillCommandBuilder
@@ -54,22 +55,30 @@ internal class TextCommandAutoBuilder(
         private var warned = false
 
         override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
-            return if (b.annotation.generalDescription.isNotBlank()) {
-                if (!warned && a.annotation.generalDescription.isNotBlank()) {
-                    warned = true
-                    logger.warn {
-                        """
+            if (a.annotation.path.contentEquals(b.annotation.path)) {
+                val firstHasGD = a.annotation.generalDescription.isNotBlank()
+                val secondHasGD = b.annotation.generalDescription.isNotBlank()
+                if (firstHasGD && secondHasGD) {
+                    if (!warned) {
+                        warned = true
+                        logger.warn {
+                            """
                             Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
                             See ${a.func.shortSignature}
                             See ${b.func.shortSignature}
                         """.trimIndent()
+                        }
                     }
+                    return 0
+                } else if (secondHasGD) {
+                    return 1 //B is superior
+                } else {
+                    return -1
                 }
-                1 //B is superior
-            } else {
-                // Metadata containers need to be constructed first
-                a.path.nameCount.compareTo(b.path.nameCount)
             }
+
+            // Metadata containers need to be constructed first
+            return a.path.nameCount.compareTo(b.path.nameCount)
         }
     }
 
@@ -171,6 +180,8 @@ internal class TextCommandAutoBuilder(
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         processOptions(metadata.func, metadata.instance, metadata.path)
 
+        filters += AnnotationUtils.getFilters(context, metadata.func, TextCommandFilter::class)
+
         description = metadata.annotation.description.nullIfBlank()
         usage = metadata.annotation.usage.nullIfBlank()
         example = metadata.annotation.example.nullIfBlank()
@@ -225,7 +236,7 @@ internal class TextCommandAutoBuilder(
                 else -> {
                     val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName
                     if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure.java
+                        val inlineClassType = kParameter.type.jvmErasure
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
                             null -> inlineClassOption(declaredName, optionName, inlineClassType) {
                                 configureOption(kParameter, optionAnnotation)

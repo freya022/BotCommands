@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.parameters.RegexParameterResolver
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.api.parameters.wrap
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,13 +13,13 @@ import kotlin.math.min
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
-internal class TextCommandComparator(private val context: BContextImpl) : Comparator<TextFunctionMetadata> {
+internal class TextCommandComparator(private val context: BContext) : Comparator<TextFunctionMetadata> {
     private val logger = KotlinLogging.logger {  }
 
     private val TextFunctionMetadata.optionParameters
         get() = func.nonInstanceParameters
             .drop(1)
-            .filter { context.getService<ResolverContainer>().hasResolverOfType<RegexParameterResolver<*, *>>(it.wrap()) }
+            .filter { context.getService<ResolverContainer>().hasResolverOfType<TextParameterResolver<*, *>>(it.wrap()) }
 
     //TODO is this correct ? the same old implementation did not function with the new objects.
     override fun compare(o1: TextFunctionMetadata, o2: TextFunctionMetadata): Int {

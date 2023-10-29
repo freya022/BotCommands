@@ -2,21 +2,24 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.prefixed.IHelpCommand
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -38,7 +41,20 @@ internal class TextCommandsListener internal constructor(
 
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    private val filters = context.getInterfacedServices<TextCommandFilter>()
+    // Types are crosschecked anyway
+    private val globalFilters: List<TextCommandFilter<Any>>
+    private val rejectionHandler: TextCommandRejectionHandler<Any>?
+
+    init {
+        val filters = context.getInterfacedServices<TextCommandFilter<Any>>()
+        globalFilters = filters.filter { it.global }
+
+        rejectionHandler = when {
+            globalFilters.isEmpty() -> null
+            else -> context.getServiceOrNull<TextCommandRejectionHandler<Any>>()
+                ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
+        }
+    }
 
     @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
@@ -58,7 +74,7 @@ internal class TextCommandsListener internal constructor(
         }
         if (content.isNullOrBlank()) return
 
-        logger.trace { "Received prefixed command: $msg" }
+        logger.trace { "Received text command: $msg" }
 
         context.coroutineScopesConfig.textCommandsScope.launch {
             try {
@@ -210,9 +226,11 @@ internal class TextCommandsListener internal constructor(
             ?: return ExecutionResult.CONTINUE //Go to next variation
 
         // At this point, we're sure that the command is executable
-        for (filter in filters) {
-            if (!filter.isAcceptedSuspend(event, variation, args)) {
-                logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
+        checkFilters(globalFilters, variation.filters) { filter ->
+            val userError = filter.checkSuspend(event, variation, args)
+            if (userError != null) {
+                rejectionHandler!!.handleSuspend(event, variation, args, userError)
+                logger.trace { "${filter.description} rejected text command '$content'" }
                 return ExecutionResult.STOP
             }
         }

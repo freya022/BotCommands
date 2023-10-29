@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
-import io.github.freya022.botcommands.api.commands.prefixed.TextCommandsContext
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 
 internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {

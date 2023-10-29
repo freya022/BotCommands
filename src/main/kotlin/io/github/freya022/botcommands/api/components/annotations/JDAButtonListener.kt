@@ -7,29 +7,30 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.annotations.Handler
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
-import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 
 /**
- * Annotation for defining a button listener,
- * this has to be the same name as the one given to [PersistentButtonBuilder.bindTo].
+ * Declares this function as a button listener with the given name.
  *
- * The options of the listener need to be in the same order as passed in [PersistentButtonBuilder.bindTo],
- * they do not need any annotation.
+ * ### Requirements
+ * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
+ * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindTo].
+ * - First parameter must be [ButtonEvent].
+ * - Have all your consecutive user data, passed when creating the button.
  *
- * **Requirements:**
- *  - Button listeners must be in the [search path][BConfigBuilder.addSearchPath]
- *  - These handlers also need to have a [ButtonEvent] as their first argument
- *
- * Supported parameters are in [ParameterResolver],
- * additional resolvers can be implemented with [ComponentParameterResolver].
- *
- * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
+ * ### Option types
+ * - User data: No annotation, the order must match the data passed when creating the button,
+ * supported types are in [ParameterResolver],
+ * additional types can be added by implementing [ComponentParameterResolver].
+ * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
+ * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Components
- * @see ParameterResolver
  * @see Aggregate @Aggregate
  *
  * @see Cooldown @Cooldown

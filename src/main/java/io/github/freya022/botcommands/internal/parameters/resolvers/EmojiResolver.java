@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.prefixed.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
-import io.github.freya022.botcommands.api.parameters.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.RegexParameterResolver;
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @Resolver
 public class EmojiResolver
 		extends ClassParameterResolver<EmojiResolver, Emoji>
-		implements RegexParameterResolver<EmojiResolver, Emoji>,
+		implements TextParameterResolver<EmojiResolver, Emoji>,
 		           SlashParameterResolver<EmojiResolver, Emoji>,
 		           ComponentParameterResolver<EmojiResolver, Emoji> {
 

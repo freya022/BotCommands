@@ -19,7 +19,7 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
     BaseComponentBuilder,
-    IEphemeralActionableComponent<EntitySelectEvent> by EphemeralActionableComponentImpl(),
+    IEphemeralActionableComponent<EntitySelectEvent> by EphemeralActionableComponentImpl(componentController.context),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
