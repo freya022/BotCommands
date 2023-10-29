@@ -135,7 +135,8 @@ internal fun <T : Any> KClass<T>.createSingleton(): T {
 }
 
 internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType {
-    val interfaceType = allSupertypes.first { it.jvmErasure == T::class }
+    val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == T::class }
+        ?: throwInternal("Unable to find the supertype of ${this.simpleNestedName} extending ${T::class.simpleNestedName}")
     return interfaceType.arguments[index].type!!
 }
 
