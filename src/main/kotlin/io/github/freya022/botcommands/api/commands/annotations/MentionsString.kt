@@ -6,8 +6,9 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.Channel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 
 /**
  * Marks the [@SlashOption][SlashOption] as a list of [mentionable][IMentionable] retrieved from a string.
@@ -15,14 +16,14 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji
  * The target parameter must be of type [List], where the element type is either:
  * - [User]
  * - [Member]
- * - Any subtype of [Channel]
+ * - Any subtype of [GuildChannel]
  * - [Role]
- * - [Slash commands][Command]
+ * - [Slash commands][SlashCommandReference]
  * - [Custom emojis][CustomEmoji]
  *
- * If no mention types are set, only mentions corresponding to the list's element type will be parsed.
+ * If the list's element type is a concrete entity type (such as [Member]), no mention types can be added.
  *
- * If mention types are set, the list's element type must be [IMentionable].
+ * If the list's element type is [IMentionable], mention types can be set, if none are, all mentions are passed.
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

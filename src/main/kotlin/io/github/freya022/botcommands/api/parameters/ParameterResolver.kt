@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.commands.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.parameters.resolvers.*
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * | [Double]                                                        | ✓                 | ✓               |                    |                 | ✓          |        |
  * | [Emoji]                                                         | ✓                 | ✓               |                    |                 | ✓          |        |
  * | [IMentionable]                                                  | ✓ (only mentions) | ✓               |                    |                 |            |        |
+ * | [List] of mentionable (see [@MentionsString][MentionsString])   |                   | ✓               |                    |                 |            |        |
  * | [Role]                                                          | ✓                 | ✓               |                    |                 | ✓          |        |
  * | [User]                                                          | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
  * | [Member]                                                        | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
