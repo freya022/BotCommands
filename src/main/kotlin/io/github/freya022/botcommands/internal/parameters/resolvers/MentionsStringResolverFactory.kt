@@ -46,16 +46,16 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
             optionMapping: OptionMapping
         ): List<IMentionable> = optionMapping.mentions.getMentions(*mentionTypes).mapNotNull(transform)
 
-        companion object {
-            fun ofMentionable(mentionTypes: Array<out MentionType>): MentionsStringResolver {
+        internal companion object {
+            internal fun ofMentionable(mentionTypes: Array<out MentionType>): MentionsStringResolver {
                 return MentionsStringResolver(mentionTypes) { it }
             }
 
-            fun ofEntity(entityType: KClass<out IMentionable>, mentionType: MentionType) : MentionsStringResolver {
+            internal fun ofEntity(entityType: KClass<out IMentionable>, mentionType: MentionType) : MentionsStringResolver {
                 return ofEntity(mentionType) { entityType.safeCast(it) }
             }
 
-            fun ofEntity(mentionType: MentionType, mapper: (IMentionable) -> IMentionable?) : MentionsStringResolver {
+            internal fun ofEntity(mentionType: MentionType, mapper: (IMentionable) -> IMentionable?) : MentionsStringResolver {
                 return MentionsStringResolver(arrayOf(mentionType), mapper)
             }
         }
