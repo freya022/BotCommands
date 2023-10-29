@@ -20,6 +20,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.ChannelType.UNKNOWN
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -115,6 +116,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         val erasure = parameter.erasure
         if (!erasure.isSubclassOf(GuildChannel::class)) return false
         erasure as KClass<out GuildChannel>
+
+        //TODO future versions of JDA may have a way to disable channel caches (types would be configurable)
 
         // Only empty if the type is a GuildChannel but is not a concrete interface
         return erasure == GuildChannel::class || channelTypesFrom(erasure.java).isNotEmpty()
