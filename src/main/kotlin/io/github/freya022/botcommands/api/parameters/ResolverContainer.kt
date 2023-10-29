@@ -121,10 +121,12 @@ class ResolverContainer internal constructor(
     internal companion object {
         private val compatibleInterfaces = listOf(
             TextParameterResolver::class,
+            QuotableTextParameterResolver::class,
             SlashParameterResolver::class,
             ComponentParameterResolver::class,
             UserContextParameterResolver::class,
             MessageContextParameterResolver::class,
+            ModalParameterResolver::class,
             ICustomResolver::class
         )
     }
