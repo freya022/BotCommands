@@ -12,8 +12,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServiceTypes
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.classRef
-import kotlin.reflect.KClass
-import kotlin.reflect.full.allSupertypes
+import io.github.freya022.botcommands.internal.utils.superErasureAt
 import kotlin.reflect.jvm.jvmErasure
 
 @BService(priority = Int.MAX_VALUE - 1)
@@ -28,21 +27,16 @@ class FilterGenericCrossChecker(context: BContext) {
         val filterTypes = context.getInterfacedServiceTypes<F>()
         val rejectionHandlerType = context.getInterfacedServiceTypes<H>().firstOrNull() ?: return
 
-        val filterOutputTypes = filterTypes.map { it.erasureAt<F>(0) }
+        val filterOutputTypes = filterTypes.map { it.superErasureAt<F>(0).jvmErasure }
         check(filterOutputTypes.all { filterOutputTypes.first() == it }) {
             "All ${classRef<F>()} must have the same return type, current types: ${filterOutputTypes.joinToString { it.simpleNestedName }}"
         }
 
-        val rejectionHandlerInputType = rejectionHandlerType.erasureAt<H>(0)
+        val rejectionHandlerInputType = rejectionHandlerType.superErasureAt<H>(0).jvmErasure
         check(rejectionHandlerInputType.java.isAssignableFrom(filterOutputTypes.first().java)) {
             val inputName = rejectionHandlerInputType.simpleNestedName
             val outputName = filterOutputTypes.first().simpleNestedName
             "Input type of ${classRef<H>()} ($inputName) must be the same (or a superclass) as the output type of ${classRef<F>()} ($outputName)"
         }
-    }
-
-    private inline fun <reified T : Any> KClass<*>.erasureAt(index: Int): KClass<*> {
-        val interfaceType = allSupertypes.first { it.jvmErasure == T::class }
-        return interfaceType.arguments[index].type!!.jvmErasure
     }
 }
