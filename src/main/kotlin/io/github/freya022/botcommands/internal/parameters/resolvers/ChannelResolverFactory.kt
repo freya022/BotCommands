@@ -124,7 +124,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     override fun get(parameter: ParameterWrapper): LimitedChannelResolver {
         val erasure = parameter.erasure as KClass<out GuildChannel>
         val channelTypes = channelTypesFrom(erasure.java)
-        if (channelTypes.any { it.isThread }) {
+        if (ThreadChannel::class.java.isAssignableFrom(erasure.java)) {
             return LimitedChannelResolver(erasure.java, channelTypes)
         }
 
