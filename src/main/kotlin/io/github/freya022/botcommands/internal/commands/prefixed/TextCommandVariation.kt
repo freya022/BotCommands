@@ -116,7 +116,7 @@ class TextCommandVariation internal constructor(
                     }
                 }
 
-                if (found == groupCount) { //Found all the groups
+                if (found >= option.requiredGroups) { //Found all the groups
                     val resolved = option.resolver.resolveSuspend(this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
