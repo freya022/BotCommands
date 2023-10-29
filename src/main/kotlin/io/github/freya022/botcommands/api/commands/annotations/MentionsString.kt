@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.prefixed.annotations.TextOption
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -11,7 +10,7 @@ import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 
 /**
- * Marks the [@SlashOption][SlashOption] or [@TextOption][TextOption] as a list of [mentionable][IMentionable] retrieved from a string.
+ * Marks the [@SlashOption][SlashOption] as a list of [mentionable][IMentionable] retrieved from a string.
  *
  * The target parameter must be of type [List], where the element type is either:
  * - [User]
