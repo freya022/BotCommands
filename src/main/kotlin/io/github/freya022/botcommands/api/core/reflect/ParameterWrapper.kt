@@ -37,22 +37,6 @@ class ParameterWrapper private constructor(
         else -> this
     }
 
-    @JvmSynthetic
-    internal fun throwUser(message: String): Nothing = utilsThrowUser(parameter.function, message)
-
-    @OptIn(ExperimentalContracts::class)
-    @JvmSynthetic
-    internal inline fun requireUser(value: Boolean, lazyMessage: () -> Any?) {
-        contract {
-            returns() implies value
-            callsInPlace(lazyMessage, InvocationKind.AT_MOST_ONCE)
-        }
-
-        if (!value) {
-            utilsThrowUser(parameter.function, lazyMessage().toString())
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -75,6 +59,22 @@ class ParameterWrapper private constructor(
         return "ParameterWrapper(type=$type, parameter=$parameter)"
     }
 }
+
+@OptIn(ExperimentalContracts::class)
+@JvmSynthetic
+internal inline fun ParameterWrapper.requireUser(value: Boolean, lazyMessage: () -> Any?) {
+    contract {
+        returns() implies value
+        callsInPlace(lazyMessage, InvocationKind.AT_MOST_ONCE)
+    }
+
+    if (!value) {
+        utilsThrowUser(parameter.function, lazyMessage().toString())
+    }
+}
+
+@JvmSynthetic
+internal fun ParameterWrapper.throwUser(message: String): Nothing = utilsThrowUser(parameter.function, message)
 
 @JvmSynthetic
 internal fun KParameter.wrap() = ParameterWrapper(this)
