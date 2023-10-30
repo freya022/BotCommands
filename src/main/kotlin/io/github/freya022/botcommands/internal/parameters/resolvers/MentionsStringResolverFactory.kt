@@ -4,6 +4,8 @@ import io.github.freya022.botcommands.api.commands.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
@@ -25,7 +27,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.safeCast
 import kotlin.reflect.typeOf
@@ -66,13 +67,13 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
     override fun isResolvable(parameter: ParameterWrapper): Boolean {
         val annotation = parameter.parameter.findAnnotation<MentionsString>() ?: return false
         // Must be a List
-        parameter.requireUser(List::class.java.isAssignableFrom(parameter.javaErasure)) {
+        parameter.requireUser(parameter.erasure.isSubclassOf<List<*>>()) {
             "Parameter '${parameter.name}' annotated with ${annotationRef<MentionsString>()} must be a ${classRef<List<*>>()} subtype"
         }
 
         // Elements must be mentionable
         val elementType = parameter.type.findErasureOfAt<List<*>>(0).jvmErasure
-        require(IMentionable::class.java.isAssignableFrom(elementType.java)) {
+        require(IMentionable::class.isAssignableFrom(elementType)) {
             "Parameter '${parameter.name}' annotated with ${annotationRef<MentionsString>()} must be a ${classRef<List<*>>()} containing ${classRef<IMentionable>()} or any subtype"
         }
 
@@ -113,7 +114,7 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
                     else -> null
                 }
             }
-        } else if (elementErasure.isSubclassOf(GuildChannel::class)) {
+        } else if (elementErasure.isSubclassOf<GuildChannel>()) {
             MentionsStringResolver.ofEntity(elementErasure, MentionType.CHANNEL)
         } else if (elementErasure == Role::class) {
             MentionsStringResolver.ofEntity(elementErasure, MentionType.ROLE)

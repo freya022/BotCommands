@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import net.dv8tion.jda.api.Permission
@@ -17,7 +18,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterAnnotation
 
 internal object AnnotationUtils {

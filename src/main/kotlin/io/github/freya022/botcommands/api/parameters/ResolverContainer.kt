@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
-import io.github.freya022.botcommands.api.core.utils.arrayOfSize
-import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
@@ -19,7 +16,6 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
-import kotlin.reflect.full.isSubclassOf
 
 @BService
 class ResolverContainer internal constructor(
@@ -89,7 +85,7 @@ class ResolverContainer internal constructor(
     @JvmSynthetic
     internal inline fun <reified T : Any> hasResolverOfType(parameter: ParameterWrapper): Boolean {
         val resolverFactory = getResolverFactoryOrNull(parameter) ?: return false
-        return resolverFactory.resolverType.isSubclassOf(T::class)
+        return resolverFactory.resolverType.isSubclassOf<T>()
     }
 
     @JvmSynthetic

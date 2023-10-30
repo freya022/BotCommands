@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.core.db
 
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import java.sql.ResultSet
 import java.sql.SQLException
-import kotlin.reflect.full.isSubclassOf
 
 class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, ResultSet by resultSet {
     override fun iterator(): Iterator<DBResult> = object : Iterator<DBResult> {
@@ -20,13 +20,13 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
     }
 
     inline operator fun <reified R> get(columnLabel: String): R = when {
-        R::class.isSubclassOf(List::class) -> (getArray(columnLabel).array as Array<*>).toList() as R
+        R::class.isSubclassOf<List<*>>() -> (getArray(columnLabel).array as Array<*>).toList() as R
         R::class.java.isArray -> getArray(columnLabel).array as R
         else -> getObject(columnLabel, R::class.java)
     }
 
     inline operator fun <reified R> get(columnIndex: Int): R = when {
-        R::class.isSubclassOf(List::class) -> (getArray(columnIndex).array as Array<*>).toList() as R
+        R::class.isSubclassOf<List<*>>() -> (getArray(columnIndex).array as Array<*>).toList() as R
         else -> getObject(columnIndex, R::class.java)
     }
 

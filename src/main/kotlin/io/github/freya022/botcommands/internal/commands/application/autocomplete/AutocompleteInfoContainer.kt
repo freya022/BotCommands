@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
@@ -14,7 +15,6 @@ import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
@@ -27,7 +27,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
             .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
             .requiredFilter(FunctionFilter.returnType(Collection::class))
             .map {
-                requireUser(it.function.returnType.jvmErasure.isSubclassOf(Collection::class), it.function) {
+                requireUser(it.function.returnType.jvmErasure.isSubclassOf<Collection<*>>(), it.function) {
                     "Autocomplete handler needs to return a Collection"
                 }
 

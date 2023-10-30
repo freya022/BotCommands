@@ -1,9 +1,6 @@
 package io.github.freya022.botcommands.internal.utils
 
-import io.github.freya022.botcommands.api.core.utils.isConstructor
-import io.github.freya022.botcommands.api.core.utils.isStatic
-import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
@@ -13,7 +10,6 @@ import kotlin.reflect.*
 import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
@@ -85,7 +81,7 @@ internal object ReflectionUtils {
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
     internal val KCallable<*>.nonEventParameters
-        get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf(Event::class) }
+        get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf<Event>() }
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
 

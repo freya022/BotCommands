@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findParameterByName
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
@@ -61,7 +61,7 @@ internal class AutocompleteHandler(
         choiceSupplier = when {
             collectionElementType.isSubclassOfAny(String::class, Long::class, Double::class) ->
                 generateSupplierFromStrings(autocompleteInfo.mode)
-            Command.Choice::class.isSuperclassOf(collectionElementType) -> ChoiceSupplierChoices(maxChoices)
+            collectionElementType.isSubclassOf<Command.Choice>() -> ChoiceSupplierChoices(maxChoices)
             else -> {
                 val transformer = slashCommandInfo.context.serviceContainer
                     .getInterfacedServices<AutocompleteTransformer<Any>>()

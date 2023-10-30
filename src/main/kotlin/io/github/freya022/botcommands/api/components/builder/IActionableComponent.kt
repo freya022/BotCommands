@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentHandler
@@ -25,7 +26,6 @@ import java.util.function.Consumer
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 
 /**
  * Allows components to have handlers bound to them.
@@ -484,7 +484,7 @@ internal fun IPersistentActionableComponent.bindToCallable(func: KFunction<*>, e
 
 private fun findHandlerName(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>): String? {
     func.findAnnotation<JDAButtonListener>()?.let {
-        requireUser(eventType.isSubclassOf(ButtonEvent::class), func) {
+        requireUser(eventType.isSubclassOf<ButtonEvent>(), func) {
             "Function must have a subclass of ButtonEvent as the first argument"
         }
         return it.name

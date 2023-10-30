@@ -11,7 +11,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -31,6 +30,14 @@ object ReflectionUtils { //For Java users
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.any { this.isSubclassOf(it) }
+
+inline fun <reified T : Any> KClass<*>.isSuperclassOf(): Boolean = this.isAssignableFrom(T::class)
+inline fun <reified T : Any> KClass<*>.isSubclassOf(): Boolean = T::class.isAssignableFrom(this)
+
+fun KClass<*>.isSubclassOf(kClass: KClass<*>): Boolean = kClass.isAssignableFrom(this)
+
+fun KClass<*>.isAssignableFrom(clazz: Class<*>) = this.java.isAssignableFrom(clazz)
+fun KClass<*>.isAssignableFrom(kClass: KClass<*>) = this.java.isAssignableFrom(kClass.java)
 
 val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null

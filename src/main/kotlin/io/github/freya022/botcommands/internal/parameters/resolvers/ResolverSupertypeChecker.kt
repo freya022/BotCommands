@@ -16,7 +16,6 @@ import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
@@ -31,7 +30,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
-        val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
+        val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory<*>>()
         val missingResolverFactoryAnnotation = isResolverFactoryAnnotated && !isResolverFactorySubclass
         val missingResolverFactorySuperClass = !isResolverFactoryAnnotated && isResolverFactorySubclass
 
@@ -43,7 +42,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         }
 
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
-        val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
+        val isResolverSubclass = kClass.isSubclassOf<ParameterResolver<*, *>>()
         val missingResolverAnnotation = !isResolverAnnotated && isResolverSubclass
         val missingResolverSuperClass = isResolverAnnotated && !isResolverSubclass
 
@@ -81,7 +80,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         if (method !is Method) return
 
         val isResolverFactoryAnnotated = methodInfo.hasAnnotation(ResolverFactory::class.java)
-        val isReturnTypeResolverFactory = ParameterResolverFactory::class.java.isAssignableFrom(method.returnType)
+        val isReturnTypeResolverFactory = ParameterResolverFactory::class.isAssignableFrom(method.returnType)
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isReturnTypeResolverFactory && isServiceFactory
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isReturnTypeResolverFactory
 
@@ -93,7 +92,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         }
 
         val isResolverAnnotated = methodInfo.hasAnnotation(Resolver::class.java)
-        val isResolverReturnType = ParameterResolver::class.java.isAssignableFrom(method.returnType)
+        val isResolverReturnType = ParameterResolver::class.isAssignableFrom(method.returnType)
         val missingResolverAnnotation = !isResolverAnnotated && isResolverReturnType && isServiceFactory
         val missingResolverSuperClass = isResolverAnnotated && !isResolverReturnType
 

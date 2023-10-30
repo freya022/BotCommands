@@ -23,7 +23,6 @@ import kotlin.collections.set
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
@@ -122,7 +121,7 @@ class ModalHandlerInfo internal constructor(
 
                 val userData = userDataIterator.next()
                 if (userData != null) {
-                    requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
+                    requireUser(option.type.jvmErasure.isInstance(userData)) {
                         "The modal user data '${option.declaredName}' is not a valid type (expected a ${option.type.simpleNestedName}, got a ${userData.javaClass.simpleName})"
                     }
                 }

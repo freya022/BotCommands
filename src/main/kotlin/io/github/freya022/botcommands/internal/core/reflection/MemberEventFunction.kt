@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuil
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
@@ -19,7 +20,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 class MemberEventFunction<T : Event, R> internal constructor(
@@ -51,10 +51,10 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEve
 
     val eventType = eventParameter.type.jvmErasure
     if (builder.topLevelBuilder.scope.isGuildOnly) {
-        if (!eventType.isSubclassOf(GUILD_T::class)) {
+        if (!eventType.isSubclassOf<GUILD_T>()) {
             Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${classRef<GUILD_T>()} as to benefit from non-null getters")
         }
-    } else if (eventType.isSubclassOf(GUILD_T::class)) {
+    } else if (eventType.isSubclassOf<GUILD_T>()) {
         throwUser(kFunction, "Cannot use ${classRef<GUILD_T>()} on a global application command")
     }
 }

@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.events.BEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.*
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
@@ -27,7 +28,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.toDuration
@@ -180,7 +180,7 @@ class EventDispatcher internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure = parameters.first().type.jvmErasure
-            if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf(Event::class)) {
+            if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf<Event>()) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
                 val missingIntents = requiredIntents - jdaService.intents - context.config.ignoredIntents

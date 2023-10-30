@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
+import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -14,7 +15,10 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.*
+import kotlin.reflect.full.allSuperclasses
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
@@ -92,7 +96,7 @@ internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>): Set<KClas
         else -> buildSet(serviceType.types.size + 1) {
             this += returnType
             this += serviceType.types.onEach {
-                if (!it.isSuperclassOf(returnType)) {
+                if (!it.isAssignableFrom(returnType)) {
                     throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${returnType.simpleNestedName}")
                 }
             }

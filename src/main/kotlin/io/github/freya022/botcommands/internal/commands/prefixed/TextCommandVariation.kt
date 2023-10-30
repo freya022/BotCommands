@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
@@ -19,7 +20,6 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -47,7 +47,7 @@ class TextCommandVariation internal constructor(
     private val useTokenizedEvent: Boolean
 
     init {
-        useTokenizedEvent = eventFunction.eventParameter.type.jvmErasure.isSubclassOf(CommandEvent::class)
+        useTokenizedEvent = eventFunction.eventParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)

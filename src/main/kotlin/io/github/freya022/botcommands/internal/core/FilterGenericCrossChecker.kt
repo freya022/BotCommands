@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServiceTypes
+import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.superErasureAt
@@ -33,7 +34,7 @@ class FilterGenericCrossChecker(context: BContext) {
         }
 
         val rejectionHandlerInputType = rejectionHandlerType.superErasureAt<H>(0).jvmErasure
-        check(rejectionHandlerInputType.java.isAssignableFrom(filterOutputTypes.first().java)) {
+        check(rejectionHandlerInputType.isAssignableFrom(filterOutputTypes.first())) {
             val inputName = rejectionHandlerInputType.simpleNestedName
             val outputName = filterOutputTypes.first().simpleNestedName
             "Input type of ${classRef<H>()} ($inputName) must be the same (or a superclass) as the output type of ${classRef<F>()} ($outputName)"

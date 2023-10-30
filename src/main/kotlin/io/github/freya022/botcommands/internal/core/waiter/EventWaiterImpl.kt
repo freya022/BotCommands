@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
@@ -146,7 +147,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             }
         }
 
-        if (RawGatewayEvent::class.java.isAssignableFrom(eventType)) {
+        if (RawGatewayEvent::class.isAssignableFrom(eventType)) {
             require((jda as JDAImpl).isRawEvents) {
                 "Cannot listen to a ${eventType.simpleNestedName} as JDA is not configured to emit raw gateway events, see ${JDABuilder::setRawEventsEnabled.getSignature(source = false)}"
             }

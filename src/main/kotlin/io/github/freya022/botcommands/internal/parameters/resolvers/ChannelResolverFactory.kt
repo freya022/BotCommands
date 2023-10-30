@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
@@ -31,7 +32,6 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.isSubclassOf
 
 interface IChannelResolver {
     val channelTypes: EnumSet<ChannelType>
@@ -114,7 +114,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     @Suppress("UNCHECKED_CAST")
     override fun isResolvable(parameter: ParameterWrapper): Boolean {
         val erasure = parameter.erasure
-        if (!erasure.isSubclassOf(GuildChannel::class)) return false
+        if (!erasure.isSubclassOf<GuildChannel>()) return false
         erasure as KClass<out GuildChannel>
 
         //TODO future versions of JDA may have a way to disable channel caches (types would be configurable)
@@ -127,7 +127,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     override fun get(parameter: ParameterWrapper): LimitedChannelResolver {
         val erasure = parameter.erasure as KClass<out GuildChannel>
         val channelTypes = channelTypesFrom(erasure.java)
-        if (ThreadChannel::class.java.isAssignableFrom(erasure.java)) {
+        if (erasure.isSubclassOf<ThreadChannel>()) {
             return LimitedChannelResolver(erasure.java, channelTypes)
         }
 

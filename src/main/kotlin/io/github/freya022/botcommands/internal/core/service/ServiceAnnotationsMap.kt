@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
@@ -20,7 +21,6 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmName
 
 @BService(priority = Int.MAX_VALUE)
@@ -127,7 +127,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
     @Suppress("UNCHECKED_CAST")
     internal inline fun <reified A : Annotation, reified T : Any> getInstantiableClassesWithAnnotationAndType(): Set<KClass<T>> =
         getInstantiableClassesWithAnnotation<A>().onEach {
-            if (!it.isSubclassOf(T::class)) {
+            if (!it.isSubclassOf<T>()) {
                 throwUser("Class ${it.simpleNestedName} registered as a ${annotationRef<A>()} must extend ${T::class.simpleNestedName}")
             }
         } as Set<KClass<T>>

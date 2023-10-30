@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSingleAggregator
 import io.github.freya022.botcommands.internal.core.service.getFunctionServiceOrNull
@@ -11,7 +12,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 class AggregatorFunction private constructor(
@@ -22,7 +22,7 @@ class AggregatorFunction private constructor(
     private val aggregatorInstance: Any?
 ) : Function<Any?>(boundAggregator) {
     private val instanceParameter = aggregator.instanceParameter
-    private val eventParameter = aggregator.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(Event::class) }
+    private val eventParameter = aggregator.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf<Event>() }
 
     val aggregator get() = this.kFunction
 

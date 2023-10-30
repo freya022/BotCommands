@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
@@ -36,7 +35,7 @@ internal object SlashUtils {
     private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
-            requireUser(expectedType.isSuperclassOf(defaultValue::class), this.function) {
+            requireUser(expectedType.isInstance(defaultValue), this.function) {
                 "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
             }
         } else {
