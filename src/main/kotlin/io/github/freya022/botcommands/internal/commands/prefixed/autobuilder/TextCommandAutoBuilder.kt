@@ -40,7 +40,7 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 internal class TextCommandAutoBuilder(
-    private val context: BContextImpl,
+    context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
     private class TextCommandContainer(val name: String) {

@@ -11,7 +11,7 @@ internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : 
     private val guildFunction: EntityCacheFunction =
         getEntityCacheFunction(cacheInfo.guildLocal) { if (it.guild != null) it.guild!!.idLong else 0 }
     private val channelFunction: EntityCacheFunction =
-        getEntityCacheFunction(cacheInfo.channelLocal) { if (it.channel != null) it.channel!!.idLong else 0 }
+        getEntityCacheFunction(cacheInfo.channelLocal) { it.channel.idLong }
     private val userFunction: EntityCacheFunction = getEntityCacheFunction(cacheInfo.userLocal) { it.user.idLong }
 
     private fun getCompositeOptionValues(event: CommandAutoCompleteInteractionEvent): Array<String> {

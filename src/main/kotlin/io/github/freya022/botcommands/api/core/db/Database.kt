@@ -134,7 +134,7 @@ internal fun createThreadDump(): String = buildString {
 }
 
 @Throws(SQLException::class)
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
     return fetchConnection(readOnly).use {
         KPreparedStatement(this, it.prepareStatement(sql)).use(block)
