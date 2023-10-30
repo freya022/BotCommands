@@ -6,6 +6,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.Attachment
+import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel
+import net.dv8tion.jda.api.entities.channel.concrete.Category
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
@@ -18,24 +21,27 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * ### Default parameter resolvers
  *
- * |                                                                 | Text              | Slash           | Message context    | User context    | Components | Modals |
- * |-----------------------------------------------------------------|-------------------|-----------------|--------------------|-----------------|------------|--------|
- * | [String]                                                        | ✓ (can be quoted) | ✓               |                    |                 | ✓          | ✓      |
- * | [Boolean]                                                       | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Int]                                                           | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Long]                                                          | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Double]                                                        | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Emoji]                                                         | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [IMentionable]                                                  | ✓ (only mentions) | ✓               |                    |                 |            |        |
- * | [List] of mentionable (see [@MentionsString][MentionsString])   |                   | ✓               |                    |                 |            |        |
- * | [Role]                                                          | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [User]                                                          | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
- * | [Member]                                                        | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
- * | [InputUser]                                                     | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
- * | [All guild channels subtypes (includes Category)][GuildChannel] | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Guild]                                                         | ✓                 | ✓ (as a String) |                    |                 | ✓          |        |
- * | [Message]                                                       |                   |                 | ✓ (target message) |                 |            |        |
- * | [Attachment]                                                    |                   | ✓               |                    |                 |            |        |
+ * |                                                               | Text                          | Slash           | Message context    | User context    | Components                    | Modals |
+ * |---------------------------------------------------------------|-------------------------------|-----------------|--------------------|-----------------|-------------------------------|--------|
+ * | [String]                                                      | ✓ (can be quoted)             | ✓               |                    |                 | ✓                             | ✓      |
+ * | [Boolean]                                                     | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [Int]                                                         | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [Long]                                                        | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [Double]                                                      | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [Emoji]                                                       | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [IMentionable]                                                | ✓ (only mentions)             | ✓               |                    |                 |                               |        |
+ * | [List] of mentionable (see [@MentionsString][MentionsString]) |                               | ✓               |                    |                 |                               |        |
+ * | [Role]                                                        | ✓                             | ✓               |                    |                 | ✓                             |        |
+ * | [User]                                                        | ✓                             | ✓               |                    | ✓ (target user) | ✓                             |        |
+ * | [Member]                                                      | ✓                             | ✓               |                    | ✓ (target user) | ✓                             |        |
+ * | [InputUser]                                                   | ✓                             | ✓               |                    | ✓ (target user) | ✓                             |        |
+ * | Concrete [GuildChannel] subtypes<sup>1</sup>                  | ✓ (excluding [ThreadChannel]) | ✓               |                    |                 | ✓ (excluding [ThreadChannel]) |        |
+ * | [Guild]                                                       | ✓                             | ✓ (as a String) |                    |                 | ✓                             |        |
+ * | [Message]                                                     |                               |                 | ✓ (target message) |                 |                               |        |
+ * | [Attachment]                                                  |                               | ✓               |                    |                 |                               |        |
+ *
+ * 1. Only allows [concrete][net.dv8tion.jda.api.entities.channel.concrete] channels, including [Category],
+ * but excludes any attribute interface such as [IPositionableChannel].
  *
  * You can also check loaded parameter resolvers in the logs on the `trace` level.
  *
