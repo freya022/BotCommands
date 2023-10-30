@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -32,6 +34,7 @@ import kotlin.reflect.KParameter
 private val logger = KotlinLogging.logger { }
 
 internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeResolver<T, R>, R : UserSnowflake>(
+    protected val context: BContext,
     clazz: KClass<R>
 ) : ClassParameterResolver<T, R>(clazz),
     TextParameterResolver<T, R>,
@@ -69,7 +72,11 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         arg: String
     ): R? {
         val id = arg.toLongOrNull() ?: throwUser("Invalid user id: $arg")
-        return retrieveOrNull(id, event.message)
+        val entity = retrieveOrNull(id, event.message)
+        if (entity == null)
+            event.reply_(context.getDefaultMessages(event).resolverUserNotFoundMsg, ephemeral = true).queue()
+
+        return entity
     }
 
     final override fun resolve(info: UserCommandInfo, event: UserContextInteractionEvent): R? =

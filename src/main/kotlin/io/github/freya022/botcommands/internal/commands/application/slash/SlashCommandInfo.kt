@@ -95,14 +95,6 @@ abstract class SlashCommandInfo internal constructor(
                 if (optionMapping != null) {
                     val resolved = option.resolver.resolveSuspend(this, event, optionMapping)
                     if (resolved == null) {
-                        //Only use the generic message if the user didn't handle this situation
-                        if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                            event.reply_(
-                                context.getDefaultMessages(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
-                                ephemeral = true
-                            ).queue()
-                        }
-
                         //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
                         logger.trace {
                             "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
@@ -110,7 +102,17 @@ abstract class SlashCommandInfo internal constructor(
 
                         return when {
                             option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
-                            else -> InsertOptionResult.ABORT
+                            else -> {
+                                //Only use the generic message if the user didn't handle this situation
+                                if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
+                                    event.reply_(
+                                        context.getDefaultMessages(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
+                                        ephemeral = true
+                                    ).queue()
+                                }
+
+                                InsertOptionResult.ABORT
+                            }
                         }
                     }
 

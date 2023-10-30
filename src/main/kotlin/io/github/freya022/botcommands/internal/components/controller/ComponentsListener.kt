@@ -136,7 +136,9 @@ internal class ComponentsListener(
                                 else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                             }
 
-                            handlePersistentComponent(descriptor, evt, userData.iterator())
+                            if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
+                                return@withRateLimit false
+                            }
                         }
                     }
                     is EphemeralComponentData -> {
@@ -191,15 +193,16 @@ internal class ComponentsListener(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
         userDataIterator: Iterator<String>
-    ) {
+    ): Boolean {
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
                 if (tryInsertOption(event, descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
-                    throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
+                    return false
             }
 
             function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
         }
+        return true
     }
 
     private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
@@ -223,7 +226,11 @@ internal class ComponentsListener(
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                option.resolver.resolveSuspend(descriptor, event, userDataIterator.next())
+                val obj = option.resolver.resolveSuspend(descriptor, event, userDataIterator.next())
+                if (obj == null && !option.isOptionalOrNullable && event.isAcknowledged)
+                    return InsertOptionResult.ABORT
+
+                obj
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption

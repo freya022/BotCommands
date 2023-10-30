@@ -24,7 +24,10 @@ interface ComponentParameterResolver<T, R : Any> where T : ParameterResolver<T, 
      * Returns a resolved object from this component interaction.
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler will throw.
+     * or [optional][KParameter.isOptional], then the handler aborts.
+     *
+     * The resolver should reply to the interaction in case the value is not resolvable.
+     * If the interaction is not replied to, the handler throws.
      *
      * @param descriptor The descriptor of the component handler being executed
      * @param event      The corresponding event
@@ -37,7 +40,10 @@ interface ComponentParameterResolver<T, R : Any> where T : ParameterResolver<T, 
      * Returns a resolved object from this component interaction.
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler will throw.
+     * or [optional][KParameter.isOptional], then the handler aborts.
+     *
+     * The resolver should reply to the interaction in case the value is not resolvable.
+     * If the interaction is not replied to, the handler throws.
      *
      * @param descriptor The descriptor of the component being executed
      * @param event      The corresponding event
