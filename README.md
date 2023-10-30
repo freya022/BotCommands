@@ -12,6 +12,7 @@ using the [JDA](https://github.com/discord-jda/JDA) library.
 
 ## Features
 
+### Commands
 * Automatic registration of commands, resolvers, services, etc... with full dependency injection
 * Text commands (annotated or manually declared), either with:
   * Automatic token parsing into your parameters
@@ -27,26 +28,30 @@ using the [JDA](https://github.com/discord-jda/JDA) library.
       }
       ```
     * Which can be used as: `!ban @freya02 7 days Get banned`
-  * Manual token consuming
-* Application commands (annotated or manually declared)
+  * Manual token consumption
+* Application commands (annotated or DSL-declared)
   * Slash commands with **automatic & customizable argument parsing**
-    * Options can be grouped into _aggregates_, as to benefit from methods specifically on them 
-    * Also supports choices, min/max values/length, channel types and autocomplete
+    * Supports choices, min/max values/length, channel types and autocomplete
+    * Options can be grouped into objects
   * Context menu commands (User / Message)
-  * **Automatic smart** application commands registration
-  * Entirely localizable, from the command declaration to the bot responses
-* Customizable and localizable error messages
+  * Automatic, smart application commands registration
+
+### Components and modals
+* Unlimited data storage for components, with persistent and ephemeral storage
+* Both modals and persistent components have a way to pass data
+
+### Event handlers
 * Custom (annotated) event handlers, with priorities and async
-* Modals
-* _Unlimited_ data storage for components, *with persistent and ephemeral storage*
-  * **They can also receive additional arguments** the same way as slash commands do
-* Several utilities such as:
+
+### Localization
+* Entirely localizable, from the command declaration to the bot responses
+
+### Utilities
   * An event waiter with (multiple) preconditions, timeouts and consumers for every completion state
   * Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (turning `:joy:` into 😂)
   * Paginators and menus of different types (using components!)
 
-While every event runs on their own coroutine,
-you still need to be mindful in not blocking your bot.
+And way more features!
 
 ## Getting Started
 You are strongly recommended to have some experience with Kotlin (or Java),
@@ -105,8 +110,7 @@ class SlashSay : ApplicationCommand() {
         @SlashOption(description = "What to say") content: String
     ) {
         event.reply_("Done!", ephemeral = true)
-            .delay(5.seconds)
-            .flatMap(InteractionHook::deleteOriginal)
+            .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content).await()
     }
@@ -126,8 +130,7 @@ class SlashSayDsl {
         content: String
     ) {
         event.reply_("Done!", ephemeral = true)
-            .delay(5.seconds)
-            .flatMap(InteractionHook::deleteOriginal)
+            .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content).await()
     }
