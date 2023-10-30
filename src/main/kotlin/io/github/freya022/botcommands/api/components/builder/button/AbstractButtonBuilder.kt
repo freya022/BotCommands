@@ -10,12 +10,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
 abstract class AbstractButtonBuilder internal constructor(
     private val componentController: ComponentController,
-    private val style: ButtonStyle
+    private val style: ButtonStyle,
+    private val label: String?,
+    private val emoji: Emoji?
 ) : AbstractComponentBuilder() {
     final override val componentType: ComponentType = ComponentType.BUTTON
 
-    @JvmSynthetic
-    internal fun build(label: String?, emoji: Emoji?): Button {
+    private var built = false
+
+    fun build(): Button {
+        check(built) { "Cannot build components more than once" }
+        built = true
+
         return Button(componentController, JDAButton.of(style, componentController.createComponent(this), label, emoji))
     }
 }

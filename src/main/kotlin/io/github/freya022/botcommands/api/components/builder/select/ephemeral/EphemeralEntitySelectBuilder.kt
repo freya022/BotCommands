@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
-class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: List<SelectTarget>) :
+class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: Collection<SelectTarget>) :
     JDAEntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
@@ -23,6 +23,8 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
+
+    private var built = false
 
     init {
         setEntityTypes(targets)
@@ -39,12 +41,10 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
         throwUser("Cannot set an ID on components managed by the framework")
     }
 
-    @Deprecated("Cannot build on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun build(): Nothing {
-        throwUser("Cannot build on components managed by the framework")
-    }
+    override fun build(): EntitySelectMenu {
+        check(built) { "Cannot build components more than once" }
+        built = true
 
-    internal fun doBuild(): EntitySelectMenu {
         super.setId(componentController.createComponent(this))
 
         return EntitySelectMenu(componentController, super.build())

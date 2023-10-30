@@ -22,6 +22,8 @@ class PersistentStringSelectBuilder internal constructor(private val componentCo
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
 
+    private var built = false
+
     @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     override fun getId(): Nothing {
         throwUser("Cannot set an ID on components managed by the framework")
@@ -33,13 +35,10 @@ class PersistentStringSelectBuilder internal constructor(private val componentCo
         throwUser("Cannot set an ID on components managed by the framework")
     }
 
-    @Deprecated("Cannot build on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun build(): Nothing {
-        throwUser("Cannot build on components managed by the framework")
-    }
+    override fun build(): StringSelectMenu {
+        check(built) { "Cannot build components more than once" }
+        built = true
 
-    @JvmSynthetic
-    internal fun doBuild(): StringSelectMenu {
         super.setId(componentController.createComponent(this))
 
         return StringSelectMenu(componentController, super.build())
