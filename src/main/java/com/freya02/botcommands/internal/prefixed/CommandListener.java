@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -144,6 +145,10 @@ public final class CommandListener extends ListenerAdapter {
 
 			final boolean isNotOwner = !context.isOwner(member.getIdLong());
 			if (candidates == null) {
+				// Ignore command if it contains invalid characters
+				if (!Checks.ALPHANUMERIC_WITH_DASH.matcher(split[0]).matches()) {
+					return;
+				}
 				onCommandNotFound(event, CommandPath.of(split[0]), isNotOwner);
 				return;
 			}
