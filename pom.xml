@@ -12,7 +12,7 @@
     <version>3.0.0-alpha.7_DEV</version>
     <name>BotCommands</name>
 
-    <description>A JDA command framework (&amp; much more) which helps to develop your bots faster</description>
+    <description>A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake, using the JDA library.</description>
 
     <url>https://github.com/freya022/BotCommands</url>
 
@@ -26,7 +26,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.version>1.9.20</kotlin.version>
         <kotlin.coroutine.version>1.7.3</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
