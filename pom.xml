@@ -9,7 +9,7 @@
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
     <!-- Classifier is optional and can be either alpha or beta -->
     <!-- _DEV is removed by the CI release -->
-    <version>3.0.0-alpha.7_DEV</version>
+    <version>3.0.0-alpha.8_DEV</version>
     <name>BotCommands</name>
 
     <description>A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake, using the JDA library.</description>
