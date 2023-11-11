@@ -68,6 +68,7 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
+    @set:DevConfig
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
 
