@@ -129,7 +129,7 @@ internal class ApplicationCommandsBuilder(
             globalUpdater.updateCommands()
             logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
         } else {
-            logger.debug { "Global commands does not have to be updated (${getCheckTypeString()})" }
+            logger.debug { "Global commands does not have to be updated, ${globalUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
         }
 
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
@@ -171,7 +171,7 @@ internal class ApplicationCommandsBuilder(
                 guildUpdater.updateCommands()
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands were${getForceString(force)} updated (${getCheckTypeString()})" }
             } else {
-                logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated (${getCheckTypeString()})" }
+                logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
             }
 
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())

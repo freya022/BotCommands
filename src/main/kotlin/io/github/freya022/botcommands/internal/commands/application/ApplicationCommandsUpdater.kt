@@ -48,8 +48,9 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
-    val applicationCommands: Collection<ApplicationCommandInfo>
+    internal val applicationCommands: Collection<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
+    internal val filteredCommandsCount: Int get() = allCommandData.size
 
     init {
         Files.createDirectories(commandsCachePath.parent)
@@ -200,9 +201,8 @@ internal class ApplicationCommandsUpdater private constructor(
 
         logger.trace {
             val commandNumber = commands.size
-            val sentCommandNumber = allCommandData.size
             val scope = guild.asScopeString()
-            "Updated $commandNumber / $sentCommandNumber commands for $scope"
+            "Updated $commandNumber / $filteredCommandsCount commands for $scope"
         }
     }
 
