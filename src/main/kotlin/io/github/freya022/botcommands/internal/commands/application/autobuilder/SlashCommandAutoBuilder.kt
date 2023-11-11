@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -65,7 +66,9 @@ internal class SlashCommandAutoBuilder(
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions {
                 val annotation = it.annotation
-                if (forceGuildCommands || !manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                if (forceGuildCommands)
+                    return@forEachWithDelayedExceptions logger.debug { "Skipping command '${it.path}' as ${BApplicationConfig::forceGuildCommands.reference} is enabled" }
+                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
                 if (checkTestCommand(manager, it.func, annotation.scope, context) == TestState.EXCLUDE) {
                     return@forEachWithDelayedExceptions
