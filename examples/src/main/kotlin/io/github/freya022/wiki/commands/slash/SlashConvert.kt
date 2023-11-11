@@ -1,4 +1,4 @@
-package io.github.freya022.bot.commands.slash
+package io.github.freya022.wiki.commands.slash
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.parameters.Resolvers
-import io.github.freya022.bot.switches.WikiCommandProfile
+import io.github.freya022.wiki.switches.WikiCommandProfile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.concurrent.TimeUnit

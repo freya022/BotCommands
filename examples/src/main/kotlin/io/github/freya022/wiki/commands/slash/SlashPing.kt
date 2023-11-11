@@ -1,13 +1,13 @@
-package io.github.freya022.bot.commands.slash
+package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.bot.switches.WikiCommandProfile
+import io.github.freya022.wiki.switches.WikiCommandProfile
 
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:ping-kotlin]

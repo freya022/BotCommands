@@ -1,10 +1,10 @@
-package io.github.freya022.bot.resolvers;
+package io.github.freya022.wiki.resolvers;
 
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ParameterResolver;
 import io.github.freya022.botcommands.api.parameters.Resolvers;
-import io.github.freya022.bot.switches.WikiDetailProfile;
-import io.github.freya022.bot.switches.WikiLanguage;
+import io.github.freya022.wiki.switches.WikiDetailProfile;
+import io.github.freya022.wiki.switches.WikiLanguage;
 
 import java.util.concurrent.TimeUnit;
 

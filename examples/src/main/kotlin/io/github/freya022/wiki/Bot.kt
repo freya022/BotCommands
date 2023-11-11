@@ -1,4 +1,4 @@
-package io.github.freya022.bot
+package io.github.freya022.wiki
 
 import dev.minn.jda.ktx.jdabuilder.light
 import io.github.freya022.bot.config.Config

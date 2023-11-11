@@ -1,5 +1,6 @@
-package io.github.freya022.bot
+package io.github.freya022.wiki
 
+import ch.qos.logback.classic.ClassicConstants
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.bot.config.Config
@@ -15,18 +16,17 @@ import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.minutes
-import ch.qos.logback.classic.ClassicConstants as LogbackConstants
 
 private val logger by lazy { KotlinLogging.logger {} } // Must not load before system property is set
 
-private const val mainPackageName = "io.github.freya022.bot"
+private const val mainPackageName = "io.github.freya022.wiki"
 private const val botName = "ExampleBot"
 
 object Main {
     @JvmStatic
     fun main(args: Array<out String>) {
         try {
-            System.setProperty(LogbackConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
+            System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
             logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
             // I use hotswap agent to update my code without restarting the bot
@@ -60,6 +60,7 @@ object Main {
                 addOwners(*config.ownerIds.toLongArray())
 
                 addSearchPath(mainPackageName)
+                addSearchPath("io.github.freya022.bot.config")
 
                 textCommands {
                     //Use ping as prefix if configured
@@ -84,8 +85,6 @@ object Main {
 
                 components {
                     // Enables usage of components
-                    // This can be removed if you don't have a database,
-                    // but you'll need to use raw JDA components
                     useComponents = true
                 }
             }

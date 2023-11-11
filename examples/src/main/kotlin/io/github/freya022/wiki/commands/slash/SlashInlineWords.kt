@@ -1,4 +1,4 @@
-package io.github.freya022.bot.commands.slash
+package io.github.freya022.wiki.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_

@@ -1,16 +1,17 @@
 package io.github.freya022.bot.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.row
+import dev.minn.jda.ktx.messages.into
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.interactions.components.row
-import dev.minn.jda.ktx.messages.into
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
@@ -21,8 +22,8 @@ private const val buttonListenerName = "SlashButton: persistentButton" //ClassNa
 
 @Command
 class SlashButton(private val componentsService: Components) : ApplicationCommand() {
-    @JDASlashCommand(name = "button", description = "Try out the new buttons!")
-    fun onSlashButton(event: GuildSlashEvent) {
+    @JDASlashCommand(scope = CommandScope.GLOBAL, name = "button", description = "Try out the new buttons!")
+    fun onSlashButton(event: GlobalSlashEvent) {
         val components: MutableList<Button> = arrayListOf()
         components += componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds") {
             timeout(5.seconds) {
