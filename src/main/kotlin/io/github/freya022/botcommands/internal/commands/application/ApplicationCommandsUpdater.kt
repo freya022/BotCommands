@@ -128,8 +128,10 @@ internal class ApplicationCommandsUpdater private constructor(
                         commandData.configureTopLevel(info)
                     }
 
-                    topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
-                    topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
+                    if (!isTopLevel) {
+                        topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
+                        topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
+                    }
 
                     map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
