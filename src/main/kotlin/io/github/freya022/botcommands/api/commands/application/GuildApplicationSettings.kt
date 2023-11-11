@@ -58,7 +58,7 @@ interface GuildApplicationSettings {
      * @return A collection of Guild IDs where the specified command is allowed to be pushed in<br>
      *         This returns `null` by default
      *
-     * @see CommandId
+     * @see CommandId @CommandId
      */
     fun getGuildsForCommandId(commandId: String, commandPath: CommandPath): Collection<Long>? {
         return null

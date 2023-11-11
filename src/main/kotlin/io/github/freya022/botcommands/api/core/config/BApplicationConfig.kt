@@ -16,20 +16,22 @@ import kotlin.reflect.KClass
 @InjectedService
 interface BApplicationConfig {
     /**
-     * Enables you to push application commands are only updated on these guilds
+     * If not empty, only these guilds will have their application commands updated.
+     *
+     * Existing commands won't be removed in other guilds, global commands will still be updated.
      */
     val slashGuildIds: List<Long>
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
      *
-     * @see Test
+     * @see Test @Test
      */
     val testGuildIds: List<Long>
 
     /**
      * Enables the library to compare local commands against Discord's command,
-     * in order to check if application commands need to be updated.
+     * to check if application commands need to be updated.
      *
      * The default behavior is to compare the command data to what has been locally saved,
      * as it does not require any request, and is therefore way faster.
