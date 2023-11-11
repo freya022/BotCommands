@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
@@ -17,6 +18,7 @@ import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.getParameters
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -139,7 +141,9 @@ internal class ApplicationCommandsBuilder(
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
         val slashGuildIds = context.applicationConfig.slashGuildIds
         if (slashGuildIds.isNotEmpty()) {
-            if (guild.idLong in slashGuildIds) {
+            if (guild.idLong !in slashGuildIds) {
+                logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::slashGuildIds.reference}" }
+                applicationCommandsContext.putLiveApplicationCommandsMap(guild, MutableApplicationCommandMap.EMPTY_MAP)
                 return CommandUpdateResult(guild, false, listOf())
             }
         }
