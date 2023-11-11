@@ -57,6 +57,9 @@ internal class MutableApplicationCommandMap internal constructor(
     }
 
     internal companion object {
+        @JvmStatic
+        val EMPTY_MAP: ApplicationCommandMap = MutableApplicationCommandMap(emptyMap())
+
         internal fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
                 val type = when (info) {

@@ -53,7 +53,7 @@ interface ApplicationCommandsContext {
      *
      * @see getEffectiveApplicationCommandsMap
      */
-    fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap
+    fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap?
 
     /**
      * Returns the effective application commands available for the specific guild.
