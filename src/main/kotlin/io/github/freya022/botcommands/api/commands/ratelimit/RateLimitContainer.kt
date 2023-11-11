@@ -51,7 +51,7 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
                 function.call(instance, this, *args.toTypedArray())
             }
 
-        if (logger.isTraceEnabled()) {
+        if (logger.isTraceEnabled() && map.isNotEmpty()) {
             logger.trace {
                 "Loaded ${map.size} rate limiters with:\n${declarators.joinAsList { it.function.shortSignature }}"
             }
