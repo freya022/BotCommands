@@ -457,22 +457,6 @@
             <version>1.3.1</version>
         </dependency>
         <dependency>
-            <groupId>io.github.minndevelopment</groupId>
-            <artifactId>emoji-java</artifactId>
-            <version>5622646ccb</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.json</groupId>
-                    <artifactId>json</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency> <!-- Upgrade dependency used by emoji-java as to avoid vulnerabilities -->
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20230618</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
