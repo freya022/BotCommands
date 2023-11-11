@@ -1,8 +1,11 @@
 package io.github.freya022.botcommands.api.utils;
 
+import io.github.freya022.botcommands.api.Logging;
+import io.github.freya022.botcommands.internal.core.exceptions.InternalException;
 import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,6 +29,8 @@ import java.util.regex.Pattern;
  * You can then take the output using {@link #getResults()} or consume it directly using {@link #processResults(RichTextConsumer)}.
  */
 public class RichTextFinder {
+	private static final Logger LOGGER = Logging.getLogger();
+
 	private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	private static final Pattern EMPTY_PATTERN = Pattern.compile("");
 
@@ -35,7 +40,8 @@ public class RichTextFinder {
 		for (Emoji emoji : EmojiManager.getAllEmojis()) {
 			for (String discordAlias : emoji.getDiscordAliases()) {
 				if (emojiByDiscordAlias.containsKey(discordAlias)) {
-					throw new IllegalStateException("Existing alias: " + discordAlias);
+                    LOGGER.error("Existing alias: {}", discordAlias, new InternalException("Existing alias: " + discordAlias));
+					continue;
 				}
 
 				emojiByDiscordAlias.put(discordAlias, emoji);
