@@ -434,6 +434,8 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
+        <!-- Upgrade over JDA's version, -->
+        <!-- not sure why it isn't transitively included once emoji-java was removed in #132 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
