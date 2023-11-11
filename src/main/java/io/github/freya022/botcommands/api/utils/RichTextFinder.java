@@ -1,11 +1,10 @@
 package io.github.freya022.botcommands.api.utils;
 
-import com.vdurmont.emoji.EmojiParser;
+import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
+import net.fellbaum.jemoji.Emoji;
+import net.fellbaum.jemoji.EmojiManager;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,9 +25,23 @@ import java.util.regex.Pattern;
  * <p>
  * You can then take the output using {@link #getResults()} or consume it directly using {@link #processResults(RichTextConsumer)}.
  */
-public class RichTextFinder extends EmojiParser {
+public class RichTextFinder {
 	private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	private static final Pattern EMPTY_PATTERN = Pattern.compile("");
+
+	private static final Map<String, Emoji> emojiByDiscordAlias = new HashMap<>();
+
+	static {
+		for (Emoji emoji : EmojiManager.getAllEmojis()) {
+			for (String discordAlias : emoji.getDiscordAliases()) {
+				if (emojiByDiscordAlias.containsKey(discordAlias)) {
+					throw new IllegalStateException("Existing alias: " + discordAlias);
+				}
+
+				emojiByDiscordAlias.put(discordAlias, emoji);
+			}
+		}
+	}
 
 	private final String input;
 	private final Matcher matcher;
@@ -61,7 +74,8 @@ public class RichTextFinder extends EmojiParser {
 		}
 
 		if (getEmojis) {
-			resolveEmojis();
+			extractAliasedEmojis();
+			extractUnicodeEmojis();
 		}
 
 		if (getUrls) {
@@ -109,56 +123,58 @@ public class RichTextFinder extends EmojiParser {
 		return List.copyOf(normalMentionMap.values());
 	}
 
-	private void resolveEmojis() {
-		//Find emoji aliases
-		final int inputLength = input.length();
-		for (int last = 0; last < inputLength; last++) {
-			AliasCandidate alias = getAliasAt(input, last);
+	private void extractAliasedEmojis() {
+		int aliasBegin = 0;
+		while ((aliasBegin = input.indexOf(':', aliasBegin)) >= 0) {
+			int aliasEnd = input.indexOf(':', aliasBegin + 2);  // Alias must be at least 1 char in length
+			if (aliasEnd == -1) {
+				aliasBegin += 1; // Do not find back the same alias
+                continue; // No alias end found
+            }
 
-			if (alias != null) {
-				last = alias.endIndex;
+			final Emoji emoji = emojiByDiscordAlias.get(input.substring(aliasBegin, aliasEnd + 1));
+			if (emoji == null) {
+				aliasBegin += 1; // Do not find back the same alias
+                continue;
+            }
 
-				final String substring;
-				if (alias.fitzpatrick != null) {
-					substring = alias.emoji.getUnicode() + alias.fitzpatrick.unicode;
-				} else {
-					substring = alias.emoji.getUnicode();
-				}
+			if (!isInCustomEmote(emoji)) {
+                normalMentionMap.put(aliasBegin, new RichText(emoji.getUnicode(), RichTextType.UNICODE_EMOTE));
+				addedStrs.put(aliasBegin, input.substring(aliasBegin, aliasEnd + 1));
+			}
 
-				final int beginIndex = last;
+			aliasBegin += 1; // Do not find back the same alias
+		}
+	}
 
-				final boolean isInsideCustomEmote = normalMentionMap.values().stream().filter(r -> r.type == RichTextType.EMOJI).anyMatch(r -> {
-					final List<String> aliases = alias.emoji.getAliases();
-					for (String aliasItem : aliases) {
-						final boolean customEmoteHasEmoji = r.substring.startsWith(':' + aliasItem + ':', 1);
+	private boolean isInCustomEmote(Emoji emoji) {
+		for (RichText richText : normalMentionMap.values()) {
+			if (richText.type != RichTextType.EMOJI) continue;
 
-						if (customEmoteHasEmoji) {
-							return true;
-						}
-					}
+			for (String aliasItem : emoji.getDiscordAliases()) {
+				final boolean customEmoteHasEmoji = richText.substring.startsWith(aliasItem, 1);
 
-					return false;
-				});
-
-				if (!isInsideCustomEmote) {
-//					System.out.println("added emoji " + substring);
-					normalMentionMap.put(beginIndex, new RichText(substring, RichTextType.UNICODE_EMOTE));
-					addedStrs.put(beginIndex, input.substring(alias.startIndex, alias.endIndex + 1));
+				if (customEmoteHasEmoji) {
+					return true;
 				}
 			}
 		}
 
-		//Find unicode emojis
-		char[] inputCharArray = input.toCharArray();
-		UnicodeCandidate next;
-		for (int i = 0; (next = getNextUnicodeCandidate(inputCharArray, i)) != null; i = next.getFitzpatrickEndIndex()) {
-			if (next.hasFitzpatrick()) {
-				normalMentionMap.put(next.getEmojiStartIndex(), new RichText(next.getEmoji().getUnicode(next.getFitzpatrick()), RichTextType.UNICODE_EMOTE));
-				addedStrs.put(next.getEmojiStartIndex(), next.getEmoji().getUnicode(next.getFitzpatrick()));
-			} else {
-				normalMentionMap.put(next.getEmojiStartIndex(), new RichText(next.getEmoji().getUnicode(), RichTextType.UNICODE_EMOTE));
-				addedStrs.put(next.getEmojiStartIndex(), next.getEmoji().getUnicode());
-			}
+		return false;
+	}
+
+	private void extractUnicodeEmojis() {
+		final List<Emoji> emojis = EmojiManager.extractEmojisInOrder(input);
+		int unicodeIndex = 0;
+		for (Emoji emoji : emojis) {
+			final int index = input.indexOf(emoji.getUnicode(), unicodeIndex);
+			if (index <= unicodeIndex)
+				ExceptionsKt.throwInternal("Found an unicode emoji at the same index as the start index");
+
+			normalMentionMap.put(index, new RichText(emoji.getUnicode(), RichTextType.UNICODE_EMOTE));
+			addedStrs.put(index, emoji.getUnicode());
+
+			unicodeIndex = index + 1;
 		}
 	}
 
