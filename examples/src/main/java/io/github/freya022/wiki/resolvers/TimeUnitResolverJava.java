@@ -3,7 +3,7 @@ package io.github.freya022.wiki.resolvers;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.Resolvers;
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.wiki.switches.WikiDetailProfile;
 import io.github.freya022.wiki.switches.WikiLanguage;

@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.to
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
-import io.github.freya022.botcommands.api.parameters.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.enumResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.toHumanName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.wiki.switches.WikiDetailProfile
