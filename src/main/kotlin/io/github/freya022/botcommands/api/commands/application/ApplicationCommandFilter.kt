@@ -67,25 +67,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  */
 @InterfacedService(acceptMultiple = true)
 interface ApplicationCommandFilter<T : Any> : Filter {
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'checkSuspend' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("checkSuspend(event, commandInfo)")
-    )
-    @JvmSynthetic
-    suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'check' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("check(event, commandInfo)")
-    )
-    fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
     /**
      * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
      *

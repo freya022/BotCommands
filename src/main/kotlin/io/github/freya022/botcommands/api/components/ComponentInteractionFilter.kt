@@ -84,25 +84,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  */
 @InterfacedService(acceptMultiple = true)
 interface ComponentInteractionFilter<T : Any> : Filter {
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'checkSuspend' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("checkSuspend(event, handlerName)")
-    )
-    @JvmSynthetic
-    suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'check' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("check(event, handlerName)")
-    )
-    fun isAccepted(event: GenericComponentInteractionCreateEvent, handlerName: String?): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
     /**
      * Returns `null` if this filter should allow the component to be used, or returns your own object if not.
      *
