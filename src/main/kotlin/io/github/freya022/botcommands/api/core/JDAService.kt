@@ -27,10 +27,12 @@ import java.util.*
  * class Bot(private val config: Config) : JDAService() {
  *     override val intents: Set<GatewayIntent> = enumSetOf(GatewayIntent.MESSAGE_CONTENT)
  *
+ *     override val cacheFlags: Set<CacheFlag> = enumSetOf()
+ *
  *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
- *         DefaultShardManagerBuilder.createLight(config.token).apply {
+ *         DefaultShardManagerBuilder.createLight(config.token, intents).apply {
  *             setEventManagerProvider { eventManager }
- *             enableIntents(intents)
+ *             enableCache(cacheFlags)
  *             ...
  *         }.build()
  *     }
