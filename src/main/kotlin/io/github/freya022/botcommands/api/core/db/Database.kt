@@ -5,11 +5,8 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.Language
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -33,13 +30,23 @@ interface Database {
     val config: BConfig
     val connectionSupplier: ConnectionSupplier
 
+    @JvmSynthetic
     @Throws(SQLException::class)
     suspend fun fetchConnection(readOnly: Boolean = false): Connection
-
-    //TODO java methods
 }
 
-val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
+@JvmOverloads
+@Throws(SQLException::class)
+internal fun Database.fetchConnectionJava(readOnly: Boolean = false): Connection =
+    runBlocking { fetchConnection(readOnly) }
+
+@JvmOverloads
+@Throws(SQLException::class)
+internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: TransactionFunction<R, *>): R =
+    runBlocking { transactional(readOnly) { block.apply(connection) } }
+
+@PublishedApi
+internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
 
 @OptIn(ExperimentalContracts::class)
 @Throws(SQLException::class)
