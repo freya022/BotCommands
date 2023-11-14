@@ -1,12 +1,13 @@
 package io.github.freya022.botcommands.api.core.db;
 
+import io.github.freya022.botcommands.api.core.service.ServiceStart;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@BService
+@BService(start = ServiceStart.LAZY)
 public class BlockingDatabase {
     private final Database database;
 
