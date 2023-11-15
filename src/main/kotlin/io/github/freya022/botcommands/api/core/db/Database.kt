@@ -30,6 +30,21 @@ interface Database {
     val config: BConfig
     val connectionSupplier: ConnectionSupplier
 
+    /**
+     * Acquires a database connection.
+     *
+     * If [all connections are used][ConnectionSupplier.maxConnections],
+     * this function suspends until a connection is available.
+     *
+     * The connection should always be short-lived, consider using [transactional] otherwise.
+     *
+     * The returned connection **must** be closed with an [use] closure.
+     *
+     * @param readOnly `true` if the database only is read from, can allow some optimizations
+     *
+     * @see transactional
+     * @see preparedStatement
+     */
     @JvmSynthetic
     @Throws(SQLException::class)
     suspend fun fetchConnection(readOnly: Boolean = false): Connection
@@ -48,6 +63,24 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 @PublishedApi
 internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
 
+/**
+ * Acquires a database connection, runs the [block], commits the changes and closes the connection.
+ *
+ * If [all connections are used][ConnectionSupplier.maxConnections],
+ * this function suspends until a connection is available.
+ *
+ * If [BConfig.dumpLongTransactions] is enabled,
+ * a coroutine dump ([if available][BConfig.dumpLongTransactions]) and a thread dump will be done
+ * if the transaction is longer than [the threshold][ConnectionSupplier.maxTransactionDuration].
+ *
+ * @param readOnly `true` if the database only is read from, can allow some optimizations
+ *
+ * @see Database.fetchConnection
+ * @see Database.preparedStatement
+ *
+ * @see BConfig.dumpLongTransactions
+ * @see ConnectionSupplier.maxTransactionDuration
+ */
 @OptIn(ExperimentalContracts::class)
 @Throws(SQLException::class)
 suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
@@ -140,6 +173,19 @@ internal fun createThreadDump(): String = buildString {
     append(infos.joinToString(""))
 }
 
+/**
+ * Creates a statement from the given SQL, runs the [block], commits the changes and closes the connection.
+ *
+ * If [all connections are used][ConnectionSupplier.maxConnections],
+ * this function suspends until a connection is available.
+ *
+ * The [block] should always be short-lived, consider using [transactional] otherwise.
+ *
+ * @param readOnly `true` if the database only is read from, can allow some optimizations
+ *
+ * @see Database.fetchConnection
+ * @see Database.transactional
+ */
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
