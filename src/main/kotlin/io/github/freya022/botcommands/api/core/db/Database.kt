@@ -60,6 +60,11 @@ internal fun Database.fetchConnectionJava(readOnly: Boolean = false): Connection
 internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: TransactionFunction<R, *>): R =
     runBlocking { transactional(readOnly) { block.apply(connection) } }
 
+@JvmOverloads
+@Throws(SQLException::class)
+internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
+    runBlocking { preparedStatement(sql, readOnly) { block.apply(connection) } }
+
 @PublishedApi
 internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
 
