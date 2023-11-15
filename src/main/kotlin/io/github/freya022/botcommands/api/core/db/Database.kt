@@ -179,7 +179,7 @@ internal fun createThreadDump(): String = buildString {
 }
 
 /**
- * Creates a statement from the given SQL, runs the [block], commits the changes and closes the connection.
+ * Creates a statement from the given SQL statement, runs the [block], commits the changes and closes the connection.
  *
  * If [all connections are used][ConnectionSupplier.maxConnections],
  * this function suspends until a connection is available.
