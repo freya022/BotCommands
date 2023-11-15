@@ -77,7 +77,6 @@ public class BlockingDatabase {
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    @NotNull
     public <R, E extends Exception> R withTransaction(@NotNull TransactionFunction<R, E> transactionFunction) throws SQLException, E {
         return DatabaseKt.withTransactionJava(database, transactionFunction);
     }
@@ -101,7 +100,6 @@ public class BlockingDatabase {
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    @NotNull
     public <R, E extends Exception> R withTransaction(boolean readOnly, @NotNull TransactionFunction<R, E> transactionFunction) throws SQLException, E {
         return DatabaseKt.withTransactionJava(database, readOnly, transactionFunction);
     }
