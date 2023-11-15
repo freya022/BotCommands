@@ -6,15 +6,27 @@ import java.sql.SQLException
 
 class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, ResultSet by resultSet {
     override fun iterator(): Iterator<DBResult> = object : Iterator<DBResult> {
+        private var hasNext: Boolean? = null
+
         override fun hasNext(): Boolean {
-            return try {
-                this@DBResult.next()
+            // Return existing state if possible
+            hasNext?.let { return it }
+
+            try {
+                val hasNext = this@DBResult.next()
+                this.hasNext = hasNext
+                return hasNext
             } catch (e: SQLException) {
                 throw RuntimeException("Unable to iterate the result set", e)
             }
         }
 
         override fun next(): DBResult {
+            if (hasNext != true) {
+                throw NoSuchElementException()
+            }
+            hasNext = null
+
             return this@DBResult
         }
     }
