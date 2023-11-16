@@ -37,7 +37,7 @@ internal object GenericParametrizedQueryFactory : ParametrizedQueryFactory<Gener
         }
     }
 
-    override fun isSupported(connection: Connection): Boolean = true
+    override fun isSupported(connection: Connection, databaseProductName: String): Boolean = true
 
     override fun get(preparedStatement: PreparedStatement, sql: String): GenericParametrizedQuery = GenericParametrizedQuery(preparedStatement, sql)
 }

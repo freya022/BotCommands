@@ -6,7 +6,7 @@ import java.sql.PreparedStatement
 
 @InterfacedService(acceptMultiple = true)
 interface ParametrizedQueryFactory<R : ParametrizedQuery> {
-    fun isSupported(connection: Connection): Boolean
+    fun isSupported(connection: Connection, databaseProductName: String): Boolean
 
     fun get(preparedStatement: PreparedStatement, sql: String): R
 }

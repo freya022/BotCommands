@@ -105,7 +105,8 @@ internal class DatabaseImpl internal constructor(
             return NonParametrizedQueryFactory
         }
 
-        val compatibleFactories = tracedQueryFactories.filter { it.isSupported(connection) }
+        val databaseProductName = connection.metaData.databaseProductName
+        val compatibleFactories = tracedQueryFactories.filter { it.isSupported(connection, databaseProductName) }
         if (compatibleFactories.isEmpty()) {
             return GenericParametrizedQueryFactory
         } else if (compatibleFactories.size > 1) {

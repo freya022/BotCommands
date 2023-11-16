@@ -13,7 +13,7 @@ internal object NonParametrizedQueryFactory : ParametrizedQueryFactory<NonParame
         override fun toSql(): String = sql
     }
 
-    override fun isSupported(connection: Connection): Boolean = true
+    override fun isSupported(connection: Connection, databaseProductName: String): Boolean = true
 
     override fun get(preparedStatement: PreparedStatement, sql: String): NonParametrizedQuery = NonParametrizedQuery(sql)
 }
