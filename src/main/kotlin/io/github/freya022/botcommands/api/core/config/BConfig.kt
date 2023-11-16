@@ -59,7 +59,7 @@ interface BConfig {
     /**
      * Determines whether *all* SQL queries should be logged on `TRACE`.
      *
-     * Default: `true`
+     * Default: `false`
      */
     val logQueries: Boolean
     /**
@@ -115,7 +115,7 @@ class BConfigBuilder internal constructor() : BConfig {
     @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false
     @set:JvmName("logQueries")
-    override var logQueries: Boolean = true
+    override var logQueries: Boolean = false
     @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
     @set:JvmSynthetic
