@@ -66,7 +66,7 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
     runBlocking {
         fetchConnection(readOnly).use { connection ->
-            connection.prepareStatement(sql).use { block.apply(it) }
+            connection.prepareStatement(sql).let(::BlockingKPreparedStatement).use { block.apply(it) }
         }
     }
 
