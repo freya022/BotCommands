@@ -115,7 +115,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
     try {
         connection.autoCommit = false
-        return block(Transaction(this, connection))
+        return block(Transaction(connection))
     } catch (e: Throwable) {
         connection.rollback()
         throw e
@@ -200,6 +200,6 @@ internal fun createThreadDump(): String = buildString {
 @Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
     return fetchConnection(readOnly).use {
-        KPreparedStatement(this, it.prepareStatement(sql)).use(block)
+        KPreparedStatement(it.prepareStatement(sql)).use(block)
     }
 }

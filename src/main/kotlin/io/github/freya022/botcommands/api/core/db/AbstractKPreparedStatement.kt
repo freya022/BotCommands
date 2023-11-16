@@ -4,10 +4,13 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 sealed class AbstractKPreparedStatement(val preparedStatement: PreparedStatement) : PreparedStatement by preparedStatement {
-    // region execute
+    protected fun setParameters(params: Array<out Any?>) {
+        for ((i, param) in params.withIndex()) {
+            setObject(i + 1, param)
+        }
+    }
 
-    @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun execute(): Boolean = throw UnsupportedOperationException()
+    // region execute
 
     @Deprecated("This is never usable as this is a prepared statement", level = DeprecationLevel.HIDDEN)
     override fun execute(sql: String?): Boolean = throw UnsupportedOperationException()
@@ -25,9 +28,6 @@ sealed class AbstractKPreparedStatement(val preparedStatement: PreparedStatement
 
     // region executeUpdate
 
-    @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun executeUpdate(): Int = throw UnsupportedOperationException()
-
     @Deprecated("This is never usable as this is a prepared statement", level = DeprecationLevel.HIDDEN)
     override fun executeUpdate(sql: String?): Int = throw UnsupportedOperationException()
 
@@ -44,11 +44,12 @@ sealed class AbstractKPreparedStatement(val preparedStatement: PreparedStatement
 
     // region executeQuery
 
-    @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun executeQuery(): ResultSet = throw UnsupportedOperationException()
-
     @Deprecated("This is never usable as this is a prepared statement", level = DeprecationLevel.HIDDEN)
     override fun executeQuery(sql: String?): ResultSet = throw UnsupportedOperationException()
 
     // endregion
+
+    override fun toString(): String {
+        return preparedStatement.toString()
+    }
 }
