@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.core.db;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /**
  * Functional interface for Java JDBC prepared statements.
@@ -14,5 +14,5 @@ import java.sql.Connection;
  */
 @FunctionalInterface
 public interface StatementFunction<R, E extends Exception> {
-    R apply(@NotNull Connection connection) throws E;
+    R apply(@NotNull PreparedStatement statement) throws E;
 }
