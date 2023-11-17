@@ -5,7 +5,7 @@ package io.github.freya022.botcommands.api.core.db
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-class BlockingKPreparedStatement(preparedStatement: PreparedStatement) : AbstractKPreparedStatement(preparedStatement) {
+class BlockingKPreparedStatement internal constructor(preparedStatement: PreparedStatement) : AbstractKPreparedStatement(preparedStatement) {
     fun execute(vararg params: Any?): Boolean {
         setParameters(params)
         return preparedStatement.execute()
