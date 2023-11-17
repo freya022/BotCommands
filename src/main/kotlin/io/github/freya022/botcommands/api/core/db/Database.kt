@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.core.db
 
 import io.github.freya022.botcommands.api.Logging
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
+import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -24,6 +26,11 @@ private val logger = KotlinLogging.logger { }
 
 /**
  * Utility class to use connections given by the [ConnectionSupplier].
+ *
+ * The connection could be wrapped depending on the configuration, for example,
+ * to log the queries (in which case a [ParametrizedQuery] is used), as well as timing them.
+ *
+ * @see ParametrizedQueryFactory
  */
 @InjectedService("Requires a ConnectionSupplier service")
 interface Database {
