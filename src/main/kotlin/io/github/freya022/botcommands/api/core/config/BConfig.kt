@@ -59,6 +59,8 @@ interface BConfig {
     /**
      * Determines whether *all* SQL queries should be logged on `TRACE`.
      *
+     * The `TRACE` log level is required on the class that created the prepared statement.
+     *
      * Default: `false`
      */
     val logQueries: Boolean
