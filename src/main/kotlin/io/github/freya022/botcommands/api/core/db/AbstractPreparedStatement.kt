@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.core.db
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-sealed class AbstractKPreparedStatement(val preparedStatement: PreparedStatement) : PreparedStatement by preparedStatement {
+sealed class AbstractPreparedStatement(val preparedStatement: PreparedStatement) : PreparedStatement by preparedStatement {
     protected fun setParameters(params: Array<out Any?>) {
         for ((i, param) in params.withIndex()) {
             setObject(i + 1, param)

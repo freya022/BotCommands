@@ -12,5 +12,5 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface StatementFunction<R, E extends Exception> {
-    R apply(@NotNull BlockingKPreparedStatement statement) throws E;
+    R apply(@NotNull BlockingPreparedStatement statement) throws E;
 }

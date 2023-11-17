@@ -66,7 +66,7 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
     runBlocking {
         fetchConnection(readOnly).use { connection ->
-            connection.prepareStatement(sql).let(::BlockingKPreparedStatement).use { block.apply(it) }
+            connection.prepareStatement(sql).let(::BlockingPreparedStatement).use { block.apply(it) }
         }
     }
 
@@ -198,8 +198,8 @@ internal fun createThreadDump(): String = buildString {
  */
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
-suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
+suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: SuspendingPreparedStatement.() -> R): R {
     return fetchConnection(readOnly).use {
-        KPreparedStatement(it.prepareStatement(sql)).use(block)
+        SuspendingPreparedStatement(it.prepareStatement(sql)).use(block)
     }
 }
