@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
 import io.github.freya022.botcommands.api.core.service.ServiceStart;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
  * @see ParametrizedQueryFactory
  */
 @BService(start = ServiceStart.LAZY)
+@Dependencies(Database.class)
 public class BlockingDatabase {
     private final Database database;
 
