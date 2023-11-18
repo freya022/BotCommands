@@ -22,16 +22,43 @@ class BlockingPreparedStatement internal constructor(preparedStatement: Prepared
      */
     fun withLogger(name: String) = withLoggerExt(name)
 
+    /**
+     * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
+     *
+     * The parameters are set in the order they are passed in,
+     * supported types are implementation-specific,
+     * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
+     *
+     * @see PreparedStatement.execute
+     */
     fun execute(vararg params: Any?): Boolean {
         setParameters(params)
         return preparedStatement.execute()
     }
 
+    /**
+     * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
+     *
+     * The parameters are set in the order they are passed in,
+     * supported types are implementation-specific,
+     * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
+     *
+     * @see PreparedStatement.executeUpdate
+     */
     fun executeUpdate(vararg params: Any?): Int {
         setParameters(params)
         return preparedStatement.executeUpdate()
     }
 
+    /**
+     * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
+     *
+     * The parameters are set in the order they are passed in,
+     * supported types are implementation-specific,
+     * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
+     *
+     * @see PreparedStatement.executeQuery
+     */
     fun executeQuery(vararg params: Any?): DBResult {
         setParameters(params)
         return DBResult(preparedStatement.executeQuery())

@@ -16,7 +16,7 @@ interface ParametrizedQuery {
     /**
      * Adds a parameter to the query.
      *
-     * @param index the index of the parameter, starts at 1
+     * @param index The index of the parameter, starts at 1
      * @param value `null`-able value of the parameter
      */
     fun addValue(index: Int, value: Any?)

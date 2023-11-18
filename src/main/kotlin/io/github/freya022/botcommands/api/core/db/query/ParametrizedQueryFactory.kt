@@ -31,10 +31,10 @@ import java.sql.PreparedStatement
 @InterfacedService(acceptMultiple = true)
 interface ParametrizedQueryFactory<R : ParametrizedQuery> {
     /**
-     * Returns whether this connection is supporter by this parametrized query factory.
+     * Returns whether this connection is supported by this parametrized query factory.
      *
-     * @param connection          the database connection
-     * @param databaseProductName the [database product name][DatabaseMetaData.getDatabaseProductName]
+     * @param connection          The database connection
+     * @param databaseProductName The [database product name][DatabaseMetaData.getDatabaseProductName]
      */
     fun isSupported(connection: Connection, databaseProductName: String): Boolean
 

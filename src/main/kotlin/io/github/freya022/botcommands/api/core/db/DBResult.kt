@@ -4,6 +4,10 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import java.sql.ResultSet
 import java.sql.SQLException
 
+/**
+ * Utility class to iterate over a [ResultSet],
+ * with a few methods to use nullable objects instead of booleans.
+ */
 class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, ResultSet by resultSet {
     override fun iterator(): Iterator<DBResult> = object : Iterator<DBResult> {
         private var hasNext: Boolean? = null

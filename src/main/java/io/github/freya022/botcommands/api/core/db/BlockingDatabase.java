@@ -79,7 +79,7 @@ public class BlockingDatabase {
     }
 
     /**
-     * Acquires a database connection, runs the [block], commits the changes and closes the connection.
+     * Acquires a database connection, runs the function, commits the changes and closes the connection.
      *
      * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
      * this function blocks until a connection is available.
@@ -100,7 +100,7 @@ public class BlockingDatabase {
     }
 
     /**
-     * Acquires a database connection, runs the [block], commits the changes and closes the connection.
+     * Acquires a database connection, runs the function, commits the changes and closes the connection.
      *
      * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
      * this function blocks until a connection is available.
