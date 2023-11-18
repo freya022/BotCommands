@@ -9,7 +9,17 @@ import io.github.freya022.botcommands.api.core.db.withLogger as withLoggerExt
 
 class BlockingPreparedStatement internal constructor(preparedStatement: PreparedStatement) : AbstractPreparedStatement(preparedStatement) {
     //TODO test this works (requires unwrap impl)
+    /**
+     * Sets the logger used to log the query.
+     *
+     * This is a no-op if tracing is not enabled, see the full conditions on [Database].
+     */
     fun withLogger(logger: Logger) = withLoggerExt(logger)
+    /**
+     * Sets the logger used to log the query.
+     *
+     * This is a no-op if tracing is not enabled, see the full conditions on [Database].
+     */
     fun withLogger(name: String) = withLoggerExt(name)
 
     fun execute(vararg params: Any?): Boolean {

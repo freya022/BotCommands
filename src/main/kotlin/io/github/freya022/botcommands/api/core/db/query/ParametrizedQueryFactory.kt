@@ -14,7 +14,7 @@ import java.sql.PreparedStatement
  * A parametrized query is only used if all of these conditions are met:
  * - [BConfig.logQueries] is enabled **OR** [BConfig.queryLogThreshold] is configured
  * - [BConfig.logQueryParameters] is enabled
- * - The logger of the class that created the prepared statement has its TRACE logs enabled
+ * - The logger of the class that created the prepared statement has its `TRACE` logs enabled
  *
  * ### Usage
  * Register your instance as a service with [BService]
