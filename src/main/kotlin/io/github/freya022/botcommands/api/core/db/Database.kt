@@ -74,10 +74,8 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 @JvmOverloads
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
-    runBlocking {
-        fetchConnection(readOnly).use { connection ->
-            connection.prepareStatement(sql).let(::BlockingPreparedStatement).use { block.apply(it) }
-        }
+    runBlocking { fetchConnection(readOnly) }.use { connection ->
+        connection.prepareStatement(sql).let(::BlockingPreparedStatement).use { block.apply(it) }
     }
 
 @PublishedApi
