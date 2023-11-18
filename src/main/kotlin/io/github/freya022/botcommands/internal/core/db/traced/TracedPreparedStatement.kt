@@ -16,7 +16,7 @@ import kotlin.time.measureTimedValue
 
 internal class TracedPreparedStatement internal constructor(
     private val preparedStatement: PreparedStatement,
-    private val logger: KLogger,
+    internal var logger: KLogger,
     private val parametrizedQuery: ParametrizedQuery,
     private val isQueryThresholdSet: Boolean,
     private val queryLogThreshold: Duration

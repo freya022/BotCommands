@@ -2,10 +2,16 @@
 
 package io.github.freya022.botcommands.api.core.db
 
+import org.slf4j.Logger
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import io.github.freya022.botcommands.api.core.db.withLogger as withLoggerExt
 
 class BlockingPreparedStatement internal constructor(preparedStatement: PreparedStatement) : AbstractPreparedStatement(preparedStatement) {
+    //TODO test this works (requires unwrap impl)
+    fun withLogger(logger: Logger) = withLoggerExt(logger)
+    fun withLogger(name: String) = withLoggerExt(name)
+
     fun execute(vararg params: Any?): Boolean {
         setParameters(params)
         return preparedStatement.execute()

@@ -58,23 +58,27 @@ internal class TracedConnection internal constructor(
         // 3. prepareStatement
         // 4. Class generated for coroutines (prepareStatement:-1)
         // 5 ==> invokeSuspend, ClassWeLookingFor$TheMethod
-        val callerClass = walker.walk { stream -> stream.asSequence().drop(4).first().declaringClass }
-        val callerClassName = unwrapCompanionClass(callerClass).name.substringBefore('$')
-        return KotlinLogging.logger(callerClassName)
+        return loggerFromCallStack(4)
+    }
+}
+
+internal fun loggerFromCallStack(skippedFrames: Int): KLogger {
+    val callerClass = walker.walk { stream -> stream.asSequence().drop(skippedFrames + 1).first().declaringClass }
+    val callerClassName = unwrapCompanionClass(callerClass).name.substringBefore('$')
+    return KotlinLogging.logger(callerClassName)
+}
+
+private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
+    val enclosingClass = clazz.enclosingClass ?: return clazz
+
+    val hasCompanionField = enclosingClass.declaredFields.any { field ->
+        field.name == clazz.simpleName &&
+                Modifier.isStatic(field.modifiers) &&
+                field.type == clazz
     }
 
-    private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
-        val enclosingClass = clazz.enclosingClass ?: return clazz
-
-        val hasCompanionField = enclosingClass.declaredFields.any { field ->
-            field.name == clazz.simpleName &&
-                    Modifier.isStatic(field.modifiers) &&
-                    field.type == clazz
-        }
-
-        return when {
-            hasCompanionField -> enclosingClass
-            else -> clazz
-        }
+    return when {
+        hasCompanionField -> enclosingClass
+        else -> clazz
     }
 }

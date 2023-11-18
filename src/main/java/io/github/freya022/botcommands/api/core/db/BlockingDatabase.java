@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,8 +17,13 @@ import java.sql.SQLException;
  *
  * <p>Use {@link Database} if you use Kotlin.
  *
- * <p>The connection could be wrapped depending on the configuration, for example,
+ * <h3>Tracing</h3>
+ * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a {@link ParametrizedQuery} is used), as well as timing them.
+ *
+ * <p>The logged SQL statements will use the logger of the class that created the prepared statement.
+ * If a utility class of your own creates the statements for you, and you wish the logs to be more accurate,
+ * you can use {@link BlockingPreparedStatement#withLogger(Logger)} to change the logger of the prepared statement.
  *
  * @see Database
  * @see ParametrizedQueryFactory

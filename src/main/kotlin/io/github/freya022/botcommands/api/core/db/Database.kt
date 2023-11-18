@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.botcommands.internal.core.db.traced.TracedConnection
+import io.github.freya022.botcommands.internal.core.db.traced.loggerFromCallStack
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
@@ -29,8 +31,13 @@ private val logger = KotlinLogging.logger { }
  *
  * Use [BlockingDatabase] if you don't use Kotlin.
  *
+ * ### Tracing
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a [ParametrizedQuery] is used), as well as timing them.
+ *
+ * The logged SQL statements will use the logger of the class that created the prepared statement.
+ * If a utility class of your own creates the statements for you, and you wish the logs to be more accurate,
+ * you can use [withLogger] to change the logger of the prepared statement.
  *
  * @see BlockingDatabase
  * @see ParametrizedQueryFactory
@@ -75,7 +82,10 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
     runBlocking { fetchConnection(readOnly) }.use { connection ->
-        connection.prepareStatement(sql).let(::BlockingPreparedStatement).use { block.apply(it) }
+        val prepareStatement = connection.prepareStatement(sql)
+        if (connection.isWrapperFor(TracedConnection::class.java))
+            prepareStatement.withLogger(loggerFromCallStack(2))
+        prepareStatement.let(::BlockingPreparedStatement).use { block.apply(it) }
     }
 
 @PublishedApi
