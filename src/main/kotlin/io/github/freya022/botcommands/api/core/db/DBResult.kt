@@ -31,19 +31,23 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         }
     }
 
+    @JvmSynthetic
     inline operator fun <reified R> get(columnLabel: String): R = when {
         R::class.isSubclassOf<List<*>>() -> (getArray(columnLabel).array as Array<*>).toList() as R
         R::class.java.isArray -> getArray(columnLabel).array as R
         else -> getObject(columnLabel, R::class.java)
     }
 
+    @JvmSynthetic
     inline operator fun <reified R> get(columnIndex: Int): R = when {
         R::class.isSubclassOf<List<*>>() -> (getArray(columnIndex).array as Array<*>).toList() as R
         else -> getObject(columnIndex, R::class.java)
     }
 
+    @JvmSynthetic
     inline fun <reified R> getOrNull(columnLabel: String): R? = get<R>(columnLabel).let { if (wasNull()) null else it }
 
+    @JvmSynthetic
     inline fun <reified R> getOrNull(columnIndex: Int): R? = get<R>(columnIndex).let { if (wasNull()) null else it }
 
     fun read(): DBResult = readOrNull() ?: throw NoSuchElementException("There are no elements in this result set")
