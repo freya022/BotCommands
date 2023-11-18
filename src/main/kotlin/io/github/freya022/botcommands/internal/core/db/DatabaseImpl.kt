@@ -36,6 +36,8 @@ internal class DatabaseImpl internal constructor(
     override val config: BConfig
 ) : Database {
     internal open class ConnectionResource internal constructor(protected val connection: Connection, private val semaphore: Semaphore) : Connection by connection {
+        internal val availablePermits get() = semaphore.availablePermits
+
         override fun close() {
             try {
                 connection.close()

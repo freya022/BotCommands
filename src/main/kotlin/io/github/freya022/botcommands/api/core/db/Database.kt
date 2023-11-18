@@ -20,6 +20,7 @@ import java.sql.SQLException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 import kotlin.time.toKotlinDuration
@@ -131,7 +132,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
     val leakJob: Job? = maxTransactionDuration?.let {
         dbLeakScope.launch {
             delay(maxTransactionDuration)
-            logger!!.warn("Transaction took longer than ${maxTransactionDuration.toString(DurationUnit.SECONDS, 2)}:\n${createThreadDump()}")
+            logger!!.warn(formatExceededTransactionDuration("Transaction", connection, maxTransactionDuration))
         }
     }
 
@@ -147,12 +148,24 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
             val duration = measureTime { releaseConnection(connection) }
             if (duration > maxTransactionDuration) {
-                logger!!.warn("Commit & close took longer than ${maxTransactionDuration.toString(DurationUnit.SECONDS, 2)}:\n${createThreadDump()}")
+                logger!!.warn(formatExceededTransactionDuration("Commit & close", connection, maxTransactionDuration))
             }
         } else {
             releaseConnection(connection)
         }
     }
+}
+
+@PublishedApi
+internal fun formatExceededTransactionDuration(actionDescription: String, connection: Connection, maxTransactionDuration: Duration): String {
+    //TODO enable when #unwrap and #isWrapperFor are implemented
+//    if (!connection.isWrapperFor(DatabaseImpl.ConnectionResource::class.java))
+//        throwInternal("Transaction connection should have been a ${classRef<DatabaseImpl.ConnectionResource>()}")
+//    val resource = connection.unwrap(DatabaseImpl.ConnectionResource::class.java)
+//    val availablePermits = resource.availablePermits
+    val availablePermits = -1
+
+    return "$actionDescription took longer than ${maxTransactionDuration.toString(DurationUnit.SECONDS, 2)} (available permits: $availablePermits):\n${createDumps()}"
 }
 
 @PublishedApi
@@ -192,7 +205,7 @@ internal fun createCoroutineDump(): String? = when {
 }
 
 @PublishedApi
-internal fun createThreadDump(): String = buildString {
+internal fun createDumps(): String = buildString {
     val coroutineDump = createCoroutineDump()
     if (coroutineDump != null) {
         append(coroutineDump)
