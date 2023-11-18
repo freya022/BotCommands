@@ -15,16 +15,16 @@ import java.sql.SQLException;
 public class SlashDbJava extends ApplicationCommand {
     @JDASlashCommand(name = "java_db")
     public void onSlashJavaDb(GuildSlashEvent event, BlockingDatabase database) throws SQLException {
-        //TODO give BlockingTransaction not Connection
-        final String v = database.withTransaction(connection -> {
-            try (PreparedStatement statement = connection.prepareStatement("select version from bc.bc_version")) {
+        //TODO override incorrect logger
+        final String v = database.withTransaction(transaction -> {
+            return transaction.withStatement("select version from bc.bc_version", statement -> {
                 final ResultSet set = statement.executeQuery();
                 set.next();
                 return set.getString("version");
-            }
+            });
         });
 
-        //TODO add method to override incorrect logger
+        //TODO override incorrect logger
         final String v2 = database.withStatement("select version from bc.bc_version", statement -> {
             final ResultSet set = statement.executeQuery();
             set.next();

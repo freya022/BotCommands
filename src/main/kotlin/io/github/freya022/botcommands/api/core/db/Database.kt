@@ -79,7 +79,7 @@ internal fun Database.fetchConnectionJava(readOnly: Boolean = false): Connection
 @JvmOverloads
 @Throws(SQLException::class)
 internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: TransactionFunction<R, *>): R =
-    runBlocking { transactional(readOnly) { block.apply(connection) } }
+    runBlocking { transactional(readOnly) { block.apply(BlockingTransaction(connection)) } }
 
 @Suppress("SqlSourceToSinkFlow")
 @JvmOverloads
@@ -89,7 +89,7 @@ internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = fal
         val prepareStatement = connection.prepareStatement(sql)
         if (connection.isWrapperFor(TracedConnection::class.java))
             prepareStatement.withLogger(loggerFromCallStack(2))
-        prepareStatement.let(::BlockingPreparedStatement).use { block.apply(it) }
+        BlockingPreparedStatement(prepareStatement).use { block.apply(it) }
     }
 
 @PublishedApi
