@@ -35,6 +35,16 @@ internal class DatabaseImpl internal constructor(
     override val connectionSupplier: ConnectionSupplier,
     override val config: BConfig
 ) : Database {
+    internal open class ConnectionResource internal constructor(protected val connection: Connection, private val semaphore: Semaphore) : Connection by connection {
+        override fun close() {
+            try {
+                connection.close()
+            } finally {
+                semaphore.release()
+            }
+        }
+    }
+
     private val tracedQueryFactories: List<ParametrizedQueryFactory<*>> = context.getInterfacedServices()
 
     private val isQueryThresholdSet = config.queryLogThreshold.isFinite() && config.queryLogThreshold.isPositive()
@@ -69,35 +79,41 @@ internal class DatabaseImpl internal constructor(
 
     override suspend fun fetchConnection(readOnly: Boolean): Connection {
         semaphore.acquire()
-        return connectionSupplier.getConnection()
-            .let { connection ->
-                if (useTracedConnections) {
-                    val tracedQueryFactory = getTracedQueryFactory(connection)
-                    TracedConnection(connection, tracedQueryFactory, isQueryThresholdSet, config.queryLogThreshold)
-                } else {
-                    connection
-                }
+        val rawConnection = try {
+            connectionSupplier.getConnection()
+        } catch (e: Exception) {
+            semaphore.release()
+            throw e
+        }
+
+        val connection = try {
+            if (useTracedConnections) {
+                val tracedQueryFactory = getTracedQueryFactory(rawConnection)
+                TracedConnection(rawConnection, semaphore, tracedQueryFactory, isQueryThresholdSet, config.queryLogThreshold)
+            } else {
+                ConnectionResource(rawConnection, semaphore)
             }
-            .let {
-                object : Connection by it {
-                    override fun close() {
-                        try {
-                            it.close()
-                        } finally {
-                            semaphore.release()
-                        }
-                    }
-                }
-            }.also { connection ->
-                if (!::baseSchema.isInitialized) {
-                    baseSchema = connection.schema
-                } else {
-                    // Reset schema as it isn't done by HikariCP
-                    // in situations where a schema isn't set on the connection pool
-                    connection.schema = baseSchema
-                }
-                connection.isReadOnly = readOnly
+        } catch (e: Exception) {
+            semaphore.release()
+            runCatching { rawConnection.close() }.onFailure { e.addSuppressed(it) }
+            throw e
+        }
+
+        try {
+            if (!::baseSchema.isInitialized) {
+                baseSchema = connection.schema
+            } else {
+                // Reset schema as it isn't done by HikariCP
+                // in situations where a schema isn't set on the connection pool
+                connection.schema = baseSchema
             }
+            connection.isReadOnly = readOnly
+        } catch (e: Exception) {
+            runCatching { connection.close() }.onFailure { e.addSuppressed(it) }
+            throw e
+        }
+
+        return connection
     }
 
     private fun getTracedQueryFactory(connection: Connection): ParametrizedQueryFactory<*> {

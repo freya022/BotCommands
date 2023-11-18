@@ -1,8 +1,10 @@
 package io.github.freya022.botcommands.internal.core.db.traced
 
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
+import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.sync.Semaphore
 import java.lang.reflect.Modifier
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -13,11 +15,12 @@ private val walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REF
 
 @Suppress("SqlSourceToSinkFlow")
 internal class TracedConnection internal constructor(
-    private val connection: Connection,
+    connection: Connection,
+    semaphore: Semaphore,
     private val parametrizedQueryFactory: ParametrizedQueryFactory<*>,
     private val isQueryThresholdSet: Boolean,
     private val queryLogThreshold: Duration
-) : Connection by connection {
+) : DatabaseImpl.ConnectionResource(connection, semaphore) {
     override fun prepareStatement(sql: String): PreparedStatement {
         return wrapStatement(connection.prepareStatement(sql), sql)
     }
