@@ -14,6 +14,7 @@ public record BlockingTransaction(@NotNull Connection connection) {
     }
 
     public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql, @NotNull StatementFunction<R, E> transactionFunction) throws SQLException, E {
-        return transactionFunction.apply(preparedStatement(sql));
+        // Do not make the call stack deeper
+        return transactionFunction.apply(new BlockingPreparedStatement(connection.prepareStatement(sql)));
     }
 }
