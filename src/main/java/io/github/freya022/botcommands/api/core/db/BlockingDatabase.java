@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.core.db;
 
 import io.github.freya022.botcommands.api.core.config.BConfig;
+import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
+import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
 import io.github.freya022.botcommands.api.core.service.ServiceStart;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import org.intellij.lang.annotations.Language;
@@ -10,7 +12,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Utility class to use connections given by the [ConnectionSupplier].
+ * Utility class to use connections given by the {@link ConnectionSupplier}.
+ *
+ * <p>Use {@link Database} if you use Kotlin.
+ *
+ * <p>The connection could be wrapped depending on the configuration, for example,
+ * to log the queries (in which case a {@link ParametrizedQuery} is used), as well as timing them.
+ *
+ * @see Database
+ * @see ParametrizedQueryFactory
  */
 @BService(start = ServiceStart.LAZY)
 public class BlockingDatabase {

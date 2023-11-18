@@ -25,11 +25,14 @@ import kotlin.time.toKotlinDuration
 private val logger = KotlinLogging.logger { }
 
 /**
- * Utility class to use connections given by the [ConnectionSupplier].
+ * Utility class to use connections given by the [ConnectionSupplier], in a suspending style.
+ *
+ * Use [BlockingDatabase] if you don't use Kotlin.
  *
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a [ParametrizedQuery] is used), as well as timing them.
  *
+ * @see BlockingDatabase
  * @see ParametrizedQueryFactory
  */
 @InjectedService("Requires a ConnectionSupplier service")
