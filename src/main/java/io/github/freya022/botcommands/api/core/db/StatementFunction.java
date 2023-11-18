@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.core.db;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
+
 /**
  * Functional interface for Java JDBC prepared statements.
  *
@@ -12,5 +14,5 @@ import org.jetbrains.annotations.NotNull;
  */
 @FunctionalInterface
 public interface StatementFunction<R, E extends Exception> {
-    R apply(@NotNull BlockingPreparedStatement statement) throws E;
+    R apply(@NotNull BlockingPreparedStatement statement) throws SQLException, E;
 }
