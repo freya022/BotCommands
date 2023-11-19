@@ -38,9 +38,10 @@ private val logger = KotlinLogging.logger { }
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a [ParametrizedQuery] is used), as well as timing them.
  *
- * A SQL statement is traced if all of these conditions are met:
- * - [BConfig.logQueries] is enabled **OR** [BConfig.queryLogThreshold] is configured
- * - The logger of the class that created the prepared statement has its `TRACE` logs enabled
+ * A SQL statement is traced if any of these conditions is met:
+ * - [BConfig.logQueries] is enabled,
+ *   and the logger of the class that created the prepared statement has its `TRACE` logs enabled,
+ * - [BConfig.queryLogThreshold] is configured
  *
  * The logged SQL statements will use the logger of the class that created the prepared statement.
  * If a utility class creates statements, you should use [@IgnoreStackFrame][IgnoreStackFrame],

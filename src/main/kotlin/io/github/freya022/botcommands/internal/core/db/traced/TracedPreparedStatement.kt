@@ -18,6 +18,7 @@ internal class TracedPreparedStatement internal constructor(
     private val preparedStatement: PreparedStatement,
     internal var logger: KLogger,
     private val parametrizedQuery: ParametrizedQuery,
+    private val logQueries: Boolean,
     private val isQueryThresholdSet: Boolean,
     private val queryLogThreshold: Duration
 ) : PreparedStatement by preparedStatement {
@@ -40,9 +41,11 @@ internal class TracedPreparedStatement internal constructor(
     private fun logTimings(result: Result<*>, duration: Duration) {
         val parametrizedQuery = parametrizedQuery.toSql()
 
-        logger.trace {
-            val prefix = if (result.isSuccess) "Ran" else "Failed"
-            "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery"
+        if (logQueries) {
+            logger.trace {
+                val prefix = if (result.isSuccess) "Ran" else "Failed"
+                "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery"
+            }
         }
         if (isQueryThresholdSet && duration > queryLogThreshold) {
             val prefix = if (result.isSuccess) "Ran" else "Failed"

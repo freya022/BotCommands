@@ -1,3 +1,5 @@
+@file:IgnoreStackFrame
+
 package io.github.freya022.botcommands.internal.core.db.traced
 
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
@@ -19,6 +21,7 @@ internal class TracedConnection internal constructor(
     connection: Connection,
     semaphore: Semaphore,
     private val parametrizedQueryFactory: ParametrizedQueryFactory<*>,
+    private val logQueries: Boolean,
     private val isQueryThresholdSet: Boolean,
     private val queryLogThreshold: Duration
 ) : DatabaseImpl.ConnectionResource(connection, semaphore) {
@@ -48,9 +51,9 @@ internal class TracedConnection internal constructor(
 
     private fun wrapStatement(preparedStatement: PreparedStatement, sql: String): PreparedStatement {
         val logger = loggerFromCallStack()
-        return if (logger.isTraceEnabled()) {
+        return if (isQueryThresholdSet || (logQueries && logger.isTraceEnabled())) {
             val tracedQuery = parametrizedQueryFactory.get(preparedStatement, sql)
-            TracedPreparedStatement(preparedStatement, logger, tracedQuery, isQueryThresholdSet, queryLogThreshold)
+            TracedPreparedStatement(preparedStatement, logger, tracedQuery, logQueries, isQueryThresholdSet, queryLogThreshold)
         } else {
             preparedStatement
         }

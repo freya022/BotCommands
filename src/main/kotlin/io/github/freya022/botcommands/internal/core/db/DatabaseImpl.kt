@@ -91,7 +91,7 @@ internal class DatabaseImpl internal constructor(
         val connection = try {
             if (useTracedConnections) {
                 val tracedQueryFactory = getTracedQueryFactory(rawConnection)
-                TracedConnection(rawConnection, semaphore, tracedQueryFactory, isQueryThresholdSet, config.queryLogThreshold)
+                TracedConnection(rawConnection, semaphore, tracedQueryFactory, config.logQueries, isQueryThresholdSet, config.queryLogThreshold)
             } else {
                 ConnectionResource(rawConnection, semaphore)
             }

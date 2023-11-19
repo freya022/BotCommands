@@ -23,10 +23,11 @@ import java.sql.SQLException;
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a {@link ParametrizedQuery} is used), as well as timing them.
  *
- * <p>A SQL statement is traced if all of these conditions are met:
+ * <p>A SQL statement is traced if any of these conditions is met:
  * <ul>
- *     <li>{@link BConfig#getLogQueries()} is enabled <b>OR</b> {@link BConfig#getQueryLogThreshold()} is configured</li>
- *     <li>The logger of the class that created the prepared statement has its {@code TRACE} logs enabled</li>
+ *     <li>{@link BConfig#getLogQueries()} is enabled,
+ *         and the logger of the class that created the prepared statement has its {@code TRACE} logs enabled.</li>
+ *     <li>{@link BConfig#getQueryLogThreshold()} is configured</li>
  * </ul>
  *
  * <p>The logged SQL statements will use the logger of the class that created the prepared statement.
