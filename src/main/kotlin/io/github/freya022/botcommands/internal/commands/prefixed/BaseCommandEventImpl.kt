@@ -23,13 +23,15 @@ private val logger = KotlinLogging.logger<BaseCommandEvent>()
 
 internal open class BaseCommandEventImpl(
     context: BContext,
-    event: MessageReceivedEvent,
+    private val event: MessageReceivedEvent,
     arguments: String,
     cancellableRateLimit: CancellableRateLimit
 ) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message),
     CancellableRateLimit by cancellableRateLimit {
 
     private val argumentsStr: String = arguments
+
+    override fun getRawData() = event.rawData
 
     override fun getArgumentsStrList(): List<String> = when {
         argumentsStr.isNotBlank() -> argumentsStr.split(' ').dropLastWhile { it.isEmpty() }

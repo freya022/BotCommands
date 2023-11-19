@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 
 open class GlobalUserEvent internal constructor(
     val context: BContext,
-    event: UserContextInteractionEvent,
+    private val event: UserContextInteractionEvent,
     cancellableRateLimit: CancellableRateLimit
 ) : UserContextInteractionEvent(event.jda, event.responseNumber, event.interaction),
-    CancellableRateLimit by cancellableRateLimit
+    CancellableRateLimit by cancellableRateLimit {
+
+    override fun getRawData() = event.rawData
+}

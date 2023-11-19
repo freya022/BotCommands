@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 
 class StringSelectEvent internal constructor(
     val context: BContext,
-    event: StringSelectInteractionEvent,
+    private val event: StringSelectInteractionEvent,
     cancellableRateLimit: CancellableRateLimit
 ) : StringSelectInteractionEvent(event.jda, event.responseNumber, event.interaction),
-    CancellableRateLimit by cancellableRateLimit
+    CancellableRateLimit by cancellableRateLimit {
+
+    override fun getRawData() = event.rawData
+}
