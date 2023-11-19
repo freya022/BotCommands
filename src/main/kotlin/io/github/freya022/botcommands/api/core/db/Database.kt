@@ -89,7 +89,7 @@ internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = fal
     runBlocking { fetchConnection(readOnly) }.use { connection ->
         val prepareStatement = connection.prepareStatement(sql)
         if (connection.isWrapperFor(TracedConnection::class.java))
-            prepareStatement.withLogger(loggerFromCallStack(2))
+            prepareStatement.withLogger(loggerFromCallStack(4))
         BlockingPreparedStatement(prepareStatement).use { block.apply(it) }
     }
 

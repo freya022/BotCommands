@@ -15,7 +15,6 @@ import java.sql.SQLException;
 public class SlashDbJava extends ApplicationCommand {
     @JDASlashCommand(name = "java_db")
     public void onSlashJavaDb(GuildSlashEvent event, BlockingDatabase database) throws SQLException {
-        //TODO override incorrect logger
         final String v = database.withTransaction(transaction -> {
             return transaction.withStatement("select version from bc.bc_version", statement -> {
                 final ResultSet set = statement.executeQuery();
@@ -24,7 +23,6 @@ public class SlashDbJava extends ApplicationCommand {
             });
         });
 
-        //TODO override incorrect logger
         final String v2 = database.withStatement("select version from bc.bc_version", statement -> {
             final ResultSet set = statement.executeQuery();
             set.next();
@@ -32,12 +30,11 @@ public class SlashDbJava extends ApplicationCommand {
         });
 
         final String v3;
-        try (Connection connection = database.fetchConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("select version from bc.bc_version")) {
-                final ResultSet set = statement.executeQuery();
-                set.next();
-                v3 = set.getString("version");
-            }
+        try (Connection connection = database.fetchConnection();
+             PreparedStatement statement = connection.prepareStatement("select version from bc.bc_version")) {
+            final ResultSet set = statement.executeQuery();
+            set.next();
+            v3 = set.getString("version");
         }
 
         event.replyFormat("v: %s, v2: %s, v3: %s", v, v2, v3).setEphemeral(true).queue();
