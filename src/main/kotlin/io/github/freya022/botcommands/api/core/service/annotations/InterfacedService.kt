@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
+import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
@@ -43,6 +44,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see ApplicationCommandFilter
  *
  * @see ConnectionSupplier
+ * @see ParametrizedQueryFactory
  *
  * @see ComponentInteractionFilter
  *

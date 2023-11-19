@@ -41,6 +41,7 @@ import java.time.Duration
  * @see BComponentsConfigBuilder.useComponents
  * @see HikariSourceSupplier
  * @see Database
+ * @see BlockingDatabase
  */
 @InterfacedService(acceptMultiple = false)
 @InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService needs to be set in order to use the database")

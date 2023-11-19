@@ -49,7 +49,7 @@ interface BConfig {
      * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
      *
      * **Note:** You need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
-     * do not forget to turn off [DebugProbes.enableCreationStackTraces] in production environments.
+     * remember to turn off [DebugProbes.enableCreationStackTraces] in production environments.
      *
      * @see ConnectionSupplier.maxTransactionDuration
      * @see DebugProbes
@@ -59,7 +59,9 @@ interface BConfig {
     /**
      * Determines whether *all* SQL queries should be logged on `TRACE`.
      *
-     * Default: `true`
+     * The `TRACE` log level is required on the class that created the prepared statement.
+     *
+     * Default: `false`
      */
     val logQueries: Boolean
     /**
@@ -115,7 +117,7 @@ class BConfigBuilder internal constructor() : BConfig {
     @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false
     @set:JvmName("logQueries")
-    override var logQueries: Boolean = true
+    override var logQueries: Boolean = false
     @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
     @set:JvmSynthetic
