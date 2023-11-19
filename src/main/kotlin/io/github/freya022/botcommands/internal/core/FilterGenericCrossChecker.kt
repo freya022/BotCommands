@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.internal.utils.superErasureAt
 import kotlin.reflect.jvm.jvmErasure
 
 @BService(priority = Int.MAX_VALUE - 1)
-class FilterGenericCrossChecker(context: BContext) {
+internal class FilterGenericCrossChecker internal constructor(context: BContext) {
     init {
         checkTypes<TextCommandFilter<*>, TextCommandRejectionHandler<*>>(context)
         checkTypes<ApplicationCommandFilter<*>, ApplicationCommandRejectionHandler<*>>(context)
