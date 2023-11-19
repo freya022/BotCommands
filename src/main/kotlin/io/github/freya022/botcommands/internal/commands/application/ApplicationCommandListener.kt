@@ -56,7 +56,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
                     return@launch event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
                 }
 
-                val slashCommand = CommandPath.of(event.fullCommandName).let {
+                val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
                     context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                         ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
                 }
