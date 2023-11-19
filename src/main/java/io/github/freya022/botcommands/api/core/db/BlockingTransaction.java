@@ -29,10 +29,10 @@ public record BlockingTransaction(@NotNull Connection connection) {
      */
     public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql, @NotNull StatementFunction<R, E> transactionFunction) throws SQLException, E {
         // Do not make the call stack deeper
-        final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql));
-
-        return transactionFunction.apply(statement);
+        try (final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql))) {
             if (connection.isWrapperFor(TracedConnection.class))
                 PreparedStatementsKt.withLogger(statement, TracedConnectionKt.loggerFromCallStack(1));
+            return transactionFunction.apply(statement);
+        }
     }
 }
