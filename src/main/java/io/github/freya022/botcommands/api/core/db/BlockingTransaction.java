@@ -10,6 +10,11 @@ import java.sql.SQLException;
 
 @SuppressWarnings("SqlSourceToSinkFlow")
 public record BlockingTransaction(@NotNull Connection connection) {
+    /**
+     * Creates a statement from the given SQL statement.
+     *
+     * <p>The returned statement <b>must</b> be closed, with a try-with-resource, for example.
+     */
     @NotNull
     public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") @NotNull String sql) throws SQLException {
         final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql));
@@ -19,6 +24,9 @@ public record BlockingTransaction(@NotNull Connection connection) {
         return statement;
     }
 
+    /**
+     * Creates a statement from the given SQL statement, runs the function and closes the statement.
+     */
     public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql, @NotNull StatementFunction<R, E> transactionFunction) throws SQLException, E {
         // Do not make the call stack deeper
         final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql));
