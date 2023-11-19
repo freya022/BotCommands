@@ -8,7 +8,6 @@ import java.sql.ResultSet
 import io.github.freya022.botcommands.api.core.db.withLogger as withLoggerExt
 
 class BlockingPreparedStatement internal constructor(preparedStatement: PreparedStatement) : AbstractPreparedStatement(preparedStatement) {
-    //TODO test this works (requires unwrap impl)
     /**
      * Sets the logger used to log the query.
      *

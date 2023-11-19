@@ -9,6 +9,9 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
+import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
@@ -159,12 +162,10 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
 @PublishedApi
 internal fun formatExceededTransactionDuration(actionDescription: String, connection: Connection, maxTransactionDuration: Duration): String {
-    //TODO enable when #unwrap and #isWrapperFor are implemented
-//    if (!connection.isWrapperFor(DatabaseImpl.ConnectionResource::class.java))
-//        throwInternal("Transaction connection should have been a ${classRef<DatabaseImpl.ConnectionResource>()}")
-//    val resource = connection.unwrap(DatabaseImpl.ConnectionResource::class.java)
-//    val availablePermits = resource.availablePermits
-    val availablePermits = -1
+    if (!connection.isWrapperFor(DatabaseImpl.ConnectionResource::class.java))
+        throwInternal("Transaction connection should have been a ${classRef<DatabaseImpl.ConnectionResource>()}")
+    val resource = connection.unwrap(DatabaseImpl.ConnectionResource::class.java)
+    val availablePermits = resource.availablePermits
 
     return "$actionDescription took longer than ${maxTransactionDuration.toString(DurationUnit.SECONDS, 2)} (available permits: $availablePermits):\n${createDumps()}"
 }

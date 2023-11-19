@@ -45,6 +45,14 @@ internal class DatabaseImpl internal constructor(
                 semaphore.release()
             }
         }
+
+        override fun isWrapperFor(iface: Class<*>): Boolean =
+            iface.isInstance(this) || connection.isWrapperFor(iface)
+
+        override fun <T : Any> unwrap(iface: Class<T>): T = when {
+            iface.isInstance(this) -> iface.cast(this)
+            else -> connection.unwrap(iface)
+        }
     }
 
     private val tracedQueryFactories: List<ParametrizedQueryFactory<*>> = context.getInterfacedServices()

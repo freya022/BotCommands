@@ -53,6 +53,14 @@ internal class TracedPreparedStatement internal constructor(
         }
     }
 
+    override fun isWrapperFor(iface: Class<*>): Boolean =
+        iface.isInstance(this) || preparedStatement.isWrapperFor(iface)
+
+    override fun <T : Any> unwrap(iface: Class<T>): T = when {
+        iface.isInstance(this) -> iface.cast(this)
+        else -> preparedStatement.unwrap(iface)
+    }
+
     override fun setNull(parameterIndex: Int, sqlType: Int) {
         parametrizedQuery.addValue(parameterIndex, null)
         preparedStatement.setNull(parameterIndex, sqlType)
