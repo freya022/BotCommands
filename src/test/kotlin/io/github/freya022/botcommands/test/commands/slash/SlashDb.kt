@@ -9,8 +9,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.transactional
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 
 @Command
+@Dependencies(Database::class)
 class SlashDb(private val database: Database) : ApplicationCommand() {
     @JDASlashCommand(name = "db")
     suspend fun onSlashDb(event: GuildSlashEvent) {

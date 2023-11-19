@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Command
+@Dependencies(BlockingDatabase.class)
 public class SlashDbJava extends ApplicationCommand {
     @JDASlashCommand(name = "java_db")
     public void onSlashJavaDb(GuildSlashEvent event, BlockingDatabase database) throws SQLException {

@@ -11,11 +11,13 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 @Command
+@Dependencies(Components::class)
 class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
     fun onSlashTimeUnit(
