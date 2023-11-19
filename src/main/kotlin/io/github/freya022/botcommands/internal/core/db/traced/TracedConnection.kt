@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.db.traced
 
+import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.oshai.kotlinlogging.KLogger
@@ -8,12 +9,12 @@ import kotlinx.coroutines.sync.Semaphore
 import java.lang.reflect.Modifier
 import java.sql.Connection
 import java.sql.PreparedStatement
-import kotlin.streams.asSequence
 import kotlin.time.Duration
 
 private val walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
 @Suppress("SqlSourceToSinkFlow")
+@IgnoreStackFrame
 internal class TracedConnection internal constructor(
     connection: Connection,
     semaphore: Semaphore,
@@ -46,7 +47,7 @@ internal class TracedConnection internal constructor(
     }
 
     private fun wrapStatement(preparedStatement: PreparedStatement, sql: String): PreparedStatement {
-        val logger = getLogger()
+        val logger = loggerFromCallStack()
         return if (logger.isTraceEnabled()) {
             val tracedQuery = parametrizedQueryFactory.get(preparedStatement, sql)
             TracedPreparedStatement(preparedStatement, logger, tracedQuery, isQueryThresholdSet, queryLogThreshold)
@@ -54,21 +55,20 @@ internal class TracedConnection internal constructor(
             preparedStatement
         }
     }
-
-    private fun getLogger(): KLogger {
-        // 1. getLogger
-        // 2. wrapStatement
-        // 3. prepareStatement
-        // 4. Class generated for coroutines (prepareStatement:-1)
-        // 5 ==> invokeSuspend, ClassWeLookingFor$TheMethod
-        return loggerFromCallStack(4)
-    }
 }
 
-internal fun loggerFromCallStack(skippedFrames: Int): KLogger {
-    val callerClass = walker.walk { stream -> stream.asSequence().drop(skippedFrames + 1).first().declaringClass }
-    val callerClassName = unwrapCompanionClass(callerClass).name.substringBefore('$')
-    return KotlinLogging.logger(callerClassName)
+private fun loggerFromCallStack(): KLogger {
+    return walker.walk { stream ->
+        stream.skip(1)
+            .map { it.declaringClass }
+            .dropWhile { it.isAnnotationPresent(IgnoreStackFrame::class.java) }
+            .findAny().get()
+    }.toUnwrappedLogger()
+}
+
+private fun Class<*>.toUnwrappedLogger(): KLogger {
+    val className = unwrapCompanionClass(this).name.substringBefore('$')
+    return KotlinLogging.logger(className)
 }
 
 private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {

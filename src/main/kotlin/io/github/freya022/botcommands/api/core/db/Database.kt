@@ -1,13 +1,14 @@
+@file:IgnoreStackFrame
+
 package io.github.freya022.botcommands.api.core.db
 
 import io.github.freya022.botcommands.api.Logging
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
-import io.github.freya022.botcommands.internal.core.db.traced.TracedConnection
-import io.github.freya022.botcommands.internal.core.db.traced.loggerFromCallStack
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.debug.DebugProbes
@@ -16,6 +17,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.lang.management.ManagementFactory
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.SQLException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -41,8 +43,9 @@ private val logger = KotlinLogging.logger { }
  * - The logger of the class that created the prepared statement has its `TRACE` logs enabled
  *
  * The logged SQL statements will use the logger of the class that created the prepared statement.
- * If a utility class of your own creates the statements for you, and you wish the logs to be more accurate,
- * you can use [withLogger] to change the logger of the prepared statement.
+ * If a utility class creates statements, you should use [@IgnoreStackFrame][IgnoreStackFrame],
+ * which will instead take the logger of the class that called your utility class.
+ * You can also use [PreparedStatement.withLogger] if you wish to use a different logger.
  *
  * @see BlockingDatabase
  * @see ParametrizedQueryFactory
@@ -87,10 +90,7 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
     runBlocking { fetchConnection(readOnly) }.use { connection ->
-        val prepareStatement = connection.prepareStatement(sql)
-        if (connection.isWrapperFor(TracedConnection::class.java))
-            prepareStatement.withLogger(loggerFromCallStack(4))
-        BlockingPreparedStatement(prepareStatement).use { block.apply(it) }
+        BlockingPreparedStatement(connection.prepareStatement(sql)).use { block.apply(it) }
     }
 
 @PublishedApi

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.db;
 
 import io.github.freya022.botcommands.api.core.config.BConfig;
+import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
 import io.github.freya022.botcommands.api.core.service.ServiceStart;
@@ -22,15 +23,23 @@ import java.sql.SQLException;
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a {@link ParametrizedQuery} is used), as well as timing them.
  *
+ * <p>A SQL statement is traced if all of these conditions are met:
+ * <ul>
+ *     <li>{@link BConfig#getLogQueries()} is enabled <b>OR</b> {@link BConfig#getQueryLogThreshold()} is configured</li>
+ *     <li>The logger of the class that created the prepared statement has its {@code TRACE} logs enabled</li>
+ * </ul>
+ *
  * <p>The logged SQL statements will use the logger of the class that created the prepared statement.
- * If a utility class of your own creates the statements for you, and you wish the logs to be more accurate,
- * you can use {@link BlockingPreparedStatement#withLogger(Logger)} to change the logger of the prepared statement.
+ * <br>If a utility class creates statements, you should use {@link IgnoreStackFrame @IgnoreStackFrame},
+ * which will instead take the logger of the class that called your utility class.
+ * <br>You can also use {@link BlockingPreparedStatement#withLogger(Logger)} if you wish to use a different logger.
  *
  * @see Database
  * @see ParametrizedQueryFactory
  */
 @BService(start = ServiceStart.LAZY)
 @Dependencies(Database.class)
+@IgnoreStackFrame
 public class BlockingDatabase {
     private final Database database;
 
