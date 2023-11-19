@@ -37,9 +37,9 @@ abstract class CommandBuilder internal constructor(val context: BContext, overri
      * ### Rate limit cancellation
      * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
      *
-     * @param bucketFactory  the bucket factory to use in [RateLimiterFactory]
-     * @param limiterFactory the [RateLimiter] factory in charge of handling buckets and rate limits
-     * @param block          further configures the [RateLimitBuilder]
+     * @param bucketFactory  The bucket factory to use in [RateLimiterFactory]
+     * @param limiterFactory The [RateLimiter] factory in charge of handling buckets and rate limits
+     * @param block          Further configures the [RateLimitBuilder]
      *
      * @see RateLimit @RateLimit
      * @see RateLimitContainer
@@ -72,9 +72,9 @@ abstract class CommandBuilder internal constructor(val context: BContext, overri
  * ### Cooldown cancellation
  * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
- * @param scope    the scope of the cooldown
- * @param duration the duration before the cooldown expires
- * @param block    further configures the [RateLimitBuilder]
+ * @param scope    The scope of the cooldown
+ * @param duration The duration before the cooldown expires
+ * @param block    Further configures the [RateLimitBuilder]
  *
  * @see Cooldown @Cooldown
  * @see CommandBuilder.rateLimit

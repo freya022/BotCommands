@@ -103,8 +103,8 @@ object Resolvers {
      *
      * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
      *
-     * @param values       the accepted enumeration values
-     * @param nameFunction the function transforming the enum value into the display name
+     * @param values       The accepted enumeration values
+     * @param nameFunction The function transforming the enum value into the display name
      */
     @JvmStatic
     @JvmOverloads
@@ -142,8 +142,8 @@ object Resolvers {
  *
  * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
  *
- * @param values       the accepted enumeration values
- * @param nameFunction the function transforming the enum value into the display name
+ * @param values       The accepted enumeration values
+ * @param nameFunction The function transforming the enum value into the display name
  */
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),

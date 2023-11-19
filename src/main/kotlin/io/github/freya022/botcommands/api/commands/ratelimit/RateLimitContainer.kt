@@ -71,10 +71,10 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
      *
      * The created rate limiter can be used in [CommandBuilder.rateLimitReference] and [@RateLimitReference][RateLimitReference].
      *
-     * @param group          the "name" of the rate limiter
-     * @param bucketFactory  the bucket factory to use in [RateLimiterFactory]
-     * @param limiterFactory the [RateLimiter] factory in charge of handling buckets and rate limits
-     * @param block          further configures the [RateLimitBuilder]
+     * @param group          The "name" of the rate limiter
+     * @param bucketFactory  The bucket factory to use in [RateLimiterFactory]
+     * @param limiterFactory The [RateLimiter] factory in charge of handling buckets and rate limits
+     * @param block          Further configures the [RateLimitBuilder]
      *
      * @throws IllegalStateException If a rate limiter with the same group exists
      */
