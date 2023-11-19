@@ -34,9 +34,9 @@ interface ParametrizedQueryFactory<R : ParametrizedQuery> {
      * Returns whether this connection is supported by this parametrized query factory.
      *
      * @param connection          The database connection
-     * @param databaseProductName The [database product name][DatabaseMetaData.getDatabaseProductName]
+     * @param databaseMetaData    The database metadata
      */
-    fun isSupported(connection: Connection, databaseProductName: String): Boolean
+    fun isSupported(connection: Connection, databaseMetaData: DatabaseMetaData): Boolean
 
     /**
      * Returns a [ParametrizedQuery] for this statement.

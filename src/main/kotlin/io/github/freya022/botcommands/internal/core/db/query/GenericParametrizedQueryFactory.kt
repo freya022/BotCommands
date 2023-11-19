@@ -5,6 +5,7 @@ import gnu.trove.map.hash.TIntObjectHashMap
 import io.github.freya022.botcommands.api.core.db.query.AbstractParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import java.sql.Connection
+import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 
 internal object GenericParametrizedQueryFactory : ParametrizedQueryFactory<GenericParametrizedQueryFactory.GenericParametrizedQuery> {
@@ -37,7 +38,7 @@ internal object GenericParametrizedQueryFactory : ParametrizedQueryFactory<Gener
         }
     }
 
-    override fun isSupported(connection: Connection, databaseProductName: String): Boolean = true
+    override fun isSupported(connection: Connection, databaseMetaData: DatabaseMetaData): Boolean = true
 
     override fun get(preparedStatement: PreparedStatement, sql: String): GenericParametrizedQuery = GenericParametrizedQuery(preparedStatement, sql)
 }

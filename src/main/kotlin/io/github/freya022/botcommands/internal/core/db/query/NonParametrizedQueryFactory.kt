@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.core.db.query
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import java.sql.Connection
+import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 
 internal object NonParametrizedQueryFactory : ParametrizedQueryFactory<NonParametrizedQueryFactory.NonParametrizedQuery> {
@@ -13,7 +14,7 @@ internal object NonParametrizedQueryFactory : ParametrizedQueryFactory<NonParame
         override fun toSql(): String = sql
     }
 
-    override fun isSupported(connection: Connection, databaseProductName: String): Boolean = true
+    override fun isSupported(connection: Connection, databaseMetaData: DatabaseMetaData): Boolean = true
 
     override fun get(preparedStatement: PreparedStatement, sql: String): NonParametrizedQuery = NonParametrizedQuery(sql)
 }

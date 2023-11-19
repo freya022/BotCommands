@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import java.sql.Connection
+import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 
 @BService
@@ -15,8 +16,8 @@ internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<Post
         override fun toSql(): String = preparedStatement.toString()
     }
 
-    override fun isSupported(connection: Connection, databaseProductName: String): Boolean =
-        databaseProductName.startsWith("PostgreSQL")
+    override fun isSupported(connection: Connection, databaseMetaData: DatabaseMetaData): Boolean =
+        databaseMetaData.driverName == "PostgreSQL JDBC Driver"
 
     override fun get(preparedStatement: PreparedStatement, sql: String): PostgresParametrizedQuery =
         PostgresParametrizedQuery(preparedStatement.unwrap(PreparedStatement::class.java))
