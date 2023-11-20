@@ -31,7 +31,7 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Compile and run tests with Maven
-        run: mvn -B --file pom.xml test
+        run: mvn -B --file pom.xml -Dkotlin.compiler.incremental=false test
   check-kdocs:
     runs-on: ubuntu-latest
     steps:
@@ -43,4 +43,4 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Build KDocs with Maven
-        run: mvn -P docs -B BotCommandsBuild:generate-version-info dokka:dokka --file pom.xml
+        run: mvn -P docs -B BotCommandsBuild:generate-version-info dokka:dokka --file pom.xml -Dkotlin.compiler.incremental=false

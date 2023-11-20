@@ -34,7 +34,8 @@ jobs:
       - name: Compile and release
         run: >
           mvn -B --file pom.xml
-          -P check-docs,docs,release 
+          -P check-docs,docs,release
+          -Dkotlin.compiler.incremental=false
           deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
