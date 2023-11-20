@@ -42,7 +42,7 @@ class EphemeralStringSelectBuilder internal constructor(
     }
 
     override fun build(): StringSelectMenu {
-        check(built) { "Cannot build components more than once" }
+        check(!built) { "Cannot build components more than once" }
         built = true
 
         super.setId(componentController.createComponent(this))

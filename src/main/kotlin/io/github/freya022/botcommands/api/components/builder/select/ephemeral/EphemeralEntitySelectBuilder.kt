@@ -45,7 +45,7 @@ class EphemeralEntitySelectBuilder internal constructor(
     }
 
     override fun build(): EntitySelectMenu {
-        check(built) { "Cannot build components more than once" }
+        check(!built) { "Cannot build components more than once" }
         built = true
 
         super.setId(componentController.createComponent(this))
