@@ -7,7 +7,11 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
 
-internal class ConstrainableComponentImpl<T : IConstrainableComponent<T>> : IConstrainableComponent<T> {
+internal class ConstrainableComponentImpl<T : IConstrainableComponent<T>> internal constructor(
+    override val instanceRetriever: InstanceRetriever<T>
+) : BuilderInstanceHolderImpl<T>(),
+    IConstrainableComponent<T> {
+
     override var constraints: InteractionConstraints = InteractionConstraints.empty()
 
     override fun constraints(block: ReceiverConsumer<InteractionConstraints>): T = instance.also {

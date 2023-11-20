@@ -4,21 +4,21 @@ import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.builder.ConstrainableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.PersistentActionableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.UniqueComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
-class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: Collection<JDAEntitySelectMenu.SelectTarget>) :
-    JDAEntitySelectMenu.Builder(""),
-    IConstrainableComponent<PersistentEntitySelectBuilder> by ConstrainableComponentImpl(),
-    IUniqueComponent<PersistentEntitySelectBuilder> by UniqueComponentImpl(),
+class PersistentEntitySelectBuilder internal constructor(
+    private val componentController: ComponentController,
+    targets: Collection<JDAEntitySelectMenu.SelectTarget>,
+    instanceRetriever: InstanceRetriever<PersistentEntitySelectBuilder>
+) : JDAEntitySelectMenu.Builder(""),
+    IConstrainableComponent<PersistentEntitySelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
+    IUniqueComponent<PersistentEntitySelectBuilder> by UniqueComponentImpl(instanceRetriever),
     BaseComponentBuilder<PersistentEntitySelectBuilder>,
-    IPersistentActionableComponent<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context),
-    IPersistentTimeoutableComponent<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl() {
+    IPersistentActionableComponent<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
+    IPersistentTimeoutableComponent<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
@@ -27,6 +27,7 @@ class PersistentEntitySelectBuilder internal constructor(private val componentCo
     private var built = false
 
     init {
+        instanceRetriever.instance = this
         setEntityTypes(targets)
     }
 

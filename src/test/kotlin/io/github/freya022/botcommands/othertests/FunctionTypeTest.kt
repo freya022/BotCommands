@@ -18,6 +18,7 @@ object FunctionTypeTest {
     }
 
     private object FakeActionableComponent : IPersistentActionableComponent<FakeActionableComponent> {
+        override val instance: FakeActionableComponent = this
         override val context: BContext
             get() = throw UnsupportedOperationException()
         override val handler: ComponentHandler?

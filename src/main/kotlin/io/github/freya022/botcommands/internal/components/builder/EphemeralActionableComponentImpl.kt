@@ -8,8 +8,9 @@ import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 internal class EphemeralActionableComponentImpl<T : IEphemeralActionableComponent<T, E>, E : GenericComponentInteractionCreateEvent> internal constructor(
-    context: BContext
-) : AbstractActionableComponent<T>(context),
+    context: BContext,
+    instanceRetriever: InstanceRetriever<T>
+) : AbstractActionableComponent<T>(context, instanceRetriever),
     IEphemeralActionableComponent<T, E> {
 
     override var handler: EphemeralHandler<*>? = null

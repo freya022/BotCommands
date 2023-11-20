@@ -5,22 +5,22 @@ import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.builder.ConstrainableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.EphemeralActionableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.EphemeralTimeoutableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.UniqueComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
-class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: Collection<SelectTarget>) :
-    JDAEntitySelectMenu.Builder(""),
-    IConstrainableComponent<EphemeralEntitySelectBuilder> by ConstrainableComponentImpl(),
-    IUniqueComponent<EphemeralEntitySelectBuilder> by UniqueComponentImpl(),
+class EphemeralEntitySelectBuilder internal constructor(
+    private val componentController: ComponentController,
+    targets: Collection<SelectTarget>,
+    instanceRetriever: InstanceRetriever<EphemeralEntitySelectBuilder>
+) : JDAEntitySelectMenu.Builder(""),
+    IConstrainableComponent<EphemeralEntitySelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
+    IUniqueComponent<EphemeralEntitySelectBuilder> by UniqueComponentImpl(instanceRetriever),
     BaseComponentBuilder<EphemeralEntitySelectBuilder>,
-    IEphemeralActionableComponent<EphemeralEntitySelectBuilder, EntitySelectEvent> by EphemeralActionableComponentImpl(componentController.context),
-    IEphemeralTimeoutableComponent<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl() {
+    IEphemeralActionableComponent<EphemeralEntitySelectBuilder, EntitySelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
+    IEphemeralTimeoutableComponent<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
@@ -29,6 +29,7 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     private var built = false
 
     init {
+        instanceRetriever.instance = this
         setEntityTypes(targets)
     }
 

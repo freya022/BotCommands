@@ -4,27 +4,30 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.builder.ConstrainableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.PersistentActionableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
-import io.github.freya022.botcommands.internal.components.builder.UniqueComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
-class PersistentStringSelectBuilder internal constructor(private val componentController: ComponentController) :
-    JDAStringSelectMenu.Builder(""),
-    IConstrainableComponent<PersistentStringSelectBuilder> by ConstrainableComponentImpl(),
-    IUniqueComponent<PersistentStringSelectBuilder> by UniqueComponentImpl(),
+class PersistentStringSelectBuilder internal constructor(
+    private val componentController: ComponentController,
+    instanceRetriever: InstanceRetriever<PersistentStringSelectBuilder>
+) : JDAStringSelectMenu.Builder(""),
+    IConstrainableComponent<PersistentStringSelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
+    IUniqueComponent<PersistentStringSelectBuilder> by UniqueComponentImpl(instanceRetriever),
     BaseComponentBuilder<PersistentStringSelectBuilder>,
-    IPersistentActionableComponent<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context),
-    IPersistentTimeoutableComponent<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl() {
+    IPersistentActionableComponent<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
+    IPersistentTimeoutableComponent<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
     override val instance: PersistentStringSelectBuilder = this
 
     private var built = false
+
+    init {
+        instanceRetriever.instance = this
+    }
 
     @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     override fun getId(): Nothing {
