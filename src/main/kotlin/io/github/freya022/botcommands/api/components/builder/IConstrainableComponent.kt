@@ -14,6 +14,9 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 interface IConstrainableComponent<T : IConstrainableComponent<T>> : BuilderInstanceHolder<T> {
     var constraints: InteractionConstraints
 
+    /**
+     * Replaces the current interaction constraints with the given ones.
+     */
     fun constraints(constraints: InteractionConstraints): T = instance.also {
         this.constraints = constraints
     }
