@@ -7,30 +7,30 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
 
-internal class ConstrainableComponentImpl : IConstrainableComponent {
+internal class ConstrainableComponentImpl<T : IConstrainableComponent<T>> : IConstrainableComponent<T> {
     override var constraints: InteractionConstraints = InteractionConstraints.empty()
 
-    override fun constraints(block: ReceiverConsumer<InteractionConstraints>) {
+    override fun constraints(block: ReceiverConsumer<InteractionConstraints>): T = instance.also {
         constraints.apply(block)
     }
 
-    override fun addUsers(users: Collection<UserSnowflake>) {
+    override fun addUsers(users: Collection<UserSnowflake>): T = instance.also {
         constraints.addUsers(users)
     }
 
-    override fun addRoles(roles: Collection<Role>) {
+    override fun addRoles(roles: Collection<Role>): T = instance.also {
         constraints.addRoles(roles)
     }
 
-    override fun addUserIds(userIds: Collection<Long>) {
+    override fun addUserIds(userIds: Collection<Long>): T = instance.also {
         constraints.addUserIds(userIds)
     }
 
-    override fun addRoleIds(roleIds: Collection<Long>) {
+    override fun addRoleIds(roleIds: Collection<Long>): T = instance.also {
         constraints.addRoleIds(roleIds)
     }
 
-    override fun addPermissions(permissions: Collection<Permission>) {
+    override fun addPermissions(permissions: Collection<Permission>): T = instance.also {
         constraints.addPermissions(permissions)
     }
 }

@@ -14,8 +14,10 @@ class PersistentButtonBuilder internal constructor(
     componentController: ComponentController,
     label: String?,
     emoji: Emoji?
-) : AbstractButtonBuilder(componentController, style, label, emoji),
-    IPersistentActionableComponent by PersistentActionableComponentImpl(componentController.context),
-    IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
+) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style, label, emoji),
+    IPersistentActionableComponent<PersistentButtonBuilder> by PersistentActionableComponentImpl(componentController.context),
+    IPersistentTimeoutableComponent<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl() {
+
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
+    override val instance: PersistentButtonBuilder = this
 }

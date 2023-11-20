@@ -14,13 +14,15 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu a
 
 class PersistentStringSelectBuilder internal constructor(private val componentController: ComponentController) :
     JDAStringSelectMenu.Builder(""),
-    IConstrainableComponent by ConstrainableComponentImpl(),
-    IUniqueComponent by UniqueComponentImpl(),
-    BaseComponentBuilder,
-    IPersistentActionableComponent by PersistentActionableComponentImpl(componentController.context),
-    IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
+    IConstrainableComponent<PersistentStringSelectBuilder> by ConstrainableComponentImpl(),
+    IUniqueComponent<PersistentStringSelectBuilder> by UniqueComponentImpl(),
+    BaseComponentBuilder<PersistentStringSelectBuilder>,
+    IPersistentActionableComponent<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context),
+    IPersistentTimeoutableComponent<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl() {
+
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
+    override val instance: PersistentStringSelectBuilder = this
 
     private var built = false
 

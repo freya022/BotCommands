@@ -9,7 +9,7 @@ package io.github.freya022.botcommands.api.components.builder
  *
  * This will also cause cancellation of any associated timeout.
  */
-interface IUniqueComponent {
+interface IUniqueComponent<T : IUniqueComponent<T>> : BuilderInstanceHolder<T> {
     /**
      * Sets this component as being usable only once before being deleted
      *
@@ -20,4 +20,8 @@ interface IUniqueComponent {
      * This will also cause cancellation of any associated timeout.
      */
     var oneUse: Boolean
+
+    fun oneUse(oneUse: Boolean): T = instance.also {
+        this.oneUse = oneUse
+    }
 }

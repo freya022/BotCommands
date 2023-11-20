@@ -250,7 +250,7 @@ class Components internal constructor(private val componentController: Component
         componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() })
     }
 
-    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder, components: Array<out ActionComponent>): ComponentGroup {
+    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder<*>, components: Array<out ActionComponent>): ComponentGroup {
         requireUser(components.none { it.id == null }) {
             "Cannot make groups with link buttons"
         }

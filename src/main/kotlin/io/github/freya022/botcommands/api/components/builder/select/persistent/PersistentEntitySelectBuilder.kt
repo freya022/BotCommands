@@ -14,13 +14,15 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu a
 
 class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: Collection<JDAEntitySelectMenu.SelectTarget>) :
     JDAEntitySelectMenu.Builder(""),
-    IConstrainableComponent by ConstrainableComponentImpl(),
-    IUniqueComponent by UniqueComponentImpl(),
-    BaseComponentBuilder,
-    IPersistentActionableComponent by PersistentActionableComponentImpl(componentController.context),
-    IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
+    IConstrainableComponent<PersistentEntitySelectBuilder> by ConstrainableComponentImpl(),
+    IUniqueComponent<PersistentEntitySelectBuilder> by UniqueComponentImpl(),
+    BaseComponentBuilder<PersistentEntitySelectBuilder>,
+    IPersistentActionableComponent<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context),
+    IPersistentTimeoutableComponent<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl() {
+
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
+    override val instance: PersistentEntitySelectBuilder = this
 
     private var built = false
 

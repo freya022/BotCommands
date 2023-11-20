@@ -15,8 +15,10 @@ class EphemeralButtonBuilder internal constructor(
     componentController: ComponentController,
     label: String?,
     emoji: Emoji?
-) : AbstractButtonBuilder(componentController, style, label, emoji),
-    IEphemeralActionableComponent<ButtonEvent> by EphemeralActionableComponentImpl(componentController.context),
-    IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
+) : AbstractButtonBuilder<EphemeralButtonBuilder>(componentController, style, label, emoji),
+    IEphemeralActionableComponent<EphemeralButtonBuilder, ButtonEvent> by EphemeralActionableComponentImpl(componentController.context),
+    IEphemeralTimeoutableComponent<EphemeralButtonBuilder> by EphemeralTimeoutableComponentImpl() {
+
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
+    override val instance: EphemeralButtonBuilder = this
 }
