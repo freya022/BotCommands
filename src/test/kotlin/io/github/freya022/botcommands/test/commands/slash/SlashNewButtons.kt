@@ -30,6 +30,7 @@ import io.github.freya022.botcommands.test.filters.IsGuildOwner
 import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.minutes
@@ -85,14 +86,14 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
         val secondButton = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
         components.newPersistentGroup(firstButton, secondButton) {
@@ -120,8 +121,8 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
-    fun onFirstButtonClicked(event: ButtonEvent, double: Double, inputUser: InputUser) {
-        event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}", ephemeral = true).queue()
+    fun onFirstButtonClicked(event: ButtonEvent, double: Double, inputUser: InputUser, nullValue: Member?) {
+        event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}, null: $nullValue", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)

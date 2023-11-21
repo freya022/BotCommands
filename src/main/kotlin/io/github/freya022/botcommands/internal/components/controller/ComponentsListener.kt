@@ -192,7 +192,7 @@ internal class ComponentsListener(
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
-        userDataIterator: Iterator<String>
+        userDataIterator: Iterator<String?>
     ): Boolean {
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
@@ -220,13 +220,13 @@ internal class ComponentsListener(
         descriptor: ComponentDescriptor,
         option: Option,
         optionMap: MutableMap<Option, Any?>,
-        userDataIterator: Iterator<String>
+        userDataIterator: Iterator<String?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                val obj = option.resolver.resolveSuspend(descriptor, event, userDataIterator.next())
+                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, event, it) }
                 if (obj == null && !option.isOptionalOrNullable && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 
