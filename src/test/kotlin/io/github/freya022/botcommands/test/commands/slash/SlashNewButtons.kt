@@ -96,6 +96,10 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
+        val timeoutEdButton = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
+            timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
+        }
+
         components.newPersistentGroup(firstButton, secondButton) {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
         }
@@ -126,13 +130,13 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)
-    fun onFirstButtonTimeout(data: ComponentTimeoutData) {
-        println(data)
+    fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, nullObj: String?) {
+        println("onTimeoutEdButtonTimeout: $data ; $nullObj")
     }
 
     @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
     fun onFirstGroupTimeout(data: GroupTimeoutData, nullObj: String?) {
-        println("$data : $nullObj")
+        println("onFirstGroupTimeout: $data ; $nullObj")
     }
 
     companion object {
