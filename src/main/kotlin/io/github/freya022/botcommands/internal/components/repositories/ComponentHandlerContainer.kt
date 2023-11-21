@@ -20,7 +20,7 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 @Dependencies(Components::class)
-internal class ComponentsHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
+internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     private val buttonMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
 

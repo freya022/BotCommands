@@ -28,8 +28,8 @@ import io.github.freya022.botcommands.internal.components.data.AbstractComponent
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
 import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
+import io.github.freya022.botcommands.internal.components.repositories.ComponentHandlerContainer
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.components.repositories.ComponentsHandlerContainer
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
@@ -54,7 +54,7 @@ internal class ComponentsListener(
     private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
-    private val componentsHandlerContainer: ComponentsHandlerContainer
+    private val componentHandlerContainer: ComponentHandlerContainer
 ) {
     private val logger = KotlinLogging.logger { }
     private val exceptionHandler = ExceptionHandler(context, logger)
@@ -129,9 +129,9 @@ internal class ComponentsListener(
                             val (handlerName, userData) = component.handler ?: return@withRateLimit true
 
                             val descriptor = when (component.componentType) {
-                                ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
+                                ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
                                     ?: throwUser("Could not find a button handler named $handlerName")
-                                ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
+                                ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
                                     ?: throwUser("Could not find a select menu handler named $handlerName")
                                 else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                             }
