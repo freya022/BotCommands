@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.MemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.requireUser
@@ -28,7 +28,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalD
 
 class ModalHandlerInfo internal constructor(
     context: BContextImpl,
-    override val eventFunction: MemberEventFunction<ModalInteractionEvent, *>
+    override val eventFunction: MemberParamFunction<ModalInteractionEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 

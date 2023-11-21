@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.modals
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
@@ -20,7 +20,7 @@ internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsM
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ModalInteractionEvent::class))
             .forEach {
-                val handlerInfo = ModalHandlerInfo(context, it.toMemberEventFunction())
+                val handlerInfo = ModalHandlerInfo(context, it.toMemberParamFunction())
                 val oldHandler = handlers.put(handlerInfo.handlerName, handlerInfo)
 
                 if (oldHandler != null) {

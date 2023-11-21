@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
@@ -29,7 +29,7 @@ class TextCommandVariation internal constructor(
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo {
-    override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
+    override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
     val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
@@ -47,7 +47,7 @@ class TextCommandVariation internal constructor(
     private val useTokenizedEvent: Boolean
 
     init {
-        useTokenizedEvent = eventFunction.eventParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
+        useTokenizedEvent = eventFunction.firstParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)

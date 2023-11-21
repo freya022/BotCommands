@@ -16,40 +16,37 @@ import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
-import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-class MemberEventFunction<T : Event, R> internal constructor(
+class MemberParamFunction<T : Any, R> internal constructor(
     boundFunction: KFunction<R>,
     instanceSupplier: () -> Any,
-    eventClass: KClass<T>
+    paramClass: KClass<T>
 ) : MemberFunction<R>(boundFunction, instanceSupplier) {
-    val eventParameter get() = firstParameter
-
     init {
-        requireUser(eventParameter.type.jvmErasure.isSubclassOf(eventClass), kFunction) {
-            "First argument should be a ${eventClass.simpleNestedName}"
+        requireUser(firstParameter.type.jvmErasure.isSubclassOf(paramClass), kFunction) {
+            "First argument should be a ${paramClass.simpleNestedName}"
         }
     }
 
-    internal constructor(context: BContext, boundFunction: KFunction<R>, eventClass: KClass<T>) : this(
+    internal constructor(context: BContext, boundFunction: KFunction<R>, paramClass: KClass<T>) : this(
         boundFunction = boundFunction,
         instanceSupplier = { context.serviceContainer.getFunctionService(boundFunction) },
-        eventClass = eventClass
+        paramClass = paramClass
     )
 }
 
 // Using the builder to get the scope is required as the info object is still initializing
 // and would NPE when getting the top level instance
-internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEventFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
+internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberParamFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
     builder: ApplicationCommandBuilder<*>
 ) {
     if (kFunction.isFakeSlashFunction()) return
 
-    val eventType = eventParameter.type.jvmErasure
+    val eventType = firstParameter.type.jvmErasure
     if (builder.topLevelBuilder.scope.isGuildOnly) {
         if (!eventType.isSubclassOf<GUILD_T>()) {
             Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${classRef<GUILD_T>()} as to benefit from non-null getters")
@@ -59,13 +56,13 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEve
     }
 }
 
-internal inline fun <reified T : Event> ClassPathFunction.toMemberEventFunction() =
-    MemberEventFunction(function, instanceSupplier = { instance }, T::class)
+internal inline fun <reified T : Any> ClassPathFunction.toMemberParamFunction() =
+    MemberParamFunction(function, instanceSupplier = { instance }, T::class)
 
-internal inline fun <reified T : Event, R> KFunction<R>.toMemberEventFunction(context: BContext) =
-    MemberEventFunction(context, this, T::class)
+internal inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext) =
+    MemberParamFunction(context, this, T::class)
 
-internal inline fun <reified T : Event, R> IBuilderFunctionHolder<R>.toMemberEventFunction(context: BContext): MemberEventFunction<T, R> {
+internal inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {
     if (this is ExecutableCommandBuilder<*, *>) {
         requireUser(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"
@@ -76,5 +73,5 @@ internal inline fun <reified T : Event, R> IBuilderFunctionHolder<R>.toMemberEve
         }
     }
 
-    return MemberEventFunction(context, this.function, T::class)
+    return MemberParamFunction(context, this.function, T::class)
 }

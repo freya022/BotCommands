@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
 import io.github.freya022.botcommands.internal.parameters.MethodParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
 
 internal enum class InsertOptionResult {
@@ -45,18 +44,18 @@ internal fun tryInsertNullableOption(value: Any?, option: Option, optionMap: Mut
 
 context(IExecutableInteractionInfo)
 internal suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
-    event: Event,
+    firstParam: Any,
     optionValues: Map<Option, Any?>
 ) = buildMap(eventFunction.parametersSize) {
     this[eventFunction.instanceParameter] = instance
-    this[eventFunction.eventParameter] = event
+    this[eventFunction.firstParameter] = firstParam
 
     for (parameter in this@mapFinalParameters) {
-        insertAggregate(event, this, optionValues, parameter)
+        insertAggregate(firstParam, this, optionValues, parameter)
     }
 }
 
-internal suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
+internal suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
     val aggregator = parameter.aggregator
 
     if (aggregator.isSingleAggregator) {
@@ -76,10 +75,10 @@ internal suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap
         }
 
         for (nestedAggregatedParameter in parameter.nestedAggregatedParameters) {
-            insertAggregate(event, aggregatorArguments, optionValues, nestedAggregatedParameter)
+            insertAggregate(firstParam, aggregatorArguments, optionValues, nestedAggregatedParameter)
         }
 
-        val aggregatedObject = aggregator.aggregate(event, aggregatorArguments)
+        val aggregatedObject = aggregator.aggregate(firstParam, aggregatorArguments)
         //Check nullability against parameter
         if (aggregatedObject != null) {
             aggregatedObjects[parameter] = aggregatedObject
