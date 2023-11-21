@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.builder.PersistentHandlerBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.components.PersistentHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 
 internal class PersistentActionableComponentImpl<T : IPersistentActionableComponent<T>> internal constructor(
     context: BContext,

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter

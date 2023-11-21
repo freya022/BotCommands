@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
-import io.github.freya022.botcommands.internal.components.ComponentHandler
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser

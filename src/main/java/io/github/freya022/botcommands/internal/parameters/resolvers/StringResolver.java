@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParam
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor;
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;

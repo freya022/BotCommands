@@ -1,6 +1,7 @@
-package io.github.freya022.botcommands.internal.components
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.components.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
@@ -28,7 +29,8 @@ class PersistentHandler(val handlerName: String, userData: List<Any?>) : Compone
     }
 }
 
-class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: suspend (T) -> Unit) : ComponentHandler {
+class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: suspend (T) -> Unit) :
+    ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 
     override fun toString(): String {

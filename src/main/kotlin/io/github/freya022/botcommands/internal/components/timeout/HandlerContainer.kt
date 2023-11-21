@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.internal.core.reflection.MemberFunction
 

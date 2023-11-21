@@ -1,9 +1,9 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.EphemeralHandlers
 
 @BService
 @Dependencies(Components::class)

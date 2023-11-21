@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType

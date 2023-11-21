@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.internal.components.data.ComponentGroupDat
 import io.github.freya022.botcommands.internal.components.data.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.components.repositories.ComponentTimeoutHandlers
-import io.github.freya022.botcommands.internal.components.repositories.GroupTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.reflection.MemberFunction
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
 import io.github.oshai.kotlinlogging.KotlinLogging

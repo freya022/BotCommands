@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components.builder
 
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentDSL
-import io.github.freya022.botcommands.internal.components.PersistentHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import net.dv8tion.jda.api.entities.ISnowflake
 
 @ComponentDSL

@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.components.builder.PersistentHandlerBu
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.components.ComponentHandler
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import java.util.concurrent.TimeUnit
 
 object FunctionTypeTest {

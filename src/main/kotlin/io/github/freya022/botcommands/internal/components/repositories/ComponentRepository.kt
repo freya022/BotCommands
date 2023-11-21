@@ -12,12 +12,14 @@ import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.PersistentHandler
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
 import io.github.freya022.botcommands.internal.components.controller.ComponentTimeoutManager
 import io.github.freya022.botcommands.internal.components.data.*
+import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
+import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.utils.rethrowUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
