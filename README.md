@@ -62,6 +62,8 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 * A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
 * (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
+* (Recommended) Use [stacktrace-decoroutinator](https://github.com/Anamorphosee/stacktrace-decoroutinator), to get clearer stack traces in suspending code
+  * Each bot template has it enabled in their main class
 
 You can then head over to [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/setup/getting-started/) 
 to get started using a bot template.
