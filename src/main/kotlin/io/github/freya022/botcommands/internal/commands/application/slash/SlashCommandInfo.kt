@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashU
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
-import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -36,7 +36,7 @@ abstract class SlashCommandInfo internal constructor(
 ) {
     val description: String
 
-    final override val eventFunction = builder.toMemberEventFunction<GlobalSlashEvent, _>(context)
+    final override val eventFunction = builder.toMemberParamFunction<GlobalSlashEvent, _>(context)
     final override val parameters: List<SlashCommandParameter>
 
     init {
