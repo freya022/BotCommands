@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationG
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
+import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -117,7 +118,7 @@ abstract class SlashCommandInfo internal constructor(
                     }
 
                     resolved
-                } else if (!option.isOptionalOrNullable && event is CommandAutoCompleteInteractionEvent) {
+                } else if (option.isRequired && event is CommandAutoCompleteInteractionEvent) {
                     return InsertOptionResult.ABORT
                 } else {
                     null

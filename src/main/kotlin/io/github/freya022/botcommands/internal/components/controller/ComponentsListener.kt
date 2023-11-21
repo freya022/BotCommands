@@ -35,6 +35,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
+import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -242,7 +243,7 @@ internal class ComponentsListener(
                 option as ComponentHandlerOption
 
                 val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, event, it) }
-                if (obj == null && !option.isOptionalOrNullable && event.isAcknowledged)
+                if (obj == null && option.isRequired && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 
                 obj
