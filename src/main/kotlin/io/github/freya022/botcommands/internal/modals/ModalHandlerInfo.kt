@@ -15,7 +15,6 @@ import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -41,7 +40,7 @@ class ModalHandlerInfo internal constructor(
         val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
-        parameters = function.nonInstanceParameters.drop(1).transformParameters(
+        parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
                     parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
