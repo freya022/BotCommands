@@ -9,7 +9,7 @@ import java.sql.Timestamp as SQLTimestamp
 internal class PersistentTimeout private constructor(
     override val expirationTimestamp: Instant,
     val handlerName: String?,
-    val userData: List<String>
+    val userData: List<String?>
 ) : ComponentTimeout {
     internal companion object {
         internal fun create(expirationTimestamp: Instant): PersistentTimeout {
@@ -26,8 +26,8 @@ internal class PersistentTimeout private constructor(
                 handlerName,
                 userData.map { arg ->
                     when (arg) {
+                        null -> null
                         is ISnowflake -> arg.id
-                        //TODO probably should return null so it avoid being processed
                         else -> arg.toString()
                     }
                 }

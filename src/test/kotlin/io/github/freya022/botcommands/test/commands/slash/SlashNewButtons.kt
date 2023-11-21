@@ -97,7 +97,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
 
         components.newPersistentGroup(firstButton, secondButton) {
-            timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
+            timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
         }
         return firstButton
     }
@@ -131,8 +131,8 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
-    fun onFirstGroupTimeout(data: GroupTimeoutData) {
-        println(data)
+    fun onFirstGroupTimeout(data: GroupTimeoutData, nullObj: String?) {
+        println("$data : $nullObj")
     }
 
     companion object {

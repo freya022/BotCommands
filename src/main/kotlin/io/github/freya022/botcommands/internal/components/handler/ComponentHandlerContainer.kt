@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
@@ -30,7 +30,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotation<JDAButtonListener>()!!.name
 
-                val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.toMemberEventFunction()))
+                val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.toMemberParamFunction()))
                 if (oldDescriptor != null) {
                     throwUser("Tried to override a button handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
@@ -42,7 +42,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotation<JDASelectMenuListener>()!!.name
 
-                val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.toMemberEventFunction()))
+                val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.toMemberParamFunction()))
                 if (oldDescriptor != null) {
                     throwUser("Tried to override a select menu handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
