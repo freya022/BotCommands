@@ -136,6 +136,21 @@ internal class ComponentsListener(
                                 else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                             }
 
+                            if (userData.size != descriptor.optionSize) {
+                                // This is on debug as this is supposed to happen only in development
+                                // Or if a user clicked on an old incompatible button,
+                                // in which case the developer can enable debug logs if complained about
+                                logger.debug {
+                                    """
+                                        Mismatch between button options and ${descriptor.function.shortSignature}
+                                        Button had ${userData.size} options, function has ${descriptor.optionSize} options
+                                        Button raw data: $userData
+                                    """.trimIndent()
+                                }
+                                event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                                return@withRateLimit false
+                            }
+
                             if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
                                 return@withRateLimit false
                             }

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.components
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberEventFunction
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.transformParameters
@@ -28,4 +29,6 @@ class ComponentDescriptor internal constructor(
             aggregateBlock = { ComponentHandlerParameter(context, it) }
         )
     }
+
+    internal val optionSize = parameters.sumOf { p -> p.allOptions.count { o -> o.optionType == OptionType.OPTION } }
 }
