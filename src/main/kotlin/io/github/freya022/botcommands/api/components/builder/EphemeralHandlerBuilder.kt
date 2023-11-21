@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder
 
 import io.github.freya022.botcommands.internal.components.ComponentDSL
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 @ComponentDSL

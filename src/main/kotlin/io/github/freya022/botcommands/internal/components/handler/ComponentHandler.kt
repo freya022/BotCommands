@@ -1,6 +1,7 @@
-package io.github.freya022.botcommands.internal.components
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.components.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
@@ -10,7 +11,7 @@ sealed interface ComponentHandler {
 
 class PersistentHandler(val handlerName: String, userData: List<Any?>) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    val userData: List<String> = processArgs(userData)
+    val userData: List<String?> = processArgs(userData)
 
     operator fun component1() = handlerName
     operator fun component2() = userData
@@ -19,8 +20,9 @@ class PersistentHandler(val handlerName: String, userData: List<Any?>) : Compone
         return "PersistentHandler(handlerName='$handlerName')"
     }
 
-    private fun processArgs(args: List<Any?>): List<String> = args.map { arg ->
+    private fun processArgs(args: List<Any?>): List<String?> = args.map { arg ->
         when (arg) {
+            null -> null
             is ISnowflake -> arg.id
             else -> arg.toString()
         }

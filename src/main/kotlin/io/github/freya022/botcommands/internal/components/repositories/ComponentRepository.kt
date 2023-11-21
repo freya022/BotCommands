@@ -12,12 +12,14 @@ import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.PersistentHandler
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
 import io.github.freya022.botcommands.internal.components.controller.ComponentTimeoutManager
 import io.github.freya022.botcommands.internal.components.data.*
+import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
+import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.utils.rethrowUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -193,7 +195,7 @@ internal class ComponentRepository(
                 executeUpdate(
                     groupId,
                     Timestamp.from(timeout.expirationTimestamp.toJavaInstant()),
-                    timeout.handler?.let { ephemeralTimeoutHandlers.put(it) }
+                    timeout.handler?.let(ephemeralTimeoutHandlers::put)
                 )
             }
         } else if (timeout is PersistentTimeout) {
@@ -202,7 +204,7 @@ internal class ComponentRepository(
                     groupId,
                     timeout.expirationTimestamp.toSqlTimestamp(),
                     timeout.handlerName,
-                    timeout.userData
+                    timeout.userData.toTypedArray()
                 )
             }
         }
@@ -242,15 +244,9 @@ internal class ComponentRepository(
     }
 
     suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional(readOnly = true) {
-        preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
+        preparedStatement("select component_id, expiration_timestamp from bc_persistent_timeout") {
             executeQuery().forEach { dbResult ->
-                timeoutManager.scheduleTimeout(
-                    dbResult["component_id"], PersistentTimeout(
-                        dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
-                        dbResult["handler_name"],
-                        dbResult["user_data"]
-                    )
-                )
+                timeoutManager.scheduleTimeout(dbResult["component_id"], dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant())
             }
         }
     }
@@ -290,8 +286,8 @@ internal class ComponentRepository(
         }
 
         val timeout = dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-            PersistentTimeout(
-                timestamp.toInstant().toKotlinInstant(),
+            PersistentTimeout.fromData(
+                timestamp,
                 dbResult["timeout_handler_name"],
                 dbResult["timeout_user_data"]
             )
@@ -374,8 +370,8 @@ internal class ComponentRepository(
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
             dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-                return PersistentTimeout(
-                    timestamp.toInstant().toKotlinInstant(),
+                return PersistentTimeout.fromData(
+                    timestamp,
                     dbResult["timeout_handler_name"],
                     dbResult["timeout_user_data"]
                 )
@@ -425,5 +421,5 @@ internal class ComponentRepository(
         }
     }
 
-    private fun Instant.toSqlTimestamp(): Timestamp? = Timestamp.from(this.toJavaInstant())
+    private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())
 }

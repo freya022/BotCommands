@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components
 
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

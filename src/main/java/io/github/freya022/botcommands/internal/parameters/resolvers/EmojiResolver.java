@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor;
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;

@@ -20,16 +20,16 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor
-import io.github.freya022.botcommands.internal.components.ComponentHandlerOption
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.data.AbstractComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
 import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerContainer
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerOption
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.components.repositories.ComponentsHandlerContainer
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
@@ -54,7 +54,7 @@ internal class ComponentsListener(
     private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
-    private val componentsHandlerContainer: ComponentsHandlerContainer
+    private val componentHandlerContainer: ComponentHandlerContainer
 ) {
     private val logger = KotlinLogging.logger { }
     private val exceptionHandler = ExceptionHandler(context, logger)
@@ -129,11 +129,26 @@ internal class ComponentsListener(
                             val (handlerName, userData) = component.handler ?: return@withRateLimit true
 
                             val descriptor = when (component.componentType) {
-                                ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
+                                ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
                                     ?: throwUser("Could not find a button handler named $handlerName")
-                                ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
+                                ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
                                     ?: throwUser("Could not find a select menu handler named $handlerName")
                                 else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                            }
+
+                            if (userData.size != descriptor.optionSize) {
+                                // This is on debug as this is supposed to happen only in development
+                                // Or if a user clicked on an old incompatible button,
+                                // in which case the developer can enable debug logs if complained about
+                                logger.debug {
+                                    """
+                                        Mismatch between component options and ${descriptor.function.shortSignature}
+                                        Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                                        Component raw data: $userData
+                                    """.trimIndent()
+                                }
+                                event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                                return@withRateLimit false
                             }
 
                             if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
@@ -192,7 +207,7 @@ internal class ComponentsListener(
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
-        userDataIterator: Iterator<String>
+        userDataIterator: Iterator<String?>
     ): Boolean {
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
@@ -220,13 +235,13 @@ internal class ComponentsListener(
         descriptor: ComponentDescriptor,
         option: Option,
         optionMap: MutableMap<Option, Any?>,
-        userDataIterator: Iterator<String>
+        userDataIterator: Iterator<String?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                val obj = option.resolver.resolveSuspend(descriptor, event, userDataIterator.next())
+                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, event, it) }
                 if (obj == null && !option.isOptionalOrNullable && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 

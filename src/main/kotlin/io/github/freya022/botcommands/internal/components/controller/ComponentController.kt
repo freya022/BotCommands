@@ -55,7 +55,7 @@ internal class ComponentController(
 
         return componentRepository.createComponent(builder).also { id ->
             val timeout = builder.timeout ?: return@also
-            timeoutManager.scheduleTimeout(id, timeout)
+            timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
         }.toString()
     }
 
@@ -72,7 +72,7 @@ internal class ComponentController(
     suspend fun insertGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
         return componentRepository.insertGroup(group).also { id ->
             val timeout = group.timeout ?: return@also
-            timeoutManager.scheduleTimeout(id, timeout)
+            timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
         }.let { id -> ComponentGroup(this, id.toString()) }
     }
 

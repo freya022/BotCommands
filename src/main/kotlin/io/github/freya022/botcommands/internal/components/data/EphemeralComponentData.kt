@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.components.data
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.LifetimeType
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 
 internal class EphemeralComponentData(
     componentId: Int,
