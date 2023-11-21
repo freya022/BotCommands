@@ -40,7 +40,7 @@ internal class ComponentController(
         runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
     }
 
-    fun createComponent(builder: BaseComponentBuilder): String {
+    fun createComponent(builder: BaseComponentBuilder<*>): String {
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
                 "Rate limit group '$rateLimitGroup' was not registered using ${annotationRef<RateLimitDeclaration>()}"
@@ -69,7 +69,7 @@ internal class ComponentController(
         }
     }
 
-    suspend fun insertGroup(group: ComponentGroupBuilder): ComponentGroup {
+    suspend fun insertGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
         return componentRepository.insertGroup(group).also { id ->
             val timeout = group.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)

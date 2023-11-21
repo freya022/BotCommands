@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.components.builder.IComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.internal.components.ComponentType
 
-abstract class ComponentGroupBuilder internal constructor(@get:JvmSynthetic internal val componentIds: List<Int>) :
+sealed class ComponentGroupBuilder<T : ComponentGroupBuilder<T>>(@get:JvmSynthetic internal val componentIds: List<Int>) :
     IComponentBuilder,
-    ITimeoutableComponent {
+    ITimeoutableComponent<T> {
     override val componentType: ComponentType = ComponentType.GROUP
 }

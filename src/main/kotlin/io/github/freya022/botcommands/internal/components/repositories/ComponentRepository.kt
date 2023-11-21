@@ -45,7 +45,7 @@ internal class ComponentRepository(
         cleanupEphemeral()
     }
 
-    fun createComponent(builder: BaseComponentBuilder): Int = runBlocking {
+    fun createComponent(builder: BaseComponentBuilder<*>): Int = runBlocking {
         database.transactional {
             // Create base component
             val componentId: Int =
@@ -141,7 +141,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilder): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
         val groupId: Int = runCatching {
             preparedStatement(
                 """
@@ -186,7 +186,7 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent, groupId: Int) {
+    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent<*>, groupId: Int) {
         val timeout = timeoutableComponentBuilder.timeout
         if (timeout is EphemeralTimeout) {
             preparedStatement("insert into bc_ephemeral_timeout (component_id, expiration_timestamp, handler_id) VALUES (?, ?, ?)") {

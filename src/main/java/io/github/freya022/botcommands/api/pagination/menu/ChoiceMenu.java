@@ -63,14 +63,14 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 		for (int i = 0; i < entries.size(); i++) {
 			final E item = entries.get(i);
 			final ButtonContent content = buttonContentSupplier.apply(item, i);
-			final Button choiceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, content, builder -> {
-				builder.bindTo(event -> {
-					this.cleanup();
+			final Button choiceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, content)
+					.bindTo(event -> {
+						this.cleanup();
 
-					callback.accept(event, item);
-				});
-				builder.setConstraints(constraints);
-			});
+						callback.accept(event, item);
+					})
+					.constraints(constraints)
+					.build();
 
 			components.addComponents(1 + (i / 5), choiceButton);
 		}

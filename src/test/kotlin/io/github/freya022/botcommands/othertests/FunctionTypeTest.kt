@@ -17,7 +17,8 @@ object FunctionTypeTest {
 
     }
 
-    val x = object : IPersistentActionableComponent {
+    private object FakeActionableComponent : IPersistentActionableComponent<FakeActionableComponent> {
+        override val instance: FakeActionableComponent = this
         override val context: BContext
             get() = throw UnsupportedOperationException()
         override val handler: ComponentHandler?
@@ -26,12 +27,15 @@ object FunctionTypeTest {
             get() = arrayListOf()
         override val rateLimitGroup: String? = null
 
-        override fun rateLimitReference(group: String) { throw NotImplementedError() }
+        override fun rateLimitReference(group: String): FakeActionableComponent { throw NotImplementedError() }
 
-        override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>) {
+        override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): FakeActionableComponent {
             println("ok")
+            return this
         }
     }
+
+    private val x = FakeActionableComponent
 
     @JvmStatic
     fun main(args: Array<String>) {
