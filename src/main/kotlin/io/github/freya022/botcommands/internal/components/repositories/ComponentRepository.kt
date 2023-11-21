@@ -272,9 +272,10 @@ internal class ComponentRepository(
                   pt.expiration_timestamp as timeout_expiration_timestamp,
                   pt.handler_name         as timeout_handler_name,
                   pt.user_data            as timeout_user_data
-           from bc_persistent_handler ph
+           from bc_component component
+                    full outer join bc_persistent_handler ph using (component_id)
                     full outer join bc_persistent_timeout pt using (component_id)
-           where ph.component_id = ?;
+           where component.component_id = 369;
         """.trimIndent()
     ) {
         // There is no rows if neither a handler nor a timeout has been set
@@ -314,9 +315,10 @@ internal class ComponentRepository(
             select ph.handler_id           as handler_handler_id,
                    pt.expiration_timestamp as timeout_expiration_timestamp,
                    pt.handler_id           as timeout_handler_id
-            from bc_ephemeral_handler ph
+            from bc_component component
+                     full outer join bc_ephemeral_handler ph using (component_id)
                      full outer join bc_ephemeral_timeout pt using (component_id)
-            where component_id = ?;
+            where component.component_id = ?;
         """.trimIndent()
     ) {
         // There is no rows if neither a handler nor a timeout has been set
