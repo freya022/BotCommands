@@ -142,9 +142,9 @@ internal class ComponentsListener(
                                 // in which case the developer can enable debug logs if complained about
                                 logger.debug {
                                     """
-                                        Mismatch between button options and ${descriptor.function.shortSignature}
-                                        Button had ${userData.size} options, function has ${descriptor.optionSize} options
-                                        Button raw data: $userData
+                                        Mismatch between component options and ${descriptor.function.shortSignature}
+                                        Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                                        Component raw data: $userData
                                     """.trimIndent()
                                 }
                                 event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()

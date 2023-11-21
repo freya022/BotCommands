@@ -32,7 +32,7 @@ public class StringResolver
         SlashParameterResolver<StringResolver, String>,
         ComponentParameterResolver<StringResolver, String>,
         ModalParameterResolver<StringResolver, String>,
-		TimeoutParameterResolver<StringResolver, String> {
+        TimeoutParameterResolver<StringResolver, String> {
 
 	public StringResolver() {
 		super(String.class);

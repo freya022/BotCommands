@@ -79,9 +79,9 @@ internal class ComponentTimeoutManager(
                     if (userData.size != descriptor.optionSize) {
                         return@launch logger.warn {
                             """
-                                Mismatch between button options and ${descriptor.function.shortSignature}
-                                Button had ${userData.size} options, function has ${descriptor.optionSize} options
-                                Button raw data: $userData
+                                Mismatch between component options and ${descriptor.function.shortSignature}
+                                Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                                Component raw data: $userData
                             """.trimIndent()
                         }
                     }
