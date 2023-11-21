@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.withNullability
 
 /**
  * Specialization of [ParameterResolverFactory] for a specific [KType].
@@ -25,7 +26,13 @@ abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     constructor(resolverType: KClass<T>, type: KClass<*>) : this(resolverType, type.starProjectedType)
     constructor(resolverType: Class<T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
 
+    init {
+        check(!type.isMarkedNullable) {
+            "Typed parameter resolver factories cannot have a nullable type"
+        }
+    }
+
     override fun isResolvable(parameter: ParameterWrapper): Boolean {
-        return this.type == parameter.type
+        return this.type == parameter.type || this.type == parameter.type.withNullability(false)
     }
 }
