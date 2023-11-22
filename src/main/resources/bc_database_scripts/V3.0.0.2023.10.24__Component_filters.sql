@@ -8,7 +8,7 @@ set version = '3.0.0-alpha.8'
 where one_row = true;
 
 alter table bc_component
-    add column filters text[];
+    add column filters text array;
 
 update bc_component set filters = '{}';
 
