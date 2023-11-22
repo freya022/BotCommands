@@ -279,7 +279,7 @@ internal class ComponentRepository(
             ?: return PersistentComponentData(id, componentType, lifetimeType, filters, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
-            PersistentHandler(
+            PersistentHandler.fromData(
                 handlerName,
                 dbResult["handler_user_data"]
             )
