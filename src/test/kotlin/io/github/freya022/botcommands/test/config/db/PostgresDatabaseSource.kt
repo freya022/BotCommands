@@ -1,9 +1,11 @@
-package io.github.freya022.botcommands.test.config
+package io.github.freya022.botcommands.test.config.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.test.config.Config
+import io.github.freya022.botcommands.test.switches.TestDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.flywaydb.core.Flyway
 import kotlin.time.Duration.Companion.seconds
@@ -12,7 +14,8 @@ private val logger = KotlinLogging.logger { }
 
 // Interfaced service used to retrieve an SQL Connection
 @BService
-class DatabaseSource(config: Config) : HikariSourceSupplier {
+@TestDatabase(TestDatabase.DatabaseType.POSTGRESQL)
+class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
     override val source = HikariDataSource(HikariConfig().apply {
         jdbcUrl = config.databaseConfig.url
         username = config.databaseConfig.user
