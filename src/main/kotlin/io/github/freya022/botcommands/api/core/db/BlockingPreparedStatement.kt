@@ -50,6 +50,22 @@ class BlockingPreparedStatement internal constructor(preparedStatement: Prepared
     }
 
     /**
+     * Executes the SQL statement in this PreparedStatement object with the supplied parameters,
+     * and returns a [DBResult] with the [generated keys][PreparedStatement.getGeneratedKeys].
+     *
+     * The parameters are set in the order they are passed in,
+     * supported types are implementation-specific,
+     * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
+     *
+     * @see PreparedStatement.executeUpdate
+     */
+    fun executeReturningUpdate(vararg params: Any?): DBResult {
+        setParameters(params)
+        preparedStatement.executeUpdate()
+        return generatedKeys
+    }
+
+    /**
      * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
      *
      * The parameters are set in the order they are passed in,

@@ -10,6 +10,9 @@ sealed class AbstractPreparedStatement(val preparedStatement: PreparedStatement)
         }
     }
 
+    override fun getResultSet(): DBResult = DBResult(preparedStatement.resultSet)
+    override fun getGeneratedKeys(): DBResult = DBResult(preparedStatement.generatedKeys)
+
     // region execute
 
     @Deprecated("This is never usable as this is a prepared statement", level = DeprecationLevel.HIDDEN)
