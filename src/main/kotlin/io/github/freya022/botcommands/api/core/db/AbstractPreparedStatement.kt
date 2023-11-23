@@ -5,8 +5,19 @@ import java.sql.ResultSet
 
 sealed class AbstractPreparedStatement(val preparedStatement: PreparedStatement) : PreparedStatement by preparedStatement {
     protected fun setParameters(params: Array<out Any?>) {
-        for ((i, param) in params.withIndex()) {
-            setObject(i + 1, param)
+        params.forEachIndexed { i, param ->
+            // Primitive arrays are not always supported, do it ourselves
+            when (param) {
+                is IntArray -> setArray(i + 1, connection.createArrayOf("int", param.toTypedArray()))
+                is LongArray -> setArray(i + 1, connection.createArrayOf("bigint", param.toTypedArray()))
+                is FloatArray -> setArray(i + 1, connection.createArrayOf("real", param.toTypedArray()))
+                is DoubleArray -> setArray(i + 1, connection.createArrayOf("double", param.toTypedArray()))
+                is ByteArray -> setBytes(i + 1, param)
+                is ShortArray -> setArray(i + 1, connection.createArrayOf("smallint", param.toTypedArray()))
+                is BooleanArray -> setArray(i + 1, connection.createArrayOf("bool", param.toTypedArray()))
+                is CharArray -> setArray(i + 1, connection.createArrayOf("char", param.toTypedArray()))
+                else -> setObject(i + 1, param)
+            }
         }
     }
 
