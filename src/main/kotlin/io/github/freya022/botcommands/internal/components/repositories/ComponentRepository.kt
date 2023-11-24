@@ -51,7 +51,10 @@ internal class ComponentRepository(
         database.transactional {
             // Create base component
             val componentId: Int =
-                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?)", generatedKeys = true) {
+                preparedStatement(
+                    "insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?)",
+                    columnNames = arrayOf("component_id")
+                ) {
                     executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
                         .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
@@ -61,8 +64,8 @@ internal class ComponentRepository(
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
                 executeUpdate(
                     componentId,
-                    connection.createArrayOf("bigint", builder.constraints.userList.toArray().toTypedArray()),
-                    connection.createArrayOf("bigint", builder.constraints.roleList.toArray().toTypedArray()),
+                    builder.constraints.userList.toArray(),
+                    builder.constraints.roleList.toArray(),
                     Permission.getRaw(builder.constraints.permissions)
                 )
             }
@@ -150,7 +153,7 @@ internal class ComponentRepository(
                 insert into bc_component (component_type, lifetime_type, one_use, filters)
                 VALUES (?, ?, false, '{}')
                 """.trimIndent(),
-                generatedKeys = true
+                columnNames = arrayOf("component_id")
             ) {
                 executeReturningUpdate(ComponentType.GROUP.key, builder.lifetimeType.key).readOrNull()!!
                     .get<Int>("component_id")
