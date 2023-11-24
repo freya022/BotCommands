@@ -16,7 +16,7 @@ internal class MutableApplicationCommandMap internal constructor(
 ) : ApplicationCommandMap() {
     internal class UnmodifiableApplicationCommandMap(private val map: ApplicationCommandMap) : ApplicationCommandMap() {
         override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
-            map.getTypeMap(type)
+            map.getTypeMap<T>(type).toUnmodifiableMap()
     }
 
     @Suppress("UNCHECKED_CAST")
