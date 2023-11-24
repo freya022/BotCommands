@@ -49,11 +49,12 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         else -> getObject(columnIndex, R::class.java)
     }
 
+    @Suppress("UNCHECKED_CAST")
     @PublishedApi
     internal fun readArray(columnIndex: Int, elementType: Class<*>): Array<*> {
         val list = readList(columnIndex, elementType)
-        val array = java.lang.reflect.Array.newInstance(elementType, list.size) as Array<*>
-        list.forEachIndexed { index, o -> java.lang.reflect.Array.set(array, index, o) }
+        val array = java.lang.reflect.Array.newInstance(elementType, list.size) as Array<Any?>
+        list.forEachIndexed { index, o -> array[index] = o }
         return array
     }
 
