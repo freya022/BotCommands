@@ -177,9 +177,10 @@ internal class ComponentRepository(
         val hasTimeouts: Boolean = preparedStatement(
             """
             select count(*) > 0 as "exists"
-            from bc_persistent_timeout pt
+            from bc_component component
+                     left join bc_persistent_timeout pt using (component_id)
                      left join bc_ephemeral_timeout et using (component_id)
-            where pt.component_id = any (?)""".trimIndent()
+            where component.component_id = any (?)""".trimIndent()
         ) {
             executeQuery(builder.componentIds.toTypedArray()).readOrNull()!!["exists"]
         }
