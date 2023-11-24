@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.pagination.paginator;
 
-import io.github.freya022.botcommands.api.Logging;
 import io.github.freya022.botcommands.api.components.Components;
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
+import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.pagination.BasicPagination;
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
 import io.github.freya022.botcommands.api.pagination.TimeoutInfo;

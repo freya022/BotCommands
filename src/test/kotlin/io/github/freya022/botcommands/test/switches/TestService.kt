@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 object TestServiceChecker : CustomConditionChecker<TestService> {
-    const val useTestServices = false
+    const val useTestServices = true
 
     override val annotationType: Class<TestService> = TestService::class.java
 

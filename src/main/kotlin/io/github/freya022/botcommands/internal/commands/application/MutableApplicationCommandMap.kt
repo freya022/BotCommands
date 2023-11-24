@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
@@ -13,20 +12,17 @@ import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 internal class MutableApplicationCommandMap internal constructor(
-    private val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
+    private val rawTypeMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
 ) : ApplicationCommandMap() {
-    override fun getRawTypeMap() = rawTypeMap
-
-    override fun getSlashCommands(): MutableCommandMap<SlashCommandInfo> {
-        return getTypeMap(CommandType.SLASH)
+    internal class UnmodifiableApplicationCommandMap(private val map: ApplicationCommandMap) : ApplicationCommandMap() {
+        override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
+            map.getTypeMap<T>(type).toUnmodifiableMap()
     }
 
-    override fun getUserCommands(): MutableCommandMap<UserCommandInfo> {
-        return getTypeMap(CommandType.USER)
-    }
-
-    override fun getMessageCommands(): MutableCommandMap<MessageCommandInfo> {
-        return getTypeMap(CommandType.MESSAGE)
+    @Suppress("UNCHECKED_CAST")
+    internal object EmptyApplicationCommandMap : ApplicationCommandMap() {
+        override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
+            EmptyCommandMap as CommandMap<T>
     }
 
     internal fun <T : ApplicationCommandInfo> computeIfAbsent(
@@ -37,28 +33,14 @@ internal class MutableApplicationCommandMap internal constructor(
 
     internal fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
-    override operator fun plus(map: ApplicationCommandMap): MutableApplicationCommandMap {
-        val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
-        Command.Type.entries.forEach { commandType ->
-            val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
-
-            listOf(this, map).forEach { sourceMap ->
-                sourceMap.getTypeMap<ApplicationCommandInfo>(commandType).forEach { (path, info) ->
-                    commandMap[path] = info
-                }
-            }
-        }
-
-        return MutableApplicationCommandMap(newMap)
-    }
-
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ApplicationCommandInfo> getTypeMap(type: CommandType): MutableCommandMap<T> {
-        return super.getTypeMap<T>(type) as MutableCommandMap<T>
+        return rawTypeMap.computeIfAbsent(type) { MutableCommandMap() } as MutableCommandMap<T>
     }
 
     internal companion object {
         @JvmStatic
-        val EMPTY_MAP: ApplicationCommandMap = MutableApplicationCommandMap(emptyMap())
+        val EMPTY_MAP: ApplicationCommandMap = EmptyApplicationCommandMap
 
         internal fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
@@ -92,4 +74,9 @@ internal class MutableApplicationCommandMap internal constructor(
             }
         }
     }
+}
+
+internal fun ApplicationCommandMap.toUnmodifiableMap(): ApplicationCommandMap {
+    if (this is MutableApplicationCommandMap.UnmodifiableApplicationCommandMap) return this
+    return MutableApplicationCommandMap.UnmodifiableApplicationCommandMap(this)
 }

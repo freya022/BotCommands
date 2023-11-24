@@ -7,7 +7,7 @@ import java.util.*
 
 interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>
 
-class MutableCommandMap<T : ApplicationCommandInfo>(
+internal class MutableCommandMap<T : ApplicationCommandInfo>(
     private val map: MutableMap<CommandPath, T> = Collections.synchronizedMap(
         mutableMapOf()
     )
@@ -50,3 +50,12 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
         return null //oldInfo is always null
     }
 }
+
+internal class UnmodifiableCommandMap<T : ApplicationCommandInfo>(map: CommandMap<T>) : CommandMap<T>,
+    Map<CommandPath, T> by Collections.unmodifiableMap(map)
+
+internal object EmptyCommandMap : CommandMap<ApplicationCommandInfo>,
+    Map<CommandPath, ApplicationCommandInfo> by emptyMap()
+
+internal fun <T : ApplicationCommandInfo> CommandMap<T>.toUnmodifiableMap(): CommandMap<T> =
+    UnmodifiableCommandMap(this)

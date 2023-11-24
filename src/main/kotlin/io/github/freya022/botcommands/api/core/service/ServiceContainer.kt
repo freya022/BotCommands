@@ -112,6 +112,10 @@ fun <R : Any> ServiceContainer.lazy(clazz: KClass<R>): Lazy<R> = lazy { this.get
 fun <R : Any> ServiceContainer.lazyOrNull(clazz: KClass<R>): Lazy<R?> = lazy { this.getServiceOrNull(clazz) }
 fun <R : Any, U : R> ServiceContainer.lazyOrElse(clazz: KClass<R>, block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(clazz) ?: block() }
 
+fun <R : Any> ServiceContainer.lazy(name: String, requiredType: KClass<R>): Lazy<R> = lazy { this.getService(name, requiredType) }
+fun <R : Any> ServiceContainer.lazyOrNull(name: String, requiredType: KClass<R>): Lazy<R?> = lazy { this.getServiceOrNull(name, requiredType) }
+fun <R : Any, U : R> ServiceContainer.lazyOrElse(name: String, requiredType: KClass<R>, block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(name, requiredType) ?: block() }
+
 inline fun <reified R : Any> ServiceContainer.lazy(name: String): Lazy<R> = lazy { this.getService(name, R::class) }
 inline fun <reified R : Any> ServiceContainer.lazyOrNull(name: String): Lazy<R?> = lazy { this.getServiceOrNull(name, R::class) }
 inline fun <reified R : Any, U : R> ServiceContainer.lazyOrElse(name: String, crossinline block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(name, R::class) ?: block() }

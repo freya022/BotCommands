@@ -45,7 +45,7 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
     }
 
     fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap): Unit = writeLock.withLock {
-        liveApplicationCommandInfoMap.put(getGuildKey(guild), map)
+        liveApplicationCommandInfoMap.put(getGuildKey(guild), map.toUnmodifiableMap())
     }
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {

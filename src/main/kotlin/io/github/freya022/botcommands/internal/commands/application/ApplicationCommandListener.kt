@@ -136,6 +136,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     }
 
     private fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
+        // If an exception occurred during global commands registration, the command map for it does not exist
+        if (context.applicationCommandsContext.getLiveApplicationCommandsMap(null) == null) {
+            return event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+        }
+
         //This is done so warnings are printed after the exception
         handleException(IllegalArgumentException(message), event)
         printAvailableCommands(event)

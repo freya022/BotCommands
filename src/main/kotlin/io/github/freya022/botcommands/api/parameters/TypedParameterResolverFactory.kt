@@ -15,7 +15,9 @@ import kotlin.reflect.full.withNullability
  *
  * @see ParameterResolverFactory
  *
- * @param T Type of the returned parameter resolver
+ * @param resolverType Class of the returned parameter resolver
+ * @param type         Type of the objects returned by the parameter resolver
+ * @param T            Type of the returned parameter resolver
  */
 abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     resolverType: KClass<out T>,

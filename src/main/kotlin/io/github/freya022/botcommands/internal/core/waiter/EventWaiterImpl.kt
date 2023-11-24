@@ -108,10 +108,10 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             eventLoop@ while (iterator.hasNext()) {
                 try {
                     val waitingEvent = iterator.next()
-                    for ((index, precondition) in waitingEvent.preconditions.withIndex()) {
+                    for (precondition in waitingEvent.preconditions) {
                         precondition as Predicate<Event>
                         if (!precondition.test(event)) {
-                            logger.trace { "Failed ${event.javaClass.simpleNestedName} precondition #$index $precondition with $event" }
+                            logger.trace { "Failed ${event.javaClass.simpleNestedName} precondition #${waitingEvent.preconditions.indexOf(precondition)} $precondition with $event" }
                             continue@eventLoop
                         }
                     }

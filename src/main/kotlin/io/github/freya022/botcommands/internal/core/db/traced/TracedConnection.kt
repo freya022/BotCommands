@@ -2,13 +2,12 @@
 
 package io.github.freya022.botcommands.internal.core.db.traced
 
+import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.Semaphore
-import java.lang.reflect.Modifier
 import java.sql.Connection
 import java.sql.PreparedStatement
 import kotlin.time.Duration
@@ -67,24 +66,4 @@ private fun loggerFromCallStack(): KLogger {
             .dropWhile { it.isAnnotationPresent(IgnoreStackFrame::class.java) }
             .findAny().get()
     }.toUnwrappedLogger()
-}
-
-private fun Class<*>.toUnwrappedLogger(): KLogger {
-    val className = unwrapCompanionClass(this).name.substringBefore('$')
-    return KotlinLogging.logger(className)
-}
-
-private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
-    val enclosingClass = clazz.enclosingClass ?: return clazz
-
-    val hasCompanionField = enclosingClass.declaredFields.any { field ->
-        field.name == clazz.simpleName &&
-                Modifier.isStatic(field.modifiers) &&
-                field.type == clazz
-    }
-
-    return when {
-        hasCompanionField -> enclosingClass
-        else -> clazz
-    }
 }

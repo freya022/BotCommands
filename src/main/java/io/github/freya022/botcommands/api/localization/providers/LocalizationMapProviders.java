@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.localization.providers;
 
-import io.github.freya022.botcommands.api.Logging;
+import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.core.service.ServiceContainer;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;

@@ -2,7 +2,7 @@
 
 package io.github.freya022.botcommands.api.core.db
 
-import io.github.freya022.botcommands.api.Logging
+import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.SQLException
+import java.sql.Statement
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -95,6 +96,22 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
     runBlocking { fetchConnection(readOnly) }.use { connection ->
         BlockingPreparedStatement(connection.prepareStatement(sql)).use { block.apply(it) }
+    }
+
+@Suppress("SqlSourceToSinkFlow")
+@JvmOverloads
+@Throws(SQLException::class)
+internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, columnIndexes: IntArray, block: StatementFunction<R, *>): R =
+    runBlocking { fetchConnection(readOnly) }.use { connection ->
+        BlockingPreparedStatement(connection.prepareStatement(sql, columnIndexes)).use { block.apply(it) }
+    }
+
+@Suppress("SqlSourceToSinkFlow")
+@JvmOverloads
+@Throws(SQLException::class)
+internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, columnNames: Array<out String>, block: StatementFunction<R, *>): R =
+    runBlocking { fetchConnection(readOnly) }.use { connection ->
+        BlockingPreparedStatement(connection.prepareStatement(sql, columnNames)).use { block.apply(it) }
     }
 
 @PublishedApi
@@ -223,20 +240,77 @@ internal fun createDumps(): String = buildString {
 /**
  * Creates a statement from the given SQL statement, runs the [block], commits the changes and closes the connection.
  *
+ * The returned keys are accessible using [getGeneratedKeys][AbstractPreparedStatement.getGeneratedKeys].
+ *
  * If [all connections are used][ConnectionSupplier.maxConnections],
  * this function suspends until a connection is available.
  *
  * The [block] should always be short-lived, consider using [transactional] otherwise.
  *
- * @param readOnly `true` if the database only is read from, can allow some optimizations
+ * @param sql           An SQL statement that may contain one or more '?' IN parameter placeholders
+ * @param readOnly      `true` if the database only is read from, can allow some optimizations
+ * @param generatedKeys `true` to return the generated keys
  *
  * @see Database.fetchConnection
  * @see Database.transactional
  */
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
-suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: SuspendingPreparedStatement.() -> R): R {
+suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, generatedKeys: Boolean = false, block: SuspendingPreparedStatement.() -> R): R {
     return fetchConnection(readOnly).use {
-        SuspendingPreparedStatement(it.prepareStatement(sql)).use(block)
+        SuspendingPreparedStatement(it.prepareStatement(
+            sql,
+            if (generatedKeys) Statement.RETURN_GENERATED_KEYS else Statement.NO_GENERATED_KEYS
+        )).use(block)
+    }
+}
+
+/**
+ * Creates a statement from the given SQL statement, runs the [block], commits the changes and closes the connection.
+ *
+ * The returned keys are accessible using [getGeneratedKeys][AbstractPreparedStatement.getGeneratedKeys].
+ *
+ * If [all connections are used][ConnectionSupplier.maxConnections],
+ * this function suspends until a connection is available.
+ *
+ * The [block] should always be short-lived, consider using [transactional] otherwise.
+ *
+ * @param sql           An SQL statement that may contain one or more '?' IN parameter placeholders
+ * @param readOnly      `true` if the database only is read from, can allow some optimizations
+ * @param columnIndexes An array of column indexes indicating the columns that should be returned from the inserted row or rows
+ *
+ * @see Database.fetchConnection
+ * @see Database.transactional
+ */
+@Throws(SQLException::class)
+@Suppress("SqlSourceToSinkFlow")
+suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, columnIndexes: IntArray, block: SuspendingPreparedStatement.() -> R): R {
+    return fetchConnection(readOnly).use {
+        SuspendingPreparedStatement(it.prepareStatement(sql, columnIndexes)).use(block)
+    }
+}
+
+/**
+ * Creates a statement from the given SQL statement, runs the [block], commits the changes and closes the connection.
+ *
+ * The returned keys are accessible using [getGeneratedKeys][AbstractPreparedStatement.getGeneratedKeys].
+ *
+ * If [all connections are used][ConnectionSupplier.maxConnections],
+ * this function suspends until a connection is available.
+ *
+ * The [block] should always be short-lived, consider using [transactional] otherwise.
+ *
+ * @param sql          An SQL statement that may contain one or more '?' IN parameter placeholders
+ * @param readOnly     `true` if the database only is read from, can allow some optimizations
+ * @param columnNames  An array of column names indicating the columns that should be returned from the inserted row or rows
+ *
+ * @see Database.fetchConnection
+ * @see Database.transactional
+ */
+@Throws(SQLException::class)
+@Suppress("SqlSourceToSinkFlow")
+suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, columnNames: Array<out String>, block: SuspendingPreparedStatement.() -> R): R {
+    return fetchConnection(readOnly).use {
+        SuspendingPreparedStatement(it.prepareStatement(sql, columnNames)).use(block)
     }
 }
