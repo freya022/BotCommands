@@ -17,19 +17,12 @@ internal class MutableApplicationCommandMap internal constructor(
     internal class UnmodifiableApplicationCommandMap(private val map: ApplicationCommandMap) : ApplicationCommandMap() {
         override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
             map.getTypeMap(type)
-
-        override fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap =
-            map.plus(liveApplicationCommandsMap)
     }
 
     @Suppress("UNCHECKED_CAST")
     internal object EmptyApplicationCommandMap : ApplicationCommandMap() {
         override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
             EmptyCommandMap as CommandMap<T>
-
-        override fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap {
-            TODO("Not yet implemented")
-        }
     }
 
     internal fun <T : ApplicationCommandInfo> computeIfAbsent(
@@ -40,23 +33,6 @@ internal class MutableApplicationCommandMap internal constructor(
 
     internal fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
-    //TODO move to ApplicationCommandMap
-    override operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap {
-        val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
-        Command.Type.entries.forEach { commandType ->
-            val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
-
-            listOf(this, liveApplicationCommandsMap).forEach { sourceMap ->
-                sourceMap.getTypeMap<ApplicationCommandInfo>(commandType).forEach { (path, info) ->
-                    commandMap[path] = info
-                }
-            }
-        }
-
-        return MutableApplicationCommandMap(newMap).toUnmodifiableMap()
-    }
-
-    //TODO make a proper unmodifiable type
     @Suppress("UNCHECKED_CAST")
     override fun <T : ApplicationCommandInfo> getTypeMap(type: CommandType): MutableCommandMap<T> {
         return rawTypeMap.computeIfAbsent(type) { MutableCommandMap() } as MutableCommandMap<T>

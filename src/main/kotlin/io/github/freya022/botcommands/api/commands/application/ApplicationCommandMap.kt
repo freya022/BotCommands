@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.CommandMap
+import io.github.freya022.botcommands.api.core.utils.enumMapOf
+import io.github.freya022.botcommands.internal.commands.application.*
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -28,5 +28,18 @@ abstract class ApplicationCommandMap {
 
     abstract fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T>
 
-    abstract operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap
+    operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap {
+        val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
+        Command.Type.entries.forEach { commandType ->
+            val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
+
+            listOf(this, liveApplicationCommandsMap).forEach { sourceMap ->
+                sourceMap.getTypeMap<ApplicationCommandInfo>(commandType).forEach { (path, info) ->
+                    commandMap[path] = info
+                }
+            }
+        }
+
+        return MutableApplicationCommandMap(newMap).toUnmodifiableMap()
+    }
 }
