@@ -77,5 +77,6 @@ internal class MutableApplicationCommandMap internal constructor(
 }
 
 internal fun ApplicationCommandMap.toUnmodifiableMap(): ApplicationCommandMap {
+    if (this is MutableApplicationCommandMap.UnmodifiableApplicationCommandMap) return this
     return MutableApplicationCommandMap.UnmodifiableApplicationCommandMap(this)
 }
