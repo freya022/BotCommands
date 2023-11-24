@@ -130,16 +130,24 @@ internal fun <T : Any> KClass<T>.createSingleton(): T {
     return constructor.callBy(mapOf())
 }
 
-internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType {
-    val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == T::class }
-        ?: throwInternal("Unable to find the supertype of ${this.simpleNestedName} extending ${T::class.simpleNestedName}")
+@PublishedApi
+internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
+
+@PublishedApi
+internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType {
+    val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == targetType }
+        ?: throwInternal("Unable to find the supertype of ${this.simpleNestedName} extending ${targetType.simpleNestedName}")
     return interfaceType.arguments[index].type!!
 }
 
-internal inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType {
-    if (this.jvmErasure == T::class) {
+@PublishedApi
+internal inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType = findErasureOfAt(index, T::class)
+
+@PublishedApi
+internal fun KType.findErasureOfAt(index: Int, targetType: KClass<*>): KType {
+    if (this.jvmErasure == targetType) {
         return this.arguments[index].type!!
     }
 
-    return this.jvmErasure.superErasureAt<T>(index)
+    return this.jvmErasure.superErasureAt(index, targetType)
 }

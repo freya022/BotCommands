@@ -32,5 +32,5 @@ class PersistentHandlerBuilder internal constructor(val handlerName: String) {
     fun passData(vararg data: Any?): Unit = passData(data.asList())
 
     @JvmSynthetic
-    internal fun build(): PersistentHandler = PersistentHandler(handlerName, data)
+    internal fun build(): PersistentHandler = PersistentHandler.create(handlerName, data)
 }

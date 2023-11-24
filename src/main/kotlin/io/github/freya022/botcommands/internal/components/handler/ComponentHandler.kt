@@ -9,9 +9,8 @@ sealed interface ComponentHandler {
     val lifetimeType: LifetimeType
 }
 
-class PersistentHandler(val handlerName: String, userData: List<Any?>) : ComponentHandler {
+class PersistentHandler private constructor(val handlerName: String, val userData: List<String?>) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    val userData: List<String?> = processArgs(userData)
 
     operator fun component1() = handlerName
     operator fun component2() = userData
@@ -20,11 +19,21 @@ class PersistentHandler(val handlerName: String, userData: List<Any?>) : Compone
         return "PersistentHandler(handlerName='$handlerName')"
     }
 
-    private fun processArgs(args: List<Any?>): List<String?> = args.map { arg ->
-        when (arg) {
-            null -> null
-            is ISnowflake -> arg.id
-            else -> arg.toString()
+    internal companion object {
+        internal fun create(handlerName: String, userData: List<Any?>): PersistentHandler {
+            return PersistentHandler(handlerName, processArgs(userData))
+        }
+
+        internal fun fromData(handlerName: String, userData: List<String?>): PersistentHandler {
+            return PersistentHandler(handlerName, userData)
+        }
+
+        private fun processArgs(args: List<Any?>): List<String?> = args.map { arg ->
+            when (arg) {
+                null -> null
+                is ISnowflake -> arg.id
+                else -> arg.toString()
+            }
         }
     }
 }
