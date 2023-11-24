@@ -196,7 +196,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceCont
     val params: MutableMap<KParameter, Any?> = hashMapOf()
     this.nonInstanceParameters.forEach {
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
-        val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
+        val dependencyResult = serviceContainer.tryGetWrappedService(it)
         params[it] = dependencyResult.service ?: when {
             it.type.isMarkedNullable -> null
             it.isOptional -> return@forEach

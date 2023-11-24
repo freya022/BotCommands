@@ -1,18 +1,17 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.INVALID_TYPE
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.NO_PROVIDER
-import io.github.freya022.botcommands.api.core.service.ServiceResult
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.isConstructor
-import io.github.freya022.botcommands.api.core.utils.isStatic
-import io.github.freya022.botcommands.api.core.utils.logger
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.findErasureOfAt
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
@@ -21,9 +20,11 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
+import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.DurationUnit
 
@@ -230,5 +231,30 @@ internal fun ServiceContainer.getFunctionServiceOrNull(function: KFunction<*>): 
 internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
     return types.map {
         map[it] ?: getService(it)
+    }
+}
+
+/**
+ * NOTE: Lazy services do not get checked if they can be instantiated,
+ * this aligns with the behavior of a user using `ServiceContainer.lazy`.
+ */
+internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): ServiceResult<*> {
+    val type = parameter.type
+    val name = parameter.findAnnotation<ServiceName>()?.value
+    return if (name != null) {
+        when (type.jvmErasure) {
+            Lazy::class -> ServiceResult.pass(lazy(name, type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            List::class -> {
+                logger.warn { "Using ${annotationRef<ServiceName>()} on a list of interfaced services is ineffective on '${parameter.bestName}' of ${parameter.function.shortSignature}" }
+                ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
+            }
+            else -> tryGetService(name, type.jvmErasure)
+        }
+    } else {
+        when (type.jvmErasure) {
+            Lazy::class -> ServiceResult.pass(lazy(type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
+            else -> tryGetService(type.jvmErasure)
+        }
     }
 }
