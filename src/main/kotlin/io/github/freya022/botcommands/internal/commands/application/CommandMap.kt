@@ -50,3 +50,5 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
         return null //oldInfo is always null
     }
 }
+
+object EmptyCommandMap : CommandMap<ApplicationCommandInfo>, Map<CommandPath, ApplicationCommandInfo> by emptyMap()

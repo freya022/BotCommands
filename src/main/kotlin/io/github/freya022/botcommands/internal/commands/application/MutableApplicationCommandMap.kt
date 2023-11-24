@@ -12,8 +12,26 @@ import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 internal class MutableApplicationCommandMap internal constructor(
-    override val rawTypeMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
+    private val rawTypeMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
 ) : ApplicationCommandMap() {
+    internal class UnmodifiableApplicationCommandMap(private val map: ApplicationCommandMap) : ApplicationCommandMap() {
+        override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
+            map.getTypeMap(type)
+
+        override fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap =
+            map.plus(liveApplicationCommandsMap)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    internal object EmptyApplicationCommandMap : ApplicationCommandMap() {
+        override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
+            EmptyCommandMap as CommandMap<T>
+
+        override fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap {
+            TODO("Not yet implemented")
+        }
+    }
+
     internal fun <T : ApplicationCommandInfo> computeIfAbsent(
         type: CommandType,
         path: CommandPath,
@@ -23,7 +41,7 @@ internal class MutableApplicationCommandMap internal constructor(
     internal fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
     //TODO move to ApplicationCommandMap
-    override operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): MutableApplicationCommandMap {
+    override operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap {
         val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
         Command.Type.entries.forEach { commandType ->
             val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
@@ -35,7 +53,7 @@ internal class MutableApplicationCommandMap internal constructor(
             }
         }
 
-        return MutableApplicationCommandMap(newMap)
+        return MutableApplicationCommandMap(newMap).toUnmodifiableMap()
     }
 
     //TODO make a proper unmodifiable type
@@ -46,7 +64,7 @@ internal class MutableApplicationCommandMap internal constructor(
 
     internal companion object {
         @JvmStatic
-        val EMPTY_MAP: ApplicationCommandMap = MutableApplicationCommandMap(mutableMapOf())
+        val EMPTY_MAP: ApplicationCommandMap = EmptyApplicationCommandMap
 
         internal fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
@@ -80,4 +98,8 @@ internal class MutableApplicationCommandMap internal constructor(
             }
         }
     }
+}
+
+internal fun ApplicationCommandMap.toUnmodifiableMap(): ApplicationCommandMap {
+    return MutableApplicationCommandMap.UnmodifiableApplicationCommandMap(this)
 }

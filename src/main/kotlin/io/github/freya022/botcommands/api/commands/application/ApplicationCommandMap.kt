@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.application
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.CommandMap
-import io.github.freya022.botcommands.internal.commands.application.MutableCommandMap
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -12,10 +11,8 @@ import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 
 abstract class ApplicationCommandMap {
-    protected abstract val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>>
-
     val allApplicationCommands: @UnmodifiableView List<ApplicationCommandInfo>
-        get() = Collections.unmodifiableList(rawTypeMap.values.flatMap { it.values })
+        get() = Collections.unmodifiableList(Command.Type.entries.flatMap { getTypeMap<ApplicationCommandInfo>(it).values })
 
     operator fun get(type: Command.Type, path: CommandPath): ApplicationCommandInfo? {
         return getTypeMap<ApplicationCommandInfo>(type)[path]
@@ -29,9 +26,7 @@ abstract class ApplicationCommandMap {
     fun findUserCommand(name: String): UserCommandInfo? = userCommands[CommandPath.ofName(name)]
     fun findMessageCommand(name: String): MessageCommandInfo? = messageCommands[CommandPath.ofName(name)]
 
-    open fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> {
-        return (rawTypeMap[type] ?: MutableCommandMap()) as CommandMap<T>
-    }
+    abstract fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T>
 
     abstract operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap
 }
