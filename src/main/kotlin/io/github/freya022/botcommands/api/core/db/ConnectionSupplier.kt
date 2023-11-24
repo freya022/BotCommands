@@ -12,7 +12,25 @@ import java.sql.SQLException
 import java.time.Duration
 
 /**
- * Allows access to a PostgreSQL database.
+ * Allows access to an SQL database.
+ *
+ * ## Supported RDBMS
+ * Currently, PostgreSQL is the best experience you can have.
+ * H2 was also tested, but requires the PostgreSQL compatibility mode.
+ * Whether the H2 database runs in-memory, in a file, or as a server is up to you,
+ * see [the available connection modes](https://www.h2database.com/html/features.html#connection_modes)
+ * for more details.
+ *
+ * An H2 JDBC URL might look like this:
+ * `jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH`
+ *
+ * `DB_CLOSE_DELAY=-1` prevents the database from being lost when all connections are closed,
+ * while `MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH` is **required**.
+ *
+ * See [the H2 compatibility modes](https://www.h2database.com/html/features.html#compatibility) for more details.
+ *
+ * Using H2 is only recommended if you absolutely do not want to/cant install the PostgreSQL server,
+ * the PostgreSQL driver has a far superior quality, larger feature set and has full syntax support.
  *
  * ## Usage
  * First, register your instance as a service with [BService]
