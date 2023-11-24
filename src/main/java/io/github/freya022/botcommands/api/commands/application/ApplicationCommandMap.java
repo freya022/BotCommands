@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public abstract class ApplicationCommandMap {
@@ -60,7 +61,7 @@ public abstract class ApplicationCommandMap {
 
 	@SuppressWarnings("unchecked")
 	public <T extends ApplicationCommandInfo> CommandMap<T> getTypeMap(Command.Type type) {
-		return (CommandMap<T>) getRawTypeMap().computeIfAbsent(type, x -> new MutableCommandMap<>());
+		return (CommandMap<T>) getRawTypeMap().getOrDefault(type, new MutableCommandMap<>(Collections.emptyMap()));
 	}
 
 	protected abstract Map<Command.Type, CommandMap<ApplicationCommandInfo>> getRawTypeMap();

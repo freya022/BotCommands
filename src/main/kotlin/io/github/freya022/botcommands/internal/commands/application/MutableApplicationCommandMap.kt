@@ -13,7 +13,7 @@ import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 internal class MutableApplicationCommandMap internal constructor(
-    private val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
+    private val rawTypeMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
 ) : ApplicationCommandMap() {
     override fun getRawTypeMap() = rawTypeMap
 
@@ -52,13 +52,15 @@ internal class MutableApplicationCommandMap internal constructor(
         return MutableApplicationCommandMap(newMap)
     }
 
+    //TODO make a proper unmodifiable type
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ApplicationCommandInfo> getTypeMap(type: CommandType): MutableCommandMap<T> {
-        return super.getTypeMap<T>(type) as MutableCommandMap<T>
+        return rawTypeMap.computeIfAbsent(type) { MutableCommandMap() } as MutableCommandMap<T>
     }
 
     internal companion object {
         @JvmStatic
-        val EMPTY_MAP: ApplicationCommandMap = MutableApplicationCommandMap(emptyMap())
+        val EMPTY_MAP: ApplicationCommandMap = MutableApplicationCommandMap(mutableMapOf())
 
         internal fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
