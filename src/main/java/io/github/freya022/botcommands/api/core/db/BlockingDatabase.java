@@ -98,6 +98,8 @@ public class BlockingDatabase {
      * a coroutine dump ({@link BConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
      *
+     * @param transactionFunction The function to run with the connection
+     *
      * @see #fetchConnection()
      * @see #withStatement(String, StatementFunction)
      *
@@ -119,7 +121,8 @@ public class BlockingDatabase {
      * a coroutine dump ({@link BConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
      *
-     * @param readOnly {@code true} if the database only is read from, can allow some optimizations
+     * @param readOnly            {@code true} if the database only is read from, can allow some optimizations
+     * @param transactionFunction The function to run with the connection
      *
      * @see #fetchConnection(boolean)
      * @see #withStatement(String, boolean, StatementFunction)
@@ -142,6 +145,9 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(TransactionFunction)} otherwise.
      *
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param statementFunction The function to run with the prepared statement
+     *
      * @see #fetchConnection()
      * @see #withTransaction(TransactionFunction)
      */
@@ -161,7 +167,9 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
      *
-     * @param readOnly {@code true} if the database only is read from, can allow some optimizations
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     * @param statementFunction The function to run with the prepared statement
      *
      * @see #fetchConnection(boolean)
      * @see #withTransaction(boolean, TransactionFunction)
@@ -171,5 +179,113 @@ public class BlockingDatabase {
                                                     boolean readOnly,
                                                     @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, readOnly, statementFunction);
+    }
+
+    /**
+     * Creates a statement from the given SQL statement, runs the function,
+     * commits the changes and closes the connection.
+     *
+     * <p>The returned keys are accessible using {@link AbstractPreparedStatement#getGeneratedKeys() getGeneratedKeys()}.
+     *
+     * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
+     * this function blocks until a connection is available.
+     *
+     * <p>The function should always be short-lived,
+     * consider using {@link #withTransaction(TransactionFunction)} otherwise.
+     *
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param columnIndexes     An array of column index indicating the columns that should be returned from the inserted row or rows
+     * @param statementFunction The function to run with the prepared statement
+     *
+     * @see #fetchConnection()
+     * @see #withTransaction(TransactionFunction)
+     */
+    @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
+    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+                                                    int @NotNull [] columnIndexes,
+                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+        return DatabaseKt.withStatementJava(database, sql, columnIndexes, statementFunction);
+    }
+
+    /**
+     * Creates a statement from the given SQL statement, runs the function,
+     * commits the changes and closes the connection.
+     *
+     * <p>The returned keys are accessible using {@link AbstractPreparedStatement#getGeneratedKeys() getGeneratedKeys()}.
+     *
+     * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
+     * this function blocks until a connection is available.
+     *
+     * <p>The function should always be short-lived,
+     * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
+     *
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     * @param columnIndexes     An array of column index indicating the columns that should be returned from the inserted row or rows
+     * @param statementFunction The function to run with the prepared statement
+     *
+     * @see #fetchConnection(boolean)
+     * @see #withTransaction(boolean, TransactionFunction)
+     */
+    @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
+    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+                                                    boolean readOnly,
+                                                    int @NotNull [] columnIndexes,
+                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+        return DatabaseKt.withStatementJava(database, sql, readOnly, columnIndexes, statementFunction);
+    }
+
+    /**
+     * Creates a statement from the given SQL statement, runs the function,
+     * commits the changes and closes the connection.
+     *
+     * <p>The returned keys are accessible using {@link AbstractPreparedStatement#getGeneratedKeys() getGeneratedKeys()}.
+     *
+     * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
+     * this function blocks until a connection is available.
+     *
+     * <p>The function should always be short-lived,
+     * consider using {@link #withTransaction(TransactionFunction)} otherwise.
+     *
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param columnNames       An array of column names indicating the columns that should be returned from the inserted row or rows
+     * @param statementFunction The function to run with the prepared statement
+     *
+     * @see #fetchConnection()
+     * @see #withTransaction(TransactionFunction)
+     */
+    @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
+    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+                                                    @NotNull String @NotNull [] columnNames,
+                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+        return DatabaseKt.withStatementJava(database, sql, columnNames, statementFunction);
+    }
+
+    /**
+     * Creates a statement from the given SQL statement, runs the function,
+     * commits the changes and closes the connection.
+     *
+     * <p>The returned keys are accessible using {@link AbstractPreparedStatement#getGeneratedKeys() getGeneratedKeys()}.
+     *
+     * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
+     * this function blocks until a connection is available.
+     *
+     * <p>The function should always be short-lived,
+     * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
+     *
+     * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
+     * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     * @param columnNames       An array of column names indicating the columns that should be returned from the inserted row or rows
+     * @param statementFunction The function to run with the prepared statement
+     *
+     * @see #fetchConnection(boolean)
+     * @see #withTransaction(boolean, TransactionFunction)
+     */
+    @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
+    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+                                                    boolean readOnly,
+                                                    @NotNull String @NotNull [] columnNames,
+                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+        return DatabaseKt.withStatementJava(database, sql, readOnly, columnNames, statementFunction);
     }
 }
