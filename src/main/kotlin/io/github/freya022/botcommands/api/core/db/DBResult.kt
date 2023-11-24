@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.db
 
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.core.utils.toBoxed
 import io.github.freya022.botcommands.internal.utils.findErasureOfAt
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -65,19 +66,6 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
             list += rs.getObject(2, boxedType)
         }
         return list
-    }
-
-    private fun Class<*>.toBoxed(): Class<*> {
-        if (!isPrimitive) return this
-        if (this == Integer.TYPE) return Int::class.javaObjectType
-        if (this == java.lang.Long.TYPE) return Long::class.javaObjectType
-        if (this == java.lang.Boolean.TYPE) return Boolean::class.javaObjectType
-        if (this == java.lang.Byte.TYPE) return Byte::class.javaObjectType
-        if (this == Character.TYPE) return Char::class.javaObjectType
-        if (this == java.lang.Float.TYPE) return Float::class.javaObjectType
-        if (this == java.lang.Double.TYPE) return Double::class.javaObjectType
-        if (this == java.lang.Short.TYPE) return Short::class.javaObjectType
-        return this
     }
 
     @JvmSynthetic
