@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.builder.IActionableComponent
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -20,6 +21,11 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *
  * Instead, the cause of the error will be passed down to the component executor,
  * and then given back to the [ComponentInteractionRejectionHandler].
+ *
+ * **Note:** Composite filters using [`and`][and]/[`or`][or]
+ * **cannot** be passed to [IActionableComponent.filters] / [IActionableComponent.addFilter],
+ * in which case you must make a filter service that will receive other filters via constructor injection.
+ * After combining those filters, you can delegate the calls to it.
  *
  * ### Usage
  * - Register your instance as a service with [BService]
