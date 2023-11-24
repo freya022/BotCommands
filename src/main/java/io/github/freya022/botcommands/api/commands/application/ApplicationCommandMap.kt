@@ -1,71 +1,37 @@
-package io.github.freya022.botcommands.api.commands.application;
+package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.commands.CommandPath;
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo;
-import io.github.freya022.botcommands.internal.commands.application.CommandMap;
-import io.github.freya022.botcommands.internal.commands.application.MutableCommandMap;
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo;
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
+import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.CommandMap
+import io.github.freya022.botcommands.internal.commands.application.MutableCommandMap
+import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import net.dv8tion.jda.api.interactions.commands.Command
+import org.jetbrains.annotations.UnmodifiableView
+import java.util.*
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+abstract class ApplicationCommandMap {
+    protected abstract val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>>
 
-public abstract class ApplicationCommandMap {
-	@UnmodifiableView
-	public Collection<? extends ApplicationCommandInfo> getAllApplicationCommands() {
-		return getRawTypeMap().values()
-				.stream()
-				.flatMap(map -> map.values().stream())
-				.toList();
-	}
+    val allApplicationCommands: @UnmodifiableView List<ApplicationCommandInfo>
+        get() = Collections.unmodifiableList(rawTypeMap.values.flatMap { it.values })
 
-	public ApplicationCommandInfo get(Command.Type type, CommandPath path) {
-		return getTypeMap(type).get(path);
-	}
+    operator fun get(type: Command.Type, path: CommandPath): ApplicationCommandInfo? {
+        return getTypeMap<ApplicationCommandInfo>(type)[path]
+    }
 
-	@UnmodifiableView
-	public CommandMap<SlashCommandInfo> getSlashCommands() {
-		return getTypeMap(Command.Type.SLASH);
-	}
+    val slashCommands: @UnmodifiableView CommandMap<SlashCommandInfo> get() = getTypeMap(Command.Type.SLASH)
+    val userCommands: @UnmodifiableView CommandMap<UserCommandInfo> get() = getTypeMap(Command.Type.USER)
+    val messageCommands: @UnmodifiableView CommandMap<MessageCommandInfo> get() = getTypeMap(Command.Type.MESSAGE)
 
-	@UnmodifiableView
-	public CommandMap<UserCommandInfo> getUserCommands() {
-		return getTypeMap(Command.Type.USER);
-	}
+    fun findSlashCommand(path: CommandPath): SlashCommandInfo? = slashCommands[path]
+    fun findUserCommand(name: String): UserCommandInfo? = userCommands[CommandPath.ofName(name)]
+    fun findMessageCommand(name: String): MessageCommandInfo? = messageCommands[CommandPath.ofName(name)]
 
-	@UnmodifiableView
-	public CommandMap<MessageCommandInfo> getMessageCommands() {
-		return getTypeMap(Command.Type.MESSAGE);
-	}
+    open fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> {
+        return (rawTypeMap[type] ?: MutableCommandMap()) as CommandMap<T>
+    }
 
-	@Nullable
-	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
-		return this.getSlashCommands().get(path);
-	}
-
-	@Nullable
-	public UserCommandInfo findUserCommand(@NotNull String name) {
-		return this.getUserCommands().get(CommandPath.ofName(name));
-	}
-
-	@Nullable
-	public MessageCommandInfo findMessageCommand(@NotNull String name) {
-		return this.getMessageCommands().get(CommandPath.ofName(name));
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends ApplicationCommandInfo> CommandMap<T> getTypeMap(Command.Type type) {
-		return (CommandMap<T>) getRawTypeMap().getOrDefault(type, new MutableCommandMap<>(Collections.emptyMap()));
-	}
-
-	protected abstract Map<Command.Type, CommandMap<ApplicationCommandInfo>> getRawTypeMap();
-
-	@NotNull
-	public abstract ApplicationCommandMap plus(@NotNull ApplicationCommandMap liveApplicationCommandsMap);
+    abstract operator fun plus(liveApplicationCommandsMap: ApplicationCommandMap): ApplicationCommandMap
 }
