@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.internal.core.ReadyListener;
@@ -14,8 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @Command
-public class SlashDI extends ApplicationCommand {
-    @JDASlashCommand(name = "di")
+public class SlashDIJava extends ApplicationCommand {
+    public SlashDIJava(@ServiceName("builtinHelpCommand") @Nullable IHelpCommand builtinHelpCommand) {
+        System.out.println("Built-in help command: " + builtinHelpCommand);
+    }
+
+    @JDASlashCommand(name = "di_java")
     public void onSlashDi(GuildSlashEvent event,
                           List<ApplicationCommandFilter<?>> filters,
                           Lazy<BlockingDatabase> databaseLazy,

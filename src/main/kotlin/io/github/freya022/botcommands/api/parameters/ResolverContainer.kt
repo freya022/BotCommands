@@ -99,7 +99,7 @@ class ResolverContainer internal constructor(
 
                 serviceResult.serviceError?.let { serviceError ->
                     //If a service isn't required then that's fine
-                    if (wrapper.parameter.isNullable) {
+                    if (wrapper.parameter.isNullable || wrapper.parameter.isOptional) {
                         logger.trace { "Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}" }
                         return@run NullServiceCustomResolverFactory
                     }
