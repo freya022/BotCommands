@@ -4,7 +4,7 @@
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?color=red&label=Pre-release)](https://github.com/freya022/BotCommands/tree/3.X#readme)
 [![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/jda-discord/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
+[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/docs/allclasses-index.html)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/2.X)
 
 # BotCommands
