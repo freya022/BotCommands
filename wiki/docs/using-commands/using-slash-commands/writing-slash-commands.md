@@ -46,12 +46,12 @@ while the declaring class must extend `ApplicationCommand`.
 !!! example
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashPing.kt:ping-kotlin"
+        --8<-- "wiki/commands/slash/SlashPing.kt:ping-kotlin"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashPingJava.java:ping-java"
+        --8<-- "wiki/commands/slash/SlashPingJava.java:ping-java"
         ```
 
 ### Adding options
@@ -63,12 +63,12 @@ All supported types are documented under `ParameterResolver`, and [other types c
 !!! example
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSay.kt:say-kotlin"
+        --8<-- "wiki/commands/slash/SlashSay.kt:say-kotlin"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashSayJava.java:say-java"
+        --8<-- "wiki/commands/slash/SlashSayJava.java:say-java"
         ```
 
 !!! tip "Inferred option names"
@@ -84,12 +84,12 @@ be careful to check against the command path as well as the option's display nam
 !!! example
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashConvert.kt:convert-kotlin"
+        --8<-- "wiki/commands/slash/SlashConvert.kt:convert-kotlin"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashConvertJava.java:convert-java"
+        --8<-- "wiki/commands/slash/SlashConvertJava.java:convert-java"
         ```
 
 As you can see, despite the short choice list, 
@@ -107,12 +107,12 @@ As always, make sure to check against the command path as well as the option's d
 !!! example
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashCreateTime.kt:create_time-kotlin"
+        --8<-- "wiki/commands/slash/SlashCreateTime.kt:create_time-kotlin"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashCreateTimeJava.java:create_time-java"
+        --8<-- "wiki/commands/slash/SlashCreateTimeJava.java:create_time-java"
         ```
 
 ## DSL commands (Kotlin)
@@ -136,7 +136,7 @@ and then configure your command.
 
 !!! example
     ```kotlin
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashPing.kt:ping-kotlin_dsl"
+    --8<-- "wiki/commands/slash/SlashPing.kt:ping-kotlin_dsl"
     ```
 
 ### Adding options
@@ -148,7 +148,7 @@ All supported types are documented under `ParameterResolver`, and [other types c
 
 !!! example
     ```kotlin
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSay.kt:say-kotlin_dsl"
+    --8<-- "wiki/commands/slash/SlashSay.kt:say-kotlin_dsl"
     ```
 
 !!! tip
@@ -165,7 +165,7 @@ Adding choices is very straight forward, you only have to give a list of choices
 
 !!! example
     ```kotlin
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashConvert.kt:convert-kotlin_dsl"
+    --8<-- "wiki/commands/slash/SlashConvert.kt:convert-kotlin_dsl"
     ```
 
 As you can see, despite the short choice list, this causes duplications with multiple commands.
@@ -179,7 +179,7 @@ Contrary to the annotated commands, no checks are required, as this is tied to t
 
 !!! example
     ```kotlin
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashCreateTime.kt:create_time-kotlin_dsl"
+    --8<-- "wiki/commands/slash/SlashCreateTime.kt:create_time-kotlin_dsl"
     ```
 
 ## Default description
@@ -191,24 +191,24 @@ and have your localization bundle registered with `BApplicationConfigBuilder#add
 ??? info "The same commands as before, but without the descriptions"
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSayDefaultDescription.kt:say_default_description-kotlin"
+        --8<-- "wiki/commands/slash/SlashSayDefaultDescription.kt:say_default_description-kotlin"
         ```
 
     === "Kotlin (DSL)"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSayDefaultDescription.kt:say_default_description-kotlin_dsl"
+        --8<-- "wiki/commands/slash/SlashSayDefaultDescription.kt:say_default_description-kotlin_dsl"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashSayDefaultDescriptionJava.java:say_default_description-java"
+        --8<-- "wiki/commands/slash/SlashSayDefaultDescriptionJava.java:say_default_description-java"
         ```
 
 !!! example "Adding the root localization bundle"
     For the given resource bundle:
     ```json title="src/main/resources/bc_localization/Commands.json"
     {
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/resources/bc_localization/Commands.json:default_description-json"
+    --8<-- "bc_localization/Commands.json:default_description-json"
     }
     ```
 
@@ -227,17 +227,17 @@ All you now need to do is enable `usePredefinedChoices` on your option.
 
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashConvertSimplified.kt:convert_simplified-kotlin"
+        --8<-- "wiki/commands/slash/SlashConvertSimplified.kt:convert_simplified-kotlin"
         ```
 
     === "Kotlin (DSL)"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashConvertSimplified.kt:convert_simplified-kotlin_dsl"
+        --8<-- "wiki/commands/slash/SlashConvertSimplified.kt:convert_simplified-kotlin_dsl"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/commands/slash/SlashConvertSimplifiedJava.java:convert_simplified-java"
+        --8<-- "wiki/commands/slash/SlashConvertSimplifiedJava.java:convert_simplified-java"
         ```
 
 ## Adding option resolvers
@@ -266,12 +266,12 @@ The first type parameter is the type of your resolver implementation, and the se
 !!! example "A `TimeUnit` resolver"
     === "Kotlin"
         ```kotlin
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/resolvers/TimeUnitResolver.kt:time_unit_resolver-detailed-kotlin"
+        --8<-- "wiki/resolvers/TimeUnitResolver.kt:time_unit_resolver-detailed-kotlin"
         ```
 
     === "Java"
         ```java
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/resolvers/TimeUnitResolverJava.java:time_unit_resolver-detailed-java"
+        --8<-- "wiki/resolvers/TimeUnitResolverJava.java:time_unit_resolver-detailed-java"
         ```
     
     As you can see, this defines the slash command's option to be a string, 
@@ -289,14 +289,14 @@ all you need to do is declare a service factory with `#!java @Resolver` and use 
     === "Kotlin"
         ```kotlin
         object TimeUnitResolverSimplified {
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/resolvers/TimeUnitResolver.kt:time_unit_resolver-simplified-kotlin"
+        --8<-- "wiki/resolvers/TimeUnitResolver.kt:time_unit_resolver-simplified-kotlin"
         ```
         As this functions as a service factory, the method needs to be in an `object` or have a no-arg constructor.
 
     === "Java"
         ```java
         public class TimeUnitResolverSimplifiedJava {
-        --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/java/io/github/freya022/bot/resolvers/TimeUnitResolverSimplifiedJava.java:time_unit_resolver-simplified-java"
+        --8<-- "wiki/resolvers/TimeUnitResolverSimplifiedJava.java:time_unit_resolver-simplified-java"
         ```
         As this functions as a service factory, the method needs to be static.
 
@@ -324,7 +324,7 @@ which gets merged into one parameter by using an aggregator.
     Here is how you can use aggregated parameters to create an message delete timeframe, out of a `Long` and a `TimeUnit`.
 
     ```kotlin title="The aggregated object"
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt:aggregated_object-kotlin"
+    --8<-- "wiki/commands/slash/SlashBan.kt:aggregated_object-kotlin"
     ```
 
     ```kotlin title="The aggregated parameter declaration"
@@ -335,7 +335,7 @@ which gets merged into one parameter by using an aggregator.
             manager.slashCommand("ban", function = SlashBan::onSlashBan) {
                 ...
 
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt:declare_aggregate-kotlin_dsl"
+    --8<-- "wiki/commands/slash/SlashBan.kt:declare_aggregate-kotlin_dsl"
             }
         }
     }
@@ -353,7 +353,7 @@ allowing you to define simple computable properties and functions for types wher
 !!! example "Using inline classes"
 
     ```kotlin
-    --8<-- "https://github.com/freya022/BotCommands/raw/3.X/examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashInlineWords.kt:inline_sentence-kotlin"
+    --8<-- "wiki/commands/slash/SlashInlineWords.kt:inline_sentence-kotlin"
     ```
 
 ## Examples
