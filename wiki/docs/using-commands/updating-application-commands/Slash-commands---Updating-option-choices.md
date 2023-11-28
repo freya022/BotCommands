@@ -1,6 +1,6 @@
 # Slash commands - Updating option choices
 
-See [here](../using-slash-commands/Slash-commands.md#examples) 
+See [here](../using-slash-commands/writing-slash-commands.md#examples) 
 the example on how to add predefined choices to your slash commands
 
 You can also change the `GuildApplicationSettings#getOptionChoices` to provide dynamic values, 

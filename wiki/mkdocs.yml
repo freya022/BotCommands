@@ -1,13 +1,15 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 
-# Heavily inspired from: https://github.com/DV8FromTheWorld/JDA-Website/blob/master/mkdocs.yml
+# Base file from: https://github.com/discord-jda/JDA-Website/blob/8a3a36f0f95e29f14f0e04a75c219c4e4352ecf7/mkdocs.yml
 theme:
   features:
     - navigation.instant # Faster loading
     - navigation.tabs # Top level horizontal tabs
     - toc.integrate # Integrated Table Of Contents (shows #, ##... sections)
     - content.code.annotate # Annotations on lines of codeicon:
+    - content.code.copy
     - content.action.edit
+    - content.tabs.link
   name: material
   logo: assets/logo-transparent.svg
   favicon: assets/logo-round.svg
@@ -31,19 +33,19 @@ plugins:
   - mike
 
 site_name: BotCommands Wiki
-site_url: 'https://freya022.github.io/BotCommands/'
+site_url: 'https://freya022.github.io/BotCommands'
 
 repo_name: BotCommands
-repo_url: https://github.com/freya022/BotCommands/tree/2.X
-edit_uri: ../../edit/2.X/wiki/docs # This URI is relative to repo_url
+repo_url: https://github.com/freya022/BotCommands/tree/3.X
+edit_uri: ../../edit/3.X/wiki/docs # This URI is relative to repo_url TODO check
 extra:
   version:
     provider: mike
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/freya022/BotCommands/tree/2.X
+      link: https://github.com/freya022/BotCommands/tree/3.X
     - icon: fontawesome/solid/book
-      link: https://github.com/freya022/BotCommands/tree/2.X/wiki
+      link: https://github.com/freya022/BotCommands/tree/3.X/wiki
     - icon: fontawesome/brands/discord
       link: https://discord.gg/frpCcQfvTz
 
@@ -53,41 +55,48 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.highlight
   - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.keys
   - footnotes
   - def_list
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.snippets:
+      url_download: true
+      check_paths: true
   - toc:
       permalink: true
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 nav:
   - Home: index.md
+  - Setup:
+      - Getting started: setup/getting-started.md
+      - Logging: setup/logging.md
   - Using commands:
-      - Writing prefixed commands: using-commands/Prefixed-commands.md
+#      - Writing prefixed commands: using-commands/Prefixed-commands.md
       - Using slash commands:
-        - Writing slash commands: using-commands/using-slash-commands/Slash-commands.md
-        - Updating application commands: using-commands/using-slash-commands/Updating-slash-commands.md
-        - Managing guild application commands: using-commands/using-slash-commands/Managing-application-commands.md
-      - Writing context menu commands: using-commands/Context-menu-commands.md
-      - Updating application commands:
-          - Slash commands - Updating option choices: using-commands/updating-application-commands/Slash-commands---Updating-option-choices.md
-      - Using localization: using-commands/Using-localization.md
-      - Inferred option names: using-commands/Inferred-option-names.md
-  - Using components:
-      - The Components API: using-components/The-Components-API.md
-      - Buttons: using-components/Buttons.md
-      - Selection menus: using-components/Selection-menus.md
-  - Writing extensions:
-      - Creating parameter resolvers: writing-extensions/Creating-parameter-resolvers.md #TODO move to each command type's wiki as to show the different interfaces
-      - Constructor injection: writing-extensions/Constructor-injection.md
-      - Field injection: writing-extensions/Field-injection.md
-  - Misc:
-      - Conditional instancing: misc/Conditional-instancing.md
-      - Using instance suppliers: misc/Instance-suppliers.md
-      - Using the event waiter: misc/The-event-waiter.md
-  - Logging: Logging.md
+        - Writing slash commands: using-commands/using-slash-commands/writing-slash-commands.md
+#        - Updating application commands: using-commands/using-slash-commands/Updating-slash-commands.md
+#        - Managing guild application commands: using-commands/using-slash-commands/Managing-application-commands.md
+#      - Writing context menu commands: using-commands/Context-menu-commands.md
+#      - Updating application commands:
+#          - Slash commands - Updating option choices: using-commands/updating-application-commands/Slash-commands---Updating-option-choices.md
+#      - Using localization: using-commands/Using-localization.md
+#      - Inferred option names: using-commands/Inferred-option-names.md
+#  - Using components:
+#      - The Components API: using-components/The-Components-API.md
+#      - Buttons: using-components/Buttons.md
+#      - Selection menus: using-components/Selection-menus.md
+#  - Writing extensions:
+#      - Creating parameter resolvers: writing-extensions/Creating-parameter-resolvers.md #TODO move to each command type's wiki as to show the different interfaces
+#      - Constructor injection: writing-extensions/Constructor-injection.md
+#      - Field injection: writing-extensions/Field-injection.md
+#  - Misc:
+#      - Conditional instancing: misc/Conditional-instancing.md
+#      - Using instance suppliers: misc/Instance-suppliers.md
+#      - Using the event waiter: misc/The-event-waiter.md
