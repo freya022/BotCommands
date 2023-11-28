@@ -21,6 +21,7 @@ on:
         options:
           - 2.X
           - 3.X
+          - latest
 
 # Allow one concurrent deployment
 concurrency:
