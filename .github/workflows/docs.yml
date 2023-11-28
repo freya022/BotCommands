@@ -1,5 +1,9 @@
-# https://github.com/MinnDevelopment/jda-ktx/blob/17eb77a138ba356a3b0439afeddf77d4520c7c60/.github/workflows/docs.yml
-# https://github.com/freya022/BotCommands/blob/792f01135c5266dc06256de0b920e5482adfd3a4/.github/workflows/check-javadoc.yml
+# This workflow builds the docs and uploads them to a subdirectory of a staging repository.
+# The staging repository is used as more than one workflow can modify the website's content.
+# A gh-pages branch could have been used, but this wasn't possible as it would trigger webhooks.
+
+# So the goal here is to create the outputs, write them to the remote repo,
+# then grab the entire staging repo and publish it, since it will contain all the merged content.
 
 name: Deploy Javadocs to Pages
 
@@ -12,25 +16,16 @@ on:
       - 'src/main/**.kt'
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  staging:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -38,14 +33,48 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Set release version
-        run: mvn -B --file pom.xml BotCommandsBuild:set-ci-version
+        run: mvn -B BotCommandsBuild:set-ci-version
       - name: Generate Javadocs
-        run: mvn -B --file pom.xml -P check-docs javadoc:javadoc
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        run: mvn -B -P check-docs javadoc:javadoc
+      # The docs are uploaded to a directory in the staging repository
+      - name: Upload to staging repository
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        with:
+          git-config-name: GitHub Actions
+          git-config-email: 41898282+github-actions[bot]@users.noreply.github.com
+          ssh-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
+          repository-name: freya022/BotCommands-Pages-Staging
+          branch: staging
+          folder: ./target/site/apidocs
+          target-folder: docs
+
+  # Same as in wiki.yml
+  deploy:
+    needs: staging
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      # The entire staging repository (docs + wiki) gets deployed
+      - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
+          repository: freya022/BotCommands-Pages-Staging
+          ref: staging
+      - name: Upload staging repository
+        uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
-          path: ./target/site/apidocs
+          path: .
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
