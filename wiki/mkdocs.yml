@@ -37,7 +37,7 @@ site_url: 'https://freya022.github.io/BotCommands'
 
 repo_name: BotCommands
 repo_url: https://github.com/freya022/BotCommands/tree/3.X
-edit_uri: ../../edit/3.X/wiki/docs # This URI is relative to repo_url TODO check
+edit_uri: ../../edit/3.X/wiki/docs # This URI is relative to repo_url
 extra:
   version:
     provider: mike
