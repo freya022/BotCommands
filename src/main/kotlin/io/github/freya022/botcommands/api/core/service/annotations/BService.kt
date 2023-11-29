@@ -39,6 +39,10 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  * If you want to get a service only if it is available,
  * you can use a nullable parameter (non-null annotated, for example) or Kotlin's optional parameters.
  *
+ * Lazy services can be nullable, this is supported by default in Kotlin,
+ * but Java users will need to annotate the element type with [@Nullable],
+ * such as `Lazy<@Nullable IHelpCommand>`.
+ *
  * If a service is not available and the parameter is required, an exception will be thrown.
  *
  * ### Naming scheme

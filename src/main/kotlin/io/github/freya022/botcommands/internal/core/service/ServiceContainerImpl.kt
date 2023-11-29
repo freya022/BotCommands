@@ -243,7 +243,11 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
     val name = parameter.findAnnotation<ServiceName>()?.value
     return if (name != null) {
         when (type.jvmErasure) {
-            Lazy::class -> ServiceResult.pass(lazy(name, type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            Lazy::class -> {
+                val elementType = type.findErasureOfAt<Lazy<*>>(0)
+                val elementErasure = elementType.jvmErasure
+                ServiceResult.pass(if (elementType.isMarkedNullable) lazyOrNull(name, elementErasure) else lazy(name, elementErasure))
+            }
             List::class -> {
                 logger.warn { "Using ${annotationRef<ServiceName>()} on a list of interfaced services is ineffective on '${parameter.bestName}' of ${parameter.function.shortSignature}" }
                 ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
@@ -252,7 +256,11 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         }
     } else {
         when (type.jvmErasure) {
-            Lazy::class -> ServiceResult.pass(lazy(type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            Lazy::class -> {
+                val elementType = type.findErasureOfAt<Lazy<*>>(0)
+                val elementErasure = elementType.jvmErasure
+                ServiceResult.pass(if (elementType.isMarkedNullable) lazyOrNull(elementErasure) else lazy(elementErasure))
+            }
             List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
             else -> tryGetService(type.jvmErasure)
         }
