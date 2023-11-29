@@ -1,11 +1,8 @@
 package io.github.freya022.botcommands.api.utils;
 
-import io.github.freya022.botcommands.api.Logging;
-import io.github.freya022.botcommands.internal.core.exceptions.InternalException;
-import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
-import org.slf4j.Logger;
+import net.fellbaum.jemoji.IndexedEmoji;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,30 +21,13 @@ import java.util.regex.Pattern;
  *     <li>URLs</li>
  * </ul>
  * <p>
- * This class takes your input and tokenises it as it finds what you're asking it to find.
+ * This class takes your input and tokenizes it as it finds what you're asking it to find.
  * <p>
  * You can then take the output using {@link #getResults()} or consume it directly using {@link #processResults(RichTextConsumer)}.
  */
 public class RichTextFinder {
-    private static final Logger LOGGER = Logging.getLogger();
-
     private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern EMPTY_PATTERN = Pattern.compile("");
-
-    private static final Map<String, Emoji> emojiByDiscordAlias = new HashMap<>();
-
-    static {
-        for (Emoji emoji : EmojiManager.getAllEmojis()) {
-            for (String discordAlias : emoji.getDiscordAliases()) {
-                if (emojiByDiscordAlias.containsKey(discordAlias)) {
-                    LOGGER.error("Existing alias: {}", discordAlias, new InternalException("Existing alias: " + discordAlias));
-                    continue;
-                }
-
-                emojiByDiscordAlias.put(discordAlias, emoji);
-            }
-        }
-    }
 
     private final String input;
     private final Matcher matcher;
@@ -138,12 +118,13 @@ public class RichTextFinder {
                 continue; // No alias end found
             }
 
-            final Emoji emoji = emojiByDiscordAlias.get(input.substring(aliasBegin, aliasEnd + 1));
-            if (emoji == null) {
+            final Optional<Emoji> optEmoji = EmojiManager.getByDiscordAlias(input.substring(aliasBegin, aliasEnd + 1));
+            if (optEmoji.isEmpty()) {
                 aliasBegin += 1; // Do not find back the same alias
                 continue;
             }
 
+            final Emoji emoji = optEmoji.get();
             if (!isInCustomEmote(emoji)) {
                 normalMentionMap.put(aliasBegin, new RichText(emoji.getUnicode(), RichTextType.UNICODE_EMOTE));
                 addedStrs.put(aliasBegin, input.substring(aliasBegin, aliasEnd + 1));
@@ -170,17 +151,9 @@ public class RichTextFinder {
     }
 
     private void extractUnicodeEmojis() {
-        final List<Emoji> emojis = EmojiManager.extractEmojisInOrder(input);
-        int unicodeIndex = 0;
-        for (Emoji emoji : emojis) {
-            final int index = input.indexOf(emoji.getUnicode(), unicodeIndex);
-            if (index <= unicodeIndex)
-                ExceptionsKt.throwInternal("Found an unicode emoji at the same index as the start index");
-
-            normalMentionMap.put(index, new RichText(emoji.getUnicode(), RichTextType.UNICODE_EMOTE));
-            addedStrs.put(index, emoji.getUnicode());
-
-            unicodeIndex = index + 1;
+        for (IndexedEmoji indexedEmoji : EmojiManager.extractEmojisInOrderWithIndex(input)) {
+            normalMentionMap.put(indexedEmoji.getCharIndex(), new RichText(indexedEmoji.getEmoji().getUnicode(), RichTextType.UNICODE_EMOTE));
+            addedStrs.put(indexedEmoji.getCharIndex(), indexedEmoji.getEmoji().getUnicode());
         }
     }
 
