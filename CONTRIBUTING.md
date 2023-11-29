@@ -1,5 +1,12 @@
 [//]: # (most of it is from https://kotlinlang.org/docs/jvm-api-guidelines-introduction.html)
 
+### Commits
+Wiki commits must be with `Wiki: Commit text`
+Examples commits must be with `Examples: Commit text`
+
+If these commits are in a PR, the commits can omit this format, 
+but the PR's merge commit must contain the prefix.
+
 ### Documentation
 - Document `@return` on boolean annotations or non-trivial returns (such as `the time in [timeUnit]`)
 - Document default values (e.g., for configs)
