@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 @NullMarked
 public class RichTextFinder {
-    private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+    private static final Pattern URL_PATTERN = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern EMPTY_PATTERN = Pattern.compile("");
 
     private final String input;
@@ -67,7 +67,7 @@ public class RichTextFinder {
         }
 
         if (getUrls) {
-            findAllMentions(RichTextType.URL, urlPattern);
+            findAllMentions(RichTextType.URL, URL_PATTERN);
         }
 
         if (!addedStrs.isEmpty()) {
