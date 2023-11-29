@@ -22,28 +22,30 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
     private val liveApplicationCommandInfoMap = TLongObjectHashMap<ApplicationCommandMap>()
 
     override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
-        getLiveApplicationCommandsMap(guild).findSlashCommand(path)
-            ?: getLiveApplicationCommandsMap(null).findSlashCommand(path)
+        getLiveApplicationCommandsMap(guild)?.findSlashCommand(path)
+            ?: getLiveApplicationCommandsMap(null)?.findSlashCommand(path)
 
     override fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo? =
-        getLiveApplicationCommandsMap(guild).findUserCommand(name)
-            ?: getLiveApplicationCommandsMap(null).findUserCommand(name)
+        getLiveApplicationCommandsMap(guild)?.findUserCommand(name)
+            ?: getLiveApplicationCommandsMap(null)?.findUserCommand(name)
 
     override fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo? =
-        getLiveApplicationCommandsMap(guild).findMessageCommand(name)
-            ?: getLiveApplicationCommandsMap(null).findMessageCommand(name)
+        getLiveApplicationCommandsMap(guild)?.findMessageCommand(name)
+            ?: getLiveApplicationCommandsMap(null)?.findMessageCommand(name)
 
-    override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap {
+    override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap? {
         return liveApplicationCommandInfoMap[getGuildKey(guild)]
     }
 
     override fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap = when (guild) {
-        null -> getLiveApplicationCommandsMap(null)
-        else -> getLiveApplicationCommandsMap(null) + getLiveApplicationCommandsMap(guild)
+        null -> getLiveApplicationCommandsMap(guild = null) ?: MutableApplicationCommandMap.EMPTY_MAP
+
+        else -> (getLiveApplicationCommandsMap(guild = null) ?: MutableApplicationCommandMap.EMPTY_MAP) +
+                (getLiveApplicationCommandsMap(guild = guild) ?: MutableApplicationCommandMap.EMPTY_MAP)
     }
 
     fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap): Unit = writeLock.withLock {
-        liveApplicationCommandInfoMap.put(getGuildKey(guild), map)
+        liveApplicationCommandInfoMap.put(getGuildKey(guild), map.toUnmodifiableMap())
     }
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {

@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.pagination.paginator;
 
-import io.github.freya022.botcommands.api.Logging;
 import io.github.freya022.botcommands.api.components.Components;
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
+import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.pagination.BasicPagination;
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
 import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
@@ -42,49 +42,49 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent, builder -> {
-			builder.bindTo(e -> {
-				page = 0;
+		firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent)
+				.bindTo(e -> {
+					page = 0;
 
-				e.editMessage(get()).queue();
-			});
-			builder.setConstraints(constraints);
-		});
+					e.editMessage(get()).queue();
+				})
+				.constraints(constraints)
+				.build();
 
-		previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent, builder -> {
-			builder.bindTo(e -> {
-				page = Math.max(0, page - 1);
+		previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent)
+				.bindTo(e -> {
+					page = Math.max(0, page - 1);
 
-				e.editMessage(get()).queue();
-			});
-			builder.setConstraints(constraints);
-		});
+					e.editMessage(get()).queue();
+				})
+				.constraints(constraints)
+				.build();
 
-		nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent, builder -> {
-			builder.bindTo(e -> {
-				page = Math.min(maxPages - 1, page + 1);
+		nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent)
+				.bindTo(e -> {
+					page = Math.min(maxPages - 1, page + 1);
 
-				e.editMessage(get()).queue();
-			});
-			builder.setConstraints(constraints);
-		});
+					e.editMessage(get()).queue();
+				})
+				.constraints(constraints)
+				.build();
 
-		lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent, builder -> {
-			builder.bindTo(e -> {
-				page = maxPages - 1;
+		lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent)
+				.bindTo(e -> {
+					page = maxPages - 1;
 
-				e.editMessage(get()).queue();
-			});
-			builder.setConstraints(constraints);
-		});
+					e.editMessage(get()).queue();
+				})
+				.constraints(constraints)
+				.build();
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
-				builder.bindTo(this::onDeleteClicked);
-				builder.setConstraints(constraints);
-				builder.setOneUse(true);
-			});
+			this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent)
+					.bindTo(this::onDeleteClicked)
+					.constraints(constraints)
+					.oneUse(true)
+					.build();
 		} else {
 			this.deleteButton = null;
 		}

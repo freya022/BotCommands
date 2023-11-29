@@ -5,15 +5,19 @@ import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 
-internal class PersistentTimeoutableComponentImpl : IPersistentTimeoutableComponent {
+internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
+    override val instanceRetriever: InstanceRetriever<T>
+) : BuilderInstanceHolderImpl<T>(),
+    IPersistentTimeoutableComponent<T> {
+
     override var timeout: PersistentTimeout? = null
         private set
 
-    override fun timeout(timeout: Duration) {
-        this.timeout = PersistentTimeout(Clock.System.now() + timeout, null, emptyArray())
+    override fun timeout(timeout: Duration): T = instance.also {
+        this.timeout = PersistentTimeout.create(Clock.System.now() + timeout)
     }
 
-    override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?) {
-        this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, data)
+    override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
+        this.timeout = PersistentTimeout.create(Clock.System.now() + timeout, handlerName, data.toList())
     }
 }

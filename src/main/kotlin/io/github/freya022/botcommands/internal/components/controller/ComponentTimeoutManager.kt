@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.components.controller
 
-import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
@@ -13,16 +12,20 @@ import io.github.freya022.botcommands.internal.components.data.ComponentGroupDat
 import io.github.freya022.botcommands.internal.components.data.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.components.repositories.ComponentTimeoutHandlers
-import io.github.freya022.botcommands.internal.components.repositories.GroupTimeoutHandlers
-import io.github.freya022.botcommands.internal.core.reflection.MemberFunction
-import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
+import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandlerOption
+import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionType
+import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlin.reflect.KParameter
+import kotlinx.datetime.Instant
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
@@ -39,9 +42,9 @@ internal class ComponentTimeoutManager(
     private val componentController: ComponentController by serviceContainer.lazy()
     private val timeoutMap = hashMapOf<Int, Job>()
 
-    fun scheduleTimeout(id: Int, timeout: ComponentTimeout) {
+    fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
         timeoutMap[id] = scopesConfig.componentTimeoutScope.launch {
-            delay(timeout.expirationTimestamp - Clock.System.now())
+            delay(expirationTimestamp - Clock.System.now())
 
             //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
             timeoutMap.remove(id)
@@ -58,7 +61,7 @@ internal class ComponentTimeoutManager(
             when (val componentTimeout = component.timeout) {
                 is PersistentTimeout -> {
                     val handlerName = componentTimeout.handlerName ?: return@launch
-                    val handler = when (component.componentType) {
+                    val descriptor = when (component.componentType) {
                         ComponentType.GROUP ->
                             groupTimeoutHandlers[handlerName]
                                 ?: return@launch logger.warn { "Could not find group timeout handler: $handlerName" }
@@ -72,11 +75,63 @@ internal class ComponentTimeoutManager(
                         ComponentType.BUTTON, ComponentType.SELECT_MENU -> ComponentTimeoutData(component.componentId.toString())
                     }
 
-                    callTimeoutHandler(handler, firstParameter)
+                    val userData = componentTimeout.userData
+                    if (userData.size != descriptor.optionSize) {
+                        return@launch logger.warn {
+                            """
+                                Mismatch between component options and ${descriptor.function.shortSignature}
+                                Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                                Component raw data: $userData
+                            """.trimIndent()
+                        }
+                    }
+
+                    handlePersistentTimeout(descriptor, firstParameter, userData.iterator())
                 }
                 is EphemeralTimeout -> componentTimeout.handler?.invoke()
             }
         }
+    }
+
+    private suspend fun handlePersistentTimeout(
+        descriptor: TimeoutDescriptor<*>,
+        firstArgument: Any,
+        userDataIterator: Iterator<String?>
+    ): Boolean {
+        with(descriptor) {
+            val optionValues = parameters.mapOptions { option ->
+                if (tryInsertOption(descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
+                    return false
+            }
+
+            function.callSuspendBy(parameters.mapFinalParameters(firstArgument, optionValues))
+        }
+        return true
+    }
+
+    private suspend fun tryInsertOption(
+        descriptor: TimeoutDescriptor<*>,
+        option: Option,
+        optionMap: MutableMap<Option, Any?>,
+        userDataIterator: Iterator<String?>
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as TimeoutHandlerOption
+
+                userDataIterator.next()?.let { option.resolver.resolve(descriptor, it) }
+            }
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+
+                //TODO add CONSTANT option type, make services use it
+                serviceContainer.getService(option.type.jvmErasure)
+//                option.resolver.resolveSuspend(descriptor, event)
+            }
+            else -> throwInternal("${option.optionType} has not been implemented")
+        }
+
+        return tryInsertNullableOption(value, option, optionMap)
     }
 
     fun throwTimeouts(componentId: Int) {
@@ -93,18 +148,5 @@ internal class ComponentTimeoutManager(
     fun cancelTimeout(id: Int) {
         logger.trace { "Cancelled timeout for component $id" }
         timeoutMap.remove(id)?.cancel()
-    }
-
-    private suspend fun callTimeoutHandler(handler: MemberFunction<*>, firstArgument: Any): Any? {
-        val args = buildMap<KParameter, Any?>(handler.parametersSize) {
-            this[handler.instanceParameter] = handler.instance
-            this[handler.firstParameter] = firstArgument
-
-            handler.resolvableParameters.forEach { kParameter ->
-                this[kParameter] = serviceContainer.getService(kParameter.type.jvmErasure)
-            }
-        }
-
-        return handler.kFunction.callSuspendBy(args)
     }
 }

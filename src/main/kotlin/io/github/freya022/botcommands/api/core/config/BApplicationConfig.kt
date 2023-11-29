@@ -16,20 +16,22 @@ import kotlin.reflect.KClass
 @InjectedService
 interface BApplicationConfig {
     /**
-     * Enables you to push application commands are only updated on these guilds
+     * If not empty, only these guilds will have their application commands updated.
+     *
+     * Existing commands won't be removed in other guilds, global commands will still be updated.
      */
     val slashGuildIds: List<Long>
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
      *
-     * @see Test
+     * @see Test @Test
      */
     val testGuildIds: List<Long>
 
     /**
      * Enables the library to compare local commands against Discord's command,
-     * in order to check if application commands need to be updated.
+     * to check if application commands need to be updated.
      *
      * The default behavior is to compare the command data to what has been locally saved,
      * as it does not require any request, and is therefore way faster.
@@ -49,8 +51,10 @@ interface BApplicationConfig {
     /**
      * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation.
      *
+     * **Beware**: This also means that your global application commands will **not** be registered.
+     *
      * **Note:** This only works on **annotated** commands,
-     * as you can simply return when manually declaring with the DSL
+     * as you can return when manually declaring with the DSL
      *
      * Default: `false`
      */
@@ -66,6 +70,7 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
+    @set:DevConfig
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
 

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
@@ -176,7 +177,7 @@ internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
 
 internal fun KFunction<*>.checkConstructingFunction(serviceContainer: ServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
-        serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
+        serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
             when {
                 it.type.isMarkedNullable -> return@forEach //Ignore
                 it.isOptional -> return@forEach //Ignore
@@ -192,11 +193,33 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: ServiceCon
     return null
 }
 
+/**
+ * NOTE: Lazy services do not get checked if they can be instantiated,
+ * this aligns with the behavior of a user using `ServiceContainer.lazy`.
+ */
+internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
+    val type = parameter.type
+    val name = parameter.findAnnotation<ServiceName>()?.value
+    return if (name != null) {
+        when (type.jvmErasure) {
+            Lazy::class -> null //Lazy exception
+            List::class -> null //Might be empty if no service were available, which is ok
+            else -> canCreateService(type.jvmErasure) //TODO support name
+        }
+    } else {
+        when (type.jvmErasure) {
+            Lazy::class -> null //Lazy exception
+            List::class -> null //Might be empty if no service were available, which is ok
+            else -> canCreateService(type.jvmErasure)
+        }
+    }
+}
+
 internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceContainerImpl): TimedInstantiation {
     val params: MutableMap<KParameter, Any?> = hashMapOf()
     this.nonInstanceParameters.forEach {
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
-        val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
+        val dependencyResult = serviceContainer.tryGetWrappedService(it)
         params[it] = dependencyResult.service ?: when {
             it.type.isMarkedNullable -> null
             it.isOptional -> return@forEach

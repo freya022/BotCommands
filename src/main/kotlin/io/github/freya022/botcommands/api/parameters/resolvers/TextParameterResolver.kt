@@ -97,9 +97,9 @@ interface TextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
      *
      * **Tip:** You may use the event as a way to get sample data (such as getting the member, channel, roles, etc...).
      *
-     * @param parameter the [parameter][KParameter] of the command being shown in the help content
-     * @param event the event of the command that triggered help content to be displayed
-     * @param isID whether this option was [marked as being an ID][ID]
+     * @param parameter The [parameter][KParameter] of the command being shown in the help content
+     * @param event     The event of the command that triggered help content to be displayed
+     * @param isID      Whether this option was [marked as being an ID][ID]
      */
     fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String
 }

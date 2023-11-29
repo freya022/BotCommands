@@ -68,25 +68,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  */
 @InterfacedService(acceptMultiple = true)
 interface TextCommandFilter<T : Any> : Filter {
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'checkSuspend' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("checkSuspend(event, commandVariation, args)")
-    )
-    @JvmSynthetic
-    suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
-    //TODO remove in alpha 9
-    @Deprecated(
-        message = "Implement 'check' instead, do not return a boolean",
-        level = DeprecationLevel.ERROR,
-        replaceWith = ReplaceWith("check(event, commandVariation, args)")
-    )
-    fun isAccepted(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Boolean =
-        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
-
     /**
      * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
      *

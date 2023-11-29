@@ -15,7 +15,9 @@ import io.github.freya022.botcommands.api.core.config.BComponentsConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.utils.ButtonContent
+import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.requireUser
@@ -134,6 +136,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * }
  * ```
  */
+@Suppress("MemberVisibilityCanBePrivate")
 @BService
 @ConditionalService(Components.Companion::class)
 class Components internal constructor(private val componentController: ComponentController) {
@@ -142,60 +145,103 @@ class Components internal constructor(private val componentController: Component
     // -------------------- Persistent groups --------------------
 
     fun newPersistentGroup(block: ReceiverConsumer<PersistentComponentGroupBuilder>, vararg components: ActionComponent): ComponentGroup = runBlocking {
-        createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
+        createGroup({ PersistentComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
     }
 
     @JvmSynthetic
     suspend fun newPersistentGroup(vararg components: ActionComponent, block: ReceiverConsumer<PersistentComponentGroupBuilder>): ComponentGroup =
-        createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
+        createGroup({ PersistentComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
 
     // -------------------- Ephemeral groups --------------------
 
     fun newEphemeralGroup(block: ReceiverConsumer<EphemeralComponentGroupBuilder>, vararg components: ActionComponent): ComponentGroup = runBlocking {
-        createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
+        createGroup({ EphemeralComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
     }
 
     @JvmSynthetic
     suspend fun newEphemeralGroup(vararg components: ActionComponent, block: ReceiverConsumer<EphemeralComponentGroupBuilder>): ComponentGroup =
-        createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
+        createGroup({ EphemeralComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
 
     // -------------------- Persistent buttons --------------------
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
-    @JvmOverloads
-    fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
-        PersistentButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    fun persistentButton(style: ButtonStyle, content: ButtonContent) =
+        PersistentButtonBuilder(style, componentController, content.text, content.emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
-    fun persistentButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<PersistentButtonBuilder>) =
-        persistentButton(style, content.text, content.emoji, block)
+    @JvmSynthetic
+    fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
+        PersistentButtonBuilder(style, componentController, label, emoji, InstanceRetriever()).apply(block).build()
 
     // -------------------- Ephemeral buttons --------------------
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmOverloads
-    fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
-        EphemeralButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
+        EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @JvmSynthetic
+    fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
+        EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever()).apply(block).build()
+
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    fun ephemeralButton(style: ButtonStyle, content: ButtonContent) =
+        ephemeralButton(style, content.text, content.emoji)
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @JvmSynthetic
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<EphemeralButtonBuilder>) =
         ephemeralButton(style, content.text, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
 
+    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    fun persistentStringSelectMenu() =
+        PersistentStringSelectBuilder(componentController, InstanceRetriever())
+    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @JvmSynthetic
     fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
-        PersistentStringSelectBuilder(componentController).apply(block).doBuild()
+        PersistentStringSelectBuilder(componentController, InstanceRetriever()).apply(block).build()
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    fun persistentEntitySelectMenu(target: SelectTarget) =
+        persistentEntitySelectMenu(enumSetOf(target))
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @JvmSynthetic
     fun persistentEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
-        persistentEntitySelectMenu(listOf(target), block)
-    fun persistentEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
-        PersistentEntitySelectBuilder(componentController, targets).apply(block).doBuild()
+        persistentEntitySelectMenu(enumSetOf(target), block)
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    fun persistentEntitySelectMenu(targets: Collection<SelectTarget>) =
+        PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @JvmSynthetic
+    fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
+        PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever()).apply(block).build()
 
     // -------------------- Ephemeral select menus --------------------
 
+    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    fun ephemeralStringSelectMenu() =
+        EphemeralStringSelectBuilder(componentController, InstanceRetriever())
+    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @JvmSynthetic
     fun ephemeralStringSelectMenu(block: ReceiverConsumer<EphemeralStringSelectBuilder>) =
-        EphemeralStringSelectBuilder(componentController).apply(block).doBuild()
+        EphemeralStringSelectBuilder(componentController, InstanceRetriever()).apply(block).build()
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    fun ephemeralEntitySelectMenu(target: SelectTarget) =
+        ephemeralEntitySelectMenu(enumSetOf(target))
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @JvmSynthetic
     fun ephemeralEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
-        ephemeralEntitySelectMenu(listOf(target), block)
-    fun ephemeralEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
-        EphemeralEntitySelectBuilder(componentController, targets).apply(block).doBuild()
+        ephemeralEntitySelectMenu(enumSetOf(target), block)
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>) =
+        EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @JvmSynthetic
+    fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
+        EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever()).apply(block).build()
 
     @JvmName("deleteComponentsById")
     fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
@@ -205,7 +251,7 @@ class Components internal constructor(private val componentController: Component
         componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() })
     }
 
-    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder, vararg components: ActionComponent): ComponentGroup {
+    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder<*>, components: Array<out ActionComponent>): ComponentGroup {
         requireUser(components.none { it.id == null }) {
             "Cannot make groups with link buttons"
         }

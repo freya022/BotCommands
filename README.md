@@ -3,8 +3,8 @@
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3)](#getting-the-library)
 [![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.17+-important)](https://github.com/discord-jda/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
-[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/3.X)
+[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/docs/allclasses-index.html)
+[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands/3.X)
 
 # BotCommands
 A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
@@ -60,10 +60,12 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
 * A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
-* (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands-Wiki/3.X/using-commands/Inferred-option-names/)
+* (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands/3.X/using-commands/Inferred-option-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
+* (Recommended) Use [stacktrace-decoroutinator](https://github.com/Anamorphosee/stacktrace-decoroutinator), to get clearer stack traces in suspending code
+  * Each bot template has it enabled in their main class
 
-You can then head over to [the wiki](https://freya022.github.io/BotCommands-Wiki/3.X/setup/getting-started/) 
+You can then head over to [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/) 
 to get started using a bot template.
 
 [//]: # (TODO keep an eye out for this wiki link)
@@ -182,7 +184,7 @@ You can find a number of feature demonstrations in the [examples subproject](exa
 
 ## Debugging tips
 
-- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/3.X/setup/logging/)
+- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands/3.X/setup/logging/)
 - Look at the switches in `BDebugConfig`
 
 ## Live templates

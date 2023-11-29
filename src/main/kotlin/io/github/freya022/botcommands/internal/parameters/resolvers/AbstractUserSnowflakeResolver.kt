@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.findEntity
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging

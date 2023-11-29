@@ -11,7 +11,9 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -93,10 +95,15 @@ class ResolverContainer internal constructor(
     internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
         return cache.computeIfAbsent(parameter) { wrapper ->
             getResolverFactoryOrNull(wrapper) ?: run {
-                val erasure = wrapper.erasure
-                val serviceResult = serviceContainer.tryGetService(erasure)
+                val serviceResult = serviceContainer.tryGetWrappedService(wrapper.parameter)
 
                 serviceResult.serviceError?.let { serviceError ->
+                    //If a service isn't required then that's fine
+                    if (wrapper.parameter.isNullable || wrapper.parameter.isOptional) {
+                        logger.trace { "Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}" }
+                        return@run NullServiceCustomResolverFactory
+                    }
+
                     wrapper.throwUser("Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
                 }
 
@@ -107,6 +114,14 @@ class ResolverContainer internal constructor(
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
         return resolver::class.isSubclassOfAny(compatibleInterfaces)
+    }
+
+    private object NullServiceCustomResolverFactory : TypedParameterResolverFactory<NullServiceCustomResolverFactory.NullServiceCustomResolver>(NullServiceCustomResolver::class, Any::class) {
+        private object NullServiceCustomResolver : ClassParameterResolver<NullServiceCustomResolver, Any>(Any::class), ICustomResolver<NullServiceCustomResolver, Any> {
+            override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): Any? = null
+        }
+
+        override fun get(parameter: ParameterWrapper): NullServiceCustomResolver = NullServiceCustomResolver
     }
 
     private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class),

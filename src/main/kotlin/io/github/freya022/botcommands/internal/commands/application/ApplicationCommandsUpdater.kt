@@ -48,8 +48,9 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
-    val applicationCommands: Collection<ApplicationCommandInfo>
+    internal val applicationCommands: Collection<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
+    internal val filteredCommandsCount: Int get() = allCommandData.size
 
     init {
         Files.createDirectories(commandsCachePath.parent)
@@ -128,8 +129,10 @@ internal class ApplicationCommandsUpdater private constructor(
                         commandData.configureTopLevel(info)
                     }
 
-                    topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
-                    topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
+                    if (!isTopLevel) {
+                        topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
+                        topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
+                    }
 
                     map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
@@ -198,9 +201,8 @@ internal class ApplicationCommandsUpdater private constructor(
 
         logger.trace {
             val commandNumber = commands.size
-            val sentCommandNumber = allCommandData.size
             val scope = guild.asScopeString()
-            "Updated $commandNumber / $sentCommandNumber commands for $scope"
+            "Updated $commandNumber / $filteredCommandsCount commands for $scope"
         }
     }
 

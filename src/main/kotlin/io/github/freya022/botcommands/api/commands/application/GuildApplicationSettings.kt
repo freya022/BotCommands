@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
@@ -23,14 +22,14 @@ import net.dv8tion.jda.api.interactions.commands.Command
 interface GuildApplicationSettings {
     /**
      * Returns the choices available for this command path,
-     * on the specific `optionIndex` (option index starts at 0 and are composed of only the parameters annotated with [@SlashOption][SlashOption]).
+     * on the specific [optionName].
      *
      * The choices returned by this method will have their name localized
      * if they are present in the [localization bundles][BApplicationConfigBuilder.addLocalizations].
      *
      * @param guild       The [Guild] in which the command is, might be `null` for global commands with choices
      * @param commandPath The [CommandPath] of the command, this is composed of it's name and optionally of its group and subcommand name
-     * @param optionName  The option name, this is the same name that appears on Discord
+     * @param optionName  The option name, not the same as the parameter name, this is the same name that appears on Discord
      *
      * @return The list of choices for this slash command's options
      *
@@ -58,7 +57,7 @@ interface GuildApplicationSettings {
      * @return A collection of Guild IDs where the specified command is allowed to be pushed in<br>
      *         This returns `null` by default
      *
-     * @see CommandId
+     * @see CommandId @CommandId
      */
     fun getGuildsForCommandId(commandId: String, commandPath: CommandPath): Collection<Long>? {
         return null
@@ -72,8 +71,7 @@ interface GuildApplicationSettings {
      * @param guild         The [Guild] in which to add the default value, `null` if the scope is **not** [CommandScope.GUILD]
      * @param commandId     The ID of the command, as optionally set in [@CommandId][CommandId], might be `null`
      * @param commandPath   The path of the command, as set in [@JDASlashCommand][JDASlashCommand]
-     * @param optionName    The name of the **transformed** command option,
-     *                      which might not be equal to the parameter name
+     * @param optionName    The option name, not the same as the parameter name, this is the same name that appears on Discord
      * @param parameterType The **boxed** type of the command option
      *
      * @return A [ApplicationGeneratedValueSupplier] to generate the option on command execution

@@ -26,7 +26,7 @@ import java.time.Duration as JavaDuration
  * - If the component is a group, then all of its owned components will also be deleted.
  * - If the component is inside a group, then all the group's components will also be deleted.
  */
-interface ITimeoutableComponent {
+interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceHolder<T> {
     val timeout: ComponentTimeout?
 
     /**
@@ -46,7 +46,7 @@ interface ITimeoutableComponent {
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
      */
-    fun timeout(timeout: Long, timeoutUnit: TimeUnit) =
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()))
 
     /**
@@ -65,7 +65,7 @@ interface ITimeoutableComponent {
      *
      * @param timeout The duration of the timeout
      */
-    fun timeout(timeout: JavaDuration) =
+    fun timeout(timeout: JavaDuration): T =
         timeout(timeout.toKotlinDuration())
 
     /**
@@ -85,7 +85,7 @@ interface ITimeoutableComponent {
      * @param timeout The duration of the timeout
      */
     @JvmSynthetic
-    fun timeout(timeout: Duration)
+    fun timeout(timeout: Duration): T
 }
 
 /**
@@ -96,7 +96,7 @@ interface ITimeoutableComponent {
  *
  * @see ITimeoutableComponent
  */
-interface IPersistentTimeoutableComponent : ITimeoutableComponent {
+interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>> : ITimeoutableComponent<T> {
     /**
      * Binds the given timeout handler name with its arguments to this component.
      *
@@ -122,7 +122,7 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
      */
-    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg data: Any?) =
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, *data)
 
     /**
@@ -143,13 +143,14 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Unlike with [PersistentHandlerBuilder.passData], the data passed to the handler will only be [String],
+     * no conversion will happen.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
      */
-    fun timeout(timeout: JavaDuration, handlerName: String, vararg data: Any?) =
+    fun timeout(timeout: JavaDuration, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toKotlinDuration(), handlerName, *data)
 
     /**
@@ -170,14 +171,15 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
      * The data passed is transformed with [toString][Object.toString],
      * except [snowflakes][ISnowflake] which get their IDs stored.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Unlike with [PersistentHandlerBuilder.passData], the data passed to the handler will only be [String],
+     * no conversion will happen.
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
      */
     @JvmSynthetic
-    fun timeout(timeout: Duration, handlerName: String, vararg data: Any?)
+    fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T
 }
 
 /**
@@ -187,7 +189,7 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
  *
  * @see ITimeoutableComponent
  */
-interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
+interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> : ITimeoutableComponent<T> {
     /**
      * Binds the given handler to this component.
      *
@@ -209,7 +211,7 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * @param timeout The duration before timeout
      * @param handler The handler to run when the button is clicked
      */
-    fun timeout(timeout: JavaDuration, handler: Runnable) =
+    fun timeout(timeout: JavaDuration, handler: Runnable): T =
         timeout(timeout.toKotlinDuration()) { handler.run() }
 
     /**
@@ -234,7 +236,7 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * @param timeoutUnit The unit of the timeout
      * @param handler The handler to run when the button is clicked
      */
-    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable) =
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
 
     /**
@@ -262,5 +264,5 @@ interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
      * @param handler The handler to run when the button is clicked
      */
     @JvmSynthetic
-    fun timeout(timeout: Duration, handler: suspend () -> Unit)
+    fun timeout(timeout: Duration, handler: suspend () -> Unit): T
 }

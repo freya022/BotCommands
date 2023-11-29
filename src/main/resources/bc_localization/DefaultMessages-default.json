@@ -9,6 +9,7 @@
     "channel.rate_limit.message": "You will be able to use this, in this channel, {delay}",
     "guild.rate_limit.message": "You will be able to use this, in this guild, {delay}",
 
+    "application_commands_not_available": "Application commands are not available yet, please try again later",
     "command.not.found.message": "Unknown command, maybe you meant: {suggestions}",
 
     "resolver.channel.not_found.message": "The target channel does not exist anymore",

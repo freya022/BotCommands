@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashU
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
-import io.github.freya022.botcommands.internal.core.reflection.toMemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
@@ -27,7 +27,7 @@ class UserCommandInfo internal constructor(
 ) : ApplicationCommandInfo(builder),
     ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(builder) {
 
-    override val eventFunction = builder.toMemberEventFunction<GlobalUserEvent, _>(context)
+    override val eventFunction = builder.toMemberParamFunction<GlobalUserEvent, _>(context)
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null

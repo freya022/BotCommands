@@ -199,9 +199,8 @@ internal object ReflectionMetadata {
                 ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
             val isNullableAnnotated =
                 metadata.nullabilities[index]
-            val isNullableMarked = type.isMarkedNullable
 
-            return isNullableAnnotated || isNullableMarked
+            return isNullableAnnotated || type.isMarkedNullable
         }
 
     internal val KFunction<*>.lineNumber: Int

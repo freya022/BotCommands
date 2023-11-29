@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
-import io.github.freya022.botcommands.internal.components.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -103,8 +103,8 @@ object Resolvers {
      *
      * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
      *
-     * @param values       the accepted enumeration values
-     * @param nameFunction the function transforming the enum value into the display name
+     * @param values       The accepted enumeration values
+     * @param nameFunction The function transforming the enum value into the display name
      */
     @JvmStatic
     @JvmOverloads
@@ -142,8 +142,8 @@ object Resolvers {
  *
  * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
  *
- * @param values       the accepted enumeration values
- * @param nameFunction the function transforming the enum value into the display name
+ * @param values       The accepted enumeration values
+ * @param nameFunction The function transforming the enum value into the display name
  */
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),

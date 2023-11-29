@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 open class GlobalSlashEvent internal constructor(
     val context: BContext,
-    event: SlashCommandInteractionEvent,
+    private val event: SlashCommandInteractionEvent,
     cancellableRateLimit: CancellableRateLimit
 ) : SlashCommandInteractionEvent(event.jda, event.responseNumber, event.interaction),
-    CancellableRateLimit by cancellableRateLimit
+    CancellableRateLimit by cancellableRateLimit {
+
+    override fun getRawData() = event.rawData
+}

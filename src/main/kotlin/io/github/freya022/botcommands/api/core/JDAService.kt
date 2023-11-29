@@ -27,10 +27,12 @@ import java.util.*
  * class Bot(private val config: Config) : JDAService() {
  *     override val intents: Set<GatewayIntent> = enumSetOf(GatewayIntent.MESSAGE_CONTENT)
  *
+ *     override val cacheFlags: Set<CacheFlag> = enumSetOf()
+ *
  *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
- *         DefaultShardManagerBuilder.createLight(config.token).apply {
+ *         DefaultShardManagerBuilder.createLight(config.token, intents).apply {
  *             setEventManagerProvider { eventManager }
- *             enableIntents(intents)
+ *             enableCache(cacheFlags)
  *             ...
  *         }.build()
  *     }
@@ -69,8 +71,8 @@ abstract class JDAService {
      * - [jda.setEventManager(eventManager)][JDA.setEventManager]
      * - [shardManagerBuilder.setEventManagerProvider { eventManager }][DefaultShardManagerBuilder.setEventManagerProvider]
      *
-     * @param event        the framework's ready event
-     * @param eventManager the event manager passed to [BBuilder.newBuilder], you **must** use it in your [JDABuilder]/[DefaultShardManagerBuilder]
+     * @param event        The framework's ready event
+     * @param eventManager The event manager passed to [BBuilder.newBuilder], you **must** use it in your [JDABuilder]/[DefaultShardManagerBuilder]
      *
      */
     abstract fun createJDA(event: BReadyEvent, eventManager: IEventManager)

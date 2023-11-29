@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
+import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
@@ -53,9 +54,9 @@ internal object SlashUtils {
             options.sortedWith { o1, o2 ->
                 when {
                     //Optional options are placed after required options
-                    o1.isOptionalOrNullable && !o2.isOptionalOrNullable -> 1
+                    o1.isOptionalOrNullable && o2.isRequired -> 1
                     //Required options are placed before optional options
-                    !o1.isOptionalOrNullable && o2.isOptionalOrNullable -> -1
+                    o1.isRequired && o2.isOptionalOrNullable -> -1
                     //If both are optional/required, keep order using index
                     else -> options.indexOf(o1).compareTo(options.indexOf(o2))
                 }
@@ -136,6 +137,6 @@ internal object SlashUtils {
             }
         }
 
-        data.isRequired = !option.isOptionalOrNullable
+        data.isRequired = option.isRequired
     }
 }

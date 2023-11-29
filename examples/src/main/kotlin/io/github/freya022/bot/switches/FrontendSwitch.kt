@@ -3,6 +3,10 @@ package io.github.freya022.bot.switches
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 
+// This is just an annotation to switch between command declaration modes
+// "Simple frontends" are just annotated commands, without the actual logic on it
+// Other frontends include DSL-declared commands
+
 annotation class SimpleFrontend
 
 object FrontendChooser : ConditionalServiceChecker {

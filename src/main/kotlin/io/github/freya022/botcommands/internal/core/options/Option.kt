@@ -60,6 +60,8 @@ interface Option {
     val type: KType
 }
 
+internal val Option.isRequired: Boolean get() = !isOptionalOrNullable
+
 open class OptionImpl private constructor(
     final override val optionParameter: OptionParameter,
     final override val optionType: OptionType,

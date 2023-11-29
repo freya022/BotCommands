@@ -51,7 +51,12 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
-                val slashCommand = CommandPath.of(event.fullCommandName).let {
+                // In rare cases where a user sends a command before they have been registered
+                if (context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild) == null) {
+                    return@launch event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+                }
+
+                val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
                     context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                         ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
                 }
@@ -76,6 +81,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
+                // In rare cases where a user sends a command before they have been registered
+                if (context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild) == null) {
+                    return@launch event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+                }
+
                 val userCommand = event.name.let {
                     context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
                         ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
@@ -101,6 +111,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
+                // In rare cases where a user sends a command before they have been registered
+                if (context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild) == null) {
+                    return@launch event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+                }
+
                 val messageCommand = event.name.let {
                     context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
                         ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
@@ -121,6 +136,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
     }
 
     private fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
+        // If an exception occurred during global commands registration, the command map for it does not exist
+        if (context.applicationCommandsContext.getLiveApplicationCommandsMap(null) == null) {
+            return event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+        }
+
         //This is done so warnings are printed after the exception
         handleException(IllegalArgumentException(message), event)
         printAvailableCommands(event)

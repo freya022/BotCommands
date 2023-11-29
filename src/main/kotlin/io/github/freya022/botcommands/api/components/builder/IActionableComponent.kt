@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
-import io.github.freya022.botcommands.internal.components.ComponentHandler
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -30,7 +30,7 @@ import kotlin.reflect.full.findAnnotation
 /**
  * Allows components to have handlers bound to them.
  */
-interface IActionableComponent {
+interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHolder<T> {
     val context: BContext
 
     val handler: ComponentHandler?
@@ -46,16 +46,16 @@ interface IActionableComponent {
      *
      * @see RateLimitReference @RateLimitReference
      */
-    fun rateLimitReference(group: String)
+    fun rateLimitReference(group: String): T
 
-    fun addFilter(filter: ComponentInteractionFilter<*>) {
+    fun addFilter(filter: ComponentInteractionFilter<*>): T = instance.also {
         filters += filter
     }
 
-    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>) = addFilter(context.getService(filterType))
+    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T = addFilter(context.getService(filterType))
 }
 
-inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filter(): T {
+inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent<*>.filter(): T {
     return context.getService<T>()
 }
 
@@ -65,14 +65,14 @@ inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent.filt
  * These handlers are represented by a method with a [JDAButtonListener] or [JDASelectMenuListener] annotation on it,
  * and will still exist after a restart.
  */
-interface IPersistentActionableComponent : IActionableComponent {
+interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> : IActionableComponent<T> {
     /**
      * Binds the given handler name with its arguments to this component.
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      */
-    fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>)
+    fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T
 
     /**
      * Binds the given handler name with its arguments to this component.
@@ -87,7 +87,7 @@ interface IPersistentActionableComponent : IActionableComponent {
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      * @param data The data to pass to the component handler
      */
-    fun bindTo(handlerName: String, data: List<Any?>) = bindTo(handlerName) { passData(data) }
+    fun bindTo(handlerName: String, data: List<Any?>): T = bindTo(handlerName) { passData(data) }
 
     /**
      * Binds the given handler name with its arguments to this component.
@@ -102,7 +102,7 @@ interface IPersistentActionableComponent : IActionableComponent {
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      * @param data The data to pass to the component handler
      */
-    fun bindTo(handlerName: String, vararg data: Any?) = bindTo(handlerName, data.asList())
+    fun bindTo(handlerName: String, vararg data: Any?): T = bindTo(handlerName, data.asList())
 }
 
 /**
@@ -110,7 +110,7 @@ interface IPersistentActionableComponent : IActionableComponent {
  *
  * These handlers will not exist anymore after a restart.
  */
-interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEvent> : IActionableComponent {
+interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>, E : GenericComponentInteractionCreateEvent> : IActionableComponent<T> {
     /**
      * Binds the given handler to this component.
      *
@@ -120,7 +120,7 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
      *
      * @param handler The handler to run when the button is clicked
      */
-    fun bindTo(handler: Consumer<E>) = bindTo(handler = { handler.accept(it) })
+    fun bindTo(handler: Consumer<E>): T = bindTo(handler = { handler.accept(it) })
 
     /**
      * Binds the given handler to this component.
@@ -131,22 +131,7 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
      *
      * @param handler The handler to run when the button is clicked
      */
-    fun bindTo(handler: Consumer<E>, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>) = bindTo(handler = { handler.accept(it) }, block)
-
-    /**
-     * Binds the given handler to this component.
-     *
-     * ### Captured entities
-     * Pay *extra* attention to not capture JDA entities in such handlers
-     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
-     *
-     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
-     * even though it will return you an outdated object if the entity cannot be found anymore.
-     *
-     * @param handler The handler to run when the button is clicked
-     */
-    @JvmSynthetic
-    fun bindTo(handler: suspend (E) -> Unit) = bindTo(handler, ReceiverConsumer.noop())
+    fun bindTo(handler: Consumer<E>, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = bindTo(handler = { handler.accept(it) }, block)
 
     /**
      * Binds the given handler to this component.
@@ -161,7 +146,22 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
      * @param handler The handler to run when the button is clicked
      */
     @JvmSynthetic
-    fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>)
+    fun bindTo(handler: suspend (E) -> Unit): T = bindTo(handler, ReceiverConsumer.noop())
+
+    /**
+     * Binds the given handler to this component.
+     *
+     * ### Captured entities
+     * Pay *extra* attention to not capture JDA entities in such handlers
+     * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+     *
+     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
+     * even though it will return you an outdated object if the entity cannot be found anymore.
+     *
+     * @param handler The handler to run when the button is clicked
+     */
+    @JvmSynthetic
+    fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T
 }
 
 /**
@@ -174,8 +174,8 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent> T.bindTo(noinline func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
 }
 
 /**
@@ -188,8 +188,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActio
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent> T.bindTo(noinline func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
 }
 
 /**
@@ -202,8 +202,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActio
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1> T.bindTo(noinline func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
 }
 
 /**
@@ -216,8 +216,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentA
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1> T.bindTo(noinline func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
 }
 
 /**
@@ -230,8 +230,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentA
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(noinline func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
 }
 
 /**
@@ -244,8 +244,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersist
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(noinline func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
 }
 
 /**
@@ -258,8 +258,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersist
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(noinline func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
 }
 
 /**
@@ -272,8 +272,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPer
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(noinline func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
 }
 
 /**
@@ -286,8 +286,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPer
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
 }
 
 /**
@@ -300,8 +300,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(noinline func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
 }
 
 /**
@@ -314,8 +314,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
 /**
@@ -328,8 +328,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
 /**
@@ -342,8 +342,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
 /**
@@ -356,8 +356,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
 /**
@@ -370,8 +370,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
 /**
@@ -384,8 +384,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
 /**
@@ -398,8 +398,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
 /**
@@ -412,8 +412,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
 /**
@@ -426,8 +426,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
 /**
@@ -440,8 +440,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
 /**
@@ -454,8 +454,8 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
 
 /**
@@ -468,15 +468,15 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
  * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
  * even though it will return you an outdated object if the entity cannot be found anymore.
  */
-inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
-    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
+inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
 
 @PublishedApi
-internal fun IPersistentActionableComponent.bindToCallable(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>, data: List<Any?>, block: ReceiverConsumer<PersistentHandlerBuilder>) {
+internal fun <T : IPersistentActionableComponent<T>> T.bindToCallable(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>, data: List<Any?>, block: ReceiverConsumer<PersistentHandlerBuilder>): T {
     val name = findHandlerName(func, eventType)
         ?: throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
-    this.bindTo(handlerName = name) {
+    return this.bindTo(handlerName = name) {
         apply(block)
         passData(data)
     }

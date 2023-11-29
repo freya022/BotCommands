@@ -42,22 +42,22 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 
 	@NotNull
 	protected StringSelectMenu createSelectMenu() {
-		return componentsService.ephemeralStringSelectMenu(selectBuilder -> {
-			selectBuilder.bindTo(this::onItemSelected);
-			selectBuilder.setOneUse(true);
-			selectBuilder.setConstraints(constraints);
+		final SelectOption[] options = new SelectOption[items.size()];
+		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
+			InteractiveMenuItem<T> item = items.get(i);
 
-			final SelectOption[] options = new SelectOption[items.size()];
-			for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
-				InteractiveMenuItem<T> item = items.get(i);
+			SelectOption option = item.content().toSelectOption(String.valueOf(i));
+			if (i == selectedItem) option = option.withDefault(true);
 
-				SelectOption option = item.content().toSelectOption(String.valueOf(i));
-				if (i == selectedItem) option = option.withDefault(true);
+			options[i] = option;
+		}
 
-				options[i] = option;
-			}
-			selectBuilder.addOptions(options);
-		});
+		return componentsService.ephemeralStringSelectMenu()
+				.bindTo(this::onItemSelected)
+				.oneUse(true)
+				.constraints(constraints)
+				.addOptions(options)
+				.build();
 	}
 
 	private void onItemSelected(StringSelectEvent event) {

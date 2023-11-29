@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 
 open class GlobalMessageEvent internal constructor(
     val context: BContext,
-    event: MessageContextInteractionEvent,
+    private val event: MessageContextInteractionEvent,
     cancellableRateLimit: CancellableRateLimit
 ) : MessageContextInteractionEvent(event.jda, event.responseNumber, event.interaction),
-    CancellableRateLimit by cancellableRateLimit
+    CancellableRateLimit by cancellableRateLimit {
+
+    override fun getRawData() = event.rawData
+}

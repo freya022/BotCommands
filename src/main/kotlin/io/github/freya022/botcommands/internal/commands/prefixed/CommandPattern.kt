@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
+import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import java.util.regex.Pattern
@@ -19,7 +20,7 @@ internal object CommandPattern {
 
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
-        val exampleStr = optionParameters.filter { !it.isOptionalOrNullable }.joinToString(" ") { it.resolver.testExample }
+        val exampleStr = optionParameters.filter { it.isRequired }.joinToString(" ") { it.resolver.testExample }
         require(pattern.matches(exampleStr)) {
             """
             Failed building pattern for method ${variation.function.shortSignature} with pattern '$pattern' and example '$exampleStr'

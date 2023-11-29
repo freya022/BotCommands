@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.PersistentHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 
 internal class PersistentComponentData(
     componentId: Int,

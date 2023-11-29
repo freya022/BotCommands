@@ -8,14 +8,13 @@ import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.MemberEventFunction
+import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -28,7 +27,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalD
 
 class ModalHandlerInfo internal constructor(
     context: BContextImpl,
-    override val eventFunction: MemberEventFunction<ModalInteractionEvent, *>
+    override val eventFunction: MemberParamFunction<ModalInteractionEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
@@ -41,7 +40,7 @@ class ModalHandlerInfo internal constructor(
         val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
-        parameters = function.nonInstanceParameters.drop(1).transformParameters(
+        parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
                     parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))

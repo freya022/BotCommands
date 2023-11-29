@@ -143,6 +143,13 @@ public final class DefaultMessages {
 	}
 
 	/**
+	 * @return Message to display when application commands are not loaded on the guild yet
+	 */
+	public String getApplicationCommandsNotAvailableMsg() {
+		return getLocalizationTemplate("application_commands_not_available").localize();
+	}
+
+	/**
 	 * @return Message to display when the command is not found
 	 */
 	public String getCommandNotFoundMsg(String suggestions) {
