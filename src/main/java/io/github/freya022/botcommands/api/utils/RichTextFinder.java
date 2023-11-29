@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.utils;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 import net.fellbaum.jemoji.IndexedEmoji;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
  * <p>
  * You can then take the output using {@link #getResults()} or consume it directly using {@link #processResults(RichTextConsumer)}.
  */
+@NullMarked
 public class RichTextFinder {
     private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern EMPTY_PATTERN = Pattern.compile("");
