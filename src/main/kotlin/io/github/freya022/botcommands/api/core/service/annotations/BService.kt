@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceStart
 
 /**
@@ -10,6 +12,34 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  * Service factories must be static, or declared in a service class, or an `object`.
  *
  * **Warning:** Top-level functions are not processed, you must have them in an object/class.
+ *
+ * ### Service retrieval
+ *
+ * Classes annotated with [service annotations][BServiceConfigBuilder.serviceAnnotations]
+ * can be injected into other service classes.
+ * You can also request a named instance of a class by using [@ServiceName][ServiceName].
+ *
+ * #### Interfaced services
+ *
+ * Request a [List] will retrieve all services implementing the list's element type,
+ * such as `List<ApplicationCommandFilter<*>>`.
+ *
+ * #### Lazy services
+ *
+ * In Kotlin, you can request a [ServiceContainer] and use a delegated property,
+ * such as `private val helpCommand: IHelpCommand by serviceContainer.lazy()`.
+ *
+ * Java users can request a [Lazy] with the type being the requested service,
+ * and get the value with [Lazy.getValue()][Lazy.value].
+ *
+ * **Note:** Lazy services cannot hold a list of interfaced services, nor can a list of lazy services be requested.
+ *
+ * #### Optional services
+ *
+ * If you want to get a service only if it is available,
+ * you can use a nullable parameter (non-null annotated, for example) or Kotlin's optional parameters.
+ *
+ * If a service is not available and the parameter is required, an exception will be thrown.
  *
  * ### Naming scheme
  *
