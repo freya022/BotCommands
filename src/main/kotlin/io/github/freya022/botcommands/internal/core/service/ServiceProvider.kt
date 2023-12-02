@@ -204,7 +204,7 @@ internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): Se
         when (type.jvmErasure) {
             Lazy::class -> null //Lazy exception
             List::class -> null //Might be empty if no service were available, which is ok
-            else -> canCreateService(type.jvmErasure) //TODO support name
+            else -> canCreateService(name, type.jvmErasure)
         }
     } else {
         when (type.jvmErasure) {
