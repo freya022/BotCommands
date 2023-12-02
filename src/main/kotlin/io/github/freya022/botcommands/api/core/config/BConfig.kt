@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
@@ -14,13 +13,9 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
-import kotlinx.coroutines.debug.DebugProbes
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import kotlin.time.Duration
-import kotlin.time.toKotlinDuration
-import java.time.Duration as JavaDuration
 
 @InjectedService
 interface BConfig {
@@ -45,37 +40,6 @@ interface BConfig {
     val disableAutocompleteCache: Boolean
 
     /**
-     * Whether transactions should trigger a coroutine dump & thread dump
-     * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
-     *
-     * **Note:** You need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
-     * remember to turn off [DebugProbes.enableCreationStackTraces] in production environments.
-     *
-     * @see ConnectionSupplier.maxTransactionDuration
-     * @see DebugProbes
-     * @see DebugProbes.enableCreationStackTraces
-     */
-    val dumpLongTransactions: Boolean
-    /**
-     * Determines whether *all* SQL queries should be logged on `TRACE`.
-     *
-     * The `TRACE` log level is required on the class that created the prepared statement.
-     *
-     * Default: `false`
-     */
-    val logQueries: Boolean
-    /**
-     * Determines if the SQL query logger will replace query parameters by their value.
-     *
-     * Default: `true`
-     */
-    val logQueryParameters: Boolean
-    /**
-     * The duration a query has to run for it to be logged on `WARN`.
-     */
-    val queryLogThreshold: Duration
-
-    /**
      * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
      *
      * @see BEventListener.ignoreIntents
@@ -93,6 +57,7 @@ interface BConfig {
 
     val debugConfig: BDebugConfig
     val serviceConfig: BServiceConfig
+    val databaseConfig: BDatabaseConfig
     val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
     val componentsConfig: BComponentsConfig
@@ -113,20 +78,6 @@ class BConfigBuilder internal constructor() : BConfig {
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
 
-    @set:DevConfig
-    @set:JvmName("dumpLongTransactions")
-    override var dumpLongTransactions: Boolean = false
-    @set:JvmName("logQueries")
-    override var logQueries: Boolean = false
-    @set:JvmName("logQueryParameters")
-    override var logQueryParameters: Boolean = true
-    @set:JvmSynthetic
-    override var queryLogThreshold: Duration = Duration.INFINITE
-
-    fun setQueryLogThreshold(duration: JavaDuration) {
-        this.queryLogThreshold = duration.toKotlinDuration()
-    }
-
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
     override val ignoredEventIntents: MutableSet<Class<out Event>> = hashSetOf()
@@ -135,6 +86,7 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
+    override val databaseConfig = BDatabaseConfigBuilder()
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder(serviceConfig)
     override val componentsConfig = BComponentsConfigBuilder()
@@ -218,6 +170,10 @@ class BConfigBuilder internal constructor() : BConfig {
         coroutineScopesConfig.apply(block)
     }
 
+    fun database(block: ReceiverConsumer<BDatabaseConfigBuilder>) {
+        databaseConfig.apply(block)
+    }
+
     fun debug(block: ReceiverConsumer<BDebugConfigBuilder>) {
         debugConfig.apply(block)
     }
@@ -241,15 +197,12 @@ class BConfigBuilder internal constructor() : BConfig {
         override val classes = this@BConfigBuilder.classes.toImmutableSet()
         override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
         override val disableAutocompleteCache = this@BConfigBuilder.disableAutocompleteCache
-        override val dumpLongTransactions = this@BConfigBuilder.dumpLongTransactions
-        override val logQueries = this@BConfigBuilder.logQueries
-        override val logQueryParameters = this@BConfigBuilder.logQueryParameters
-        override val queryLogThreshold = this@BConfigBuilder.queryLogThreshold
         override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
         override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
         override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
         override val debugConfig = this@BConfigBuilder.debugConfig.build()
         override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
+        override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
         override val textConfig = this@BConfigBuilder.textConfig.build()
         override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
         override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
@@ -261,6 +214,7 @@ class BConfigBuilder internal constructor() : BConfig {
 internal fun BConfig.putConfigInServices(serviceContainer: ServiceContainer) {
     serviceContainer.putServiceAs(this)
     serviceContainer.putServiceAs(serviceConfig)
+    serviceContainer.putServiceAs(databaseConfig)
     serviceContainer.putServiceAs(applicationConfig)
     serviceContainer.putServiceAs(componentsConfig)
     serviceContainer.putServiceAs(coroutineScopesConfig)

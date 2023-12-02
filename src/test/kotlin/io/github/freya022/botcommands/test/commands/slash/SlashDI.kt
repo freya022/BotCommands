@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.core.ReadyListener
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService
 
 @Command
-class SlashDI(
+class SlashDI internal constructor(
     @ServiceName("builtinHelpCommand") builtinHelpCommand: IHelpCommand?,
     @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default(),
     unusedInterfacedService: UnusedInterfacedService?

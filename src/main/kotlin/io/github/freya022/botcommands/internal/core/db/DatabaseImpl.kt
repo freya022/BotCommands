@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.core.db
 
-import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.api.core.db.preparedStatement
@@ -33,7 +33,7 @@ private val logger = KotlinLogging.logger { }
 internal class DatabaseImpl internal constructor(
     context: ServiceContainer,
     override val connectionSupplier: ConnectionSupplier,
-    override val config: BConfig
+    override val databaseConfig: BDatabaseConfig
 ) : Database {
     internal open class ConnectionResource internal constructor(protected val connection: Connection, private val semaphore: Semaphore) : Connection by connection {
         internal val availablePermits get() = semaphore.availablePermits
@@ -57,8 +57,8 @@ internal class DatabaseImpl internal constructor(
 
     private val tracedQueryFactories: List<ParametrizedQueryFactory<*>> = context.getInterfacedServices()
 
-    private val isQueryThresholdSet = config.queryLogThreshold.isFinite() && config.queryLogThreshold.isPositive()
-    private val useTracedConnections = config.logQueries || isQueryThresholdSet
+    private val isQueryThresholdSet = databaseConfig.queryLogThreshold.isFinite() && databaseConfig.queryLogThreshold.isPositive()
+    private val useTracedConnections = databaseConfig.logQueries || isQueryThresholdSet
 
     //Prevents deadlock when a paused coroutine holds a Connection,
     // but cannot be resumed and freed because of the coroutine scope being full (from another component event)
@@ -67,9 +67,9 @@ internal class DatabaseImpl internal constructor(
     private lateinit var baseSchema: String
 
     init {
-        if (config.dumpLongTransactions) {
+        if (databaseConfig.dumpLongTransactions) {
             check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
-                "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.reference} is enabled"
+                "Maximum transaction duration must be positive when ${BDatabaseConfig::dumpLongTransactions.reference} is enabled"
             }
         }
 
@@ -99,7 +99,7 @@ internal class DatabaseImpl internal constructor(
         val connection = try {
             if (useTracedConnections) {
                 val tracedQueryFactory = getTracedQueryFactory(rawConnection)
-                TracedConnection(rawConnection, semaphore, tracedQueryFactory, config.logQueries, isQueryThresholdSet, config.queryLogThreshold)
+                TracedConnection(rawConnection, semaphore, tracedQueryFactory, databaseConfig.logQueries, isQueryThresholdSet, databaseConfig.queryLogThreshold)
             } else {
                 ConnectionResource(rawConnection, semaphore)
             }
@@ -127,7 +127,7 @@ internal class DatabaseImpl internal constructor(
     }
 
     private fun getTracedQueryFactory(connection: Connection): ParametrizedQueryFactory<*> {
-        if (!config.logQueryParameters) {
+        if (!databaseConfig.logQueryParameters) {
             return NonParametrizedQueryFactory
         }
 

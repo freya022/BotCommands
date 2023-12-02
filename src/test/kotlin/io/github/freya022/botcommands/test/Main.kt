@@ -48,12 +48,15 @@ object Main {
 
             BBuilder.newBuilder(manager) {
                 disableExceptionsInDMs = true
-                queryLogThreshold = 250.milliseconds
 
                 addSearchPath("io.github.freya022.botcommands.test")
 
-                @OptIn(DevConfig::class)
-                dumpLongTransactions = true
+                database {
+                    queryLogThreshold = 250.milliseconds
+
+                    @OptIn(DevConfig::class)
+                    dumpLongTransactions = true
+                }
 
                 components {
                     useComponents = true

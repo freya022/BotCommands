@@ -4,6 +4,7 @@ package io.github.freya022.botcommands.api.core.db
 
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
@@ -57,7 +58,7 @@ private val logger = KotlinLogging.logger { }
  */
 @InjectedService("Requires a ConnectionSupplier service")
 interface Database {
-    val config: BConfig
+    val databaseConfig: BDatabaseConfig
     val connectionSupplier: ConnectionSupplier
 
     /**
@@ -146,7 +147,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
     // The leak test code doesn't use idiomatic Kotlin on purpose
     val maxTransactionDuration = when {
-        config.dumpLongTransactions -> connectionSupplier.maxTransactionDuration.toKotlinDuration()
+        databaseConfig.dumpLongTransactions -> connectionSupplier.maxTransactionDuration.toKotlinDuration()
         else -> null
     }
     val logger = maxTransactionDuration?.let { Logging.getLogger() }
