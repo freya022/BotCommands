@@ -12,6 +12,9 @@ interface ServiceContainer {
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T>
     fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = tryGetService(clazz.kotlin)
 
+    fun canCreateService(name: String, requiredType: KClass<*>): ServiceError?
+    fun canCreateService(name: String, requiredType: Class<*>): ServiceError? = canCreateService(name, requiredType.kotlin)
+
     fun canCreateService(clazz: KClass<*>): ServiceError?
     fun canCreateService(clazz: Class<*>): ServiceError? = canCreateService(clazz.kotlin)
 

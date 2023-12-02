@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringCl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.AnnotatedParameterizedType
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -64,12 +63,12 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices(requestedStart: ServiceStart) {
-        val providerToClazz = getLoadableService(requestedStart)
-            .associateByTo(TreeMap()) { clazz ->
+        getLoadableService(requestedStart)
+            .mapTo(sortedSetOf()) { clazz ->
                 context.serviceProviders.findForType(clazz)
                     ?: throwInternal("Unable to find back service provider for ${clazz.jvmName}")
             }
-        providerToClazz.forEach { (provider, clazz) -> tryGetService(provider, clazz).getOrThrow() }
+            .forEach { provider -> tryGetService<Any>(provider).getOrThrow() }
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
@@ -86,13 +85,18 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
         val provider = context.serviceProviders.findForName(name) ?: return null
+        if (!provider.primaryType.isSubclassOf(requiredType)) return null
+
         return provider.instance?.let { requiredType.safeCast(it) }
     }
 
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForName(name)
             ?: return NO_PROVIDER.toResult("No service or factories found for service name '$name'")
-        return tryGetService(provider, requiredType)
+        if (!provider.primaryType.isSubclassOf(requiredType))
+            return provider.createInvalidTypeError(requiredType)
+
+        return tryGetService(provider)
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
@@ -102,7 +106,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
         val errors: MutableList<ServiceError> = arrayListOf()
         providers.forEach { provider ->
-            tryGetService(provider, clazz)
+            tryGetService<T>(provider)
                 .onService { return this }
                 .onError { errors += it }
         }
@@ -111,7 +115,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <T : Any> tryGetService(provider: ServiceProvider, requiredType: KClass<T>): ServiceResult<T> {
+    private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> {
         val instance = provider.instance as T?
         if (instance != null) {
             return ServiceResult.pass(instance)
@@ -121,11 +125,11 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         if (serviceError != null)
             return ServiceResult.fail(serviceError)
 
-        return createService(provider, requiredType)
+        return createService(provider)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> createService(provider: ServiceProvider, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
+    private fun <T : Any> createService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
@@ -136,12 +140,8 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
                     return result
 
                 val instance = result.getOrThrow()
-                if (!requiredType.isInstance(instance))
-                    return INVALID_TYPE.toResult(
-                        errorMessage = "A service was found but type is incorrect, " +
-                                "requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}",
-                        extraMessage = "provider: ${provider.providerKey}"
-                    )
+                if (!provider.primaryType.isInstance(instance))
+                    throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.providerKey}")
 
                 logger.trace {
                     val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
@@ -153,6 +153,13 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             throw RuntimeException("Unable to create service ${provider.primaryType.simpleNestedName}", e)
         }
     }
+
+    private fun <T : Any> ServiceProvider.createInvalidTypeError(requiredType: KClass<T>): ServiceResult<T> =
+        INVALID_TYPE.toResult(
+            errorMessage = "A service was found but type is incorrect, " +
+                    "requested: ${requiredType.simpleNestedName}, actual: ${this.primaryType.simpleNestedName}",
+            extraMessage = "provider: ${this.providerKey}"
+        )
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
@@ -166,7 +173,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             // Avoid circular dependency, we can't supply ourselves
             .filterNot { it in serviceCreationStack }
             .mapNotNull {
-                val serviceResult = tryGetService(it, clazz)
+                val serviceResult = tryGetService<T>(it)
                 serviceResult.serviceError?.let { serviceError ->
                     val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}):\n${serviceError.toSimpleString()}"
                     if (interfacedServiceErrors.add(warnMessage)) {
@@ -179,6 +186,14 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
         context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
+    }
+
+    override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
+        val provider = context.serviceProviders.findForName(name)
+            ?: return NO_PROVIDER.toError("No service or factories found for service name '$name'")
+        if (!provider.primaryType.isSubclassOf(requiredType))
+            return provider.createInvalidTypeError(requiredType).serviceError
+        return canCreateService(provider)
     }
 
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
