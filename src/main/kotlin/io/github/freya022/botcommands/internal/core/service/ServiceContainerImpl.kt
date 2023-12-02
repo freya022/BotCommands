@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.INVALID_TYPE
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.NO_PROVIDER
@@ -7,22 +8,23 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.findErasureOfAt
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.lang.reflect.AnnotatedParameterizedType
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.safeCast
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
@@ -243,7 +245,10 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
     val name = parameter.findAnnotation<ServiceName>()?.value
     return if (name != null) {
         when (type.jvmErasure) {
-            Lazy::class -> ServiceResult.pass(lazy(name, type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            Lazy::class -> {
+                val (elementErasure, isNullable) = getLazyElementErasure(parameter)
+                ServiceResult.pass(if (isNullable) lazyOrNull(name, elementErasure) else lazy(name, elementErasure))
+            }
             List::class -> {
                 logger.warn { "Using ${annotationRef<ServiceName>()} on a list of interfaced services is ineffective on '${parameter.bestName}' of ${parameter.function.shortSignature}" }
                 ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
@@ -252,9 +257,40 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         }
     } else {
         when (type.jvmErasure) {
-            Lazy::class -> ServiceResult.pass(lazy(type.findErasureOfAt<Lazy<*>>(0).jvmErasure))
+            Lazy::class -> {
+                val (elementErasure, isNullable) = getLazyElementErasure(parameter)
+                ServiceResult.pass(if (isNullable) lazyOrNull(elementErasure) else lazy(elementErasure))
+            }
             List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
             else -> tryGetService(type.jvmErasure)
         }
+    }
+}
+
+private fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
+    // TODO Simplify then https://youtrack.jetbrains.com/issue/KT-63929 is fixed
+
+    // Due to https://youtrack.jetbrains.com/issue/KT-63929
+    // we need to get the annotations from the java type as they are not read by kotlin-reflect
+    val elementType = kParameter.type.arguments[0].type
+        ?: throwUser("Star projections cannot be used in lazily injected service")
+    val function = kParameter.function
+    return if (!function.declaringClass.sourceFile.endsWith(".kt")) {
+        if (function is CallableReference)
+            throwInternal("Cannot find lazy element nullability on a callable reference")
+
+        val parameter = function.javaMethodOrConstructor.parameters[kParameter.index - 1] // -1 for instance parameter
+        val lazyType = parameter.annotatedType as? AnnotatedParameterizedType
+            ?: throwInternal("Unknown annotated type ${parameter.annotatedType.javaClass}")
+        val annotatedElementType = lazyType.annotatedActualTypeArguments.singleOrNull()
+            ?: throwInternal("No single argument in annotated type $lazyType: ${lazyType.annotatedActualTypeArguments.contentToString()}")
+        val annotations = annotatedElementType.annotations
+        val isNullable = annotations.any { it.annotationClass.jvmName.endsWith("Nullable") }
+                || annotations.any { it.annotationClass == Optional::class }
+
+        elementType.jvmErasure to isNullable
+    } else {
+        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotation<Optional>()
+        elementType.jvmErasure to isNullable
     }
 }

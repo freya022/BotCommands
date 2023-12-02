@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import net.dv8tion.jda.api.entities.*
@@ -42,6 +43,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * 1. Only allows [concrete][net.dv8tion.jda.api.entities.channel.concrete] channels, including [Category],
  * but excludes any attribute interface such as [IPositionableChannel].
+ *
+ * Parameter resolvers for services exist by default, and follow the rules described in [@BService][BService].
  *
  * You can also check loaded parameter resolvers in the logs on the `trace` level.
  *
