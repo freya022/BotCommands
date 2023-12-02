@@ -268,7 +268,9 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
 }
 
 private fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
-    // Due to https://youtrack.jetbrains.com/issue/KT-63929/Cant-get-annotations-on-KType-arguments-from-Java-sources
+    // TODO Simplify then https://youtrack.jetbrains.com/issue/KT-63929 is fixed
+
+    // Due to https://youtrack.jetbrains.com/issue/KT-63929
     // we need to get the annotations from the java type as they are not read by kotlin-reflect
     val elementType = kParameter.type.arguments[0].type
         ?: throwUser("Star projections cannot be used in lazily injected service")
