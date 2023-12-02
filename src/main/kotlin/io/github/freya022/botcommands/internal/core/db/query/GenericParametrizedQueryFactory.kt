@@ -22,7 +22,7 @@ internal object GenericParametrizedQueryFactory : ParametrizedQueryFactory<Gener
         }
 
         override fun toSql(): String {
-            val builder = StringBuilder(removeComments(sql))
+            val builder = StringBuilder(removeCommentsAndInline(sql))
 
             var paramIndex = 1
             var builderIndex = 0

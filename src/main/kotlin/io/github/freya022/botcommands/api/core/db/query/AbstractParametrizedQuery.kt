@@ -28,7 +28,7 @@ abstract class AbstractParametrizedQuery(protected val preparedStatement: Prepar
         }
     }
 
-    protected open fun removeComments(sql: String): String {
+    protected open fun removeCommentsAndInline(sql: String): String {
         return sql.lines()
             .map {
                 val endIndex = commentRegex.find(it)?.range?.start ?: it.length
