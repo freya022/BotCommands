@@ -434,6 +434,13 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
+        <!-- Upgrade over JDA's version, -->
+        <!-- not sure why it isn't transitively included once emoji-java was removed in #132 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.0</version>
+        </dependency>
         <dependency>
             <groupId>io.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
@@ -445,20 +452,9 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
-            <groupId>io.github.minndevelopment</groupId>
-            <artifactId>emoji-java</artifactId>
-            <version>5622646ccb</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.json</groupId>
-                    <artifactId>json</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency> <!-- Upgrade dependency used by emoji-java as to avoid vulnerabilities -->
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20230618</version>
+            <groupId>net.fellbaum</groupId>
+            <artifactId>jemoji</artifactId>
+            <version>1.3.3</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
