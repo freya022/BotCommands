@@ -27,10 +27,6 @@ public class SlashDIJava extends ApplicationCommand {
     public void onSlashDi(GuildSlashEvent event,
                           List<ApplicationCommandFilter<?>> filters,
                           Lazy<BlockingDatabase> databaseLazy,
-                          //TODO This is the only annotation with the correct targets, and retention
-                          // Maybe JSpecify annotations can do it too,
-                          // unfortunate that a specific annotation needs to be used,
-                          // it will need to be documented
                           Lazy<@org.checkerframework.checker.nullness.qual.Nullable UnusedInterfacedService> unusableLazy,
                           @ServiceName("firstReadyListenerNope") @Nullable ReadyListener inexistantListener) {
         event.replyFormat("""
