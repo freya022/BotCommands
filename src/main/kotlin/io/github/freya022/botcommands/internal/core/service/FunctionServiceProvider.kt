@@ -12,7 +12,7 @@ internal class FunctionServiceProvider(
     override val name = function.getServiceName()
     override val providerKey = function.getSignature(source = false, qualifiedClass = true, qualifiedTypes = true)
     override val primaryType get() = function.returnType.jvmErasure
-    override val types = function.getServiceTypes(function.returnType.jvmErasure)
+    override val types = function.getServiceTypes(primaryType)
     override val priority = function.getAnnotatedServicePriority()
 
     private var isInstantiable = false

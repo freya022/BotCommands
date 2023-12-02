@@ -91,23 +91,23 @@ internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
     return 0
 }
 
-internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>): Set<KClass<*>> {
+internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
     val explicitTypes = when (val serviceType = findAnnotation<ServiceType>()) {
-        null -> setOf(returnType)
+        null -> setOf(primaryType)
         else -> buildSet(serviceType.types.size + 1) {
-            this += returnType
+            this += primaryType
             this += serviceType.types.onEach {
-                if (!it.isAssignableFrom(returnType)) {
-                    throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${returnType.simpleNestedName}")
+                if (!it.isAssignableFrom(primaryType)) {
+                    throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${primaryType.simpleNestedName}")
                 }
             }
         }
     }
 
-    val interfacedServiceTypes = returnType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
+    val interfacedServiceTypes = primaryType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
     val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes)
     if (existingServiceTypes.isNotEmpty()) {
-        logger.warn { "Instance of ${returnType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
+        logger.warn { "Instance of ${primaryType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
     }
 
     return explicitTypes + interfacedServiceTypes
