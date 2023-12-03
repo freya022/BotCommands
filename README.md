@@ -11,6 +11,9 @@ A Kotlin-first (and Java) framework that makes creating Discord bots a piece of 
 using the [JDA](https://github.com/discord-jda/JDA) library.
 
 ## Features
+The framework being built around events and dependency injection,
+your project can take advantage of that and avoid passing objects around, 
+while also easily being able to use services provided by the framework. 
 
 ### Commands
 * Automatic registration of commands, resolvers, services, etc... with full dependency injection
@@ -47,6 +50,7 @@ using the [JDA](https://github.com/discord-jda/JDA) library.
 * Entirely localizable, from the command declaration to the bot responses
 
 ### Utilities
+  * A PostgreSQL (and H2) database abstraction, with logged queries
   * An event waiter with (multiple) preconditions, timeouts and consumers for every completion state
   * Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (turning `:joy:` into 😂)
   * Paginators and menus of different types (using components!)
