@@ -210,24 +210,42 @@ Building JDA before the framework will result in an error, I strongly recommend 
 
 You can also refer to [the example JDA service](examples/src/main/kotlin/io/github/freya022/bot/Bot.kt).
 
-## New database utils
-A `Database` interface has been added, this is mostly useful for Kotlin users and only serves as a very basic abstraction for transactions.
+## Enhanced database support
+A `Database` service has been added, 
+helping you get a decent abstraction for transactions and reading result rows with ease. 
+`BlockingDatabase` is the equivalent for Java users, with the same features.
 
-You might find helpful how the framework logs the queries going through it, with the timings, if you enable the `TRACE` logging level.
+### H2 Support
+While PostgreSQL is still strongly recommended, H2 is also supported, but requires the PostgreSQL compatibility mode.
+
+This allows you to run an in-memory database, or have it saved to a file, 
+see [`ConnectionSupplier`](src/main/kotlin/io/github/freya022/botcommands/api/core/db/ConnectionSupplier.kt) and [H2 Database connection modes](https://www.h2database.com/html/features.html#connection_modes) for more details.
+
+### Statement logging
+This service helps you create statements that are logged at the class that created the statement. 
+That way, you can enable traces of some of your classes, without having everything else logged.
+
+The logged statements are reconstructed from the parametrized SQL, and then filled with the parameters,
+giving you an executable query, which can be run in a console.
+
+See [`Database`](src/main/kotlin/io/github/freya022/botcommands/api/core/db/Database.kt) for more details.
 
 ### Long transaction reporting
-Additionally, if `BConfig#dumpLongTransactions` is enabled, 
+Additionally, if `BDatabaseConfig#dumpLongTransactions` is enabled, 
 the framework will report transactions taking longer than `ConnectionSupplier#maxTransactionDuration`,
 and will trigger a coroutine / thread dump.
 
-**Note:** Coroutine dumps require `kotlinx-coroutines-debug`, see `BConfig#dumpLongTransactions` for more details.
+**Note:** Coroutine dumps require `kotlinx-coroutines-debug`, see `BDatabaseConfig#dumpLongTransactions` for more details.
 
 ## New components
 The `Components` utility class is now a service, which means you can get it either in your constructor, or in your handler.
 
-As in V2, your components can be set as being usable only once, being able to be used by certain users/with permissions/with roles...
+Like in V2, your components can be set as being usable only once, 
+being able to be used by certain users/with permissions/with roles...
+They can also be constructed using the builder pattern.
 
-The main difference is that you need to set the handler and the timeout handler inside the component DSL, which means that setting a handler and a timeout handler is optional.
+Kotlin users can configure their components using a DSL,
+as well as having the handler, and the timeout handler be optional.
 
 As these handlers are optional, you can still handle them using coroutines, by using `await` on your component/group.
 
@@ -316,3 +334,8 @@ alongside the non-null User, without retrieving.
 
 This is particularly useful for commands that work for both `User`s and `Member`s, 
 but where having a `Member` triggers additional checks, such as in ban commands.
+
+### Emoji library change
+[emoji-java](https://github.com/MinnDevelopment/emoji-java) has been replaced with [JEmoji](https://github.com/felldo/JEmoji),
+providing a more up-to-date emoji list, 
+also allowing dropping `org.json` and fixing issues with emoji indexes, and incorrect fitzpatrick formats.
