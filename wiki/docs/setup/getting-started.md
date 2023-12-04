@@ -138,3 +138,13 @@ by pressing ++ctrl++ twice in IntelliJ, then running:
     ```
 
 This will generate an executable jar, which you should be running using `#!sh java -jar YourBotName.jar`.
+
+## Other resources
+
+### Examples
+
+You can find examples covering parts of the framework [here](https://github.com/freya022/BotCommands/blob/3.X/examples).
+
+### Getting help
+
+Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
