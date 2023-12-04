@@ -106,3 +106,4 @@ nav:
 #      - Conditional instancing: misc/Conditional-instancing.md
 #      - Using instance suppliers: misc/Instance-suppliers.md
 #      - Using the event waiter: misc/The-event-waiter.md
+#  - Docs: docs #TODO enable with KDocs once published
