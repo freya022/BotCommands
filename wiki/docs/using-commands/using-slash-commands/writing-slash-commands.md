@@ -36,6 +36,7 @@ where you can set the scope, name, description, etc...,
 while the declaring class must extend `ApplicationCommand`.
 
 !!! question "Why do I need to extend `ApplicationCommand`?"
+
     As a limitation of annotated commands, 
     you are required to extend this class as it allows the framework to ask your commands for stuff,
     like what guilds a command should be pushed to, getting a value generator for one of their options,
@@ -56,7 +57,7 @@ while the declaring class must extend `ApplicationCommand`.
 
 ### Adding options
 
-Options can simply be added with a parameter annotated with `#!java @SlashOption`.
+Options can be added with a parameter annotated with `#!java @SlashOption`.
 
 All supported types are documented under `ParameterResolver`, and [other types can be added](#adding-option-resolvers).
 
@@ -125,7 +126,7 @@ Application commands can be added with a public method annotated with `#!java @A
 where the first parameter is a `GlobalApplicationCommandManager` (for global / guild-only global) commands, 
 or `GuildApplicationCommandManager` for guild commands.
 
-You can then simply use the `slashCommand` method, give it the command name, the command method, 
+You can then use the `slashCommand` method, give it the command name, the command method, 
 and then configure your command.
 
 !!! tip
@@ -141,7 +142,7 @@ and then configure your command.
 
 ### Adding options
 
-Options can simply be added with a parameter and declaring it using `option` in your command builder,
+Options can be added with a parameter and declaring it using `option` in your command builder,
 where the `declaredName` is the name of your parameter, the block will let you change the description, choices, etc.
 
 All supported types are documented under `ParameterResolver`, and [other types can be added](#adding-option-resolvers).
@@ -212,7 +213,7 @@ and have your localization bundle registered with `BApplicationConfigBuilder#add
     }
     ```
 
-    You can add the bundle by simply calling `BApplicationConfigBuilder#addLocalizations("Commands")`.
+    You can add the bundle by calling `BApplicationConfigBuilder#addLocalizations("Commands")`.
 
 ## Using predefined choices
 
@@ -306,9 +307,9 @@ The Kotlin DSL also lets you do more, for example, using loops to generate comma
 It also allows you to create more complex options, such as having multiple options in one parameter.
 
 !!! info "Distinction between parameters and options"
-    Method parameters are what you expect, simply a value in your method,
+    Method parameters are what you expect, a simple value in your method,
     but for the framework, parameters might be a complex object (composed of multiple options),
-    or simply a single option, whether it's an injected service, a Discord option or a generated value.
+    or a single option, whether it's an injected service, a Discord option or a generated value.
 
     i.e., A parameter might be a single or multiple options, but an option is always a single value.
 
@@ -318,10 +319,10 @@ These are parameters composed of multiple options, of any type,
 which gets merged into one parameter by using an aggregator.
 
 !!! tip
-    This is how varargs are implemented, they are simply a loop that generate N options, where X options are optional.
+    This is how varargs are implemented, they are a loop that generates N options, where X options are optional.
 
 !!! example "Creating an aggregated parameter"
-    Here is how you can use aggregated parameters to create an message delete timeframe, out of a `Long` and a `TimeUnit`.
+    Here is how you can use aggregated parameters to create a message delete timeframe, out of a `Long` and a `TimeUnit`.
 
     ```kotlin title="The aggregated object"
     --8<-- "wiki/commands/slash/SlashBan.kt:aggregated_object-kotlin"
