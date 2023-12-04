@@ -1,5 +1,6 @@
 package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
@@ -39,11 +40,11 @@ class SlashCreateTimeKotlin : ApplicationCommand() {
     }
 
     @JDASlashCommand(name = "create_time", description = "Shows the creation time of this command")
-    fun onSlashCreateTime(
+    suspend fun onSlashCreateTime(
         event: GuildSlashEvent,
         @GeneratedOption timestamp: Instant
     ) {
-        event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").queue()
+        event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").await()
     }
 }
 // --8<-- [end:create_time-kotlin]
@@ -52,8 +53,8 @@ class SlashCreateTimeKotlin : ApplicationCommand() {
 // --8<-- [start:create_time-kotlin_dsl]
 @Command
 class SlashCreateTimeKotlinDsl {
-    fun onSlashCreateTime(event: GuildSlashEvent, timestamp: Instant) {
-        event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").queue()
+    suspend fun onSlashCreateTime(event: GuildSlashEvent, timestamp: Instant) {
+        event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").await()
     }
 
     @AppDeclaration

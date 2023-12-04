@@ -1,5 +1,6 @@
 package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -32,13 +33,13 @@ class SlashConvertKotlin : ApplicationCommand() {
     }
 
     @JDASlashCommand(name = "convert", description = "Convert time to another unit")
-    fun onSlashConvert(
+    suspend fun onSlashConvert(
         event: GuildSlashEvent,
         @SlashOption(description = "The time to convert") time: Long,
         @SlashOption(description = "The unit to convert from") from: TimeUnit,
         @SlashOption(description = "The unit to convert to") to: TimeUnit
     ) {
-        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
+        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").await()
     }
 }
 // --8<-- [end:convert-kotlin]
@@ -47,8 +48,8 @@ class SlashConvertKotlin : ApplicationCommand() {
 // --8<-- [start:convert-kotlin_dsl]
 @Command
 class SlashConvertKotlinDsl {
-    fun onSlashConvert(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
-        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
+    suspend fun onSlashConvert(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
+        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").await()
     }
 
     @AppDeclaration

@@ -1,5 +1,6 @@
 package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
@@ -14,8 +15,8 @@ import io.github.freya022.wiki.switches.WikiCommandProfile
 @Command
 class SlashSayKotlin : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Says something")
-    fun onSlashSay(event: GuildSlashEvent, @SlashOption(description = "What to say") content: String) {
-        event.reply(content).queue()
+    suspend fun onSlashSay(event: GuildSlashEvent, @SlashOption(description = "What to say") content: String) {
+        event.reply(content).await()
     }
 }
 // --8<-- [end:say-kotlin]
@@ -24,8 +25,8 @@ class SlashSayKotlin : ApplicationCommand() {
 // --8<-- [start:say-kotlin_dsl]
 @Command
 class SlashSayKotlinDsl {
-    fun onSlashSay(event: GuildSlashEvent, content: String) {
-        event.reply(content).queue()
+    suspend fun onSlashSay(event: GuildSlashEvent, content: String) {
+        event.reply(content).await()
     }
 
     @AppDeclaration

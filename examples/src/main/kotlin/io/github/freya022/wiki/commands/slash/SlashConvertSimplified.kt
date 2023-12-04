@@ -1,5 +1,6 @@
 package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
@@ -15,13 +16,13 @@ import java.util.concurrent.TimeUnit
 @Command
 class SlashConvertSimplifiedKotlin : ApplicationCommand() {
     @JDASlashCommand(name = "convert_simplified", description = "Convert time to another unit")
-    fun onSlashConvertSimplified(
+    suspend fun onSlashConvertSimplified(
         event: GuildSlashEvent,
         @SlashOption(description = "The time to convert") time: Long,
         @SlashOption(description = "The unit to convert from", usePredefinedChoices = true) from: TimeUnit,
         @SlashOption(description = "The unit to convert to", usePredefinedChoices = true) to: TimeUnit
     ) {
-        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
+        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").await()
     }
 }
 // --8<-- [end:convert_simplified-kotlin]
@@ -30,8 +31,8 @@ class SlashConvertSimplifiedKotlin : ApplicationCommand() {
 // --8<-- [start:convert_simplified-kotlin_dsl]
 @Command
 class SlashConvertSimplifiedKotlinDsl {
-    fun onSlashConvertSimplified(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
-        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").queue()
+    suspend fun onSlashConvertSimplified(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
+        event.reply("${to.convert(time, from)} ${to.name.lowercase()}").await()
     }
 
     @AppDeclaration

@@ -1,5 +1,6 @@
 package io.github.freya022.wiki.commands.slash
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
@@ -14,8 +15,8 @@ import io.github.freya022.wiki.switches.WikiCommandProfile
 @Command
 class SlashSayDefaultDescriptionKotlin : ApplicationCommand() {
     @JDASlashCommand(name = "say_default_description")
-    fun onSlashSayDefaultDescription(event: GuildSlashEvent, @SlashOption content: String) {
-        event.reply(content).queue()
+    suspend fun onSlashSayDefaultDescription(event: GuildSlashEvent, @SlashOption content: String) {
+        event.reply(content).await()
     }
 }
 // --8<-- [end:say_default_description-kotlin]
@@ -24,8 +25,8 @@ class SlashSayDefaultDescriptionKotlin : ApplicationCommand() {
 // --8<-- [start:say_default_description-kotlin_dsl]
 @Command
 class SlashSayDefaultDescriptionKotlinDsl {
-    fun onSlashSayDefaultDescription(event: GuildSlashEvent, content: String) {
-        event.reply(content).queue()
+    suspend fun onSlashSayDefaultDescription(event: GuildSlashEvent, content: String) {
+        event.reply(content).await()
     }
 
     @AppDeclaration

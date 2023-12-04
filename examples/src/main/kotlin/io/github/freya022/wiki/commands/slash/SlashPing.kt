@@ -19,7 +19,7 @@ class SlashPingKotlin : ApplicationCommand() {
         event.deferReply(true).queue()
 
         val ping = event.jda.getRestPing().await()
-        event.hook.editOriginal("Pong! $ping ms").queue()
+        event.hook.editOriginal("Pong! $ping ms").await()
     }
 }
 // --8<-- [end:ping-kotlin]
@@ -32,7 +32,7 @@ class SlashPingKotlinDsl {
         event.deferReply(true).queue()
 
         val ping = event.jda.getRestPing().await()
-        event.hook.editOriginal("Pong! $ping ms").queue()
+        event.hook.editOriginal("Pong! $ping ms").await()
     }
 
     @AppDeclaration
