@@ -91,4 +91,4 @@ nav:
       - Using instance suppliers: misc/Instance-suppliers.md
       - Using the event waiter: misc/The-event-waiter.md
   - Logging: Logging.md
-  - Javadocs: docs
+  - Javadocs: https://freya022.github.io/BotCommands/docs
