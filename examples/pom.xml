@@ -14,7 +14,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <kotlin.version>1.9.20</kotlin.version>
+        <kotlin.version>1.9.21</kotlin.version>
         <kotlin.coroutine.version>1.7.3</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.17</version>
+            <version>5.0.0-beta.18</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>3.0.0-alpha.8</version>
+            <version>3.0.0-alpha.9</version>
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->
@@ -144,25 +144,25 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.11</version>
+            <version>1.4.14</version>
         </dependency>
 
         <!-- Needed for components, otherwise optional - You must use PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.6.0</version>
+            <version>42.7.0</version>
         </dependency>
         <!-- BotCommands should provide upgrade scripts detectable by flyway, so you don't need to upgrade manually -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>10.0.0</version>
+            <version>10.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>10.0.0</version>
+            <version>10.1.0</version>
         </dependency>
         <!-- Strongly recommended to pool SQL connections -->
         <dependency>
