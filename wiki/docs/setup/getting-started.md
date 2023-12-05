@@ -1,5 +1,5 @@
 This tutorial assumes you know how to use your IDE (preferably IntelliJ IDEA), using Maven or Gradle,
-and how to install PostgreSQL.
+and (optionally) how to install PostgreSQL.
 
 ## Using the bot template
 
@@ -79,7 +79,15 @@ You can then update the package of the template, so it matches your group ID.
     you are required to use PostgreSQL, and so the template is already configured for it,
     including a connection pool (HikariCP), and a database migrator (Flyway).
 
-[//]: # (TODO update depending on SQLite compatibility)
+    If you cannot use PostgreSQL, you can use H2 by:
+
+    1. Replacing the PostgreSQL driver with the [H2 driver](https://github.com/h2database/h2database#downloads) in `pom.xml`
+    2. Replacing the JDBC URL in `DatabaseSource` with:
+        ```
+        jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+        ```
+        The URL can be modified to use a file, more details in `ConnectionSupplier`.
+    3. Removing the username/password fields
 
 #### Configuring the bot
 
