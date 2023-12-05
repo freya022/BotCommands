@@ -84,9 +84,10 @@ nav:
       - Getting started: setup/getting-started.md
       - Logging: setup/logging.md
   - Using commands:
+      - Common details: using-commands/common-command-details.md
 #      - Writing prefixed commands: using-commands/Prefixed-commands.md
-      - Using slash commands:
-        - Writing slash commands: using-commands/using-slash-commands/writing-slash-commands.md
+      - Slash commands:
+        - Creating slash commands: using-commands/application-commands/writing-slash-commands.md
 #        - Updating application commands: using-commands/using-slash-commands/Updating-slash-commands.md
 #        - Managing guild application commands: using-commands/using-slash-commands/Managing-application-commands.md
 #      - Writing context menu commands: using-commands/Context-menu-commands.md

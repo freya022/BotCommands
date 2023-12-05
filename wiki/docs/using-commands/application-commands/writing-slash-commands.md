@@ -1,37 +1,19 @@
-# Writing slash commands
+# Creating slash commands
 
 Slash commands are the new way of defining commands, even though there are limitations with them, 
 we do have some advantages such as being easier to fill in, choices and auto-completion.
 
 ## Defining the command method
 
-Whether you're using annotated or DSL commands, you will have to write a method, 
-which holds the user inputs as parameters.
+!!! tip
+    Make sure you read the [common command requirements](../common-command-details.md#defining-the-command-method) first!
 
-The method must be public, non-static, with the first parameter being `GlobalSlashEvent` for global commands
+In addition to the common requirements, the first parameter must be `GlobalSlashEvent` for global commands
 or `GuildSlashEvent` for guild commands, or guild-only global commands (default).
-
-Lastly, any class containing commands will need to be annotated with `#!java @Command`.
-
-The command methods support coroutines, as well as nullable options, and optionals.
-
-??? example "A method with everything mentioned above"
-    === "Kotlin"
-        ```kotlin
-        suspend fun example(event: GuildSlashEvent, string: String, user: User?, integer: Int = 42) {}    
-        ```
-
-    === "Java"
-        ```java
-        public void example(@NotNull GuildSlashEvent event, @NotNull String string, @Nullable User user) {}
-        ```
 
 ## Annotated commands
 
-Annotated commands are easy to create, but generally are hard to read, cannot be made dynamically,
-and require usage of other methods for other features, such as retrieving choices.
-
-The command method must be annotated with `#!java @JDASlashCommand`,
+Annotated command methods must be annotated with `#!java @JDASlashCommand`,
 where you can set the scope, name, description, etc..., 
 while the declaring class must extend `ApplicationCommand`.
 
@@ -118,11 +100,7 @@ As always, make sure to check against the command path as well as the option's d
 
 ## DSL commands (Kotlin)
 
-DSL commands were added in V3 to help create commands dynamically, 
-whether it's to let the user filter commands themselves, or adding subcommands/options in a loop; 
-you can almost do anything you want while keeping the simplicity of your command method.
-
-Application commands can be added with a public method annotated with `#!java @AppDeclaration`,
+Commands can be DSL-declared in public method annotated with `#!java @AppDeclaration`,
 where the first parameter is a `GlobalApplicationCommandManager` (for global / guild-only global) commands, 
 or `GuildApplicationCommandManager` for guild commands.
 
