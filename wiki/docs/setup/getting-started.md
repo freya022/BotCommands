@@ -128,7 +128,7 @@ You can then update the package of the template, so it matches your group ID.
 
 #### Making the JAR
 
-During development, simply run the main class in your IDE.
+During development, run the main class in your IDE.
 
 For your production environment, making a JAR is as simple as opening "Run Anything"
 by pressing ++ctrl++ twice in IntelliJ, then running:
