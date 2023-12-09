@@ -59,6 +59,8 @@ All supported types are documented under `ParameterResolver`, and [other types c
     but can also be deduced from the parameter name, this is natively supported in Kotlin,
     but for Java, you will need to [enable parameter names](../Inferred-option-names.md) on the Java compiler.
 
+[//]: # (TODO add @MentionsString)
+
 #### Using choices
 
 You must override `getOptionChoices` in order to return a list of choices, 
