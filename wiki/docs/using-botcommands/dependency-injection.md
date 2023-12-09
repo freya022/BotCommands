@@ -16,7 +16,13 @@ and allows switching implementations in a completely transparent manner.
     You can create an implementation of this interface, per database, enabling you to switch your database, 
     for example, using a configuration file, without changing anything else in your code.
 
-??? tip "2.X Migration"
+??? info "2.X Migration"
+
+    All singletons / classes with static methods were moved as services, including:
+
+    - `Components`
+    - `EventWaiter`
+    - `Localization`
 
     If you were using `ExtensionsBuilder#registerConstructorParameter(Class<T>, ConstructorParameterSupplier<T>)` to get objects in commands, 
     it is basically the same, except in a much more complete framework, and without having to declare everything with this method.
