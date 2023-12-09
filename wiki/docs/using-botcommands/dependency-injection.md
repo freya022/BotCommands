@@ -163,7 +163,7 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
 
 ### Conditional services
 Some services may not always be instantiable, 
-some may require soft dependencies (dependencies that, when unavailable, make the service not instantiated),
+some may require soft dependencies (prevents instantiation if a service is unavailable, without failing),
 while some run a set of conditions to determine if a service can be instantiated.
 
 Services that are not instantiable will not be created at startup, 
