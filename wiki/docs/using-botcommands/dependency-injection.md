@@ -244,6 +244,51 @@ The implementation must have a no-arg constructor, or be an `#!kotlin object`
         ```
 
 ### Interfaced services
+Interfaced services are interfaces, or abstract class, marked by `#!java @InterfacedService`,
+they must be implemented by a service.
+
+In addition to the service's type,
+implementations of these annotated interfaces have the interface's type automatically added.
+
+Some interfaced services may only be implemented once, some may allow multiple implementations,
+if an interfaced service only accepts one implementation, multiple implementations can exist,
+but only one must be instantiable.
+
+!!! tip
+
+    You can implement multiple interfaced services at once, 
+    which may be useful for text, application and component filters.
+
+??? info "2.X Migration"
+
+    Most methods in `CommandsBuilder` accepting interfaces, implementations or lambdas, were moved to interfaced services:
+
+    **Global:**
+
+    - `CommandsBuilder#setComponentManager`: Removed, using components must be enabled in `BComponentsConfigBuilder#useComponents`, and a `ConnectionSupplier` service be present
+    - `CommandsBuilder#setSettingsProvider`: Needs to implement `SettingsProvider`
+    - `CommandsBuilder#setUncaughtExceptionHandler`: Needs to implement `GlobalExceptionHandler`
+    - `CommandsBuilder#setDefaultEmbedFunction`: Needs to implement `DefaultEmbedSupplier` and `DefaultEmbedFooterIconSupplier`
+
+    **Text commands:**
+
+    - `TextCommandBuilder#addTextFilter`: Needs to implement `TextCommandFilter`, and `TextCommandRejectionHandler`
+    - `TextCommandBuilder#setHelpBuilderConsumer`: Needs to implement `HelpBuilderConsumer`
+
+    **Application commands:**
+
+    - `ApplicationCommandBuilder#addApplicationFilter`: Needs to implement `ApplicationCommandFilter`, and `ApplicationCommandRejectionHandler`
+    - `ApplicationCommandBuilder#addComponentFilter`: Needs to implement `ComponentCommandFilter`, and `ComponentCommandRejectionHandler`
+
+    **Extensions:**
+
+    - `ExtensionsBuilder#registerAutocompletionTransformer`: Needs to implement `AutocompleteTransformer`
+    - `ExtensionsBuilder#registerCommandDependency`: Replaced with standard dependency injection
+    - `ExtensionsBuilder#registerConstructorParameter`: Replaced with standard dependency injection
+    - `ExtensionsBuilder#registerCustomResolver`: Needs to implement `ClassParameterResolver` and `ICustomResolver`
+    - `ExtensionsBuilder#registerDynamicInstanceSupplier`: Needs to implement `DynamicSupplier`
+    - `ExtensionsBuilder#registerInstanceSupplier`: Replaced by service factories
+    - `ExtensionsBuilder#registerParameterResolver`: Needs to implement `ClassParameterResolver` and the resolver interface of your choices
 
 ### Service properties
 
