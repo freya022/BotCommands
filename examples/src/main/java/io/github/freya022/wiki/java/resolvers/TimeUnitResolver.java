@@ -1,6 +1,7 @@
-package io.github.freya022.wiki.resolvers;
+package io.github.freya022.wiki.java.resolvers;
 
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.Resolvers;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
@@ -19,15 +20,16 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+@ServiceName("timeUnitResolverJava")
 @WikiLanguage(WikiLanguage.Language.JAVA)
 @WikiDetailProfile(WikiDetailProfile.Profile.DETAILED)
 // --8<-- [start:time_unit_resolver-detailed-java]
 @Resolver
-public class TimeUnitResolverJava
-        extends ClassParameterResolver<TimeUnitResolverJava, TimeUnit>
-        implements SlashParameterResolver<TimeUnitResolverJava, TimeUnit> {
+public class TimeUnitResolver
+        extends ClassParameterResolver<TimeUnitResolver, TimeUnit>
+        implements SlashParameterResolver<TimeUnitResolver, TimeUnit> {
 
-    public TimeUnitResolverJava() {
+    public TimeUnitResolver() {
         super(TimeUnit.class);
     }
 

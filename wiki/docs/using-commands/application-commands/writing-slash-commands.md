@@ -34,7 +34,7 @@ while the declaring class must extend `ApplicationCommand`.
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashPingJava.java:ping-java"
+        --8<-- "wiki/java/commands/slash/SlashPing.java:ping-java"
         ```
 
 ### Adding options
@@ -51,7 +51,7 @@ All supported types are documented under `ParameterResolver`, and [other types c
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashSayJava.java:say-java"
+        --8<-- "wiki/java/commands/slash/SlashSay.java:say-java"
         ```
 
 !!! tip "Inferred option names"
@@ -74,7 +74,7 @@ be careful to check against the command path as well as the option's display nam
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashConvertJava.java:convert-java"
+        --8<-- "wiki/java/commands/slash/SlashConvert.java:convert-java"
         ```
 
 As you can see, despite the short choice list, 
@@ -97,7 +97,7 @@ As always, make sure to check against the command path as well as the option's d
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashCreateTimeJava.java:create_time-java"
+        --8<-- "wiki/java/commands/slash/SlashCreateTime.java:create_time-java"
         ```
 
 ## DSL commands (Kotlin)
@@ -182,7 +182,7 @@ and have your localization bundle registered with `BApplicationConfigBuilder#add
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashSayDefaultDescriptionJava.java:say_default_description-java"
+        --8<-- "wiki/java/commands/slash/SlashSayDefaultDescription.java:say_default_description-java"
         ```
 
 !!! example "Adding the root localization bundle"
@@ -218,7 +218,7 @@ All you now need to do is enable `usePredefinedChoices` on your option.
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashConvertSimplifiedJava.java:convert_simplified-java"
+        --8<-- "wiki/java/commands/slash/SlashConvertSimplified.java:convert_simplified-java"
         ```
 
 ## Adding option resolvers
@@ -252,7 +252,7 @@ The first type parameter is the type of your resolver implementation, and the se
 
     === "Java"
         ```java
-        --8<-- "wiki/resolvers/TimeUnitResolverJava.java:time_unit_resolver-detailed-java"
+        --8<-- "wiki/java/resolvers/TimeUnitResolver.java:time_unit_resolver-detailed-java"
         ```
     
     As you can see, this defines the slash command's option to be a string, 
@@ -277,7 +277,7 @@ all you need to do is declare a service factory with `#!java @Resolver` and use 
     === "Java"
         ```java
         public class TimeUnitResolverSimplifiedJava {
-        --8<-- "wiki/resolvers/TimeUnitResolverSimplifiedJava.java:time_unit_resolver-simplified-java"
+        --8<-- "wiki/java/resolvers/TimeUnitResolverSimplified.java:time_unit_resolver-simplified-java"
         ```
         As this functions as a service factory, the method needs to be static.
 

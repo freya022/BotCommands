@@ -1,4 +1,4 @@
-package io.github.freya022.wiki.commands.slash;
+package io.github.freya022.wiki.java.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -19,7 +19,7 @@ import java.time.Instant;
 @WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:create_time-java]
 @Command
-public class SlashCreateTimeJava extends ApplicationCommand {
+public class SlashCreateTime extends ApplicationCommand {
     @NotNull
     @Override
     public ApplicationGeneratedValueSupplier getGeneratedValueSupplier(

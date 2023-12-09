@@ -1,4 +1,4 @@
-package io.github.freya022.wiki.commands.slash;
+package io.github.freya022.wiki.java.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:convert_simplified-java]
 @Command
-public class SlashConvertSimplifiedJava extends ApplicationCommand {
+public class SlashConvertSimplified extends ApplicationCommand {
     @JDASlashCommand(name = "convert_simplified", description = "Convert time to another unit")
     public void onSlashTimeInSimplified(
             GuildSlashEvent event,

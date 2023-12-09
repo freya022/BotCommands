@@ -1,4 +1,4 @@
-package io.github.freya022.wiki.commands.slash;
+package io.github.freya022.wiki.java.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:convert-java]
 @Command
-public class SlashConvertJava extends ApplicationCommand {
+public class SlashConvert extends ApplicationCommand {
     @NotNull
     @Override
     public List<Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
