@@ -123,6 +123,44 @@ they accept other services as parameters and define a service with the method's 
 In addition to the package requirement,
 they must be annotated with `#!java @BService`, be in a service, or in an `#!kotlin object`, or be a static method.
 
+??? example
+
+    === "Java"
+        ```java
+        public class Config {
+            private static Config INSTANCE = null;
+
+            /* */
+
+            // Service factory, registers as "Config" (as it is the return type)
+            @BService
+            public static Config getInstance() {
+                if (INSTANCE == null) {
+                    // Of course here you would load the config from a file
+                    INSTANCE = new Config();
+                }
+                
+                return INSTANCE;
+            }
+        }
+        ```
+
+    === "Kotlin"
+        ```kotlin
+        class Config {
+            /* */
+
+            companion object {
+                // Service factory, registers as "Config" (as it is the return type)
+                @get:BService
+                val instance: Config by lazy {
+                    // Of course here you would load the config from a file
+                    Config()
+                }                
+            }
+        }
+        ```
+
 ### Conditional services
 Some services may not always be instantiable, 
 some may require soft dependencies (dependencies that, when unavailable, make the service not instantiated),
