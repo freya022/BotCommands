@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.parameters.Resolvers;
-import io.github.freya022.wiki.switches.WikiCommandProfile;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import org.jetbrains.annotations.NotNull;

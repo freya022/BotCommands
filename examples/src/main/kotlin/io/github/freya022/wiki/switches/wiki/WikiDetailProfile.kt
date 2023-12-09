@@ -1,4 +1,4 @@
-package io.github.freya022.wiki.switches
+package io.github.freya022.wiki.switches.wiki
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker

@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.Application
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
-import io.github.freya022.wiki.switches.WikiCommandProfile;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jetbrains.annotations.NotNull;

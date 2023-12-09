@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import io.github.freya022.wiki.switches.WikiCommandProfile;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 
 @WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:ping-java]

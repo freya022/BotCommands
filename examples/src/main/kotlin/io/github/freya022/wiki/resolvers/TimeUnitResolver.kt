@@ -8,8 +8,8 @@ import io.github.freya022.botcommands.api.parameters.enumResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.toHumanName
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.wiki.switches.WikiDetailProfile
-import io.github.freya022.wiki.switches.WikiLanguage
+import io.github.freya022.wiki.switches.wiki.WikiDetailProfile
+import io.github.freya022.wiki.switches.wiki.WikiLanguage
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
