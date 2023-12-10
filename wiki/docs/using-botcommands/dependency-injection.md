@@ -109,7 +109,7 @@ and allows switching implementations in a completely transparent manner.
     
             No specific builder code required!
 
-## Creating a service
+## Creating services
 To register a class as a service, add `#!java @BService` to your class declaration.
 
 `#!java @BService` is the base annotation to register a service, 
@@ -128,6 +128,10 @@ they accept other services as parameters and define a service with the method's 
 
 In addition to the package requirement,
 they must be annotated with `#!java @BService`, be in a service, or in an `#!kotlin object`, or be a static method.
+
+!!! note "Terminology"
+
+    Classes registered as services, and service factories, are service providers.
 
 ??? example
 
@@ -291,14 +295,31 @@ but only one must be instantiable.
     - `ExtensionsBuilder#registerParameterResolver`: Needs to implement `ClassParameterResolver` and the resolver interface of your choices
 
 ### Service properties
+Service providers can have names, additional registered types, and an instantiation priority.
 
 #### Service names
+Named services may be useful if you have multiple services of the same type, but need to get a specific one.
+
+The name is either defined by using `#!java @ServiceName`, or with `BService#name` on the service provider.
+
+!!! example
+
+    You can have a caching `HttpClient` named `cachingHttpClient`, while the usual client uses the default name.
 
 #### Service types
+In addition to the type of the service provider, 
+`#!java @ServiceType` enables you to register a service as a supertype.
 
 #### Service priority
+Service priorities control how service providers are sorted.
 
-## Retrieving a service
+A higher priority means that the service will be loaded first,
+or that an interfaced service will appear first when [requesting interfaced services](#interfaced-services-1).
+
+The priority is either defined by using `#!java @ServicePriority`, or with `BService#priority` on the service provider, 
+see their documentation to learn what how service providers are sorted.
+
+## Retrieving services
 
 ### Named services
 
