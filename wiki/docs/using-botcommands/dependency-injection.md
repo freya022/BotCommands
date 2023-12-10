@@ -326,6 +326,58 @@ or the service factory's parameters.
 
 Named services can be retrieved by using `#!java @ServiceName` on the parameter.
 
+!!! tip
+
+    You can also get services manually with `BContext` or `ServiceContainer`, the latter has all methods available, 
+    including Kotlin extensions.
+
+!!! example
+
+    === "Java"
+        ```java
+        @BService // Enables the service to request services and be requested
+        public class TagDatabase { /* */ }
+        ```
+
+        ```java
+        @Command // Enables the command to request services and be requested
+        public class TagCommand {
+            private final Component components;
+            private final TagDatabase tagDatabase;
+            
+            public TagCommand(
+                // You can even request framework services, as long as they are annotated with @BService or @InterfacedService
+                Component components,
+                // and your own services
+                TagDatabase tagDatabase
+            ) {
+                this.components = components;
+                this.tagDatabase = tagDatabase;
+            }
+
+            /* */
+        }
+        ```                
+
+    === "Kotlin"
+        ```kotlin
+        @BService // Enables the service to request services and be requested
+        class TagDatabase { /* */ }
+        ```
+
+        ```kotlin
+        @Command // Enables the command to request services and be requested
+        class TagCommand(
+            // You can even request framework services, as long as they are annotated with @BService or @InterfacedService
+            // Here I've named it "componentsService" because "components" might conflict with some JDA-KTX builders
+            private val componentsService: Components,
+            // and your own services
+            private val tagDatabase: TagDatabase
+        ) {
+            /* */
+        }
+        ```
+
 ### Interfaced services
 A list which the element type is an interfaced service can be requested,
 the list will then contain all instantiable instances with the specified type.
