@@ -79,6 +79,15 @@ class BlockingPreparedStatement internal constructor(preparedStatement: Prepared
         return DBResult(preparedStatement.executeQuery())
     }
 
+    /**
+     * Executes the SQL statement in this PreparedStatement object.
+     *
+     * @see PreparedStatement.executeQuery
+     */
+    override fun executeQuery(): DBResult {
+        return DBResult(preparedStatement.executeQuery())
+    }
+
     // region execute
 
     @Deprecated("This is never usable as this is a prepared statement", level = DeprecationLevel.ERROR)
