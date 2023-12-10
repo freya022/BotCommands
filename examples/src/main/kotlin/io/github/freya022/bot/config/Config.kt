@@ -19,6 +19,13 @@ data class Config(val token: String,
                   val testGuildIds: List<Long>,
                   val databaseConfig: DatabaseConfig
 ) {
+    // Wiki configs
+    @get:JvmName("areTagsEnabled")
+    val enableTags: Boolean get() = false
+
+    @get:JvmName("isDevModeEnabled")
+    val enableDevMode: Boolean get() = false
+
     companion object {
         private val logger = KotlinLogging.logger { }
 

@@ -1,15 +1,15 @@
-package io.github.freya022.wiki.commands.slash;
+package io.github.freya022.wiki.java.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import io.github.freya022.wiki.switches.WikiCommandProfile;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 
 @WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:ping-java]
 @Command
-public class SlashPingJava extends ApplicationCommand {
+public class SlashPing extends ApplicationCommand {
     // Default scope is global, guild-only (GUILD_NO_DM)
     @JDASlashCommand(name = "ping", description = "Pong!")
     public void onSlashPing(GuildSlashEvent event) {

@@ -1,37 +1,19 @@
-# Writing slash commands
+# Creating slash commands
 
 Slash commands are the new way of defining commands, even though there are limitations with them, 
 we do have some advantages such as being easier to fill in, choices and auto-completion.
 
 ## Defining the command method
 
-Whether you're using annotated or DSL commands, you will have to write a method, 
-which holds the user inputs as parameters.
+!!! tip
+    Make sure you read the [common command requirements](../common-command-details.md#defining-the-command-method) first!
 
-The method must be public, non-static, with the first parameter being `GlobalSlashEvent` for global commands
+In addition to the common requirements, the first parameter must be `GlobalSlashEvent` for global commands
 or `GuildSlashEvent` for guild commands, or guild-only global commands (default).
-
-Lastly, any class containing commands will need to be annotated with `#!java @Command`.
-
-The command methods support coroutines, as well as nullable options, and optionals.
-
-??? example "A method with everything mentioned above"
-    === "Kotlin"
-        ```kotlin
-        suspend fun example(event: GuildSlashEvent, string: String, user: User?, integer: Int = 42) {}    
-        ```
-
-    === "Java"
-        ```java
-        public void example(@NotNull GuildSlashEvent event, @NotNull String string, @Nullable User user) {}
-        ```
 
 ## Annotated commands
 
-Annotated commands are easy to create, but generally are hard to read, cannot be made dynamically,
-and require usage of other methods for other features, such as retrieving choices.
-
-The command method must be annotated with `#!java @JDASlashCommand`,
+Annotated command methods must be annotated with `#!java @JDASlashCommand`,
 where you can set the scope, name, description, etc..., 
 while the declaring class must extend `ApplicationCommand`.
 
@@ -52,7 +34,7 @@ while the declaring class must extend `ApplicationCommand`.
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashPingJava.java:ping-java"
+        --8<-- "wiki/java/commands/slash/SlashPing.java:ping-java"
         ```
 
 ### Adding options
@@ -69,13 +51,15 @@ All supported types are documented under `ParameterResolver`, and [other types c
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashSayJava.java:say-java"
+        --8<-- "wiki/java/commands/slash/SlashSay.java:say-java"
         ```
 
 !!! tip "Inferred option names"
     Display names of options can be set on the annotation,
     but can also be deduced from the parameter name, this is natively supported in Kotlin,
     but for Java, you will need to [enable parameter names](../Inferred-option-names.md) on the Java compiler.
+
+[//]: # (TODO add @MentionsString)
 
 #### Using choices
 
@@ -90,7 +74,7 @@ be careful to check against the command path as well as the option's display nam
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashConvertJava.java:convert-java"
+        --8<-- "wiki/java/commands/slash/SlashConvert.java:convert-java"
         ```
 
 As you can see, despite the short choice list, 
@@ -113,16 +97,12 @@ As always, make sure to check against the command path as well as the option's d
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashCreateTimeJava.java:create_time-java"
+        --8<-- "wiki/java/commands/slash/SlashCreateTime.java:create_time-java"
         ```
 
 ## DSL commands (Kotlin)
 
-DSL commands were added in V3 to help create commands dynamically, 
-whether it's to let the user filter commands themselves, or adding subcommands/options in a loop; 
-you can almost do anything you want while keeping the simplicity of your command method.
-
-Application commands can be added with a public method annotated with `#!java @AppDeclaration`,
+Commands can be DSL-declared in a public method annotated with `#!java @AppDeclaration`,
 where the first parameter is a `GlobalApplicationCommandManager` (for global / guild-only global) commands, 
 or `GuildApplicationCommandManager` for guild commands.
 
@@ -202,7 +182,7 @@ and have your localization bundle registered with `BApplicationConfigBuilder#add
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashSayDefaultDescriptionJava.java:say_default_description-java"
+        --8<-- "wiki/java/commands/slash/SlashSayDefaultDescription.java:say_default_description-java"
         ```
 
 !!! example "Adding the root localization bundle"
@@ -238,7 +218,7 @@ All you now need to do is enable `usePredefinedChoices` on your option.
 
     === "Java"
         ```java
-        --8<-- "wiki/commands/slash/SlashConvertSimplifiedJava.java:convert_simplified-java"
+        --8<-- "wiki/java/commands/slash/SlashConvertSimplified.java:convert_simplified-java"
         ```
 
 ## Adding option resolvers
@@ -272,7 +252,7 @@ The first type parameter is the type of your resolver implementation, and the se
 
     === "Java"
         ```java
-        --8<-- "wiki/resolvers/TimeUnitResolverJava.java:time_unit_resolver-detailed-java"
+        --8<-- "wiki/java/resolvers/TimeUnitResolver.java:time_unit_resolver-detailed-java"
         ```
     
     As you can see, this defines the slash command's option to be a string, 
@@ -297,7 +277,7 @@ all you need to do is declare a service factory with `#!java @Resolver` and use 
     === "Java"
         ```java
         public class TimeUnitResolverSimplifiedJava {
-        --8<-- "wiki/resolvers/TimeUnitResolverSimplifiedJava.java:time_unit_resolver-simplified-java"
+        --8<-- "wiki/java/resolvers/TimeUnitResolverSimplified.java:time_unit_resolver-simplified-java"
         ```
         As this functions as a service factory, the method needs to be static.
 
