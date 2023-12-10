@@ -320,11 +320,54 @@ The priority is either defined by using `#!java @ServicePriority`, or with `BSer
 see their documentation to learn what how service providers are sorted.
 
 ## Retrieving services
+Any class given by a service provider can be injected into other service providers, 
+requesting a service is as simple as declaring a parameter in the class's constructor, 
+or the service factory's parameters.
 
-### Named services
+Named services can be retrieved by using `#!java @ServiceName` on the parameter.
 
 ### Interfaced services
+A list which the element type is an interfaced service can be requested,
+the list will then contain all instantiable instances with the specified type.
+
+!!! example
+
+    `#!java List<ApplicationCommandFilter<?>>` will contain all instances implementing `ApplicationCommandFilter`, 
+    which are usable.
 
 ### Lazy services
+Lazy service retrieval enables you to get lazily-created service, delaying the initialization,
+or to get services that are not yet available, such as manually injected services (like `JDA`).
+
+!!! example "Retrieving a lazy service"
+
+    === "Java"
+        Request a `Lazy` with the element type being the requested service, 
+        and then get the service when needed by using `Lazy#getValue`.
+
+    === "Kotlin"
+        Request a `ServiceContainer` and use a delegated property, such as:
+
+        `#!kotlin private val helpCommand: IHelpCommand by serviceContainer.lazy()`
+
+!!! note
+
+    Lazy injections cannot contain a list of interfaced services, 
+    nor can a list of lazy services be requested.
 
 ### Optional services
+When a requested service is not available, and is not a [soft-dependency](#dependencies), 
+service creation will fail.
+
+[null-safety]: https://kotlinlang.org/docs/null-safety.html
+[default-arguments]: https://kotlinlang.org/docs/functions.html#default-arguments
+
+In case your service does not always require the service,
+you can prevent failure by using Kotlin's [nullable][null-safety] / [optional][default-arguments] parameters,
+but Java users will need a runtime-retained `#!java @Nullable` annotation 
+(such as `#!java @javax.annotation.Nullable`, or, in checker-framework or JSpecify) or `#!java @Optional`.
+
+!!! note "Lazy nullability"
+
+    Lazy services can also have their element type be marked as nullable, 
+    for example, `#!java Lazy<@Nullable IHelpCommand>`.
