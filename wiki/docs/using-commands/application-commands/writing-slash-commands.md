@@ -102,7 +102,7 @@ As always, make sure to check against the command path as well as the option's d
 
 ## DSL commands (Kotlin)
 
-Commands can be DSL-declared in public method annotated with `#!java @AppDeclaration`,
+Commands can be DSL-declared in a public method annotated with `#!java @AppDeclaration`,
 where the first parameter is a `GlobalApplicationCommandManager` (for global / guild-only global) commands, 
 or `GuildApplicationCommandManager` for guild commands.
 
