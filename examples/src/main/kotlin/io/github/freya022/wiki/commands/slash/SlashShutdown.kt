@@ -7,7 +7,7 @@ import io.github.freya022.wiki.switches.wiki.WikiLanguage
 @WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:dev_command_annotated_condition-command-kotlin]
 @Command
-@DevCommand
+@DevCommand // Our custom condition, this command will only exist if it passes.
 class SlashShutdown {
     /* */
 }

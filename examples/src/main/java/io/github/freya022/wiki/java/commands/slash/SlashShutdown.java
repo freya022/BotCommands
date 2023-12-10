@@ -9,7 +9,7 @@ import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 @WikiLanguage(WikiLanguage.Language.JAVA)
 // --8<-- [start:dev_command_annotated_condition-command-java]
 @Command
-@DevCommand
+@DevCommand // Our custom condition, this command will only exist if it passes.
 public class SlashShutdown {
     /* */
 }
