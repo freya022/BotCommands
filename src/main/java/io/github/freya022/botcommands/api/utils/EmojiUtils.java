@@ -1,22 +1,34 @@
 package io.github.freya022.botcommands.api.utils;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.fellbaum.jemoji.EmojiManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Utility class to resolve alias emojis into unicode, and getting an {@link UnicodeEmoji} out of them.
+ */
 public class EmojiUtils {
     private static final int REGIONAL_INDICATOR_A_CODEPOINT = 127462;
     private static final int REGIONAL_INDICATOR_Z_CODEPOINT = 127487;
 
     /**
-     * Resolves a shortcode/alias emoji (e.g. :joy:) into an unicode emoji for JDA to use (on reactions, for example)
-     * <br>This will return itself if the input was a valid unicode emoji
+     * Resolves a shortcode/alias emoji (e.g. {@code :joy:}) into an unicode emoji,
+     * for JDA to use (on reactions, for example).
      *
-     * @param input An emoji shortcode
+     * <p><b>Note:</b> The input string is case-sensitive!
+     *
+     * <p>This will return itself if the input is a valid unicode emoji.
+     *
+     * @param input An emoji alias or unicode
      *
      * @return The unicode string of this emoji
+     *
+     * @throws NoSuchElementException if no emoji alias or unicode matches
+     *
+     * @see #resolveJDAEmoji(String)
      */
     @NotNull
     public static String resolveEmoji(@NotNull String input) {
@@ -48,8 +60,23 @@ public class EmojiUtils {
         return alias.startsWith(":") && alias.endsWith(":") ? alias.substring(1, alias.length() - 1) : alias;
     }
 
+    /**
+     * Resolves a shortcode/alias emoji (e.g. {@code :joy:}) into an {@link UnicodeEmoji}.
+     *
+     * <p><b>Note:</b> The input string is case-sensitive!
+     *
+     * <p>This will return itself if the input is a valid unicode emoji.
+     *
+     * @param input An emoji alias or unicode
+     *
+     * @return The {@link UnicodeEmoji} of this emoji
+     *
+     * @throws NoSuchElementException if no emoji alias or unicode matches
+     *
+     * @see #resolveEmoji(String)
+     */
     @NotNull
-    public static Emoji resolveJDAEmoji(@NotNull String input) {
+    public static UnicodeEmoji resolveJDAEmoji(@NotNull String input) {
         return Emoji.fromUnicode(resolveEmoji(input));
     }
 }
