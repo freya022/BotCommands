@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.fellbaum.jemoji.EmojiManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 
@@ -15,8 +16,7 @@ public class EmojiUtils {
     private static final int REGIONAL_INDICATOR_Z_CODEPOINT = 127487;
 
     /**
-     * Resolves a shortcode/alias emoji (e.g. {@code :joy:}) into an unicode emoji,
-     * for JDA to use (on reactions, for example).
+     * Returns the unicode emoji from a Discord alias (e.g. {@code :joy:}).
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
@@ -27,11 +27,30 @@ public class EmojiUtils {
      * @return The unicode string of this emoji
      *
      * @throws NoSuchElementException if no emoji alias or unicode matches
-     *
      * @see #resolveJDAEmoji(String)
      */
     @NotNull
     public static String resolveEmoji(@NotNull String input) {
+        final var emoji = resolveEmojiOrNull(input);
+        if (emoji == null) throw new NoSuchElementException("No emoji for input: " + input);
+        return emoji;
+    }
+
+    /**
+     * Returns the unicode emoji from a Discord alias (e.g. {@code :joy:}), or {@code null} if unresolvable.
+     *
+     * <p><b>Note:</b> The input string is case-sensitive!
+     *
+     * <p>This will return itself if the input is a valid unicode emoji.
+     *
+     * @param input An emoji alias or unicode
+     *
+     * @return The unicode string of this emoji, {@code null} if unresolvable
+     *
+     * @see #resolveJDAEmojiOrNull(String)
+     */
+    @Nullable
+    public static String resolveEmojiOrNull(@NotNull String input) {
         var emoji = EmojiManager.getByDiscordAlias(input);
 
         if (emoji.isEmpty()) emoji = EmojiManager.getEmoji(input);
@@ -50,7 +69,7 @@ public class EmojiUtils {
                     return input;
                 }
             }
-            throw new NoSuchElementException("No emoji for input: " + input);
+            return null;
         }
         return emoji.get().getUnicode();
     }
@@ -61,7 +80,7 @@ public class EmojiUtils {
     }
 
     /**
-     * Resolves a shortcode/alias emoji (e.g. {@code :joy:}) into an {@link UnicodeEmoji}.
+     * Returns the {@link UnicodeEmoji} from a Discord alias (e.g. {@code :joy:}).
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
@@ -72,11 +91,30 @@ public class EmojiUtils {
      * @return The {@link UnicodeEmoji} of this emoji
      *
      * @throws NoSuchElementException if no emoji alias or unicode matches
-     *
      * @see #resolveEmoji(String)
      */
     @NotNull
     public static UnicodeEmoji resolveJDAEmoji(@NotNull String input) {
         return Emoji.fromUnicode(resolveEmoji(input));
+    }
+
+    /**
+     * Returns the {@link UnicodeEmoji} from a Discord alias (e.g. {@code :joy:}), or {@code null} if unresolvable.
+     *
+     * <p><b>Note:</b> The input string is case-sensitive!
+     *
+     * <p>This will return itself if the input is a valid unicode emoji.
+     *
+     * @param input An emoji alias or unicode
+     *
+     * @return The {@link UnicodeEmoji} of this emoji
+     *
+     * @see #resolveEmoji(String)
+     */
+    @Nullable
+    public static UnicodeEmoji resolveJDAEmojiOrNull(@NotNull String input) {
+        final String unicode = resolveEmojiOrNull(input);
+        if (unicode == null) return null;
+        return Emoji.fromUnicode(unicode);
     }
 }
