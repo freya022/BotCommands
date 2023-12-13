@@ -104,9 +104,8 @@ inline fun <reified T : Any> BContext.getInterfacedServices() = serviceContainer
 inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInterfacedServices(T::class)
 
 //region Lazy service retrieval
-// The U type parameter is used so the caller
-// cannot accidentally request a service with the type of what the block returns
-// as the block return type is most likely not a service, and thus will fail the initial service retrieval
+
+// The U type parameter is used so the type produced by the block would not override the requested service's type.
 inline fun <reified R : Any> ServiceContainer.lazy(): Lazy<R> = lazy { this.getService(R::class) }
 inline fun <reified R : Any> ServiceContainer.lazyOrNull(): Lazy<R?> = lazy { this.getServiceOrNull(R::class) }
 inline fun <reified R : Any, U : R> ServiceContainer.lazyOrElse(crossinline block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(R::class) ?: block() }

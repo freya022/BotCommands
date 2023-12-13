@@ -22,7 +22,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * Implementors of this interface will automatically be registered with the interface's type,
- * in addition to their own type and the ones in [ServiceType]
+ * in addition to their own type and the ones in [@ServiceType][ServiceType]
  *
  * @see DynamicSupplier
  *
