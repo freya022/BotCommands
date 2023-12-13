@@ -47,9 +47,8 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
 
     override fun compareTo(other: ServiceProvider): Int {
-        // Reverse order
-        val priorityCmp = priority.compareTo(other.priority)
-        if (priorityCmp != 0) return -priorityCmp
+        val priorityCmp = other.priority.compareTo(priority) // Reverse order
+        if (priorityCmp != 0) return priorityCmp
 
         // Prioritize service coming from service factories
         if (this is FunctionServiceProvider && other !is FunctionServiceProvider) {
