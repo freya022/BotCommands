@@ -25,39 +25,45 @@ internal class ClassServiceProvider(
     override val types = clazz.getServiceTypes(primaryType)
     override val priority = clazz.getAnnotatedServicePriority()
 
-    private var isInstantiable = false
+    /**
+     * If not the sentinel value, the service was attempted to be created.
+     */
+    private var serviceError: ServiceError? = ServiceProvider.nullServiceError
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
-        if (isInstantiable) return null
-        if (instance != null) return null
+        // Returns null if there is no error, the error itself if there's one
+        if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
         clazz.findAnnotation<InjectedService>()?.let {
             //Skips cache
             return ErrorType.UNAVAILABLE_INJECTED_SERVICE.toError("Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}")
         }
 
+        serviceError = checkInstantiate(serviceContainer)
+        return serviceError
+    }
+
+    private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
+
+        //Is a singleton
+        if (clazz.objectInstance != null) return null
 
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
                 //Return error message
-                InstantiabilityType.NOT_INSTANTIABLE -> return ErrorType.DYNAMIC_NOT_INSTANTIABLE.toError(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
+                InstantiabilityType.NOT_INSTANTIABLE ->
+                    return ErrorType.DYNAMIC_NOT_INSTANTIABLE.toError(
+                        errorMessage = instantiability.message!!,
+                        extraMessage = "${dynamicSupplier::class.simpleNestedName} failed"
+                    )
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return no error message
-                InstantiabilityType.INSTANTIABLE -> {
-                    isInstantiable = true
-                    return null
-                }
+                InstantiabilityType.INSTANTIABLE -> return null
             }
-        }
-
-        //Is a singleton
-        if (clazz.objectInstance != null) {
-            isInstantiable = true
-            return null
         }
 
         //Check constructor parameters
@@ -65,7 +71,6 @@ internal class ClassServiceProvider(
         val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
         constructingFunction.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
-        isInstantiable = true
         return null
     }
 

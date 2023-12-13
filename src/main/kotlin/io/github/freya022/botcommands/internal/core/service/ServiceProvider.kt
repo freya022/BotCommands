@@ -59,6 +59,10 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 
         return name.compareTo(other.name)
     }
+
+    companion object {
+        internal val nullServiceError = ErrorType.UNKNOWN.toError("Returning a sentinel service error is impossible")
+    }
 }
 
 internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {

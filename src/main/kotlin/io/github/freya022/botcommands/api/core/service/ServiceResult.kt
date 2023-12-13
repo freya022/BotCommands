@@ -18,6 +18,7 @@ class ServiceError private constructor(
     val siblingErrors: List<ServiceError>
 ) {
     enum class ErrorType(val explanation: String) {
+        UNKNOWN("Unknown service error"),
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
         INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
         NO_PROVIDER("No class annotated as a service or service factories were found"),

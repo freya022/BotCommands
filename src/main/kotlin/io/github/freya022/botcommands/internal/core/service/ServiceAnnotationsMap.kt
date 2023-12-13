@@ -51,6 +51,8 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                 val serviceError = context.serviceContainer.canCreateService(clazz) ?: return@filterKeys true
 
                 when (serviceError.errorType) {
+                    UNKNOWN -> throwInternal(serviceError.errorMessage)
+
                     DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER, FAILED_FATAL_CUSTOM_CONDITION ->
                         throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 

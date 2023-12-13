@@ -15,16 +15,23 @@ internal class FunctionServiceProvider(
     override val types = function.getServiceTypes(primaryType)
     override val priority = function.getAnnotatedServicePriority()
 
-    private var isInstantiable = false
+    /**
+     * If not the sentinel value, the service was attempted to be created.
+     */
+    private var serviceError: ServiceError? = ServiceProvider.nullServiceError
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
-        if (isInstantiable) return null
-        if (instance != null) return null
+        // Returns null if there is no error, the error itself if there's one
+        if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
+        serviceError = checkInstantiate(serviceContainer)
+        return serviceError
+    }
+
+    private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         function.commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
-        isInstantiable = true
         return null
     }
 
