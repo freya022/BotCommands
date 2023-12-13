@@ -166,8 +166,15 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
 }
 
 internal inline fun <T> measureTimedInstantiation(block: () -> T): TimedInstantiation {
-    val measureTimedValue = measureTimedValue(block)
-    return TimedInstantiation(ServiceResult.pass(measureTimedValue.value!!), measureTimedValue.duration)
+    val (value, duration) = measureTimedValue(block)
+    if (value == null) throw NullPointerException("Timed instantiation block returned null")
+    return TimedInstantiation(ServiceResult.pass(value), duration)
+}
+
+internal inline fun <T : Any?> measureNullableTimedInstantiation(block: () -> T): TimedInstantiation? {
+    val (value, duration) = measureTimedValue(block)
+    if (value == null) return null
+    return TimedInstantiation(ServiceResult.pass(value), duration)
 }
 
 internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {

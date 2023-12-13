@@ -88,6 +88,10 @@ internal class ClassServiceProvider(
             """.trimIndent())
         }
 
+        measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
+            return timedInstantiation
+        }
+
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
