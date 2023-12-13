@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
@@ -36,6 +37,18 @@ internal class FunctionServiceProvider(
     }
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+        // Definitely an error if an instance is trying to be created
+        // before we know if it's instantiable.
+        // We know it's instantiable when the error is null, throw if non-null
+        serviceError?.let { serviceError ->
+            throwInternal("""
+                Tried to create an instance while a service error exists / hasn't been determined
+                Provider: $providerKey
+                Instance: $instance
+                Error: ${serviceError.toSimpleString()}
+            """.trimIndent())
+        }
+
         val timedInstantiation = function.callConstructingFunction(serviceContainer)
         if (timedInstantiation.result.serviceError != null)
             return timedInstantiation

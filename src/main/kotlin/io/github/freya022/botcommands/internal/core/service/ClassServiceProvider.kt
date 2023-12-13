@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -75,6 +76,18 @@ internal class ClassServiceProvider(
     }
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+        // Definitely an error if an instance is trying to be created
+        // before we know if it's instantiable.
+        // We know it's instantiable when the error is null, throw if non-null
+        serviceError?.let { serviceError ->
+            throwInternal("""
+                Tried to create an instance while a service error exists / hasn't been determined
+                Provider: $providerKey
+                Instance: $instance
+                Error: ${serviceError.toSimpleString()}
+            """.trimIndent())
+        }
+
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
