@@ -92,6 +92,12 @@ internal class ClassServiceProvider(
             """.trimIndent())
         }
 
+        val timedInstantiation = createInstanceNonCached(serviceContainer)
+        instance = timedInstantiation.result.getOrNull()
+        return timedInstantiation
+    }
+
+    private fun createInstanceNonCached(serviceContainer: ServiceContainerImpl): TimedInstantiation {
         measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
             return timedInstantiation
         }
@@ -105,34 +111,24 @@ internal class ClassServiceProvider(
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return instance
-                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation {
-                    dynamicSupplier.get(clazz)
-                }
+                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz) }
             }
         }
 
         //The command object has to be created either by the instance supplier
         // or by the **only** constructor a class has
-        // It must resolve all parameters types with the registered parameter suppliers
+        // It must resolve all parameter types with the registered parameter suppliers
         val instanceSupplier = serviceContainer.context.serviceConfig.instanceSupplierMap[clazz]
-        return when {
-            instanceSupplier != null -> {
-                measureTimedInstantiation {
-                    instanceSupplier.supply(serviceContainer.context)
-                        ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
-                }
+        if (instanceSupplier != null) {
+            return measureTimedInstantiation {
+                instanceSupplier.supply(serviceContainer.context)
+                    ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
             }
-            clazz.objectInstance != null -> measureTimedInstantiation { clazz.objectInstance }
-            else -> {
-                val constructingFunction = findConstructingFunction(clazz).getOrThrow()
+        }
 
-                val timedInstantiation = constructingFunction.callConstructingFunction(serviceContainer)
-                if (timedInstantiation.result.serviceError != null)
-                    return timedInstantiation
+        val constructingFunction = findConstructingFunction(clazz).getOrThrow()
 
-                timedInstantiation
-            }
-        }.also { instance = it.result.getOrNull() }
+        return constructingFunction.callConstructingFunction(serviceContainer)
     }
 
     private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
