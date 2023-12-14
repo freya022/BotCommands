@@ -105,11 +105,13 @@ internal class ClassServiceProvider(
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(clazz)
             when (instantiability.type) {
-                //Return error message
-                InstantiabilityType.NOT_INSTANTIABLE -> ErrorType.DYNAMIC_NOT_INSTANTIABLE.toResult<Any>(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
-                    .toFailedTimedInstantiation()
+                // This should have been checked in canInstantiate!
+                InstantiabilityType.NOT_INSTANTIABLE ->
+                    throw IllegalStateException("${dynamicSupplier.javaClass.simpleNestedName} returned '${InstantiabilityType.NOT_INSTANTIABLE.name}' when instantiability test returned '${InstantiabilityType.INSTANTIABLE.name}'! Instantiability should not change over time")
+
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
+
                 //Found a supplier, return instance
                 InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz) }
             }
