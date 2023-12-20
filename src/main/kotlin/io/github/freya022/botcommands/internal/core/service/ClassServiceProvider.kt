@@ -16,9 +16,13 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmName
 
-internal class ClassServiceProvider(
+internal class ClassServiceProvider private constructor(
     private val clazz: KClass<*>,
-    override var instance: Any? = null
+    override var instance: Any?,
+    /**
+     * If not the sentinel value, the service was attempted to be created.
+     */
+    private var serviceError: ServiceError?
 ) : ServiceProvider {
     override val name = clazz.getServiceName()
     override val providerKey = clazz.jvmName
@@ -26,10 +30,9 @@ internal class ClassServiceProvider(
     override val types = clazz.getServiceTypes(primaryType)
     override val priority = clazz.getAnnotatedServicePriority()
 
-    /**
-     * If not the sentinel value, the service was attempted to be created.
-     */
-    private var serviceError: ServiceError? = ServiceProvider.nullServiceError
+    private constructor(clazz: KClass<*>) : this(clazz, null, ServiceProvider.nullServiceError)
+
+    private constructor(clazz: KClass<*>, instance: Any) : this(clazz, instance, null)
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
@@ -152,6 +155,16 @@ internal class ClassServiceProvider(
     }
 
     override fun toString() = providerKey
+
+    companion object {
+        fun fromClass(clazz: KClass<*>): ClassServiceProvider {
+            return ClassServiceProvider(clazz)
+        }
+
+        fun fromInstance(type: KClass<*>, instance: Any): ClassServiceProvider {
+            return ClassServiceProvider(type, instance)
+        }
+    }
 }
 
 internal fun KClass<*>.getServiceName() = getAnnotatedServiceName() ?: this.simpleNestedName.replaceFirstChar { it.lowercase() }

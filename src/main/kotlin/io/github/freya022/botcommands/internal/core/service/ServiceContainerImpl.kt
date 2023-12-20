@@ -185,7 +185,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
-        context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
+        context.serviceProviders.putServiceProvider(ClassServiceProvider.fromInstance(clazz, t))
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {

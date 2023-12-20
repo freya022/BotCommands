@@ -36,7 +36,7 @@ internal class ServiceProviders : ClassGraphProcessor {
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (isService) {
-            (context as BContextImpl).serviceProviders.putServiceProvider(ClassServiceProvider(kClass))
+            (context as BContextImpl).serviceProviders.putServiceProvider(ClassServiceProvider.fromClass(kClass))
         }
     }
 
