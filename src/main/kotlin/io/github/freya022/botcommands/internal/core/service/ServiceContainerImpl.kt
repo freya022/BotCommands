@@ -194,6 +194,8 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
+        if (!clazz.isInstance(t))
+            throwUser("${t.javaClass.name} is not an instance of ${clazz.jvmName}")
         context.serviceProviders.putServiceProvider(ClassServiceProvider.fromInstance(clazz, t))
     }
 
