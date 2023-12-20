@@ -162,11 +162,27 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
 
             companion object {
                 // Service factory, registers as "Config" (as it is the return type)
+                // You can use any method name
+                fun createConfig(): Config {
+                    // Of course here you would load the config from a file
+                    Config()
+                }
+            }
+        }
+        ```
+
+    === "Kotlin property"
+        ```kotlin
+        class Config {
+            /* */
+
+            companion object {
+                // Service factory, registers as "Config" (as it is the return type)
                 @get:BService
                 val instance: Config by lazy {
                     // Of course here you would load the config from a file
                     Config()
-                }                
+                }
             }
         }
         ```
