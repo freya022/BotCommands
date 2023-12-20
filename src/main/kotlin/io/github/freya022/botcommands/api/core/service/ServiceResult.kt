@@ -38,10 +38,10 @@ class ServiceError private constructor(
             ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError, siblingErrors))
     }
 
-    operator fun component0() = errorType
-    operator fun component1() = errorMessage
-    operator fun component2() = extraMessage
-    operator fun component3() = nestedError
+    operator fun component1() = errorType
+    operator fun component2() = errorMessage
+    operator fun component3() = extraMessage
+    operator fun component4() = nestedError
 
     fun withSibling(serviceError: ServiceError): ServiceError =
         ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
