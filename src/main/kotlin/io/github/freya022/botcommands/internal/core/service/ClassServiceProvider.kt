@@ -80,6 +80,9 @@ internal class ClassServiceProvider(
     }
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+        if (instance != null)
+            throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
+
         // Definitely an error if an instance is trying to be created
         // before we know if it's instantiable.
         // We know it's instantiable when the error is null, throw if non-null

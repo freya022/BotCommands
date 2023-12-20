@@ -1,9 +1,12 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 internal class FunctionServiceProvider(
@@ -37,6 +40,9 @@ internal class FunctionServiceProvider(
     }
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+        if (instance != null)
+            throwInternal("Tried to create an instance using ${function.shortSignatureNoSrc} when one already exists, instance should be retrieved manually beforehand")
+
         // Definitely an error if an instance is trying to be created
         // before we know if it's instantiable.
         // We know it's instantiable when the error is null, throw if non-null
