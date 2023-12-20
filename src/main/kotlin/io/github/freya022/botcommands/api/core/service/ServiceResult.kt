@@ -22,6 +22,8 @@ class ServiceError private constructor(
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
         INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
         NO_PROVIDER("No class annotated as a service or service factories were found"),
+        NO_USABLE_PROVIDER("A provider was found but is not usable"),
+        NON_UNIQUE_PROVIDERS("Multiple providers were found but none were marked as primary"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
         UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),

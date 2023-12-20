@@ -17,6 +17,7 @@ internal class FunctionServiceProvider(
     override val providerKey = function.getSignature(source = false, qualifiedClass = true, qualifiedTypes = true)
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(primaryType)
+    override val isPrimary = function.hasAnnotation<Primary>()
     override val priority = function.getAnnotatedServicePriority()
 
     /**

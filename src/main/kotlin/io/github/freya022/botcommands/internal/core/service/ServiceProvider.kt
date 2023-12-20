@@ -38,6 +38,7 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val providerKey: ProviderName
     val primaryType: KClass<*>
     val types: Set<KClass<*>>
+    val isPrimary: Boolean
     val priority: Int
 
     val instance: Any?

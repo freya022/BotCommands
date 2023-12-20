@@ -20,6 +20,20 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  * can be injected into other service classes.
  * You can also request a named instance of a class by using [@ServiceName][ServiceName].
  *
+ * #### Primary providers
+ *
+ * When requesting a service of a specific type, there must be at most one service provider for such a type.
+ *
+ * If multiple **usable** providers for the same type are present,
+ * no service can be returned unless *one* [primary][Primary] provider is defined.
+ *
+ * For example, if you have two service factories with the same return type:
+ * - ✗ If both are usable
+ * - ✓ One has a failing condition, meaning you have one usable provider
+ * - ✓ One is annotated with [@Primary][Primary], in which case this one is prioritized
+ *
+ * **Note:** You can still get all the [types][ServiceContainer.getInterfacedServiceTypes] / [instances][ServiceContainer.getInterfacedServices].
+ *
  * #### Interfaced services
  *
  * Request a [List] will retrieve all services implementing the list's element type,
@@ -67,6 +81,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  *
  * @see Dependencies @Dependencies
  *
+ * @see Primary @Primary
  * @see ServiceType @ServiceType
  * @see ServiceName @ServiceName
  * @see ServicePriority @ServicePriority

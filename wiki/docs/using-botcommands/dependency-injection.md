@@ -394,6 +394,23 @@ Named services can be retrieved by using `#!java @ServiceName` on the parameter.
         }
         ```
 
+### Primary providers
+
+When requesting a service of a specific type, there must be at most one service provider for such a type.
+
+If multiple **usable** providers for the same type are present,
+no service can be returned unless *one* primary provider is defined.
+
+For example, if you have two [service factories](#service-factories) with the same return type:
+
+- :x: If both are usable
+- :white_check_mark: One has a failing condition, meaning you have one usable provider
+- :white_check_mark: One is annotated with `#!java @Primary`, in which case this one is prioritized
+
+!!! note
+
+    You can still retrieve existing services with `ServiceContainer#getInterfacedServices/getInterfacedServiceTypes`
+
 ### Interfaced services
 A list which the element type is an interfaced service can be requested,
 the list will then contain all instantiable instances with the specified type.

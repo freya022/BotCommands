@@ -2,8 +2,7 @@ package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.service.*
-import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.INVALID_TYPE
-import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.NO_PROVIDER
+import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
@@ -76,11 +75,24 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         if (providers.isEmpty())
             return null
 
-        providers.forEach { provider ->
-            provider.instance?.let { instance -> return clazz.cast(instance) }
+        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val provider = providerResult.service
+        val providerError = providerResult.serviceError
+
+        if (providerError != null) {
+            val (errorType, errorMessage) = providerError
+            if (errorType == NON_UNIQUE_PROVIDERS) {
+                logger.debug { errorMessage }
+            } else {
+                logger.trace { "Peeking service ${clazz.simpleNestedName} error: $errorMessage" }
+            }
+            return null
         }
 
-        return null
+        return when {
+            provider != null -> provider.instance?.let(clazz::cast)
+            else -> throwInternal("No error yet no provider is present")
+        }
     }
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
@@ -101,17 +113,14 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val providers = context.serviceProviders.findAllForType(clazz)
-        if (providers.isEmpty())
-            return NO_PROVIDER.toResult("No service or factories found for type ${clazz.simpleNestedName}")
 
-        val errors: MutableList<ServiceError> = arrayListOf()
-        providers.forEach { provider ->
-            tryGetService<T>(provider)
-                .onService { return this }
-                .onError { errors += it }
+        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val provider = providerResult.service
+
+        return when {
+            provider != null -> tryGetService(provider)
+            else -> ServiceResult.fail(providerResult.serviceError ?: throwInternal("Can't have no provider and no error"))
         }
-
-        return ServiceResult.fail(errors)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -198,19 +207,70 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
         val providers = context.serviceProviders.findAllForType(clazz)
-        if (providers.isEmpty())
-            return NO_PROVIDER.toError("No service or factories found for type ${clazz.simpleNestedName}")
 
+        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val provider = providerResult.service
+
+        return when {
+            provider != null -> null
+            else -> providerResult.serviceError ?: throwInternal("Can't have no provider and no error")
+        }
+    }
+
+    /**
+     * Returns the primary provider out of the [providers],
+     * this only takes into account providers than can create their services.
+     *
+     * - **One usable provider:** Regardless of if it's primary or not, it is returned.
+     *
+     * - **`N` usable providers:** One of them must be a primary provider,
+     * if there is no primary provider, an error is returned.
+     *
+     * - **No usable provider:** The result contains the error.
+     */
+    private fun getInstantiablePrimaryProvider(clazz: KClass<*>, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
+        if (providers.isEmpty())
+            return NO_PROVIDER.toResult(errorMessage = "No service or factories found for type ${clazz.simpleNestedName}")
+
+        // Get instantiable providers, otherwise their errors
         val errors: MutableList<ServiceError> = arrayListOf()
-        providers.forEach { provider ->
+        val instantiableProviders: MutableList<ServiceProvider> = arrayListOf()
+        for (provider in providers) {
             when (val serviceError = canCreateService(provider)) {
-                null -> return null
+                null -> instantiableProviders += provider
                 else -> errors += serviceError
             }
         }
 
-        return ServiceError.fromErrors(errors)
+        // If there's no primary provider, take all of them
+        val primaryProviders = instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
+
+        if (primaryProviders.size > 1) {
+            return NON_UNIQUE_PROVIDERS.toResult(primaryProviders.createNonUniqueProvidersMessage(clazz))
+        } else if (errors.isEmpty()) {
+            val primaryProvider = primaryProviders.singleOrNull()
+                ?: throwInternal("This collection cannot be empty as instantiable providers shouldn't be empty when there's no error, due to there being at least one provider")
+            return ServiceResult.pass(primaryProvider)
+        } else { // One provider at most, or none and has errors
+            val primaryProvider = primaryProviders.firstOrNull()
+                ?: return NO_USABLE_PROVIDER.toResult(
+                    errorMessage = "No usable service or factories found for type ${clazz.simpleNestedName}",
+                    nestedError = ServiceError.fromErrors(errors)
+                )
+
+            return ServiceResult.pass(primaryProvider)
+        }
     }
+
+    private fun <T : Any> List<ServiceProvider>.createNonUniqueProvidersMessage(clazz: KClass<T>) = """
+        Requested service of type '${clazz.simpleNestedName}' had multiple providers:
+        ${this.joinAsList {
+        buildString {
+            if (it.isPrimary) append("[Primary] ")
+            append("${it.primaryType.simpleNestedName} (${it.providerKey})")
+        }
+    }}
+    """.trimIndent()
 
     private fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null

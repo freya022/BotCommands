@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -14,6 +15,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmName
 
 internal class ClassServiceProvider private constructor(
@@ -28,6 +30,7 @@ internal class ClassServiceProvider private constructor(
     override val providerKey = clazz.jvmName
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(primaryType)
+    override val isPrimary = clazz.hasAnnotation<Primary>()
     override val priority = clazz.getAnnotatedServicePriority()
 
     private constructor(clazz: KClass<*>) : this(clazz, null, ServiceProvider.nullServiceError)
