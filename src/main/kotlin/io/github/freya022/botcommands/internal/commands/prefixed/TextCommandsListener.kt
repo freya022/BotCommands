@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
@@ -27,7 +26,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.internal.utils.Checks
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -83,11 +81,7 @@ internal class TextCommandsListener internal constructor(
                 val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
                     // At this point no top level command was found,
                     // if a subcommand wasn't matched, it would simply appear in the args
-                    val topLevelName = content.substringBefore(' ')
-                    if (topLevelName.matches(Checks.ALPHANUMERIC_WITH_DASH.toRegex())) {
-                        // Commands aren't going to be found if the user tried to use illegal characters anyway
-                        onCommandNotFound(event, CommandPath.of(topLevelName), isNotOwner)
-                    }
+                    onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
                     return@launch
                 }
 
@@ -187,7 +181,7 @@ internal class TextCommandsListener internal constructor(
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                onCommandNotFound(event, commandInfo.path, true)
+                onHiddenCommand(event, commandInfo)
                 return false
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
@@ -249,21 +243,37 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private fun onCommandNotFound(event: MessageReceivedEvent, commandName: CommandPath, isNotOwner: Boolean) {
+    private suspend fun onCommandNotFound(event: MessageReceivedEvent, commandName: String, isNotOwner: Boolean) {
         if (!context.textConfig.showSuggestions) return
 
-        TODO("Suggestions are not implemented yet")
+        val candidates = context.textCommandsContext.rootCommands
+            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner).isShowable }
 
-//        val suggestions = getSuggestions(event, commandName, isNotOwner)
-//        if (suggestions.isNotEmpty()) {
-//            replyError(
-//                event,
-//                context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestions.joinToString("**, **", "**", "**"))
-//            )
-//        }
+        val suggestions = sortAndFilterSuggestions(commandName, candidates)
+        if (suggestions.isNotEmpty()) {
+            val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
+            replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
+        }
     }
 
-//    private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
-//        return listOf() //TODO decide if useful or not
-//    }
+    private suspend fun onHiddenCommand(event: MessageReceivedEvent, commandInfo: TextCommandInfo) {
+        if (!context.textConfig.showSuggestions) return
+
+        val parentCommand = commandInfo.parentInstance
+        // If the hidden command is top-level, search in root commands, if not, search in sibling commands
+        val candidateSource = parentCommand?.subcommands?.values ?: context.textCommandsContext.rootCommands
+        val candidates = candidateSource
+            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner = true).isShowable }
+
+        // The input is the last component of the recognized (but hidden) command path
+        val suggestions = sortAndFilterSuggestions(commandInfo.name, candidates)
+        if (suggestions.isNotEmpty()) {
+            val suggestionsStr = suggestions.joinToString("**, **", "**", "**")
+            replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
+        }
+    }
+
+    private fun sortAndFilterSuggestions(input: String, candidates: List<TextCommandInfo>): List<TextCommandInfo> {
+        return candidates //TODO
+    }
 }
