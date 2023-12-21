@@ -21,7 +21,7 @@ sealed class AbstractPreparedStatement(val preparedStatement: PreparedStatement)
         }
     }
 
-    override fun getResultSet(): DBResult = DBResult(preparedStatement.resultSet)
+    override fun getResultSet(): DBResult? = preparedStatement.resultSet?.let(::DBResult)
     override fun getGeneratedKeys(): DBResult = DBResult(preparedStatement.generatedKeys)
 
     // region execute
