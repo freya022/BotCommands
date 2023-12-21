@@ -3,14 +3,13 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfo
 import io.github.freya022.botcommands.internal.commands.NSFWStrategy
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
 sealed class TextCommandInfo(
     builder: TextCommandBuilder,
-    override val parentInstance: INamedCommand?
+    override val parentInstance: TextCommandInfo?
 ) : AbstractCommandInfo(builder) {
     val subcommands: Map<String, TextCommandInfo>
 
