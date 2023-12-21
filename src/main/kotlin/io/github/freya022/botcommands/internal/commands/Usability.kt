@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
@@ -101,7 +102,7 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
 
         @JvmStatic
         fun of(context: BContext, cmdInfo: TextCommandInfo, member: Member, channel: GuildMessageChannel, isNotOwner: Boolean): Usability {
-            with(EnumSet.noneOf(UnusableReason::class.java)) {
+            enumSetOf<UnusableReason>().apply {
                 if (isNotOwner && cmdInfo.hidden) add(HIDDEN)
                 if (isNotOwner && cmdInfo.isOwnerRequired) add(OWNER_ONLY)
 
@@ -116,7 +117,7 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
 
         @JvmStatic
         fun of(event: GenericCommandInteractionEvent, cmdInfo: ApplicationCommandInfo, isNotOwner: Boolean): Usability {
-            with(EnumSet.noneOf(UnusableReason::class.java)) {
+            enumSetOf<UnusableReason>().apply {
                 if (!event.isFromGuild) return Usability(this)
 
                 val channel = event.guildChannel
