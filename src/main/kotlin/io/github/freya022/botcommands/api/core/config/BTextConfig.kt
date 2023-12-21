@@ -26,7 +26,7 @@ interface BTextConfig {
     /**
      * Whether command suggestions will be shown when a user tries to use an invalid command.
      *
-     * Default: `false`
+     * Default: `true`
      */
     val showSuggestions: Boolean
 }
@@ -40,7 +40,7 @@ class BTextConfigBuilder internal constructor() : BTextConfig {
     @set:JvmName("disableHelp")
     override var isHelpDisabled: Boolean = false
     @set:JvmName("showSuggestions")
-    override var showSuggestions: Boolean = false
+    override var showSuggestions: Boolean = true
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {
