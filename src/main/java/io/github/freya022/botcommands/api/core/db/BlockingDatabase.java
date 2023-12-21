@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.db;
 
-import io.github.freya022.botcommands.api.core.config.BConfig;
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig;
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
@@ -25,9 +25,9 @@ import java.sql.SQLException;
  *
  * <p>A SQL statement is traced if any of these conditions is met:
  * <ul>
- *     <li>{@link BConfig#getLogQueries()} is enabled,
+ *     <li>{@link BDatabaseConfig#getLogQueries()} is enabled,
  *         and the logger of the class that created the prepared statement has its {@code TRACE} logs enabled.</li>
- *     <li>{@link BConfig#getQueryLogThreshold()} is configured</li>
+ *     <li>{@link BDatabaseConfig#getQueryLogThreshold()} is configured</li>
  * </ul>
  *
  * <p>The logged SQL statements will use the logger of the class that created the prepared statement.
@@ -94,8 +94,8 @@ public class BlockingDatabase {
      * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
      * this function blocks until a connection is available.
      *
-     * <p>If {@link BConfig#getDumpLongTransactions()} is enabled,
-     * a coroutine dump ({@link BConfig#getDumpLongTransactions() if available}) and a thread dump will be done
+     * <p>If {@link BDatabaseConfig#getDumpLongTransactions()} is enabled,
+     * a coroutine dump ({@link BDatabaseConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
      *
      * @param transactionFunction The function to run with the connection
@@ -103,7 +103,7 @@ public class BlockingDatabase {
      * @see #fetchConnection()
      * @see #withStatement(String, StatementFunction)
      *
-     * @see BConfig#getDumpLongTransactions()
+     * @see BDatabaseConfig#getDumpLongTransactions()
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
@@ -117,8 +117,8 @@ public class BlockingDatabase {
      * <p>If {@link ConnectionSupplier#getMaxConnections() all connections are used},
      * this function blocks until a connection is available.
      *
-     * <p>If {@link BConfig#getDumpLongTransactions()} is enabled,
-     * a coroutine dump ({@link BConfig#getDumpLongTransactions() if available}) and a thread dump will be done
+     * <p>If {@link BDatabaseConfig#getDumpLongTransactions()} is enabled,
+     * a coroutine dump ({@link BDatabaseConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
      *
      * @param readOnly            {@code true} if the database only is read from, can allow some optimizations
@@ -127,7 +127,7 @@ public class BlockingDatabase {
      * @see #fetchConnection(boolean)
      * @see #withStatement(String, boolean, StatementFunction)
      *
-     * @see BConfig#getDumpLongTransactions()
+     * @see BDatabaseConfig#getDumpLongTransactions()
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead

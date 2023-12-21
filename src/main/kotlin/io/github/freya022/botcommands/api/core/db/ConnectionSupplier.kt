@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.core.db
 
 import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
-import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
@@ -76,7 +76,7 @@ interface ConnectionSupplier {
      *
      * This should be the same value as the [HikariCP leak detection threshold][HikariDataSource.setLeakDetectionThreshold].
      *
-     * @see BConfig.dumpLongTransactions
+     * @see BDatabaseConfig.dumpLongTransactions
      */
     val maxTransactionDuration: Duration
         get() = Duration.ZERO

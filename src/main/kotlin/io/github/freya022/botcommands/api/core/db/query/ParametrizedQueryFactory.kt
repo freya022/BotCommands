@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.db.query
 
-import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -12,9 +12,9 @@ import java.sql.PreparedStatement
  * Factory for [ParametrizedQuery].
  *
  * A parametrized query is only used if any of these conditions is met:
- * - [BConfig.logQueries] is enabled,
+ * - [BDatabaseConfig.logQueries] is enabled,
  *   and the logger of the class that created the prepared statement has its `TRACE` logs enabled,
- * - [BConfig.queryLogThreshold] is configured
+ * - [BDatabaseConfig.queryLogThreshold] is configured
  *
  * ### Usage
  * Register your instance as a service with [BService]

@@ -3,7 +3,6 @@
 package io.github.freya022.botcommands.api.core.db
 
 import io.github.freya022.botcommands.api.core.Logging
-import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
@@ -44,9 +43,9 @@ private val logger = KotlinLogging.logger { }
  * to log the queries (in which case a [ParametrizedQuery] is used), as well as timing them.
  *
  * A SQL statement is traced if any of these conditions is met:
- * - [BConfig.logQueries] is enabled,
+ * - [BDatabaseConfig.logQueries] is enabled,
  *   and the logger of the class that created the prepared statement has its `TRACE` logs enabled,
- * - [BConfig.queryLogThreshold] is configured
+ * - [BDatabaseConfig.queryLogThreshold] is configured
  *
  * The logged SQL statements will use the logger of the class that created the prepared statement.
  * If a utility class creates statements, you should use [@IgnoreStackFrame][IgnoreStackFrame],
@@ -124,8 +123,8 @@ internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
  * If [all connections are used][ConnectionSupplier.maxConnections],
  * this function suspends until a connection is available.
  *
- * If [BConfig.dumpLongTransactions] is enabled,
- * a coroutine dump ([if available][BConfig.dumpLongTransactions]) and a thread dump will be done
+ * If [BDatabaseConfig.dumpLongTransactions] is enabled,
+ * a coroutine dump ([if available][BDatabaseConfig.dumpLongTransactions]) and a thread dump will be done
  * if the transaction is longer than [the threshold][ConnectionSupplier.maxTransactionDuration].
  *
  * @param readOnly `true` if the database only is read from, can allow some optimizations
@@ -133,7 +132,7 @@ internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
  * @see Database.fetchConnection
  * @see Database.preparedStatement
  *
- * @see BConfig.dumpLongTransactions
+ * @see BDatabaseConfig.dumpLongTransactions
  * @see ConnectionSupplier.maxTransactionDuration
  */
 @OptIn(ExperimentalContracts::class)
