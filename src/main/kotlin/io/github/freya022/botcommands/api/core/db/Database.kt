@@ -52,6 +52,23 @@ private val logger = KotlinLogging.logger { }
  * which will instead take the logger of the class that called your utility class.
  * You can also use [PreparedStatement.withLogger] if you wish to use a different logger.
  *
+ * ### Batching support
+ *
+ * If you must run a lot of DML statements (`INSERT`, `UPDATE`, ...),
+ * you can batch them as to execute all of them in one go, massively improving performances on larger updates.
+ *
+ * For that, you can use any function giving you a [prepared statement][SuspendingPreparedStatement], then,
+ * you can add statements by:
+ * - Adding the parameters using [SuspendingPreparedStatement.setParameters],
+ * - Calling [SuspendingPreparedStatement.addBatch].
+ *
+ * Repeat those two steps for all your statements,
+ * then call [SuspendingPreparedStatement.executeBatch] to run all of them.
+ *
+ * **Note:** To read returned columns (like an `INSERT INTO ... RETURNING {column}` in PostgreSQL),
+ * you must specify the column indexes/names when creating your statement,
+ * and read them back from [SuspendingPreparedStatement.getGeneratedKeys].
+ *
  * @see BlockingDatabase
  * @see ParametrizedQueryFactory
  */

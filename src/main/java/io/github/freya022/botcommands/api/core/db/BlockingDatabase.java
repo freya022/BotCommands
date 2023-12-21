@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -34,6 +35,24 @@ import java.sql.SQLException;
  * <br>If a utility class creates statements, you should use {@link IgnoreStackFrame @IgnoreStackFrame},
  * which will instead take the logger of the class that called your utility class.
  * <br>You can also use {@link BlockingPreparedStatement#withLogger(Logger)} if you wish to use a different logger.
+ *
+ * <h3>Batching support</h3>
+ * If you must run a lot of DML statements ({@code INSERT}, {@code UPDATE}, ...),
+ * you can batch them as to execute all of them in one go, massively improving performances on larger updates.
+ *
+ * <p>For that, you can use any function giving you a {@link BlockingPreparedStatement prepared statement}, then,
+ * you can add statements by:
+ * <ul>
+ *     <li>Adding the parameters using {@link BlockingPreparedStatement#setParameters(Object[])}</li>
+ *     <li>Calling {@link PreparedStatement#addBatch() BlockingPreparedStatement#addBatch()}</li>
+ * </ul>
+ *
+ * <p>Repeat those two steps for all your statements,
+ * then call {@link BlockingPreparedStatement#executeBatch()} to run all of them.
+ *
+ * <p><b>Note:</b> To read returned columns (like an {@code INSERT INTO ... RETURNING {column}} in PostgreSQL),
+ * you must specify the column indexes/names when creating your statement,
+ * and read them back from {@link SuspendingPreparedStatement#getGeneratedKeys()}.
  *
  * @see Database
  * @see ParametrizedQueryFactory

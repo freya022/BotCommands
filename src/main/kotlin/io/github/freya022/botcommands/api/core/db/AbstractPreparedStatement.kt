@@ -4,7 +4,24 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 sealed class AbstractPreparedStatement(val preparedStatement: PreparedStatement) : PreparedStatement by preparedStatement {
-    protected fun setParameters(params: Array<out Any?>) {
+    /**
+     * Sets the parameters for this query.
+     *
+     * The parameters are set in the order they are passed in,
+     * supported types are implementation-specific,
+     * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
+     *
+     * ### Batching support
+     *
+     * This function supports query batching, you can call this function to set the parameters,
+     * and then call [addBatch] (and [executeBatch] when finished adding all the queries),
+     * see [Database]/[BlockingDatabase] for more details.
+     *
+     * @see PreparedStatement.setObject
+     * @see Database
+     * @see BlockingDatabase
+     */
+    fun setParameters(params: Array<out Any?>) {
         params.forEachIndexed { i, param ->
             // Primitive arrays are not always supported, do it ourselves
             when (param) {
