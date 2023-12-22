@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -78,12 +79,14 @@ internal class TextCommandsListener internal constructor(
             try {
                 val isNotOwner = !context.config.isOwner(member.idLong)
 
-                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
+                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
                     // At this point no top level command was found,
                     // if a subcommand wasn't matched, it would simply appear in the args
                     onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
                     return@launch
                 }
+
+                logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
 
                 commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, commandInfo, isNotOwner)) {
@@ -140,13 +143,20 @@ internal class TextCommandsListener internal constructor(
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
     }
 
-    private fun findCommandWithArgs(content: String): CommandWithArgs? {
+    private fun findCommandWithArgs(content: String, isNotOwner: Boolean): CommandWithArgs? {
         var commandInfo: TextCommandInfo? = null
         val words: List<String> = spacePattern.split(content)
         for (index in words.indices) {
             when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
                 null -> break
-                else -> commandInfo = info
+                else -> {
+                    if (info.hidden && isNotOwner) {
+                        //This will help us have the same behavior as if the command didn't exist
+                        continue
+                    } else {
+                        commandInfo = info
+                    }
+                }
             }
         }
 
@@ -181,8 +191,7 @@ internal class TextCommandsListener internal constructor(
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                onHiddenCommand(event, commandInfo)
-                return false
+                throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
                 return false
@@ -252,23 +261,6 @@ internal class TextCommandsListener internal constructor(
         val suggestions = sortAndFilterSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
             val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
-            replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
-        }
-    }
-
-    private suspend fun onHiddenCommand(event: MessageReceivedEvent, commandInfo: TextCommandInfo) {
-        if (!context.textConfig.showSuggestions) return
-
-        val parentCommand = commandInfo.parentInstance
-        // If the hidden command is top-level, search in root commands, if not, search in sibling commands
-        val candidateSource = parentCommand?.subcommands?.values ?: context.textCommandsContext.rootCommands
-        val candidates = candidateSource
-            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner = true).isShowable }
-
-        // The input is the last component of the recognized (but hidden) command path
-        val suggestions = sortAndFilterSuggestions(commandInfo.name, candidates)
-        if (suggestions.isNotEmpty()) {
-            val suggestionsStr = suggestions.joinToString("**, **", "**", "**")
             replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
         }
     }

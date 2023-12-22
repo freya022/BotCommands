@@ -50,7 +50,7 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
     var ownerRequired: Boolean = false
 
     /**
-     * Hides a command from help content and execution.
+     * Hides a command and its subcommands from help content and execution.
      *
      * @see Hidden
      */
