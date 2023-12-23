@@ -1,17 +1,14 @@
 package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 
 @BService
-internal class ComponentFilters internal constructor(context: BContext) {
-    private val filters: Map<String, ComponentInteractionFilter<Any>> =
-        context.getInterfacedServices<ComponentInteractionFilter<Any>>().associateBy { it.javaClass.name }
+internal class ComponentFilters internal constructor(filters: List<ComponentInteractionFilter<Any>>) {
+    private val filters: Map<String, ComponentInteractionFilter<Any>> = filters.associateBy { it.javaClass.name }
 
     internal fun getFilters(qualifiedNames: Array<out String>): List<ComponentInteractionFilter<*>> {
         return qualifiedNames.map { qualifiedName ->

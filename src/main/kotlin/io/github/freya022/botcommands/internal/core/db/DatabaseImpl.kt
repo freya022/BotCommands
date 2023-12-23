@@ -5,11 +5,9 @@ import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.db.query.GenericParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.query.NonParametrizedQueryFactory
@@ -31,9 +29,9 @@ private val logger = KotlinLogging.logger { }
 @ServiceType(Database::class)
 @Dependencies(ConnectionSupplier::class)
 internal class DatabaseImpl internal constructor(
-    context: ServiceContainer,
     override val connectionSupplier: ConnectionSupplier,
-    override val databaseConfig: BDatabaseConfig
+    override val databaseConfig: BDatabaseConfig,
+    private val tracedQueryFactories: List<ParametrizedQueryFactory<*>>
 ) : Database {
     internal open class ConnectionResource internal constructor(protected val connection: Connection, private val semaphore: Semaphore) : Connection by connection {
         internal val availablePermits get() = semaphore.availablePermits
@@ -54,8 +52,6 @@ internal class DatabaseImpl internal constructor(
             else -> connection.unwrap(iface)
         }
     }
-
-    private val tracedQueryFactories: List<ParametrizedQueryFactory<*>> = context.getInterfacedServices()
 
     private val isQueryThresholdSet = databaseConfig.queryLogThreshold.isFinite() && databaseConfig.queryLogThreshold.isPositive()
     private val useTracedConnections = databaseConfig.logQueries || isQueryThresholdSet

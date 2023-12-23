@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.internal.localization
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -24,11 +22,11 @@ private val logger = KotlinLogging.logger<LocalizationService>()
 
 @BService
 internal class LocalizationServiceImpl internal constructor(
-    context: BContext,
+    formattableArgumentFactories: List<FormattableArgumentFactory>,
     private val localizationMapProviders: LocalizationMapProviders,
     private val localizationMapReader: LocalizationMapReaders
 ) : LocalizationService {
-    private val formattableArgumentFactories = Collections.unmodifiableList(context.getInterfacedServices<FormattableArgumentFactory>())
+    private val formattableArgumentFactories = Collections.unmodifiableList(formattableArgumentFactories)
 
     private val lock = ReentrantLock()
     private val localizationMap: MutableMap<String, MutableMap<Locale, Localization>> = ConcurrentHashMap()

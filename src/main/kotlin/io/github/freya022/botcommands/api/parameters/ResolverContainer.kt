@@ -1,13 +1,11 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
@@ -22,7 +20,8 @@ import java.util.*
 
 @BService
 class ResolverContainer internal constructor(
-    context: BContext,
+    resolvers: List<ParameterResolver<*, *>>,
+    resolverFactories: List<ParameterResolverFactory<*>>,
     private val serviceContainer: ServiceContainer
 ) {
     private val logger = KotlinLogging.logger { }
@@ -31,8 +30,8 @@ class ResolverContainer internal constructor(
     private val cache: MutableMap<ParameterWrapper, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.getInterfacedServices<ParameterResolver<*, *>>().forEach(::addResolver)
-        context.getInterfacedServices<ParameterResolverFactory<*>>().forEach(::addResolverFactory)
+        resolvers.forEach(::addResolver)
+        resolverFactories.forEach(::addResolverFactory)
     }
 
     fun addResolver(resolver: ParameterResolver<*, *>) {

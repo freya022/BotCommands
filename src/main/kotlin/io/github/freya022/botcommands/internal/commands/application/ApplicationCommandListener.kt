@@ -4,17 +4,15 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
-import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -26,23 +24,20 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @BService
-internal class ApplicationCommandListener(private val context: BContextImpl) {
+internal class ApplicationCommandListener internal constructor(
+    private val context: BContext,
+    filters: List<ApplicationCommandFilter<Any>>,
+    rejectionHandler: ApplicationCommandRejectionHandler<Any>?
+) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<ApplicationCommandFilter<Any>>
-    private val rejectionHandler: ApplicationCommandRejectionHandler<Any>?
-
-    init {
-        val filters = context.getInterfacedServices<ApplicationCommandFilter<Any>>()
-        globalFilters = filters.filter { it.global }
-
-        rejectionHandler = when {
-            filters.isEmpty() -> null
-            else -> context.getServiceOrNull<ApplicationCommandRejectionHandler<Any>>()
-                ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
-        }
+    private val globalFilters: List<ApplicationCommandFilter<Any>> = filters.filter { it.global }
+    private val rejectionHandler: ApplicationCommandRejectionHandler<Any>? = when {
+        filters.isEmpty() -> null
+        else -> rejectionHandler
+            ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
     }
 
     @BEventListener

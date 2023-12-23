@@ -7,8 +7,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
-import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.commands.Usability
@@ -31,6 +29,8 @@ private val spacePattern = Regex("\\s+")
 @BService
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
+    filters: List<TextCommandFilter<Any>>,
+    rejectionHandler: TextCommandRejectionHandler<Any>?,
     private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
@@ -39,18 +39,11 @@ internal class TextCommandsListener internal constructor(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<TextCommandFilter<Any>>
-    private val rejectionHandler: TextCommandRejectionHandler<Any>?
-
-    init {
-        val filters = context.getInterfacedServices<TextCommandFilter<Any>>()
-        globalFilters = filters.filter { it.global }
-
-        rejectionHandler = when {
-            globalFilters.isEmpty() -> null
-            else -> context.getServiceOrNull<TextCommandRejectionHandler<Any>>()
-                ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
-        }
+    private val globalFilters: List<TextCommandFilter<Any>> = filters.filter { it.global }
+    private val rejectionHandler: TextCommandRejectionHandler<Any>? = when {
+        globalFilters.isEmpty() -> null
+        else -> rejectionHandler
+            ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
     }
 
     @BEventListener(ignoreIntents = true)

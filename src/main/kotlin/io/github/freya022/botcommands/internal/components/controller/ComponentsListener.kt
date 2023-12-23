@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
@@ -16,8 +17,6 @@ import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
-import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -30,7 +29,6 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentHandl
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerOption
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -51,7 +49,9 @@ import kotlin.reflect.full.callSuspendBy
 @BService
 @Dependencies(Components::class, InternalDatabase::class)
 internal class ComponentsListener(
-    private val context: BContextImpl,
+    private val context: BContext,
+    filters: List<ComponentInteractionFilter<Any>>,
+    rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
     private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
@@ -61,18 +61,11 @@ internal class ComponentsListener(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<ComponentInteractionFilter<Any>>
-    private val rejectionHandler: ComponentInteractionRejectionHandler<Any>?
-
-    init {
-        val filters = context.getInterfacedServices<ComponentInteractionFilter<Any>>()
-        globalFilters = filters.filter { it.global }
-
-        rejectionHandler = when {
-            globalFilters.isEmpty() -> null
-            else -> context.getServiceOrNull<ComponentInteractionRejectionHandler<Any>>()
-                ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
-        }
+    private val globalFilters: List<ComponentInteractionFilter<Any>> = filters.filter { it.global }
+    private val rejectionHandler: ComponentInteractionRejectionHandler<Any>? = when {
+        globalFilters.isEmpty() -> null
+        else -> rejectionHandler
+            ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
     }
 
     @BEventListener
