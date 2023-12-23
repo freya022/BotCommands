@@ -36,8 +36,8 @@ public final class LocalizationMapProviders {
 	@UnmodifiableView
 	public Collection<LocalizationMapProvider> getProviders() {
 		if (providers == null)
-			providers = serviceContainer.getInterfacedServices(LocalizationMapProvider.class);
-		return Collections.unmodifiableCollection(providers);
+			providers = Collections.unmodifiableList(serviceContainer.getInterfacedServices(LocalizationMapProvider.class));
+		return providers;
 	}
 
 	/**
