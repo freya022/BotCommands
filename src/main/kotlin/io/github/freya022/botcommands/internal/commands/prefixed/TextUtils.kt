@@ -114,7 +114,7 @@ object TextUtils {
             variation.description?.let { appendLine(it) }
             appendLine("**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
             appendLine("**Example:** ${variation.buildExample(commandOptionsByParameters)}")
-        } else {
+        } else if (commandInfo.variations.isNotEmpty()) {
             appendLine("### Usages:")
             commandInfo.variations.forEachIndexed { i, variation ->
                 val commandOptionsByParameters = variation.getCommandOptionsByParameters()
