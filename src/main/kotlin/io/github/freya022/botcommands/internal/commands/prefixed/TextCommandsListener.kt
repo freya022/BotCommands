@@ -2,10 +2,8 @@ package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.text.*
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -16,7 +14,6 @@ import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -33,7 +30,8 @@ private val spacePattern = Regex("\\s+")
 
 @BService
 internal class TextCommandsListener internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
+    private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
     private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
@@ -258,14 +256,10 @@ internal class TextCommandsListener internal constructor(
         val candidates = context.textCommandsContext.rootCommands
             .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner).isShowable }
 
-        val suggestions = sortAndFilterSuggestions(commandName, candidates)
+        val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
             val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
             replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
         }
-    }
-
-    private fun sortAndFilterSuggestions(input: String, candidates: List<TextCommandInfo>): List<TextCommandInfo> {
-        return candidates //TODO
     }
 }
