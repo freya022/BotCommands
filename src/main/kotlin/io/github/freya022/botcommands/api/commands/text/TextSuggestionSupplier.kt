@@ -24,7 +24,9 @@ fun interface TextSuggestionSupplier {
      * only requiring you to match against the user input.
      *
      * @param topLevelName The user input, which should correspond to the top level command
-     * @param candidates   The available commands, all of them can be shown to the user.
+     * @param candidates   The available commands, all of them can be shown to the user
+     *
+     * @return The list of commands suggested to the user
      */
     fun getSuggestions(topLevelName: String, candidates: List<TopLevelTextCommandInfo>): Collection<TopLevelTextCommandInfo>
 }
