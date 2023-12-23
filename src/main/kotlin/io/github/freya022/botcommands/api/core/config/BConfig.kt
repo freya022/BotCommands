@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -19,6 +20,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @InjectedService
 interface BConfig {
+    /**
+     * User IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
+     * and having [hidden commands][Hidden] shown.
+     */
     val ownerIds: Set<Long>
 
     val packages: Set<String>
