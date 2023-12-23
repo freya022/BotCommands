@@ -1,12 +1,9 @@
 package io.github.freya022.botcommands.internal.commands.prefixed
 
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.text.*
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -17,9 +14,9 @@ import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -27,14 +24,14 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.internal.utils.Checks
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
 @BService
 internal class TextCommandsListener internal constructor(
-    private val context: BContextImpl,
+    private val context: BContext,
+    private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
     private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
@@ -80,16 +77,14 @@ internal class TextCommandsListener internal constructor(
             try {
                 val isNotOwner = !context.config.isOwner(member.idLong)
 
-                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
+                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
                     // At this point no top level command was found,
                     // if a subcommand wasn't matched, it would simply appear in the args
-                    val topLevelName = content.substringBefore(' ')
-                    if (topLevelName.matches(Checks.ALPHANUMERIC_WITH_DASH.toRegex())) {
-                        // Commands aren't going to be found if the user tried to use illegal characters anyway
-                        onCommandNotFound(event, CommandPath.of(topLevelName), isNotOwner)
-                    }
+                    onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
                     return@launch
                 }
+
+                logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
 
                 commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                     if (!canRun(event, commandInfo, isNotOwner)) {
@@ -146,13 +141,20 @@ internal class TextCommandsListener internal constructor(
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
     }
 
-    private fun findCommandWithArgs(content: String): CommandWithArgs? {
+    private fun findCommandWithArgs(content: String, isNotOwner: Boolean): CommandWithArgs? {
         var commandInfo: TextCommandInfo? = null
         val words: List<String> = spacePattern.split(content)
         for (index in words.indices) {
             when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
                 null -> break
-                else -> commandInfo = info
+                else -> {
+                    if (info.hidden && isNotOwner) {
+                        //This will help us have the same behavior as if the command didn't exist
+                        continue
+                    } else {
+                        commandInfo = info
+                    }
+                }
             }
         }
 
@@ -187,8 +189,7 @@ internal class TextCommandsListener internal constructor(
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                onCommandNotFound(event, commandInfo.path, true)
-                return false
+                throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
                 return false
@@ -249,21 +250,16 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private fun onCommandNotFound(event: MessageReceivedEvent, commandName: CommandPath, isNotOwner: Boolean) {
+    private suspend fun onCommandNotFound(event: MessageReceivedEvent, commandName: String, isNotOwner: Boolean) {
         if (!context.textConfig.showSuggestions) return
 
-        TODO("Suggestions are not implemented yet")
+        val candidates = context.textCommandsContext.rootCommands
+            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner).isShowable }
 
-//        val suggestions = getSuggestions(event, commandName, isNotOwner)
-//        if (suggestions.isNotEmpty()) {
-//            replyError(
-//                event,
-//                context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestions.joinToString("**, **", "**", "**"))
-//            )
-//        }
+        val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
+        if (suggestions.isNotEmpty()) {
+            val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
+            replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
+        }
     }
-
-//    private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
-//        return listOf() //TODO decide if useful or not
-//    }
 }

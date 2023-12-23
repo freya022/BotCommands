@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
@@ -39,6 +40,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see DefaultEmbedFooterIconSupplier
  * @see IHelpCommand
  * @see HelpBuilderConsumer
+ * @see TextSuggestionSupplier
  *
  * @see AutocompleteTransformer
  * @see ApplicationCommandFilter

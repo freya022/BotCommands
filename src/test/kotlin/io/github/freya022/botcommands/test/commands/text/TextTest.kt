@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
@@ -66,6 +67,12 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
+    @Hidden
+    @JDATextCommand(path = ["test_annotated", "subcommand", "hidden"])
+    fun onTextTextSubcommandHidden(event: BaseCommandEvent) {
+        event.reply(":spy:").queue()
+    }
+
     @TextDeclaration
     fun declare(textCommandManager: TextCommandManager) {
         textCommandManager.textCommand("test") {
@@ -90,6 +97,12 @@ class TextTest : TextCommand() {
             subcommand("subcommand") {
                 variation(::onTextTestSubcommand) {
                     option("number")
+                }
+
+                subcommand("hidden") {
+                    hidden = true
+
+                    variation(::onTextTextSubcommandHidden)
                 }
             }
         }
