@@ -42,7 +42,10 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                     }
                 }
             } catch (e: Throwable) {
-                exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'")
+                exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'", buildMap(2) {
+                    event.message?.let { put("Message", it.jumpUrl) }
+                    put("Modal values", event.values.associate { it.id to it.asString })
+                })
 
                 when {
                     event.isAcknowledged -> event.hook.send(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
