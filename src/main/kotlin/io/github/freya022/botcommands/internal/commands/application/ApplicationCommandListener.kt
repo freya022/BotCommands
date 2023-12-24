@@ -42,7 +42,7 @@ internal class ApplicationCommandListener internal constructor(
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
-        logger.trace { "Received slash command: ${reconstructCommand(event)}" }
+        logger.trace { "Received slash command: ${event.commandString}" }
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
@@ -72,7 +72,7 @@ internal class ApplicationCommandListener internal constructor(
 
     @BEventListener
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
-        logger.trace { "Received user context command: ${reconstructCommand(event)}" }
+        logger.trace { "Received user context command: ${event.name}" }
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
@@ -102,7 +102,7 @@ internal class ApplicationCommandListener internal constructor(
 
     @BEventListener
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
-        logger.trace { "Received message context command: ${reconstructCommand(event)}" }
+        logger.trace { "Received message context command: ${event.name}" }
 
         context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
@@ -181,7 +181,7 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
-        exceptionHandler.handleException(event, e, "application command '${reconstructCommand(event)}'")
+        exceptionHandler.handleException(event, e, "application command '${event.commandString}'")
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
@@ -249,12 +249,5 @@ internal class ApplicationCommandListener internal constructor(
     private fun reply(event: GenericCommandInteractionEvent, msg: String) {
         event.reply_(msg, ephemeral = true)
             .queue(null) { exceptionHandler.handleException(event, it, "interaction reply") }
-    }
-
-    private fun reconstructCommand(event: GenericCommandInteractionEvent): String {
-        return when (event) {
-            is SlashCommandInteractionEvent -> event.commandString
-            else -> event.name
-        }
     }
 }
