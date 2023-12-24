@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
+import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
@@ -20,15 +21,11 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.system.measureNanoTime
-import kotlin.time.Duration.Companion.minutes
 
 internal class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
@@ -79,6 +76,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
         }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
     }
 
+    private val bcRegex = Regex("at ${Regex.escape("io.github.freya022.botcommands.")}(?:api|internal)[.a-z]*\\.(.+)")
     private var nextExceptionDispatch: Long = 0
 
     override fun dispatchException(message: String, t: Throwable?, extraContext: Map<String, Any?>) {
@@ -114,6 +112,12 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
                         .filterNot { it.endsWith(".kt)") }
                         .filterNot { ".access$" in it }
                         .map { it.replace("    ", "\t") }
+                        .map {
+                            bcRegex.replace(it) { matchResult ->
+                                val remaining = matchResult.groupValues[1]
+                                "at BC-${BCInfo.VERSION}/$remaining"
+                            }
+                        }
 
                     for (stackTraceLine in stackTraceLines) {
                         if (this.length + stackTraceLine.length + 3 + 1 + 63 > Message.MAX_CONTENT_LENGTH) break
