@@ -81,7 +81,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     private var nextExceptionDispatch: Long = 0
 
-    override fun dispatchException(message: String, t: Throwable?) {
+    override fun dispatchException(message: String, t: Throwable?, extraContext: Map<String, Any?>) {
         if (config.disableExceptionsInDMs) return //Don't send DM exceptions in dev mode
 
         if (nextExceptionDispatch < System.currentTimeMillis()) {
@@ -89,8 +89,12 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
             val content = buildString {
                 appendLine(message)
+                if (extraContext.isNotEmpty()) {
+                    appendLine("## Context")
+                    appendLine(extraContext.entries.joinToString("\n") { (name, value) -> "**$name:** $value" })
+                }
                 if (t != null) {
-                    append("\nFiltered exception:```\n")
+                    append("## Filtered exception\n```\n")
                     val stackTraceLines = t.unwrap().stackTraceToString()
                         .lineSequence()
                         .filterNot { "jdk.internal" in it }
