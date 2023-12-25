@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 
 /**
  * Marks this class as a [parameter resolver factory][ParameterResolverFactory].<br>
- * This is a specialization of [BService] for parameter resolver factories.
+ * This is a specialization of [@BService][BService] for parameter resolver factories.
  *
  * **Requirement:** this must extend [ParameterResolverFactory].
  *

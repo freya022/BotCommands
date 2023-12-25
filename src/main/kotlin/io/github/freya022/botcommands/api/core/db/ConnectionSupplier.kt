@@ -33,7 +33,7 @@ import java.time.Duration
  * the PostgreSQL driver has a far superior quality, larger feature set and has full syntax support.
  *
  * ## Usage
- * First, register your instance as a service with [BService]
+ * First, register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * ### With Flyway (Recommended)

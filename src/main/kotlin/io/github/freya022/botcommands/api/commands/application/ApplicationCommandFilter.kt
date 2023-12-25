@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * and then given back to the [ApplicationCommandRejectionHandler].
  *
  * ### Usage
- * - Register your instance as a service with [BService]
+ * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * This is not required if you pass the instance directly to the command builder.
  * - Have exactly one instance of [ApplicationCommandRejectionHandler].

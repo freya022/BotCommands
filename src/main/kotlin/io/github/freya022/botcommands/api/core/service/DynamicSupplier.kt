@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 /**
  * Interface to supply services of the requested type.
  *
- * **Usage**: Register your instance as a service with [BService]
+ * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see InterfacedService @InterfacedService

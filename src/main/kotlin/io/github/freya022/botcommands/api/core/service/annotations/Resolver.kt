@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
 
 /**
  * Marks this class as a [parameter resolver][ParameterResolver].<br>
- * This is a specialization of [BService] for parameter resolvers.
+ * This is a specialization of [@BService][BService] for parameter resolvers.
  *
  * **Requirement:** this must extend [ParameterResolver].
  *

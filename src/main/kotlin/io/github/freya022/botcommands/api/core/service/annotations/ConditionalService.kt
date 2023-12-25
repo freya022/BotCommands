@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 /**
  * Marks a service as being available under certain conditions.
  *
- * You are still required to mark this class as a service with [BService].
+ * You are still required to mark this class as a service with [@BService][BService].
  *
  * All [ConditionalServiceChecker] must pass for this service to be instantiated.
  *

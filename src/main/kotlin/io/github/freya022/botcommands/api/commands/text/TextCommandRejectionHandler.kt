@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Processes text command rejections returned by [text command filters][TextCommandFilter].
  *
  * ### Usage
- * - Register your instance as a service with [BService]
+ * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
  *

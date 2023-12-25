@@ -19,7 +19,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 /**
  * Marker annotation on interfaces intended to be implemented by a service.
  *
- * If you implement such an interface, your implementation class will need to use [BService]
+ * If you implement such an interface, your implementation class will need to use [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * Implementors of this interface will automatically be registered with the interface's type,

@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Factory for [formattable arguments][FormattableArgument].
  *
- * **Usage**: Register your instance as a service with [BService]
+ * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see FormattableArgument

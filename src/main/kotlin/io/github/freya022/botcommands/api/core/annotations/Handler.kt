@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 
 /**
  * Enables this class to be scanned for one or more handler.<br>
- * This is a specialization of [BService] for handlers.
+ * This is a specialization of [@BService][BService] for handlers.
  *
  * A warning will be logged if this class does not have any handlers,
  * i.e., methods that declare handlers with annotations.

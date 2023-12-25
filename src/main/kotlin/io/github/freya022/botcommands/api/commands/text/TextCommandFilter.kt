@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * and then given back to the [TextCommandRejectionHandler].
  *
  * ### Usage
- * - Register your instance as a service with [BService]
+ * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * This is not required if you pass the instance directly to the command builder.
  * - Have exactly one instance of [TextCommandRejectionHandler].

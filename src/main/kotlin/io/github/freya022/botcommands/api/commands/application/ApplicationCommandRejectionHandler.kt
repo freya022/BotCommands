@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * Processes application command rejections returned by [application command filters][ApplicationCommandFilter].
  *
  * ### Usage
- * - Register your instance as a service with [BService]
+ * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
  *

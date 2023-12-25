@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * After combining those filters, you can delegate the calls to it.
  *
  * ### Usage
- * - Register your instance as a service with [BService]
+ * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations]
  * (this is required as the service is retrieved when the component is used).
  * - Have exactly one instance of [ComponentInteractionRejectionHandler].
@@ -45,7 +45,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *
  * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
  *
- * **Usage**: Register your instance as a service with [BService]
+ * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * ### Example - Rejecting component interactions from non-owners

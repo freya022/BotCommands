@@ -17,7 +17,7 @@ import java.sql.PreparedStatement
  * - [BDatabaseConfig.queryLogThreshold] is configured
  *
  * ### Usage
- * Register your instance as a service with [BService]
+ * Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * ### Built-in RDBMS support

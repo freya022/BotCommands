@@ -18,7 +18,7 @@ import java.util.*
 /**
  * Optional interfaced service to be implemented by the service which creates a JDA instance.
  *
- * **Usage**: Register your instance as a service with [BService]
+ * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * Example:
