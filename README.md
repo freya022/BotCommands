@@ -75,7 +75,7 @@ to get started using a bot template.
 [//]: # (TODO keep an eye out for this wiki link)
 
 ## Getting the library
-[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
+[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
 ### Maven
 ```xml
 <dependencies>
