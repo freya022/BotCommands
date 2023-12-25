@@ -91,6 +91,8 @@ to get started using a bot template.
 ```gradle
 repositories {
     mavenCentral()
+    // The framework uses JDA-KTX, which requires Jitpack
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
