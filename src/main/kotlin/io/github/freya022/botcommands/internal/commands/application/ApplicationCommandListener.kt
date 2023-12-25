@@ -181,7 +181,7 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
-        exceptionHandler.handleException(event, e, "application command '${event.commandString}'")
+        exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap())
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
@@ -248,6 +248,8 @@ internal class ApplicationCommandListener internal constructor(
 
     private fun reply(event: GenericCommandInteractionEvent, msg: String) {
         event.reply_(msg, ephemeral = true)
-            .queue(null) { exceptionHandler.handleException(event, it, "interaction reply") }
+            .queue(null) { throwable ->
+                exceptionHandler.handleException(event, throwable, "interaction reply", emptyMap())
+            }
     }
 }

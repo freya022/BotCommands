@@ -7,7 +7,10 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
-class Button internal constructor(private val componentController: ComponentController, button: JDAButton) : JDAButton by button, IdentifiableComponent {
+class Button internal constructor(
+    private val componentController: ComponentController,
+    private val button: JDAButton
+) : JDAButton by button, IdentifiableComponent {
     override fun withDisabled(disabled: Boolean): Button {
         return Button(componentController, super.withDisabled(disabled))
     }
@@ -39,4 +42,21 @@ class Button internal constructor(private val componentController: ComponentCont
      */
     @JvmSynthetic
     override suspend fun await(): ButtonEvent = componentController.awaitComponent(this)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Button
+
+        return button == other.button
+    }
+
+    override fun hashCode(): Int {
+        return button.hashCode()
+    }
+
+    override fun toString(): String {
+        return button.toString()
+    }
 }

@@ -215,7 +215,10 @@ internal class ComponentsListener(
     }
 
     private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
-        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'")
+        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
+            "Message" to event.message.jumpUrl,
+            "Component" to event.component
+        ))
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {

@@ -130,7 +130,7 @@ internal class TextCommandsListener internal constructor(
     }
 
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
-        exceptionHandler.handleException(event, e, "text command '$msg'")
+        exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
     }
 

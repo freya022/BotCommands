@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
+import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
@@ -20,10 +21,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -79,38 +77,63 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
         }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
     }
 
+    private val bcRegex = Regex("at ${Regex.escape("io.github.freya022.botcommands.")}(?:api|internal)[.a-z]*\\.(.+)")
     private var nextExceptionDispatch: Long = 0
 
-    override fun dispatchException(message: String, t: Throwable?) {
+    override fun dispatchException(message: String, t: Throwable?, extraContext: Map<String, Any?>) {
         if (config.disableExceptionsInDMs) return //Don't send DM exceptions in dev mode
 
         if (nextExceptionDispatch < System.currentTimeMillis()) {
             nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
 
-            val exceptionStr = when (t) {
-                null -> ""
-                else -> "\nException:```\n${
-                    t.unwrap().stackTraceToString()
+            val content = buildString {
+                appendLine(message)
+                if (extraContext.isNotEmpty()) {
+                    appendLine("## Context")
+                    appendLine(extraContext.entries.joinToString("\n") { (name, value) -> "**$name:** $value" })
+                }
+                if (t != null) {
+                    append("## Filtered exception\n```\n")
+                    val stackTraceLines = t.unwrap().stackTraceToString()
                         .lineSequence()
                         .filterNot { "jdk.internal" in it }
+                        .filterNot { "java.base/java.lang.reflect.Method" in it }
+                        .filterNot { "kotlin.reflect.full" in it }
                         .filterNot { "kotlin.reflect.jvm.internal" in it }
                         .filterNot { "kotlin.coroutines.jvm.internal" in it }
+                        .filterNot { "dev.reformator.stacktracedecoroutinator" in it }
+                        .filterNot { "kotlinx.coroutines.DispatchedTask.run" in it }
+                        .filterNot { "java.base/java.util.concurrent.Executors\$RunnableAdapter.call" in it }
+                        .filterNot { "java.base/java.util.concurrent.FutureTask.run" in it }
+                        .filterNot { "java.base/java.util.concurrent.ScheduledThreadPoolExecutor\$ScheduledFutureTask.run" in it }
+                        .filterNot { "java.base/java.util.concurrent.ThreadPoolExecutor" in it }
+                        .filterNot { "java.base/java.lang.Thread.run" in it }
+                        //Remove lines without a source line number,
+                        // they are usually generated methods like "invokeSuspend"
+                        .filterNot { it.endsWith(".kt)") }
+                        .filterNot { ".access$" in it }
                         .map { it.replace("    ", "\t") }
-                        .fold("") { acc, s ->
-                            when {
-                                acc.length + s.length <= Message.MAX_CONTENT_LENGTH - 256 -> acc + s + "\n"
-                                else -> acc
+                        .map {
+                            bcRegex.replace(it) { matchResult ->
+                                val remaining = matchResult.groupValues[1]
+                                "at BC-${BCInfo.VERSION}/$remaining"
                             }
-                        }.trimEnd()
-                }```"
+                        }
+
+                    for (stackTraceLine in stackTraceLines) {
+                        if (this.length + stackTraceLine.length + 3 + 1 + 63 > Message.MAX_CONTENT_LENGTH) break
+                        appendLine(stackTraceLine)
+                    }
+                    // Replace last newline with the code block end
+                    replace(lastIndex, lastIndex + 1, "```")
+                }
+                append("\nPlease check the logs for more detail and possible exceptions")
             }
 
             jda.retrieveApplicationInfo()
-                .map { obj: ApplicationInfo -> obj.owner }
-                .flatMap { obj: User -> obj.openPrivateChannel() }
-                .flatMap { channel: PrivateChannel ->
-                    channel.sendMessage("$message$exceptionStr\n\nPlease check the logs for more detail and possible exceptions")
-                }
+                .map { applicationInfo -> applicationInfo.owner }
+                .flatMap { user -> user.openPrivateChannel() }
+                .flatMap { channel -> channel.sendMessage(content) }
                 .queue(
                     null,
                     ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn { "Could not send exception DM to owner" } }
