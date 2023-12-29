@@ -467,7 +467,7 @@ Finally, load it on the first lines of your main program:
     ```
 
 While you can run the main class in your IDE during development,
-to run your bot in production, you can press ++ctrl++ twice in IntelliJ, then run:
+you can create a JAR with all the dependencies by pressing ++ctrl++ twice in IntelliJ, then running:
 
 === "Maven"
 
