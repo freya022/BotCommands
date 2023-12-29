@@ -165,6 +165,10 @@ The only strictly necessary dependencies are the framework and JDA:
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3&label=BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
 [![](https://img.shields.io/maven-central/v/net.dv8tion/JDA?versionPrefix=5&label=JDA)](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
 
+!!! tip ""
+
+    Omit the `v` prefix from the version, e.g. `5.0.0-beta.18`.
+
 === "Maven"
 
     ```xml
