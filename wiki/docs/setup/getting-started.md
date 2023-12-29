@@ -204,81 +204,7 @@ The only strictly necessary dependencies are the framework and JDA:
 
 Any SLF4J compatible logger should work; I recommend logback, which you can learn more [here](logging.md).
 
-### Creating the main class
-
-??? "Adding stacktrace-decoroutinator"
-
-    You can optionally add `stacktrace-decoroutinator`, this will help you get clearer stacktrace for code using coroutines.
-    
-    !!! info
-    
-        Java users also benefit from it as it may help debug framework issues.
-    
-    [![](https://img.shields.io/maven-central/v/dev.reformator.stacktracedecoroutinator/stacktrace-decoroutinator-jvm?label=stacktrace-decoroutinator)](https://mvnrepository.com/artifact/dev.reformator.stacktracedecoroutinator/stacktrace-decoroutinator-jvm/latest)
-    
-    === "Maven"
-    
-        ```xml
-        <dependencies>
-            ...
-    
-            <dependency>
-                <groupId>dev.reformator.stacktracedecoroutinator</groupId>
-                <artifactId>stacktrace-decoroutinator-jvm</artifactId>
-                <version>SD_VERSION</version>
-            </dependency>
-        </dependencies>
-        ```
-    
-    === "Kotlin Gradle"
-    
-        ```kotlin
-        repositories {
-            ...
-            mavenCentral()
-        }
-        
-        dependencies {
-            ...
-    
-            implementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm:SD_VERSION")
-        }
-        ```
-
-    Finally, load it on the first lines of your main program:
-
-    === "Kotlin"
-
-        ```kotlin
-        // stacktrace-decoroutinator has issues when reloading with hotswap agent
-        if ("-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments) {
-            logger.info { "Skipping stacktrace-decoroutinator as enhanced hotswap is active" }
-        } else if ("--no-decoroutinator" in args) {
-            logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
-        } else {
-            DecoroutinatorRuntime.load()
-        }
-        ```
-
-        !!! warning
-
-            `stacktrace-decoroutinator` must be loaded before any coroutine code is loaded, 
-            including suspending main functions `suspend fun main() { ... }`.
-
-    === "Java"
-
-        ```java
-        // stacktrace-decoroutinator has issues when reloading with hotswap agent
-        if (ManagementFactory.getRuntimeMXBean().getInputArguments().contains("-XX:+AllowEnhancedClassRedefinition")) {
-            logger.info("Skipping stacktrace-decoroutinator as enhanced hotswap is active");
-        } else if (Arrays.asList(args).contains("--no-decoroutinator")) {
-            logger.info("Skipping stacktrace-decoroutinator as --no-decoroutinator is specified");
-        } else {
-            DecoroutinatorRuntime.INSTANCE.load();
-        }
-        ```
-
-#### Creating a config service
+### Creating a config service
 
 Create a small `Config` service, it can be a simple object with the properties you need, 
 this will be useful when running your bot.
@@ -324,12 +250,12 @@ this will be useful when running your bot.
 
     You can refer to [the Dependency Injection page](../using-botcommands/dependency-injection.md) for more details
 
-#### Starting the framework
+### Creating the main class
 
 As we've used a singleton pattern for your `Config` class, we can get the same instance anywhere, 
 and still be able to get it as a service.
 
-All you need to do is use `BBuilder#newBuilder`:
+All you need to do to start the framework is `BBuilder#newBuilder`:
 
 === "Kotlin"
 
@@ -387,9 +313,9 @@ All you need to do is use `BBuilder#newBuilder`:
     JDA must be created **after** the framework is built,
     as the framework listens to JDA events and must not skip any of these.
 
-#### Creating a `JDAService`
+### Creating a `JDAService`
 
-Now you've been able to start the framework, all your services should be loaded, 
+Now you've been able to start the framework, all your services (such as `Config` for the moment) should be loaded, 
 but you must now have a way to start JDA, implementing `JDAService` will let you start the bot in a convenient place.
 
 === "Kotlin"
@@ -419,6 +345,79 @@ but you must now have a way to start JDA, implementing `JDAService` will let you
 You can now run your bot!
 Assuming you have done your config class and provided at least the token and owner IDs, 
 you should be able to run the help command, by mentioning your bot `@YourBot help`.
+
+### Optional - Add `stacktrace-decoroutinator`
+
+I recommend adding [`stacktrace-decoroutinator`](https://github.com/Anamorphosee/stacktrace-decoroutinator), 
+which will help you get clearer stacktrace when using Kotlin coroutines.
+
+!!! note
+
+    Java users also benefit from it as it may help debug framework issues.
+
+[![](https://img.shields.io/maven-central/v/dev.reformator.stacktracedecoroutinator/stacktrace-decoroutinator-jvm?label=stacktrace-decoroutinator)](https://mvnrepository.com/artifact/dev.reformator.stacktracedecoroutinator/stacktrace-decoroutinator-jvm/latest)
+
+=== "Maven"
+
+    ```xml
+    <dependencies>
+        ...
+
+        <dependency>
+            <groupId>dev.reformator.stacktracedecoroutinator</groupId>
+            <artifactId>stacktrace-decoroutinator-jvm</artifactId>
+            <version>SD_VERSION</version>
+        </dependency>
+    </dependencies>
+    ```
+
+=== "Kotlin Gradle"
+
+    ```kotlin
+    repositories {
+        ...
+        mavenCentral()
+    }
+    
+    dependencies {
+        ...
+
+        implementation("dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm:SD_VERSION")
+    }
+    ```
+
+Finally, load it on the first lines of your main program:
+
+=== "Kotlin"
+
+    ```kotlin
+    // stacktrace-decoroutinator has issues when reloading with hotswap agent
+    if ("-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments) {
+        logger.info { "Skipping stacktrace-decoroutinator as enhanced hotswap is active" }
+    } else if ("--no-decoroutinator" in args) {
+        logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
+    } else {
+        DecoroutinatorRuntime.load()
+    }
+    ```
+
+    !!! warning
+
+        `stacktrace-decoroutinator` must be loaded before any coroutine code is loaded, 
+        including suspending main functions `suspend fun main() { ... }`.
+
+=== "Java"
+
+    ```java
+    // stacktrace-decoroutinator has issues when reloading with hotswap agent
+    if (ManagementFactory.getRuntimeMXBean().getInputArguments().contains("-XX:+AllowEnhancedClassRedefinition")) {
+        logger.info("Skipping stacktrace-decoroutinator as enhanced hotswap is active");
+    } else if (Arrays.asList(args).contains("--no-decoroutinator")) {
+        logger.info("Skipping stacktrace-decoroutinator as --no-decoroutinator is specified");
+    } else {
+        DecoroutinatorRuntime.INSTANCE.load();
+    }
+    ```
 
 ### Creating a runnable JAR
 
