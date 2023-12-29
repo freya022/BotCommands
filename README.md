@@ -62,7 +62,7 @@ You are strongly recommended to have some experience with Kotlin (or Java),
 OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics before you start using this library.
 
 ### Prerequisites
-* An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
+* An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=21) installation
 * A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
 * (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands/3.X/using-commands/Inferred-option-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
@@ -70,9 +70,7 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
   * Each bot template has it enabled in their main class
 
 You can then head over to [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/) 
-to get started using a bot template.
-
-[//]: # (TODO keep an eye out for this wiki link)
+to get started either using a bot template, or from a new project.
 
 ## Getting the library
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
