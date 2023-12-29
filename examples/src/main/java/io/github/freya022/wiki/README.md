@@ -1,0 +1,1 @@
+This folder can be ignored, these files are for the Wiki only
