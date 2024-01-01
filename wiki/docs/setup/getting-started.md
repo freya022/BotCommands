@@ -341,7 +341,8 @@ but you must now have a way to start JDA, implementing `JDAService` will let you
     Implementing `JDAService` guarantees that your bot will connect at the right time, 
     and provides a way for the framework to check missing intents and missing cache flags before your bot even starts.
 
-    You can retrieve a `JDA` instance once this service has finished constructing.
+    You can retrieve a `JDA` instance once this service has finished constructing, 
+    this also implies that you cannot request a `JDA` before `InjectedJDAEvent` has fired.
 
 !!! warning
 
