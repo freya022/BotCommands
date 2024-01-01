@@ -84,7 +84,6 @@ nav:
       - Getting started: setup/getting-started.md
       - Logging: setup/logging.md
   - Using BotCommands:
-#      - Setup: foo # TODO This should include showing JDAService, including advantages (async, ...) and downsides (JDA not immediately accessible)
       - Dependency injection: using-botcommands/dependency-injection.md
       - Database: using-botcommands/database.md
 #      - Rate limiting: foo
