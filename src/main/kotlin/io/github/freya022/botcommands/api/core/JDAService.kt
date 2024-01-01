@@ -48,7 +48,7 @@ abstract class JDAService {
     /**
      * The intents used by your bot,
      * must be passed as the entire list of intents your bot will use,
-     * i.e., JDABuilder's create(Light/Default) methods and similar for shard managers.
+     * i.e., JDABuilder's `create(Light/Default)` methods and similar for shard managers.
      *
      * @see defaultIntents
      */

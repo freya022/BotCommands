@@ -62,16 +62,16 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         }
 
         val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() }
-        future.whenComplete { t: T?, throwable: Throwable? ->
+        future.whenComplete { event: T?, throwable: Throwable? ->
             try {
-                waitingEvent.onComplete?.accept(future, t, throwable)
+                waitingEvent.onComplete?.accept(future, event, throwable)
                 if (throwable is TimeoutException) {
                     logger.trace { "Timeout for ${waitingEvent.eventType.simpleNestedName} waiter" }
                     //Not removed automatically by Iterator#remove before this method is called
                     lock.withLock { waitingEvents.remove(waitingEvent) }
                     waitingEvent.onTimeout?.run()
-                } else if (t != null) {
-                    waitingEvent.onSuccess?.accept(t)
+                } else if (event != null) {
+                    waitingEvent.onSuccess?.accept(event)
                 } else if (future.isCancelled) {
                     logger.trace { "Cancelled ${waitingEvent.eventType.simpleNestedName} waiter" }
                     //Not removed automatically by Iterator#remove before this method is called
@@ -81,7 +81,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
                     throwInternal("Unexpected branch with stack trace: ${throwable?.stackTraceToString()}")
                 }
             } catch (e: Exception) {
-                exceptionHandler.handleException(t, e, "EventWaiter Future#whenCompleteAsync")
+                exceptionHandler.handleException(event, e, "EventWaiter CompletableFuture#whenComplete")
             }
         }
 
