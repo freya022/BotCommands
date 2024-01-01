@@ -26,46 +26,8 @@ import kotlin.time.Duration.Companion.minutes
  * Entry point for the BotCommands framework.
  *
  * Note: Building JDA before the framework will result in an error,
- * I strongly recommend that you create a service which extends [JDAService].
- *
- * Creating a JDA instance when this method return is also fine.
- *
- * **Example** - Main.kt:
- * ```kt
- * val scope = getDefaultScope()
- * val manager = CoroutineEventManager(scope, 1.minutes)
- * manager.listener<ShutdownEvent> {
- *     this.cancel() //"this" is a scope delegate
- * }
- *
- * BBuilder.newBuilder(manager) {
- *     addSearchPath("io.github.name.bot") //Change this
- *
- *     components {
- *         useComponents = true
- *     }
- *
- *     textCommands {
- *         usePingAsPrefix = true
- *     }
- * }
- * ```
- *
- * Bot.kt:
- * ```kt
- * @BService
- * class Bot(private val config: Config) : JDAService() {
- *     override val intents: Set<GatewayIntent> = defaultIntents
- *
- *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
- *         light(config.token, enableCoroutines = false /* required */) {
- *             //Configure JDA
- *
- *             setEventManager(eventManager) //Required
- *         }
- *     }
- * }
- * ```
+ * I strongly recommend that you create a service extending [JDAService],
+ * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/#creating-a-jdaservice).
  *
  * @see BService @BService
  * @see InterfacedService @InterfacedService
