@@ -50,6 +50,7 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
     }
 
     @Suppress("UNCHECKED_CAST")
+    @JvmSynthetic
     @PublishedApi
     internal fun readArray(columnIndex: Int, elementType: Class<*>): Array<*> {
         val list = readList(columnIndex, elementType)
@@ -58,6 +59,7 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         return array
     }
 
+    @JvmSynthetic
     @PublishedApi
     internal fun readList(columnIndex: Int, elementType: Class<*>): List<*> {
         val boxedType = elementType.toBoxed()
