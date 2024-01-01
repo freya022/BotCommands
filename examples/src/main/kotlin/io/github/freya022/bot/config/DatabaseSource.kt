@@ -18,7 +18,9 @@ class DatabaseSource(config: Config) : HikariSourceSupplier {
         username = config.databaseConfig.user
         password = config.databaseConfig.password
 
+        // At most 2 JDBC connections, the database will suspend/block if all connections are used
         maximumPoolSize = 2
+        // Emits a warning and does a thread/coroutine dump after the duration
         leakDetectionThreshold = 10.seconds.inWholeMilliseconds
     })
 
@@ -27,6 +29,7 @@ class DatabaseSource(config: Config) : HikariSourceSupplier {
         createFlyway("bc", "bc_database_scripts").migrate()
 
         //You can use the same function for your database, you have to change the schema and scripts location
+        createFlyway("public", "wiki_database_scripts").migrate()
 
         logger.info { "Created database source" }
     }
