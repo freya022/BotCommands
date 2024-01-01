@@ -34,14 +34,14 @@ public class SlashDb extends ApplicationCommand {
         //TODO remove object array on alpha.10
         //TODO use stream on alpha.10
         // --8<-- [start:db_return_value-java]
-        final long tagCount = database.withStatement("select count(*) from tag", statement -> {
+        final long tagCount = database.withStatement("SELECT count(*) FROM tag", statement -> {
             return statement.executeQuery(new Object[0]).read() //Read a single row
                     .getLong(1); // Indexes start at 1
         });
         // --8<-- [end:db_return_value-java]
 
         // --8<-- [start:db_return_rows-java]
-        final List<String> tagNames = database.withStatement("select name from tag", statement -> {
+        final List<String> tagNames = database.withStatement("SELECT name FROM tag", statement -> {
             // Reads all rows and convert them to strings
             List<String> tagNamesTmp = new ArrayList<>();
             for (DBResult result : statement.executeQuery(new Object[0])) {
@@ -55,12 +55,12 @@ public class SlashDb extends ApplicationCommand {
             // --8<-- [start:db_transaction-java]
             database.withTransaction(transaction -> {
                 // This should not be in the database since the next query will fail, thus reverting the transaction
-                transaction.withStatement("insert into tag (name, content) values ('should_not_be_here', 'should not be here')", statement -> {
+                transaction.withStatement("INSERT INTO tag (name, content) VALUES ('should_not_be_here', 'should not be here')", statement -> {
                     statement.executeUpdate();
                     return null;
                 });
                 // This will raise an exception as the name has a constraint matching ^[\w-]+$ (spaces aren't allowed, for example)
-                transaction.withStatement("insert into tag (name, content) values ('invalid name', 'foo')", statement -> {
+                transaction.withStatement("INSERT INTO tag (name, content) VALUES ('invalid name', 'foo')", statement -> {
                     statement.executeUpdate();
                     return null;
                 });
@@ -76,7 +76,7 @@ public class SlashDb extends ApplicationCommand {
 
         // --8<-- [start:db_generated_keys-java]
         final Instant createdAt = database.withStatement(
-                "insert into tag (name, content) values ('new_tag', 'new content')",
+                "INSERT INTO tag (name, content) VALUES ('new_tag', 'new content')",
                 new String[]{"created_at"}, // This is required as this is a generated column
                 statement -> {
                     return statement.executeReturningUpdate() // executeUpdate() + getGeneratedKeys()

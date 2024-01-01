@@ -21,17 +21,15 @@ private val logger = KotlinLogging.logger { }
 class SlashDb(private val database: Database) : ApplicationCommand() {
     @JDASlashCommand(name = "db")
     suspend fun onSlash(event: GuildSlashEvent) {
-        //TODO capitalize
-
         // --8<-- [start:db_return_value-kotlin]
-        val tagCount: Long = database.preparedStatement("select count(*) from tag") {
+        val tagCount: Long = database.preparedStatement("SELECT count(*) FROM tag") {
             val dbResult = executeQuery().read() //Read a single row
             dbResult[1] // Indexes start at 1
         }
         // --8<-- [end:db_return_value-kotlin]
 
         // --8<-- [start:db_return_rows-kotlin]
-        val tagNames: List<String> = database.preparedStatement("select name from tag") {
+        val tagNames: List<String> = database.preparedStatement("SELECT name FROM tag") {
             // Reads all rows and convert them to strings (type inference with List<String>)
             executeQuery().map { it["name"] }
         }
@@ -41,11 +39,11 @@ class SlashDb(private val database: Database) : ApplicationCommand() {
             // --8<-- [start:db_transaction-kotlin]
             database.transactional {
                 // This should not be in the database since the next query will fail, thus reverting the transaction
-                preparedStatement("insert into tag (name, content) values ('should_not_be_here', 'should not be here')") {
+                preparedStatement("INSERT INTO tag (name, content) VALUES ('should_not_be_here', 'should not be here')") {
                     executeUpdate()
                 }
                 // This will raise an exception as the name has a constraint matching ^[\w-]+$ (spaces aren't allowed, for example)
-                preparedStatement("insert into tag (name, content) values ('invalid name', 'foo')") {
+                preparedStatement("INSERT INTO tag (name, content) VALUES ('invalid name', 'foo')") {
                     executeUpdate()
                 }
             }
@@ -59,7 +57,7 @@ class SlashDb(private val database: Database) : ApplicationCommand() {
 
         // --8<-- [start:db_generated_keys-kotlin]
         val createdAt: Instant = database.preparedStatement(
-            "insert into tag (name, content) values ('new_tag', 'new content')",
+            "INSERT INTO tag (name, content) VALUES ('new_tag', 'new content')",
             columnNames = arrayOf("created_at") // This is required as this is a generated column
         ) {
             executeReturningUpdate() // executeUpdate() + getGeneratedKeys()
