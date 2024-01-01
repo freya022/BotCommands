@@ -238,8 +238,8 @@ this will be useful when running your bot.
             private String token;
             private List<Long> ownerIds;
         
-            public getToken() { return token; }
-            public getOwnerIds() { return ownerIds; }
+            public String getToken() { return token; }
+            public List<Long> getOwnerIds() { return ownerIds; }
         
             @BService // Makes this method a service factory that outputs Config objects
             public static Config getInstance() {
