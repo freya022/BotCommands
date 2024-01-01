@@ -50,8 +50,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          */
         @JvmStatic
         @JvmName("newBuilder")
-        fun newBuilderJava(configConsumer: ReceiverConsumer<BConfigBuilder>) {
-            newBuilder(configConsumer = configConsumer)
+        fun newBuilderJava(configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
+            return newBuilder(configConsumer = configConsumer)
         }
 
         /**
@@ -60,8 +60,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          * @see BBuilder
          */
         @JvmSynthetic
-        fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>) {
-            BBuilder(configConsumer).build(manager)
+        fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
+            return BBuilder(configConsumer).build(manager)
         }
 
         private fun getDefaultManager(): CoroutineEventManager {
@@ -74,8 +74,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
         }
     }
 
-    private fun build(manager: CoroutineEventManager) {
-        runBlocking(manager.coroutineContext) {
+    private fun build(manager: CoroutineEventManager): BContext {
+        return runBlocking(manager.coroutineContext) {
             logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
             Version.checkVersions()
 
@@ -102,6 +102,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             context.setStatus(BContext.Status.READY)
             context.serviceContainer.loadServices(ServiceStart.READY)
             context.eventDispatcher.dispatchEvent(BReadyEvent(context))
+
+            context
         }
     }
 }
