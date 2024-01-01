@@ -26,56 +26,101 @@ to at least take advantage of statement logging and long transaction reports.
 
     Implement `HikariSourceSupplier` instead of `ConnectionSupplier`.
 
-[//]: # (TODO postgresl & H2)
 ??? example
 
     === "Kotlin"
-        ```kotlin
-        @BService
-        class DatabaseSource(config: Config) : HikariSourceSupplier {
-            override val source = HikariDataSource(HikariConfig().apply {
-                // Suppose those are your config values
-                jdbcUrl = config.databaseConfig.url
-                username = config.databaseConfig.user
-                password = config.databaseConfig.password
-        
-                // At most 2 JDBC connections, the database will block if all connections are used
-                maximumPoolSize = 2
-                // Emits a warning and does a thread/coroutine dump after the duration
-                leakDetectionThreshold = 10.seconds.inWholeMilliseconds
-            })
-        }
-        ```
+        === "PostgreSQL"
+            ```kotlin
+            @BService
+            class DatabaseSource(config: Config) : HikariSourceSupplier {
+                override val source = HikariDataSource(HikariConfig().apply {
+                    // Suppose those are your config values
+                    jdbcUrl = config.databaseConfig.url
+                    username = config.databaseConfig.user
+                    password = config.databaseConfig.password
+            
+                    // At most 2 JDBC connections, suspends the coroutine if all connections are used
+                    maximumPoolSize = 2
+                    // Emits a warning and does a thread/coroutine dump after the duration
+                    leakDetectionThreshold = 10.seconds.inWholeMilliseconds
+                })
+            }
+            ```
+        === "H2"
+            ```kotlin
+            @BService
+            class DatabaseSource : HikariSourceSupplier {
+                override val source = HikariDataSource(HikariConfig().apply {
+                    // Create an in-memory database with the PostgreSQL compatibility mode
+                    jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+            
+                    // At most 2 JDBC connections, suspends the coroutine if all connections are used
+                    maximumPoolSize = 2
+                    // Emits a warning and does a thread/coroutine dump after the duration
+                    leakDetectionThreshold = 10.seconds.inWholeMilliseconds
+                })
+            }
+            ```
 
     === "Java"
-        ```java
-        @BService
-        public class DatabaseSource implements HikariSourceSupplier {
-            private final HikariDataSource source;
-        
-            public DatabaseSource(Config config) {
-                final var hikariConfig = new HikariConfig();
-                // Suppose those are your config values
-                hikariConfig.setJdbcUrl(config.getDatabaseConfig().getUrl());
-                hikariConfig.setUsername(config.getDatabaseConfig().getUser());
-                hikariConfig.setPassword(config.getDatabaseConfig().getPassword());
-        
-                // At most 2 JDBC connections, the database will block if all connections are used
-                hikariConfig.setMaximumPoolSize(2);
-        
-                // Emits a warning and does a thread/coroutine dump after the duration (in milliseconds)
-                hikariConfig.setLeakDetectionThreshold(10000);
-        
-                source = new HikariDataSource(hikariConfig);
+        === "PostgreSQL"
+            ```java
+            @BService
+            public class DatabaseSource implements HikariSourceSupplier {
+                private final HikariDataSource source;
+            
+                public DatabaseSource(Config config) {
+                    final var hikariConfig = new HikariConfig();
+                    // Suppose those are your config values
+                    hikariConfig.setJdbcUrl(config.getDatabaseConfig().getUrl());
+                    hikariConfig.setUsername(config.getDatabaseConfig().getUser());
+                    hikariConfig.setPassword(config.getDatabaseConfig().getPassword());
+            
+                    // At most 2 JDBC connections, the database will block if all connections are used
+                    hikariConfig.setMaximumPoolSize(2);
+            
+                    // Emits a warning and does a thread/coroutine dump after the duration (in milliseconds)
+                    hikariConfig.setLeakDetectionThreshold(10000);
+            
+                    source = new HikariDataSource(hikariConfig);
+                }
+            
+                @NotNull
+                @Override
+                public HikariDataSource getSource() {
+                    return source;
+                }
             }
-        
-            @NotNull
-            @Override
-            public HikariDataSource getSource() {
-                return source;
+            ```
+        === "H2"
+            ```java
+            @BService
+            public class DatabaseSource implements HikariSourceSupplier {
+                private final HikariDataSource source;
+            
+                public DatabaseSource() {
+                    final var hikariConfig = new HikariConfig();
+                    // Create an in-memory database with the PostgreSQL compatibility mode
+                    hikariConfig.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH");
+            
+                    // At most 2 JDBC connections, the database will block if all connections are used
+                    hikariConfig.setMaximumPoolSize(2);
+            
+                    // Emits a warning and does a thread/coroutine dump after the duration (in milliseconds)
+                    hikariConfig.setLeakDetectionThreshold(10000);
+            
+                    source = new HikariDataSource(hikariConfig);
+                }
+            
+                @NotNull
+                @Override
+                public HikariDataSource getSource() {
+                    return source;
+                }
             }
-        }
-        ```
+            ```
+    !!! tip "PostgreSQL connection URL"
+        The URL should be similar to `jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]`
 
 ## Using migration
 The framework's tables may be automatically created and migrated on updates,
