@@ -119,7 +119,7 @@ but the appropriate documentation will specify if such alternatives are required
 !!! info
     
     All classes available for dependency injection must be in the framework's classpath,
-    by adding packages to `BBuilder#packages`, or by using `BBuilder#addSearchPath`, 
+    by adding packages to `BConfigBuilder#packages`, or by using `BConfigBuilder#addSearchPath`, 
     all classes are searched recursively.
 
 ### Service factories

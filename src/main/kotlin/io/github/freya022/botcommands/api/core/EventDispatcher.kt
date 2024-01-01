@@ -160,7 +160,7 @@ class EventDispatcher internal constructor(
             }
         } catch (e: InvocationTargetException) {
             if (event is InitializationEvent) {
-                //BBuilder will catch exception as it is the one dispatching the initialization events
+                //Entry point will catch exception as it is the one dispatching the initialization events
                 throw e.cause!!
             }
             printException(event, eventHandlerFunction, e)

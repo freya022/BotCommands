@@ -72,7 +72,7 @@ abstract class JDAService {
      * - [shardManagerBuilder.setEventManagerProvider { eventManager }][DefaultShardManagerBuilder.setEventManagerProvider]
      *
      * @param event        The framework's ready event
-     * @param eventManager The event manager passed to [BBuilder.newBuilder], you **must** use it in your [JDABuilder]/[DefaultShardManagerBuilder]
+     * @param eventManager The event manager passed to [BotCommands.create], you **must** use it in your [JDABuilder]/[DefaultShardManagerBuilder]
      *
      */
     abstract fun createJDA(event: BReadyEvent, eventManager: IEventManager)

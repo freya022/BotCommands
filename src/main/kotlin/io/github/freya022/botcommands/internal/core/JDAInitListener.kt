@@ -28,7 +28,7 @@ internal data object JDAInitListener {
                     A JDA instance was constructed before the framework had finished initializing
                     Possible solutions include:
                         - (Recommended) Use a service extending JDAService
-                        - Building JDA after BBuilder has returned
+                        - Building JDA after the BotCommands entry point has returned
                         - Building JDA in a service annotated with ${annotationRef<BService>()}(start = ServiceStart.READY)
                 """.trimIndent()
             )

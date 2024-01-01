@@ -261,14 +261,14 @@ this will be useful when running your bot.
 As we've used a singleton pattern for your `Config` class, we can get the same instance anywhere, 
 and still be able to get it as a service.
 
-All you need to do to start the framework is `BBuilder#newBuilder`:
+All you need to do to start the framework is `BotCommands#create`:
 
 === "Kotlin"
 
     ```kotlin title="Main.kt - Main function"
     val config = Config.instance
 
-    BBuilder.newBuilder {
+    BotCommands.create {
         addOwners(config.ownerIds)
 
         // Add the base package of the application
@@ -283,7 +283,7 @@ All you need to do to start the framework is `BBuilder#newBuilder`:
 
     ??? tip "Using a custom `CoroutineEventManager`"
 
-        I recommend passing a custom `CoroutineEventManager` to `BBuilder#newBuilder`,
+        I recommend passing a custom `CoroutineEventManager` to `BotCommands#create`,
         that way you can configure anything such as the amount of threads, their names or their uncaught exception handlers.
 
         You can use `namedDefaultScope` for this:
@@ -301,7 +301,7 @@ All you need to do to start the framework is `BBuilder#newBuilder`:
     ```java title="Main.java - Main method"
     final var config = Config.getInstance();
 
-    BBuilder.newBuilder(builder -> {
+    BotCommands.create(builder -> {
         builder.addOwners(config.getOwnerIds());
 
         // Add the base package of the application

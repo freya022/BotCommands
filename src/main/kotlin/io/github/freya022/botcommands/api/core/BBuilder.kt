@@ -2,23 +2,12 @@ package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
-import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.events.BReadyEvent
-import io.github.freya022.botcommands.api.core.events.LoadEvent
-import io.github.freya022.botcommands.api.core.events.PostLoadEvent
-import io.github.freya022.botcommands.api.core.events.PreLoadEvent
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.Version
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
@@ -33,10 +22,8 @@ import kotlin.time.Duration.Companion.minutes
  * @see InterfacedService @InterfacedService
  * @see Command @Command
  */
-class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuilder>) {
-    private val logger = KotlinLogging.logger { }
-    private val config = configConsumer.applyTo(BConfigBuilder()).build()
-
+@Deprecated("Replaced with the BotCommands entry point")
+class BBuilder private constructor() {
     /**
      * Entry point for the BotCommands framework.
      *
@@ -48,10 +35,17 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          *
          * @see BBuilder
          */
+        @Deprecated(
+            "Replaced with the BotCommands entry point",
+            replaceWith = ReplaceWith(
+                expression = "BotCommands.create(configConsumer)",
+                imports = ["io.github.freya022.botcommands.api.core.BotCommands"]
+            )
+        )
         @JvmStatic
         @JvmName("newBuilder")
         fun newBuilderJava(configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
-            return newBuilder(configConsumer = configConsumer)
+            return BotCommands.create(configConsumer = configConsumer)
         }
 
         /**
@@ -59,9 +53,16 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          *
          * @see BBuilder
          */
+        @Deprecated(
+            "Replaced with the BotCommands entry point",
+            replaceWith = ReplaceWith(
+                expression = "BotCommands.create(manager, configConsumer)",
+                imports = ["io.github.freya022.botcommands.api.core.BotCommands"]
+            )
+        )
         @JvmSynthetic
         fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
-            return BBuilder(configConsumer).build(manager)
+            return BotCommands.create(manager, configConsumer)
         }
 
         private fun getDefaultManager(): CoroutineEventManager {
@@ -71,39 +72,6 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
                     scope.cancel()
                 }
             }
-        }
-    }
-
-    private fun build(manager: CoroutineEventManager): BContext {
-        return runBlocking(manager.coroutineContext) {
-            logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
-            Version.checkVersions()
-
-            val context = BContextImpl(config, manager)
-
-            if (context.ownerIds.isEmpty())
-                logger.info { "No owner ID specified, exceptions won't be sent to owners" }
-            if (config.disableExceptionsInDMs)
-                logger.info { "Configuration disabled sending exception in bot owners DMs" }
-            if (config.disableAutocompleteCache)
-                logger.info { "Configuration disabled autocomplete cache, except forced caches" }
-
-            context.serviceContainer.loadServices(ServiceStart.DEFAULT)
-
-            context.setStatus(BContext.Status.PRE_LOAD)
-            context.eventDispatcher.dispatchEvent(PreLoadEvent(context))
-
-            context.setStatus(BContext.Status.LOAD)
-            context.eventDispatcher.dispatchEvent(LoadEvent(context))
-
-            context.setStatus(BContext.Status.POST_LOAD)
-            context.eventDispatcher.dispatchEvent(PostLoadEvent(context))
-
-            context.setStatus(BContext.Status.READY)
-            context.serviceContainer.loadServices(ServiceStart.READY)
-            context.eventDispatcher.dispatchEvent(BReadyEvent(context))
-
-            context
         }
     }
 }

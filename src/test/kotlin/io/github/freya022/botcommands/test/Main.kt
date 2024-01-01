@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.test
 import ch.qos.logback.classic.ClassicConstants
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
-import io.github.freya022.botcommands.api.core.BBuilder
+import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.test.config.Environment
@@ -46,7 +46,7 @@ object Main {
                 scope.cancel()
             }
 
-            BBuilder.newBuilder(manager) {
+            BotCommands.create(manager) {
                 disableExceptionsInDMs = true
 
                 addSearchPath("io.github.freya022.botcommands.test")
