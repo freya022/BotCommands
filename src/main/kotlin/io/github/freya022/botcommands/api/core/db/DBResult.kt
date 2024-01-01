@@ -5,6 +5,9 @@ import io.github.freya022.botcommands.api.core.utils.toBoxed
 import io.github.freya022.botcommands.internal.utils.findErasureOfAt
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.*
+import java.util.stream.Stream
+import java.util.stream.StreamSupport
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
 
@@ -38,6 +41,11 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
             return this@DBResult
         }
     }
+
+    fun stream(): Stream<DBResult> = StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(iterator(), Spliterator.NONNULL or Spliterator.ORDERED),
+        false
+    )
 
     @JvmSynthetic
     inline operator fun <reified R> get(columnLabel: String): R = get<R>(findColumn(columnLabel))
