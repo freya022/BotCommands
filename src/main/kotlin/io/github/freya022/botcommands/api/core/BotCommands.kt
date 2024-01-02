@@ -90,6 +90,8 @@ object BotCommands {
                 logger.info { "Configuration disabled sending exception in bot owners DMs" }
             if (config.disableAutocompleteCache)
                 logger.info { "Configuration disabled autocomplete cache, except forced caches" }
+            if (!config.textConfig.usePingAsPrefix && config.textConfig.prefixes.isEmpty())
+                logger.info { "Text commands will not work as ping-as-prefix is disabled and no prefix has been added" }
 
             context.serviceContainer.loadServices(ServiceStart.DEFAULT)
 
