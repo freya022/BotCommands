@@ -187,6 +187,8 @@ class EventDispatcher internal constructor(
                 if (missingIntents.isNotEmpty()) {
                     return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
                 }
+
+                // Cannot check for RawGatewayEvent as JDA is not present yet and there is no config for it
             }
 
             val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
