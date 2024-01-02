@@ -1,9 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.internal.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -11,18 +9,27 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.utils.data.DataArray
-import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
 
-@BService(ServiceStart.LAZY)
-internal class ApplicationCommandsCache(serviceContainer: ServiceContainer) {
-    //Cannot put JDA in the constructor as it is injected later
-    private val cachePath = Path.of(System.getProperty("java.io.tmpdir"), "${serviceContainer.getService<JDA>().selfUser.id}slashcommands")
-    val globalCommandsPath: Path = cachePath.resolve("globalCommands.json")
+//TODO Missing dependencies should not invalidate this service, especially since this starts lazily
+@BService(ServiceStart.LAZY) // The service is requested when JDA is available
+internal class ApplicationCommandsCache(jda: Lazy<JDA>) {
+    private val cachePath: Path
 
     init {
-        Files.createDirectories(cachePath)
+        val appDataDirectory = when {
+            "Windows" in System.getProperty("os.name") -> System.getenv("appdata")
+            else -> "/var/tmp"
+        }
+        cachePath = Path(appDataDirectory)
+            .resolve("BotCommands")
+            .resolve("ApplicationCommands-${jda.value.selfUser.id}")
+            .createDirectories()
     }
+
+    val globalCommandsPath: Path = cachePath.resolve("globalCommands.json")
 
     fun getGuildCommandsPath(guild: Guild): Path {
         return cachePath.resolve(guild.id).resolve("commands.json")
