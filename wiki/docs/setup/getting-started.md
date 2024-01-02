@@ -194,8 +194,6 @@ The only strictly necessary dependencies are the framework and JDA:
     repositories {
         ...
         mavenCentral()
-        // The framework uses JDA-KTX, which requires Jitpack
-        maven { url 'https://jitpack.io' }
     }
     
     dependencies {

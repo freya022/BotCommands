@@ -388,13 +388,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <repositories>
-        <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -442,9 +435,9 @@
             <version>2.16.0</version>
         </dependency>
         <dependency>
-            <groupId>io.github.minndevelopment</groupId>
+            <groupId>club.minnced</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>9fc90f616b</version>
+            <version>0.11.0-beta.19</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

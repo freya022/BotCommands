@@ -89,8 +89,6 @@ to get started either using a bot template, or from a new project.
 ```gradle
 repositories {
     mavenCentral()
-    // The framework uses JDA-KTX, which requires Jitpack
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
