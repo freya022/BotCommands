@@ -176,14 +176,15 @@ interface BContext {
     val isPingAsPrefix: Boolean get() = textConfig.usePingAsPrefix
 
     /**
-     * Returns the preferred prefix for triggering this bot
+     * Returns the preferred prefix for triggering this bot,
+     * or `null` if [BTextConfig.usePingAsPrefix] is disabled and no prefix was added in [BTextConfig.prefixes].
      *
      * @return The preferred prefix
      */
-    val prefix: String
+    val prefix: String?
         get() = when {
             isPingAsPrefix -> jda.selfUser.asMention + " "
-            else -> prefixes.first()
+            else -> prefixes.firstOrNull()
         }
 
     //TODO docs

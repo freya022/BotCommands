@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
 import kotlin.reflect.KClass
@@ -70,7 +71,7 @@ object TextUtils {
             }
         }
 
-        val prefix = event.context.prefix
+        val prefix = event.context.prefix ?: throwInternal("Cannot generate help content without a prefix")
         fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
             append(prefix)
             append(name)
