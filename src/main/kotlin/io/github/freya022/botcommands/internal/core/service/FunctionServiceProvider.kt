@@ -29,7 +29,14 @@ internal class FunctionServiceProvider(
         // Returns null if there is no error, the error itself if there's one
         if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
-        serviceError = checkInstantiate(serviceContainer)
+        val serviceError = checkInstantiate(serviceContainer)
+        //Do not cache service error if a parameter is unavailable, a retrial is allowed
+        when (serviceError?.errorType) {
+            ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY, ServiceError.ErrorType.UNAVAILABLE_INJECTED_SERVICE -> {}
+
+            else -> this.serviceError = serviceError
+        }
+
         return serviceError
     }
 
