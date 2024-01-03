@@ -252,7 +252,7 @@ this will be useful when running your bot.
 
 !!! info
 
-    You can refer to [the Dependency Injection page](../using-botcommands/dependency-injection.md) for more details
+    You can refer to [the Dependency Injection page](../using-botcommands/dependency-injection/index.md) for more details
 
 ### Creating the main class
 

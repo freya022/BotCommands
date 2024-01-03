@@ -3,6 +3,7 @@
 # Base file from: https://github.com/discord-jda/JDA-Website/blob/8a3a36f0f95e29f14f0e04a75c219c4e4352ecf7/mkdocs.yml
 theme:
   features:
+    - navigation.indexes
     - navigation.instant # Faster loading
     - navigation.tabs # Top level horizontal tabs
     - toc.integrate # Integrated Table Of Contents (shows #, ##... sections)
@@ -84,7 +85,10 @@ nav:
       - Getting started: setup/getting-started.md
       - Logging: setup/logging.md
   - Using BotCommands:
-      - Dependency injection: using-botcommands/dependency-injection.md
+      - Dependency injection:
+        - using-botcommands/dependency-injection/index.md
+        - Creating services: using-botcommands/dependency-injection/creating-services.md
+        - Retrieving services: using-botcommands/dependency-injection/retrieving-services.md
       - Database: using-botcommands/database.md
 #      - Rate limiting: foo
 #      - Localization: foo
