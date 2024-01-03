@@ -13,9 +13,8 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 
-//TODO Missing dependencies should not invalidate this service, especially since this starts lazily
 @BService(ServiceStart.LAZY) // The service is requested when JDA is available
-internal class ApplicationCommandsCache(jda: Lazy<JDA>) {
+internal class ApplicationCommandsCache(jda: JDA) {
     private val cachePath: Path
 
     init {
@@ -25,7 +24,7 @@ internal class ApplicationCommandsCache(jda: Lazy<JDA>) {
         }
         cachePath = Path(appDataDirectory)
             .resolve("BotCommands")
-            .resolve("ApplicationCommands-${jda.value.selfUser.id}")
+            .resolve("ApplicationCommands-${jda.selfUser.id}")
             .createDirectories()
     }
 
