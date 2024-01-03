@@ -80,6 +80,7 @@ class BConfigBuilder internal constructor() : BConfig {
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+    @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
 
