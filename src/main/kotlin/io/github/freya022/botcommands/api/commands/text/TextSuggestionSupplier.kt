@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.commands.prefixed.TopLevelTextCom
  * - Get the partial similarity between all commands, keeping 90% similarity and above (partial similarity compares the shortest substring of both the command name and the user input)
  * - Get the similarity of the remaining commands, keeping 42% similarity and above
  *
- * @see InterfacedService
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = false)
 fun interface TextSuggestionSupplier {

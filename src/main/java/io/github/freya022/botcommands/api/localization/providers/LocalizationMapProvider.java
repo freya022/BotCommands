@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
  * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * @see DefaultLocalizationMapProvider
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
 public interface LocalizationMapProvider {
