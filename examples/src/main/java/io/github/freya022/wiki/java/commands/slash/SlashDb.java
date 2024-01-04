@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
-import io.github.freya022.botcommands.api.core.db.DBResult;
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @WikiLanguage(WikiLanguage.Language.JAVA)
@@ -31,11 +29,9 @@ public class SlashDb extends ApplicationCommand {
 
     @JDASlashCommand(name = "db")
     public void onSlashDb(GuildSlashEvent event) throws SQLException {
-        //TODO remove object array on alpha.10
-        //TODO use stream on alpha.10
         // --8<-- [start:db_return_value-java]
         final long tagCount = database.withStatement("SELECT count(*) FROM tag", statement -> {
-            return statement.executeQuery(new Object[0]).read() //Read a single row
+            return statement.executeQuery().read() //Read a single row
                     .getLong(1); // Indexes start at 1
         });
         // --8<-- [end:db_return_value-java]
@@ -43,11 +39,10 @@ public class SlashDb extends ApplicationCommand {
         // --8<-- [start:db_return_rows-java]
         final List<String> tagNames = database.withStatement("SELECT name FROM tag", statement -> {
             // Reads all rows and convert them to strings
-            List<String> tagNamesTmp = new ArrayList<>();
-            for (DBResult result : statement.executeQuery(new Object[0])) {
-                tagNamesTmp.add(result.getString("name"));
-            }
-            return tagNamesTmp;
+            return statement.executeQuery()
+                    .stream()
+                    .map(result -> result.getString("name"))
+                    .toList();
         });
         // --8<-- [end:db_return_rows-java]
 
