@@ -127,7 +127,7 @@ internal class CommandEventImpl private constructor(
         internal suspend fun create(
             context: BContext,
             event: MessageReceivedEvent,
-            argumentsStr: String?,
+            argumentsStr: String,
             cancellableRateLimit: CancellableRateLimit
         ): CommandEventImpl {
             val arguments: MutableList<Any> = arrayListOf()
