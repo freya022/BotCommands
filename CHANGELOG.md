@@ -38,6 +38,11 @@ and available to other classes.
 
 These services can all have a name, in case you want multiple services of the same type, but want to differentiate them.
 
+#### Primary providers
+When requesting a service, only one service must correspond to the given type/name.
+
+If multiple service providers exist, only one must be usable, or, only one must be marked primary (using `@Primary`).
+
 **Note:** Service factories are prioritized over annotated classes.
 
 **Kotlin note:** Service factories can be top-level functions.
