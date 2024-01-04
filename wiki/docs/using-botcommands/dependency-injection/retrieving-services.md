@@ -58,10 +58,7 @@ Named services can be retrieved by using `#!java @ServiceName` on the parameter.
 
 ### Primary providers
 
-When requesting a service of a specific type, there must be at most one service provider for such a type.
-
-If multiple **usable** providers for the same type are present,
-no service can be returned unless *one* primary provider is defined.
+When requesting a service of a specific type/name, there must be at most one *usable* service provider.
 
 For example, if you have two [service factories](#service-factories) with the same return type:
 
