@@ -1,7 +1,7 @@
 <img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
 
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.18+-important)](https://github.com/discord-jda/JDA/releases)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.19+-important)](https://github.com/discord-jda/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/docs/allclasses-index.html)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands/3.X)
