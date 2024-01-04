@@ -48,7 +48,7 @@ object BotCommands {
      * @see BotCommands
      */
     @JvmStatic
-    @JvmName("newBuilder")
+    @JvmName("create")
     fun createJava(configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
         return create(configConsumer = configConsumer)
     }
