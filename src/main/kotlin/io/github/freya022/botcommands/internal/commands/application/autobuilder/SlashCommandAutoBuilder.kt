@@ -30,13 +30,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 @BService
 internal class SlashCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
-    private val logger = KotlinLogging.logger { }
-
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
 
     private val functions: List<SlashFunctionMetadata> =
