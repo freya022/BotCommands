@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
@@ -130,6 +129,8 @@ internal class TextCommandAutoBuilder(
         manager.textCommand(container.name) {
             container.metadata?.let { metadata ->
                 try {
+                    metadata.instance::class.findAnnotation<Category>()?.let { category = it.value }
+
                     processBuilder(metadata)
                 } catch (e: Exception) {
                     rethrowUser(metadata.func, "Unable to construct a text command", e)
@@ -195,10 +196,6 @@ internal class TextCommandAutoBuilder(
         //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
 
         fillCommandBuilder(func)
-
-        if (this is TopLevelTextCommandBuilder) {
-            func.findAnnotation<Category>()?.let { category = it.value }
-        }
 
         aliases = annotation.aliases.toMutableList()
         description = annotation.generalDescription.nullIfBlank()
