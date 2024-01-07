@@ -19,5 +19,4 @@ abstract class ApplicationCommandInfo internal constructor(
             "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
         }
     }
-    val nsfw: Boolean = builder.nsfw
 }

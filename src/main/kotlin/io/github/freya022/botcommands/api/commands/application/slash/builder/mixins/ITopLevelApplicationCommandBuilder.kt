@@ -34,4 +34,21 @@ interface ITopLevelApplicationCommandBuilder {
      * @see JDAMessageCommand.defaultLocked
      */
     var isDefaultLocked: Boolean
+
+    /**
+     * Specifies whether the application command is usable in NSFW channels.
+     *
+     * Note: NSFW commands need to be enabled by the user to appear in DMs.
+     *
+     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
+     *
+     * **Default:** false
+     *
+     * @return `true` if the command is restricted to NSFW channels
+     *
+     * @see JDATopLevelSlashCommand.nsfw
+     * @see JDAUserCommand.nsfw
+     * @see JDAMessageCommand.nsfw
+     */
+    var nsfw: Boolean
 }

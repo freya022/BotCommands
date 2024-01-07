@@ -181,7 +181,7 @@ internal class SlashCommandAutoBuilder(
 
     private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
         fillCommandBuilder(metadata.func)
-        fillApplicationCommandBuilder(metadata.func, metadata.annotation)
+        fillApplicationCommandBuilder(metadata.func)
     }
 
     private fun SlashCommandBuilder.processOptions(

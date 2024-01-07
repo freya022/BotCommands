@@ -87,14 +87,12 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
 @Suppress("UNCHECKED_CAST")
 internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 
-internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
+internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>) {
     filters += AnnotationUtils.getFilters(context, func, ApplicationCommandFilter::class)
 
     if (func.hasAnnotation<NSFW>()) {
         throwUser(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
-
-    nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw")
 }
 
 internal fun ResolverContainer.requireCustomOption(func: KFunction<*>, kParameter: KParameter, optionAnnotation: KClass<out Annotation>) {

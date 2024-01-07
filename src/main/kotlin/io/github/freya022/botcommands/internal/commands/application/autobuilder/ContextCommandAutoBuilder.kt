@@ -118,9 +118,10 @@ internal class ContextCommandAutoBuilder(
         val annotation = metadata.annotation
         manager.messageCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            fillApplicationCommandBuilder(func, annotation)
+            fillApplicationCommandBuilder(func)
 
             isDefaultLocked = annotation.defaultLocked
+            nsfw = annotation.nsfw
 
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
@@ -145,9 +146,10 @@ internal class ContextCommandAutoBuilder(
         val annotation = metadata.annotation
         manager.userCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            fillApplicationCommandBuilder(func, annotation)
+            fillApplicationCommandBuilder(func)
 
             isDefaultLocked = annotation.defaultLocked
+            nsfw = annotation.nsfw
 
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
