@@ -102,13 +102,10 @@ internal class SlashCommandAutoBuilder(
 
         // Check if all commands have their metadata
         check(missingTopLevels.isEmpty()) {
-            val missingTopLevelRefs = missingTopLevels.values.flatten()
-                .groupBy { it.path.name }
-                .entries
-                .joinAsList { (name, metadataList) ->
-                    if (metadataList.size == 1) throwInternal("Single top level commands should have been assigned the metadata")
-                    "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
-                }
+            val missingTopLevelRefs = missingTopLevels.entries.joinAsList { (name, metadataList) ->
+                if (metadataList.size == 1) throwInternal("Single top level commands should have been assigned the metadata")
+                "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
+            }
 
             "At least one top-level slash command must be annotated with ${annotationRef<JDATopLevelSlashCommand>()}:\n$missingTopLevelRefs"
         }
@@ -182,9 +179,7 @@ internal class SlashCommandAutoBuilder(
     private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {
         val metadata = topLevelMetadata.metadata
         val annotation = metadata.annotation
-        val instance = metadata.instance
         val path = metadata.path
-        val commandId = metadata.commandId
 
         val name = path.name
         val subcommandsMetadata = subcommands[name]
@@ -201,7 +196,7 @@ internal class SlashCommandAutoBuilder(
                         //TODO replace with #subcommandDescription in annotation
                         this@subcommand.description = subMetadata.annotation.description
                         this@subcommand.configureBuilder(subMetadata)
-                        this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                        this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
                     }
                 }
             }
@@ -214,7 +209,10 @@ internal class SlashCommandAutoBuilder(
                         metadataList.forEach { subMetadata ->
                             subcommand(subname, subMetadata.func.castFunction()) {
                                 this@subcommand.configureBuilder(subMetadata)
-                                this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                                this@subcommand.processOptions(
+                                    (manager as? GuildApplicationCommandManager)?.guild,
+                                    subMetadata
+                                )
                             }
                         }
                     }
@@ -224,7 +222,7 @@ internal class SlashCommandAutoBuilder(
             configureBuilder(metadata)
 
             if (isTopLevelOnly) {
-                processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
+                processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata)
             }
         }
     }
@@ -234,12 +232,8 @@ internal class SlashCommandAutoBuilder(
         fillApplicationCommandBuilder(metadata.func)
     }
 
-    private fun SlashCommandBuilder.processOptions(
-        guild: Guild?,
-        metadata: SlashFunctionMetadata,
-        instance: ApplicationCommand,
-        commandId: String?
-    ) {
+    private fun SlashCommandBuilder.processOptions(guild: Guild?, metadata: SlashFunctionMetadata) {
+        val instance = metadata.instance
         val func = metadata.func
         val path = metadata.path
 
@@ -254,7 +248,7 @@ internal class SlashCommandAutoBuilder(
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
                             guild,
-                            commandId,
+                            metadata.commandId,
                             path,
                             kParameter.findOptionName(),
                             ParameterType.ofType(kParameter.type)
