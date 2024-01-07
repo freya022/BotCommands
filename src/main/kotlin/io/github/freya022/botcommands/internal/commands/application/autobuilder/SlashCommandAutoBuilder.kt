@@ -188,7 +188,15 @@ internal class SlashCommandAutoBuilder(
         manager.slashCommand(name, topLevelMetadata.annotation.scope, if (isTopLevelOnly) metadata.func.castFunction() else null) {
             isDefaultLocked = topLevelMetadata.annotation.defaultLocked
             nsfw = topLevelMetadata.annotation.nsfw
-            description = annotation.description
+
+            // On top-level only commands, the description can be set on either of the annotations, but not both
+            if (isTopLevelOnly) {
+                // One of them needs to not be set
+                require(topLevelMetadata.annotation.description.isBlank() || annotation.description.isBlank()) {
+                    "Slash command annotated with ${annotationRef<JDATopLevelSlashCommand>()} must only have a description set once"
+                }
+            }
+            description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description
 
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
