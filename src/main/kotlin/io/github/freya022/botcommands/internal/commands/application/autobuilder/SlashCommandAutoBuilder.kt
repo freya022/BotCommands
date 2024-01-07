@@ -84,6 +84,10 @@ internal class SlashCommandAutoBuilder(
             slashFunctionMetadata.func.findAnnotation<JDATopLevelSlashCommand>()?.let { annotation ->
                 // Remove all slash commands with the top level name
                 val name = slashFunctionMetadata.path.name
+                check(name in missingTopLevels) {
+                    "Cannot have multiple ${annotationRef<JDATopLevelSlashCommand>()} on a same top-level command '$name'"
+                }
+
                 missingTopLevels.remove(name)
                 topLevelMetadata[name] = TopLevelSlashCommandMetadata(name, annotation, slashFunctionMetadata)
             }
@@ -201,7 +205,6 @@ internal class SlashCommandAutoBuilder(
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
                     subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
-                        //TODO replace with #subcommandDescription in annotation
                         this@subcommand.description = subMetadata.annotation.description
                         this@subcommand.configureBuilder(subMetadata)
                         this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
