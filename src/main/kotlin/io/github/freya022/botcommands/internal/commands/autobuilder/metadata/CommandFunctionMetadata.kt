@@ -11,8 +11,8 @@ internal abstract class CommandFunctionMetadata<T : Any, A : Annotation>(
     private val instanceType: KClass<T>,
     val annotation: A,
     val path: CommandPath
-) {
-    val func get() = classPathFunction.function
+) : MetadataFunctionHolder {
+    override val func get() = classPathFunction.function
 
     val instance: T
         get() = instanceType.safeCast(classPathFunction.instance)

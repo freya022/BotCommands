@@ -15,9 +15,9 @@ import net.dv8tion.jda.api.Permission
 
 @Command
 class SlashPermissions : ApplicationCommand() {
-    @JDASlashCommand(scope = CommandScope.GLOBAL_NO_DM, name = "permissions_annotated")
     @BotPermissions(Permission.MANAGE_EVENTS)
     @UserPermissions(Permission.MANAGE_SERVER, Permission.ADMINISTRATOR)
+    @JDASlashCommand(name = "permissions_annotated")
     fun onSlashPermissions(event: GuildSlashEvent) {
         event.reply_("Granted", ephemeral = true).queue()
     }

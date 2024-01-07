@@ -4,12 +4,12 @@ import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
 import net.dv8tion.jda.api.Permission
 
 interface ITopLevelApplicationCommandBuilder {
     /**
-     * @see JDASlashCommand.scope
+     * @see JDATopLevelSlashCommand.scope
      * @see JDAUserCommand.scope
      * @see JDAMessageCommand.scope
      */
@@ -29,7 +29,7 @@ interface ITopLevelApplicationCommandBuilder {
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see JDASlashCommand.defaultLocked
+     * @see JDATopLevelSlashCommand.defaultLocked
      * @see JDAUserCommand.defaultLocked
      * @see JDAMessageCommand.defaultLocked
      */

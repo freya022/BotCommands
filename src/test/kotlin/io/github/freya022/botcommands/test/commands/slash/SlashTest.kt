@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
@@ -34,7 +35,8 @@ class SlashTest : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDASlashCommand(name = "test_annotated", scope = CommandScope.GUILD)
+    @JDASlashCommand(name = "test_annotated")
+    @JDATopLevelSlashCommand(scope = CommandScope.GUILD)
     fun onSlashTest(
         event: GuildSlashEvent,
         @SlashOption(autocomplete = guildNicknameAutocompleteName) guildNickname: String,

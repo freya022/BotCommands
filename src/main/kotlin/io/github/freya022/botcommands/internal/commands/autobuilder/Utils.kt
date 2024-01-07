@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.*
@@ -20,15 +20,15 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.hasAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
-internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
+internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
     var ex: Throwable? = null
     forEach { metadata ->
         runCatching {
             block(metadata)
         }.onFailure {
             when (ex) {
-                null -> ex = it.addFunction(metadata)
-                else -> ex!!.addSuppressed(it.addFunction(metadata))
+                null -> ex = it.addFunction(metadata.func)
+                else -> ex!!.addSuppressed(it.addFunction(metadata.func))
             }
         }
     }
@@ -39,8 +39,8 @@ internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithD
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
-    RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
+private inline fun Throwable.addFunction(func: KFunction<*>) =
+    RuntimeException("An exception occurred while processing function ${func.shortSignature}", this)
 
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
     if (manager is GuildApplicationCommandManager) {

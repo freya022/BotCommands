@@ -7,9 +7,11 @@ import io.github.freya022.botcommands.api.commands.application.GlobalApplication
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
 
 @Command
 class SlashSubWithGroup : ApplicationCommand() {
+    @JDATopLevelSlashCommand
     @JDASlashCommand(name = "tag_annotated", subcommand = "send")
     fun onSlashSubWithGroup(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()

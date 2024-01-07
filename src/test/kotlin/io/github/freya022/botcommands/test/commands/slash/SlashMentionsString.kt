@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 
 @Command
 class SlashMentionsString : ApplicationCommand() {
+    @JDATopLevelSlashCommand
     @JDASlashCommand(name = "mentions_string", subcommand = "any")
     suspend fun onSlashMentionsStringAny(
         event: GuildSlashEvent,
