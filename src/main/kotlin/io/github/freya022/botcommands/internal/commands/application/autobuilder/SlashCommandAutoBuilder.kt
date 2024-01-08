@@ -47,6 +47,9 @@ internal class SlashCommandAutoBuilder(
         val metadata: SlashFunctionMetadata
     ) : MetadataFunctionHolder {
         override val func: KFunction<*> get() = metadata.func
+
+        val subcommands: MutableList<SlashFunctionMetadata> = arrayListOf()
+        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
     }
 
     private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
@@ -56,8 +59,6 @@ internal class SlashCommandAutoBuilder(
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
 
     private val topLevelMetadata: MutableMap<String, TopLevelSlashCommandMetadata> = hashMapOf()
-    private val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
-    private val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
 
     init {
         val functions: List<SlashFunctionMetadata> =
@@ -116,11 +117,16 @@ internal class SlashCommandAutoBuilder(
 
         // Assign subcommands and groups
         functions.forEachWithDelayedExceptions { metadata ->
+            if (metadata.path.nameCount < 2) return@forEachWithDelayedExceptions
+
+            val topLevelMetadata = topLevelMetadata[metadata.path.name]
+                ?: throwInternal("Missing top level metadata '${metadata.path.name}' when assigning subcommands")
             if (metadata.path.nameCount == 2) {
-                subcommands.getOrPut(metadata.path.name) { arrayListOf() }.add(metadata)
+                topLevelMetadata.subcommands.add(metadata)
             } else if (metadata.path.nameCount == 3) {
-                subcommandGroups
-                    .getOrPut(metadata.path.name) { metadata.toSubcommandGroupMetadata() }
+                topLevelMetadata
+                    .subcommandGroups
+                    .getOrPut(metadata.path.group!!) { metadata.toSubcommandGroupMetadata() }
                     .subcommands
                     .getOrPut(metadata.path.subname!!) { arrayListOf() }
                     .add(metadata)
@@ -186,9 +192,9 @@ internal class SlashCommandAutoBuilder(
         val path = metadata.path
 
         val name = path.name
-        val subcommandsMetadata = subcommands[name]
-        val subcommandGroupsMetadata = subcommandGroups[name]
-        val isTopLevelOnly = subcommandsMetadata == null && subcommandGroupsMetadata == null
+        val subcommandsMetadata = topLevelMetadata.subcommands
+        val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
+        val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
         manager.slashCommand(name, topLevelMetadata.annotation.scope, if (isTopLevelOnly) metadata.func.castFunction() else null) {
             isDefaultLocked = topLevelMetadata.annotation.defaultLocked
             nsfw = topLevelMetadata.annotation.nsfw
@@ -202,17 +208,15 @@ internal class SlashCommandAutoBuilder(
             }
             description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description
 
-            subcommandsMetadata?.let { metadataList ->
-                metadataList.forEach { subMetadata ->
-                    subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
-                        this@subcommand.description = subMetadata.annotation.description
-                        this@subcommand.configureBuilder(subMetadata)
-                        this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
-                    }
+            subcommandsMetadata.forEach { subMetadata ->
+                subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
+                    this@subcommand.description = subMetadata.annotation.description
+                    this@subcommand.configureBuilder(subMetadata)
+                    this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
                 }
             }
 
-            subcommandGroupsMetadata?.let { groupMetadata ->
+            subcommandGroupsMetadata.values.forEach { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
                     this@subcommandGroup.description = groupMetadata.description
 
