@@ -2,7 +2,9 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommandGroup
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
@@ -20,6 +22,22 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
 
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
 
+    //TODO change docs when Discord eventually decides to not have a mess of a command list
+    /**
+     * Short description of the subcommand group.
+     * May be displayed on Discord.
+     *
+     * If this description is omitted, a default localization is
+     * searched in [the command localization bundles][BApplicationConfigBuilder.addLocalizations]
+     * using the root locale, for example: `MyCommands.json`.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped,
+     * for example, on `/ban temp recent` => `ban.temp.description`.
+     *
+     * @see LocalizationFunction
+     *
+     * @see JDASlashCommandGroup.description
+     */
     var description: String = ""
 
     init {

@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -52,7 +53,11 @@ internal class SlashCommandAutoBuilder(
         val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
     }
 
-    private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
+    private class SlashSubcommandGroupMetadata(val name: String) {
+        class Properties(val description: String)
+
+        lateinit var properties: Properties
+
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
     }
 
@@ -86,7 +91,10 @@ internal class SlashCommandAutoBuilder(
                 // Remove all slash commands with the top level name
                 val name = slashFunctionMetadata.path.name
                 check(name in missingTopLevels) {
-                    "Cannot have multiple ${annotationRef<JDATopLevelSlashCommand>()} on a same top-level command '$name'"
+                    val refs = functions
+                        .filter { it.path.name == name && it.func.hasAnnotation<JDATopLevelSlashCommand>() }
+                        .joinAsList { it.func.shortSignature }
+                    "Cannot have multiple ${annotationRef<JDATopLevelSlashCommand>()} on a same top-level command '$name':\n$refs"
                 }
 
                 missingTopLevels.remove(name)
@@ -132,10 +140,29 @@ internal class SlashCommandAutoBuilder(
                     .add(metadata)
             }
         }
+
+        // For each subcommand group, find the JDASlashCommandGroup from its subcommands
+        topLevelMetadata.values.forEach { topLevelSlashCommandMetadata ->
+            topLevelSlashCommandMetadata.subcommandGroups.values.forEach { slashSubcommandGroupMetadata ->
+                val groupSubcommands = slashSubcommandGroupMetadata.subcommands.values.flatten()
+                val annotation = groupSubcommands
+                    .mapNotNull { metadata -> metadata.func.findAnnotation<JDASlashCommandGroup>() }
+                    .also { annotations ->
+                        check(annotations.size <= 1) {
+                            val refs = groupSubcommands
+                                .filter { it.func.hasAnnotation<JDASlashCommandGroup>() }
+                                .joinAsList { it.func.shortSignature }
+                            "Cannot have multiple ${annotationRef<JDASlashCommandGroup>()} on a same subcommand group '${topLevelSlashCommandMetadata.name} ${slashSubcommandGroupMetadata.name}':\n$refs"
+                        }
+                    }
+                    .firstOrNull() ?: JDASlashCommandGroup()
+
+                slashSubcommandGroupMetadata.properties = SlashSubcommandGroupMetadata.Properties(annotation.description)
+            }
+        }
     }
 
-    private fun SlashFunctionMetadata.toSubcommandGroupMetadata() =
-        SlashSubcommandGroupMetadata(path.group!!, annotation.description)
+    private fun SlashFunctionMetadata.toSubcommandGroupMetadata() = SlashSubcommandGroupMetadata(path.group!!)
 
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         topLevelMetadata
@@ -218,7 +245,7 @@ internal class SlashCommandAutoBuilder(
 
             subcommandGroupsMetadata.values.forEach { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
-                    this@subcommandGroup.description = groupMetadata.description
+                    this@subcommandGroup.description = groupMetadata.properties.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->

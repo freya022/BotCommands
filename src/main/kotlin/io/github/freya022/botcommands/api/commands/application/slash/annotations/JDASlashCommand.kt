@@ -20,7 +20,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 
 /**
  * Declares this function as a slash command,
- * additional properties can be set with [@JDATopLevelSlashCommand][JDATopLevelSlashCommand].
+ * additional properties can be set with [@JDATopLevelSlashCommand][JDATopLevelSlashCommand]
+ * and [@JDASlashCommandGroup][JDASlashCommandGroup].
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
  * on which paths are allowed.
@@ -39,6 +40,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
+ * @see JDATopLevelSlashCommand @JDATopLevelSlashCommand
+ * @see JDASlashCommandGroup @JDASlashCommandGroup
  * @see SlashOption @SlashOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
