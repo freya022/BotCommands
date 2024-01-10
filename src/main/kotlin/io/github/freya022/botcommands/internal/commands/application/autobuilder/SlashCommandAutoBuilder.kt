@@ -107,10 +107,8 @@ internal class SlashCommandAutoBuilder(
             .mapNotNull { it.singleOrNull() }
             .forEach { slashFunctionMetadata ->
                 val name = slashFunctionMetadata.path.name
-                if (name in topLevelMetadata)
-                    return@forEach // The user still put metadata on a single top-level command, this is fine
                 missingTopLevels.remove(name)
-                topLevelMetadata[name] = TopLevelSlashCommandMetadata(name, defaultTopLevelMetadata, slashFunctionMetadata)
+                topLevelMetadata.putIfAbsentOrThrow(name, TopLevelSlashCommandMetadata(name, defaultTopLevelMetadata, slashFunctionMetadata))
             }
 
         // Check if all commands have their metadata
