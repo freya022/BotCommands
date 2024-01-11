@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptio
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
@@ -36,12 +37,20 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
+private val defaultTopLevelMetadata = JDATopLevelTextCommand()
 
 @BService
 internal class TextCommandAutoBuilder(
     context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
+    private class TopLevelTextCommandMetadata(
+        val name: String,
+        val annotation: JDATopLevelTextCommand
+    ) {
+        val container: TextCommandContainer = TextCommandContainer(name)
+    }
+
     private class TextCommandContainer(val name: String) {
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
         val variations: MutableList<TextFunctionMetadata> = arrayListOf()
@@ -49,42 +58,10 @@ internal class TextCommandAutoBuilder(
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 
-    // The dominating metadata will set attributes on the top level command, such as the general description
-    private object MetadataDominatorComparator : Comparator<TextFunctionMetadata> {
-        private var warned = false
-
-        override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
-            if (a.annotation.path.contentEquals(b.annotation.path)) {
-                val firstHasGD = a.annotation.generalDescription.isNotBlank()
-                val secondHasGD = b.annotation.generalDescription.isNotBlank()
-                if (firstHasGD && secondHasGD) {
-                    if (!warned) {
-                        warned = true
-                        logger.warn {
-                            """
-                            Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
-                            See ${a.func.shortSignature}
-                            See ${b.func.shortSignature}
-                        """.trimIndent()
-                        }
-                    }
-                    return 0
-                } else if (secondHasGD) {
-                    return 1 //B is superior
-                } else {
-                    return -1
-                }
-            }
-
-            // Metadata containers need to be constructed first
-            return a.path.nameCount.compareTo(b.path.nameCount)
-        }
-    }
-
-    private val functions: List<TextFunctionMetadata>
+    private val topLevelMetadata: MutableMap<String, TopLevelTextCommandMetadata> = hashMapOf()
 
     init {
-        functions = context.instantiableServiceAnnotationsMap
+        val functions = context.instantiableServiceAnnotationsMap
             .getInstantiableFunctionsWithAnnotation<Command, JDATextCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
@@ -95,16 +72,50 @@ internal class TextCommandAutoBuilder(
 
                 TextFunctionMetadata(it, annotation, path)
             }
-            .sortedWith(MetadataDominatorComparator)
-    }
 
-    fun declare(manager: TextCommandManager) {
-        val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
+        // Create all top level metadata
+        val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
+        functions.forEach { textFunctionMetadata ->
+            textFunctionMetadata.func.findAnnotation<JDATopLevelTextCommand>()?.let { annotation ->
+                // Remove all text commands with the top level name
+                val name = textFunctionMetadata.path.name
+                check(name in missingTopLevels) {
+                    val refs = functions
+                        .filter { it.path.name == name && it.func.hasAnnotation<JDATopLevelTextCommand>() }
+                        .joinAsList { it.func.shortSignature }
+                    "Cannot have multiple ${annotationRef<JDATopLevelTextCommand>()} on a same top-level command '$name':\n$refs"
+                }
 
+                missingTopLevels.remove(name)
+                topLevelMetadata[name] = TopLevelTextCommandMetadata(name, annotation)
+            }
+        }
+
+        // Create default metadata for top level commands with no subcommands or groups
+        missingTopLevels.values
+            .mapNotNull { it.singleOrNull() }
+            .forEach { textFunctionMetadata ->
+                val name = textFunctionMetadata.path.name
+                missingTopLevels.remove(name)
+                topLevelMetadata.putIfAbsentOrThrow(name, TopLevelTextCommandMetadata(name, defaultTopLevelMetadata))
+            }
+
+        // Check if all commands have their metadata
+        check(missingTopLevels.isEmpty()) {
+            val missingTopLevelRefs = missingTopLevels.entries.joinAsList { (name, metadataList) ->
+                if (metadataList.size == 1) throwInternal("Single top level commands should have been assigned the metadata")
+                "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
+            }
+
+            "At least one top-level text command must be annotated with ${annotationRef<JDATopLevelTextCommand>()}:\n$missingTopLevelRefs"
+        }
+
+        // Add variations to their (sub)commands
         functions.forEachWithDelayedExceptions { metadata ->
             // Checking if a (sub)command exists is not possible,
             // as it would require checking if two functions are the same commands
-            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it) }
+            val firstContainer = topLevelMetadata[metadata.path.name]?.container
+                ?: throwInternal("Cannot find top level metadata for '${metadata.path.name}' when assigning variations")
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
                 // Navigate to the subcommand that's going to hold the command
@@ -115,18 +126,23 @@ internal class TextCommandAutoBuilder(
 
             container.variations.add(metadata)
         }
+    }
 
-        containers.values.forEach { container ->
+    fun declare(manager: TextCommandManager) {
+        topLevelMetadata.values.forEach { metadata ->
             try {
-                processCommand(manager, container)
+                processCommand(manager, metadata)
             } catch (e: Exception) {
-                logger.error(e) { "An exception occurred while registering annotated text command '${container.name}'" }
+                logger.error(e) { "An exception occurred while registering annotated text command '${metadata.name}'" }
             }
         }
     }
 
-    private fun processCommand(manager: TextCommandManager, container: TextCommandContainer) {
+    private fun processCommand(manager: TextCommandManager, metadata: TopLevelTextCommandMetadata) {
+        val container = metadata.container
         manager.textCommand(container.name) {
+            description = metadata.annotation.description.nullIfBlank()
+
             container.metadata?.let { metadata ->
                 try {
                     metadata.instance::class.findAnnotation<Category>()?.let { category = it.value }
@@ -197,8 +213,7 @@ internal class TextCommandAutoBuilder(
 
         fillCommandBuilder(func)
 
-        aliases = annotation.aliases.toMutableList()
-        description = annotation.generalDescription.nullIfBlank()
+        aliases += annotation.aliases
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()

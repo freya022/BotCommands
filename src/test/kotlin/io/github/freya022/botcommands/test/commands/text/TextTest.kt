@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
-import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
@@ -30,6 +27,7 @@ class TextTest : TextCommand() {
         return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
     }
 
+    @JDATopLevelTextCommand
     @JDATextCommand(path = ["test_annotated"])
     fun onTextTestFallback(
         event: BaseCommandEvent,

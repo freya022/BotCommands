@@ -4,12 +4,14 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATopLevelTextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 @Command
 class TextTimeUnit : TextCommand() {
+    @JDATopLevelTextCommand
     @JDATextCommand(path = ["time_unit"])
     fun onTextTimeUnit(
         event: BaseCommandEvent,

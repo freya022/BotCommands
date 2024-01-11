@@ -12,7 +12,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
- * Declares this function as a text command.
+ * Declares this function as a text command,
+ * additional properties can be set with [@JDATopLevelTextCommand][JDATopLevelTextCommand].
  *
  * ### Text command variations
  * A given text command path (such as `ban temp`) is composed of at least one variation;
@@ -30,6 +31,8 @@ import net.dv8tion.jda.internal.utils.Checks
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command] and extend [TextCommand]
  * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
+ * - [@JDATopLevelTextCommand][JDATopLevelTextCommand] can only be used **once per top-level name**,
+ * e.g., if you have `tag create` and `tag edit`, you can annotate at most one of them.
  *
  * ### Option types
  * - Input options: Uses [@TextOption][TextOption], supported types are in [ParameterResolver],
@@ -38,6 +41,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
+ * @see JDATopLevelTextCommand @JDATopLevelTextCommand
  * @see Category @Category
  * @see TextOption @TextOption
  * @see Hidden @Hidden
