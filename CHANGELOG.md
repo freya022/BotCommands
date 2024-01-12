@@ -190,16 +190,20 @@ You can also add per-variant usage and examples, both in annotations and in the 
 ```kt
 @Command
 class TextBan : TextCommand() {
-    @JDATextCommand(path = ["ban"], generalDescription = "Permanently bans an user.")
+    // Applies to "ban"
+    @TextCommandData(description = "Permanently bans an user.")
+    @JDATextCommandVariation(path = ["ban"])
     suspend fun onTextBan(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
 
-    @JDATextCommand(path = ["ban"])
+    @JDATextCommandVariation(path = ["ban"])
     suspend fun onTextBan(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
 
-    @JDATextCommand(path = ["ban", "temp"], generalDescription = "Temporarily bans an user.")
+    // Applies to "temp" of "ban"
+    @TextCommandData(description = "Temporarily bans an user.")
+    @JDATextCommandVariation(path = ["ban", "temp"])
     suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
 
-    @JDATextCommand(path = ["ban", "temp"])
+    @JDATextCommandVariation(path = ["ban", "temp"])
     suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
 }
 ```

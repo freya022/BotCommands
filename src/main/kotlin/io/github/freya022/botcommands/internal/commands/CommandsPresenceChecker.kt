@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
@@ -23,7 +23,7 @@ private val commandAnnotations = listOf(
     JDASlashCommand::class.jvmName,
     JDAUserCommand::class.jvmName,
     JDAMessageCommand::class.jvmName,
-    JDATextCommand::class.jvmName,
+    JDATextCommandVariation::class.jvmName,
     AppDeclaration::class.jvmName,
     TextDeclaration::class.jvmName
 )

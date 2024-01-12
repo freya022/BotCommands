@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
+import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.internal.commands.NSFWStrategy
@@ -32,14 +32,14 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
      * Secondary **paths** of the command, **must not contain any spaces**,
      * and must follow the same format as slash commands such as `name group subcommand`
      *
-     * @see JDATextCommand.aliases
+     * @see TextCommandData.aliases
      */
     var aliases: MutableList<String> = arrayListOf()
 
     /**
      * Short description of the command, displayed in the description of the built-in help command.
      *
-     * @see JDATextCommand.generalDescription
+     * @see TextCommandData.description
      */
     var description: String? = null
 

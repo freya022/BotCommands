@@ -21,7 +21,7 @@ while also easily being able to use services provided by the framework.
   * Automatic token parsing into your parameters
     * Suppose the prefix is `!` and the command is `ban`
       ```kt
-      @JDATextCommand(name = "ban")
+      @JDATextCommandVariation(name = "ban")
       fun onTextBan(event: BaseCommandEvent,
                     @TextOption user: User,
                     @TextOption timeframe: Long,

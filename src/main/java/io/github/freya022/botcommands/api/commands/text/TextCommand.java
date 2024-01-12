@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.text;
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand;
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration;
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  *
  * <p>You are not required to use this if you use the {@link TextDeclaration DSL declaration mode}
  *
- * @see JDATextCommand @JDATextCommand
+ * @see JDATextCommandVariation @JDATextCommandVariation
  */
 public abstract class TextCommand {
 	/**
@@ -40,7 +40,7 @@ public abstract class TextCommand {
 	 *
 	 * <p>This method will only be called once per command option per guild
 	 *
-	 * @param commandPath   The path of the command, as set in {@link JDATextCommand}
+	 * @param commandPath   The path of the command, as set in {@link JDATextCommandVariation}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
 	 * @param parameterType The <b>boxed</b> type of the command option
 	 *

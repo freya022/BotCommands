@@ -7,7 +7,10 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.text.annotations.*
+import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
+import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
@@ -27,8 +30,7 @@ class TextTest : TextCommand() {
         return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
     }
 
-    @JDATopLevelTextCommand
-    @JDATextCommand(path = ["test_annotated"])
+    @JDATextCommandVariation(path = ["test_annotated"])
     fun onTextTestFallback(
         event: BaseCommandEvent,
         context: BContext,
@@ -41,7 +43,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(path = ["test_annotated"])
+    @JDATextCommandVariation(path = ["test_annotated"])
     fun onTextTest(
         event: BaseCommandEvent,
         @TextOption text: String,
@@ -55,7 +57,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(path = ["test_annotated", "subcommand"])
+    @JDATextCommandVariation(path = ["test_annotated", "subcommand"])
     fun onTextTestSubcommand(
         event: BaseCommandEvent,
         @TextOption number: Double
@@ -66,7 +68,7 @@ class TextTest : TextCommand() {
     }
 
     @Hidden
-    @JDATextCommand(path = ["test_annotated", "subcommand", "hidden"])
+    @JDATextCommandVariation(path = ["test_annotated", "subcommand", "hidden"])
     fun onTextTextSubcommandHidden(event: BaseCommandEvent) {
         event.reply(":spy:").queue()
     }

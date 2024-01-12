@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -40,7 +40,7 @@ class TextCommandVariationBuilder internal constructor(
      * Short description of the command displayed in the built-in help command,
      * below the command usage.
      *
-     * @see JDATextCommand.description
+     * @see JDATextCommandVariation.description
      */
     var description: String? = null
 
@@ -50,7 +50,7 @@ class TextCommandVariationBuilder internal constructor(
      *
      * If not set, the built-in help command will generate a string out of the options.
      *
-     * @see JDATextCommand.usage
+     * @see JDATextCommandVariation.usage
      */
     var usage: String? = null
 
@@ -60,7 +60,7 @@ class TextCommandVariationBuilder internal constructor(
      *
      * If not set, the built-in help command will generate a string out of the options.
      *
-     * @see JDATextCommand.example
+     * @see JDATextCommandVariation.example
      */
     var example: String? = null
 
