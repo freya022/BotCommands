@@ -73,8 +73,12 @@ internal class TextCommandAutoBuilder(
         // Assign user-generated extra data
         functions.forEach { textFunctionMetadata ->
             textFunctionMetadata.func.findAnnotation<TextCommandData>()?.let { annotation ->
+                // If the path is not specified (empty array), use the path of the variation
+                val path = when {
+                    annotation.path.isNotEmpty() -> CommandPath.of(annotation.path.asList())
+                    else -> textFunctionMetadata.path
+                }
                 // Find command
-                val path = CommandPath.of(annotation.path.asList())
                 val firstContainer = containers[path.name]
                     ?: throwInternal("Cannot find top level metadata for '${path.name}' when assigning extra data")
                 val container = when (path.nameCount) {
