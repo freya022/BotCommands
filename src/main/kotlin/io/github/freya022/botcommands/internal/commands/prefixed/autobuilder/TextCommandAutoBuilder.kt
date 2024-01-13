@@ -37,84 +37,72 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
-private val defaultTopLevelMetadata = JDATopLevelTextCommand()
+private val defaultExtraData = TextCommandData()
 
 @BService
 internal class TextCommandAutoBuilder(
     context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
-    private class TopLevelTextCommandMetadata(
-        val name: String,
-        val annotation: JDATopLevelTextCommand
-    ) {
-        val container: TextCommandContainer = TextCommandContainer(name)
-    }
-
     private class TextCommandContainer(val name: String) {
+        var extraData: TextCommandData = defaultExtraData
+        val hasExtraData get() = extraData !== defaultExtraData
+
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
+        // This may be empty in case this just holds subcommands
         val variations: MutableList<TextFunctionMetadata> = arrayListOf()
 
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 
-    private val topLevelMetadata: MutableMap<String, TopLevelTextCommandMetadata> = hashMapOf()
+    private val containers: Map<String, TextCommandContainer> = hashMapOf()
 
     init {
         val functions = context.instantiableServiceAnnotationsMap
-            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommand>()
+            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommandVariation>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
+                val annotation = func.findAnnotation<JDATextCommandVariation>() ?: throwInternal("@JDATextCommandVariation should be present")
                 val path = CommandPath.of(annotation.path.asList())
 
                 TextFunctionMetadata(it, annotation, path)
             }
 
-        // Create all top level metadata
-        val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
+        // Assign user-generated extra data
         functions.forEach { textFunctionMetadata ->
-            textFunctionMetadata.func.findAnnotation<JDATopLevelTextCommand>()?.let { annotation ->
-                // Remove all text commands with the top level name
-                val name = textFunctionMetadata.path.name
-                check(name in missingTopLevels) {
-                    val refs = functions
-                        .filter { it.path.name == name && it.func.hasAnnotation<JDATopLevelTextCommand>() }
-                        .joinAsList { it.func.shortSignature }
-                    "Cannot have multiple ${annotationRef<JDATopLevelTextCommand>()} on a same top-level command '$name':\n$refs"
+            textFunctionMetadata.func.findAnnotation<TextCommandData>()?.let { annotation ->
+                // Find command
+                val path = CommandPath.of(annotation.path.asList())
+                val firstContainer = containers[path.name]
+                    ?: throwInternal("Cannot find top level metadata for '${path.name}' when assigning extra data")
+                val container = when (path.nameCount) {
+                    1 -> firstContainer
+                    // Navigate to the subcommand that's going to hold the command
+                    else -> path.components.drop(1).fold(firstContainer) { acc, subName ->
+                        acc.subcommands[subName] ?: throwUser("Cannot find command variation '$path'")
+                    }
                 }
 
-                missingTopLevels.remove(name)
-                topLevelMetadata[name] = TopLevelTextCommandMetadata(name, annotation)
-            }
-        }
+                // Cannot reassign extra data
+                check(!container.hasExtraData) {
+                    val refs = functions
+                        .filter { it.func.findAnnotation<TextCommandData>()?.path contentEquals annotation.path }
+                        .joinAsList { it.func.shortSignature }
+                    "Cannot have multiple ${annotationRef<TextCommandData>()} assigned on '$path':\n$refs"
+                }
 
-        // Create default metadata for top level commands with no subcommands or groups
-        missingTopLevels.values
-            .mapNotNull { it.singleOrNull() }
-            .forEach { textFunctionMetadata ->
-                val name = textFunctionMetadata.path.name
-                missingTopLevels.remove(name)
-                topLevelMetadata.putIfAbsentOrThrow(name, TopLevelTextCommandMetadata(name, defaultTopLevelMetadata))
+                // Assign
+                container.extraData = annotation
             }
-
-        // Check if all commands have their metadata
-        check(missingTopLevels.isEmpty()) {
-            val missingTopLevelRefs = missingTopLevels.entries.joinAsList { (name, metadataList) ->
-                if (metadataList.size == 1) throwInternal("Single top level commands should have been assigned the metadata")
-                "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
-            }
-
-            "At least one top-level text command must be annotated with ${annotationRef<JDATopLevelTextCommand>()}:\n$missingTopLevelRefs"
         }
 
         // Add variations to their (sub)commands
         functions.forEachWithDelayedExceptions { metadata ->
             // Checking if a (sub)command exists is not possible,
             // as it would require checking if two functions are the same commands
-            val firstContainer = topLevelMetadata[metadata.path.name]?.container
+            val firstContainer = containers[metadata.path.name]
                 ?: throwInternal("Cannot find top level metadata for '${metadata.path.name}' when assigning variations")
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
@@ -129,25 +117,22 @@ internal class TextCommandAutoBuilder(
     }
 
     fun declare(manager: TextCommandManager) {
-        topLevelMetadata.values.forEach { metadata ->
+        containers.values.forEach { container ->
             try {
-                processCommand(manager, metadata)
+                processCommand(manager, container)
             } catch (e: Exception) {
-                logger.error(e) { "An exception occurred while registering annotated text command '${metadata.name}'" }
+                logger.error(e) { "An exception occurred while registering annotated text command '${container.name}'" }
             }
         }
     }
 
-    private fun processCommand(manager: TextCommandManager, metadata: TopLevelTextCommandMetadata) {
-        val container = metadata.container
+    private fun processCommand(manager: TextCommandManager, container: TextCommandContainer) {
         manager.textCommand(container.name) {
-            description = metadata.annotation.description.nullIfBlank()
-
             container.metadata?.let { metadata ->
                 try {
                     metadata.instance::class.findAnnotation<Category>()?.let { category = it.value }
 
-                    processBuilder(metadata)
+                    processBuilder(container, metadata)
                 } catch (e: Exception) {
                     rethrowUser(metadata.func, "Unable to construct a text command", e)
                 }
@@ -165,7 +150,7 @@ internal class TextCommandAutoBuilder(
         subcommand(subContainer.name) {
             subContainer.metadata?.let { metadata ->
                 try {
-                    processBuilder(metadata)
+                    processBuilder(subContainer, metadata)
                 } catch (e: Exception) {
                     rethrowUser(metadata.func, "Unable to construct a text subcommand", e)
                 }
@@ -204,16 +189,14 @@ internal class TextCommandAutoBuilder(
         example = metadata.annotation.example.nullIfBlank()
     }
 
-    private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
+    private fun TextCommandBuilder.processBuilder(container: TextCommandContainer, metadata: TextFunctionMetadata) {
         val func = metadata.func
-        val annotation = metadata.annotation
         val instance = metadata.instance
-
-        //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
 
         fillCommandBuilder(func)
 
-        aliases += annotation.aliases
+        description = container.extraData.description.nullIfBlank()
+        aliases += container.extraData.aliases
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()
