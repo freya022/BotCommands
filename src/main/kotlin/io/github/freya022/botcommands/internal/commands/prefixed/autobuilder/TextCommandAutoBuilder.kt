@@ -18,10 +18,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
-import io.github.freya022.botcommands.internal.commands.autobuilder.fillCommandBuilder
-import io.github.freya022.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
-import io.github.freya022.botcommands.internal.commands.autobuilder.requireCustomOption
+import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.components
 import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
@@ -55,7 +52,7 @@ internal class TextCommandAutoBuilder(
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 
-    private val containers: Map<String, TextCommandContainer> = hashMapOf()
+    private val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
     init {
         val functions = context.instantiableServiceAnnotationsMap
@@ -69,6 +66,20 @@ internal class TextCommandAutoBuilder(
 
                 TextFunctionMetadata(it, annotation, path)
             }
+
+        // Add variations to their (sub)commands
+        functions.forEachWithDelayedExceptions { metadata ->
+            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it) }
+            val container = when (metadata.path.nameCount) {
+                1 -> firstContainer
+                // Navigate to the subcommand that's going to hold the command
+                else -> metadata.path.components.drop(1).fold(firstContainer) { acc, subName ->
+                    acc.subcommands.computeIfAbsent(subName) { TextCommandContainer(it) }
+                }
+            }
+
+            container.variations.add(metadata)
+        }
 
         // Assign user-generated extra data
         functions.forEach { textFunctionMetadata ->
@@ -100,23 +111,6 @@ internal class TextCommandAutoBuilder(
                 // Assign
                 container.extraData = annotation
             }
-        }
-
-        // Add variations to their (sub)commands
-        functions.forEachWithDelayedExceptions { metadata ->
-            // Checking if a (sub)command exists is not possible,
-            // as it would require checking if two functions are the same commands
-            val firstContainer = containers[metadata.path.name]
-                ?: throwInternal("Cannot find top level metadata for '${metadata.path.name}' when assigning variations")
-            val container = when (metadata.path.nameCount) {
-                1 -> firstContainer
-                // Navigate to the subcommand that's going to hold the command
-                else -> metadata.path.components.drop(1).fold(firstContainer) { acc, subName ->
-                    acc.subcommands.computeIfAbsent(subName) { TextCommandContainer(it) }
-                }
-            }
-
-            container.variations.add(metadata)
         }
     }
 
