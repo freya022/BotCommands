@@ -4,6 +4,9 @@ import net.dv8tion.jda.api.Permission
 
 /**
  * Sets the required bot permissions to use this text / application command.
+ *
+ * **Text commands note:** This applies to the command itself, not only this variation,
+ * in other words, this applies to all commands with the same path.
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

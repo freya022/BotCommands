@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.reflect.wrap
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
@@ -17,6 +18,7 @@ import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
@@ -75,13 +77,47 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
     return TestState.NO_ANNOTATION
 }
 
-internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
-    func.readRateLimit()?.let { (bucketFactory, rateLimiterFactory) ->
-        rateLimit(bucketFactory, rateLimiterFactory)
-    }
+internal fun CommandBuilder.fillCommandBuilder(functions: Iterable<KFunction<*>>) {
+    functions
+        .singleValueOfVariants("their rate limit") { it.readRateLimit() }
+        ?.let { (bucketFactory, rateLimiterFactory) ->
+            rateLimit(bucketFactory, rateLimiterFactory)
+        }
 
-    userPermissions = AnnotationUtils.getUserPermissions(func)
-    botPermissions = AnnotationUtils.getBotPermissions(func)
+    functions
+        .singleValueOfVariants("user permission") { f ->
+            AnnotationUtils.getUserPermissions(f).takeIf { it.isNotEmpty() }
+        }
+        ?.let { userPermissions = it }
+    functions
+        .singleValueOfVariants("bot permissions") { f ->
+            AnnotationUtils.getBotPermissions(f).takeIf { it.isNotEmpty() }
+        }
+        ?.let { botPermissions = it }
+}
+
+internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) = fillCommandBuilder(listOf(func))
+
+context(CommandBuilder)
+internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresentAnnotationOfVariants(): Boolean {
+    return singleAnnotationOfVariants<A>() != null
+}
+
+context(CommandBuilder)
+internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
+    return singleValueOfVariants(annotationRef<A>()) { it.findAnnotation<A>() }
+}
+
+context(CommandBuilder)
+internal fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String, associationBlock: (KFunction<*>) -> V?): V? {
+    val allValues = this.associateWith(associationBlock)
+
+    val nonNullMap = allValues.filterValues { it != null }
+    check(nonNullMap.size <= 1) {
+        val refs = nonNullMap.map { it.key }.joinAsList { it.shortSignature }
+        "Command '$path' should have $desc defined at most once:\n$refs"
+    }
+    return nonNullMap.values.firstOrNull()
 }
 
 @Suppress("UNCHECKED_CAST")

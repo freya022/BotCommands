@@ -188,18 +188,20 @@ internal class TextCommandAutoBuilder(
     }
 
     private fun TextCommandBuilder.processBuilder(container: TextCommandContainer, metadata: TextFunctionMetadata) {
-        val func = metadata.func
         val instance = metadata.instance
 
-        fillCommandBuilder(func)
+        // Any variation could contain an annotation we're searching for.
+        // But only one annotation may be taken for the given command
+        val variationFunctions = container.variations.map { it.func }
+        fillCommandBuilder(variationFunctions)
 
         description = container.extraData.description.nullIfBlank()
         aliases += container.extraData.aliases
 
-        hidden = func.hasAnnotation<Hidden>()
-        ownerRequired = func.hasAnnotation<RequireOwner>()
+        hidden = variationFunctions.singlePresentAnnotationOfVariants<Hidden>()
+        ownerRequired = variationFunctions.singlePresentAnnotationOfVariants<RequireOwner>()
 
-        func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
+        variationFunctions.singleAnnotationOfVariants<NSFW>()?.let { nsfwAnnotation ->
             nsfw {
                 allowInDMs = nsfwAnnotation.dm
                 allowInGuild = nsfwAnnotation.guild
