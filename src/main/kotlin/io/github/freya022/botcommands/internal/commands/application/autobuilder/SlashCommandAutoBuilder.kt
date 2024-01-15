@@ -103,6 +103,11 @@ internal class SlashCommandAutoBuilder(
         }
 
         // Create default metadata for top level commands with no subcommands or groups
+        // This can only be applied to single top level commands
+        // as the function metadata needs to be taken from the function that has the top level annotation.
+        // This is especially important for annotations such as @Test,
+        // which are read on the function with the top-level annotation.
+        // Picking a random function is not suited in this case.
         missingTopLevels.values
             .mapNotNull { it.singleOrNull() }
             .forEach { slashFunctionMetadata ->
