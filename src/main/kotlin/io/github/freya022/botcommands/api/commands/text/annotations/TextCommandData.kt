@@ -31,6 +31,7 @@ annotation class TextCommandData(
      * If the path is omitted or empty, then the path of the [variation][JDATextCommandVariation] is used.
      */
     val path: Array<out String> = [],
+
     /**
      * Alternative names for this command's path fragment, **must not contain any spaces**,
      * and must follow the same format as slash commands such as `name group subcommand`
