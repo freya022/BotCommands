@@ -28,9 +28,11 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
         runCatching {
             block(metadata)
         }.onFailure {
-            when (ex) {
-                null -> ex = it.addFunction(metadata.func)
-                else -> ex!!.addSuppressed(it.addFunction(metadata.func))
+            val newException = RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", it)
+            if (ex == null) {
+                ex = newException
+            } else {
+                ex!!.addSuppressed(newException)
             }
         }
     }
@@ -39,10 +41,6 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
         throw RuntimeException("Exception(s) occurred while registering annotated commands", ex)
     }
 }
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun Throwable.addFunction(func: KFunction<*>) =
-    RuntimeException("An exception occurred while processing function ${func.shortSignature}", this)
 
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
     if (manager is GuildApplicationCommandManager) {
