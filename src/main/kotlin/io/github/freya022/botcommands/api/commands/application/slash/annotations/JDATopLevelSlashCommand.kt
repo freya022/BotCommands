@@ -13,8 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * This is only used to specify properties on the top-level command of the annotated slash command,
  * such as the scope or top-level description.
  *
- * This can be used on a [subcommand][JDASlashCommand.subcommand],
- * and specified at most once per top-level slash command,
+ * This can be specified at most once per top-level slash command,
  * e.g., if you have `/tag create` and `/tag edit`, you can annotate at most one of them.
  *
  * @see JDASlashCommand @JDASlashCommand

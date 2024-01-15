@@ -26,12 +26,14 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
  * on which paths are allowed.
  *
+ * ### Additional annotations
+ * Additional data can be set once **per top-level name** with [@JDATopLevelSlashCommand][JDATopLevelSlashCommand],
+ * and once **per subcommand group** with [@JDASlashCommandGroup][JDASlashCommandGroup].
+ *
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
  * - First parameter must be [GlobalSlashEvent] for [global][CommandScope.GLOBAL] commands, or,
  * [GuildSlashEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
- * - [@JDATopLevelSlashCommand][JDATopLevelSlashCommand] can only be used **once per top-level name**,
- * e.g., if you have `/tag create` and `/tag edit`, you can annotate at most one of them.
  *
  * ### Option types
  * - Input options: Uses [@SlashOption][SlashOption], supported types are in [ParameterResolver],
