@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class JDASlashCommandGroup(
+annotation class SlashCommandGroupData(
     //TODO change docs when Discord eventually decides to not have a mess of a command list
     /**
      * Short description of the subcommand group.

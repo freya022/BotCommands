@@ -35,7 +35,7 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
-private val defaultTopLevelMetadata = JDATopLevelSlashCommand()
+private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
@@ -44,7 +44,7 @@ internal class SlashCommandAutoBuilder(
 ) {
     private class TopLevelSlashCommandMetadata(
         val name: String,
-        val annotation: JDATopLevelSlashCommand,
+        val annotation: TopLevelSlashCommandData,
         val metadata: SlashFunctionMetadata
     ) : MetadataFunctionHolder {
         override val func: KFunction<*> get() = metadata.func
@@ -87,14 +87,14 @@ internal class SlashCommandAutoBuilder(
         // Create all top level metadata
         val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
         functions.forEach { slashFunctionMetadata ->
-            slashFunctionMetadata.func.findAnnotation<JDATopLevelSlashCommand>()?.let { annotation ->
+            slashFunctionMetadata.func.findAnnotation<TopLevelSlashCommandData>()?.let { annotation ->
                 // Remove all slash commands with the top level name
                 val name = slashFunctionMetadata.path.name
                 check(name in missingTopLevels) {
                     val refs = functions
-                        .filter { it.path.name == name && it.func.hasAnnotation<JDATopLevelSlashCommand>() }
+                        .filter { it.path.name == name && it.func.hasAnnotation<TopLevelSlashCommandData>() }
                         .joinAsList { it.func.shortSignature }
-                    "Cannot have multiple ${annotationRef<JDATopLevelSlashCommand>()} on a same top-level command '$name':\n$refs"
+                    "Cannot have multiple ${annotationRef<TopLevelSlashCommandData>()} on a same top-level command '$name':\n$refs"
                 }
 
                 missingTopLevels.remove(name)
@@ -118,7 +118,7 @@ internal class SlashCommandAutoBuilder(
                 "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
             }
 
-            "At least one top-level slash command must be annotated with ${annotationRef<JDATopLevelSlashCommand>()}:\n$missingTopLevelRefs"
+            "At least one top-level slash command must be annotated with ${annotationRef<TopLevelSlashCommandData>()}:\n$missingTopLevelRefs"
         }
 
         // Assign subcommands and groups
@@ -139,21 +139,21 @@ internal class SlashCommandAutoBuilder(
             }
         }
 
-        // For each subcommand group, find the JDASlashCommandGroup from its subcommands
+        // For each subcommand group, find the SlashCommandGroupData from its subcommands
         topLevelMetadata.values.forEach { topLevelSlashCommandMetadata ->
             topLevelSlashCommandMetadata.subcommandGroups.values.forEach { slashSubcommandGroupMetadata ->
                 val groupSubcommands = slashSubcommandGroupMetadata.subcommands.values.flatten()
                 val annotation = groupSubcommands
-                    .mapNotNull { metadata -> metadata.func.findAnnotation<JDASlashCommandGroup>() }
+                    .mapNotNull { metadata -> metadata.func.findAnnotation<SlashCommandGroupData>() }
                     .also { annotations ->
                         check(annotations.size <= 1) {
                             val refs = groupSubcommands
-                                .filter { it.func.hasAnnotation<JDASlashCommandGroup>() }
+                                .filter { it.func.hasAnnotation<SlashCommandGroupData>() }
                                 .joinAsList { it.func.shortSignature }
-                            "Cannot have multiple ${annotationRef<JDASlashCommandGroup>()} on a same subcommand group '${topLevelSlashCommandMetadata.name} ${slashSubcommandGroupMetadata.name}':\n$refs"
+                            "Cannot have multiple ${annotationRef<SlashCommandGroupData>()} on a same subcommand group '${topLevelSlashCommandMetadata.name} ${slashSubcommandGroupMetadata.name}':\n$refs"
                         }
                     }
-                    .firstOrNull() ?: JDASlashCommandGroup()
+                    .firstOrNull() ?: SlashCommandGroupData()
 
                 slashSubcommandGroupMetadata.properties = SlashSubcommandGroupMetadata.Properties(annotation.description)
             }
@@ -228,7 +228,7 @@ internal class SlashCommandAutoBuilder(
             if (isTopLevelOnly) {
                 // One of them needs to not be set
                 require(topLevelMetadata.annotation.description.isBlank() || annotation.description.isBlank()) {
-                    "Slash command annotated with ${annotationRef<JDATopLevelSlashCommand>()} must only have a description set once"
+                    "Slash command annotated with ${annotationRef<TopLevelSlashCommandData>()} must only have a description set once"
                 }
             }
             description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description

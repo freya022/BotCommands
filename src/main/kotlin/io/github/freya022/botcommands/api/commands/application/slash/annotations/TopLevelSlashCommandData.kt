@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class JDATopLevelSlashCommand(
+annotation class TopLevelSlashCommandData(
     /**
      * Specifies the application command scope for this command.
      *

@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommandGroup
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -36,7 +36,7 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
      *
      * @see LocalizationFunction
      *
-     * @see JDASlashCommandGroup.description
+     * @see SlashCommandGroupData.description
      */
     var description: String = ""
 

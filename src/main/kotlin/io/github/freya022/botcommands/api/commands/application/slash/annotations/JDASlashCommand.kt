@@ -20,15 +20,15 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 
 /**
  * Declares this function as a slash command,
- * additional properties can be set with [@JDATopLevelSlashCommand][JDATopLevelSlashCommand]
- * and [@JDASlashCommandGroup][JDASlashCommandGroup].
+ * additional properties can be set with [@TopLevelSlashCommandData][TopLevelSlashCommandData]
+ * and [@SlashCommandGroupData][SlashCommandGroupData].
  *
  * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
  * on which paths are allowed.
  *
  * ### Additional annotations
- * Additional data can be set once **per top-level name** with [@JDATopLevelSlashCommand][JDATopLevelSlashCommand],
- * and once **per subcommand group** with [@JDASlashCommandGroup][JDASlashCommandGroup].
+ * Additional data can be set once **per top-level name** with [@TopLevelSlashCommandData][TopLevelSlashCommandData],
+ * and once **per subcommand group** with [@SlashCommandGroupData][SlashCommandGroupData].
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
@@ -42,8 +42,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
- * @see JDATopLevelSlashCommand @JDATopLevelSlashCommand
- * @see JDASlashCommandGroup @JDASlashCommandGroup
+ * @see TopLevelSlashCommandData @TopLevelSlashCommandData
+ * @see SlashCommandGroupData @SlashCommandGroupData
  * @see SlashOption @SlashOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
@@ -98,7 +98,7 @@ annotation class JDASlashCommand(
      *
      * This can be localized, see [LocalizationFunction] on how commands are mapped, example: `ban.description`.
      *
-     * **Note:** A description cannot be set here and on [@JDATopLevelSlashCommand][JDATopLevelSlashCommand] at the same time.
+     * **Note:** A description cannot be set here and on [@TopLevelSlashCommandData][TopLevelSlashCommandData] at the same time.
      *
      * @see LocalizationFunction
      *

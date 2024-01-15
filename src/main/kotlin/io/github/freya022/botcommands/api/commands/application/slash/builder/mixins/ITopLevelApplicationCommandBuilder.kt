@@ -4,12 +4,12 @@ import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import net.dv8tion.jda.api.Permission
 
 interface ITopLevelApplicationCommandBuilder {
     /**
-     * @see JDATopLevelSlashCommand.scope
+     * @see TopLevelSlashCommandData.scope
      * @see JDAUserCommand.scope
      * @see JDAMessageCommand.scope
      */
@@ -29,7 +29,7 @@ interface ITopLevelApplicationCommandBuilder {
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see JDATopLevelSlashCommand.defaultLocked
+     * @see TopLevelSlashCommandData.defaultLocked
      * @see JDAUserCommand.defaultLocked
      * @see JDAMessageCommand.defaultLocked
      */
@@ -46,7 +46,7 @@ interface ITopLevelApplicationCommandBuilder {
      *
      * @return `true` if the command is restricted to NSFW channels
      *
-     * @see JDATopLevelSlashCommand.nsfw
+     * @see TopLevelSlashCommandData.nsfw
      * @see JDAUserCommand.nsfw
      * @see JDAMessageCommand.nsfw
      */

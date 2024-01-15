@@ -7,12 +7,12 @@ import io.github.freya022.botcommands.api.commands.application.GlobalApplication
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDATopLevelSlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 
 @Command
 class SlashNsfw : ApplicationCommand() {
     @JDASlashCommand(name = "nsfw_annotated")
-    @JDATopLevelSlashCommand(nsfw = true)
+    @TopLevelSlashCommandData(nsfw = true)
     fun onSlashNsfw(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }
