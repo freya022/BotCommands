@@ -27,6 +27,8 @@ annotation class TextCommandData(
     /**
      * Path components of the command this annotation applies to,
      * limited to three components and composed of [`a-zA-Z1-9_-`][Checks.ALPHANUMERIC_WITH_DASH]
+     *
+     * If the path is omitted or empty, then the path of the [variation][JDATextCommandVariation] is used.
      */
     val path: Array<out String> = [],
     /**

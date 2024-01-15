@@ -40,7 +40,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @TextCommandData(path = ["test_annotated"], description = "'test_annotated' command description")
+    @TextCommandData(description = "'test_annotated' command description")
     @JDATextCommandVariation(path = ["test_annotated"], description = "First variation description")
     fun onTextTest(
         event: BaseCommandEvent,
@@ -55,7 +55,7 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @TextCommandData(path = ["test_annotated", "subcommand"], description = "'test_annotated subcommand' subcommand description")
+    @TextCommandData(description = "'test_annotated subcommand' subcommand description")
     @JDATextCommandVariation(path = ["test_annotated", "subcommand"], description = "First subcommand variation description")
     fun onTextTestSubcommand(
         event: BaseCommandEvent,
@@ -67,7 +67,7 @@ class TextTest : TextCommand() {
     }
 
     @Hidden
-    @TextCommandData(path = ["test_annotated", "subcommand", "hidden"], description = "'test_annotated subcommand hidden' hidden subcommand description")
+    @TextCommandData(description = "'test_annotated subcommand hidden' hidden subcommand description")
     @JDATextCommandVariation(path = ["test_annotated", "subcommand", "hidden"], description = "First hidden subcommand variation description")
     fun onTextTextSubcommandHidden(event: BaseCommandEvent) {
         event.reply(":spy:").queue()
