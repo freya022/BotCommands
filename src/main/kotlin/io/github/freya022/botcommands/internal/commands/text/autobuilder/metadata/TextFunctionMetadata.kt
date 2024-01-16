@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata
+package io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.text.TextCommand

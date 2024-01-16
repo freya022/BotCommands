@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
-import io.github.freya022.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
 
 class TopLevelTextCommandBuilder internal constructor(context: BContext, name: String) : TextCommandBuilder(context, name) {
     override val parentInstance: INamedCommand? = null

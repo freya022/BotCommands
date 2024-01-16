@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.ServicePriority
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 
 object HelpCondition : ConditionalServiceChecker {
     override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {

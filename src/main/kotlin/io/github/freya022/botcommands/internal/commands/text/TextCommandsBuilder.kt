@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed
+package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.events.FirstGuildReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
+import io.github.freya022.botcommands.internal.commands.text.autobuilder.TextCommandAutoBuilder
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter

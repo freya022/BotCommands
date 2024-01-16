@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation;
+import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo;

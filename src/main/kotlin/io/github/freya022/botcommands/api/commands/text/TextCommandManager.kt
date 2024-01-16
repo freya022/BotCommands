@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.JDATextComma
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
-import io.github.freya022.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
 
 class TextCommandManager internal constructor(private val context: BContext) {
     @get:JvmSynthetic

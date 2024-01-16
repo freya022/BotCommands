@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed.autobuilder
+package io.github.freya022.botcommands.internal.commands.text.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -19,9 +19,9 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandComparator
-import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.components
-import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
+import io.github.freya022.botcommands.internal.commands.text.TextUtils.components
+import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.utils.*

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed
+package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver

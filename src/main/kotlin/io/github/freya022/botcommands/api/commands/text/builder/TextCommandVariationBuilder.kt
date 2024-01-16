@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName

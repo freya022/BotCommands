@@ -1,11 +1,11 @@
-package io.github.freya022.botcommands.internal.commands.prefixed
+package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.oshai.kotlinlogging.KotlinLogging

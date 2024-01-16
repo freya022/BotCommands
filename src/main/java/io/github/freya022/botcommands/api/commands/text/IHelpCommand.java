@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.text;
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo;
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
 
 /**

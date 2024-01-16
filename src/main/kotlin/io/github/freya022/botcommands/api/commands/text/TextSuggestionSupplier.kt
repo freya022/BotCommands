@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.text
 
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.internal.commands.prefixed.TopLevelTextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
 
 /**
  * Interface to supply text command suggestions from a top level name.

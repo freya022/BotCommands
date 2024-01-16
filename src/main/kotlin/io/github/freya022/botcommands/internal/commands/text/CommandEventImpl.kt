@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed
+package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
-import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.findEntity
+import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType

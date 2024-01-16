@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.UserSnowflake

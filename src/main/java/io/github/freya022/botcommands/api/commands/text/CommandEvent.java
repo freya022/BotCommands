@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException;
 import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException;
 import io.github.freya022.botcommands.api.core.BContext;
-import io.github.freya022.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
+import io.github.freya022.botcommands.internal.commands.text.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;

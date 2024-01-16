@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.prefixed
+package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.api.core.utils.delay
 import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.Usability
-import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging

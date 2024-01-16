@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
