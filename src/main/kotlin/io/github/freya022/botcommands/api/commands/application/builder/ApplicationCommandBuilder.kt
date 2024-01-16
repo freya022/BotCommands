@@ -2,10 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -23,22 +20,6 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
-
-    /**
-     * Specifies whether the application command is usable in NSFW channels.<br>
-     * Note: NSFW commands need to be enabled by the user in order to appear in DMs
-     *
-     * **Default:** false
-     *
-     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
-     *
-     * @return `true` if the command is restricted to NSFW channels
-     *
-     * @see JDASlashCommand.nsfw
-     * @see JDAUserCommand.nsfw
-     * @see JDAMessageCommand.nsfw
-     */
-    var nsfw: Boolean = false
 
     /**
      * Declares a custom option, such as an [AppLocalizationContext] (with [@LocalizationBundle][LocalizationBundle])

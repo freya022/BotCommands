@@ -13,15 +13,12 @@ import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
-import io.github.freya022.botcommands.internal.commands.autobuilder.fillCommandBuilder
-import io.github.freya022.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
-import io.github.freya022.botcommands.internal.commands.autobuilder.requireCustomOption
+import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.prefixed.TextUtils.components
 import io.github.freya022.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
@@ -37,6 +34,7 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
+private val defaultExtraData = TextCommandData()
 
 @BService
 internal class TextCommandAutoBuilder(
@@ -44,67 +42,33 @@ internal class TextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer
 ) {
     private class TextCommandContainer(val name: String) {
+        var extraData: TextCommandData = defaultExtraData
+        val hasExtraData get() = extraData !== defaultExtraData
+
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
+        // This may be empty in case this just holds subcommands
         val variations: MutableList<TextFunctionMetadata> = arrayListOf()
 
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
 
-    // The dominating metadata will set attributes on the top level command, such as the general description
-    private object MetadataDominatorComparator : Comparator<TextFunctionMetadata> {
-        private var warned = false
-
-        override fun compare(a: TextFunctionMetadata, b: TextFunctionMetadata): Int {
-            if (a.annotation.path.contentEquals(b.annotation.path)) {
-                val firstHasGD = a.annotation.generalDescription.isNotBlank()
-                val secondHasGD = b.annotation.generalDescription.isNotBlank()
-                if (firstHasGD && secondHasGD) {
-                    if (!warned) {
-                        warned = true
-                        logger.warn {
-                            """
-                            Annotated text command ${a.path} has multiple general descriptions, only one declaration can exist.
-                            See ${a.func.shortSignature}
-                            See ${b.func.shortSignature}
-                        """.trimIndent()
-                        }
-                    }
-                    return 0
-                } else if (secondHasGD) {
-                    return 1 //B is superior
-                } else {
-                    return -1
-                }
-            }
-
-            // Metadata containers need to be constructed first
-            return a.path.nameCount.compareTo(b.path.nameCount)
-        }
-    }
-
-    private val functions: List<TextFunctionMetadata>
+    private val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
     init {
-        functions = context.instantiableServiceAnnotationsMap
-            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommand>()
+        val functions = context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommandVariation>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
+                val annotation = func.findAnnotation<JDATextCommandVariation>() ?: throwInternal("@JDATextCommandVariation should be present")
                 val path = CommandPath.of(annotation.path.asList())
 
                 TextFunctionMetadata(it, annotation, path)
             }
-            .sortedWith(MetadataDominatorComparator)
-    }
 
-    fun declare(manager: TextCommandManager) {
-        val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
-
+        // Add variations to their (sub)commands
         functions.forEachWithDelayedExceptions { metadata ->
-            // Checking if a (sub)command exists is not possible,
-            // as it would require checking if two functions are the same commands
             val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it) }
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
@@ -117,6 +81,40 @@ internal class TextCommandAutoBuilder(
             container.variations.add(metadata)
         }
 
+        // Assign user-generated extra data
+        functions.forEach { textFunctionMetadata ->
+            textFunctionMetadata.func.findAnnotation<TextCommandData>()?.let { annotation ->
+                // If the path is not specified (empty array), use the path of the variation
+                val path = when {
+                    annotation.path.isNotEmpty() -> CommandPath.of(annotation.path.asList())
+                    else -> textFunctionMetadata.path
+                }
+                // Find command
+                val firstContainer = containers[path.name]
+                    ?: throwInternal("Cannot find top level metadata for '${path.name}' when assigning extra data")
+                val container = when (path.nameCount) {
+                    1 -> firstContainer
+                    // Navigate to the subcommand that's going to hold the command
+                    else -> path.components.drop(1).fold(firstContainer) { acc, subName ->
+                        acc.subcommands[subName] ?: throwUser("Cannot find command variation '$path'")
+                    }
+                }
+
+                // Cannot reassign extra data
+                check(!container.hasExtraData) {
+                    val refs = functions
+                        .filter { it.func.findAnnotation<TextCommandData>()?.path contentEquals annotation.path }
+                        .joinAsList { it.func.shortSignature }
+                    "Cannot have multiple ${annotationRef<TextCommandData>()} assigned on '$path':\n$refs"
+                }
+
+                // Assign
+                container.extraData = annotation
+            }
+        }
+    }
+
+    fun declare(manager: TextCommandManager) {
         containers.values.forEach { container ->
             try {
                 processCommand(manager, container)
@@ -130,7 +128,9 @@ internal class TextCommandAutoBuilder(
         manager.textCommand(container.name) {
             container.metadata?.let { metadata ->
                 try {
-                    processBuilder(metadata)
+                    metadata.instance::class.findAnnotation<Category>()?.let { category = it.value }
+
+                    processBuilder(container, metadata)
                 } catch (e: Exception) {
                     rethrowUser(metadata.func, "Unable to construct a text command", e)
                 }
@@ -148,7 +148,7 @@ internal class TextCommandAutoBuilder(
         subcommand(subContainer.name) {
             subContainer.metadata?.let { metadata ->
                 try {
-                    processBuilder(metadata)
+                    processBuilder(subContainer, metadata)
                 } catch (e: Exception) {
                     rethrowUser(metadata.func, "Unable to construct a text subcommand", e)
                 }
@@ -187,26 +187,21 @@ internal class TextCommandAutoBuilder(
         example = metadata.annotation.example.nullIfBlank()
     }
 
-    private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
-        val func = metadata.func
-        val annotation = metadata.annotation
+    private fun TextCommandBuilder.processBuilder(container: TextCommandContainer, metadata: TextFunctionMetadata) {
         val instance = metadata.instance
 
-        //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
+        // Any variation could contain an annotation we're searching for.
+        // But only one annotation may be taken for the given command
+        val variationFunctions = container.variations.map { it.func }
+        fillCommandBuilder(variationFunctions)
 
-        fillCommandBuilder(func)
+        description = container.extraData.description.nullIfBlank()
+        aliases += container.extraData.aliases
 
-        if (this is TopLevelTextCommandBuilder) {
-            func.findAnnotation<Category>()?.let { category = it.value }
-        }
+        hidden = variationFunctions.singlePresentAnnotationOfVariants<Hidden>()
+        ownerRequired = variationFunctions.singlePresentAnnotationOfVariants<RequireOwner>()
 
-        aliases = annotation.aliases.toMutableList()
-        description = annotation.generalDescription.nullIfBlank()
-
-        hidden = func.hasAnnotation<Hidden>()
-        ownerRequired = func.hasAnnotation<RequireOwner>()
-
-        func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
+        variationFunctions.singleAnnotationOfVariants<NSFW>()?.let { nsfwAnnotation ->
             nsfw {
                 allowInDMs = nsfwAnnotation.dm
                 allowInGuild = nsfwAnnotation.guild

@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.AppDe
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 
@@ -23,7 +23,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
  * @see JDAUserCommand @JDAUserCommand
  *
  * @see TextDeclaration @TextDeclaration
- * @see JDATextCommand @JDATextCommand
+ * @see JDATextCommandVariation @JDATextCommandVariation
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY) //Read by ClassGraph

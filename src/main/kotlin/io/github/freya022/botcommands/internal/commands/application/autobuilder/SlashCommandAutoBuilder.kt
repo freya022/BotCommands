@@ -11,14 +11,17 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
+import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.utils.*
@@ -26,70 +29,174 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
+
+private val logger = KotlinLogging.logger { }
+private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
-    private val logger = KotlinLogging.logger { }
+    private class TopLevelSlashCommandMetadata(
+        val name: String,
+        val annotation: TopLevelSlashCommandData,
+        val metadata: SlashFunctionMetadata
+    ) : MetadataFunctionHolder {
+        override val func: KFunction<*> get() = metadata.func
+
+        val subcommands: MutableList<SlashFunctionMetadata> = arrayListOf()
+        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
+    }
+
+    private class SlashSubcommandGroupMetadata(val name: String) {
+        class Properties(val description: String)
+
+        lateinit var properties: Properties
+
+        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
+    }
 
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
 
-    private val functions: List<SlashFunctionMetadata> =
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
-            .map {
-                val func = it.function
-                val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank()).also { path ->
-                    if (path.group != null && path.nameCount == 2) {
-                        throwUser(func, "Slash commands with groups need to have their subcommand name set")
-                    }
-                }
-                val commandId = func.findAnnotation<CommandId>()?.value
+    private val topLevelMetadata: MutableMap<String, TopLevelSlashCommandMetadata> = hashMapOf()
 
-                SlashFunctionMetadata(it, annotation, path, commandId)
+    init {
+        val functions: List<SlashFunctionMetadata> =
+            context.instantiableServiceAnnotationsMap
+                .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
+                .requiredFilter(FunctionFilter.nonStatic())
+                .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
+                .map {
+                    val func = it.function
+                    val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
+                    val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank()).also { path ->
+                        if (path.group != null && path.nameCount == 2) {
+                            throwUser(func, "Slash commands with groups need to have their subcommand name set")
+                        }
+                    }
+                    val commandId = func.findAnnotation<CommandId>()?.value
+
+                    SlashFunctionMetadata(it, annotation, path, commandId)
+                }
+
+        // Create all top level metadata
+        val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
+        functions.forEach { slashFunctionMetadata ->
+            slashFunctionMetadata.func.findAnnotation<TopLevelSlashCommandData>()?.let { annotation ->
+                // Remove all slash commands with the top level name
+                val name = slashFunctionMetadata.path.name
+                check(name in missingTopLevels) {
+                    val refs = functions
+                        .filter { it.path.name == name && it.func.hasAnnotation<TopLevelSlashCommandData>() }
+                        .joinAsList { it.func.shortSignature }
+                    "Cannot have multiple ${annotationRef<TopLevelSlashCommandData>()} on a same top-level command '$name':\n$refs"
+                }
+
+                missingTopLevels.remove(name)
+                topLevelMetadata[name] = TopLevelSlashCommandMetadata(name, annotation, slashFunctionMetadata)
+            }
+        }
+
+        // Create default metadata for top level commands with no subcommands or groups
+        // This can only be applied to single top level commands
+        // as the function metadata needs to be taken from the function that has the top level annotation.
+        // This is especially important for annotations such as @Test,
+        // which are read on the function with the top-level annotation.
+        // Picking a random function is not suited in this case.
+        missingTopLevels.values
+            .mapNotNull { it.singleOrNull() }
+            .forEach { slashFunctionMetadata ->
+                val name = slashFunctionMetadata.path.name
+                missingTopLevels.remove(name)
+                topLevelMetadata.putIfAbsentOrThrow(name, TopLevelSlashCommandMetadata(name, defaultTopLevelMetadata, slashFunctionMetadata))
             }
 
+        // Check if all commands have their metadata
+        check(missingTopLevels.isEmpty()) {
+            val missingTopLevelRefs = missingTopLevels.entries.joinAsList { (name, metadataList) ->
+                if (metadataList.size == 1) throwInternal("Single top level commands should have been assigned the metadata")
+                "$name:\n${metadataList.joinAsList("\t -") { it.func.shortSignature }}"
+            }
+
+            "At least one top-level slash command must be annotated with ${annotationRef<TopLevelSlashCommandData>()}:\n$missingTopLevelRefs"
+        }
+
+        // Assign subcommands and groups
+        functions.forEachWithDelayedExceptions { metadata ->
+            if (metadata.path.nameCount < 2) return@forEachWithDelayedExceptions
+
+            val topLevelMetadata = topLevelMetadata[metadata.path.name]
+                ?: throwInternal("Missing top level metadata '${metadata.path.name}' when assigning subcommands")
+            if (metadata.path.nameCount == 2) {
+                topLevelMetadata.subcommands.add(metadata)
+            } else if (metadata.path.nameCount == 3) {
+                topLevelMetadata
+                    .subcommandGroups
+                    .getOrPut(metadata.path.group!!) { metadata.toSubcommandGroupMetadata() }
+                    .subcommands
+                    .getOrPut(metadata.path.subname!!) { arrayListOf() }
+                    .add(metadata)
+            }
+        }
+
+        // For each subcommand group, find the SlashCommandGroupData from its subcommands
+        topLevelMetadata.values.forEach { topLevelSlashCommandMetadata ->
+            topLevelSlashCommandMetadata.subcommandGroups.values.forEach { slashSubcommandGroupMetadata ->
+                val groupSubcommands = slashSubcommandGroupMetadata.subcommands.values.flatten()
+                val annotation = groupSubcommands
+                    .mapNotNull { metadata -> metadata.func.findAnnotation<SlashCommandGroupData>() }
+                    .also { annotations ->
+                        check(annotations.size <= 1) {
+                            val refs = groupSubcommands
+                                .filter { it.func.hasAnnotation<SlashCommandGroupData>() }
+                                .joinAsList { it.func.shortSignature }
+                            "Cannot have multiple ${annotationRef<SlashCommandGroupData>()} on a same subcommand group '${topLevelSlashCommandMetadata.name} ${slashSubcommandGroupMetadata.name}':\n$refs"
+                        }
+                    }
+                    .firstOrNull() ?: SlashCommandGroupData()
+
+                slashSubcommandGroupMetadata.properties = SlashSubcommandGroupMetadata.Properties(annotation.description)
+            }
+        }
+    }
+
+    private fun SlashFunctionMetadata.toSubcommandGroupMetadata() = SlashSubcommandGroupMetadata(path.group!!)
+
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
-        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
-        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
-        fillSubcommandsAndGroups(subcommands, subcommandGroups)
-
-        functions
-            .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
-            .forEachWithDelayedExceptions {
-                val annotation = it.annotation
+        topLevelMetadata
+            .values
+            .forEachWithDelayedExceptions { topLevelMetadata ->
+                val topLevelAnnotation = topLevelMetadata.annotation
                 if (forceGuildCommands)
-                    return@forEachWithDelayedExceptions logger.debug { "Skipping command '${it.path}' as ${BApplicationConfig::forceGuildCommands.reference} is enabled" }
-                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                    return@forEachWithDelayedExceptions logger.debug { "Skipping command '${topLevelMetadata.name}' as ${BApplicationConfig::forceGuildCommands.reference} is enabled" }
 
-                if (checkTestCommand(manager, it.func, annotation.scope, context) == TestState.EXCLUDE) {
+                if (!manager.isValidScope(topLevelAnnotation.scope)) return@forEachWithDelayedExceptions
+
+                val metadata = topLevelMetadata.metadata
+                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) == TestState.EXCLUDE) {
                     return@forEachWithDelayedExceptions
                 }
 
-                processCommand(manager, it, subcommands, subcommandGroups)
+                processCommand(manager, topLevelMetadata)
             }
     }
 
     fun declareGuild(manager: GuildApplicationCommandManager) {
-        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
-        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
-        fillSubcommandsAndGroups(subcommands, subcommandGroups)
+        topLevelMetadata
+            .values
+            .forEachWithDelayedExceptions { topLevelMetadata ->
+                val topLevelAnnotation = topLevelMetadata.annotation
 
-        functions
-            .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
-            .forEachWithDelayedExceptions { metadata ->
-                val annotation = metadata.annotation
                 //Declare as a guild command: remove invalid scopes when commands aren't forced as guild scoped
-                if (!forceGuildCommands && !manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                if (!forceGuildCommands && !manager.isValidScope(topLevelAnnotation.scope)) return@forEachWithDelayedExceptions
 
+                val metadata = topLevelMetadata.metadata
                 val instance = metadata.instance
                 val path = metadata.path
 
@@ -101,70 +208,51 @@ internal class SlashCommandAutoBuilder(
                     }
                 }
 
-                if (checkTestCommand(manager, metadata.func, annotation.scope, context) == TestState.EXCLUDE) {
+                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) == TestState.EXCLUDE) {
                     logger.trace { "Skipping command '$path' as it is a test command on ${manager.guild}" }
                     return@forEachWithDelayedExceptions
                 }
 
-                processCommand(manager, metadata, subcommands, subcommandGroups)
+                processCommand(manager, topLevelMetadata)
             }
     }
 
-    private fun fillSubcommandsAndGroups(
-        subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>>,
-        subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata>
-    ) {
-        functions.forEachWithDelayedExceptions { metadata ->
-            when (metadata.path.nameCount) {
-                2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
-                3 -> subcommandGroups
-                    .computeIfAbsent(metadata.path.name) { SlashSubcommandGroupMetadata(metadata.path.group!!, metadata.annotation.description) }
-                    .subcommands
-                    .computeIfAbsent(metadata.path.subname!!) { arrayListOf() }
-                    .add(metadata)
-            }
-        }
-    }
-
-    private fun processCommand(
-        manager: AbstractApplicationCommandManager,
-        metadata: SlashFunctionMetadata,
-        subcommands: Map<String, List<SlashFunctionMetadata>>,
-        subcommandGroups: Map<String, SlashSubcommandGroupMetadata>
-    ) {
+    private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {
+        val metadata = topLevelMetadata.metadata
         val annotation = metadata.annotation
-        val instance = metadata.instance
         val path = metadata.path
-        val commandId = metadata.commandId
 
         val name = path.name
-        val subcommandsMetadata = subcommands[name]
-        val subcommandGroupsMetadata = subcommandGroups[name]
-        val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
-        manager.slashCommand(name, annotation.scope, if (isTopLevel) metadata.func.castFunction() else null) {
-            isDefaultLocked = annotation.defaultLocked
-            description = annotation.description
+        val subcommandsMetadata = topLevelMetadata.subcommands
+        val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
+        val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
+        manager.slashCommand(name, topLevelMetadata.annotation.scope, if (isTopLevelOnly) metadata.func.castFunction() else null) {
+            isDefaultLocked = topLevelMetadata.annotation.defaultLocked
+            nsfw = topLevelMetadata.annotation.nsfw
 
-            subcommandsMetadata?.let { metadataList ->
-                metadataList.forEach { subMetadata ->
-                    subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
-                        //TODO replace with #subcommandDescription in annotation
-                        this@subcommand.description = subMetadata.annotation.description
-                        this@subcommand.configureBuilder(subMetadata)
-                        this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
-                    }
+            // On top-level only commands, the description can be set on either of the annotations, but not both
+            if (isTopLevelOnly) {
+                // One of them needs to not be set
+                require(topLevelMetadata.annotation.description.isBlank() || annotation.description.isBlank()) {
+                    "Slash command annotated with ${annotationRef<TopLevelSlashCommandData>()} must only have a description set once"
+                }
+            }
+            description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description
+
+            subcommandsMetadata.forEach { subMetadata ->
+                subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
+                    configureSubcommand(manager, subMetadata)
                 }
             }
 
-            subcommandGroupsMetadata?.let { groupMetadata ->
+            subcommandGroupsMetadata.values.forEach { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
-                    this@subcommandGroup.description = groupMetadata.description
+                    this@subcommandGroup.description = groupMetadata.properties.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
                             subcommand(subname, subMetadata.func.castFunction()) {
-                                this@subcommand.configureBuilder(subMetadata)
-                                this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                                configureSubcommand(manager, subMetadata)
                             }
                         }
                     }
@@ -173,23 +261,25 @@ internal class SlashCommandAutoBuilder(
 
             configureBuilder(metadata)
 
-            if (isTopLevel) {
-                processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
+            if (isTopLevelOnly) {
+                processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata)
             }
         }
     }
 
-    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
-        fillCommandBuilder(metadata.func)
-        fillApplicationCommandBuilder(metadata.func, metadata.annotation)
+    private fun SlashSubcommandBuilder.configureSubcommand(manager: AbstractApplicationCommandManager, subMetadata: SlashFunctionMetadata) {
+        this.description = subMetadata.annotation.description
+        this.configureBuilder(subMetadata)
+        this.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
     }
 
-    private fun SlashCommandBuilder.processOptions(
-        guild: Guild?,
-        metadata: SlashFunctionMetadata,
-        instance: ApplicationCommand,
-        commandId: String?
-    ) {
+    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
+        fillCommandBuilder(metadata.func)
+        fillApplicationCommandBuilder(metadata.func)
+    }
+
+    private fun SlashCommandBuilder.processOptions(guild: Guild?, metadata: SlashFunctionMetadata) {
+        val instance = metadata.instance
         val func = metadata.func
         val path = metadata.path
 
@@ -204,7 +294,7 @@ internal class SlashCommandAutoBuilder(
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
                             guild,
-                            commandId,
+                            metadata.commandId,
                             path,
                             kParameter.findOptionName(),
                             ParameterType.ofType(kParameter.type)
@@ -262,9 +352,5 @@ internal class SlashCommandAutoBuilder(
         if (optionAnnotation.autocomplete.isNotEmpty()) {
             autocompleteReference(optionAnnotation.autocomplete)
         }
-    }
-
-    private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
-        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
     }
 }

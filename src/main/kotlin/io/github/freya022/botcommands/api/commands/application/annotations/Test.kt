@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.annotations
 
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import net.dv8tion.jda.api.entities.Guild
 
@@ -8,6 +9,9 @@ import net.dv8tion.jda.api.entities.Guild
  *
  * This means this application command will only be pushed in guilds
  * defined by [BApplicationConfig.testGuildIds] and [guildIds].
+ *
+ * **Note:** This only applies to top-level commands, for slash commands,
+ * this means the annotation needs to be used alongside [@TopLevelSlashCommandData][TopLevelSlashCommandData].
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

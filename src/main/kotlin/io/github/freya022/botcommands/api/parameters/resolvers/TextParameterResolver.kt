@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.annotations.ID
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.internal.commands.prefixed.TextCommandVariation
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -11,7 +11,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDATextCommand][JDATextCommand].
+ * Parameter resolver for parameters of [@JDATextCommandVariation][JDATextCommandVariation].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
  *
@@ -26,7 +26,7 @@ interface TextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
      *
-     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
+     * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.
      *
      * @param variation The text command variation being executed
      * @param event     The corresponding event
@@ -41,7 +41,7 @@ interface TextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
      *
-     * See the [@JDATextCommand][JDATextCommand] documentation for more details about text command variations.
+     * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.
      *
      * @param variation The text command variation being executed
      * @param event     The corresponding event

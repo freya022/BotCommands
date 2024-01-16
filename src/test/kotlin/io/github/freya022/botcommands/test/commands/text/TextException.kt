@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.messages.into
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.create
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
 @Command
 class TextException : TextCommand() {
-    @JDATextCommand(path = ["exception"])
+    @JDATextCommandVariation(path = ["exception"])
     suspend fun onTextException(event: BaseCommandEvent, components: Components, modals: Modals) {
         event.context.dispatchException("test no throwable", null)
         event.context.dispatchException("test no throwable, with context", null, mapOf("pi" to 3.14159))

@@ -11,12 +11,14 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.core.entities.InputUser
 
 @Command
 class SlashBanManual : ApplicationCommand() {
     @Test(guildIds = [722891685755093072])
-    @JDASlashCommand(name = "ban_annotated", defaultLocked = true, scope = CommandScope.GUILD)
+    @JDASlashCommand(name = "ban_annotated")
+    @TopLevelSlashCommandData(defaultLocked = true, scope = CommandScope.GUILD)
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @SlashOption target: InputUser,

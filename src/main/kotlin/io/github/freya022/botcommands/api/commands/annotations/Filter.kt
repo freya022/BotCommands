@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
+import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.filter
 import io.github.freya022.botcommands.api.components.builder.IActionableComponent
@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
  *
  * The filter must implement at least one of the corresponding interfaces:
  * - [@JDASlashCommand][JDASlashCommand], [@JDAUserCommand][JDAUserCommand], [@JDAMessageCommand][JDAMessageCommand] -> [ApplicationCommandFilter]
- * - [@JDATextCommand][JDATextCommand] -> [TextCommandFilter]
+ * - [@JDATextCommandVariation][JDATextCommandVariation] -> [TextCommandFilter]
  *
  * **Note:** This **cannot** be used on component handlers,
  * use the appropriate methods on the builders instead like [IActionableComponent.filter] / [IActionableComponent.addFilter].

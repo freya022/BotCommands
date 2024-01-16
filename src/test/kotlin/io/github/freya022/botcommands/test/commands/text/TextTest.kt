@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
-import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
-import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
+import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
@@ -30,7 +27,7 @@ class TextTest : TextCommand() {
         return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
     }
 
-    @JDATextCommand(path = ["test_annotated"])
+    @JDATextCommandVariation(path = ["test_annotated"], description = "Fallback variation description")
     fun onTextTestFallback(
         event: BaseCommandEvent,
         context: BContext,
@@ -43,7 +40,8 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(path = ["test_annotated"])
+    @TextCommandData(description = "'test_annotated' command description")
+    @JDATextCommandVariation(path = ["test_annotated"], description = "First variation description")
     fun onTextTest(
         event: BaseCommandEvent,
         @TextOption text: String,
@@ -57,7 +55,8 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @JDATextCommand(path = ["test_annotated", "subcommand"])
+    @TextCommandData(description = "'test_annotated subcommand' subcommand description")
+    @JDATextCommandVariation(path = ["test_annotated", "subcommand"], description = "First subcommand variation description")
     fun onTextTestSubcommand(
         event: BaseCommandEvent,
         @TextOption number: Double
@@ -68,7 +67,8 @@ class TextTest : TextCommand() {
     }
 
     @Hidden
-    @JDATextCommand(path = ["test_annotated", "subcommand", "hidden"])
+    @TextCommandData(description = "'test_annotated subcommand hidden' hidden subcommand description")
+    @JDATextCommandVariation(path = ["test_annotated", "subcommand", "hidden"], description = "First hidden subcommand variation description")
     fun onTextTextSubcommandHidden(event: BaseCommandEvent) {
         event.reply(":spy:").queue()
     }
@@ -76,7 +76,11 @@ class TextTest : TextCommand() {
     @TextDeclaration
     fun declare(textCommandManager: TextCommandManager) {
         textCommandManager.textCommand("test") {
+            description = "'test' command description"
+
             variation(::onTextTest) {
+                description = "First variation description"
+
                 option("text")
 
                 customOption("context")
@@ -87,6 +91,8 @@ class TextTest : TextCommand() {
             }
 
             variation(::onTextTestFallback) {
+                description = "Fallback variation description"
+
                 customOption("context")
 
                 generatedOption("userName") {
@@ -95,14 +101,22 @@ class TextTest : TextCommand() {
             }
 
             subcommand("subcommand") {
+                description = "'test subcommand' subcommand description"
+
                 variation(::onTextTestSubcommand) {
+                    description = "First subcommand variation description"
+
                     option("number")
                 }
 
                 subcommand("hidden") {
+                    description = "'test subcommand hidden' hidden subcommand description"
+
                     hidden = true
 
-                    variation(::onTextTextSubcommandHidden)
+                    variation(::onTextTextSubcommandHidden) {
+                        description = "First hidden subcommand variation description"
+                    }
                 }
             }
         }

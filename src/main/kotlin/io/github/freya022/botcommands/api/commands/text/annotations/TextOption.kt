@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable
 /**
  * Sets a parameter as a text command option from the Discord message.
  *
- * This also can set name and example of [text commands][JDATextCommand] parameters.
+ * This also can set name and example of [text commands][JDATextCommandVariation] parameters.
  *
  * @see Optional @Optional
  * @see Nullable @Nullable

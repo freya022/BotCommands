@@ -6,4 +6,5 @@ interface ITopLevelApplicationCommandInfo {
     val scope: CommandScope
     val isDefaultLocked: Boolean
     val isGuildOnly: Boolean
+    val nsfw: Boolean
 }

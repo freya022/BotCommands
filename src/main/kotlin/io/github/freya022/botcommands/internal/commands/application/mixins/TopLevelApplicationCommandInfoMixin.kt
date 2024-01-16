@@ -12,6 +12,7 @@ open class TopLevelApplicationCommandInfoMixin(
     final override val scope: CommandScope = builder.scope
     final override val isDefaultLocked: Boolean = builder.isDefaultLocked
     final override val isGuildOnly: Boolean = scope.isGuildOnly
+    final override val nsfw: Boolean = builder.nsfw
 
     init {
         downcast<ApplicationCommandBuilder<*>>(builder)

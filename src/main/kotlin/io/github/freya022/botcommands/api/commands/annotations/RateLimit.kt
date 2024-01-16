@@ -57,6 +57,9 @@ annotation class Refill(
 /**
  * Defines a rate limit for a command / component handler.
  *
+ * **Text commands note:** This applies to the command itself, not only this variation,
+ * in other words, this applies to all commands with the same path.
+ *
  * ### Rate limit cancellation
  * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
@@ -111,6 +114,9 @@ annotation class RateLimit(
 
 /**
  * Uses an existing rate limiter for this command / component handler.
+ *
+ * **Text commands note:** This applies to the command itself, not only this variation,
+ * in other words, this applies to all commands with the same path.
  *
  * ### Example
  * ```kt

@@ -4,12 +4,12 @@ import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import net.dv8tion.jda.api.Permission
 
 interface ITopLevelApplicationCommandBuilder {
     /**
-     * @see JDASlashCommand.scope
+     * @see TopLevelSlashCommandData.scope
      * @see JDAUserCommand.scope
      * @see JDAMessageCommand.scope
      */
@@ -29,9 +29,26 @@ interface ITopLevelApplicationCommandBuilder {
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see JDASlashCommand.defaultLocked
+     * @see TopLevelSlashCommandData.defaultLocked
      * @see JDAUserCommand.defaultLocked
      * @see JDAMessageCommand.defaultLocked
      */
     var isDefaultLocked: Boolean
+
+    /**
+     * Specifies whether the application command is usable in NSFW channels.
+     *
+     * Note: NSFW commands need to be enabled by the user to appear in DMs.
+     *
+     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
+     *
+     * **Default:** false
+     *
+     * @return `true` if the command is restricted to NSFW channels
+     *
+     * @see TopLevelSlashCommandData.nsfw
+     * @see JDAUserCommand.nsfw
+     * @see JDAMessageCommand.nsfw
+     */
+    var nsfw: Boolean
 }

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.text.*
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
@@ -12,7 +11,12 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
- * Declares this function as a text command.
+ * Declares this function as a text command,
+ * additional properties can be set with [@TextCommandData][TextCommandData].
+ *
+ * ### Additional annotations
+ * Additional data can be set by using [@TextCommandData][TextCommandData] once **per top-level name**,
+ * by specifying their [target path][TextCommandData.path].
  *
  * ### Text command variations
  * A given text command path (such as `ban temp`) is composed of at least one variation;
@@ -38,6 +42,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
  *
  * @see Command @Command
+ * @see TextCommandData @TextCommandData
  * @see Category @Category
  * @see TextOption @TextOption
  * @see Hidden @Hidden
@@ -54,7 +59,7 @@ import net.dv8tion.jda.internal.utils.Checks
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class JDATextCommand(
+annotation class JDATextCommandVariation(
     /**
      * Path components of the command,
      * limited to three components and composed of [`a-zA-Z1-9_-`][Checks.ALPHANUMERIC_WITH_DASH]
@@ -70,23 +75,6 @@ annotation class JDATextCommand(
      * If you are using Kotlin, [DSL-declared commands][TextDeclaration] retain the order they are declared in.
      */
     val order: Int = 0,
-
-    /**
-     * Secondary **paths** of the command, **must not contain any spaces**,
-     * and must follow the same format as slash commands such as `name group subcommand`
-     *
-     * @see TextCommandBuilder.aliases DSL equivalent
-     */
-    val aliases: Array<String> = [],
-
-    /**
-     * Short description of the command, displayed in the description of the built-in help command.
-     *
-     * This description can only be set once for a given command path.
-     *
-     * @see TextCommandBuilder.description DSL equivalent
-     */
-    val generalDescription: String = "",
 
     /**
      * Short description of the command displayed in the built-in help command,
