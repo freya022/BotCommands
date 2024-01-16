@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -240,9 +241,7 @@ internal class SlashCommandAutoBuilder(
 
             subcommandsMetadata.forEach { subMetadata ->
                 subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
-                    this@subcommand.description = subMetadata.annotation.description
-                    this@subcommand.configureBuilder(subMetadata)
-                    this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
+                    configureSubcommand(manager, subMetadata)
                 }
             }
 
@@ -253,11 +252,7 @@ internal class SlashCommandAutoBuilder(
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
                             subcommand(subname, subMetadata.func.castFunction()) {
-                                this@subcommand.configureBuilder(subMetadata)
-                                this@subcommand.processOptions(
-                                    (manager as? GuildApplicationCommandManager)?.guild,
-                                    subMetadata
-                                )
+                                configureSubcommand(manager, subMetadata)
                             }
                         }
                     }
@@ -270,6 +265,12 @@ internal class SlashCommandAutoBuilder(
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata)
             }
         }
+    }
+
+    private fun SlashSubcommandBuilder.configureSubcommand(manager: AbstractApplicationCommandManager, subMetadata: SlashFunctionMetadata) {
+        this.description = subMetadata.annotation.description
+        this.configureBuilder(subMetadata)
+        this.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
     }
 
     private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
