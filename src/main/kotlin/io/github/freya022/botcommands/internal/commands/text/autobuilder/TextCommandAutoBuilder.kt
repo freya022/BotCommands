@@ -60,7 +60,7 @@ internal class TextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDATextCommandVariation>() ?: throwInternal("@JDATextCommandVariation should be present")
+                val annotation = func.findAnnotation<JDATextCommandVariation>() ?: throwInternal("${annotationRef<JDATextCommandVariation>()} should be present")
                 val path = CommandPath.of(annotation.path.asList())
 
                 TextFunctionMetadata(it, annotation, path)

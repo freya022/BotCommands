@@ -24,11 +24,8 @@ import io.github.freya022.botcommands.internal.commands.application.autobuilder.
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
-import io.github.freya022.botcommands.internal.utils.FunctionFilter
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.findOptionName
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -49,7 +46,7 @@ internal class ContextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
+                val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("${annotationRef<JDAMessageCommand>()} should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
@@ -62,7 +59,7 @@ internal class ContextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAMessageCommand should be present")
+                val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("${annotationRef<JDAUserCommand>()} should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
