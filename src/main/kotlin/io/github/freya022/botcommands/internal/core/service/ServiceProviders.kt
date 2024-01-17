@@ -4,7 +4,6 @@ import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import java.lang.reflect.Executable
@@ -36,7 +35,7 @@ internal class ServiceProviders : ClassGraphProcessor {
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (isService) {
-            (context as BContextImpl).serviceProviders.putServiceProvider(ClassServiceProvider.fromClass(kClass))
+            putServiceProvider(ClassServiceProvider.fromClass(kClass))
         }
     }
 
@@ -57,7 +56,7 @@ internal class ServiceProviders : ClassGraphProcessor {
                 method.kotlinFunction
                     ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
                     ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
-            (context as BContextImpl).serviceProviders.putServiceProvider(FunctionServiceProvider(function))
+            putServiceProvider(FunctionServiceProvider(function))
         }
     }
 }
