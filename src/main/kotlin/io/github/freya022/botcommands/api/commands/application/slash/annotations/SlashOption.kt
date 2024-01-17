@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationSettings
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable
  * for more details.
  *
  * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
- * or the [application command itself][GuildApplicationSettings.getOptionChoices].
+ * or the [application command itself][ApplicationCommand.getOptionChoices].
  *
  * @see Optional @Optional
  * @see Nullable @Nullable
@@ -76,7 +76,7 @@ annotation class SlashOption(
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
      *
-     * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
+     * **Note:** Predefined choices can still be overridden by [ApplicationCommand.getOptionChoices].
      *
      * @return `true` to enable using choices from [SlashParameterResolver.getPredefinedChoices].
      *

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationSettings
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
@@ -59,7 +58,7 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
      *
-     * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
+     * **Note:** Predefined choices can still be overridden by [ApplicationCommand.getOptionChoices].
      *
      * @return `true` to enable using choices from [SlashParameterResolver.getPredefinedChoices].
      *
