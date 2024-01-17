@@ -1,37 +1,15 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
-import io.github.freya022.botcommands.api.core.SettingsProvider
-
 
 /**
  * Marks a text command as being usable in NSFW channels only.
  *
- * NSFW commands will be shown in help content only if called in an NSFW channel,
- * DM consent is **not** checked as text commands are guild-only.
- *
- * **Note:** For application commands, see the `nsfw` parameter of your annotation
+ * ### Built-in help content
+ * NSFW commands will be shown if requested in an NSFW channel.
  *
  * @see TextCommandBuilder.nsfw DSL equivalent
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class NSFW(
-    /**
-     * Specifies whether this NSFW command should work in guild channels.
-     *
-     * @return `true` if the command should run on guild channels
-     */
-    val guild: Boolean = true,
-
-    /**
-     * Specifies whether this NSFW command should work in a user's DMs.
-     *
-     * The user also needs to [consent to NSFW DMs][SettingsProvider.doesUserConsentNSFW]
-     *
-     * @return `true` if the command should run in user DMs
-     *
-     * @see SettingsProvider.doesUserConsentNSFW
-     */
-    val dm: Boolean = false
-) 
+annotation class NSFW

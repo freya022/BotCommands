@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfo
-import io.github.freya022.botcommands.internal.commands.NSFWStrategy
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
@@ -19,7 +18,7 @@ sealed class TextCommandInfo(
 
     val description: String? = builder.description
 
-    val nsfwStrategy: NSFWStrategy? = builder.nsfwStrategy
+    val nsfw: Boolean = builder.nsfw
     val isOwnerRequired: Boolean = builder.ownerRequired
     val hidden: Boolean = builder.hidden
 

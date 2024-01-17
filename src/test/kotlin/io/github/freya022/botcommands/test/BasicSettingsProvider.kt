@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.test
 import io.github.freya022.botcommands.api.core.SettingsProvider
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.DiscordLocale
 
 @BService
@@ -14,9 +13,5 @@ class BasicSettingsProvider : SettingsProvider {
         }
 
         return super.getLocale(guild)
-    }
-
-    override fun doesUserConsentNSFW(user: User): Boolean {
-        return true
     }
 }

@@ -186,14 +186,8 @@ internal class TextCommandsListener internal constructor(
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
                 return false
-            } else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
-                replyError(event, context.getDefaultMessages(event.guild).nsfwDisabledErrorMsg)
-                return false
             } else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).nsfwOnlyErrorMsg)
-                return false
-            } else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
-                replyError(event, context.getDefaultMessages(event.guild).nsfwdmDeniedErrorMsg)
                 return false
             } else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
                 val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
@@ -247,7 +241,7 @@ internal class TextCommandsListener internal constructor(
         if (!context.textConfig.showSuggestions) return
 
         val candidates = context.textCommandsContext.rootCommands
-            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner).isShowable }
+            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner = isNotOwner).isShowable }
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {

@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.DefaultMessages;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,16 +66,5 @@ public interface SettingsProvider {
 
 		//Discord default locale is US english
 		return DiscordLocale.ENGLISH_US;
-	}
-
-	/**
-	 * Returns whether the specified {@link User} consents to executing NSFW commands in its DMs
-	 * <br>Note: <b>You</b> may also use this method to know if a user consents to getting NSFW content from other users
-	 *
-	 * @param user The {@link User} which would receive NSFW content
-	 * @return {@code true} if the {@link User} is consenting to NSFW content, {@code false} otherwise
-	 */
-	default boolean doesUserConsentNSFW(@NotNull User user) {
-		return false;
 	}
 }

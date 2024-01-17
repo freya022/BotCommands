@@ -21,6 +21,9 @@ fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
     return Collections.unmodifiableMap(LinkedHashMap(this))
 }
 
+fun <T> Iterable<T>.containsAny(vararg elements: T): Boolean = elements.any { it in this }
+fun <T> Iterable<T>.containsAny(elements: Iterable<T>): Boolean = elements.any { it in this }
+
 /**
  * Returns `null` if the element already exists
  */

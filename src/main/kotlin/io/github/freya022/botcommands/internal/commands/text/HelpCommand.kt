@@ -128,7 +128,6 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         val builder = context.defaultEmbedSupplier.get()
         builder.setTimestamp(Instant.now())
         builder.setColor(member.colorRaw)
-        builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n")
 
         val categoryBuilderMap = TreeMap<String, StringJoiner>(String.CASE_INSENSITIVE_ORDER)
         for (cmd in context.textCommandsContext.rootCommands) {

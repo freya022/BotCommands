@@ -203,18 +203,7 @@ internal class ApplicationCommandListener internal constructor(
                     reply(event, context.getDefaultMessages(event).ownerOnlyErrorMsg)
                     return false
                 }
-                UnusableReason.NSFW_DISABLED in unusableReasons -> {
-                    reply(event, context.getDefaultMessages(event).nsfwDisabledErrorMsg)
-                    return false
-                }
-                UnusableReason.NSFW_ONLY in unusableReasons -> {
-                    reply(event, context.getDefaultMessages(event).nsfwOnlyErrorMsg)
-                    return false
-                }
-                UnusableReason.NSFW_DM_DENIED in unusableReasons -> {
-                    reply(event, context.getDefaultMessages(event).nsfwdmDeniedErrorMsg)
-                    return false
-                }
+                UnusableReason.NSFW_ONLY in unusableReasons -> throwInternal("Discord already handles NSFW commands")
                 UnusableReason.USER_PERMISSIONS in unusableReasons -> {
                     val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
                     val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)

@@ -200,12 +200,7 @@ internal class TextCommandAutoBuilder(
         hidden = variationFunctions.singlePresentAnnotationOfVariants<Hidden>()
         ownerRequired = variationFunctions.singlePresentAnnotationOfVariants<RequireOwner>()
 
-        variationFunctions.singleAnnotationOfVariants<NSFW>()?.let { nsfwAnnotation ->
-            nsfw {
-                allowInDMs = nsfwAnnotation.dm
-                allowInGuild = nsfwAnnotation.guild
-            }
-        }
+        nsfw = variationFunctions.singlePresentAnnotationOfVariants<NSFW>()
 
         detailedDescription = instance.detailedDescription
     }

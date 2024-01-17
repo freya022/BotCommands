@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.commands.builder.NSFWStrategyBuilder
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
@@ -13,7 +12,6 @@ import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
@@ -25,8 +23,15 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
 
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
 
-    internal var nsfwStrategy: NSFWStrategy? = null
-        private set
+    /**
+     * Marks a text command as being usable in NSFW channels only.
+     *
+     * ### Built-in help content
+     * NSFW commands will be shown if requested in an NSFW channel.
+     *
+     * @see NSFW @NSFW
+     */
+    var nsfw: Boolean = false
 
     /**
      * Secondary **paths** of the command, **must not contain any spaces**,
@@ -97,17 +102,5 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
      */
     fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {}) {
         variations += TextCommandVariationBuilder(context, function).apply(block)
-    }
-
-    /**
-     * Marks a text command as being usable in NSFW channels only.
-     *
-     * NSFW commands will be shown in help content only if called in an NSFW channel,
-     * DM consent is **not** checked as text commands are guild-only.
-     *
-     * @see NSFW
-     */
-    fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {
-        nsfwStrategy = NSFWStrategyBuilder().apply(block).build()
     }
 }

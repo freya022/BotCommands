@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
@@ -55,9 +54,7 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
         OWNER_ONLY(false, false),
         USER_PERMISSIONS(false, false),
         BOT_PERMISSIONS(true, false),
-        NSFW_DISABLED(false, false),
-        NSFW_ONLY(false, false),
-        NSFW_DM_DENIED(false, false);
+        NSFW_ONLY(false, false)
     }
 
     companion object {
@@ -67,36 +64,20 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
             channel: GuildMessageChannel,
             cmdInfo: TextCommandInfo
         ) {
-            val nsfwStrategy = cmdInfo.nsfwStrategy ?: return
+            // Do not run if command is not NSFW
+            if (!cmdInfo.nsfw) return
 
-            //The command is indeed marked NSFW, but where is the command ran ?
             if (channel is ThreadChannel) {
                checkNSFW(context, unusableReasons, channel.parentMessageChannel, cmdInfo)
                return
             }
 
             if (channel is StandardGuildMessageChannel) {
-                //If guild NSFW is not enabled, and we are in a guild channel
-                if (!nsfwStrategy.allowedInGuilds) {
-                    unusableReasons.add(NSFW_DISABLED)
-                } else if (!channel.isNSFW) { //If we are in a non-nsfw channel
+                if (!channel.isNSFW) {
                     unusableReasons.add(NSFW_ONLY)
                 }
-            } else if (channel is PrivateChannel) {
-                if (!nsfwStrategy.allowInDMs) {
-                    unusableReasons.add(NSFW_DISABLED)
-                } else {
-                    val provider = context.settingsProvider
-
-                    //If provider is null then assume there is no consent
-                    if (provider == null) {
-                        unusableReasons.add(NSFW_DM_DENIED)
-
-                        //If the user does not consent
-                    } else if (!provider.doesUserConsentNSFW(channel.user!!)) {
-                        unusableReasons.add(NSFW_DM_DENIED)
-                    }
-                }
+            } else {
+                throwInternal("Unsupported channel: $channel")
             }
         }
 

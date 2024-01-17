@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization;
 
-import io.github.freya022.botcommands.api.commands.text.annotations.NSFW;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.SettingsProvider;
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;
@@ -187,24 +186,10 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when a command is used in a channel type that was not enabled by {@link NSFW @NSFW}
-	 */
-	public String getNsfwDisabledErrorMsg() {
-		return getLocalizationTemplate("nsfw.disabled.error.message").localize();
-	}
-
-	/**
 	 * @return Message to display when a command is used in a non-NSFW {@link GuildMessageChannel}
 	 */
 	public String getNSFWOnlyErrorMsg() {
 		return getLocalizationTemplate("nsfw.only.error.message").localize();
-	}
-
-	/**
-	 * @return Message to display when a command is used in DMs and the user has not given consent yet
-	 */
-	public String getNSFWDMDeniedErrorMsg() {
-		return getLocalizationTemplate("nsfw.dm.denied.error.message").localize();
 	}
 
 	/**
