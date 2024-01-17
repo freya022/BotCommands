@@ -112,7 +112,7 @@ object TextUtils {
         if (commandInfo.variations.size == 1) {
             val variation = commandInfo.variations.single()
             val commandOptionsByParameters = variation.getCommandOptionsByParameters()
-            variation.description?.let { appendLine(it) }
+            variation.description?.let { appendLine().appendLine(it) }
             appendLine("**Usage:** ${variation.buildUsage(commandOptionsByParameters)}")
             appendLine("**Example:** ${variation.buildExample(commandOptionsByParameters)}")
         } else if (commandInfo.variations.isNotEmpty()) {
