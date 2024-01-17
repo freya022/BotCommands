@@ -127,18 +127,15 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         builder.setTimestamp(Instant.now())
         builder.setColor(member.colorRaw)
 
-        val categoryBuilderMap = TreeMap<String, StringJoiner>(String.CASE_INSENSITIVE_ORDER)
-        for (cmd in context.textCommandsContext.rootCommands) {
-            if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
-                categoryBuilderMap
-                    .computeIfAbsent(cmd.category) { StringJoiner("\n") }
-                    .add("**${cmd.name}** : ${cmd.description ?: "No description"}")
+        val isNotOwner = !context.isOwner(member.idLong)
+        context.textCommandsContext.rootCommands
+            .filter { Usability.of(context, it, member, channel, isNotOwner).isShowable }
+            .groupByTo(TreeMap(String.CASE_INSENSITIVE_ORDER)) { it.category }
+            .forEach { (category, commands) ->
+                val commandListStr =
+                    commands.joinToString("\n") { "**${it.name}** : ${it.description ?: "No description"}" }
+                builder.addField(category, commandListStr, false)
             }
-        }
-
-        for ((key, value) in categoryBuilderMap) {
-            builder.addField(key, value.toString(), false)
-        }
 
         context.helpBuilderConsumer?.accept(builder, true, null)
 
