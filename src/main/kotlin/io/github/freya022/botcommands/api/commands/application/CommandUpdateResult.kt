@@ -1,12 +1,42 @@
-package io.github.freya022.botcommands.api.commands.application;
+package io.github.freya022.botcommands.api.commands.application
 
-import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
+import net.dv8tion.jda.api.entities.Guild
 
 /**
- * Record which holds the result of a scheduled command update
- * <br>This tells you if the commands were updated in the specified scope
+ * Result of a scheduled command update.
+ *
+ * More details in debug/trace logs.
  */
-public record CommandUpdateResult(@Nullable Guild guild, boolean updatedCommands, List<CommandUpdateException> updateExceptions) {}
+class CommandUpdateResult internal constructor(
+    /**
+     * The guild the commands were updated in, `null` for global commands
+     */
+    val guild: Guild?,
+    /**
+     * `true` if the commands were updated
+     */
+    val updatedCommands: Boolean,
+    /**
+     * The list of failed command declaration functions alongside their exceptions
+     */
+    val updateExceptions: List<CommandUpdateException>
+) {
+    override fun toString(): String = buildString {
+        if (updatedCommands) {
+            append("Updated")
+        } else {
+            append("Skipped")
+        }
+
+        if (guild == null) {
+            append(" global")
+        } else {
+            append(" guild (${guild.id})")
+        }
+        append(" commands")
+
+        if (updateExceptions.isNotEmpty()) {
+            append(", with ${updateExceptions.size} exceptions")
+        }
+    }
+}
