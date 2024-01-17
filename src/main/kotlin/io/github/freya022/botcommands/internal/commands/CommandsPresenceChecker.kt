@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
+import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
@@ -52,12 +53,14 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
-                "Some classes annotated with ${annotationRef<Command>()} were found to have no command declarations:\n${noDeclarationClasses.joinAsList()}"
+                val refs = noDeclarationClasses.joinAsList()
+                "Some classes annotated with ${annotationRef<Command>()} were found to have no command declarations:\n$refs"
             }
         }
 
-        if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some command declarations do not have their declaring class annotated with ${annotationRef<Command>()}:\n${noAnnotationMethods.joinAsList()}")
+        check(noAnnotationMethods.isEmpty()) {
+            val refs = noAnnotationMethods.joinAsList { it.shortSignature }
+            "Some command declarations do not have their declaring class annotated with ${annotationRef<Command>()}:\n$refs"
         }
     }
 }

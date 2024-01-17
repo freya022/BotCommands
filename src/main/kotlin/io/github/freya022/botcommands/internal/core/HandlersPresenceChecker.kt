@@ -52,14 +52,14 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
-                "Some classes annotated with ${annotationRef<Handler>()} were found to have no handler declarations:\n${noDeclarationClasses.joinAsList()}"
+                val refs = noDeclarationClasses.joinAsList()
+                "Some classes annotated with ${annotationRef<Handler>()} were found to have no handler declarations:\n$refs"
             }
         }
 
-        if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some handler declarations do not have their declaring class annotated with ${annotationRef<Handler>()}:\n${
-                noAnnotationMethods.joinAsList { it.shortSignature }
-            }")
+        check(noAnnotationMethods.isEmpty()) {
+            val refs = noAnnotationMethods.joinAsList { it.shortSignature }
+            "Some handler declarations do not have their declaring class annotated with ${annotationRef<Handler>()}:\n$refs"
         }
     }
 }
