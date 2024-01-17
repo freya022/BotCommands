@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
@@ -17,7 +18,7 @@ interface BTextConfig {
     /**
      * Whether the default help command is disabled. This also disables help content when a user misuses a command.
      *
-     * This still lets you define your own help command.
+     * This still lets you define your own help command with [IHelpCommand].
      *
      * Default: `false`
      */
