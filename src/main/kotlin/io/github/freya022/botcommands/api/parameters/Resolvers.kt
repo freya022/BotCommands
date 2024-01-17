@@ -46,9 +46,8 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
 
     override val testExample: String = values.first().name
 
-    override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
-        return nameFunction.apply(values.first())
-    }
+    private val helpExample = nameFunction.apply(values.first())
+    override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String = helpExample
 
     override suspend fun resolveSuspend(
         variation: TextCommandVariation,
