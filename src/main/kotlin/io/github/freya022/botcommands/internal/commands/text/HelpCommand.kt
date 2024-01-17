@@ -90,19 +90,17 @@ internal class HelpCommand internal constructor(private val context: BContextImp
     }
 
     private suspend fun sendGlobalHelp(event: BaseCommandEvent) {
+        val privateChannel = event.author.openPrivateChannel().await()
         val builder = generateGlobalHelp(event.member, event.guildChannel)
         val embed = builder.build()
 
         runCatching {
-            event.author
-                .openPrivateChannel()
-                .flatMap { event.sendWithEmbedFooterIcon(it, embed, event.failureReporter("Unable to send help message")) }
-                .await()
-
-            event.reactSuccess().queue()
+            event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).await()
         }.handle(ErrorResponse.CANNOT_SEND_TO_USER) {
             event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
         }.getOrThrow()
+
+        event.reactSuccess().queue()
     }
 
     private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo, temporary: Boolean) {
