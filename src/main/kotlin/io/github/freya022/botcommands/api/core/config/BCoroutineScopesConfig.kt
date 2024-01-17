@@ -31,13 +31,13 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
         namedDefaultScope(coroutineName, corePoolSize)
     }
 
-    override var commandUpdateScope by ScopeDelegate("Command update coroutine", 0) //Not used much
-    override var eventDispatcherScope by ScopeDelegate("Event dispatcher coroutine", 4) //Only used by EventDispatcher#dispatchEventAsync
-    override var textCommandsScope by ScopeDelegate("Text command coroutine", 2) //Commands that should not block threads with cpu intensive tasks
-    override var applicationCommandsScope by ScopeDelegate("Application command coroutine", 2)  //Interactions that should not block threads with cpu intensive tasks
-    override var componentsScope by ScopeDelegate("Component handling coroutine", 2)  //Interactions that should not block threads with cpu intensive tasks
-    override var modalsScope by ScopeDelegate("Modal handling coroutine", 2) //Interactions that should not block threads with cpu intensive tasks
-    override var componentTimeoutScope by ScopeDelegate("Component timeout coroutine", 2) //Spends time waiting
+    override var commandUpdateScope by ScopeDelegate("Command updater", 0) //Not used much
+    override var eventDispatcherScope by ScopeDelegate("Event dispatcher", 4) //Only used by EventDispatcher#dispatchEventAsync
+    override var textCommandsScope by ScopeDelegate("Text command handler", 2) //Commands that should not block threads with cpu intensive tasks
+    override var applicationCommandsScope by ScopeDelegate("App command handler", 2)  //Interactions that should not block threads with cpu intensive tasks
+    override var componentsScope by ScopeDelegate("Component handler", 2)  //Interactions that should not block threads with cpu intensive tasks
+    override var modalsScope by ScopeDelegate("Modal handler", 2) //Interactions that should not block threads with cpu intensive tasks
+    override var componentTimeoutScope by ScopeDelegate("Component timeout handler", 2) //Spends time waiting
 
     @JvmSynthetic
     internal fun build() = object : BCoroutineScopesConfig {
