@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
+import io.github.freya022.botcommands.api.commands.application.annotations.Test;
 import io.github.freya022.botcommands.api.core.SettingsProvider;
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -12,7 +13,7 @@ public enum CommandScope {
 	/**
 	 * The guild command scope, only pushes application commands to the guilds
 	 * <br>Can be filtered with {@link ApplicationCommand#getGuildsForCommandId(String, CommandPath)} and {@link SettingsProvider#getGuildCommands(Guild)}
-	 * <br>Can be forced with {@link BApplicationConfigBuilder#forceGuildCommands(boolean)} and {@link @Test Test}
+	 * <br>Can be forced with {@link BApplicationConfigBuilder#forceGuildCommands(boolean)} and {@link Test @Test}
 	 */
 	GUILD(false, true),
 	/**
