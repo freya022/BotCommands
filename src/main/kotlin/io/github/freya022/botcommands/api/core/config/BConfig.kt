@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
-import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
+import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer

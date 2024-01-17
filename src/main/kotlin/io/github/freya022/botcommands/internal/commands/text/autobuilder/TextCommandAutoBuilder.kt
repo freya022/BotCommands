@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.text.autobuilder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand

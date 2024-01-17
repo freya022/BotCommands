@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.annotations
+package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 
