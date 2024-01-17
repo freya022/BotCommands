@@ -1,6 +1,5 @@
-package io.github.freya022.botcommands.api.commands.annotations
+package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member

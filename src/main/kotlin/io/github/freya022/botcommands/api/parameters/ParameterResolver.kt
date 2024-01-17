@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.commands.annotations.MentionsString
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
