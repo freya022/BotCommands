@@ -11,9 +11,9 @@ import java.util.*
 internal object LocalizationUtils {
     private val logger = KotlinLogging.logger { }
 
-    internal fun getCommandDescription(context: BContext, builder: INamedCommand, builderDescription: String): String {
+    internal fun getCommandDescription(context: BContext, builder: INamedCommand, builderDescription: String?): String {
         val rootDescription = getCommandRootDescription(context, builder)
-        return if (builderDescription.isNotBlank()) {
+        return if (builderDescription != null) {
             // If a description was set, then use it, but check if a root description was found too
             if (rootDescription != null) {
                 logger.debug { "A command description was set manually, while a root description was found in a localization bundle, path: '${builder.path}'" }
@@ -21,8 +21,8 @@ internal object LocalizationUtils {
             builderDescription
         } else {
             // If a description isn't set, then take the root description if it exists,
-            // otherwise take the builder's default description
-            rootDescription ?: builderDescription.ifEmpty { "No description" }
+            // otherwise use the default description
+            rootDescription ?: "No description"
         }
     }
 
@@ -33,16 +33,17 @@ internal object LocalizationUtils {
 
     internal fun getOptionDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String {
         val rootDescription = getOptionRootDescription(context, optionBuilder)
-        return if (optionBuilder.description.isNotBlank()) {
+        val optionDescription = optionBuilder.description
+        return if (optionDescription != null) {
             // If a description was set, then use it, but check if a root description was found too
             if (rootDescription != null) {
                 logger.debug { "An option description was set manually, while a root description was found in a localization bundle, path: '${optionBuilder.commandBuilder.path}', option: '${optionBuilder.optionName}'" }
             }
-            optionBuilder.description
+            optionDescription
         } else {
             // If a description isn't set, then take the root description if it exists,
-            // otherwise take the builder's default description
-            rootDescription ?: optionBuilder.description.ifEmpty { "No description" }
+            // otherwise use the default description
+            rootDescription ?: "No description"
         }
     }
 

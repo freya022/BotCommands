@@ -237,7 +237,7 @@ internal class SlashCommandAutoBuilder(
                     "Slash command annotated with ${annotationRef<TopLevelSlashCommandData>()} must only have a description set once"
                 }
             }
-            description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description
+            description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description.nullIfBlank()
 
             subcommandsMetadata.forEach { subMetadata ->
                 subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
@@ -247,7 +247,7 @@ internal class SlashCommandAutoBuilder(
 
             subcommandGroupsMetadata.values.forEach { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
-                    this@subcommandGroup.description = groupMetadata.properties.description
+                    this@subcommandGroup.description = groupMetadata.properties.description.nullIfBlank()
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
@@ -268,7 +268,7 @@ internal class SlashCommandAutoBuilder(
     }
 
     private fun SlashSubcommandBuilder.configureSubcommand(manager: AbstractApplicationCommandManager, subMetadata: SlashFunctionMetadata) {
-        this.description = subMetadata.annotation.description
+        this.description = subMetadata.annotation.description.nullIfBlank()
         this.configureBuilder(subMetadata)
         this.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata)
     }
@@ -330,7 +330,7 @@ internal class SlashCommandAutoBuilder(
 
     context(SlashCommandBuilder)
     private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: SlashOption) {
-        description = optionAnnotation.description
+        description = optionAnnotation.description.nullIfBlank()
 
         kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
         kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }

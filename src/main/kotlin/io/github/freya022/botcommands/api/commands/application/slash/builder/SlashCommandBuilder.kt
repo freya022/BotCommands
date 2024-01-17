@@ -40,7 +40,11 @@ abstract class SlashCommandBuilder internal constructor(
      *
      * @see JDASlashCommand.description
      */
-    var description: String = ""
+    var description: String? = null
+        set(value) {
+            require(value == null || value.isNotBlank()) { "Description cannot be blank" }
+            field = value
+        }
 
     protected abstract val allowOptions: Boolean
     protected abstract val allowSubcommands: Boolean

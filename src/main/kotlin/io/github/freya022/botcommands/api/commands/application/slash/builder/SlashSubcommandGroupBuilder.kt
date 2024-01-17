@@ -38,7 +38,11 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
      *
      * @see SlashCommandGroupData.description
      */
-    var description: String = ""
+    var description: String? = null
+        set(value) {
+            require(value == null || value.isNotBlank()) { "Description cannot be blank" }
+            field = value
+        }
 
     init {
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")

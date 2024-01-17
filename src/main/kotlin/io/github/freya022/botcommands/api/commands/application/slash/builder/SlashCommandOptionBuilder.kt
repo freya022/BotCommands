@@ -50,7 +50,11 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see SlashOption.usePredefinedChoices
      */
-    var description: String = ""
+    var description: String? = null
+        set(value) {
+            require(value == null || value.isNotBlank()) { "Description cannot be blank" }
+            field = value
+        }
 
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
