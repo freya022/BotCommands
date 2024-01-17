@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -24,12 +25,21 @@ import kotlin.reflect.KParameter
 internal class EnumResolver<E : Enum<E>> internal constructor(
     e: Class<E>,
     private val values: Array<out E>,
+    private val guildValuesSupplier: EnumValuesSupplier<E>,
     private val nameFunction: EnumNameFunction<E>
 ) :
     ClassParameterResolver<EnumResolver<E>, E>(e),
     TextParameterResolver<EnumResolver<E>, E>,
     SlashParameterResolver<EnumResolver<E>, E>,
     ComponentParameterResolver<EnumResolver<E>, E> {
+
+    // Key is both the enum name and the human name
+    private val enumMap: Map<String, E> = buildMap {
+        e.enumConstants.forEach {
+            this[it.name.lowercase()] = it
+            this[nameFunction.apply(it).lowercase()] = it
+        }
+    }
 
     //region Regex
     override val pattern: Pattern = Pattern.compile("(?i)(${values.joinToString("|") { Pattern.quote(nameFunction.apply(it)) }})(?-i)")
@@ -44,21 +54,21 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): E = values.first { it.name.contentEquals(args[0], ignoreCase = true) }
+    ): E? = getEnumValueOrNull(args[0]!!)
     //endregion
 
     //region Slash
     override val optionType: OptionType = OptionType.STRING
 
     override fun getPredefinedChoices(guild: Guild?): Collection<Choice> {
-        return values.map { Choice(nameFunction.apply(it), it.name) }
+        return guildValuesSupplier.get(guild).map { Choice(nameFunction.apply(it), it.name) }
     }
 
     override suspend fun resolveSuspend(
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
-    ): E = values.first { it.name == optionMapping.asString }
+    ): E = getEnumValue(optionMapping.asString)
     //endregion
 
     //region Component
@@ -66,16 +76,26 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String
-    ): E = values.first { it.name == arg }
+    ): E? = getEnumValueOrNull(arg)
     //endregion
 
     override fun toString(): String {
-        return "EnumResolver(values=${values.contentToString()}, nameFunction=$nameFunction)"
+        return "EnumResolver(values=${values.contentToString()}, guildValuesSupplier=$guildValuesSupplier, nameFunction=$nameFunction)"
     }
+
+    private fun getEnumValue(name: String): E = getEnumValueOrNull(name) ?: throwInternal("Could not find enum value '$name', map: $enumMap")
+    private fun getEnumValueOrNull(name: String): E? = enumMap[name.lowercase()]
 }
 
 fun interface EnumNameFunction<E : Enum<E>> {
     fun apply(value: E): String
+}
+
+fun interface EnumValuesSupplier<E : Enum<E>> {
+    /**
+     * @param guild The guild containing the command, `null` for global commands
+     */
+    fun get(guild: Guild?): Array<out E>
 }
 
 /**
@@ -85,6 +105,8 @@ object Resolvers {
     /**
      * Creates an enum resolver for [text][TextParameterResolver]/[slash][SlashParameterResolver] commands,
      * as well as [component data][ComponentParameterResolver].
+     *
+     * Text command options are case-insensitive.
      *
      * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
      * or by using a service factory with [Resolver] as such:
@@ -103,22 +125,26 @@ object Resolvers {
      *
      * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
      *
-     * @param values       The accepted enumeration values
-     * @param nameFunction The function transforming the enum value into the display name
+     * @param values              The accepted enumeration values
+     * @param guildValuesSupplier The function retrieving the enum values depending on the [Guild]
+     * @param nameFunction        The function transforming the enum value into the display name, uses [toHumanName] by default
+     *
+     * @see toHumanName
      */
     @JvmStatic
-    @JvmOverloads
+    @JvmOverloads //TODO use a builder pattern
     fun <E : Enum<E>> enumResolver(
         e: Class<E>,
-        values: Array<out E>,
+        values: Array<out E> = e.enumConstants,
+        guildValuesSupplier: EnumValuesSupplier<E> = EnumValuesSupplier { values },
         nameFunction: EnumNameFunction<E> = EnumNameFunction { it.toHumanName() }
     ): ClassParameterResolver<*, E> {
-        return EnumResolver(e, values, nameFunction)
+        return EnumResolver(e, values, guildValuesSupplier, nameFunction)
     }
 
     @JvmStatic
     @JvmOverloads
-    fun <E : Enum<E>> toHumanName(value: E, locale: Locale = Locale.ROOT): String {
+    fun toHumanName(value: Enum<*>, locale: Locale = Locale.ROOT): String {
         return value.name.lowercase(locale).replaceFirstChar { it.uppercaseChar() }
     }
 }
@@ -126,6 +152,8 @@ object Resolvers {
 /**
  * Creates an enum resolver for [text][TextParameterResolver]/[slash][SlashParameterResolver] commands,
  * as well as [component data][ComponentParameterResolver].
+ *
+ * Text command options are case-insensitive.
  *
  * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
  * or by using a service factory with [Resolver] as such:
@@ -142,12 +170,21 @@ object Resolvers {
  *
  * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
  *
- * @param values       The accepted enumeration values
- * @param nameFunction The function transforming the enum value into the display name
+ * @param values              The accepted enumeration values
+ * @param guildValuesSupplier The function retrieving the enum values depending on the [Guild]
+ * @param nameFunction        The function transforming the enum value into the display name, uses [toHumanName] by default
+ *
+ * @see toHumanName
  */
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),
+    guildValuesSupplier: EnumValuesSupplier<E> = EnumValuesSupplier { values },
     noinline nameFunction: (e: E) -> String = { it.toHumanName() }
-): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, nameFunction)
+): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, guildValuesSupplier, nameFunction)
 
-fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
+/**
+ * Convert an enum to a more human-friendly name.
+ *
+ * This takes the enum value's name and capitalizes it, while replacing underscores with spaces.
+ */
+fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
