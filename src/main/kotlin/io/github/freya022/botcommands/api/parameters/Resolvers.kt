@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -24,7 +25,7 @@ import kotlin.reflect.KParameter
 
 internal class EnumResolver<E : Enum<E>> internal constructor(
     e: Class<E>,
-    private val values: Array<out E>,
+    private val values: Collection<E>,
     private val guildValuesSupplier: EnumValuesSupplier<E>,
     private val nameFunction: EnumNameFunction<E>
 ) :
@@ -79,7 +80,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     //endregion
 
     override fun toString(): String {
-        return "EnumResolver(values=${values.contentToString()}, guildValuesSupplier=$guildValuesSupplier, nameFunction=$nameFunction)"
+        return "EnumResolver(values=$values, guildValuesSupplier=$guildValuesSupplier, nameFunction=$nameFunction)"
     }
 
     private fun getEnumValue(name: String): E = getEnumValueOrNull(name) ?: throwInternal("Could not find enum value '$name', map: $enumMap")
@@ -94,7 +95,7 @@ fun interface EnumValuesSupplier<E : Enum<E>> {
     /**
      * @param guild The guild containing the command, `null` for global commands
      */
-    fun get(guild: Guild?): Array<out E>
+    fun get(guild: Guild?): Collection<E>
 }
 
 /**
@@ -115,7 +116,7 @@ object Resolvers {
      *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers#toHumanName'
      *     @Resolver
      *     public ParameterResolver<?, ?> timeUnitResolver() {
-     *         return Resolvers.enumResolver(TimeUnit.class, TimeUnit.values());
+     *         return Resolvers.enumResolver(TimeUnit.class, EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES));
      *     }
      *
      *     ...other resolvers...
@@ -134,7 +135,7 @@ object Resolvers {
     @JvmOverloads //TODO use a builder pattern
     fun <E : Enum<E>> enumResolver(
         e: Class<E>,
-        values: Array<out E> = e.enumConstants,
+        values: Collection<E> = e.enumConstants.toCollection(EnumSet.noneOf(e)),
         guildValuesSupplier: EnumValuesSupplier<E> = EnumValuesSupplier { values },
         nameFunction: EnumNameFunction<E> = EnumNameFunction { it.toHumanName() }
     ): ClassParameterResolver<*, E> {
@@ -177,9 +178,14 @@ object Resolvers {
  */
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),
-    guildValuesSupplier: EnumValuesSupplier<E> = EnumValuesSupplier { values },
+    guildValuesSupplier: EnumValuesSupplier<E> = defaultEnumValuesSupplier<E>(values.toCollection(enumSetOf<E>())),
     noinline nameFunction: (e: E) -> String = { it.toHumanName() }
-): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values, guildValuesSupplier, nameFunction)
+): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values.toCollection(enumSetOf<E>()), guildValuesSupplier, nameFunction)
+
+// Cannot directly inline this. It is used as a way to not make a copy of the values for every guild
+@PublishedApi
+internal inline fun <reified E : Enum<E>> defaultEnumValuesSupplier(valueCollection: Collection<E>) =
+    EnumValuesSupplier { valueCollection }
 
 /**
  * Convert an enum to a more human-friendly name.
