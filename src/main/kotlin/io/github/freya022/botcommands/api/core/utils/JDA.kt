@@ -163,6 +163,14 @@ fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Messa
 fun RestAction<*>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<Void> =
     delay(delay).flatMap { hook.deleteOriginal() }
 
+/**
+ * Deletes the message after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun RestAction<Message>.deleteDelayed(delay: Duration): RestAction<Void> =
+    delay(delay).flatMap(Message::delete)
+
 // NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
 //       as coroutines already enable the same behavior using `delay`
 
