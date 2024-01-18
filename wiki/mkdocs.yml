@@ -82,7 +82,10 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Setup:
-      - Getting started: setup/getting-started.md
+      - Getting started:
+          - setup/getting-started/index.md
+          - Using the bot template: setup/getting-started/bot-template.md
+          - Starting from scratch: setup/getting-started/from-scratch.md
       - Logging: setup/logging.md
   - Using BotCommands:
       - Dependency injection:
