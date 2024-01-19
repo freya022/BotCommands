@@ -19,7 +19,7 @@ internal class ModalListener(private val context: BContextImpl, private val moda
 
     @BEventListener
     suspend fun onModalEvent(event: ModalInteractionEvent) {
-        context.coroutineScopesConfig.modalsScope.launch {
+        context.coroutineScopesConfig.modalScope.launch {
             try {
                 val modalData = modalMaps.consumeModal(event.modalId)
                 if (modalData == null) { //Probably the modal expired

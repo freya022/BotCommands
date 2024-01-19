@@ -8,60 +8,76 @@ import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlinx.coroutines.CoroutineScope
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
+import java.util.concurrent.Executor
 
 @InjectedService
 interface BCoroutineScopesConfig {
-    val commandUpdateScope: CoroutineScope //Not used much
+    val commandUpdateScope: CoroutineScope          //Not used much
     /**
      * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync], including if [BEventListener.async] is enabled, all JDA events are executed sequentially on the same scope as the supplied [CoroutineEventManager]
      */
     val eventDispatcherScope: CoroutineScope        //Only used by EventDispatcher#dispatchEventAsync
-    val textCommandsScope: CoroutineScope           //Commands that should not block threads with cpu intensive tasks
-    val applicationCommandsScope: CoroutineScope    //Interactions that should not block threads with cpu intensive tasks
-    val componentsScope: CoroutineScope             //Interactions that should not block threads with cpu intensive tasks
-    val modalsScope: CoroutineScope                 //Interactions that should not block threads with cpu intensive tasks
-    val componentTimeoutScope: CoroutineScope       //Spends time waiting
+    val textCommandsScope: CoroutineScope           //Should not be long-running
+    val applicationCommandsScope: CoroutineScope    //Should not be long-running
+    val componentScope: CoroutineScope              //Should not be long-running
+    val modalScope: CoroutineScope                  //Should not be long-running
+    val componentTimeoutScope: CoroutineScope       //Should not be long-running, spends time waiting
+}
+
+fun interface CoroutineScopeFactory {
+    fun create(): CoroutineScope
 }
 
 @ConfigDSL
 class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
-    var defaultScopeSupplier: (coroutineName: String, corePoolSize: Int) -> CoroutineScope = { coroutineName, corePoolSize ->
-        namedDefaultScope(coroutineName, corePoolSize)
+    override val commandUpdateScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val eventDispatcherScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val textCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val applicationCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val componentScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val modalScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val componentTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+
+    var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 0)
+    var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
+    var textCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("Text command handler", 2)
+    var applicationCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("App command handler", 2)
+    var componentScopeFactory: CoroutineScopeFactory = defaultFactory("Component handler", 2)
+    var modalScopeFactory: CoroutineScopeFactory = defaultFactory("Modal handler", 2)
+    var componentTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Component timeout handler", 2)
+
+    /**
+     * Creates a new coroutine scope factory out of an executor.
+     *
+     * @param coroutineName The name of the coroutines
+     * @param executor      The executor running the coroutines
+     *
+     * @see namedDefaultScope
+     */
+    fun defaultFactory(coroutineName: String, executor: Executor) = CoroutineScopeFactory {
+        namedDefaultScope(coroutineName, executor)
     }
 
-    override var commandUpdateScope by ScopeDelegate("Command updater", 0) //Not used much
-    override var eventDispatcherScope by ScopeDelegate("Event dispatcher", 4) //Only used by EventDispatcher#dispatchEventAsync
-    override var textCommandsScope by ScopeDelegate("Text command handler", 2) //Commands that should not block threads with cpu intensive tasks
-    override var applicationCommandsScope by ScopeDelegate("App command handler", 2)  //Interactions that should not block threads with cpu intensive tasks
-    override var componentsScope by ScopeDelegate("Component handler", 2)  //Interactions that should not block threads with cpu intensive tasks
-    override var modalsScope by ScopeDelegate("Modal handler", 2) //Interactions that should not block threads with cpu intensive tasks
-    override var componentTimeoutScope by ScopeDelegate("Component timeout handler", 2) //Spends time waiting
+    /**
+     * Creates a new coroutine scope factory.
+     *
+     * @param name         The base name of the threads and coroutines, will be prefixed by the number if [corePoolSize] > 1
+     * @param corePoolSize The number of threads to keep in the pool, even if they are idle
+     *
+     * @see namedDefaultScope
+     */
+    fun defaultFactory(name: String, corePoolSize: Int) = CoroutineScopeFactory {
+        namedDefaultScope(name, corePoolSize)
+    }
 
     @JvmSynthetic
     internal fun build() = object : BCoroutineScopesConfig {
-        override val commandUpdateScope = this@BCoroutineScopesConfigBuilder.commandUpdateScope
-        override val eventDispatcherScope = this@BCoroutineScopesConfigBuilder.eventDispatcherScope
-        override val textCommandsScope = this@BCoroutineScopesConfigBuilder.textCommandsScope
-        override val applicationCommandsScope = this@BCoroutineScopesConfigBuilder.applicationCommandsScope
-        override val componentsScope = this@BCoroutineScopesConfigBuilder.componentsScope
-        override val modalsScope = this@BCoroutineScopesConfigBuilder.modalsScope
-        override val componentTimeoutScope = this@BCoroutineScopesConfigBuilder.componentTimeoutScope
-    }
-
-    private inner class ScopeDelegate(private val name: String, private val corePoolSize: Int) : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
-        private var scope: CoroutineScope? = null
-
-        //To avoid allocating the scopes if the user wants to replace them
-        override fun getValue(thisRef: BCoroutineScopesConfig, property: KProperty<*>): CoroutineScope {
-            if (scope == null) scope = defaultScopeSupplier(name, corePoolSize)
-            return scope!!
-        }
-
-        override fun setValue(thisRef: BCoroutineScopesConfig, property: KProperty<*>, value: CoroutineScope) {
-            if (scope != null) throwUser("Cannot set a CoroutineScope more than once")
-            scope = value
-        }
+        override val commandUpdateScope = commandUpdateScopeFactory.create()
+        override val eventDispatcherScope = eventDispatcherScopeFactory.create()
+        override val textCommandsScope = textCommandsScopeFactory.create()
+        override val applicationCommandsScope = applicationCommandsScopeFactory.create()
+        override val componentScope = componentScopeFactory.create()
+        override val modalScope = modalScopeFactory.create()
+        override val componentTimeoutScope = componentTimeoutScopeFactory.create()
     }
 }

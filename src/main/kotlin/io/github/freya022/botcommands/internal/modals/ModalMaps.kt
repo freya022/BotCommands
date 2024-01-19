@@ -37,7 +37,7 @@ internal class ModalMaps(private val config: BConfig) {
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
-                config.coroutineScopesConfig.modalsScope.launch {
+                config.coroutineScopesConfig.modalScope.launch {
                     delay(timeoutInfo.unit.toMillis(timeoutInfo.timeout))
 
                     modalLock.withLock {
