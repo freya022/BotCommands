@@ -119,7 +119,7 @@ class BConfigBuilder internal constructor() : BConfig {
      * Adds this package for class discovery.
      * All services, commands, handlers, listeners, etc... will be read from these packages.
      *
-     * **Tip:**: you can have your package structure such as:
+     * **Tip:** For your commands, you can have your package structure such as:
      *
      * ```text
      * commands/
@@ -150,18 +150,28 @@ class BConfigBuilder internal constructor() : BConfig {
      * This is only beneficial if you plan on having the same logic
      * for multiple input types (text / slash commands, for example).
      *
-     * @param commandPackageName The package name such as `io.github.freya022.bot.commands`
+     * @param packageName The package name such as `io.github.freya022.bot.commands`
      *
      * @see addClass
      */
-    fun addSearchPath(commandPackageName: String) {
-        packages.add(commandPackageName)
+    fun addSearchPath(packageName: String) {
+        packages.add(packageName)
     }
 
+    /**
+     * Adds a specific class containing services, commands, handlers, listeners, etc...
+     *
+     * @see addSearchPath
+     */
     fun addClass(clazz: Class<*>) {
         classes.add(clazz)
     }
 
+    /**
+     * Adds a specific class containing services, commands, handlers, listeners, etc...
+     *
+     * @see BConfigBuilder.addSearchPath
+     */
     @JvmSynthetic
     inline fun <reified T : Any> addClass() {
         addClass(T::class.java)
