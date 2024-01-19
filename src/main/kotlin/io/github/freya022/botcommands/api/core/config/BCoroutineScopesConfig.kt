@@ -20,8 +20,9 @@ interface BCoroutineScopesConfig {
     val textCommandsScope: CoroutineScope           //Should not be long-running
     val applicationCommandsScope: CoroutineScope    //Should not be long-running
     val componentScope: CoroutineScope              //Should not be long-running
-    val modalScope: CoroutineScope                  //Should not be long-running
     val componentTimeoutScope: CoroutineScope       //Should not be long-running, spends time waiting
+    val modalScope: CoroutineScope                  //Should not be long-running
+    val modalTimeoutScope: CoroutineScope           //Should not be long-running, spends time waiting
 }
 
 fun interface CoroutineScopeFactory {
@@ -35,16 +36,18 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
     override val textCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
     override val applicationCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
     override val componentScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val modalScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
     override val componentTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val modalScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val modalTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
 
     var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 0)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
     var textCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("Text command handler", 2)
     var applicationCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("App command handler", 2)
     var componentScopeFactory: CoroutineScopeFactory = defaultFactory("Component handler", 2)
-    var modalScopeFactory: CoroutineScopeFactory = defaultFactory("Modal handler", 2)
     var componentTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Component timeout handler", 2)
+    var modalScopeFactory: CoroutineScopeFactory = defaultFactory("Modal handler", 2)
+    var modalTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Modal timeout handler", 2)
 
     /**
      * Creates a new coroutine scope factory out of an executor.
@@ -77,7 +80,8 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
         override val textCommandsScope = textCommandsScopeFactory.create()
         override val applicationCommandsScope = applicationCommandsScopeFactory.create()
         override val componentScope = componentScopeFactory.create()
-        override val modalScope = modalScopeFactory.create()
         override val componentTimeoutScope = componentTimeoutScopeFactory.create()
+        override val modalScope = modalScopeFactory.create()
+        override val modalTimeoutScope = modalTimeoutScopeFactory.create()
     }
 }
