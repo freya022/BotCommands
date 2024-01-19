@@ -80,6 +80,29 @@ or if it is supported but cannot create an instance of it.
 
 An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/ban/BanService.kt).
 
+## Annotated command changes
+Annotated text and slash commands suffered from several issues, 
+due to the data either being applied to the wrong part of the command,
+or no data being applicable on a part of a command (such as subcommand group descriptions).
+
+To reduce confusion about which property applies to what, and reduce undefined behaviors,
+annotations with distinct scopes were introduced:
+
+Slash commands:
+- (Required) `@JDASlashCommand(name, group, subcommand, description)`
+- (Required on subcommands) `@TopLevelSlashCommandData(scope, defaultLocked, nsfw, description)`
+- (Optional) `@SlashCommandGroupData(description)`
+
+Text commands:
+- (Required) `@JDATextCommandVariation(path, order, description, usage, example)`
+- (Optional) `@TextCommandData(path, aliases, description)`, this must be used alongside `@JDATextCommandVariation`,
+  `path` is the path this annotation applies to, defaults to the variation's path
+
+This way ensures that the data is only applied to a specific command, 
+and does not need to be repeated, or follow specific orders.
+
+More details [on the PR](https://github.com/freya022/BotCommands/pull/146).
+
 ## New command declarations
 Commands can now be declared using a DSL, these works best if you use Kotlin.
 
