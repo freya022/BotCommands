@@ -96,7 +96,6 @@ class BConfigBuilder internal constructor() : BConfig {
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder(serviceConfig)
     override val componentsConfig = BComponentsConfigBuilder()
-    @get:JvmSynthetic
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -181,7 +180,6 @@ class BConfigBuilder internal constructor() : BConfig {
         serviceConfig.apply(block)
     }
 
-    @JvmSynthetic
     fun coroutineScopes(block: ReceiverConsumer<BCoroutineScopesConfigBuilder>) {
         coroutineScopesConfig.apply(block)
     }

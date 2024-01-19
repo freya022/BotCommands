@@ -69,7 +69,7 @@ internal class ComponentsListener(
     }
 
     @BEventListener
-    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
+    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentScope.launch {
         try {
             logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
 
