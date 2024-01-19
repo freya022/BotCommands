@@ -7,6 +7,7 @@ import io.github.oshai.kotlinlogging.slf4j.toKLogger
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.InputStream
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -69,7 +70,7 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
  * @param corePoolSize The number of threads to keep in the pool, even if they are idle
  * @param job          The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
  * @param errorHandler The [CoroutineExceptionHandler] used for handling uncaught exceptions,
- *                     uses a logging handler which cancels the parent job on [Error] by default
+ * uses a logging handler which cancels the parent job on [Error] by default
  * @param context      Any additional context to add to the scope, uses [EmptyCoroutineContext] by default
  */
 fun namedDefaultScope(
@@ -97,5 +98,25 @@ fun namedDefaultScope(
         }
     }
 
-    return getDefaultScope(pool = executor, context = CoroutineName(name) + context, job = job, errorHandler = errorHandler)
+    return namedDefaultScope(name, executor, job, errorHandler, context)
+}
+
+/**
+ * Creates a [CoroutineScope] with incremental thread naming, uses [getDefaultScope] under the hood.
+ *
+ * @param coroutineName The name of the coroutines
+ * @param executor      The executor running the coroutines
+ * @param job           The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
+ * @param errorHandler  The [CoroutineExceptionHandler] used for handling uncaught exceptions,
+ * uses a logging handler which cancels the parent job on [Error] by default
+ * @param context       Any additional context to add to the scope, uses [EmptyCoroutineContext] by default
+ */
+fun namedDefaultScope(
+    coroutineName: String,
+    executor: Executor,
+    job: Job? = null,
+    errorHandler: CoroutineExceptionHandler? = null,
+    context: CoroutineContext = EmptyCoroutineContext
+): CoroutineScope {
+    return getDefaultScope(pool = executor, context = CoroutineName(coroutineName) + context, job = job, errorHandler = errorHandler)
 }
