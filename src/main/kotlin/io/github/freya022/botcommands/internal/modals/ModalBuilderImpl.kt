@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.modals.Modal
 import io.github.freya022.botcommands.api.modals.ModalBuilder
-import io.github.freya022.botcommands.api.modals.ModalTimeoutInfo
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
