@@ -1,115 +1,102 @@
-package io.github.freya022.botcommands.api.modals;
+package io.github.freya022.botcommands.api.modals
 
-import io.github.freya022.botcommands.api.modals.annotations.ModalData;
-import io.github.freya022.botcommands.api.modals.annotations.ModalHandler;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import io.github.freya022.botcommands.api.modals.annotations.ModalData
+import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.internal.modals.ModalDSL
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import java.time.Duration
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
+import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+@ModalDSL
+abstract class ModalBuilder protected constructor(
+    customId: String,
+    title: String
+) : JDAModal.Builder(customId, title) {
+    /**
+     * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
+     * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
+     *
+     * @return This builder for chaining convenience
+     */
+    abstract fun bindTo(handlerName: String, userData: List<Any?>): ModalBuilder
 
-public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.modals.Modal.Builder implements IModalBuilder {
-	protected ModalBuilder(@NotNull String customId, @NotNull String title) {
-		super(customId, title);
-	}
+    /**
+     * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
+     * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
+     *
+     * @return This builder for chaining convenience
+     */
+    fun bindTo(handlerName: String, vararg userData: Any?): ModalBuilder {
+        return bindTo(handlerName, userData.asList())
+    }
 
-	/**
-	 * Binds the following handler (defined by {@link ModalHandler @ModalHandler}) with its arguments
-	 *
-	 * <br>This step is optional if you do not wish to use methods for that
-	 *
-	 * @param handlerName The name of the modal handler, which must be the same as your {@link ModalHandler @ModalHandler}
-	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData @ModalData}
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	@NotNull
-	public abstract ModalBuilder bindTo(@NotNull String handlerName, @NotNull List<@Nullable Object> userData);
+    /**
+     * Binds the action to the consumer.
+     *
+     * @param handler The modal handler to run when the modal is used
+     *
+     * @return This builder for chaining convenience
+     */
+    abstract fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilder
 
-	/**
-	 * Binds the following handler (defined by {@link ModalHandler @ModalHandler}) with its arguments
-	 *
-	 * <br>This step is optional if you do not wish to use methods for that
-	 *
-	 * @param handlerName The name of the modal handler, which must be the same as your {@link ModalHandler @ModalHandler}
-	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData @ModalData}
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	@NotNull
-	public final ModalBuilder bindTo(@NotNull String handlerName, @Nullable Object @NotNull ... userData) {
-		return bindTo(handlerName, Arrays.asList(userData));
-	}
+    /**
+     * Binds the action to the closure.
+     *
+     * @param handler The modal handler to run when the modal is used
+     *
+     * @return This builder for chaining convenience
+     */
+    @JvmSynthetic
+    abstract fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilder
 
-	/**
-	 * Binds the following handler to this modal
-	 *
-	 * <br>This step is optional if you do not wish to use handlers for that
-	 *
-	 * @param handler The modal handler to run when the modal is used
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	@NotNull
-	public abstract ModalBuilder bindTo(@NotNull Consumer<ModalInteractionEvent> handler);
+    /**
+     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     *
+     * **Note:** It is extremely recommended to put a timeout on your modals,
+     * as it would otherwise cause a memory leak if the user never sends the modal.
+     *
+     * @param timeout   The amount of time in the supplied time unit before the modal is removed
+     * @param unit      The time unit of the timeout
+     * @param onTimeout The function to run when the timeout has been reached
+     *
+     * @return This builder for chaining convenience
+     */
+    fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder {
+        return setTimeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout)
+    }
 
-	/**
-	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed
-	 * <br>The timeout will start when the modal is built
-	 *
-	 * <p><b>It is extremely recommended to put a timeout on your modals</b>, if your user dismisses the modal, so, never uses it, the data of the modal could stay in your RAM indefinitely
-	 *
-	 * @param timeout   The amount of time in the supplied time unit before the modal is removed
-	 * @param unit      The time unit of the timeout
-	 * @param onTimeout The function to run when the timeout has been reached
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	@NotNull
-	public final ModalBuilder setTimeout(long timeout, @NotNull TimeUnit unit, @NotNull Runnable onTimeout) {
-		return setTimeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout);
-	}
+    /**
+     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     *
+     * **Note:** It is extremely recommended to put a timeout on your modals,
+     * as it would otherwise cause a memory leak if the user never sends the modal.
+     *
+     * @param timeout   The amount of time before the modal is removed
+     * @param onTimeout The function to run when the timeout has been reached
+     *
+     * @return This builder for chaining convenience
+     */
+    abstract fun setTimeout(timeout: Duration, onTimeout: Runnable): ModalBuilder
 
-	/**
-	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed
-	 * <br>The timeout will start when the modal is built
-	 *
-	 * <p><b>It is extremely recommended to put a timeout on your modals</b>, if your user dismisses the modal, so, never uses it, the data of the modal could stay in your RAM indefinitely
-	 *
-	 * @param timeout   The amount of time before the modal is removed
-	 * @param onTimeout The function to run when the timeout has been reached
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	@NotNull
-	public abstract ModalBuilder setTimeout(@NotNull Duration timeout, @NotNull Runnable onTimeout);
+    /**
+     * An ID is already generated automatically, but you can set a custom ID if you wish to.
+     *
+     * **Tip:** A modal with the same ID as a previously sent one, will have the previously submitted values.
+     */
+    override fun setId(customId: String): ModalBuilder {
+        super.setId(customId)
+        return this
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>You can still set a custom ID on this ModalBuilder, this is an <b>optional</b> step
-	 *
-	 * <br>This could be useful if this modal gets closed by the user by mistake, as Discord caches the inputs by its modal ID (and input IDs),
-	 * keeping the same ID might help the user not having to type things again
-	 *
-	 * <p><b>Pay attention, if the ID is the same then it means that modals associated to that ID will be overwritten</b>,
-	 * so you should do something like appending the interacting user's ID at the end of the modal ID
-	 */
-	@NotNull
-	public ModalBuilder setId(@NotNull String customId) {
-		super.setId(customId);
-		return this;
-	}
+    protected fun jdaBuild(): JDAModal {
+        return super.build()
+    }
 
-	@NotNull
-	protected final net.dv8tion.jda.api.interactions.modals.Modal jdaBuild() {
-		return super.build();
-	}
-
-	@NotNull
-	public abstract Modal build();
+    abstract override fun build(): Modal
 }

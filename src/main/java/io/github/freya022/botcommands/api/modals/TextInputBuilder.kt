@@ -1,50 +1,42 @@
-package io.github.freya022.botcommands.api.modals;
+package io.github.freya022.botcommands.api.modals
 
-import io.github.freya022.botcommands.internal.modals.InputData;
-import io.github.freya022.botcommands.internal.modals.ModalMaps;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.internal.modals.InputData
+import io.github.freya022.botcommands.internal.modals.ModalMaps
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
-public class TextInputBuilder extends TextInput.Builder {
-	private final ModalMaps modalMaps;
-	private final String inputName;
+class TextInputBuilder internal constructor(
+    private val modalMaps: ModalMaps,
+    private val inputName: String,
+    label: String?,
+    style: TextInputStyle?
+) : TextInput.Builder("0", label, style) {
+    /**
+     * An ID is already generated automatically, but you can set a custom ID if you wish to.
+     *
+     * **Tip:** A modal input with the same ID as a previously sent one, will have the previously submitted values.
+     */
+    override fun setId(customId: String): TextInputBuilder = this.apply { super.setId(customId) }
 
-	@ApiStatus.Internal
-	public TextInputBuilder(ModalMaps modalMaps, String inputName, String label, TextInputStyle style) {
-		super("0", label, style);
+    override fun setLabel(label: String): TextInputBuilder = this.apply { setLabel(label) }
 
-		this.modalMaps = modalMaps;
-		this.inputName = inputName;
-	}
+    override fun setStyle(style: TextInputStyle?): TextInputBuilder = this.apply { super.setStyle(style) }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>You can still set a custom ID on this TextInputBuilder, this is an <b>optional</b> step
-	 *
-	 * <br>This could be useful if this modal gets closed by the user by mistake, as Discord caches the inputs by its modal ID (and input IDs),
-	 * keeping the same ID might help the user not having to type things again
-	 *
-	 * <p><b>Pay attention, if the ID is the same then it means that inputs associated to that ID will be overwritten</b>,
-	 * so you should do something like appending the interacting user's ID at the end of the modal ID
-	 */
-	@NotNull
-	@Override
-	public TextInputBuilder setId(@NotNull String customId) {
-		super.setId(customId);
+    override fun setRequired(required: Boolean): TextInputBuilder = this.apply { super.setRequired(required) }
 
-		return this;
-	}
+    override fun setMinLength(minLength: Int): TextInputBuilder = this.apply { super.setMinLength(minLength) }
 
-	@NotNull
-	@Override
-	public TextInput build() {
-		final String actualId = modalMaps.insertInput(new InputData(inputName), getId());
+    override fun setMaxLength(maxLength: Int): TextInputBuilder = this.apply { super.setMaxLength(maxLength) }
 
-		setId(actualId);
+    override fun setRequiredRange(min: Int, max: Int): TextInputBuilder = this.apply { super.setRequiredRange(min, max) }
 
-		return super.build();
-	}
+    override fun setValue(value: String?): TextInputBuilder = this.apply { super.setValue(value) }
+
+    override fun setPlaceholder(placeholder: String?): TextInputBuilder = this.apply { super.setPlaceholder(placeholder) }
+
+    override fun build(): TextInput {
+        id = modalMaps.insertInput(InputData(inputName), id)
+
+        return super.build()
+    }
 }
