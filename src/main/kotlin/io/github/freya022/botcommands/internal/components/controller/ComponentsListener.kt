@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
@@ -124,9 +126,9 @@ internal class ComponentsListener(
 
                             val descriptor = when (component.componentType) {
                                 ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
-                                    ?: throwUser("Could not find a button handler named $handlerName")
+                                    ?: throwUser("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
                                 ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
-                                    ?: throwUser("Could not find a select menu handler named $handlerName")
+                                    ?: throwUser("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
                                 else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                             }
 

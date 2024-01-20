@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.components.controller
 
+import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
+import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
@@ -64,10 +66,10 @@ internal class ComponentTimeoutManager(
                     val descriptor = when (component.componentType) {
                         ComponentType.GROUP ->
                             groupTimeoutHandlers[handlerName]
-                                ?: return@launch logger.warn { "Could not find group timeout handler: $handlerName" }
+                                ?: return@launch logger.warn { "Missing ${annotationRef<GroupTimeoutHandler>()} named '$handlerName'" }
                         else ->
                             componentTimeoutHandlers[handlerName]
-                                ?: return@launch logger.warn { "Could not find component timeout handler: $handlerName" }
+                                ?: return@launch logger.warn { "Missing ${annotationRef<ComponentTimeoutHandler>()} named '$handlerName'" }
                     }
 
                     val firstParameter: Any = when (component.componentType) {

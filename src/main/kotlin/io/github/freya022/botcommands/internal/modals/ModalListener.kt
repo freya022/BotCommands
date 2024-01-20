@@ -4,8 +4,10 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
@@ -36,7 +38,7 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                     is EphemeralModalHandlerData -> handlerData.handler(event)
                     is PersistentModalHandlerData -> {
                         val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
-                            ?: throwUser("Found no modal handler with handler name: '${handlerData.handlerName}'")
+                            ?: throwUser("Missing ${annotationRef<ModalHandler>()} named '${handlerData.handlerName}'")
 
                         modalHandler.execute(modalData, event)
                     }
