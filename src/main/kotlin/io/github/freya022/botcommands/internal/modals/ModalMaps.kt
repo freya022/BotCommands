@@ -42,10 +42,10 @@ internal class ModalMaps(private val config: BConfig) {
 
                     val data = modalLock.withLock { modalMap.remove(id) }
                     if (data != null) { //If the timeout was reached without the modal being used
-                        timeoutInfo.onTimeout()
                         for (continuation in data.continuations) {
                             continuation.cancel(TimeoutExceptionAccessor.createModalTimeoutException())
                         }
+                        timeoutInfo.onTimeout()
                     }
                 }
             }
