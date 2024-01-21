@@ -38,16 +38,14 @@ internal class ModalMaps(private val config: BConfig) {
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
                 config.coroutineScopesConfig.modalTimeoutScope.launch {
-                    delay(timeoutInfo.unit.toMillis(timeoutInfo.timeout))
+                    delay(timeoutInfo.timeout)
 
-                    modalLock.withLock {
-                        val data = modalMap.remove(id)
-                        if (data != null) { //If the timeout was reached without the modal being used
-                            timeoutInfo.onTimeout.run()
-                            for (continuation in data.continuations) {
-                                continuation.cancel(TimeoutExceptionAccessor.createModalTimeoutException())
-                            }
+                    val data = modalLock.withLock { modalMap.remove(id) }
+                    if (data != null) { //If the timeout was reached without the modal being used
+                        for (continuation in data.continuations) {
+                            continuation.cancel(TimeoutExceptionAccessor.createModalTimeoutException())
                         }
+                        timeoutInfo.onTimeout()
                     }
                 }
             }

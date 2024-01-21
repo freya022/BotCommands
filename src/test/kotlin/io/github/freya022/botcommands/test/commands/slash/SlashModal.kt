@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
@@ -38,7 +38,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
 
 //            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
-            setTimeout(5, TimeUnit.SECONDS) {
+            timeout(5.seconds) {
                 event.hook.send("Timeout !", ephemeral = true).queue()
             }
         }
