@@ -4,10 +4,12 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.modals.ModalDSL
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
 import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
+import java.time.Duration as JavaDuration
 
 @ModalDSL
 abstract class ModalBuilder protected constructor(
@@ -68,7 +70,7 @@ abstract class ModalBuilder protected constructor(
      * @return This builder for chaining convenience
      */
     fun timeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder {
-        return timeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout)
+        return timeout(JavaDuration.of(timeout, unit.toChronoUnit()), onTimeout)
     }
 
     /**
@@ -82,7 +84,22 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    abstract fun timeout(timeout: Duration, onTimeout: Runnable): ModalBuilder
+    fun timeout(timeout: JavaDuration, onTimeout: Runnable): ModalBuilder {
+        return timeout(timeout.toKotlinDuration()) { onTimeout.run() }
+    }
+
+    /**
+     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     *
+     * **Note:** It is extremely recommended to put a timeout on your modals,
+     * as it would otherwise cause a memory leak if the user never sends the modal.
+     *
+     * @param timeout   The amount of time before the modal is removed
+     * @param onTimeout The function to run when the timeout has been reached
+     *
+     * @return This builder for chaining convenience
+     */
+    abstract fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder
 
     /**
      * An ID is already generated automatically, but you can set a custom ID if you wish to.

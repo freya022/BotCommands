@@ -6,9 +6,8 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import java.time.Duration
-import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
     private val modalMaps: ModalMaps,
@@ -29,11 +28,11 @@ internal class ModalBuilderImpl internal constructor(
         return bindTo { handler.accept(it) }
     }
 
-    override fun timeout(timeout: Duration, onTimeout: Runnable): ModalBuilder = this.also {
-        require(!timeout.isZero && !timeout.isNegative) {
-            "Timeout must be positive"
+    override fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder = this.also {
+        require(timeout.isFinite() && timeout.isPositive()) {
+            "Timeout must be finite and positive"
         }
-        timeoutInfo = ModalTimeoutInfo(timeout.toMillis(), TimeUnit.MILLISECONDS, onTimeout)
+        timeoutInfo = ModalTimeoutInfo(timeout, onTimeout)
     }
 
     override fun setId(customId: String): ModalBuilderImpl = this.also {
