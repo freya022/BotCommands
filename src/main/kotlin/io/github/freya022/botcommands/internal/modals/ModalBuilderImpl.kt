@@ -29,7 +29,7 @@ internal class ModalBuilderImpl internal constructor(
         return bindTo { handler.accept(it) }
     }
 
-    override fun setTimeout(timeout: Duration, onTimeout: Runnable): ModalBuilder = this.also {
+    override fun timeout(timeout: Duration, onTimeout: Runnable): ModalBuilder = this.also {
         require(!timeout.isZero && !timeout.isNegative) {
             "Timeout must be positive"
         }

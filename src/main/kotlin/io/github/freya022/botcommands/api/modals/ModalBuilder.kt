@@ -67,8 +67,8 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder {
-        return setTimeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout)
+    fun timeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder {
+        return timeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout)
     }
 
     /**
@@ -82,7 +82,7 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    abstract fun setTimeout(timeout: Duration, onTimeout: Runnable): ModalBuilder
+    abstract fun timeout(timeout: Duration, onTimeout: Runnable): ModalBuilder
 
     /**
      * An ID is already generated automatically, but you can set a custom ID if you wish to.
