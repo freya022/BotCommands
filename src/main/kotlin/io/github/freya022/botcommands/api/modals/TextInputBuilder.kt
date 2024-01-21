@@ -1,13 +1,11 @@
 package io.github.freya022.botcommands.api.modals
 
-import io.github.freya022.botcommands.internal.modals.InputData
-import io.github.freya022.botcommands.internal.modals.ModalMaps
+import io.github.freya022.botcommands.internal.modals.ModalDSL
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
-class TextInputBuilder internal constructor(
-    private val modalMaps: ModalMaps,
-    private val inputName: String,
+@ModalDSL
+abstract class TextInputBuilder internal constructor(
     label: String?,
     style: TextInputStyle?
 ) : TextInput.Builder("0", label, style) {
@@ -18,7 +16,7 @@ class TextInputBuilder internal constructor(
      */
     override fun setId(customId: String): TextInputBuilder = this.apply { super.setId(customId) }
 
-    override fun setLabel(label: String): TextInputBuilder = this.apply { setLabel(label) }
+    override fun setLabel(label: String): TextInputBuilder = this.apply { super.setLabel(label) }
 
     override fun setStyle(style: TextInputStyle?): TextInputBuilder = this.apply { super.setStyle(style) }
 
@@ -34,9 +32,9 @@ class TextInputBuilder internal constructor(
 
     override fun setPlaceholder(placeholder: String?): TextInputBuilder = this.apply { super.setPlaceholder(placeholder) }
 
-    override fun build(): TextInput {
-        id = modalMaps.insertInput(InputData(inputName), id)
-
+    protected fun jdaBuild(): TextInput {
         return super.build()
     }
+
+    abstract override fun build(): TextInput
 }

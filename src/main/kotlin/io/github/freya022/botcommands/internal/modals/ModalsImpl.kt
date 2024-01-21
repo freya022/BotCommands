@@ -12,6 +12,6 @@ internal class ModalsImpl(private val modalMaps: ModalMaps) : Modals {
     }
 
     override fun createTextInput(inputName: String, label: String, style: TextInputStyle): TextInputBuilder {
-        return TextInputBuilder(modalMaps, inputName, label, style)
+        return TextInputBuilderImpl(modalMaps, inputName, label, style)
     }
 }
