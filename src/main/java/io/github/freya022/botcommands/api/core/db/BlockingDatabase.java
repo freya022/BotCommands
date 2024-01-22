@@ -154,6 +154,9 @@ public class BlockingDatabase {
         return DatabaseKt.withTransactionJava(database, readOnly, transactionFunction);
     }
 
+    // NOTE: Language injection does not work due to https://youtrack.jetbrains.com/issue/IDEA-341219
+    // But this does not impact the library at all, only the DX
+
     /**
      * Creates a statement from the given SQL statement, runs the function,
      * commits the changes and closes the connection.
