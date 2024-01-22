@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
-import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeo
 import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandlerOption
+import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -25,73 +26,81 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 @BService
 @Dependencies(ComponentRepository::class)
 internal class ComponentTimeoutManager(
-    private val scopesConfig: BCoroutineScopesConfig,
+    private val context: BContext,
     private val serviceContainer: ServiceContainer,
     private val componentRepository: ComponentRepository,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
     private val componentTimeoutHandlers: ComponentTimeoutHandlers
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val exceptionHandler = ExceptionHandler(context, logger)
     private val componentController: ComponentController by serviceContainer.lazy()
     private val timeoutMap = hashMapOf<Int, Job>()
 
     fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
-        timeoutMap[id] = scopesConfig.componentTimeoutScope.launch {
+        timeoutMap[id] = context.coroutineScopesConfig.componentTimeoutScope.launchCatching({ handleTimeoutException(id, it) }) {
             delay(expirationTimestamp - Clock.System.now())
+            onTimeout(id)
+        }
+    }
 
-            //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
-            timeoutMap.remove(id)
+    private fun handleTimeoutException(id: Int, e: Throwable) {
+        exceptionHandler.handleException(null, e, "component timeout handler", mapOf("Component ID" to id))
+    }
 
-            val component = componentRepository.getComponent(id)
-                ?: return@launch logger.warn { "Component $id was still timeout scheduled after being deleted" }
+    private suspend fun onTimeout(id: Int) {
+        //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
+        timeoutMap.remove(id)
 
-            //Will also cancel timeouts of related components
-            componentController.deleteComponent(component, isTimeout = true)
+        val component = componentRepository.getComponent(id)
+            ?: return logger.warn { "Component $id was still timeout scheduled after being deleted" }
 
-            //Throw timeout exceptions
-            throwTimeouts(component.componentId)
+        //Will also cancel timeouts of related components
+        componentController.deleteComponent(component, isTimeout = true)
 
-            when (val componentTimeout = component.timeout) {
-                is PersistentTimeout -> {
-                    val handlerName = componentTimeout.handlerName ?: return@launch
-                    val descriptor = when (component.componentType) {
-                        ComponentType.GROUP ->
-                            groupTimeoutHandlers[handlerName]
-                                ?: return@launch logger.warn { "Missing ${annotationRef<GroupTimeoutHandler>()} named '$handlerName'" }
-                        else ->
-                            componentTimeoutHandlers[handlerName]
-                                ?: return@launch logger.warn { "Missing ${annotationRef<ComponentTimeoutHandler>()} named '$handlerName'" }
-                    }
+        //Throw timeout exceptions
+        throwTimeouts(component.componentId)
 
-                    val firstParameter: Any = when (component.componentType) {
-                        ComponentType.GROUP -> GroupTimeoutData((component as ComponentGroupData).componentsIds)
-                        ComponentType.BUTTON, ComponentType.SELECT_MENU -> ComponentTimeoutData(component.componentId.toString())
-                    }
-
-                    val userData = componentTimeout.userData
-                    if (userData.size != descriptor.optionSize) {
-                        return@launch logger.warn {
-                            """
-                                Mismatch between component options and ${descriptor.function.shortSignature}
-                                Component had ${userData.size} options, function has ${descriptor.optionSize} options
-                                Component raw data: $userData
-                            """.trimIndent()
-                        }
-                    }
-
-                    handlePersistentTimeout(descriptor, firstParameter, userData.iterator())
+        when (val componentTimeout = component.timeout) {
+            is PersistentTimeout -> {
+                val handlerName = componentTimeout.handlerName ?: return
+                val descriptor = when (component.componentType) {
+                    ComponentType.GROUP ->
+                        groupTimeoutHandlers[handlerName]
+                            ?: return logger.warn { "Missing ${annotationRef<GroupTimeoutHandler>()} named '$handlerName'" }
+                    else ->
+                        componentTimeoutHandlers[handlerName]
+                            ?: return logger.warn { "Missing ${annotationRef<ComponentTimeoutHandler>()} named '$handlerName'" }
                 }
-                is EphemeralTimeout -> componentTimeout.handler?.invoke()
+
+                val firstParameter: Any = when (component.componentType) {
+                    ComponentType.GROUP -> GroupTimeoutData((component as ComponentGroupData).componentsIds)
+                    ComponentType.BUTTON, ComponentType.SELECT_MENU -> ComponentTimeoutData(component.componentId.toString())
+                }
+
+                val userData = componentTimeout.userData
+                if (userData.size != descriptor.optionSize) {
+                    return logger.warn {
+                        """
+                            Mismatch between component options and ${descriptor.function.shortSignature}
+                            Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                            Component raw data: $userData
+                        """.trimIndent()
+                    }
+                }
+
+                handlePersistentTimeout(descriptor, firstParameter, userData.iterator())
             }
+            is EphemeralTimeout -> componentTimeout.handler?.invoke()
         }
     }
 

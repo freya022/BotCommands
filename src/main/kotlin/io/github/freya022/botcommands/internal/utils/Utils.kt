@@ -1,5 +1,8 @@
 package io.github.freya022.botcommands.internal.utils
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -36,4 +39,15 @@ internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V) {
     if (key in this)
         throwInternal("Key '$key' is already present in the map")
     this[key] = value
+}
+
+internal inline fun CoroutineScope.launchCatching(
+    crossinline catchBlock: suspend (Throwable) -> Unit,
+    crossinline block: suspend () -> Unit
+): Job = launch {
+    try {
+        block()
+    } catch (e: Throwable) {
+        catchBlock(e)
+    }
 }

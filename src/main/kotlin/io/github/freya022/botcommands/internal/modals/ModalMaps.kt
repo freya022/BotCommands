@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.internal.modals
 
-import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
+import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.locks.ReentrantLock
@@ -15,12 +17,16 @@ import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.pow
 
+private val logger = KotlinLogging.logger { }
+
 private const val MAX_ID = Long.MAX_VALUE
 //Same amount of digits except every digit is 0 but the first one is 1
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
 @BService
-internal class ModalMaps(private val config: BConfig) {
+internal class ModalMaps(private val context: BContext) {
+    private val exceptionHandler = ExceptionHandler(context, logger)
+
     private val modalLock = ReentrantLock()
     private val inputLock = ReentrantLock()
 
@@ -37,7 +43,7 @@ internal class ModalMaps(private val config: BConfig) {
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
-                config.coroutineScopesConfig.modalTimeoutScope.launch {
+                context.coroutineScopesConfig.modalTimeoutScope.launchCatching(::handleTimeoutException) {
                     delay(timeoutInfo.timeout)
 
                     val data = modalLock.withLock { modalMap.remove(id) }
@@ -54,6 +60,10 @@ internal class ModalMaps(private val config: BConfig) {
         }
 
         return id
+    }
+
+    private fun handleTimeoutException(e: Throwable) {
+        exceptionHandler.handleException(null, e, "modal timeout handler", emptyMap())
     }
 
     fun insertInput(inputData: InputData, id: String): String {
