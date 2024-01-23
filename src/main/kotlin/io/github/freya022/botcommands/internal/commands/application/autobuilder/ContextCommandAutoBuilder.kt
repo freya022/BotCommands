@@ -3,10 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
@@ -19,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Glob
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
@@ -26,14 +24,18 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 internal class ContextCommandAutoBuilder(
-    private val context: BContextImpl,
+    context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
@@ -79,15 +81,37 @@ internal class ContextCommandAutoBuilder(
     fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
+        val skipLogger = SkipLogger(logger)
         messageFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(manager, forceGuildCommands, metadata, metadata.annotation.scope) { processMessageCommand(manager, it) }
+            runFiltered(
+                manager,
+                skipLogger,
+                forceGuildCommands,
+                metadata.path,
+                metadata.instance,
+                metadata.commandId,
+                metadata.func,
+                metadata.annotation.scope
+            ) { processMessageCommand(manager, metadata) }
         }
+        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, JDACommand.Type.MESSAGE)
     }
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
+        val skipLogger = SkipLogger(logger)
         userFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(manager, forceGuildCommands, metadata, metadata.annotation.scope) { processUserCommand(manager, it) }
+            runFiltered(
+                manager,
+                skipLogger,
+                forceGuildCommands,
+                metadata.path,
+                metadata.instance,
+                metadata.commandId,
+                metadata.func,
+                metadata.annotation.scope
+            ) { processUserCommand(manager, metadata) }
         }
+        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, JDACommand.Type.USER)
     }
 
     private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {

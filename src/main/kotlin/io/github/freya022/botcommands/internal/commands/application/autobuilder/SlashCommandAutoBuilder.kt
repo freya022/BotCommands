@@ -12,13 +12,13 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
-import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
@@ -34,13 +34,14 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
+import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 
 private val logger = KotlinLogging.logger { }
 private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
-    private val context: BContextImpl,
+    context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
     private class TopLevelSlashCommandMetadata(
@@ -168,53 +169,30 @@ internal class SlashCommandAutoBuilder(
 
     private fun SlashFunctionMetadata.toSubcommandGroupMetadata() = SlashSubcommandGroupMetadata(path.group!!)
 
-    fun declareGlobal(manager: GlobalApplicationCommandManager) {
+    fun declareGlobal(manager: GlobalApplicationCommandManager) = declare(manager)
+
+    fun declareGuild(manager: GuildApplicationCommandManager) = declare(manager)
+
+    private fun declare(manager: AbstractApplicationCommandManager) {
+        val skipLogger = SkipLogger(logger)
         topLevelMetadata
             .values
-            .forEachWithDelayedExceptions { topLevelMetadata ->
-                val topLevelAnnotation = topLevelMetadata.annotation
-                if (forceGuildCommands)
-                    return@forEachWithDelayedExceptions logger.debug { "Skipping command '${topLevelMetadata.name}' as ${BApplicationConfig::forceGuildCommands.reference} is enabled" }
-
-                if (!manager.isValidScope(topLevelAnnotation.scope)) return@forEachWithDelayedExceptions
-
+            .forEachWithDelayedExceptions loop@{ topLevelMetadata ->
                 val metadata = topLevelMetadata.metadata
-                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) != TestState.NO_ANNOTATION) {
-                    throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
+                runFiltered(
+                    manager,
+                    skipLogger,
+                    forceGuildCommands,
+                    metadata.path,
+                    metadata.instance,
+                    metadata.commandId,
+                    metadata.func,
+                    topLevelMetadata.annotation.scope
+                ) {
+                    processCommand(manager, topLevelMetadata)
                 }
-
-                processCommand(manager, topLevelMetadata)
             }
-    }
-
-    fun declareGuild(manager: GuildApplicationCommandManager) {
-        topLevelMetadata
-            .values
-            .forEachWithDelayedExceptions { topLevelMetadata ->
-                val topLevelAnnotation = topLevelMetadata.annotation
-
-                //Declare as a guild command: remove invalid scopes when commands aren't forced as guild scoped
-                if (!forceGuildCommands && !manager.isValidScope(topLevelAnnotation.scope)) return@forEachWithDelayedExceptions
-
-                val metadata = topLevelMetadata.metadata
-                val instance = metadata.instance
-                val path = metadata.path
-
-                //TODO test
-                metadata.commandId?.also { id ->
-                    if (!checkCommandId(manager, instance, id, path)) {
-                        logger.trace { "Skipping command '$path' as its command ID was rejected on ${manager.guild}" }
-                        return@forEachWithDelayedExceptions
-                    }
-                }
-
-                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) == TestState.EXCLUDE) {
-                    logger.trace { "Skipping command '$path' as it is a test command on ${manager.guild}" }
-                    return@forEachWithDelayedExceptions
-                }
-
-                processCommand(manager, topLevelMetadata)
-            }
+        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, JDACommand.Type.SLASH)
     }
 
     private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {

@@ -7,12 +7,13 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.utils.*
@@ -43,29 +44,36 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
     }
 }
 
-internal fun <T : ApplicationFunctionMetadata<*>> runFiltered(
+internal fun runFiltered(
     manager: AbstractApplicationCommandManager,
+    skipLogger: SkipLogger,
     forceGuildCommands: Boolean,
-    metadata: T,
+    path: CommandPath,
+    instance: ApplicationCommand,
+    commandId: String?,
+    func: KFunction<*>,
     scope: CommandScope,
-    block: (T) -> Unit
+    block: () -> Unit
 ) {
-    if (!manager.isValidScope(scope)) return
+    // On global manager, do not register any command if forceGuildCommands is enabled,
+    // as none of them would be global
+    if (manager is GlobalApplicationCommandManager && forceGuildCommands)
+        return skipLogger.skip(path.name, "${BApplicationConfig::forceGuildCommands.reference} is enabled")
 
-    if (scope.isGlobal && forceGuildCommands)
-        return
+    // If guild commands aren't forced, check the scope
+    if (!forceGuildCommands && !manager.isValidScope(scope)) return
 
-    if (metadata.commandId != null && !checkCommandId(manager, metadata.instance, metadata.commandId, metadata.path))
-        return
+    if (commandId != null && !checkCommandId(manager, instance, commandId, path))
+        return skipLogger.skip(path, "Guild does not support that command ID")
 
-    val testState = checkTestCommand(manager, metadata.func, scope, manager.context)
+    val testState = checkTestCommand(manager, func, scope, manager.context)
     if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
 
     if (testState == TestState.EXCLUDE)
-        return
+        return skipLogger.skip(path, "Is a test command while this guild isn't a test guild")
 
-    block(metadata)
+    block()
 }
 
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
