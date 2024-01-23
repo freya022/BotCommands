@@ -26,9 +26,8 @@ import kotlin.reflect.KFunction
 sealed class AbstractApplicationCommandManager(private val context: BContext) {
     private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
-        @JvmSynthetic get() = commandMap.map
+        get() = commandMap.map
 
-    @JvmSynthetic
     internal abstract fun isValidScope(scope: CommandScope): Boolean
 
     protected abstract fun checkScope(scope: CommandScope)
