@@ -3,7 +3,10 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.*
+import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
@@ -16,7 +19,6 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Glob
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
@@ -78,33 +80,14 @@ internal class ContextCommandAutoBuilder(
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
         messageFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(manager, metadata, metadata.annotation.scope) { processMessageCommand(manager, it) }
+            runFiltered(manager, forceGuildCommands, metadata, metadata.annotation.scope) { processMessageCommand(manager, it) }
         }
     }
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
         userFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(manager, metadata, metadata.annotation.scope) { processUserCommand(manager, it) }
+            runFiltered(manager, forceGuildCommands, metadata, metadata.annotation.scope) { processUserCommand(manager, it) }
         }
-    }
-
-    private inline fun <T : ApplicationFunctionMetadata<*>> runFiltered(manager: AbstractApplicationCommandManager, metadata: T, scope: CommandScope, block: (T) -> Unit) {
-        if (!manager.isValidScope(scope)) return
-
-        if (scope.isGlobal && forceGuildCommands)
-            return
-
-        if (metadata.commandId != null && !checkCommandId(manager, metadata.instance, metadata.commandId, metadata.path))
-            return
-
-        val testState = checkTestCommand(manager, metadata.func, scope, context)
-        if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
-            throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
-
-        if (testState == TestState.EXCLUDE)
-            return
-
-        block(metadata)
     }
 
     private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {

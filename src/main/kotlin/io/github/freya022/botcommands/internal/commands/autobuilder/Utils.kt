@@ -6,14 +6,15 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -42,6 +43,31 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
     }
 }
 
+internal fun <T : ApplicationFunctionMetadata<*>> runFiltered(
+    manager: AbstractApplicationCommandManager,
+    forceGuildCommands: Boolean,
+    metadata: T,
+    scope: CommandScope,
+    block: (T) -> Unit
+) {
+    if (!manager.isValidScope(scope)) return
+
+    if (scope.isGlobal && forceGuildCommands)
+        return
+
+    if (metadata.commandId != null && !checkCommandId(manager, metadata.instance, metadata.commandId, metadata.path))
+        return
+
+    val testState = checkTestCommand(manager, metadata.func, scope, manager.context)
+    if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
+        throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
+
+    if (testState == TestState.EXCLUDE)
+        return
+
+    block(metadata)
+}
+
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
     if (manager is GuildApplicationCommandManager) {
         val guildIds = instance.getGuildsForCommandId(commandId, path) ?: return true
@@ -60,7 +86,7 @@ internal enum class TestState {
     NO_ANNOTATION
 }
 
-internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): TestState {
+internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContext): TestState {
     if (func.hasAnnotation<Test>()) {
         if (scope != CommandScope.GUILD) throwUser(func, "Test commands must have their scope set to GUILD")
         if (manager !is GuildApplicationCommandManager) throwInternal("GUILD scoped command was not registered with a guild command manager")
