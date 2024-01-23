@@ -179,8 +179,8 @@ internal class SlashCommandAutoBuilder(
                 if (!manager.isValidScope(topLevelAnnotation.scope)) return@forEachWithDelayedExceptions
 
                 val metadata = topLevelMetadata.metadata
-                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) == TestState.EXCLUDE) {
-                    return@forEachWithDelayedExceptions
+                if (checkTestCommand(manager, metadata.func, topLevelAnnotation.scope, context) != TestState.NO_ANNOTATION) {
+                    throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
                 }
 
                 processCommand(manager, topLevelMetadata)
