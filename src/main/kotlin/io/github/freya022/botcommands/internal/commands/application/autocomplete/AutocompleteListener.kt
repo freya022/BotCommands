@@ -11,6 +11,8 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 
 private val logger = KotlinLogging.logger { }
 
@@ -36,7 +38,7 @@ internal class AutocompleteListener(private val context: BContext) {
                 val autocompleteHandler = option.autocompleteHandler
                     ?: throwUser(option.kParameter.function, "Autocomplete handler was not found on parameter '${option.declaredName}'")
 
-                return@launch event.replyChoices(autocompleteHandler.handle(event)).queue()
+                return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
             }
         }
     }
@@ -53,5 +55,14 @@ internal class AutocompleteListener(private val context: BContext) {
         }
 
         return event.replyChoices().queue()
+    }
+
+    private fun onReplyException(event: CommandAutoCompleteInteractionEvent, e: Throwable) {
+        if (e is ErrorResponseException && e.errorResponse == ErrorResponse.UNKNOWN_INTERACTION) {
+            return logger.debug { "Ignored UNKNOWN_INTERACTION on autocomplete" }
+        }
+
+        // Doesn't happen realistically, the exception only comes from replyChoices
+        context.dispatchException("An uncaught exception occurred while replying autocomplete values for '${event.commandString}'", e)
     }
 }
