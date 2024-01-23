@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.db;
 
-import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame;
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 

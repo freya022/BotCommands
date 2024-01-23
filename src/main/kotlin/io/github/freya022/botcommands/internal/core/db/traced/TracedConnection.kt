@@ -3,7 +3,7 @@
 package io.github.freya022.botcommands.internal.core.db.traced
 
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
-import io.github.freya022.botcommands.api.core.db.annotations.IgnoreStackFrame
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.oshai.kotlinlogging.KLogger
