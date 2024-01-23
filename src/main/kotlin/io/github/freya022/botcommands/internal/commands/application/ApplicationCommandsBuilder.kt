@@ -161,6 +161,7 @@ internal class ApplicationCommandsBuilder(
             }
 
             if (failedDeclarations.isNotEmpty() && guild.idLong !in firstGuildUpdates) {
+                context.dispatchException("An exception occurred while updating commands for '${guild.name}' (${guild.idLong}) on startup", null)
                 logger.error { "An exception occurred while updating commands for '${guild.name}' (${guild.idLong}) on startup, aborting any update" }
                 return CommandUpdateResult(guild, false, failedDeclarations)
             }
