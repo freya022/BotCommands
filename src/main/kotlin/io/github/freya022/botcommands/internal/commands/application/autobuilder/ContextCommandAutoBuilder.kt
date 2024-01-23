@@ -34,6 +34,8 @@ internal class ContextCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
+    private val forceGuildCommands = context.applicationConfig.forceGuildCommands
+
     private val messageFunctions: List<MessageContextFunctionMetadata>
     private val userFunctions: List<UserContextFunctionMetadata>
 
@@ -88,6 +90,9 @@ internal class ContextCommandAutoBuilder(
 
     private inline fun <T : ApplicationFunctionMetadata<*>> runFiltered(manager: AbstractApplicationCommandManager, metadata: T, scope: CommandScope, block: (T) -> Unit) {
         if (!manager.isValidScope(scope)) return
+
+        if (scope.isGlobal && forceGuildCommands)
+            return
 
         if (metadata.commandId != null && !checkCommandId(manager, metadata.instance, metadata.commandId, metadata.path))
             return
