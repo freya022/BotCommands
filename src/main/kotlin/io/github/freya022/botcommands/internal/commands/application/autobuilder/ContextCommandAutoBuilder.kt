@@ -97,7 +97,8 @@ internal class ContextCommandAutoBuilder(
         val commandId = metadata.commandId
 
         val annotation = metadata.annotation
-        manager.messageCommand(path.name, annotation.scope, func.castFunction()) {
+        val actualScope = if (forceGuildCommands) CommandScope.GUILD else annotation.scope
+        manager.messageCommand(path.name, actualScope, func.castFunction()) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 
@@ -115,7 +116,8 @@ internal class ContextCommandAutoBuilder(
         val commandId = metadata.commandId
 
         val annotation = metadata.annotation
-        manager.userCommand(path.name, annotation.scope, func.castFunction()) {
+        val actualScope = if (forceGuildCommands) CommandScope.GUILD else annotation.scope
+        manager.userCommand(path.name, actualScope, func.castFunction()) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 

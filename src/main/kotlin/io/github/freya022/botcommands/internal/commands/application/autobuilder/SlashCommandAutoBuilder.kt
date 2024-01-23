@@ -226,7 +226,8 @@ internal class SlashCommandAutoBuilder(
         val subcommandsMetadata = topLevelMetadata.subcommands
         val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
         val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
-        manager.slashCommand(name, topLevelMetadata.annotation.scope, if (isTopLevelOnly) metadata.func.castFunction() else null) {
+        val actualScope = if (forceGuildCommands) CommandScope.GUILD else topLevelMetadata.annotation.scope
+        manager.slashCommand(name, actualScope, if (isTopLevelOnly) metadata.func.castFunction() else null) {
             isDefaultLocked = topLevelMetadata.annotation.defaultLocked
             nsfw = topLevelMetadata.annotation.nsfw
 
