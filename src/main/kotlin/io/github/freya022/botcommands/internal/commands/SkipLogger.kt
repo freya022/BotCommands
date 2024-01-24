@@ -36,17 +36,29 @@ internal class SkipLoggerImpl(private val logger: KLogger) : SkipLogger {
     override fun log(guild: Guild?, type: Command.Type) {
         if (skips.isEmpty()) return
 
-        logger.debug {
-            buildString {
-                append("Skipped ${skips.size}")
-                if (guild != null) {
-                    append(" ${type.toHumanName()} commands in ${guild.name} (${guild.id})")
-                } else {
-                    append(" global ${type.toHumanName()} commands")
+        if (logger.isTraceEnabled()) {
+            logger.trace {
+                buildString {
+                    appendBase(guild, type)
+                    append(":\n")
+                    append(skips.joinAsList { "${it.path}: ${it.reason}" })
                 }
-                append(":\n")
-                append(skips.joinAsList { "${it.path}: ${it.reason}" })
             }
+        } else {
+            logger.debug {
+                buildString {
+                    appendBase(guild, type)
+                }
+            }
+        }
+    }
+
+    private fun StringBuilder.appendBase(guild: Guild?, type: Command.Type) {
+        append("Skipped ${skips.size}")
+        if (guild != null) {
+            append(" ${type.toHumanName()} commands in ${guild.name} (${guild.id})")
+        } else {
+            append(" global ${type.toHumanName()} commands")
         }
     }
 
