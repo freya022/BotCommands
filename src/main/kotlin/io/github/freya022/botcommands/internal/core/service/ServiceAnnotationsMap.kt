@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
+import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
@@ -57,6 +58,15 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                         throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 
                     UNAVAILABLE_DEPENDENCY, NO_USABLE_PROVIDER, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
+                        // If the service is lazy and is recoverable, then we assume the service is instantiable,
+                        // and will only be retrieved when instantiable
+                        if (clazz.findAnnotation<BService>()?.start == ServiceStart.LAZY
+                            // Conditions are only checked once
+                            && (serviceError.errorType != FAILED_CONDITION && serviceError.errorType != FAILED_CUSTOM_CONDITION)
+                        ) {
+                            return@filterKeys true
+                        }
+
                         if (logger.isTraceEnabled()) {
                             logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
                         } else if (logger.isDebugEnabled()) {
