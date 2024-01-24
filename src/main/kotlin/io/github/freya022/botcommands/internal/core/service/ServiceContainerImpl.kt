@@ -184,9 +184,22 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             .mapNotNull {
                 val serviceResult = tryGetService<T>(it)
                 serviceResult.serviceError?.let { serviceError ->
-                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}):\n${serviceError.toSimpleString()}"
+                    val warnMessage = buildString {
+                        append("Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey})")
+
+                        if (logger.isTraceEnabled()) {
+                            append("\n")
+                            append(serviceError.toDetailedString())
+                        } else {
+                            serviceError.appendPostfixSimpleString()
+                        }
+                    }
                     if (interfacedServiceErrors.add(warnMessage)) {
-                        logger.debug { warnMessage }
+                        if (logger.isTraceEnabled()) {
+                            logger.trace { warnMessage }
+                        } else {
+                            logger.debug { warnMessage }
+                        }
                     }
                 }
                 serviceResult.getOrNull()

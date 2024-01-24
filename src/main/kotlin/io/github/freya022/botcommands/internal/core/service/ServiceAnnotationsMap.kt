@@ -72,14 +72,8 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                         } else if (logger.isDebugEnabled()) {
                             logger.debug {
                                 buildString {
-                                    append("Service ${clazz.simpleNestedName} not loaded:")
-                                    if (serviceError.siblingErrors.isNotEmpty()) {
-                                        append("\n")
-                                        append(serviceError.toSimpleString())
-                                    } else {
-                                        append(": ")
-                                        append(serviceError.toSimpleString())
-                                    }
+                                    append("Service ${clazz.simpleNestedName} not loaded")
+                                    serviceError.appendPostfixSimpleString()
                                 }
                             }
                         }

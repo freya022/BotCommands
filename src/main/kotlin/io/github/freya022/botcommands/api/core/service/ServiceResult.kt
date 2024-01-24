@@ -60,6 +60,17 @@ class ServiceError private constructor(
 
     fun toDetailedString(): String = (listOf(this) + siblingErrors).joinToString("\n") { it.toSingleDetailedString() }
 
+    context(StringBuilder)
+    internal fun appendPostfixSimpleString() {
+        if (siblingErrors.isNotEmpty()) {
+            append("\n")
+            append(toSimpleString())
+        } else {
+            append(": ")
+            append(toSimpleString())
+        }
+    }
+
     private fun toSingleDetailedString(): String = buildString {
         appendLine("Error message: $errorMessage")
         if (failedFunction != null)
