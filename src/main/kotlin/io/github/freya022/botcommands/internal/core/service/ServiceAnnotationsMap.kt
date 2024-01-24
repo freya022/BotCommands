@@ -60,7 +60,18 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                         if (logger.isTraceEnabled()) {
                             logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
                         } else if (logger.isDebugEnabled()) {
-                            logger.debug { "Service ${clazz.simpleNestedName} not loaded: ${serviceError.toSimpleString()}" }
+                            logger.debug {
+                                buildString {
+                                    append("Service ${clazz.simpleNestedName} not loaded:")
+                                    if (serviceError.siblingErrors.isNotEmpty()) {
+                                        append("\n")
+                                        append(serviceError.toSimpleString())
+                                    } else {
+                                        append(": ")
+                                        append(serviceError.toSimpleString())
+                                    }
+                                }
+                            }
                         }
                     }
                 }

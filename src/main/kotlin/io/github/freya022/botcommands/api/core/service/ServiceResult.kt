@@ -48,7 +48,10 @@ class ServiceError private constructor(
     fun withSibling(serviceError: ServiceError): ServiceError =
         ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
 
-    fun toSimpleString(): String = (listOf(this) + siblingErrors).joinAsList { it.toSingleSimpleString() }
+    fun toSimpleString(): String = when {
+        siblingErrors.isEmpty() -> this.toSingleSimpleString()
+        else -> (listOf(this) + siblingErrors).joinAsList { it.toSingleSimpleString() }
+    }
 
     private fun toSingleSimpleString(): String = when {
         extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
