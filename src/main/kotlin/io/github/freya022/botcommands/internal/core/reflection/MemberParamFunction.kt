@@ -49,6 +49,9 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberPar
     val eventType = firstParameter.type.jvmErasure
     if (builder.topLevelBuilder.scope.isGuildOnly) {
         if (!eventType.isSubclassOf<GUILD_T>()) {
+            // Do not warn about guild-restricted types when everything is forced as a guild command
+            if (builder.context.applicationConfig.forceGuildCommands) return
+
             Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${classRef<GUILD_T>()} as to benefit from non-null getters")
         }
     } else if (eventType.isSubclassOf<GUILD_T>()) {
