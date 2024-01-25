@@ -113,7 +113,7 @@ internal fun CommandBuilder.fillCommandBuilder(functions: Iterable<KFunction<*>>
     functions
         .singleValueOfVariants("their rate limit") { it.readRateLimit() }
         ?.let { (bucketFactory, rateLimiterFactory) ->
-            rateLimit(bucketFactory, rateLimiterFactory)
+            rateLimitIfAbsent(bucketFactory, rateLimiterFactory)
         }
 
     functions
