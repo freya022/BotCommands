@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -110,11 +111,19 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 }
 
 internal fun CommandBuilder.fillCommandBuilder(functions: Iterable<KFunction<*>>) {
-    functions
-        .singleValueOfVariants("their rate limit") { it.readRateLimit() }
-        ?.let { (bucketFactory, rateLimiterFactory) ->
-            rateLimitIfAbsent(bucketFactory, rateLimiterFactory)
-        }
+    val rateLimitSpec = functions.singleValueOfVariants("their rate limit specification") { it.readRateLimit() }
+    val rateLimitRef = functions.singleAnnotationOfVariants<RateLimitReference>()
+
+    // A single one of them can be used - One of them needs to be null
+    check(rateLimitRef == null || rateLimitSpec == null) {
+        "You can either define a rate limit or reference one, but not both"
+    }
+
+    rateLimitSpec?.let { (bucketFactory, rateLimiterFactory) ->
+        rateLimitIfAbsent(bucketFactory, rateLimiterFactory)
+    }
+
+    rateLimitRef?.let { rateLimitReference(it.group) }
 
     functions
         .singleValueOfVariants("user permission") { f ->
