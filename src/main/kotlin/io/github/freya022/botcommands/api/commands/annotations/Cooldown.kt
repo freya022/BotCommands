@@ -9,6 +9,9 @@ import java.time.temporal.ChronoUnit
 /**
  * Add a simple rate limit-based cooldown of this text / application command and components.
  *
+ * **Text commands note:** This applies to the command itself, not only this variation,
+ * in other words, this applies to all commands with the same path.
+ *
  * ### Cooldown cancellation
  * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
