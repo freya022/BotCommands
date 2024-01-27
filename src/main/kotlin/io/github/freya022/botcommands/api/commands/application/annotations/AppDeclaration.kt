@@ -8,12 +8,12 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 
 /**
- * Annotation for functions which declares application commands.
+ * Marks the function as an application command declaration function.
  *
- * The first argument needs to be a [GuildApplicationCommandManager] or a [GlobalApplicationCommandManager].
+ * The first argument needs to be a [GuildApplicationCommandManager] or a [GlobalApplicationCommandManager],
+ * and is allowed to declare no commands, or multiple commands.
  *
- * **Note:** The function may declare no command,
- * and may be called more than once, for example,
+ * **Note:** The function may be called more than once, for example,
  * if the bot needs to update its commands, or if it joins a guild.
  *
  * **Requirement:** The declaring class must be annotated with [@Command][Command].
