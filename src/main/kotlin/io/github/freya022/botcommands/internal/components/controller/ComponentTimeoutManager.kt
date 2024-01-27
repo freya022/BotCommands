@@ -25,7 +25,6 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.reflect.full.callSuspendBy
@@ -47,10 +46,12 @@ internal class ComponentTimeoutManager(
     private val timeoutMap = hashMapOf<Int, Job>()
 
     fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
-        timeoutMap[id] = context.coroutineScopesConfig.componentTimeoutScope.launchCatching({ handleTimeoutException(id, it) }) {
-            delay(expirationTimestamp - Clock.System.now())
-            onTimeout(id)
-        }
+        val delay = expirationTimestamp - Clock.System.now()
+        timeoutMap[id] = context.coroutineScopesConfig.componentTimeoutScope.launchCatchingDelayed(
+            delay,
+            { handleTimeoutException(id, it) },
+            { onTimeout(id) }
+        )
     }
 
     private fun handleTimeoutException(id: Int, e: Throwable) {

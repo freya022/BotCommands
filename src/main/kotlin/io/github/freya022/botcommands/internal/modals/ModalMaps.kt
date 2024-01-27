@@ -4,11 +4,10 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
-import io.github.freya022.botcommands.internal.utils.launchCatching
+import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.locks.ReentrantLock
@@ -43,9 +42,7 @@ internal class ModalMaps(private val context: BContext) {
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
-                context.coroutineScopesConfig.modalTimeoutScope.launchCatching(::handleTimeoutException) {
-                    delay(timeoutInfo.timeout)
-
+                context.coroutineScopesConfig.modalTimeoutScope.launchCatchingDelayed(timeoutInfo.timeout, ::handleTimeoutException) {
                     val data = modalLock.withLock { modalMap.remove(id) }
                     if (data != null) { //If the timeout was reached without the modal being used
                         for (continuation in data.continuations) {

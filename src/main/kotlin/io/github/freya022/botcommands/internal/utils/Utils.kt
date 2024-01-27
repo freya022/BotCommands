@@ -2,10 +2,12 @@ package io.github.freya022.botcommands.internal.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.time.Duration
 
 internal fun String.toDiscordString(): String {
     val sb: StringBuilder = StringBuilder()
@@ -45,6 +47,19 @@ internal inline fun CoroutineScope.launchCatching(
     crossinline catchBlock: suspend (Throwable) -> Unit,
     crossinline block: suspend () -> Unit
 ): Job = launch {
+    try {
+        block()
+    } catch (e: Throwable) {
+        catchBlock(e)
+    }
+}
+
+internal inline fun CoroutineScope.launchCatchingDelayed(
+    delay: Duration,
+    crossinline catchBlock: suspend (Throwable) -> Unit,
+    crossinline block: suspend () -> Unit
+): Job = launch {
+    delay(delay)
     try {
         block()
     } catch (e: Throwable) {
