@@ -41,6 +41,12 @@ internal class ComponentRepository(
     private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
     private val componentFilters: ComponentFilters
 ) {
+    internal class DeletedComponent(val componentId: Int, val ephemeralComponentHandlerId: Int?, val ephemeralTimeoutHandlerId: Int?) {
+        operator fun component1() = componentId
+        operator fun component2() = ephemeralComponentHandlerId
+        operator fun component3() = ephemeralTimeoutHandlerId
+    }
+
     private val logger = KotlinLogging.logger { }
 
     init {
@@ -213,17 +219,16 @@ internal class ComponentRepository(
         }
     }
 
-    /** Returns all deleted components */
-    suspend fun deleteComponent(componentId: Int): List<Int> = deleteComponentsById(listOf(componentId))
-
-    suspend fun deleteComponentsById(ids: List<Int>): List<Int> = database.transactional {
+    suspend fun deleteComponentsById(ids: List<Int>): List<DeletedComponent> = database.transactional {
         // If the component is a group, then delete the component, and it's contained components
         // If the component is not a group, then delete the component as well as it's group
 
-        val deletedComponents: List<Int> = preparedStatement(
+        val deletedComponents: List<DeletedComponent> = preparedStatement(
             """
-                select c.component_id
+                select c.component_id, eh.handler_id as component_handler_id, et.handler_id as timeout_handler_id
                 from bc_component c
+                         left join bc_ephemeral_handler eh using (component_id)
+                         left join bc_ephemeral_timeout et using (component_id)
                 where c.component_id = any (?) -- Delete this component
                    or c.component_id = any
                       (select component_id -- (This component is a group) Delete all components from the same group
@@ -237,14 +242,15 @@ internal class ComponentRepository(
             """.trimIndent()
         ) {
             val idArray = ids.toTypedArray()
-            executeQuery(idArray, idArray, idArray).map { it["component_id"] }
+            executeQuery(idArray, idArray, idArray).map { DeletedComponent(it["component_id"], it.getOrNull("component_handler_id"), it.getOrNull("timeout_handler_id")) }
         }
+        val deletedComponentIds = deletedComponents.map { it.componentId }
 
         preparedStatement("delete from bc_component where component_id = any (?)") {
-            executeUpdate(deletedComponents.toTypedArray())
+            executeUpdate(deletedComponentIds.toTypedArray())
         }
 
-        logger.trace { "Deleted components: ${deletedComponents.joinToString()}" }
+        logger.trace { "Deleted components: ${deletedComponentIds.joinToString()}" }
 
         return@transactional deletedComponents
     }

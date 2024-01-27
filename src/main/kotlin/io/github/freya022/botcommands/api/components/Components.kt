@@ -248,7 +248,7 @@ class Components internal constructor(private val componentController: Component
 
     @JvmSynthetic
     suspend fun deleteComponentsById(ids: Collection<String>) {
-        componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() })
+        componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() }, throwTimeouts = false)
     }
 
     private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder<*>, components: Array<out ActionComponent>): ComponentGroup {

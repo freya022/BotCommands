@@ -14,7 +14,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.components.data.ComponentData
+import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
+import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
@@ -30,6 +32,8 @@ import kotlin.concurrent.withLock
 internal class ComponentController(
     val context: BContext,
     private val componentRepository: ComponentRepository,
+    private val ephemeralComponentHandlers: EphemeralComponentHandlers,
+    private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
     private val timeoutManager: ComponentTimeoutManager
 ) {
     // This service might be used in classes that use components and also declare rate limiters
@@ -68,15 +72,8 @@ internal class ComponentController(
         }.toString()
     }
 
-    suspend fun deleteComponent(component: ComponentData, isTimeout: Boolean = false) {
-        //Only one timeout will be executed at most, as components inside groups aren't timeout-able
-        componentRepository.deleteComponent(component.componentId).forEach { componentId ->
-            timeoutManager.cancelTimeout(componentId)
-            if (isTimeout) {
-                timeoutManager.throwTimeouts(componentId)
-            }
-        }
-    }
+    suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
+        deleteComponentsById(listOf(component.componentId), throwTimeouts)
 
     suspend fun insertGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
         return componentRepository.insertGroup(group).also { id ->
@@ -85,9 +82,11 @@ internal class ComponentController(
         }.let { id -> ComponentGroup(this, id.toString()) }
     }
 
-    suspend fun deleteComponentsById(ids: List<Int>) {
-        componentRepository.deleteComponentsById(ids).forEach { componentId ->
-            timeoutManager.cancelTimeout(componentId)
+    suspend fun deleteComponentsById(ids: List<Int>, throwTimeouts: Boolean) {
+        componentRepository.deleteComponentsById(ids).forEach { (componentId, ephemeralComponentHandlerId, ephemeralTimeoutHandlerId) ->
+            ephemeralComponentHandlerId?.let { ephemeralComponentHandlers.remove(it) }
+            ephemeralTimeoutHandlerId?.let { ephemeralTimeoutHandlers.remove(it) }
+            timeoutManager.removeTimeouts(componentId, throwTimeouts)
         }
     }
 

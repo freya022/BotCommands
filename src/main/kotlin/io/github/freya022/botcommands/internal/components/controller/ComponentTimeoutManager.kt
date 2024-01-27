@@ -24,6 +24,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -66,10 +67,7 @@ internal class ComponentTimeoutManager(
             ?: return logger.warn { "Component $id was still timeout scheduled after being deleted" }
 
         //Will also cancel timeouts of related components
-        componentController.deleteComponent(component, isTimeout = true)
-
-        //Throw timeout exceptions
-        throwTimeouts(component.componentId)
+        componentController.deleteComponent(component, throwTimeouts = true)
 
         when (val componentTimeout = component.timeout) {
             is PersistentTimeout -> {
@@ -146,19 +144,20 @@ internal class ComponentTimeoutManager(
         return tryInsertNullableOption(value, option, optionMap)
     }
 
-    fun throwTimeouts(componentId: Int) {
-        componentController.removeContinuations(componentId).let { continuations ->
-            if (continuations.isNotEmpty()) {
-                val timeoutException = TimeoutExceptionAccessor.createComponentTimeoutException()
-                continuations.forEach {
-                    it.cancel(timeoutException)
-                }
-            }
-        }
-    }
+    fun removeTimeouts(componentId: Int, throwTimeouts: Boolean) {
+        logger.trace { "Cancelled timeout for component $componentId" }
+        timeoutMap.remove(componentId)?.cancel()
 
-    fun cancelTimeout(id: Int) {
-        logger.trace { "Cancelled timeout for component $id" }
-        timeoutMap.remove(id)?.cancel()
+        val continuations = componentController.removeContinuations(componentId)
+        if (continuations.isEmpty()) return
+
+        // Continuations must be canceled
+        if (throwTimeouts) {
+            val timeoutException = TimeoutExceptionAccessor.createComponentTimeoutException()
+            continuations.forEach { it.cancel(timeoutException) }
+        } else {
+            val cancellationException = CancellationException("Component was deleted")
+            continuations.forEach { it.cancel(cancellationException) }
+        }
     }
 }
