@@ -114,53 +114,50 @@ internal class ComponentsListener(
                 }
 
                 if (component.oneUse) {
-                    componentController.deleteComponent(component)
+                    componentController.deleteComponent(component, throwTimeouts = false)
                 }
 
+                val evt = transformEvent(event, cancellableRateLimit)
                 when (component) {
                     is PersistentComponentData -> {
-                        transformEvent(event, cancellableRateLimit)?.let { evt ->
-                            resumeCoroutines(component, evt)
+                        resumeCoroutines(component, evt)
 
-                            val (handlerName, userData) = component.handler ?: return@withRateLimit true
+                        val (handlerName, userData) = component.handler ?: return@withRateLimit true
 
-                            val descriptor = when (component.componentType) {
-                                ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
-                                    ?: throwUser("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
-                                ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
-                                    ?: throwUser("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
-                                else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                        val descriptor = when (component.componentType) {
+                            ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
+                                ?: throwUser("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
+                            ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
+                                ?: throwUser("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
+                            else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                        }
+
+                        if (userData.size != descriptor.optionSize) {
+                            // This is on debug as this is supposed to happen only in development
+                            // Or if a user clicked on an old incompatible button,
+                            // in which case the developer can enable debug logs if complained about
+                            logger.debug {
+                                """
+                                    Mismatch between component options and ${descriptor.function.shortSignature}
+                                    Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                                    Component raw data: $userData
+                                """.trimIndent()
                             }
+                            event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                            return@withRateLimit false
+                        }
 
-                            if (userData.size != descriptor.optionSize) {
-                                // This is on debug as this is supposed to happen only in development
-                                // Or if a user clicked on an old incompatible button,
-                                // in which case the developer can enable debug logs if complained about
-                                logger.debug {
-                                    """
-                                        Mismatch between component options and ${descriptor.function.shortSignature}
-                                        Component had ${userData.size} options, function has ${descriptor.optionSize} options
-                                        Component raw data: $userData
-                                    """.trimIndent()
-                                }
-                                event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
-                                return@withRateLimit false
-                            }
-
-                            if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
-                                return@withRateLimit false
-                            }
+                        if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
+                            return@withRateLimit false
                         }
                     }
                     is EphemeralComponentData -> {
-                        transformEvent(event, cancellableRateLimit)?.let { evt ->
-                            resumeCoroutines(component, evt)
+                        resumeCoroutines(component, evt)
 
-                            val ephemeralHandler = component.handler ?: return@withRateLimit true
+                        val ephemeralHandler = component.handler ?: return@withRateLimit true
 
-                            @Suppress("UNCHECKED_CAST")
-                            (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
-                        }
+                        @Suppress("UNCHECKED_CAST")
+                        (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
                     }
                     is ComponentGroupData -> throwInternal("Somehow received an interaction with a component ID that was a group")
                 }
@@ -188,16 +185,11 @@ internal class ComponentsListener(
     private fun transformEvent(
         event: GenericComponentInteractionCreateEvent,
         cancellableRateLimit: CancellableRateLimit
-    ): GenericComponentInteractionCreateEvent? {
-        return when (event) {
-            is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit)
-            is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit)
-            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit)
-            else -> {
-                logger.warn { "Unhandled component event: ${event::class.simpleName}" }
-                null
-            }
-        }
+    ): GenericComponentInteractionCreateEvent = when (event) {
+        is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit)
+        is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit)
+        is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit)
+        else -> throwInternal("Unhandled component event: ${event::class.simpleName}")
     }
 
     private suspend fun handlePersistentComponent(
