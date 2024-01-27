@@ -23,7 +23,6 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.AbstractComponentData
-import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
 import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
@@ -81,6 +80,9 @@ internal class ComponentsListener(
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
+            if (component !is AbstractComponentData)
+                throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
+
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
                 return@launch event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
             }
@@ -92,11 +94,9 @@ internal class ComponentsListener(
             }
 
             component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
-                component.constraints?.let { constraints ->
-                    if (!constraints.isAllowed(event)) {
-                        event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
-                        return@withRateLimit false
-                    }
+                if (!component.constraints.isAllowed(event)) {
+                    event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+                    return@withRateLimit false
                 }
 
                 checkFilters(globalFilters, component.filters) { filter ->
@@ -113,15 +113,20 @@ internal class ComponentsListener(
                     }
                 }
 
+                // Resume coroutines before deleting the component,
+                // as it will also delete the continuations (that we already consume anyway)
+                val evt = transformEvent(event, cancellableRateLimit)
+                resumeCoroutines(component, evt)
+
                 if (component.oneUse) {
-                    componentController.deleteComponent(component, throwTimeouts = false)
+                    // This shouldn't throw timeouts,
+                    // but no timeouts will be thrown as all continuations have been consumed
+                    // Thus, this helps see if an issue arises
+                    componentController.deleteComponent(component, throwTimeouts = true)
                 }
 
-                val evt = transformEvent(event, cancellableRateLimit)
                 when (component) {
                     is PersistentComponentData -> {
-                        resumeCoroutines(component, evt)
-
                         val (handlerName, userData) = component.handler ?: return@withRateLimit true
 
                         val descriptor = when (component.componentType) {
@@ -152,14 +157,11 @@ internal class ComponentsListener(
                         }
                     }
                     is EphemeralComponentData -> {
-                        resumeCoroutines(component, evt)
-
                         val ephemeralHandler = component.handler ?: return@withRateLimit true
 
                         @Suppress("UNCHECKED_CAST")
                         (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
                     }
-                    is ComponentGroupData -> throwInternal("Somehow received an interaction with a component ID that was a group")
                 }
 
                 true
