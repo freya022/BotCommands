@@ -163,7 +163,12 @@ class EventDispatcher internal constructor(
                 //Entry point will catch exception as it is the one dispatching the initialization events
                 throw e.cause!!
             }
+
+            if (e.cause is CancellationException) return
+
             printException(event, eventHandlerFunction, e)
+        } catch (_: CancellationException) {
+            // Ignore
         } catch (e: Throwable) {
             printException(event, eventHandlerFunction, e)
         }
