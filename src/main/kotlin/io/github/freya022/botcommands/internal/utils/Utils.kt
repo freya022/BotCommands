@@ -1,9 +1,6 @@
 package io.github.freya022.botcommands.internal.utils
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -44,8 +41,8 @@ internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V) {
 }
 
 internal inline fun CoroutineScope.launchCatching(
-    crossinline catchBlock: suspend (Throwable) -> Unit,
-    crossinline block: suspend () -> Unit
+    crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
+    crossinline block: suspend CoroutineScope.() -> Unit
 ): Job = launch {
     try {
         block()
@@ -56,8 +53,8 @@ internal inline fun CoroutineScope.launchCatching(
 
 internal inline fun CoroutineScope.launchCatchingDelayed(
     delay: Duration,
-    crossinline catchBlock: suspend (Throwable) -> Unit,
-    crossinline block: suspend () -> Unit
+    crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
+    crossinline block: suspend CoroutineScope.() -> Unit
 ): Job = launch {
     delay(delay)
     try {
