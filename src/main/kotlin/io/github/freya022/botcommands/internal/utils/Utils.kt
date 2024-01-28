@@ -44,11 +44,7 @@ internal inline fun CoroutineScope.launchCatching(
     crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
     crossinline block: suspend CoroutineScope.() -> Unit
 ): Job = launch {
-    try {
-        block()
-    } catch (e: Throwable) {
-        catchBlock(e)
-    }
+    runCatching(catchBlock, block)
 }
 
 internal inline fun CoroutineScope.launchCatchingDelayed(
@@ -57,9 +53,20 @@ internal inline fun CoroutineScope.launchCatchingDelayed(
     crossinline block: suspend CoroutineScope.() -> Unit
 ): Job = launch {
     delay(delay)
+    runCatching(catchBlock, block)
+}
+
+private suspend inline fun CoroutineScope.runCatching(
+    crossinline catchBlock: suspend (CoroutineScope, Throwable) -> Unit,
+    crossinline block: suspend (CoroutineScope) -> Unit
+) {
     try {
-        block()
+        block(this)
+    } catch (e: CancellationException) {
+        // Pass cancellation exceptions back,
+        // at worst JobSupport#cancelParent makes the exception ignored
+        throw e
     } catch (e: Throwable) {
-        catchBlock(e)
+        catchBlock(this, e)
     }
 }
