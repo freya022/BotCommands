@@ -23,7 +23,8 @@ private const val MAX_ID = Long.MAX_VALUE
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
 @BService
-internal class ModalMaps(private val context: BContext) {
+internal class ModalMaps(context: BContext) {
+    private val timeoutScope = context.coroutineScopesConfig.modalTimeoutScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val modalLock = ReentrantLock()
@@ -42,7 +43,7 @@ internal class ModalMaps(private val context: BContext) {
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
-                context.coroutineScopesConfig.modalTimeoutScope.launchCatchingDelayed(timeoutInfo.timeout, ::handleTimeoutException) {
+                timeoutScope.launchCatchingDelayed(timeoutInfo.timeout, { handleTimeoutException(it) }) {
                     val data = modalLock.withLock { modalMap.remove(id) }
                     if (data != null) { //If the timeout was reached without the modal being used
                         for (continuation in data.continuations) {

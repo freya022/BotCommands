@@ -14,10 +14,10 @@ import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -36,6 +36,7 @@ internal class TextCommandsListener internal constructor(
 ) {
     private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
+    private val scope = context.coroutineScopesConfig.textCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
@@ -66,28 +67,24 @@ internal class TextCommandsListener internal constructor(
 
         logger.trace { "Received text command: $msg" }
 
-        context.coroutineScopesConfig.textCommandsScope.launch {
-            try {
-                val isNotOwner = !context.config.isOwner(member.idLong)
+        scope.launchCatching({ handleException(event, it, msg) }) launch@{
+            val isNotOwner = !context.config.isOwner(member.idLong)
 
-                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
-                    // At this point no top level command was found,
-                    // if a subcommand wasn't matched, it would simply appear in the args
-                    onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
-                    return@launch
+            val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
+                // At this point no top level command was found,
+                // if a subcommand wasn't matched, it would simply appear in the args
+                onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
+                return@launch
+            }
+
+            logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
+
+            commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
+                if (!canRun(event, commandInfo, isNotOwner)) {
+                    false
+                } else {
+                    tryVariations(event, commandInfo, content, args, cancellableRateLimit)
                 }
-
-                logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
-
-                commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                    if (!canRun(event, commandInfo, isNotOwner)) {
-                        false
-                    } else {
-                        tryVariations(event, commandInfo, content, args, cancellableRateLimit)
-                    }
-                }
-            } catch (e: Throwable) {
-                handleException(event, e, msg)
             }
         }
     }

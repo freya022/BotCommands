@@ -5,11 +5,12 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
+import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -20,25 +21,30 @@ private val logger = KotlinLogging.logger { }
 internal class AutocompleteListener(private val context: BContext) {
     private val applicationContext = context.applicationCommandsContext
     private val scope = context.coroutineScopesConfig.applicationCommandsScope
+    private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
-    internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) = scope.launch {
-        val slashCommand = CommandPath.of(event.fullCommandName).let {
-            applicationContext.findLiveSlashCommand(event.guild, it)
-                // Ignore, if the user tries to use a command we don't know,
-                // it's going to be handled by the slash command handler
-                ?: return@launch onCommandNotFound(event)
-        }
+    internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
+        logger.trace { "Received autocomplete interaction for '${event.focusedOption.name}' on '${event.commandString}'" }
 
-        for (option in slashCommand.parameters.flatMap { it.allOptions }) {
-            if (option.optionType != OptionType.OPTION) continue
-            option as SlashCommandOption
+        scope.launchCatching({ handleException(it, event) }) launch@{
+            val slashCommand = CommandPath.of(event.fullCommandName).let {
+                applicationContext.findLiveSlashCommand(event.guild, it)
+                    // Ignore, if the user tries to use a command we don't know,
+                    // it's going to be handled by the slash command handler
+                    ?: return@launch onCommandNotFound(event)
+            }
 
-            if (option.discordName == event.focusedOption.name) {
-                val autocompleteHandler = option.autocompleteHandler
-                    ?: throwUser(option.kParameter.function, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+            for (option in slashCommand.parameters.flatMap { it.allOptions }) {
+                if (option.optionType != OptionType.OPTION) continue
+                option as SlashCommandOption
 
-                return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
+                if (option.discordName == event.focusedOption.name) {
+                    val autocompleteHandler = option.autocompleteHandler
+                        ?: throwUser(option.kParameter.function, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+
+                    return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
+                }
             }
         }
     }
@@ -64,5 +70,9 @@ internal class AutocompleteListener(private val context: BContext) {
 
         // Doesn't happen realistically, the exception only comes from replyChoices
         context.dispatchException("An uncaught exception occurred while replying autocomplete values for '${event.commandString}'", e)
+    }
+
+    private fun handleException(e: Throwable, event: CommandAutoCompleteInteractionEvent) {
+        exceptionHandler.handleException(event, e, "autocomplete in '${event.commandString}' for '${event.focusedOption.name}' with value '${event.focusedOption.value}'", emptyMap())
     }
 }

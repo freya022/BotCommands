@@ -15,13 +15,15 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+
+private val logger = KotlinLogging.logger {  }
 
 @BService
 internal class ApplicationCommandListener internal constructor(
@@ -29,7 +31,7 @@ internal class ApplicationCommandListener internal constructor(
     filters: List<ApplicationCommandFilter<Any>>,
     rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val scope = context.coroutineScopesConfig.applicationCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
@@ -44,23 +46,19 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${event.commandString}" }
 
-        context.coroutineScopesConfig.applicationCommandsScope.launch {
-            try {
-                val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
-                    context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                        ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
-                }
+        scope.launchCatching({ handleException(it, event) }) launch@{
+            val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
+                context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
+                    ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
+            }
 
-                val isNotOwner = !context.isOwner(event.user.idLong)
-                slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                    if (!canRun(event, slashCommand, isNotOwner)) {
-                        false
-                    } else {
-                        slashCommand.execute(event, cancellableRateLimit)
-                    }
+            val isNotOwner = !context.isOwner(event.user.idLong)
+            slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
+                if (!canRun(event, slashCommand, isNotOwner)) {
+                    false
+                } else {
+                    slashCommand.execute(event, cancellableRateLimit)
                 }
-            } catch (e: Throwable) {
-                handleException(e, event)
             }
         }
     }
@@ -69,23 +67,19 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${event.name}" }
 
-        context.coroutineScopesConfig.applicationCommandsScope.launch {
-            try {
-                val userCommand = event.name.let {
-                    context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
-                        ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
-                }
+        scope.launchCatching({ handleException(it, event) }) launch@{
+            val userCommand = event.name.let {
+                context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
+                    ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
+            }
 
-                val isNotOwner = !context.isOwner(event.user.idLong)
-                userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                    if (!canRun(event, userCommand, isNotOwner)) {
-                        false
-                    } else {
-                        userCommand.execute(event, cancellableRateLimit)
-                    }
+            val isNotOwner = !context.isOwner(event.user.idLong)
+            userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
+                if (!canRun(event, userCommand, isNotOwner)) {
+                    false
+                } else {
+                    userCommand.execute(event, cancellableRateLimit)
                 }
-            } catch (e: Throwable) {
-                handleException(e, event)
             }
         }
     }
@@ -94,23 +88,19 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${event.name}" }
 
-        context.coroutineScopesConfig.applicationCommandsScope.launch {
-            try {
-                val messageCommand = event.name.let {
-                    context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
-                        ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
-                }
+        scope.launchCatching({ handleException(it, event) }) launch@{
+            val messageCommand = event.name.let {
+                context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
+                    ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
+            }
 
-                val isNotOwner = !context.isOwner(event.user.idLong)
-                messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                    if (!canRun(event, messageCommand, isNotOwner)) {
-                        false
-                    } else {
-                        messageCommand.execute(event, cancellableRateLimit)
-                    }
+            val isNotOwner = !context.isOwner(event.user.idLong)
+            messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
+                if (!canRun(event, messageCommand, isNotOwner)) {
+                    false
+                } else {
+                    messageCommand.execute(event, cancellableRateLimit)
                 }
-            } catch (e: Throwable) {
-                handleException(e, event)
             }
         }
     }

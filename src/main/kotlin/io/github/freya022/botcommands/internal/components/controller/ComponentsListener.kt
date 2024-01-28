@@ -16,7 +16,6 @@ import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
-import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -38,7 +37,6 @@ import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -46,6 +44,8 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 @Dependencies(Components::class, InternalDatabase::class)
@@ -55,10 +55,9 @@ internal class ComponentsListener(
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
     private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
-    private val coroutinesScopesConfig: BCoroutineScopesConfig,
     private val componentHandlerContainer: ComponentHandlerContainer
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val scope = context.coroutineScopesConfig.componentScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
@@ -70,10 +69,10 @@ internal class ComponentsListener(
     }
 
     @BEventListener
-    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentScope.launch {
-        try {
-            logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
+    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
+        logger.trace { "Received ${event.componentType} interaction: ${event.component}" }
 
+        scope.launchCatching({ handleException(event, it) }) launch@{
             val componentId = event.componentId.toIntOrNull()
                 ?: return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
                         "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
@@ -166,8 +165,6 @@ internal class ComponentsListener(
 
                 true
             }
-        } catch (e: Throwable) {
-            handleException(event, e)
         }
     }
 
