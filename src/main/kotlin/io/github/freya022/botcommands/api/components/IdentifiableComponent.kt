@@ -4,7 +4,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 interface IdentifiableComponent {
-    fun getId(): String?
+    fun getId(): String
 
     /**
      * Suspends until the component is used and all checks passed, and returns the event.

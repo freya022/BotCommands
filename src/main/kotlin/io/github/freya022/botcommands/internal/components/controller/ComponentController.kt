@@ -101,7 +101,7 @@ internal class ComponentController(
     @Suppress("UNCHECKED_CAST")
     internal suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
         return suspendCancellableCoroutine { continuation ->
-            val componentId = component.getId()!!.toInt()
+            val componentId = component.getId().toInt()
             putContinuation(componentId, continuation)
 
             continuation.invokeOnCancellation {

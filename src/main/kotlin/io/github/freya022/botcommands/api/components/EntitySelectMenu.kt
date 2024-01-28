@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 class EntitySelectMenu internal constructor(
@@ -11,6 +12,8 @@ class EntitySelectMenu internal constructor(
     override fun withDisabled(disabled: Boolean): EntitySelectMenu {
         return EntitySelectMenu(componentController, super.withDisabled(disabled))
     }
+
+    override fun getId(): String = selectMenu.id ?: throwInternal("BC components cannot have null IDs")
 
     @JvmSynthetic
     override suspend fun await(): EntitySelectEvent = componentController.awaitComponent(this)
