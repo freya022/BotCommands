@@ -1,30 +1,40 @@
-package io.github.freya022.botcommands.api.commands.text;
+package io.github.freya022.botcommands.api.commands.text
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
-import io.github.freya022.botcommands.api.core.service.annotations.BService;
-import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
-import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 
 /**
- * Interface which needs to be implemented by the help command.
- * <br>This lets the framework use the command to also display help about specific commands
+ * Must be implemented by your custom help command.
  *
- * <p>You can implement a help command just like a normal command, but it has to implement this interface.
+ * If an implementation of that interface is found, it replaces the built-in help command.
  *
- * <p>
- * <b>Usage</b>: Register your instance as a service with {@link BService}
- * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ * This lets the framework use the command to also display help about specific commands.
+ *
+ * **Usage**: Register your instance as a service with [@BService][BService]
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = false)
-public interface IHelpCommand {
-	/**
-	 * Is fired when a command is recognized, but the arguments cannot be resolved on any of the command variations.
-	 *
-	 * @param event       The event of the current command invocation
-	 * @param commandInfo The command info of the command which the user tried to use
-	 */
-	void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull TextCommandInfo commandInfo);
+interface IHelpCommand {
+    /**
+     * Fired when a command is recognized, but the arguments do not correspond to any command variation.
+     *
+     * @param event       The event of the current command invocation
+     * @param commandInfo The command info of the command which the user tried to use
+     */
+    fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo): Unit =
+        throw NotImplementedError("${this.javaClass.simpleName} must implement the 'onInvalidCommand' or 'onInvalidCommandSuspend' method")
+
+    /**
+     * Fired when a command is recognized, but the arguments do not correspond to any command variation.
+     *
+     * @param event       The event of the current command invocation
+     * @param commandInfo The command info of the command which the user tried to use
+     */
+    @JvmSynthetic
+    suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo): Unit =
+        onInvalidCommand(event, commandInfo)
 }

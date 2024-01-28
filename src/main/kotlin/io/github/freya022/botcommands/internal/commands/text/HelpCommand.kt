@@ -22,7 +22,6 @@ import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpaced
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -82,10 +81,8 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         sendCommandHelp(event, commandInfo, temporary = false)
     }
 
-    override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
-        context.coroutineScopesConfig.textCommandsScope.launch {
-            sendCommandHelp(event, commandInfo, temporary = true)
-        }
+    override suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
+        sendCommandHelp(event, commandInfo, temporary = true)
     }
 
     private suspend fun sendGlobalHelp(event: BaseCommandEvent) {

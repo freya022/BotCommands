@@ -122,7 +122,7 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, "", cancellableRateLimit), commandInfo)
+        helpCommand?.onInvalidCommandSuspend(BaseCommandEventImpl(context, event, "", cancellableRateLimit), commandInfo)
         return false
     }
 

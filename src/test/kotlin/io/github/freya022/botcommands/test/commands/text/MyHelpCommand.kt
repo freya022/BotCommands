@@ -19,7 +19,7 @@ object HelpCondition : ConditionalServiceChecker {
 @ConditionalService(HelpCondition::class)
 class MyHelpCommand : IHelpCommand {
     //Only triggered when an existing command is misused
-    override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
+    override suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
         event.respond("My help content").queue()
     }
 }
@@ -29,7 +29,7 @@ class MyHelpCommand : IHelpCommand {
 @ConditionalService(HelpCondition::class)
 class MyHelpCommand2 : IHelpCommand {
     //Only triggered when an existing command is misused
-    override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
+    override suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
         event.respond("My help content").queue()
     }
 }
