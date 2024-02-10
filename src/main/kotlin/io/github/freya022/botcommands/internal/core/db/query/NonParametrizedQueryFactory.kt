@@ -11,7 +11,7 @@ internal object NonParametrizedQueryFactory : ParametrizedQueryFactory<NonParame
         override fun clear() { }
         override fun addValue(index: Int, value: Any?) { }
 
-        override fun toSql(): String = sql
+        override fun toSql(): String = removeCommentsAndInline(sql)
     }
 
     override fun isSupported(connection: Connection, databaseMetaData: DatabaseMetaData): Boolean = true
