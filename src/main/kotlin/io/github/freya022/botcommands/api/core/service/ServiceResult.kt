@@ -25,6 +25,7 @@ class ServiceError private constructor(
         NO_USABLE_PROVIDER("A provider was found but is not usable"),
         NON_UNIQUE_PROVIDERS("Multiple providers were found but none were marked as primary"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
+        PROVIDER_RETURNED_NULL("The service provider returned no service"),
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
         UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),
         FAILED_CONDITION("At least one check returned an error message"),
@@ -108,7 +109,7 @@ class ServiceResult<T : Any> private constructor(val service: T?, val serviceErr
 
     fun getOrThrow(): T = when {
         service != null -> service
-        serviceError != null -> throwService(serviceError.errorMessage)
+        serviceError != null -> throwService(serviceError)
         else -> throwInternal("ServiceResult should contain either the service or the error message")
     }
 

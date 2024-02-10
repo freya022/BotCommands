@@ -54,7 +54,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                 when (serviceError.errorType) {
                     UNKNOWN -> throwInternal(serviceError.errorMessage)
 
-                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, NON_UNIQUE_PROVIDERS, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER, FAILED_FATAL_CUSTOM_CONDITION ->
+                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, NON_UNIQUE_PROVIDERS, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER, PROVIDER_RETURNED_NULL, FAILED_FATAL_CUSTOM_CONDITION ->
                         throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 
                     UNAVAILABLE_DEPENDENCY, NO_USABLE_PROVIDER, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {

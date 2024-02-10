@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.utils
 
+import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import java.lang.reflect.InvocationTargetException
@@ -24,6 +25,9 @@ internal fun rethrowUser(message: String, e: Throwable): Nothing =
 
 internal fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
+
+internal fun throwService(serviceError: ServiceError): Nothing =
+    throw ServiceException("\n${serviceError.toDetailedString()}")
 
 internal fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
     null -> throw ServiceException(message)

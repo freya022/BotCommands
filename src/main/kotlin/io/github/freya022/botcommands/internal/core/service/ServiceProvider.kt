@@ -8,10 +8,27 @@ import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.createSingleton
+import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.Set
+import kotlin.collections.buildSet
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.hashMapOf
+import kotlin.collections.intersect
+import kotlin.collections.isNotEmpty
+import kotlin.collections.joinToString
+import kotlin.collections.onEach
+import kotlin.collections.plus
+import kotlin.collections.plusAssign
+import kotlin.collections.set
+import kotlin.collections.setOf
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -166,9 +183,8 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     return null
 }
 
-internal inline fun <T> measureTimedInstantiation(block: () -> T): TimedInstantiation {
+internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedInstantiation {
     val (value, duration) = measureTimedValue(block)
-    if (value == null) throw NullPointerException("Timed instantiation block returned null")
     return TimedInstantiation(ServiceResult.pass(value), duration)
 }
 
@@ -178,13 +194,8 @@ internal inline fun <T : Any?> measureNullableTimedInstantiation(block: () -> T)
     return TimedInstantiation(ServiceResult.pass(value), duration)
 }
 
-internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
-    if (serviceError != null) {
-        return TimedInstantiation(this, Duration.INFINITE)
-    } else {
-        throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
-    }
-}
+internal fun ServiceError.toFailedTimedInstantiation(): TimedInstantiation =
+    TimedInstantiation(ServiceResult.fail<Any>(this), Duration.INFINITE)
 
 internal fun KFunction<*>.checkConstructingFunction(serviceContainer: ServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
@@ -234,7 +245,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceCont
         params[it] = dependencyResult.service ?: when {
             it.type.isMarkedNullable -> null
             it.isOptional -> return@forEach
-            else -> return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
+            else -> return ErrorType.UNAVAILABLE_PARAMETER.toError(
                 "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
                 failedFunction = this,
                 nestedError = dependencyResult.serviceError
@@ -242,7 +253,13 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceCont
         }
     }
 
-    return measureTimedInstantiation { this.callStatic(serviceContainer, params) }
+    return measureTimedInstantiation {
+        this.callStatic(serviceContainer, params)
+            ?: return ErrorType.PROVIDER_RETURNED_NULL.toError(
+                errorMessage = "Service factory returned null",
+                failedFunction = this
+            ).toFailedTimedInstantiation()
+    }
 }
 
 internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
