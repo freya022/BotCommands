@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.db.query
 
+private val commentRegex = Regex("""--(?!.* ')""")
+
 /**
  * Represents an SQL query with parameters.
  *
@@ -25,4 +27,13 @@ interface ParametrizedQuery {
      * Constructs the SQL query out of the previously registered parameters.
      */
     fun toSql(): String
+
+    fun removeCommentsAndInline(sql: String): String {
+        return sql.lines()
+            .map {
+                val endIndex = commentRegex.find(it)?.range?.start ?: it.length
+                it.substring(0, endIndex)
+            }
+            .joinToString(" ") { it.trim() }
+    }
 }

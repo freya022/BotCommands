@@ -11,8 +11,6 @@ import java.sql.Date as SqlDate
 import java.sql.Time as SqlTime
 import java.sql.Timestamp as SqlTimestamp
 
-private val commentRegex = Regex("""--(?!.* ')""")
-
 abstract class AbstractParametrizedQuery(protected val preparedStatement: PreparedStatement) : ParametrizedQuery {
     protected open fun formatParameter(value: Any?): String {
         if (value == null) return "NULL"
@@ -50,13 +48,4 @@ abstract class AbstractParametrizedQuery(protected val preparedStatement: Prepar
 
     private fun DateTimeFormatter.formatSqlDate(temporal: TemporalAccessor) =
         preparedStatement.enquoteLiteral(format(temporal))
-
-    protected open fun removeCommentsAndInline(sql: String): String {
-        return sql.lines()
-            .map {
-                val endIndex = commentRegex.find(it)?.range?.start ?: it.length
-                it.substring(0, endIndex)
-            }
-            .joinToString(" ") { it.trim() }
-    }
 }
