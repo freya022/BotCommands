@@ -14,21 +14,7 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.createSingleton
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.collections.List
-import kotlin.collections.MutableMap
-import kotlin.collections.Set
-import kotlin.collections.buildSet
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.hashMapOf
-import kotlin.collections.intersect
-import kotlin.collections.isNotEmpty
-import kotlin.collections.joinToString
-import kotlin.collections.onEach
-import kotlin.collections.plus
-import kotlin.collections.plusAssign
 import kotlin.collections.set
-import kotlin.collections.setOf
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -221,19 +207,26 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: ServiceCon
  */
 internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
     val type = parameter.type
-    val name = parameter.findAnnotation<ServiceName>()?.value
-    return if (name != null) {
-        when (type.jvmErasure) {
-            Lazy::class -> null //Lazy exception
-            List::class -> null //Might be empty if no service were available, which is ok
-            else -> canCreateService(name, type.jvmErasure)
-        }
+    if (type.jvmErasure == Lazy::class) {
+        return null //Lazy exception
+    } else if (type.jvmErasure == List::class) {
+        return null //Might be empty if no service were available, which is ok
+    }
+
+    val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
+    return if (requestedMandatoryName != null) {
+        canCreateService(requestedMandatoryName, type.jvmErasure)
     } else {
-        when (type.jvmErasure) {
-            Lazy::class -> null //Lazy exception
-            List::class -> null //Might be empty if no service were available, which is ok
-            else -> canCreateService(type.jvmErasure)
+        val serviceErrorByParameterName = parameter.name?.let { parameterName ->
+            canCreateService(parameterName, type.jvmErasure)
         }
+
+        // Try to get a service with the parameter name
+        if (serviceErrorByParameterName == null)
+            return null
+
+        // If no service by parameter name was found, try by type
+        canCreateService(type.jvmErasure)
     }
 }
 

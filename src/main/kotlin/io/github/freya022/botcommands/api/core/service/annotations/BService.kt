@@ -18,7 +18,12 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  *
  * Classes annotated with [service annotations][BServiceConfigBuilder.serviceAnnotations]
  * can be injected into other service classes.
- * You can also request a named instance of a class by using [@ServiceName][ServiceName].
+ *
+ * In most cases, the services you retrieve will be type-matched, however, here is how they are looked up:
+ * - If [@ServiceName][ServiceName] is used: Finds a service with the same name and satisfying type.
+ * - If a parameter name is available (native in Kotlin, requires the `-parameters` compiler arg in Java):
+ * Finds a service with the same name and a satisfying type.
+ * - In other cases, a service with a satisfying type will be returned.
  *
  * #### Primary providers
  *
