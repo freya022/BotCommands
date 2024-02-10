@@ -17,10 +17,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.Version
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDAInfo
-import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -70,11 +68,7 @@ object BotCommands {
 
     private fun getDefaultManager(): CoroutineEventManager {
         val scope = getDefaultScope()
-        return CoroutineEventManager(scope, 1.minutes).apply {
-            listener<ShutdownEvent> {
-                scope.cancel()
-            }
-        }
+        return CoroutineEventManager(scope, 1.minutes)
     }
 
     private fun build(manager: CoroutineEventManager, config: BConfig): BContext {
