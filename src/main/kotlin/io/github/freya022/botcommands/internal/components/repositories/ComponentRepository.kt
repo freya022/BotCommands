@@ -21,7 +21,6 @@ import io.github.freya022.botcommands.internal.components.handler.EphemeralHandl
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
-import io.github.freya022.botcommands.internal.utils.rethrowUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -30,7 +29,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import net.dv8tion.jda.api.Permission
-import java.sql.SQLException
 import java.sql.Timestamp
 
 @BService
@@ -56,15 +54,7 @@ internal class ComponentRepository(
     fun createComponent(builder: BaseComponentBuilder<*>): Int = runBlocking {
         database.transactional {
             // Create base component
-            val componentId: Int =
-                preparedStatement(
-                    "insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?)",
-                    columnNames = arrayOf("component_id")
-                ) {
-                    executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
-                        .readOrNull()
-                        ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
-                }
+            val componentId: Int = insertBaseComponent(builder.componentType, builder.lifetimeType, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
 
             // Add constraints
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
@@ -153,22 +143,7 @@ internal class ComponentRepository(
     }
 
     suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
-        val groupId: Int = runCatching {
-            preparedStatement(
-                """
-                insert into bc_component (component_type, lifetime_type, one_use, filters)
-                VALUES (?, ?, false, '{}')
-                """.trimIndent(),
-                columnNames = arrayOf("component_id")
-            ) {
-                executeReturningUpdate(ComponentType.GROUP.key, builder.lifetimeType.key).readOrNull()!!
-                    .get<Int>("component_id")
-            }
-        }.onFailure {
-            if (it is SQLException && it.errorCode == 23523) { //foreign_key_violation, the component does not exist
-                rethrowUser("Attempted to put a group ID to an external component: ${it.message}", it)
-            }
-        }.getOrThrow()
+        val groupId: Int = insertBaseComponent(ComponentType.GROUP, builder.lifetimeType, false, null, emptyArray())
 
         // Add timeout
         insertTimeoutData(builder, groupId)
@@ -194,6 +169,22 @@ internal class ComponentRepository(
         }
 
         return@transactional groupId
+    }
+
+    context(Transaction)
+    private suspend fun insertBaseComponent(
+        componentType: ComponentType,
+        lifetimeType: LifetimeType,
+        oneUse: Boolean,
+        rateLimitGroup: String?,
+        filterNames: Array<out String>
+    ): Int = preparedStatement(
+        "insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?)",
+        columnIndexes = intArrayOf(1)
+    ) {
+        executeReturningUpdate(componentType.key, lifetimeType.key, oneUse, rateLimitGroup, filterNames)
+            .read()
+            .getInt(1)
     }
 
     context(Transaction)
