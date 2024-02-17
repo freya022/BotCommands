@@ -180,15 +180,15 @@ class Components internal constructor(private val componentController: Component
         EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
-        EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever()).apply(block).build()
+    inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: (EphemeralButtonBuilder) -> Unit) =
+        ephemeralButton(style, label, emoji).apply(block).build()
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent) =
         ephemeralButton(style, content.text, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<EphemeralButtonBuilder>) =
+    inline fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: (EphemeralButtonBuilder) -> Unit) =
         ephemeralButton(style, content.text, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
@@ -198,15 +198,15 @@ class Components internal constructor(private val componentController: Component
         PersistentStringSelectBuilder(componentController, InstanceRetriever())
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @JvmSynthetic
-    fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
-        PersistentStringSelectBuilder(componentController, InstanceRetriever()).apply(block).build()
+    inline fun persistentStringSelectMenu(block: (PersistentStringSelectBuilder) -> Unit) =
+        persistentStringSelectMenu().apply(block).build()
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     fun persistentEntitySelectMenu(target: SelectTarget) =
         persistentEntitySelectMenu(enumSetOf(target))
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    fun persistentEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
+    inline fun persistentEntitySelectMenu(target: SelectTarget, block: (PersistentEntitySelectBuilder) -> Unit) =
         persistentEntitySelectMenu(enumSetOf(target), block)
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
@@ -214,8 +214,8 @@ class Components internal constructor(private val componentController: Component
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
-        PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever()).apply(block).build()
+    inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: (PersistentEntitySelectBuilder) -> Unit) =
+        persistentEntitySelectMenu(targets).apply(block).build()
 
     // -------------------- Ephemeral select menus --------------------
 
@@ -224,15 +224,15 @@ class Components internal constructor(private val componentController: Component
         EphemeralStringSelectBuilder(componentController, InstanceRetriever())
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @JvmSynthetic
-    fun ephemeralStringSelectMenu(block: ReceiverConsumer<EphemeralStringSelectBuilder>) =
-        EphemeralStringSelectBuilder(componentController, InstanceRetriever()).apply(block).build()
+    inline fun ephemeralStringSelectMenu(block: (EphemeralStringSelectBuilder) -> Unit) =
+        ephemeralStringSelectMenu().apply(block).build()
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     fun ephemeralEntitySelectMenu(target: SelectTarget) =
         ephemeralEntitySelectMenu(enumSetOf(target))
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    fun ephemeralEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
+    inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: (EphemeralEntitySelectBuilder) -> Unit) =
         ephemeralEntitySelectMenu(enumSetOf(target), block)
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
@@ -240,8 +240,8 @@ class Components internal constructor(private val componentController: Component
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
-        EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever()).apply(block).build()
+    inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: (EphemeralEntitySelectBuilder) -> Unit) =
+        ephemeralEntitySelectMenu(targets).apply(block).build()
 
     @JvmName("deleteComponentsById")
     fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
