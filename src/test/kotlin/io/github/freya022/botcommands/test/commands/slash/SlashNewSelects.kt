@@ -77,7 +77,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             addOption("Bar", "Bar")
         }
 
-        components.newPersistentGroup(firstSelect, secondSelect) {
+        components.persistentGroup(firstSelect, secondSelect) {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstSelect
@@ -93,7 +93,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             bindTo { evt -> evt.reply_("Ephemeral select menu clicked", ephemeral = true).queue() }
         }
 
-        components.newEphemeralGroup(firstSelect) {
+        components.ephemeralGroup(firstSelect) {
             timeout(15.seconds) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.builder.IComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
+import kotlinx.coroutines.runBlocking
 
 sealed class ComponentGroupBuilder<T : ComponentGroupBuilder<T>>(
     private val componentController: ComponentController,
@@ -17,8 +18,11 @@ sealed class ComponentGroupBuilder<T : ComponentGroupBuilder<T>>(
     @get:JvmSynthetic
     internal val componentIds = components.map { it.getId().toInt() }
 
+    fun build(): ComponentGroup = runBlocking { buildSuspend() }
+
     @JvmSynthetic
-    internal suspend fun build(): ComponentGroup {
+    @PublishedApi
+    internal suspend fun buildSuspend(): ComponentGroup {
         return componentController.insertGroup(this)
     }
 }

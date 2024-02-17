@@ -96,7 +96,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
         }
 
-        components.newPersistentGroup(firstButton, secondButton) {
+        components.persistentGroup(firstButton, secondButton) {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
         }
         return firstButton
@@ -110,7 +110,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
         }
 
-        components.newEphemeralGroup(firstButton) {
+        components.ephemeralGroup(firstButton) {
             timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
