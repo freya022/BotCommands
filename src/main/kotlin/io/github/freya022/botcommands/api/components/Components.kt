@@ -165,12 +165,21 @@ class Components internal constructor(private val componentController: Component
     // -------------------- Persistent buttons --------------------
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @JvmOverloads
+    fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
+        PersistentButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @JvmSynthetic
+    inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: (PersistentButtonBuilder) -> Unit) =
+        persistentButton(style, label, emoji).apply(block).build()
+
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun persistentButton(style: ButtonStyle, content: ButtonContent) =
         PersistentButtonBuilder(style, componentController, content.text, content.emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
-        PersistentButtonBuilder(style, componentController, label, emoji, InstanceRetriever()).apply(block).build()
+    inline fun persistentButton(style: ButtonStyle, content: ButtonContent, block: (PersistentButtonBuilder) -> Unit) =
+        persistentButton(style, content).apply(block).build()
 
     // -------------------- Ephemeral buttons --------------------
 
