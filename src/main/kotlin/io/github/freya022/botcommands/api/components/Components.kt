@@ -52,81 +52,93 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * ### Java example
  * ```java
  * @Command
- * public class SlashButton extends ApplicationCommand {
- *     private static final String BUTTON_LISTENER_NAME = "SlashButton: persistentButton"; //ClassName: theButtonPurpose
+ * public class SlashSayAgain extends ApplicationCommand {
+ *     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgain: saySentenceButton";
  *
- *     private final Components componentsService;
+ *     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
+ *     public void onSlashSayAgain(
+ *             GuildSlashEvent event,
+ *             @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) String sentence,
+ *             Components componentsService
+ *     ) {
+ *         // A button that always works, even after a restart
+ *         final var persistentSaySentenceButton = componentsService.persistentButton(ButtonStyle.SECONDARY, "Say '" + sentence + "'")
+ *                 // Make sure only the caller can use the button
+ *                 .addUsers(event.getUser())
+ *                 // The method annotated with a JDAButtonListener of the same name will get called,
+ *                 // with the sentence as the argument
+ *                 .bindTo(SAY_SENTENCE_HANDLER_NAME, sentence)
+ *                 .build();
  *
- *     public SlashButton(Components componentsService) {
- *         this.componentsService = componentsService;
- *     }
+ *         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
+ *         AtomicReference<Button> temporaryButtonRef = new AtomicReference<>();
+ *         final var temporarySaySentenceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Say '" + sentence + "'")
+ *                 // Make sure only the caller can use the button
+ *                 .addUsers(event.getUser())
+ *                 // The code to run when the button gets clicked
+ *                 .bindTo(buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).queue())
+ *                 // Disables this button after 10 seconds
+ *                 .timeout(Duration.ofSeconds(10), () -> {
+ *                     final var newRow = ActionRow.of(persistentSaySentenceButton, temporaryButtonRef.get().asDisabled());
+ *                     event.getHook().editOriginalComponents(newRow).queue();
+ *                 })
+ *                 .build();
+ *         temporaryButtonRef.set(temporarySaySentenceButton); // We have to do this to get the button in our timeout handler
  *
- *     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
- *     public void onSlashButton(GuildSlashEvent event) {
- *         final List<Button> components = new ArrayList<>();
- *
- *         components.add(componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds", builder -> {
- *             builder.timeout(5, TimeUnit.SECONDS, () -> {
- *                 event.getHook()
- *                         .editOriginalComponents(ActionRow.of(
- *                                 components.stream().map(Button::asDisabled).collect(Collectors.toList())
- *                         ))
- *                         .queue();
- *             });
- *
- *             builder.bindTo(buttonEvent -> {
- *                 buttonEvent.editButton(buttonEvent.getButton().asDisabled()).queue();
- *             });
- *         }));
- *
- *         components.add(componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime", builder -> {
- *             builder.bindTo(BUTTON_LISTENER_NAME);
- *         }));
- *
- *         event.replyComponents(ActionRow.of(components))
- *                 .setContent(TimeFormat.RELATIVE.format(Instant.now().plus(Duration.ofSeconds(5))))
- *                 .setEphemeral(true)
+ *         event.reply("The first button always works, and the second button gets disabled after 10 seconds")
+ *                 .addActionRow(persistentSaySentenceButton, temporarySaySentenceButton)
  *                 .queue();
  *     }
  *
- *     @JDAButtonListener(name = BUTTON_LISTENER_NAME)
- *     public void onPersistentButtonClick(ButtonEvent event) {
- *         event.editButton(event.getButton().asDisabled()).queue();
+ *     @JDAButtonListener(SAY_SENTENCE_HANDLER_NAME)
+ *     public void onSaySentenceClick(ButtonEvent event, String sentence) {
+ *         event.reply(sentence).setEphemeral(true).queue();
  *     }
  * }
  * ```
  *
  * ### Kotlin example
  * ```kt
- * private const val buttonListenerName = "SlashButton: persistentButton" //ClassName: theButtonPurpose
- *
  * @Command
- * class SlashButton(private val componentsService: Components) : ApplicationCommand() {
- *     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
- *     fun onSlashButton(event: GuildSlashEvent) {
- *         val components: MutableList<Button> = arrayListOf()
- *         components += componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds") {
- *             timeout(5.seconds) {
- *                 event.hook.editOriginalComponents(components.map(Button::asDisabled).row()).queue()
- *             }
- *             bindTo { buttonEvent ->
- *                 buttonEvent.editButton(buttonEvent.button.asDisabled()).await() // Coroutines!
+ * class SlashSayAgain : ApplicationCommand() {
+ *     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
+ *     fun onSlashSayAgain(
+ *         event: GuildSlashEvent,
+ *         @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) sentence: String,
+ *         componentsService: Components
+ *     ) {
+ *         // A button that always works, even after a restart
+ *         val persistentSaySentenceButton = componentsService.persistentButton(ButtonStyle.SECONDARY, "Say '$sentence'") {
+ *             // Make sure only the caller can use the button
+ *             constraints += event.user
+ *
+ *             // In Kotlin, you can use callable references,
+ *             // which enables you to use persistent callbacks in a type-safe manner
+ *             bindTo(::onSaySentenceClick, sentence)
+ *         }
+ *
+ *         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
+ *         // We have to use lateinit as the button is used in a callback
+ *         lateinit var temporarySaySentenceButton: Button
+ *         temporarySaySentenceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Say '$sentence'") {
+ *             // The code to run when the button gets clicked
+ *             bindTo { buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).await() }
+ *
+ *             // Disables this button after 10 seconds
+ *             timeout(10.seconds) {
+ *                 val newRow = ActionRow.of(persistentSaySentenceButton, temporarySaySentenceButton.asDisabled())
+ *                 event.hook.editOriginalComponents(newRow).await() // Coroutines!
  *             }
  *         }
  *
- *         components += componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime") {
- *             bindTo(buttonListenerName)
- *         }
- *
- *         event.replyComponents(listOf(components.row()))
- *             .setContent(TimeFormat.RELATIVE.format(Instant.now() + 5.seconds.toJavaDuration()))
- *             .setEphemeral(true)
+ *         event.reply("The first button always works, and the second button gets disabled after 10 seconds")
+ *             .addActionRow(persistentSaySentenceButton, temporarySaySentenceButton)
  *             .queue()
  *     }
  *
- *     @JDAButtonListener(name = buttonListenerName)
- *     suspend fun onPersistentButtonClick(event: ButtonEvent) {
- *         event.editButton(event.button.asDisabled()).await()
+ *     @JDAButtonListener("SlashSayAgain: saySentenceButton")
+ *     suspend fun onSaySentenceClick(event: ButtonEvent, sentence: String) {
+ *         event.reply(sentence).setEphemeral(true).await()
  *     }
  * }
  * ```
