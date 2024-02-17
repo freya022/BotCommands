@@ -148,11 +148,14 @@ internal class ComponentRepository(
         // Add timeout
         insertTimeoutData(builder, groupId)
 
-        (builder.componentIds + groupId).forEach { componentId ->
+        // Associate group id to its components, and group id to itself
+        suspend fun insertComponentGroupAssociation(componentId: Int) {
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
         }
+        builder.componentIds.forEach { componentId -> insertComponentGroupAssociation(componentId) }
+        insertComponentGroupAssociation(groupId)
 
         // Check if components inside the group have timeouts
         val hasTimeouts: Boolean = preparedStatement(

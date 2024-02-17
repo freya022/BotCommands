@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.components
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
-import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.EphemeralComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.PersistentComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
@@ -142,22 +141,22 @@ class Components internal constructor(private val componentController: Component
     // -------------------- Persistent groups --------------------
 
     fun newPersistentGroup(block: ReceiverConsumer<PersistentComponentGroupBuilder>, vararg components: IdentifiableComponent): ComponentGroup = runBlocking {
-        createGroup({ PersistentComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
+        PersistentComponentGroupBuilder(componentController, components, InstanceRetriever()).apply(block).build()
     }
 
     @JvmSynthetic
     suspend fun newPersistentGroup(vararg components: IdentifiableComponent, block: ReceiverConsumer<PersistentComponentGroupBuilder>): ComponentGroup =
-        createGroup({ PersistentComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
+        PersistentComponentGroupBuilder(componentController, components, InstanceRetriever()).apply(block).build()
 
     // -------------------- Ephemeral groups --------------------
 
     fun newEphemeralGroup(block: ReceiverConsumer<EphemeralComponentGroupBuilder>, vararg components: IdentifiableComponent): ComponentGroup = runBlocking {
-        createGroup({ EphemeralComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
+        EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever()).apply(block).build()
     }
 
     @JvmSynthetic
     suspend fun newEphemeralGroup(vararg components: IdentifiableComponent, block: ReceiverConsumer<EphemeralComponentGroupBuilder>): ComponentGroup =
-        createGroup({ EphemeralComponentGroupBuilder(it, InstanceRetriever()).apply(block) }, components)
+        EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever()).apply(block).build()
 
     // -------------------- Persistent buttons --------------------
 
@@ -255,13 +254,6 @@ class Components internal constructor(private val componentController: Component
     @JvmSynthetic
     suspend fun deleteComponentsById(ids: Collection<String>) {
         componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() }, throwTimeouts = false)
-    }
-
-    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder<*>, components: Array<out IdentifiableComponent>): ComponentGroup {
-        return components
-            .map { it.getId().toInt() }
-            .let { componentIds -> factory(componentIds) }
-            .let { componentController.insertGroup(it) }
     }
 
     internal companion object : ConditionalServiceChecker {
