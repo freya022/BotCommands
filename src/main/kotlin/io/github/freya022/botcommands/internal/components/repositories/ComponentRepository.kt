@@ -154,14 +154,19 @@ internal class ComponentRepository(
             }
         }
 
-        // Check if components inside group have timeouts
+        // Check if components inside the group have timeouts
         val hasTimeouts: Boolean = preparedStatement(
             """
-            select count(*) > 0 as "exists"
-            from bc_persistent_timeout pt cross join bc_ephemeral_timeout et
-            where pt.component_id = any (?)""".trimIndent()
+                select count(*) > 0
+                from (select component_id
+                      from bc_persistent_timeout
+                      union all
+                      select component_id
+                      from bc_ephemeral_timeout) as timeouted_components
+                where component_id = any (?);
+            """.trimIndent()
         ) {
-            executeQuery(builder.componentIds.toTypedArray()).readOrNull()!!["exists"]
+            executeQuery(builder.componentIds.toTypedArray()).read().getBoolean(1)
         }
 
         if (hasTimeouts) {
