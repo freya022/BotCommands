@@ -84,7 +84,7 @@ internal class ComponentController(
     suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
         deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
-    suspend fun insertGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
+    suspend fun createGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
         return componentRepository.insertGroup(group)
             .also { id ->
                 val timeout = group.timeout ?: return@also

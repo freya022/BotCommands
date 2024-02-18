@@ -23,6 +23,6 @@ sealed class ComponentGroupBuilder<T : ComponentGroupBuilder<T>>(
     @JvmSynthetic
     @PublishedApi
     internal suspend fun buildSuspend(): ComponentGroup {
-        return componentController.insertGroup(this)
+        return componentController.createGroup(this)
     }
 }
