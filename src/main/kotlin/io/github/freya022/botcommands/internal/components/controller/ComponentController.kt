@@ -27,6 +27,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
+private const val PREFIX = "BotCommands-Components-"
+private const val PREFIX_LENGTH = PREFIX.length
+
 @BService
 @Dependencies(ComponentRepository::class)
 internal class ComponentController(
@@ -46,7 +49,12 @@ internal class ComponentController(
         runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
     }
 
-    fun createComponent(builder: BaseComponentBuilder<*>): String {
+    inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {
+        val internalId = createComponent(builder)
+        return block(internalId, getComponentId(internalId))
+    }
+
+    private fun createComponent(builder: BaseComponentBuilder<*>): Int {
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
                 "Rate limit group '$rateLimitGroup' was not registered using ${annotationRef<RateLimitDeclaration>()}"
@@ -66,20 +74,23 @@ internal class ComponentController(
             }
         }
 
-        return componentRepository.createComponent(builder).also { id ->
-            val timeout = builder.timeout ?: return@also
-            timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
-        }.toString()
+        return componentRepository.createComponent(builder)
+            .also { id ->
+                val timeout = builder.timeout ?: return@also
+                timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
+            }
     }
 
     suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
-        deleteComponentsById(listOf(component.componentId), throwTimeouts)
+        deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
     suspend fun insertGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
-        return componentRepository.insertGroup(group).also { id ->
-            val timeout = group.timeout ?: return@also
-            timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
-        }.let { id -> ComponentGroup(this, id.toString()) }
+        return componentRepository.insertGroup(group)
+            .also { id ->
+                val timeout = group.timeout ?: return@also
+                timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
+            }
+            .let { id -> ComponentGroup(this, id) }
     }
 
     suspend fun deleteComponentsById(ids: List<Int>, throwTimeouts: Boolean) {
@@ -101,12 +112,20 @@ internal class ComponentController(
     @Suppress("UNCHECKED_CAST")
     internal suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
         return suspendCancellableCoroutine { continuation ->
-            val componentId = component.getId().toInt()
+            val componentId = component.internalId
             putContinuation(componentId, continuation)
 
             continuation.invokeOnCancellation {
                 removeContinuations(componentId)
             }
         } as T
+    }
+
+    internal companion object {
+        internal fun isCompatibleComponent(id: String): Boolean = id.startsWith(PREFIX)
+
+        internal fun parseComponentId(id: String): Int = Integer.parseInt(id, PREFIX_LENGTH, id.length, 10)
+
+        internal fun getComponentId(internalId: Int): String = PREFIX + internalId
     }
 }

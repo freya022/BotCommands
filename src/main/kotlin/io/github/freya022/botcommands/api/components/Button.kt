@@ -10,18 +10,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
 class Button internal constructor(
     private val componentController: ComponentController,
+    override val internalId: Int,
     private val button: JDAButton
 ) : JDAButton by button, IdentifiableComponent {
     override fun withDisabled(disabled: Boolean): Button {
-        return Button(componentController, super.withDisabled(disabled))
+        return Button(componentController, internalId, super.withDisabled(disabled))
     }
 
     override fun withEmoji(emoji: Emoji?): Button {
-        return Button(componentController, super.withEmoji(emoji))
+        return Button(componentController, internalId, super.withEmoji(emoji))
     }
 
     override fun withLabel(label: String): Button {
-        return Button(componentController, super.withLabel(label))
+        return Button(componentController, internalId, super.withLabel(label))
     }
 
     override fun withId(id: String): Nothing = throw UnsupportedOperationException("This type of button cannot contain custom IDs")
@@ -29,7 +30,7 @@ class Button internal constructor(
     override fun withUrl(url: String): Nothing = throw UnsupportedOperationException("This type of button cannot contain URLs")
 
     override fun withStyle(style: ButtonStyle): Button {
-        return Button(componentController, super.withStyle(style))
+        return Button(componentController, internalId, super.withStyle(style))
     }
 
     override fun getId(): String = button.id ?: throwInternal("BC components cannot have null IDs")

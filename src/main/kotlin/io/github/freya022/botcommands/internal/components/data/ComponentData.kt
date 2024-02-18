@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 
 internal sealed class ComponentData(
-    val componentId: Int,
+    val internalId: Int,
     val componentType: ComponentType,
     val lifetimeType: LifetimeType,
     val filters: List<ComponentInteractionFilter<*>>,

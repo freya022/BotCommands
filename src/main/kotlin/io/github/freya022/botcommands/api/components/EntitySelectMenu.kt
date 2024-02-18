@@ -7,10 +7,11 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu a
 
 class EntitySelectMenu internal constructor(
     private val componentController: ComponentController,
+    override val internalId: Int,
     private val selectMenu: JDAEntitySelectMenu
 ) : JDAEntitySelectMenu by selectMenu, IdentifiableComponent {
     override fun withDisabled(disabled: Boolean): EntitySelectMenu {
-        return EntitySelectMenu(componentController, super.withDisabled(disabled))
+        return EntitySelectMenu(componentController, internalId, super.withDisabled(disabled))
     }
 
     override fun getId(): String = selectMenu.id ?: throwInternal("BC components cannot have null IDs")
