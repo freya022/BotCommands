@@ -58,9 +58,11 @@ annotation class CacheAutocomplete(
      *
      * This could be useful when making an autocomplete which depends on multiple options.
      *
-     * **Note:** The focused option will always be in the composite key.<br>
-     * **Note 2:** Parameter names also work, but will not work in case the parameter is a vararg,
-     * in which case you must use the option names.
+     * **Notes:**
+     * - The focused option will always be in the composite key.<br>
+     * - As `camelCase` values are transformed into `snake_case`,
+     * using parameter names is fine unless the parameter is a vararg,
+     * in which case you must use the generated option names.
      *
      * @see AutocompleteCacheInfoBuilder.compositeKeys
      */
