@@ -75,8 +75,8 @@ internal class ComponentsListener(
         scope.launchCatching({ handleException(event, it) }) launch@{
             val componentId = event.componentId.let { id ->
                 if (!ComponentController.isCompatibleComponent(id))
-                    return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
-                            "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
+                    return@launch logger.error { "Received an interaction for an external component format: '${event.componentId}', " +
+                            "please only use ${classRef<Components>()} to make components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
                 ComponentController.parseComponentId(id)
             }
             val component = componentRepository.getComponent(componentId)
