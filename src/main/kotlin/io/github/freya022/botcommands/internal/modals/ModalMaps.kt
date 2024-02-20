@@ -46,8 +46,11 @@ internal class ModalMaps(context: BContext) {
                 timeoutScope.launchCatchingDelayed(timeoutInfo.timeout, { handleTimeoutException(it) }) {
                     val data = modalLock.withLock { modalMap.remove(id) }
                     if (data != null) { //If the timeout was reached without the modal being used
-                        for (continuation in data.continuations) {
-                            continuation.cancel(TimeoutExceptionAccessor.createModalTimeoutException())
+                        if (data.continuations.isNotEmpty()) {
+                            val timeoutException = TimeoutExceptionAccessor.createModalTimeoutException()
+                            for (continuation in data.continuations) {
+                                continuation.cancel(timeoutException)
+                            }
                         }
                         timeoutInfo.onTimeout()
                     }
