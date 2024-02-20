@@ -45,12 +45,9 @@ internal class ModalMaps(context: BContext) {
     //Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
     private val inputMap: TLongObjectMap<InputData> = TLongObjectHashMap()
 
-    fun insertModal(partialModalData: PartialModalData, userModalId: Long?): String {
+    fun insertModal(partialModalData: PartialModalData): String {
         return modalLock.withLock {
-            val internalId: Long = when {
-                userModalId != null -> userModalId
-                else -> generateId(modalMap)
-            }
+            val internalId: Long = generateId(modalMap)
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
                 // Run timeout user code on the modal scope again
@@ -77,12 +74,9 @@ internal class ModalMaps(context: BContext) {
         exceptionHandler.handleException(null, e, "modal timeout handler", emptyMap())
     }
 
-    fun insertInput(inputData: InputData, userInputId: Long?): String {
+    fun insertInput(inputData: InputData): String {
         return inputLock.withLock {
-            val internalId: Long = when {
-                userInputId != null -> userInputId
-                else -> generateId(inputMap)
-            }
+            val internalId: Long = generateId(inputMap)
 
             inputMap.put(internalId, inputData)
             getInputId(internalId)

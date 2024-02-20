@@ -37,8 +37,10 @@ internal class ModalBuilderImpl internal constructor(
         timeoutInfo = ModalTimeoutInfo(timeout, onTimeout)
     }
 
+    @Deprecated("Cannot set an ID on modals managed by the framework", level = DeprecationLevel.ERROR)
     override fun setId(customId: String): ModalBuilderImpl = this.also {
-        super.setId(customId)
+        if (customId == "0") return@also // Super constructor call
+        throw UnsupportedOperationException("Cannot set an ID on modals managed by the framework")
     }
 
     override fun build(): Modal {
@@ -56,7 +58,7 @@ internal class ModalBuilderImpl internal constructor(
                 inputDataMap.put(internalId, data)
             }
 
-        id = modalMaps.insertModal(PartialModalData(handlerData, inputDataMap, timeoutInfo), id)
+        internetSetId(modalMaps.insertModal(PartialModalData(handlerData, inputDataMap, timeoutInfo)))
 
         return Modal(jdaBuild(), modalMaps)
     }

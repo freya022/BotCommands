@@ -9,12 +9,15 @@ abstract class TextInputBuilder internal constructor(
     label: String?,
     style: TextInputStyle?
 ) : TextInput.Builder("0", label, style) {
-    /**
-     * An ID is already generated automatically, but you can set a custom ID if you wish to.
-     *
-     * **Tip:** A modal input with the same ID as a previously sent one, will have the previously submitted values.
-     */
-    override fun setId(customId: String): TextInputBuilder = this.apply { super.setId(customId) }
+    @Deprecated("Cannot set an ID on text inputs managed by the framework", level = DeprecationLevel.ERROR)
+    override fun setId(customId: String): TextInputBuilder = this.apply {
+        if (customId == "0") return@apply // Super constructor call
+        throw UnsupportedOperationException("Cannot set an ID on text inputs managed by the framework")
+    }
+
+    protected fun internetSetId(customId: String) {
+        super.setId(customId)
+    }
 
     override fun setLabel(label: String): TextInputBuilder = this.apply { super.setLabel(label) }
 
