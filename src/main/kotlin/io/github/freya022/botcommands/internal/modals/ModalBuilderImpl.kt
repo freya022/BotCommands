@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.modals
 
+import gnu.trove.map.TLongObjectMap
+import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.modals.Modal
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.Modals
@@ -41,15 +43,17 @@ internal class ModalBuilderImpl internal constructor(
 
     override fun build(): Modal {
         //Extract input data into this map
-        val inputDataMap: Map<String, InputData> = components
+        val inputDataMap: TLongObjectMap<InputData> = TLongObjectHashMap()
+        components
             .flatMap { it.actionComponents }
             .filter { it.id != null }
-            .associate { actionComponent ->
+            .forEach { actionComponent ->
                 val id = actionComponent.id ?: throwInternal("Non identifiable components should have been filtered")
+                val internalId = ModalMaps.parseInputId(id)
 
-                val data = modalMaps.consumeInput(id)
-                    ?: throw IllegalStateException("Modal component with id '$id' could not be found in the inputs created with the '${classRef<Modals>()}' class")
-                id to data
+                val data = modalMaps.consumeInput(internalId)
+                    ?: throw IllegalStateException("Modal component with id '$internalId' could not be found in the inputs created with the '${classRef<Modals>()}' class")
+                inputDataMap.put(internalId, data)
             }
 
         id = modalMaps.insertModal(PartialModalData(handlerData, inputDataMap, timeoutInfo), id)

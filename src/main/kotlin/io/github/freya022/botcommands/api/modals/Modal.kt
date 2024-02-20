@@ -8,10 +8,11 @@ import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
 class Modal internal constructor(modal: JDAModal, private val modalMaps: ModalMaps) : JDAModal by modal {
     suspend fun await(): ModalInteractionEvent {
         return suspendCancellableCoroutine { continuation ->
-            modalMaps.insertContinuation(id, continuation)
+            val internalId = ModalMaps.parseModalId(id)
+            modalMaps.insertContinuation(internalId, continuation)
 
             continuation.invokeOnCancellation {
-                modalMaps.removeContinuation(id, continuation)
+                modalMaps.removeContinuation(internalId, continuation)
             }
         }
     }
