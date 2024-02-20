@@ -79,7 +79,7 @@ annotation class AutocompleteHandler(
      * Whether the user input is shown as the first suggestion.
      *
      * **Note:** `false` does not mean that the bot-provided choices are forced upon the user,
-     * autocomplete is never forced, unlike choices
+     * autocomplete is never forced, unlike choices.
      *
      * **Default:** `false`
      *

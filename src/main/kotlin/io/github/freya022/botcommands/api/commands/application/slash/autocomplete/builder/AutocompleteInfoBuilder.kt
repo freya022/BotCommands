@@ -21,18 +21,16 @@ class AutocompleteInfoBuilder internal constructor(private val context: BContext
     var mode: AutocompleteMode = AutocompleteMode.FUZZY
 
     /**
-     * Determines if the user input is shown as the first suggestion
+     * Whether the user input is shown as the first suggestion.
      *
-     * This allows the user to force his own input more easily
+     * **Note:** `false` does not mean that the bot-provided choices are forced upon the user,
+     * autocomplete is never forced, unlike choices.
      *
-     * **This being `false` does not mean that the bot-provided choices are forced upon the user,
-     * autocomplete is never forced, unlike choices**
-     *
-     * @return `true` if the user's input should be shown, `false` if not
+     * **Default:** `false`
      *
      * @see AutocompleteHandler.showUserInput
      */
-    var showUserInput: Boolean = true
+    var showUserInput: Boolean = false
 
     internal var autocompleteCache: AutocompleteCacheInfo? = null
         private set
