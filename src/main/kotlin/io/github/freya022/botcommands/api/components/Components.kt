@@ -102,7 +102,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * @Command
  * class SlashSayAgain : ApplicationCommand() {
  *     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
- *     fun onSlashSayAgain(
+ *     suspend fun onSlashSayAgain(
  *         event: GuildSlashEvent,
  *         @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) sentence: String,
  *         componentsService: Components
@@ -175,16 +175,16 @@ class Components internal constructor(private val componentController: Component
         PersistentButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: PersistentButtonBuilder.() -> Unit) =
-        persistentButton(style, label, emoji).apply(block).build()
+    suspend inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: PersistentButtonBuilder.() -> Unit) =
+        persistentButton(style, label, emoji).apply(block).buildSuspend()
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun persistentButton(style: ButtonStyle, content: ButtonContent) =
-        PersistentButtonBuilder(style, componentController, content.text, content.emoji, InstanceRetriever())
+        persistentButton(style, content.text, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    inline fun persistentButton(style: ButtonStyle, content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
-        persistentButton(style, content).apply(block).build()
+    suspend inline fun persistentButton(style: ButtonStyle, content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
+        persistentButton(style, content.text, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
@@ -194,15 +194,15 @@ class Components internal constructor(private val componentController: Component
         EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: EphemeralButtonBuilder.() -> Unit) =
-        ephemeralButton(style, label, emoji).apply(block).build()
+    suspend inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: EphemeralButtonBuilder.() -> Unit) =
+        ephemeralButton(style, label, emoji).apply(block).buildSuspend()
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent) =
         ephemeralButton(style, content.text, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    inline fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
+    suspend inline fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(style, content.text, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
@@ -212,15 +212,15 @@ class Components internal constructor(private val componentController: Component
         PersistentStringSelectBuilder(componentController, InstanceRetriever())
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @JvmSynthetic
-    inline fun persistentStringSelectMenu(block: PersistentStringSelectBuilder.() -> Unit) =
-        persistentStringSelectMenu().apply(block).build()
+    suspend inline fun persistentStringSelectMenu(block: PersistentStringSelectBuilder.() -> Unit) =
+        persistentStringSelectMenu().apply(block).buildSuspend()
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     fun persistentEntitySelectMenu(target: SelectTarget) =
         persistentEntitySelectMenu(enumSetOf(target))
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    inline fun persistentEntitySelectMenu(target: SelectTarget, block: PersistentEntitySelectBuilder.() -> Unit) =
+    suspend inline fun persistentEntitySelectMenu(target: SelectTarget, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(enumSetOf(target), block)
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
@@ -228,8 +228,8 @@ class Components internal constructor(private val componentController: Component
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: PersistentEntitySelectBuilder.() -> Unit) =
-        persistentEntitySelectMenu(targets).apply(block).build()
+    suspend inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: PersistentEntitySelectBuilder.() -> Unit) =
+        persistentEntitySelectMenu(targets).apply(block).buildSuspend()
 
     // -------------------- Ephemeral select menus --------------------
 
@@ -238,15 +238,15 @@ class Components internal constructor(private val componentController: Component
         EphemeralStringSelectBuilder(componentController, InstanceRetriever())
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @JvmSynthetic
-    inline fun ephemeralStringSelectMenu(block: EphemeralStringSelectBuilder.() -> Unit) =
-        ephemeralStringSelectMenu().apply(block).build()
+    suspend inline fun ephemeralStringSelectMenu(block: EphemeralStringSelectBuilder.() -> Unit) =
+        ephemeralStringSelectMenu().apply(block).buildSuspend()
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     fun ephemeralEntitySelectMenu(target: SelectTarget) =
         ephemeralEntitySelectMenu(enumSetOf(target))
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: EphemeralEntitySelectBuilder.() -> Unit) =
+    suspend inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(enumSetOf(target), block)
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
@@ -254,8 +254,8 @@ class Components internal constructor(private val componentController: Component
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @JvmSynthetic
-    inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
-        ephemeralEntitySelectMenu(targets).apply(block).build()
+    suspend inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
+        ephemeralEntitySelectMenu(targets).apply(block).buildSuspend()
 
     @JvmName("deleteComponentsById")
     fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }

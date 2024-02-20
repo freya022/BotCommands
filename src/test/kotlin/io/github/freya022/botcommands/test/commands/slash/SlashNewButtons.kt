@@ -62,7 +62,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
     }
 
-    private fun filteredButton() = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
+    private suspend fun filteredButton() = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
         filters += filter<InVoiceChannel>()
         bindTo {
             it.guild!!.kickVoiceMember(it.member!!).await()
@@ -70,7 +70,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
     }
 
-    private fun noGroupButton(event: GuildSlashEvent) =
+    private suspend fun noGroupButton(event: GuildSlashEvent) =
         components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
             oneUse = true
             bindTo { event.hook.deleteOriginal().queue() }

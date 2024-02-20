@@ -35,7 +35,7 @@ class SlashRateLimit(private val components: Components) : ApplicationCommand() 
 //        spikeBandwidth = Bandwidth(2, Refill(RefillType.INTERVAL, 2, 5, ChronoUnit.SECONDS))
 //    )
     @RateLimitReference(commandRateLimitGroup)
-    fun onSlashRateLimit(event: GuildSlashEvent) {
+    suspend fun onSlashRateLimit(event: GuildSlashEvent) {
         val button = components.ephemeralButton(ButtonStyle.PRIMARY, "Retry (5 clicks in 1 minute)") {
             rateLimitReference(retryRateLimitGroup)
             bindTo { event ->

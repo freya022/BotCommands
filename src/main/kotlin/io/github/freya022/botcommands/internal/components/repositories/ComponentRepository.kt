@@ -51,8 +51,8 @@ internal class ComponentRepository(
         cleanupEphemeral()
     }
 
-    fun createComponent(builder: BaseComponentBuilder<*>): Int = runBlocking {
-        database.transactional {
+    suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
+        return database.transactional {
             // Create base component
             val componentId: Int = insertBaseComponent(builder.componentType, builder.lifetimeType, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
 
@@ -81,7 +81,7 @@ internal class ComponentRepository(
             // Add timeout
             insertTimeoutData(builder, componentId)
 
-            return@transactional componentId
+            componentId
         }
     }
 

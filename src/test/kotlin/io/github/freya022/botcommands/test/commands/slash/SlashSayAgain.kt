@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class SlashSayAgain : ApplicationCommand() {
     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
-    fun onSlashSayAgain(
+    suspend fun onSlashSayAgain(
         event: GuildSlashEvent,
         @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) sentence: String,
         componentsService: Components
