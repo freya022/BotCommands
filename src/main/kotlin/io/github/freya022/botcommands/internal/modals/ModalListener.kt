@@ -29,7 +29,7 @@ internal class ModalListener(private val context: BContextImpl, private val moda
 
         scope.launchCatching({ handleException(it, event) }) launch@{
             if (!ModalMaps.isCompatibleModal(event.modalId)) {
-                return@launch logger.error { "Received an interaction for an external modal format: ${event.modalId}, " +
+                return@launch logger.error { "Received an interaction for an external modal format: '${event.modalId}', " +
                         "please use ${classRef<Modals>()} to make modals" }
             }
 
