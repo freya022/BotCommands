@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 @Dependencies(Components::class)
 class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
-    fun onSlashTimeUnit(
+    suspend fun onSlashTimeUnit(
         event: GuildSlashEvent,
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit

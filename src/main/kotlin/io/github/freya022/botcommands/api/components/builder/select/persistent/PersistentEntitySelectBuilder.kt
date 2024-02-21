@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwUser
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 class PersistentEntitySelectBuilder internal constructor(
@@ -42,7 +43,11 @@ class PersistentEntitySelectBuilder internal constructor(
         throwUser("Cannot set an ID on components managed by the framework")
     }
 
-    override fun build(): EntitySelectMenu {
+    override fun build(): EntitySelectMenu = runBlocking { buildSuspend() }
+
+    @JvmSynthetic
+    @PublishedApi
+    internal suspend fun buildSuspend(): EntitySelectMenu {
         check(!built) { "Cannot build components more than once" }
         built = true
 

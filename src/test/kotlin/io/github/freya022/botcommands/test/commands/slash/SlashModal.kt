@@ -51,7 +51,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
     }
 
     @ModalHandler(name = SLASH_MODAL_MODAL_HANDLER)
-    fun onModalSubmitted(
+    suspend fun onModalSubmitted(
         event: ModalInteractionEvent,
         @ModalData dataStr: String,
         @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
