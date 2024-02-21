@@ -60,7 +60,7 @@ internal class ModalMaps(context: BContext) {
                                 continuation.cancel(timeoutException)
                             }
                         }
-                        timeoutInfo.onTimeout()
+                        timeoutInfo.onTimeout?.invoke()
                     }
                 }
             }

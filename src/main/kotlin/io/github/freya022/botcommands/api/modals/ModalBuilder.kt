@@ -71,7 +71,8 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    fun timeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder {
+    @JvmOverloads
+    fun timeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable? = null): ModalBuilder {
         return timeout(JavaDuration.of(timeout, unit.toChronoUnit()), onTimeout)
     }
 
@@ -86,8 +87,9 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    fun timeout(timeout: JavaDuration, onTimeout: Runnable): ModalBuilder {
-        return timeout(timeout.toKotlinDuration()) { onTimeout.run() }
+    @JvmOverloads
+    fun timeout(timeout: JavaDuration, onTimeout: Runnable? = null): ModalBuilder {
+        return timeout(timeout.toKotlinDuration(), onTimeout?.let { { onTimeout.run() } })
     }
 
     /**
@@ -101,7 +103,8 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    abstract fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder
+    @JvmSynthetic
+    abstract fun timeout(timeout: Duration, onTimeout: (suspend () -> Unit)? = null): ModalBuilder
 
     @Deprecated("Cannot set an ID on modals managed by the framework", level = DeprecationLevel.ERROR)
     abstract override fun setId(customId: String): ModalBuilder

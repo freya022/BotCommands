@@ -25,7 +25,7 @@ internal class ModalBuilderImpl internal constructor(
         handlerData = EphemeralModalHandlerData(handler)
     }
 
-    override fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder = this.also {
+    override fun timeout(timeout: Duration, onTimeout: (suspend () -> Unit)?): ModalBuilder = this.also {
         require(timeout.isFinite() && timeout.isPositive()) {
             "Timeout must be finite and positive"
         }
