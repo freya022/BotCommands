@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder
 
 import dev.minn.jda.ktx.util.ref
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
@@ -30,9 +31,9 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
     val timeout: ComponentTimeout?
 
     /**
-     * Sets the timeout on this component.
+     * Sets the timeout on this component, invalidating the component on expiration.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -50,9 +51,9 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()))
 
     /**
-     * Sets the timeout on this component.
+     * Sets the timeout on this component, invalidating the component on expiration.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -69,9 +70,9 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
         timeout(timeout.toKotlinDuration())
 
     /**
-     * Sets the timeout on this component.
+     * Sets the timeout on this component, invalidating the component on expiration.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -98,9 +99,10 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
  */
 interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>> : ITimeoutableComponent<T> {
     /**
-     * Binds the given timeout handler name with its arguments to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -119,16 +121,21 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
-     * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
+     * @param handlerName The name of the handler to run when the button is clicked,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, *data)
 
     /**
-     * Binds the given timeout handler name with its arguments to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -147,16 +154,21 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * no conversion will happen.
      *
      * @param timeout The duration of the timeout
-     * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
+     * @param handlerName The name of the handler to run when the button is clicked,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     fun timeout(timeout: JavaDuration, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toKotlinDuration(), handlerName, *data)
 
     /**
-     * Binds the given timeout handler name with its arguments to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -175,8 +187,12 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * no conversion will happen.
      *
      * @param timeout The duration of the timeout
-     * @param handlerName The name of the handler to run when the button is clicked, defined by either [ComponentTimeoutHandler] or [GroupTimeoutHandler] depending on the type
+     * @param handlerName The name of the handler to run when the button is clicked,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
      * @param data The data to pass to the component handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     @JvmSynthetic
     fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T
@@ -191,9 +207,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
  */
 interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> : ITimeoutableComponent<T> {
     /**
-     * Binds the given handler to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the given timeout handler.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -215,9 +232,10 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
         timeout(timeout.toKotlinDuration()) { handler.run() }
 
     /**
-     * Binds the given handler to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the given timeout handler.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -240,9 +258,10 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
 
     /**
-     * Binds the given handler to this component.
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the given timeout handler.
      *
-     * The component will be deleted from the database on expiration.
+     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *

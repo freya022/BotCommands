@@ -4,6 +4,11 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 /**
  * Methods for modals and modal inputs
@@ -25,6 +30,19 @@ interface Modals {
      * @param style     The style of the text field
      */
     fun createTextInput(inputName: String, label: String, style: TextInputStyle): TextInputBuilder
+
+    companion object {
+        @JvmSynthetic
+        var defaultTimeout: Duration = 15.minutes
+
+        @JvmStatic
+        fun getDefaultTimeout(): JavaDuration = defaultTimeout.toJavaDuration()
+
+        @JvmStatic
+        fun setDefaultTimeout(defaultTimeout: JavaDuration) {
+            this.defaultTimeout = defaultTimeout.toKotlinDuration()
+        }
+    }
 }
 
 fun Modals.create(title: String, block: context(Modals) ModalBuilder.() -> Unit): Modal =

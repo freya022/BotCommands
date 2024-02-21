@@ -60,10 +60,10 @@ abstract class ModalBuilder protected constructor(
     abstract fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilder
 
     /**
-     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     * Sets the timeout for this modal, invalidating the modal after expiration,
+     * and running the given timeout handler.
      *
-     * **Note:** It is extremely recommended to put a timeout on your modals,
-     * as it would otherwise cause a memory leak if the user never sends the modal.
+     * If unset, the timeout is set to [Modals.defaultTimeout].
      *
      * @param timeout   The amount of time in the supplied time unit before the modal is removed
      * @param unit      The time unit of the timeout
@@ -77,10 +77,10 @@ abstract class ModalBuilder protected constructor(
     }
 
     /**
-     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     * Sets the timeout for this modal, invalidating the modal after expiration,
+     * and running the given timeout handler.
      *
-     * **Note:** It is extremely recommended to put a timeout on your modals,
-     * as it would otherwise cause a memory leak if the user never sends the modal.
+     * If unset, the timeout is set to [Modals.defaultTimeout].
      *
      * @param timeout   The amount of time before the modal is removed
      * @param onTimeout The function to run when the timeout has been reached
@@ -93,10 +93,10 @@ abstract class ModalBuilder protected constructor(
     }
 
     /**
-     * Sets the timeout for this modal, the modal cannot be used after the timeout has passed.
+     * Sets the timeout for this modal, invalidating the modal after expiration,
+     * and running the given timeout handler.
      *
-     * **Note:** It is extremely recommended to put a timeout on your modals,
-     * as it would otherwise cause a memory leak if the user never sends the modal.
+     * If unset, the timeout is set to [Modals.defaultTimeout].
      *
      * @param timeout   The amount of time before the modal is removed
      * @param onTimeout The function to run when the timeout has been reached

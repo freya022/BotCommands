@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.builder
 
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import kotlinx.datetime.Clock
@@ -10,7 +11,7 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponent<T> {
 
-    override var timeout: PersistentTimeout? = null
+    override var timeout: PersistentTimeout = PersistentTimeout.create(Clock.System.now() + Components.defaultTimeout)
         private set
 
     override fun timeout(timeout: Duration): T = instance.also {

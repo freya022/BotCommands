@@ -23,6 +23,11 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 /**
  * This class lets you create smart components such as buttons, select menus, and groups.
@@ -145,7 +150,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @BService
-@ConditionalService(Components.Companion::class)
+@ConditionalService(Components.InstantiationChecker::class)
 class Components internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 
@@ -265,7 +270,20 @@ class Components internal constructor(private val componentController: Component
         componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() }, throwTimeouts = false)
     }
 
-    internal companion object : ConditionalServiceChecker {
+    companion object {
+        @JvmSynthetic
+        var defaultTimeout: Duration = 15.minutes
+
+        @JvmStatic
+        fun getDefaultTimeout(): JavaDuration = defaultTimeout.toJavaDuration()
+
+        @JvmStatic
+        fun setDefaultTimeout(defaultTimeout: JavaDuration) {
+            this.defaultTimeout = defaultTimeout.toKotlinDuration()
+        }
+    }
+
+    internal object InstantiationChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
             if (context.componentsConfig.useComponents) {
                 return null

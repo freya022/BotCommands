@@ -53,7 +53,11 @@ internal class ModalBuilderImpl internal constructor(
                 inputDataMap.put(internalId, data)
             }
 
-        internetSetId(modalMaps.insertModal(PartialModalData(handlerData, inputDataMap, timeoutInfo)))
+        internetSetId(modalMaps.insertModal(PartialModalData(
+            handlerData,
+            inputDataMap,
+            timeoutInfo ?: ModalTimeoutInfo(Modals.defaultTimeout, null)
+        )))
 
         return Modal(jdaBuild(), modalMaps)
     }
