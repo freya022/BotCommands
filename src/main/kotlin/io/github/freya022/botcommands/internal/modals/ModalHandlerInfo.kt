@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.modals
 
+import gnu.trove.map.TObjectLongMap
+import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -16,9 +18,6 @@ import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.*
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -60,9 +59,10 @@ class ModalHandlerInfo internal constructor(
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap
-        val inputNameToInputIdMap: MutableMap<String, String> = HashMap()
-        inputDataMap.forEach { (inputId: String, inputData: InputData) ->
-            inputNameToInputIdMap[inputData.inputName] = inputId
+        val inputNameToInputIdMap: TObjectLongMap<String> = TObjectLongHashMap()
+        inputDataMap.forEachEntry { inputId: Long, inputData: InputData ->
+            inputNameToInputIdMap.put(inputData.inputName, inputId)
+            true
         }
 
         val userDatas = handlerData.userData
@@ -89,7 +89,7 @@ class ModalHandlerInfo internal constructor(
     private suspend fun tryInsertOption(
         event: ModalInteractionEvent,
         option: Option,
-        inputNameToInputIdMap: Map<String, String>,
+        inputNameToInputIdMap: TObjectLongMap<String>,
         userDataIterator: Iterator<Any?>,
         optionMap: MutableMap<Option, Any?>
     ): InsertOptionResult {
@@ -99,9 +99,9 @@ class ModalHandlerInfo internal constructor(
 
                 //We have the modal input's ID
                 // But we have a Map of input *name* -> InputData (contains input ID)
-                val inputId = inputNameToInputIdMap[option.inputName]
+                val inputId = inputNameToInputIdMap[option.inputName].takeIf { it != inputNameToInputIdMap.noEntryValue }
                     ?: throwUser("Modal input named '${option.inputName}' was not found")
-                val modalMapping = event.getValue(inputId)
+                val modalMapping = event.getValue(ModalMaps.getInputId(inputId))
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
                 option.resolver.resolveSuspend(this, event, modalMapping).also { obj ->

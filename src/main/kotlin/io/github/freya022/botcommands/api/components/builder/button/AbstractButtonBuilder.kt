@@ -29,6 +29,12 @@ sealed class AbstractButtonBuilder<T : AbstractButtonBuilder<T>>(
         check(!built) { "Cannot build components more than once" }
         built = true
 
-        return Button(componentController, JDAButton.of(style, componentController.createComponent(this), label, emoji))
+        return componentController.withNewComponent(this) { internalId, componentId ->
+            Button(
+                componentController,
+                internalId,
+                JDAButton.of(style, componentId, label, emoji)
+            )
+        }
     }
 }

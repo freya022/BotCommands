@@ -49,8 +49,9 @@ class PersistentStringSelectBuilder internal constructor(
         check(!built) { "Cannot build components more than once" }
         built = true
 
-        super.setId(componentController.createComponent(this))
-
-        return StringSelectMenu(componentController, super.build())
+        componentController.withNewComponent(this) { internalId, componentId ->
+            super.setId(componentId)
+            return StringSelectMenu(componentController, internalId, super.build())
+        }
     }
 }

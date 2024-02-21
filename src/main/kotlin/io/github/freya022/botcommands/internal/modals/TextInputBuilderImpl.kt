@@ -11,7 +11,7 @@ internal class TextInputBuilderImpl internal constructor(
     style: TextInputStyle?
 ) : TextInputBuilder(label, style) {
     override fun build(): TextInput {
-        id = modalMaps.insertInput(InputData(inputName), id)
+        internetSetId(modalMaps.insertInput(InputData(inputName)))
 
         return jdaBuild()
     }

@@ -73,9 +73,12 @@ internal class ComponentsListener(
         logger.trace { "Received ${event.componentType} interaction: ${event.component}" }
 
         scope.launchCatching({ handleException(event, it) }) launch@{
-            val componentId = event.componentId.toIntOrNull()
-                ?: return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
-                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
+            val componentId = event.componentId.let { id ->
+                if (!ComponentController.isCompatibleComponent(id))
+                    return@launch logger.error { "Received an interaction for an external component format: '${event.componentId}', " +
+                            "please only use ${classRef<Components>()} to make components or disable ${BComponentsConfigBuilder::useComponents.reference}" }
+                ComponentController.parseComponentId(id)
+            }
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
@@ -176,7 +179,7 @@ internal class ComponentsListener(
             }
         }
 
-        componentController.removeContinuations(component.componentId).forEach {
+        componentController.removeContinuations(component.internalId).forEach {
             (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
         }
     }

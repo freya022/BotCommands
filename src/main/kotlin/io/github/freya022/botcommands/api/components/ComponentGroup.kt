@@ -4,9 +4,10 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
-class ComponentGroup internal constructor(private val componentController: ComponentController, private val id: String) : IdentifiableComponent {
-    override fun getId(): String = id
-
+class ComponentGroup internal constructor(
+    private val componentController: ComponentController,
+    override val internalId: Int
+) : IdentifiableComponent {
     @JvmSynthetic
     override suspend fun await(): GenericComponentInteractionCreateEvent = componentController.awaitComponent(this)
 }

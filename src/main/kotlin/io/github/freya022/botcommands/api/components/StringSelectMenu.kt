@@ -7,10 +7,11 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu a
 
 class StringSelectMenu internal constructor(
     private val componentController: ComponentController,
+    override val internalId: Int,
     private val selectMenu: JDAStringSelectMenu
 ) : JDAStringSelectMenu by selectMenu, IdentifiableComponent {
     override fun withDisabled(disabled: Boolean): StringSelectMenu {
-        return StringSelectMenu(componentController, super.withDisabled(disabled))
+        return StringSelectMenu(componentController, internalId, super.withDisabled(disabled))
     }
 
     override fun getId(): String = selectMenu.id ?: throwInternal("BC components cannot have null IDs")

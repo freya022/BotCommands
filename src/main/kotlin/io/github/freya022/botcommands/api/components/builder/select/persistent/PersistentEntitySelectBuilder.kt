@@ -51,8 +51,9 @@ class PersistentEntitySelectBuilder internal constructor(
         check(!built) { "Cannot build components more than once" }
         built = true
 
-        super.setId(componentController.createComponent(this))
-
-        return EntitySelectMenu(componentController, super.build())
+        componentController.withNewComponent(this) { internalId, componentId ->
+            super.setId(componentId)
+            return EntitySelectMenu(componentController, internalId, super.build())
+        }
     }
 }

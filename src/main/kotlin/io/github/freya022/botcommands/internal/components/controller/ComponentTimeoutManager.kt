@@ -82,8 +82,8 @@ internal class ComponentTimeoutManager(
                 }
 
                 val firstParameter: Any = when (component.componentType) {
-                    ComponentType.GROUP -> GroupTimeoutData((component as ComponentGroupData).componentsIds)
-                    ComponentType.BUTTON, ComponentType.SELECT_MENU -> ComponentTimeoutData(component.componentId.toString())
+                    ComponentType.GROUP -> GroupTimeoutData((component as ComponentGroupData).componentIds)
+                    ComponentType.BUTTON, ComponentType.SELECT_MENU -> ComponentTimeoutData(component.internalId)
                 }
 
                 val userData = componentTimeout.userData

@@ -4,10 +4,12 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -26,7 +28,12 @@ internal class ModalListener(private val context: BContextImpl, private val moda
         logger.trace { "Received modal interaction '${event.modalId}' with ${event.values.associate { it.id to it.asString }}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val modalData = modalMaps.consumeModal(event.modalId)
+            if (!ModalMaps.isCompatibleModal(event.modalId)) {
+                return@launch logger.error { "Received an interaction for an external modal format: '${event.modalId}', " +
+                        "please use ${classRef<Modals>()} to make modals" }
+            }
+
+            val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(event.modalId))
             if (modalData == null) { //Probably the modal expired
                 event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()
                 return@launch

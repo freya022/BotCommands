@@ -101,14 +101,11 @@ abstract class ModalBuilder protected constructor(
      */
     abstract fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder
 
-    /**
-     * An ID is already generated automatically, but you can set a custom ID if you wish to.
-     *
-     * **Tip:** A modal with the same ID as a previously sent one, will have the previously submitted values.
-     */
-    override fun setId(customId: String): ModalBuilder {
+    @Deprecated("Cannot set an ID on modals managed by the framework", level = DeprecationLevel.ERROR)
+    abstract override fun setId(customId: String): ModalBuilder
+
+    protected fun internetSetId(customId: String) {
         super.setId(customId)
-        return this
     }
 
     protected fun jdaBuild(): JDAModal {

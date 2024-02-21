@@ -16,13 +16,13 @@ sealed class ComponentGroupBuilder<T : ComponentGroupBuilder<T>>(
     override val componentType: ComponentType = ComponentType.GROUP
 
     @get:JvmSynthetic
-    internal val componentIds = components.map { it.getId().toInt() }
+    internal val componentIds = components.map { it.internalId }
 
     fun build(): ComponentGroup = runBlocking { buildSuspend() }
 
     @JvmSynthetic
     @PublishedApi
     internal suspend fun buildSuspend(): ComponentGroup {
-        return componentController.insertGroup(this)
+        return componentController.createGroup(this)
     }
 }
