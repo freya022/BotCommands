@@ -45,7 +45,9 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
-    abstract fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilder
+    fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilder {
+        return bindTo { handler.accept(it) }
+    }
 
     /**
      * Binds the action to the closure.

@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import java.util.function.Consumer
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
@@ -24,10 +23,6 @@ internal class ModalBuilderImpl internal constructor(
 
     override fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilderImpl = this.also {
         handlerData = EphemeralModalHandlerData(handler)
-    }
-
-    override fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilderImpl = this.also {
-        return bindTo { handler.accept(it) }
     }
 
     override fun timeout(timeout: Duration, onTimeout: suspend () -> Unit): ModalBuilder = this.also {
