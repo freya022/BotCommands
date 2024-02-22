@@ -101,6 +101,21 @@ suspend fun IThreadContainer.retrieveThreadChannelByIdOrNull(id: Long): ThreadCh
     return null
 }
 
+/**
+ * Awaits the completion of this RestAction.
+ */
+suspend fun RestAction<*>.awaitUnit() {
+    submit().await()
+}
+
+/**
+ * Awaits the completion of this RestAction and returns `null`.
+ */
+suspend fun <R> RestAction<*>.awaitNull(): R? {
+    submit().await()
+    return null
+}
+
 //region Send / Edit / Replace extensions
 /**
  * @see MessageEditData.fromCreateData
