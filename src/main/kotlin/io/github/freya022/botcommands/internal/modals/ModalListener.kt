@@ -1,17 +1,13 @@
 package io.github.freya022.botcommands.internal.modals
 
 import dev.minn.jda.ktx.messages.reply_
-import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.launchCatching
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.coroutines.resume
@@ -56,16 +52,11 @@ internal class ModalListener(private val context: BContextImpl, private val moda
         }
     }
 
-    private fun handleException(e: Throwable, event: ModalInteractionEvent) {
+    private suspend fun handleException(e: Throwable, event: ModalInteractionEvent) {
         exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'", buildMap(2) {
             event.message?.let { put("Message", it.jumpUrl) }
             put("Modal values", event.values.associate { it.id to it.asString })
         })
-
-        if (event.isAcknowledged) {
-            event.hook.send(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
-        } else {
-            event.reply_(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
-        }
+        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
     }
 }

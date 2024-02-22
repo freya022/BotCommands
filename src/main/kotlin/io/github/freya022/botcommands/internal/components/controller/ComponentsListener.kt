@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.components.controller
 
 import dev.minn.jda.ktx.messages.reply_
-import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
@@ -210,17 +209,12 @@ internal class ComponentsListener(
         return true
     }
 
-    private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
+    private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
         exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
             "Message" to event.message.jumpUrl,
             "Component" to event.component
         ))
-
-        val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
-        when {
-            event.isAcknowledged -> event.hook.send(generalErrorMsg, ephemeral = true).queue()
-            else -> event.reply_(generalErrorMsg, ephemeral = true).queue()
-        }
+        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
     }
 
     private suspend fun tryInsertOption(

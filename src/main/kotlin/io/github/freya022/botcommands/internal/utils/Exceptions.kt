@@ -1,12 +1,20 @@
 package io.github.freya022.botcommands.internal.utils
 
+import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.utils.deleteDelayed
+import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.requests.ErrorResponse
 import java.lang.reflect.InvocationTargetException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction
+import kotlin.time.Duration.Companion.seconds
 
 internal fun throwInternal(message: String): Nothing =
     throw InternalException(message)
@@ -59,4 +67,21 @@ internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
 internal fun Throwable.unwrap(): Throwable {
     if (this is InvocationTargetException) return targetException
     return this
+}
+
+internal suspend fun IReplyCallback.replyExceptionMessage(
+    message: String
+) = runIgnoringResponse(ErrorResponse.UNKNOWN_INTERACTION, ErrorResponse.UNKNOWN_WEBHOOK) {
+    if (isAcknowledged) {
+        // Give ourselves 5 seconds to delete
+        if (Instant.fromEpochMilliseconds(hook.expirationTimestamp) - 5.seconds > Clock.System.now())
+            hook.sendMessage(message)
+                .setEphemeral(true)
+                .deleteDelayed(5.seconds)
+                .await()
+    } else {
+        reply(message)
+            .setEphemeral(true)
+            .await()
+    }
 }

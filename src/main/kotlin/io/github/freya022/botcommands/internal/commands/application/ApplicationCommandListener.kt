@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.launchCatching
+import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -107,7 +108,7 @@ internal class ApplicationCommandListener internal constructor(
 
     // In rare cases where a user sends a command before they have been registered
     // Or the command list is somehow not the same
-    private fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
+    private suspend fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
         // If an exception occurred during first-time commands registration, the command map for it does not exist
         val guildMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild)
         val globalMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(null)
@@ -159,14 +160,9 @@ internal class ApplicationCommandListener internal constructor(
         }
     }
 
-    private fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
+    private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
         exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap())
-
-        val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
-        when {
-            event.isAcknowledged -> event.hook.sendMessage(generalErrorMsg).setEphemeral(true).queue()
-            else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
-        }
+        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
     }
 
     private suspend fun canRun(
