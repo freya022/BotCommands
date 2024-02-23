@@ -7,9 +7,12 @@ import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
 
 @BService
-internal class AutocompleteInfoContainer {
+internal class AutocompleteInfoContainer internal constructor() {
     private val infoByName: MutableMap<String, AutocompleteInfoImpl> = hashMapOf()
     private val infoByFunction: MutableMap<KFunction<*>, AutocompleteInfoImpl> = hashMapOf()
+
+    internal val allInfos get() = infoByFunction.values
+    internal val size get() = infoByFunction.size
 
     internal operator fun plusAssign(autocompleteInfo: AutocompleteInfoImpl) {
         autocompleteInfo.name?.let { name ->

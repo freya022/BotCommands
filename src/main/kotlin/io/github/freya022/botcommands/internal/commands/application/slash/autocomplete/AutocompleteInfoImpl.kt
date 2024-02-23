@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 //See AutocompleteHandler for implementation details
@@ -30,5 +31,12 @@ internal class AutocompleteInfoImpl internal constructor(
 
     override fun invalidate() {
         cache.invalidate()
+    }
+
+    override fun toString(): String = buildString {
+        append(function.shortSignature)
+        if (name != null) {
+            append(" ($name)")
+        }
     }
 }
