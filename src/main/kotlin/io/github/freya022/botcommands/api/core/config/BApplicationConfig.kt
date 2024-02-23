@@ -1,17 +1,14 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import net.dv8tion.jda.api.interactions.DiscordLocale
-import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
-import kotlin.reflect.KClass
 
 @InjectedService
 interface BApplicationConfig {
@@ -64,7 +61,7 @@ interface BApplicationConfig {
 }
 
 @ConfigDSL
-class BApplicationConfigBuilder internal constructor(private val serviceConfig: BServiceConfigBuilder) : BApplicationConfig {
+class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     @set:DevConfig
@@ -77,34 +74,6 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
     override val baseNameToLocalesMap: Map<String, List<Locale>>
         get() = _baseNameToLocalesMap.toImmutableMap()
-
-    /**
-     * Registers an autocomplete transformer.
-     *
-     * If your autocomplete handler return a `List<YourObject>`,
-     * you will have to register an `AutocompleteTransformer<YourObject>`
-     *
-     * @param transformerType The type of the transformer service, which will transform an element of a [List], into a [Choice].
-     *
-     * @return This builder for chaining convenience
-     */
-    fun registerAutocompleteTransformer(transformerType: Class<AutocompleteTransformer<*>>) =
-        registerAutocompleteTransformer(transformerType.kotlin)
-
-    /**
-     * Registers an autocomplete transformer.
-     *
-     * If your autocomplete handler return a `List<YourObject>`,
-     * you will have to register an `AutocompleteTransformer<YourObject>`
-     *
-     * @param transformerType The type of the transformer service, which will transform an element of a [List], into a [Choice].
-     *
-     * @return This builder for chaining convenience
-     */
-    @JvmSynthetic
-    fun registerAutocompleteTransformer(transformerType: KClass<AutocompleteTransformer<*>>) {
-        serviceConfig.registerService(transformerType)
-    }
 
     /**
      * Adds the specified bundle names with its locales;

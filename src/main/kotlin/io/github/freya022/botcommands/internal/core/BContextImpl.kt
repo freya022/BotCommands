@@ -33,7 +33,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     override val serviceContainer = ServiceContainerImpl(this) //Puts itself
 
-    internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
+    internal val serviceAnnotationsMap = ServiceAnnotationsMap()
     internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()

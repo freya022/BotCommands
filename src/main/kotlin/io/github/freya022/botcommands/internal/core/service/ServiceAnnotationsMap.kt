@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.classgraph.ClassInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.ServiceStart
@@ -154,12 +153,9 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
 
 private val logger = KotlinLogging.logger { }
 
-internal class ServiceAnnotationsMap private constructor(
+internal class ServiceAnnotationsMap internal constructor() {
     //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
-    private val map: MutableMap<KClass<out Annotation>, MutableMap<KClass<*>, Annotation>>
-) {
-    internal constructor() : this(hashMapOf())
-    internal constructor(serviceConfig: BServiceConfig) : this(serviceConfig.serviceAnnotationsMap.mapValuesTo(hashMapOf()) { it.value.toMap(hashMapOf()) })
+    private val map: MutableMap<KClass<out Annotation>, MutableMap<KClass<*>, Annotation>> = hashMapOf()
 
     internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>, annotation: A) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
