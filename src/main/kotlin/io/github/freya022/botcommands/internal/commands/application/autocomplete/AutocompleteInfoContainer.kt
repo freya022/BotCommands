@@ -4,18 +4,15 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
-import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class AutocompleteInfoContainer(private val context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
@@ -25,12 +22,8 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
         infoMap = functionAnnotationsMap.getFunctionsWithAnnotation<AutocompleteHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
-            .requiredFilter(FunctionFilter.returnType(Collection::class))
+            .requiredFilter(FunctionFilter.returnType<Collection<Any>>(ignoreNullability = false))
             .map {
-                requireUser(it.function.returnType.jvmErasure.isSubclassOf<Collection<*>>(), it.function) {
-                    "Autocomplete handler needs to return a Collection"
-                }
-
                 @Suppress("UNCHECKED_CAST")
                 val autocompleteFunction = it.function as KFunction<Collection<Any>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
