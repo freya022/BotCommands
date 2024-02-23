@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.autocomplet
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
@@ -26,5 +27,5 @@ internal class AutocompleteInfoContainer internal constructor() {
     }
 
     internal operator fun get(handlerName: String): AutocompleteInfoImpl? = infoByName[handlerName]
-    internal operator fun get(handlerFunction: KFunction<*>): AutocompleteInfoImpl? = infoByFunction[handlerFunction]
+    internal operator fun get(handlerFunction: KFunction<*>): AutocompleteInfoImpl? = infoByFunction[handlerFunction.reflectReference()]
 }
