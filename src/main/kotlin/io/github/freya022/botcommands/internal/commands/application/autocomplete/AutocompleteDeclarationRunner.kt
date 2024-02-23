@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteManagerImpl
 
-@BService
+@BService(priority = 1) //Higher than all application command declarations
 internal class AutocompleteDeclarationRunner internal constructor(
     context: BContext,
     autocompleteDeclarations: List<AutocompleteDeclaration>
