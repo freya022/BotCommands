@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteManagerImpl
 
 @BService
-internal class AutocompleteDeclarationRunner(
+internal class AutocompleteDeclarationRunner internal constructor(
     context: BContext,
     autocompleteDeclarations: List<AutocompleteDeclaration>
 ) {

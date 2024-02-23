@@ -16,7 +16,7 @@ internal class AutocompleteInfoImpl internal constructor(
     builder: AutocompleteInfoBuilder
 ) : AutocompleteInfo() {
     override val name: String? = builder.name
-    val eventFunction = builder.function.toMemberParamFunction<CommandAutoCompleteInteractionEvent, _>(context)
+    internal val eventFunction = builder.function.toMemberParamFunction<CommandAutoCompleteInteractionEvent, _>(context)
     override val function get() = eventFunction.kFunction
     override val mode: AutocompleteMode = builder.mode
     override val showUserInput: Boolean = builder.showUserInput
