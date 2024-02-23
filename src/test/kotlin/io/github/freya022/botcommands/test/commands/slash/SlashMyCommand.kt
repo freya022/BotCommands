@@ -130,7 +130,7 @@ class SlashMyCommand : ApplicationCommand(), AutocompleteDeclaration {
                     option("autocompleteStr") {
                         description = "Autocomplete !"
 
-                        autocompleteByFunction(SlashMyJavaCommand::runAutocompleteJava)
+                        autocompleteByFunction(::runAutocomplete)
                     }
 
                     generatedOption("guildName") {
@@ -142,7 +142,7 @@ class SlashMyCommand : ApplicationCommand(), AutocompleteDeclaration {
     }
 
     override fun declare(manager: AutocompleteManager) {
-        manager.autocomplete(SlashMyJavaCommand::runAutocompleteJava) {
+        manager.autocomplete(::runAutocomplete) {
             cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
         }
     }
