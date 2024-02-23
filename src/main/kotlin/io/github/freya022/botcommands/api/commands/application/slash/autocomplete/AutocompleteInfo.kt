@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.autoco
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
+//See AutocompleteHandler for implementation details
 class AutocompleteInfo internal constructor(context: BContext, builder: AutocompleteInfoBuilder) {
     val name: String = builder.name
     val eventFunction = builder.function.toMemberParamFunction<CommandAutoCompleteInteractionEvent, _>(context)
@@ -22,27 +23,8 @@ class AutocompleteInfo internal constructor(context: BContext, builder: Autocomp
         else -> AbstractAutocompleteCache.fromMode(this)
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as AutocompleteInfo
-
-        if (name != other.name) return false
-        if (function != other.function) return false
-        if (mode != other.mode) return false
-        if (showUserInput != other.showUserInput) return false
-        if (autocompleteCache != other.autocompleteCache) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + function.hashCode()
-        result = 31 * result + mode.hashCode()
-        result = 31 * result + showUserInput.hashCode()
-        result = 31 * result + (autocompleteCache?.hashCode() ?: 0)
-        return result
+    @JvmSynthetic
+    internal fun invalidate() {
+        cache.invalidate()
     }
 }

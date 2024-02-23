@@ -6,13 +6,11 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
@@ -32,10 +30,17 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
+/**
+ * Autocomplete handlers are per-option,
+ * they can share the same [AutocompleteInfo] but act on different commands with different sets of options,
+ * as long as both the command function and the autocomplete function share parameters of the same name and type.
+ *
+ * Due to the Many-to-One associations, the handler cannot store any state, and must be stored in [AutocompleteInfo].
+ */
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
-    internal val autocompleteInfo: AutocompleteInfo
+    private val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameter>
@@ -71,13 +76,6 @@ internal class AutocompleteHandler(
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
-
-        //Register this handler
-        slashCommandInfo.context.getService<AutocompleteHandlerContainer>() += this
-    }
-
-    internal fun invalidate() {
-        autocompleteInfo.cache.invalidate()
     }
 
     suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
