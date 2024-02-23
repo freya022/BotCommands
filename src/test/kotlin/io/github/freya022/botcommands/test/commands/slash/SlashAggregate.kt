@@ -7,11 +7,13 @@ import io.github.freya022.botcommands.api.commands.application.GlobalApplication
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 @Command
-class SlashAggregate {
+class SlashAggregate : AutocompleteDeclaration {
     @JvmInline
     value class MyInlineString(val yes: String)
 
@@ -48,16 +50,20 @@ class SlashAggregate {
             }
 
             inlineClassOption<MyInlineString>("inlineAutoStr") {
-                autocomplete("SlashAggregate: inlineAutoStr", ::onInlineAutoStrAutocomplete) {
-                    this.showUserInput = false
-
-                    cache(AutocompleteCacheMode.CONSTANT_BY_KEY) {
-                        compositeKeys = listOf("string", "nestedDouble")
-                    }
-                }
+                autocompleteByFunction(::onInlineAutoStrAutocomplete)
             }
 
             customOption("customObject")
+        }
+    }
+
+    override fun declare(manager: AutocompleteManager) {
+        manager.autocomplete(::onInlineAutoStrAutocomplete) {
+            this.showUserInput = false
+
+            cache(AutocompleteCacheMode.CONSTANT_BY_KEY) {
+                compositeKeys = listOf("string", "nestedDouble")
+            }
         }
     }
 }

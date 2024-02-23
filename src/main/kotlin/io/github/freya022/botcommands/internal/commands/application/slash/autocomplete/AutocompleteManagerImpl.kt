@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 internal class AutocompleteManagerImpl internal constructor(override val context: BContext) : AutocompleteManager {
     private val autocompleteInfoContainer = context.getService<AutocompleteInfoContainer>()
 
-    override fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
+    override fun autocomplete(function: KFunction<Collection<Any>>, name: String?, block: AutocompleteInfoBuilder.() -> Unit) {
         autocompleteInfoContainer += AutocompleteInfoBuilder(context, name, function).apply(block).build()
     }
 }

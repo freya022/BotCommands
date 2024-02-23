@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.ErrorResponse
+import kotlin.reflect.KFunction
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.minutes
 
@@ -143,6 +144,10 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
         getService<AutocompleteInfoContainer>()[autocompleteHandlerName]?.invalidate()
+    }
+
+    override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) {
+        getService<AutocompleteInfoContainer>()[autocompleteHandler]?.invalidate()
     }
 
     internal fun setStatus(newStatus: Status) {

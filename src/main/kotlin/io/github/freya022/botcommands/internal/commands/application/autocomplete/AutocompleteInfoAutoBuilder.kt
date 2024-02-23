@@ -27,7 +27,7 @@ internal class AutocompleteInfoAutoBuilder internal constructor() : Autocomplete
                 val autocompleteFunction = it.function as KFunction<Collection<Any>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
-                manager.autocomplete(autocompleteHandlerAnnotation.name, autocompleteFunction) {
+                manager.autocomplete(autocompleteFunction, autocompleteHandlerAnnotation.name) {
                     mode = autocompleteHandlerAnnotation.mode
                     showUserInput = autocompleteHandlerAnnotation.showUserInput
 

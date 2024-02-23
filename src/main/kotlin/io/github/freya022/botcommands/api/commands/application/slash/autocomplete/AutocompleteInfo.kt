@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 import kotlin.reflect.KFunction
 
 abstract class AutocompleteInfo internal constructor() {
-    abstract val name: String
+    abstract val name: String?
     abstract val function: KFunction<*>
     abstract val mode: AutocompleteMode
     abstract val showUserInput: Boolean

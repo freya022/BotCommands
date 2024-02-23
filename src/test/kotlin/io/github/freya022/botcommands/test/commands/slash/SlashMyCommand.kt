@@ -14,6 +14,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -25,7 +27,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @Command
-class SlashMyCommand : ApplicationCommand() {
+class SlashMyCommand : ApplicationCommand(), AutocompleteDeclaration {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
         if (optionName == "string_option" || optionName == "string_annotated") {
             return listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
@@ -128,9 +130,7 @@ class SlashMyCommand : ApplicationCommand() {
                     option("autocompleteStr") {
                         description = "Autocomplete !"
 
-                        autocomplete("MyCommand: autocompleteStr", SlashMyJavaCommand::runAutocompleteJava) {
-                            cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
-                        }
+                        autocompleteByFunction(SlashMyJavaCommand::runAutocompleteJava)
                     }
 
                     generatedOption("guildName") {
@@ -138,6 +138,12 @@ class SlashMyCommand : ApplicationCommand() {
                     }
                 }
             }
+        }
+    }
+
+    override fun declare(manager: AutocompleteManager) {
+        manager.autocomplete(SlashMyJavaCommand::runAutocompleteJava) {
+            cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
         }
     }
 

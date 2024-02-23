@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
@@ -88,11 +89,11 @@ annotation class SlashOption(
     /**
      * Name of the autocomplete handler.
      *
-     * Must match a method annotated with [AutocompleteHandler] with the same name in it.
+     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler] or [AutocompleteDeclaration].
      *
      * @see AutocompleteTransformer
-     * @see SlashCommandOptionBuilder.autocompleteReference DSL equivalent
-     * @see SlashCommandOptionBuilder.autocomplete Declaring an autocomplete handler using the DSL
+     * @see SlashCommandOptionBuilder.autocompleteByName DSL equivalent
+     * @see AutocompleteDeclaration Declaring an autocomplete handler using the DSL
      */
     val autocomplete: String = ""
 )
