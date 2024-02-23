@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
