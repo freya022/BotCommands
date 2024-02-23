@@ -239,6 +239,7 @@ For an installation guide, you can follow [this guide from JetBrains](https://ww
 
 Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
 
-## Building / Installing manually
+## Contributing
+If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
 
-While I don't recommend, you can see [BUILDING.md](BUILDING.md)
+Read [the contributing guide](.github/CONTRIBUTING.md) for more details.
