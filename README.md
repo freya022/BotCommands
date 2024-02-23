@@ -254,4 +254,8 @@ Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if yo
 ## Contributing
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
 
+It would be appreciated to focus on improving the documentation,
+such as the [wiki](wiki), the library documentation, or by [creating examples](examples).<br>
+Maintainers will focus on bug reports and feature requests, which you can create issues for. 
+
 Read [the contributing guide](.github/CONTRIBUTING.md) for more details.
