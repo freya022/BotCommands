@@ -1,10 +1,22 @@
+[bc-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3
+[bc-maven-central-link]: https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest
+[bc-releases]: #getting-the-library
+[jda-version]: https://img.shields.io/badge/JDA%20Version-5.0.0--beta.19+-important
+[jda-releases]: https://github.com/discord-jda/JDA/releases
+[discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
+[discord-invite]: https://discord.gg/frpCcQfvTz
+[javadocs-shield]: https://img.shields.io/badge/Javadocs-Overview-blue
+[javadocs-link]: https://freya022.github.io/BotCommands/docs/allclasses-index.html
+[wiki-shield]: https://img.shields.io/badge/Wiki-Home-blue
+[wiki-link]: https://freya022.github.io/BotCommands/3.X
+
 <img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
 
-[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.19+-important)](https://github.com/discord-jda/JDA/releases)
-[![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/docs/allclasses-index.html)
-[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands/3.X)
+[ ![BotCommands version][bc-maven-central-shield] ][bc-releases]
+[ ![JDA version][jda-version] ][jda-releases]
+[ ![Discord invite][discord-shield] ][discord-invite]
+[ ![Javadocs overview][javadocs-shield] ][javadocs-link]
+[ ![Wiki home][wiki-shield] ][wiki-link]
 
 # BotCommands
 A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
@@ -73,7 +85,7 @@ You can then head over to [the wiki](https://freya022.github.io/BotCommands/3.X/
 to get started either using a bot template, or from a new project.
 
 ## Getting the library
-[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
+[![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]
 ### Maven
 ```xml
 <dependencies>
