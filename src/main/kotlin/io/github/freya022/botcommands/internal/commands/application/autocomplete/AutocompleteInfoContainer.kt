@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.commands.application.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class AutocompleteInfoContainer(private val context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
-    private val infoMap: Map<String, AutocompleteInfo>
+    private val infoMap: Map<String, AutocompleteInfoImpl>
 
     init {
         infoMap = functionAnnotationsMap.getFunctionsWithAnnotation<AutocompleteHandler>()
@@ -62,5 +62,5 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
             .associateBy { it.name }
     }
 
-    operator fun get(handlerName: String): AutocompleteInfo? = infoMap[handlerName]
+    operator fun get(handlerName: String): AutocompleteInfoImpl? = infoMap[handlerName]
 }

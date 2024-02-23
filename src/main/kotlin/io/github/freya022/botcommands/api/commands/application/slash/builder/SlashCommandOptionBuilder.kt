@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
@@ -17,6 +16,7 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -107,7 +107,7 @@ class SlashCommandOptionBuilder internal constructor(
      */
     var channelTypes: EnumSet<ChannelType>? = null
 
-    internal var autocompleteInfo: AutocompleteInfo? = null
+    internal var autocompleteInfo: AutocompleteInfoImpl? = null
         private set
 
     /**

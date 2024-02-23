@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import kotlin.reflect.KFunction
 
 class AutocompleteInfoBuilder internal constructor(private val context: BContext, val name: String, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
@@ -48,7 +48,7 @@ class AutocompleteInfoBuilder internal constructor(private val context: BContext
         autocompleteCache = AutocompleteCacheInfoBuilder(cacheMode).apply(block).build()
     }
 
-    internal fun build(): AutocompleteInfo {
-        return AutocompleteInfo(context, this)
+    internal fun build(): AutocompleteInfoImpl {
+        return AutocompleteInfoImpl(context, this)
     }
 }

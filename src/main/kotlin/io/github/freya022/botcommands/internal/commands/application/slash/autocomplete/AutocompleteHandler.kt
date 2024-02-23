@@ -40,7 +40,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
-    private val autocompleteInfo: AutocompleteInfo
+    private val autocompleteInfo: AutocompleteInfoImpl
 ) : IExecutableInteractionInfo {
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameter>
