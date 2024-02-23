@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
-import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -25,14 +24,13 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  *  - The method must be non-static
  *  - The first parameter must be [CommandAutoCompleteInteractionEvent]
  *
- * The annotated method must returns a [List], which gets processed differently based on its element type:
+ * The annotated method must return a [Collection], which gets processed differently based on its element type:
  *  - `String`, `Long`, `Double`: Makes a choice where `name` == `value`,
  *  uses fuzzy matching to give the best choices first
  *  - `Choice`: Keeps the same choices in the same order, does not do any matching.
  *  - Any type supported by an [AutocompleteTransformer]: Keeps the same order after transformation.
  *
- * You can add more List element types by having a service implementing [AutocompleteTransformer],
- * or with [BApplicationConfigBuilder.registerAutocompleteTransformer].
+ * You can add support for more element types with [autocomplete transformers][AutocompleteTransformer].
  *
  * ## State-aware autocomplete
  * You can also use state-aware autocomplete,

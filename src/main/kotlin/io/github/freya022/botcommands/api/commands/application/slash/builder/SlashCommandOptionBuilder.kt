@@ -121,14 +121,13 @@ class SlashCommandOptionBuilder internal constructor(
      *  - The method must be non-static
      *  - The first parameter must be [CommandAutoCompleteInteractionEvent]
      *
-     * The annotated method must returns a [List], which gets processed differently based on its element type:
+     * The given function must return a [Collection], which gets processed differently based on its element type:
      *  - `String`, `Long`, `Double`: Makes a choice where `name` == `value`,
      *  uses fuzzy matching to give the best choices first
      *  - `Choice`: Keeps the same choices in the same order, does not do any matching.
      *  - Any type supported by an [AutocompleteTransformer]: Keeps the same order after transformation.
      *
-     * You can add more List element types by having a service implementing [AutocompleteTransformer],
-     * or with [BApplicationConfigBuilder.registerAutocompleteTransformer].
+     * You can add support for more element types with [autocomplete transformers][AutocompleteTransformer].
      *
      * ## State-aware autocomplete
      * You can also use state-aware autocomplete,
@@ -143,6 +142,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or be in an existing [@Command][Command] class.
      *
+     * @see AutocompleteTransformer
      * @see SlashOption.autocomplete
      */
     fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
