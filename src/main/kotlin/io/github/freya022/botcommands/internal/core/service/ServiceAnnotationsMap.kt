@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -124,7 +124,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
     }
 
-    private val functionAnnotationsMap get() = context.getService<FunctionAnnotationsMap>()
+    private val functionAnnotationsMap by context.serviceContainer.lazy<FunctionAnnotationsMap>()
 
     @Suppress("UNCHECKED_CAST")
     internal inline fun <reified A : Annotation> get(): Map<KClass<*>, A>? =
