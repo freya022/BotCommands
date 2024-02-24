@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder
 
+import javax.annotation.CheckReturnValue
+
 /**
  * Allows components to be used once before being deleted
  *
@@ -30,6 +32,7 @@ interface IUniqueComponent<T : IUniqueComponent<T>> : BuilderInstanceHolder<T> {
      *
      * This will also cause cancellation of any associated timeout.
      */
+    @CheckReturnValue
     fun oneUse(oneUse: Boolean): T = instance.also {
         this.oneUse = oneUse
     }

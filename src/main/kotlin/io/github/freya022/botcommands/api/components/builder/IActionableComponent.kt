@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.function.Consumer
+import javax.annotation.CheckReturnValue
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -46,12 +47,15 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      *
      * @see RateLimitReference @RateLimitReference
      */
+    @CheckReturnValue
     fun rateLimitReference(group: String): T
 
+    @CheckReturnValue
     fun addFilter(filter: ComponentInteractionFilter<*>): T = instance.also {
         filters += filter
     }
 
+    @CheckReturnValue
     fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T = addFilter(context.getService(filterType))
 }
 
@@ -72,6 +76,7 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      */
+    @CheckReturnValue
     fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T
 
     /**
@@ -87,6 +92,7 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      * @param data The data to pass to the component handler
      */
+    @CheckReturnValue
     fun bindTo(handlerName: String, data: List<Any?>): T = bindTo(handlerName) { passData(data) }
 
     /**
@@ -102,6 +108,7 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      * @param data The data to pass to the component handler
      */
+    @CheckReturnValue
     fun bindTo(handlerName: String, vararg data: Any?): T = bindTo(handlerName, data.asList())
 }
 
@@ -120,6 +127,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      *
      * @param handler The handler to run when the button is clicked
      */
+    @CheckReturnValue
     fun bindTo(handler: Consumer<E>): T = bindTo(handler = { handler.accept(it) })
 
     /**
@@ -131,6 +139,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      *
      * @param handler The handler to run when the button is clicked
      */
+    @CheckReturnValue
     fun bindTo(handler: Consumer<E>, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = bindTo(handler = { handler.accept(it) }, block)
 
     /**

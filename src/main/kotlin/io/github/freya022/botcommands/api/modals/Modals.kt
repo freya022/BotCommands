@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
+import javax.annotation.CheckReturnValue
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -31,6 +32,7 @@ interface Modals {
      *
      * @param title The title of the modal
      */
+    @CheckReturnValue
     fun create(title: String): ModalBuilder
 
     /**
@@ -40,6 +42,7 @@ interface Modals {
      * @param label     The label to display on top of the text field
      * @param style     The style of the text field
      */
+    @CheckReturnValue
     fun createTextInput(inputName: String, label: String, style: TextInputStyle): TextInputBuilder
 
     companion object {

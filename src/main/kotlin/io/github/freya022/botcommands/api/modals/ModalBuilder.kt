@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.internal.modals.ModalDSL
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
+import javax.annotation.CheckReturnValue
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
@@ -24,6 +25,7 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
+    @CheckReturnValue
     abstract fun bindTo(handlerName: String, userData: List<Any?>): ModalBuilder
 
     /**
@@ -34,6 +36,7 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
+    @CheckReturnValue
     fun bindTo(handlerName: String, vararg userData: Any?): ModalBuilder {
         return bindTo(handlerName, userData.asList())
     }
@@ -45,6 +48,7 @@ abstract class ModalBuilder protected constructor(
      *
      * @return This builder for chaining convenience
      */
+    @CheckReturnValue
     fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilder {
         return bindTo { handler.accept(it) }
     }
@@ -72,6 +76,7 @@ abstract class ModalBuilder protected constructor(
      * @return This builder for chaining convenience
      */
     @JvmOverloads
+    @CheckReturnValue
     fun timeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable? = null): ModalBuilder {
         return timeout(JavaDuration.of(timeout, unit.toChronoUnit()), onTimeout)
     }
@@ -88,6 +93,7 @@ abstract class ModalBuilder protected constructor(
      * @return This builder for chaining convenience
      */
     @JvmOverloads
+    @CheckReturnValue
     fun timeout(timeout: JavaDuration, onTimeout: Runnable? = null): ModalBuilder {
         return timeout(timeout.toKotlinDuration(), onTimeout?.let { { onTimeout.run() } })
     }
@@ -117,5 +123,6 @@ abstract class ModalBuilder protected constructor(
         return super.build()
     }
 
+    @CheckReturnValue
     abstract override fun build(): Modal
 }

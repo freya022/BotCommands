@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
+import javax.annotation.CheckReturnValue
 import kotlin.time.*
 import java.time.Duration as JavaDuration
 
@@ -32,6 +33,7 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
     /**
      * Removes the timeout from this component.
      */
+    @CheckReturnValue
     fun noTimeout(): T
 
     /**
@@ -49,6 +51,7 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
      */
+    @CheckReturnValue
     fun timeout(timeout: Long, timeoutUnit: TimeUnit): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()))
 
@@ -66,6 +69,7 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
      *
      * @param timeout The duration of the timeout
      */
+    @CheckReturnValue
     fun timeout(timeout: JavaDuration): T =
         timeout(timeout.toKotlinDuration())
 
@@ -124,6 +128,7 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * @see ComponentTimeoutHandler @ComponentTimeoutHandler
      * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
+    @CheckReturnValue
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, *data)
 
@@ -155,6 +160,7 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * @see ComponentTimeoutHandler @ComponentTimeoutHandler
      * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
+    @CheckReturnValue
     fun timeout(timeout: JavaDuration, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toKotlinDuration(), handlerName, *data)
 
@@ -218,6 +224,7 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * @param timeout The duration before timeout
      * @param handler The handler to run when the button is clicked
      */
+    @CheckReturnValue
     fun timeout(timeout: JavaDuration, handler: Runnable): T =
         timeout(timeout.toKotlinDuration()) { handler.run() }
 
@@ -242,6 +249,7 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * @param timeoutUnit The unit of the timeout
      * @param handler The handler to run when the button is clicked
      */
+    @CheckReturnValue
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
 
