@@ -1,27 +1,24 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -107,56 +104,28 @@ class SlashCommandOptionBuilder internal constructor(
      */
     var channelTypes: EnumSet<ChannelType>? = null
 
-    internal var autocompleteInfo: AutocompleteInfo? = null
+    internal var autocompleteInfo: AutocompleteInfoImpl? = null
         private set
-
-    /**
-     * Declares an autocomplete function for slash command options.
-     *
-     * The name of the handler must be unique,
-     * I recommend naming them like: `YourClassSimpleName: AutocompletedField` such as `SlashTag: tagName`.
-     *
-     * Requirements:
-     *  - The method must be public
-     *  - The method must be non-static
-     *  - The first parameter must be [CommandAutoCompleteInteractionEvent]
-     *
-     * The given function must return a [Collection], which gets processed differently based on its element type:
-     *  - `String`, `Long`, `Double`: Makes a choice where `name` == `value`,
-     *  uses fuzzy matching to give the best choices first
-     *  - `Choice`: Keeps the same choices in the same order, does not do any matching.
-     *  - Any type supported by an [AutocompleteTransformer]: Keeps the same order after transformation.
-     *
-     * You can add support for more element types with [autocomplete transformers][AutocompleteTransformer].
-     *
-     * ## State-aware autocomplete
-     * You can also use state-aware autocomplete,
-     * meaning you can get what the user has inserted in other options.
-     *
-     * The requirements are as follows:
-     *  - The parameters must be named the same as in the original slash command.
-     *  - The parameters of the same name must have the same type as the original slash command.
-     *  - The parameters can be in any order, include custom parameters or omit options.
-     *
-     * **Note:** Parameters refers to method parameters, not Discord options.
-     *
-     * **Requirement:** The declaring class must be annotated with [@Handler][Handler] or be in an existing [@Command][Command] class.
-     *
-     * @see AutocompleteTransformer
-     * @see SlashOption.autocomplete
-     */
-    fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
-        autocompleteInfo = AutocompleteInfoBuilder(context, name, function).apply(block).build()
-    }
 
     /**
      * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name].
      *
-     * Must match a method annotated with [AutocompleteHandler] with the same name in it.
+     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
+     * or [AutocompleteManager.autocomplete].
      *
      * @see AutocompleteHandler @AutocompleteHandler
      */
-    fun autocompleteReference(name: String) {
+    fun autocompleteByName(name: String) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwUser("Unknown autocomplete handler: $name")
+    }
+
+    /**
+     * Uses an existing autocomplete handler with the specified function.
+     *
+     * Must match an autocomplete handler created from [AutocompleteManager.autocomplete].
+     */
+    fun autocompleteByFunction(function: KFunction<*>) {
+        autocompleteInfo = context.getService<AutocompleteInfoContainer>()[function]
+            ?: throwUser("No autocomplete handler declared from: ${function.shortSignatureNoSrc}")
     }
 }

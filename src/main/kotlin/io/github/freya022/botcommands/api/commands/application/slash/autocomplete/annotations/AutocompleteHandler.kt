@@ -3,10 +3,10 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -15,8 +15,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 /**
  * Uses the method as an autocomplete function for [slash command options][SlashOption].
  *
- * The name of the handler must be unique,
- * I recommend naming them like: `YourClassSimpleName: AutocompletedField` such as `SlashTag: tagName`.
+ * The name must be unique; I recommend naming them similarly to:
+ * `YourClassSimpleName: AutocompletedField` (for example, `SlashTag: tagName`).
  *
  * Requirements:
  *  - The declaring class must be annotated with [@Handler][Handler] or be an existing [@Command][Command] class.
@@ -51,7 +51,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  * @see JDASlashCommand @JDASlashCommand
  * @see CacheAutocomplete @CacheAutocomplete
  *
- * @see SlashCommandOptionBuilder.autocomplete DSL equivalent
+ * @see AutocompleteDeclaration DSL equivalent
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

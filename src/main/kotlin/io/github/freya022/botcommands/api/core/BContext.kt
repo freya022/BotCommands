@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
+import kotlin.reflect.KFunction
 
 @InjectedService
 interface BContext {
@@ -226,8 +228,19 @@ interface BContext {
      *
      * This means that the cache of this autocomplete handler will be fully cleared.
      *
-     * @param autocompleteHandlerName The name of the autocomplete handler, supplied at [AutocompleteHandler.name]
+     * @param autocompleteHandlerName The name of the autocomplete handler,
+     * supplied at [AutocompleteHandler.name] or [AutocompleteManager.autocomplete]
      */
     fun invalidateAutocompleteCache(autocompleteHandlerName: String)
+
+    /**
+     * Invalidates the autocomplete cache of the specified autocomplete handler.
+     *
+     * This means that the cache of this autocomplete handler will be fully cleared.
+     *
+     * @param autocompleteHandler The autocomplete handler, supplied at [AutocompleteManager.autocomplete]
+     */
+    @JvmSynthetic
+    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>)
     //endregion
 }

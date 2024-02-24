@@ -329,7 +329,7 @@ internal class SlashCommandAutoBuilder(
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: SlashOption) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {
-            autocompleteReference(optionAnnotation.autocomplete)
+            autocompleteByName(optionAnnotation.autocomplete)
         }
     }
 }

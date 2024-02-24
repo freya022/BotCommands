@@ -6,9 +6,13 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KType
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.full.withNullability
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.typeOf
 
 private typealias Function = KFunction<*>
 private typealias FunctionIterable = Iterable<Function>
@@ -26,8 +30,6 @@ internal abstract class FunctionFilter {
     }
 
     companion object {
-        private fun Function.checkReturnType(types: Array<out KClass<*>>): Boolean = returnType.jvmErasure.isSubclassOfAny(*types)
-
         private fun hasFirstArg(it: KFunction<*>, types: Array<out KClass<*>>) =
             when (val firstParam = it.nonInstanceParameters.firstOrNull()) {
                 null -> false
@@ -37,11 +39,23 @@ internal abstract class FunctionFilter {
         private fun Array<out KClass<*>>.toTypesArrayString() =
             joinToString(prefix = "[", postfix = "]") { type -> type.simpleNestedName }
 
-        fun returnType(vararg types: KClass<*>) = object : FunctionFilter() {
-            override val errorMessage: String
-                get() = "Function must return any a superclass of: ${types.toTypesArrayString()}"
+        inline fun <reified T> returnType(ignoreNullability: Boolean) = returnType(typeOf<T>(), ignoreNullability)
 
-            override fun filter(function: Function): Boolean = function.checkReturnType(types)
+        fun returnType(type: KType, ignoreNullability: Boolean) = object : FunctionFilter() {
+            private val requiredType: KType = type.adjustType()
+
+            override val errorMessage: String
+                get() = "Function must return any supertype of: ${requiredType.simpleNestedName}"
+
+            override fun filter(function: Function): Boolean {
+                val returnType = function.returnType.adjustType()
+                return returnType.isSubtypeOf(requiredType)
+            }
+
+            private fun KType.adjustType() = when {
+                ignoreNullability -> withNullability(false)
+                else -> this
+            }
         }
 
         fun firstArg(vararg types: KClass<*>) = object : FunctionFilter() {

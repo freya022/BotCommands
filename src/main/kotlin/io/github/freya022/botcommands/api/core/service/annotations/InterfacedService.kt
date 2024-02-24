@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
@@ -12,6 +13,7 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
@@ -23,7 +25,11 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * Implementors of this interface will automatically be registered with the interface's type,
- * in addition to their own type and the ones in [@ServiceType][ServiceType]
+ * in addition to their own type and the ones in [@ServiceType][ServiceType].
+ *
+ * Retrieval of interfaced services can be done with [ServiceContainer.getInterfacedServices]
+ * or [ServiceContainer.getInterfacedServiceTypes].
+ * The returned collection is sorted by [service priority][ServicePriority].
  *
  * @see DynamicSupplier
  *
@@ -42,6 +48,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see HelpBuilderConsumer
  * @see TextSuggestionSupplier
  *
+ * @see AutocompleteDeclaration
  * @see AutocompleteTransformer
  * @see ApplicationCommandFilter
  *

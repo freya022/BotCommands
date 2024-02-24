@@ -1,66 +1,31 @@
 package io.github.freya022.botcommands.internal.commands.application.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.requiredFilter
-import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
-import io.github.freya022.botcommands.internal.utils.FunctionFilter
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class AutocompleteInfoContainer(private val context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
-    private val infoMap: Map<String, AutocompleteInfo>
+internal class AutocompleteInfoContainer internal constructor() {
+    private val infoByName: MutableMap<String, AutocompleteInfoImpl> = hashMapOf()
+    private val infoByFunction: MutableMap<KFunction<*>, AutocompleteInfoImpl> = hashMapOf()
 
-    init {
-        infoMap = functionAnnotationsMap.getFunctionsWithAnnotation<AutocompleteHandler>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
-            .requiredFilter(FunctionFilter.returnType(Collection::class))
-            .map {
-                requireUser(it.function.returnType.jvmErasure.isSubclassOf<Collection<*>>(), it.function) {
-                    "Autocomplete handler needs to return a Collection"
-                }
+    internal val allInfos get() = infoByFunction.values
+    internal val size get() = infoByFunction.size
 
-                @Suppress("UNCHECKED_CAST")
-                val autocompleteFunction = it.function as KFunction<Collection<Any>>
-                val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
-
-                AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name, autocompleteFunction).apply {
-                    mode = autocompleteHandlerAnnotation.mode
-                    showUserInput = autocompleteHandlerAnnotation.showUserInput
-
-                    autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
-                        cache(autocompleteCacheAnnotation.cacheMode) {
-                            forceCache = autocompleteCacheAnnotation.forceCache
-                            cacheSize = autocompleteCacheAnnotation.cacheSize
-
-                            compositeKeys = autocompleteCacheAnnotation.compositeKeys.toList()
-                            userLocal = autocompleteCacheAnnotation.userLocal
-                            channelLocal = autocompleteCacheAnnotation.channelLocal
-                            guildLocal = autocompleteCacheAnnotation.guildLocal
-                        }
-                    }
-                }.build()
+    internal operator fun plusAssign(autocompleteInfo: AutocompleteInfoImpl) {
+        autocompleteInfo.name?.let { name ->
+            infoByName.putIfAbsentOrThrow(name, autocompleteInfo) {
+                "Autocomplete handler '$name' is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${it.function.shortSignatureNoSrc}"
             }
-            .also {
-                it.forEach { autocompleteInfo ->
-                    val otherInfo = it.find { otherInfo -> otherInfo.name == autocompleteInfo.name && otherInfo !== autocompleteInfo }
-                    if (otherInfo != null) //must be a duplicate
-                        throw IllegalArgumentException("Autocomplete handler ${autocompleteInfo.name} is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${otherInfo.function.shortSignatureNoSrc}")
-                }
-            }
-            .associateBy { it.name }
+        }
+        infoByFunction.putIfAbsentOrThrow(autocompleteInfo.function, autocompleteInfo) {
+            "Autocomplete handler is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${it.function.shortSignatureNoSrc}"
+        }
     }
 
-    operator fun get(handlerName: String): AutocompleteInfo? = infoMap[handlerName]
+    internal operator fun get(handlerName: String): AutocompleteInfoImpl? = infoByName[handlerName]
+    internal operator fun get(handlerFunction: KFunction<*>): AutocompleteInfoImpl? = infoByFunction[handlerFunction.reflectReference()]
 }

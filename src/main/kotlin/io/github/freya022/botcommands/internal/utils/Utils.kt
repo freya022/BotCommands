@@ -40,6 +40,12 @@ internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V) {
     this[key] = value
 }
 
+internal inline fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V, messageSupplier: (value: V) -> String) {
+    val existingValue = this[key]
+    if(existingValue != null) throw IllegalStateException(messageSupplier(existingValue))
+    this[key] = value
+}
+
 internal inline fun CoroutineScope.launchCatching(
     crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
     crossinline block: suspend CoroutineScope.() -> Unit
