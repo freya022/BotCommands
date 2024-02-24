@@ -1,9 +1,17 @@
+@file:OptIn(ExperimentalContracts::class)
+
 package io.github.freya022.botcommands.api.modals
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.internal.utils.throwUser
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.ModalMapping
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
@@ -45,8 +53,12 @@ interface Modals {
     }
 }
 
-fun Modals.create(title: String, block: context(Modals) ModalBuilder.() -> Unit): Modal =
-    create(title).apply { block(this@create, this) }.build()
+fun Modals.create(title: String, block: context(Modals) ModalBuilder.() -> Unit): Modal {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return create(title).apply { block(this@create, this) }.build()
+}
 
 context(Modals)
 fun ModalBuilder.textInput(inputName: String, label: String, inputStyle: TextInputStyle, block: TextInputBuilder.() -> Unit = {}): TextInput =
@@ -62,3 +74,8 @@ fun ModalBuilder.shortTextInput(inputName: String, label: String, block: TextInp
 context(Modals)
 fun ModalBuilder.paragraphTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput =
     textInput(inputName, label, TextInputStyle.PARAGRAPH, block)
+
+fun TextInput.getValue(modalEvent: ModalInteractionEvent): ModalMapping = getValue(modalEvent, id)
+
+private fun getValue(modalEvent: ModalInteractionEvent, id: String): ModalMapping =
+    modalEvent.getValue(id) ?: throwUser("Could not find value for ID '$id', available IDs: ${modalEvent.values.joinToString { it.id }}")
