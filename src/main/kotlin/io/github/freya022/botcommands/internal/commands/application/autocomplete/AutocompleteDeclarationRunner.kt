@@ -17,7 +17,7 @@ internal class AutocompleteDeclarationRunner internal constructor(
 ) {
     init {
         val manager = AutocompleteManagerImpl(context)
-        autocompleteDeclarations.forEach { it.declare(manager) }
+        autocompleteDeclarations.forEach { it.declareAutocomplete(manager) }
 
         if (logger.isTraceEnabled()) {
             logger.trace {

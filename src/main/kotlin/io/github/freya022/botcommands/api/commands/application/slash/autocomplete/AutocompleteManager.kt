@@ -7,5 +7,5 @@ import kotlin.reflect.KFunction
 interface AutocompleteManager {
     val context: BContext
 
-    fun autocomplete(function: KFunction<Collection<Any>>, name: String? = null, block: AutocompleteInfoBuilder.() -> Unit)
+    fun autocomplete(function: KFunction<Collection<Any>>, name: String? = null, block: AutocompleteInfoBuilder.() -> Unit = {})
 }

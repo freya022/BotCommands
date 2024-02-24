@@ -15,7 +15,7 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 internal class AutocompleteInfoAutoBuilder internal constructor() : AutocompleteDeclaration {
-    override fun declare(manager: AutocompleteManager) {
+    override fun declareAutocomplete(manager: AutocompleteManager) {
         val functionAnnotationsMap = manager.context.getService<FunctionAnnotationsMap>()
 
         functionAnnotationsMap.getFunctionsWithAnnotation<AutocompleteHandler>()

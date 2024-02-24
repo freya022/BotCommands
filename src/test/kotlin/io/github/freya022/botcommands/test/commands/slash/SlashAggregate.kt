@@ -57,7 +57,7 @@ class SlashAggregate : AutocompleteDeclaration {
         }
     }
 
-    override fun declare(manager: AutocompleteManager) {
+    override fun declareAutocomplete(manager: AutocompleteManager) {
         manager.autocomplete(::onInlineAutoStrAutocomplete) {
             this.showUserInput = false
 

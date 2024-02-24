@@ -141,7 +141,7 @@ class SlashMyCommand : ApplicationCommand(), AutocompleteDeclaration {
         }
     }
 
-    override fun declare(manager: AutocompleteManager) {
+    override fun declareAutocomplete(manager: AutocompleteManager) {
         manager.autocomplete(::runAutocomplete) {
             cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
         }

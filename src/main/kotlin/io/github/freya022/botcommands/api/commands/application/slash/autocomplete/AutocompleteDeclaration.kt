@@ -4,5 +4,5 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 
 @InterfacedService(acceptMultiple = true)
 interface AutocompleteDeclaration {
-    fun declare(manager: AutocompleteManager)
+    fun declareAutocomplete(manager: AutocompleteManager)
 }
