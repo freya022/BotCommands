@@ -36,7 +36,7 @@ internal inline fun <reified T> downcast(obj: Any): T {
     return obj
 }
 
-internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V) {
+internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V) {
     if (key in this)
         throwInternal("Key '$key' is already present in the map")
     this[key] = value
