@@ -49,6 +49,9 @@ class ServiceError private constructor(
     fun withSibling(serviceError: ServiceError): ServiceError =
         ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
 
+    fun withSiblings(serviceErrors: List<ServiceError>): ServiceError =
+        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceErrors)
+
     fun toSimpleString(): String = when {
         siblingErrors.isEmpty() -> this.toSingleSimpleString()
         else -> (listOf(this) + siblingErrors).joinAsList { it.toSingleSimpleString() }
@@ -95,7 +98,7 @@ class ServiceError private constructor(
 
     companion object {
         fun fromErrors(errors: List<ServiceError>): ServiceError {
-            return errors.drop(1).fold(errors.first()) { acc, serviceError -> acc.withSibling(serviceError) }
+            return errors.first().withSiblings(errors.drop(1))
         }
     }
 }
