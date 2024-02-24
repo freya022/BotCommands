@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.components.builder
 
 import dev.minn.jda.ktx.util.ref
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
@@ -31,9 +30,12 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
     val timeout: ComponentTimeout?
 
     /**
+     * Removes the timeout from this component.
+     */
+    fun noTimeout(): T
+
+    /**
      * Sets the timeout on this component, invalidating the component on expiration.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -53,8 +55,6 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
     /**
      * Sets the timeout on this component, invalidating the component on expiration.
      *
-     * If unset, the timeout is set to [Components.defaultTimeout].
-     *
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
@@ -71,8 +71,6 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
 
     /**
      * Sets the timeout on this component, invalidating the component on expiration.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -101,8 +99,6 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the timeout handler with the given name and its arguments.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -135,8 +131,6 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the timeout handler with the given name and its arguments.
      *
-     * If unset, the timeout is set to [Components.defaultTimeout].
-     *
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
@@ -167,8 +161,6 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the timeout handler with the given name and its arguments.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -210,8 +202,6 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the given timeout handler.
      *
-     * If unset, the timeout is set to [Components.defaultTimeout].
-     *
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
@@ -234,8 +224,6 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the given timeout handler.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *
@@ -260,8 +248,6 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
      * and running the given timeout handler.
-     *
-     * If unset, the timeout is set to [Components.defaultTimeout].
      *
      * **Note:** Components inside groups cannot have timeouts.
      *

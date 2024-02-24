@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.modals.Modal
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.time.Duration
@@ -56,7 +57,7 @@ internal class ModalBuilderImpl internal constructor(
         internetSetId(modalMaps.insertModal(PartialModalData(
             handlerData,
             inputDataMap,
-            timeoutInfo ?: ModalTimeoutInfo(Modals.defaultTimeout, null)
+            timeoutInfo ?: Modals.defaultTimeout.takeIfFinite()?.let { ModalTimeoutInfo(it, null) }
         )))
 
         return Modal(jdaBuild(), modalMaps)

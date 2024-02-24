@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.components
 
+import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
+import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.group.EphemeralComponentGroupBuilder
@@ -34,11 +36,13 @@ import java.time.Duration as JavaDuration
  *
  * Every component can either be persistent or ephemeral, all components can be configured to:
  *  - Be used once
- *  - Have timeouts
+ *  - Have timeouts, [a default timeout][defaultTimeout] is set,
+ *  which can be overridden, or set by the `timeout` methods.
  *  - Have handlers
  *  - Have constraints (checks before the button can be used)
  *
- * Except component groups which can only have its timeout configured.
+ * Except component groups which can only have their timeout configured,
+ * their default timeouts are the same as components.
  *
  * ### Persistent components
  *  - Kept after restart
@@ -53,6 +57,9 @@ import java.time.Duration as JavaDuration
  * ### Component groups
  *  - If deleted, all contained components are deleted
  *  - If one of the contained components is deleted, then all of its subsequent groups are also deleted
+ *
+ * **Note:** Component groups cannot contain components with timeouts,
+ * you will need to [disable the timeout on the components][ITimeoutableComponent.noTimeout].
  *
  * ### Java example
  * ```java
@@ -271,6 +278,9 @@ class Components internal constructor(private val componentController: Component
     }
 
     companion object {
+        /**
+         * The default timeout for components and component groups
+         */
         @JvmSynthetic
         var defaultTimeout: Duration = 15.minutes
 

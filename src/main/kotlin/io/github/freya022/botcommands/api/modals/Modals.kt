@@ -26,6 +26,9 @@ interface Modals {
     /**
      * Creates a new modal.
      *
+     * The modal expires after [a default timeout][defaultTimeout],
+     * which can be overridden, or set by [ModalBuilder.timeout].
+     *
      * @param title The title of the modal
      */
     fun create(title: String): ModalBuilder

@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.utils
 
 import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -76,3 +78,9 @@ private suspend inline fun CoroutineScope.runCatching(
         catchBlock(this, e)
     }
 }
+
+internal fun Duration.toTimestampIfFinite(): Instant? =
+    takeIfFinite()?.let { Clock.System.now() + it }
+
+internal fun Duration.takeIfFinite(): Duration? =
+    takeIf { it.isFinite() && it.isPositive() }
