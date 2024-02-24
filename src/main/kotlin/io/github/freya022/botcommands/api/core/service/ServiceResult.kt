@@ -22,7 +22,7 @@ class ServiceError private constructor(
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
         INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
         NO_PROVIDER("No class annotated as a service or service factories were found"),
-        NO_USABLE_PROVIDER("A provider was found but is not usable"),
+        NO_USABLE_PROVIDER("One ore more providers returned errors"),
         NON_UNIQUE_PROVIDERS("Multiple providers were found but none were marked as primary"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
         PROVIDER_RETURNED_NULL("The service provider returned no service"),
@@ -45,6 +45,9 @@ class ServiceError private constructor(
     operator fun component2() = errorMessage
     operator fun component3() = extraMessage
     operator fun component4() = nestedError
+
+    fun withErrorType(errorType: ErrorType): ServiceError =
+        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors)
 
     fun withSibling(serviceError: ServiceError): ServiceError =
         ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)

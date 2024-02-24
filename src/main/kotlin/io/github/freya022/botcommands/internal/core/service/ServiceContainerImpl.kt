@@ -265,10 +265,17 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             return ServiceResult.pass(primaryProvider)
         } else { // One provider at most, or none and has errors
             val primaryProvider = primaryProviders.firstOrNull()
-                ?: return NO_USABLE_PROVIDER.toResult(
-                    errorMessage = "No usable service or factories found for type ${clazz.simpleNestedName}",
-                    nestedError = ServiceError.fromErrors(errors)
-                )
+                ?: return run {
+                    val single = errors.singleOrNull()
+                    if (single != null) {
+                        ServiceResult.fail(single.withErrorType(NO_USABLE_PROVIDER))
+                    } else {
+                        NO_USABLE_PROVIDER.toResult(
+                            errorMessage = "Multiple providers returned an error for type ${clazz.simpleNestedName}",
+                            nestedError = ServiceError.fromErrors(errors)
+                        )
+                    }
+                }
 
             return ServiceResult.pass(primaryProvider)
         }
