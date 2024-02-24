@@ -15,8 +15,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 /**
  * Uses the method as an autocomplete function for [slash command options][SlashOption].
  *
- * The name of the handler must be unique,
- * I recommend naming them like: `YourClassSimpleName: AutocompletedField` such as `SlashTag: tagName`.
+ * The name must be unique; I recommend naming them similarly to:
+ * `YourClassSimpleName: AutocompletedField` (for example, `SlashTag: tagName`).
  *
  * Requirements:
  *  - The declaring class must be annotated with [@Handler][Handler] or be an existing [@Command][Command] class.
