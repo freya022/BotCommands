@@ -24,7 +24,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
  * @see JDAMessageCommand @JDAMessageCommand
  * @see JDAUserCommand @JDAUserCommand
  *
- * @see TextCommandProvider
+ * @see TextCommandProvider Declaring text commands using the DSL
  * @see JDATextCommandVariation @JDATextCommandVariation
  */
 @Target(AnnotationTarget.CLASS)
