@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes

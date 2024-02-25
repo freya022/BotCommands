@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ValueRange.Companion.range
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @Command
-class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandsDeclaration, AutocompleteDeclaration {
+class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, AutocompleteDeclaration {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
         if (optionName == "string_option" || optionName == "string_annotated") {
             return listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))

@@ -5,8 +5,8 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
@@ -27,7 +27,7 @@ private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
 @Dependencies(Components::class)
-class SlashRateLimit(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandsDeclaration {
+class SlashRateLimit(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(
 //        scope = RateLimitScope.USER,

@@ -2,11 +2,11 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 
 /**
@@ -18,13 +18,13 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
  *
  * @see BService @BService
  *
- * @see GlobalApplicationCommandsDeclaration Declaring global application commands using the DSL
- * @see GuildApplicationCommandsDeclaration Declaring guild application commands using the DSL
+ * @see GlobalApplicationCommandProvider Declaring global application commands using the DSL
+ * @see GuildApplicationCommandProvider Declaring guild application commands using the DSL
  * @see JDASlashCommand @JDASlashCommand
  * @see JDAMessageCommand @JDAMessageCommand
  * @see JDAUserCommand @JDAUserCommand
  *
- * @see TextCommandsDeclaration
+ * @see TextCommandProvider
  * @see JDATextCommandVariation @JDATextCommandVariation
  */
 @Target(AnnotationTarget.CLASS)

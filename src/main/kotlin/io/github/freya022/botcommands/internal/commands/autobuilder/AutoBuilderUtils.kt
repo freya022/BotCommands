@@ -7,9 +7,9 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text
 
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.FirstGuildReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -16,9 +16,9 @@ internal class TextCommandsBuilder {
         try {
             val manager = TextCommandManager(context)
             context.serviceContainer
-                .getInterfacedServices<TextCommandsDeclaration>()
-                .forEach { textCommandsDeclaration ->
-                    textCommandsDeclaration.declareTextCommands(manager)
+                .getInterfacedServices<TextCommandProvider>()
+                .forEach { textCommandProvider ->
+                    textCommandProvider.declareTextCommands(manager)
                 }
 
             manager.textCommands.map.values.forEach { context.textCommandsContext.addTextCommand(it) }

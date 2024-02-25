@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
-import io.github.freya022.botcommands.api.commands.application.declaration.*
+import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
@@ -47,7 +47,7 @@ private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 internal class SlashCommandAutoBuilder(
     context: BContextImpl,
     private val resolverContainer: ResolverContainer
-) : GlobalApplicationCommandsDeclaration, GuildApplicationCommandsDeclaration {
+) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
     private class TopLevelSlashCommandMetadata(
         val name: String,
         val annotation: TopLevelSlashCommandData,

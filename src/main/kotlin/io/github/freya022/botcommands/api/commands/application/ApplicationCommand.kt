@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 /**
  * Base class for **annotated** application commands such as slash / context commands.
  *
- * You are not required to use this if you use the DSL declaration interfaces.
+ * You are not required to use this if you use the application command provider interfaces.
  *
  * @see JDASlashCommand @JDASlashCommand
  * @see JDAMessageCommand @JDAMessageCommand

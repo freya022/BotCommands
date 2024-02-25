@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -58,7 +58,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * @see RateLimit @RateLimit
  * @see Filter @Filter
  *
- * @see TextCommandsDeclaration Declaring text commands using the DSL
+ * @see TextCommandProvider Declaring text commands using the DSL
  *
  * @see TextCommandManager.textCommand DSL equivalent
  */
@@ -77,7 +77,7 @@ annotation class JDATextCommandVariation(
      * By default, if two variations have no order set, parameters are compared between each variation,
      * if one of them is a [String] but the other is not, the [String] parameter is prioritized.
      *
-     * If you are using Kotlin, [DSL-declared commands][TextCommandsDeclaration] retain the order they are declared in.
+     * If you are using Kotlin, [DSL-declared commands][TextCommandProvider] retain the order they are declared in.
      */
     val order: Int = 0,
 

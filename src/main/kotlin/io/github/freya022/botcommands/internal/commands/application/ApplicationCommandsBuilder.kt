@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 @BService
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
-    private val globalApplicationCommandsDeclarations: List<GlobalApplicationCommandsDeclaration>,
-    private val guildApplicationCommandsDeclarations: List<GuildApplicationCommandsDeclaration>
+    private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
+    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
 ) {
     private val logger = KotlinLogging.logger {  }
 
@@ -67,7 +67,7 @@ internal class ApplicationCommandsBuilder(
         val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
         val manager = GlobalApplicationCommandManager(context)
-        globalApplicationCommandsDeclarations.forEach { globalApplicationCommandsDeclaration ->
+        globalApplicationCommandProviders.forEach { globalApplicationCommandProvider ->
             runCatching {
                 globalApplicationCommandsDeclaration.declareGlobalApplicationCommands(manager)
             }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandsDeclaration::declareGlobalApplicationCommands.resolveReference(globalApplicationCommandsDeclaration::class)!!, it)) }
@@ -109,7 +109,7 @@ internal class ApplicationCommandsBuilder(
             val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
             val manager = GuildApplicationCommandManager(context, guild)
-            guildApplicationCommandsDeclarations.forEach { guildApplicationCommandsDeclaration ->
+            guildApplicationCommandProviders.forEach { guildApplicationCommandProvider ->
                 runCatching {
                     guildApplicationCommandsDeclaration.declareGuildApplicationCommands(manager)
                 }.onFailure { failedDeclarations.add(CommandUpdateException(guildApplicationCommandsDeclaration::declareGuildApplicationCommands.resolveReference(guildApplicationCommandsDeclaration::class)!!, it)) }

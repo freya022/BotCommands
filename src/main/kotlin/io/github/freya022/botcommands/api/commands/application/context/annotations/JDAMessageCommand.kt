@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
-import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -44,8 +44,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * @see RateLimit @RateLimit
  * @see Filter @Filter
  *
- * @see GlobalApplicationCommandsDeclaration Declaring global application commands using the DSL
- * @see GuildApplicationCommandsDeclaration Declaring guild application commands using the DSL
+ * @see GlobalApplicationCommandProvider Declaring global application commands using the DSL
+ * @see GuildApplicationCommandProvider Declaring guild application commands using the DSL
  * @see AbstractApplicationCommandManager.messageCommand DSL equivalent
  */
 @Target(AnnotationTarget.FUNCTION)

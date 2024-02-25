@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import net.dv8tion.jda.api.entities.Guild
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 @Command
-class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandsDeclaration {
+class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandProvider {
     override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?,

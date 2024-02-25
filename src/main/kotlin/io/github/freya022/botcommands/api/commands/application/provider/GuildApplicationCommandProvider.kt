@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.application.declaration
+package io.github.freya022.botcommands.api.commands.application.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -27,6 +27,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface GuildApplicationCommandsDeclaration {
+interface GuildApplicationCommandProvider {
     fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager)
 }

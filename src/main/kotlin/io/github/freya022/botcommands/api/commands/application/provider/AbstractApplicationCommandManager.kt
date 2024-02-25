@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.application.declaration
+package io.github.freya022.botcommands.api.commands.application.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandScope

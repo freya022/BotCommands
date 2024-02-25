@@ -10,13 +10,13 @@ import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
-import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
 @Command
-class TextTest : TextCommand(), TextCommandsDeclaration {
+class TextTest : TextCommand(), TextCommandProvider {
     override fun getGeneratedValueSupplier(
         commandPath: CommandPath,
         optionName: String,

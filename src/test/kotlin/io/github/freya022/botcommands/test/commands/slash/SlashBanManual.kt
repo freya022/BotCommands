@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.entities.InputUser
 
 @Command
-class SlashBanManual : ApplicationCommand(), GuildApplicationCommandsDeclaration {
+class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
     @Test(guildIds = [722891685755093072])
     @JDASlashCommand(name = "ban_annotated")
     @TopLevelSlashCommandData(defaultLocked = true, scope = CommandScope.GUILD)

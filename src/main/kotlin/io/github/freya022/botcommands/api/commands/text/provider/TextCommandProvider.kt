@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.text.declaration
+package io.github.freya022.botcommands.api.commands.text.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
@@ -18,6 +18,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface TextCommandsDeclaration {
+interface TextCommandProvider {
     fun declareTextCommands(manager: TextCommandManager)
 }
