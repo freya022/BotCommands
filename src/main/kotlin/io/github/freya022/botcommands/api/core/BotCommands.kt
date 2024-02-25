@@ -20,6 +20,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDAInfo
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
 
 /**
  * Entry point for the BotCommands framework.
@@ -72,7 +74,8 @@ object BotCommands {
     }
 
     private fun build(manager: CoroutineEventManager, config: BConfig): BContext {
-        return runBlocking(manager.coroutineContext) {
+        val mark = TimeSource.Monotonic.markNow()
+        val context = runBlocking(manager.coroutineContext) {
             logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
             Version.checkVersions()
 
@@ -104,5 +107,8 @@ object BotCommands {
 
             context
         }
+        val duration = mark.elapsedNow()
+        logger.info { "Loaded BotCommands in ${duration.toString(DurationUnit.SECONDS, 3)}" }
+        return context
     }
 }
