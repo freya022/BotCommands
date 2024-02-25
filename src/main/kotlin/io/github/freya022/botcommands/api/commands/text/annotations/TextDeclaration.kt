@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.text.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
 
 /**
  * Marks the function as a text command declaration function.

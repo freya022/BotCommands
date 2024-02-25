@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text
 
-import io.github.freya022.botcommands.api.commands.text.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.FirstGuildReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService

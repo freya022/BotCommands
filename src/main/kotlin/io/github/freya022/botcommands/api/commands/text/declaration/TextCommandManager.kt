@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.text
+package io.github.freya022.botcommands.api.commands.text.declaration
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
