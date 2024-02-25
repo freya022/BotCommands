@@ -120,7 +120,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
 
         typeToImplementations.forEach { (interfacedType, providers) ->
-            logger.debug { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
+            logger.trace { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
         }
     }
 
