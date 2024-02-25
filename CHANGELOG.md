@@ -58,7 +58,7 @@ which enables this annotation to represent a custom condition for service creati
 
 You can also specify if failure of these annotations throws an exception.
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/wiki/switches/WikiLanguage.kt).
+An example can be found [here](examples/src/main/kotlin/io/github/freya022/wiki/switches/wiki/WikiLanguage.kt).
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>
@@ -107,7 +107,8 @@ More details [on the PR](https://github.com/freya022/BotCommands/pull/146).
 Commands can now be declared using a DSL, these works best if you use Kotlin.
 
 ### Declaration DSL
-To use the DSL, you can check out `@AppDeclaration` and `@TextDeclaration`.
+To use the DSL, you can check out `GlobalApplicationCommandProvider`/`GuildApplicationCommandProvider`
+and `TextCommandProvider`.
 
 The DSL can help you provide each parameter explicitly, without the need for annotations,
 and also enables more features, such as [option aggregates](#option-aggregates).

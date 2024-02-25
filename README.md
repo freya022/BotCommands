@@ -148,7 +148,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
 ```kt
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSay(private val components: Components) {
+class SlashSay(private val components: Components) : GlobalApplicationCommandProvider {
     suspend fun onSlashSay(
         event: GuildSlashEvent,
         channel: TextChannel,
@@ -167,8 +167,7 @@ class SlashSay(private val components: Components) {
             .await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("say", function = ::onSlashSay) {
             description = "Sends a message in a channel"
 
@@ -191,10 +190,10 @@ class SlashSay(private val components: Components) {
 ```java
 @Command
 @Dependencies(Components.class) // Disables the command if components are not enabled
-public class SlashSayJava extends ApplicationCommand {
+public class SlashSay extends ApplicationCommand {
     private final Components components;
 
-    public SlashSayJava(Components components) {
+    public SlashSay(Components components) {
         this.components = components;
     }
 
