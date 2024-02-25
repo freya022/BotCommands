@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.api.commands.text.declaration
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.CommandEvent
+import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
