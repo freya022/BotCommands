@@ -58,6 +58,10 @@ internal class ClassServiceProvider private constructor(
     }
 
     private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+        require(!clazz.isAbstract) {
+            "Cannot provide a service from an abstract class ${clazz.simpleNestedName}"
+        }
+
         clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
