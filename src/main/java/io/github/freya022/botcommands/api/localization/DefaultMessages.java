@@ -1,12 +1,10 @@
 package io.github.freya022.botcommands.api.localization;
 
 import io.github.freya022.botcommands.api.core.BContext;
-import io.github.freya022.botcommands.api.core.SettingsProvider;
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
 import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.Timestamp;
 import org.jetbrains.annotations.ApiStatus;
@@ -39,12 +37,10 @@ import static io.github.freya022.botcommands.api.localization.Localization.Entry
  * </ul>
  * Most of the time it's easier to just add your new localization files in {@code /bc_localization}.
  *
- * <p>The localization paths must not be changed, of course, the templates can have their values in any order,
+ * <p>The localization paths must not be changed, the templates can have their values in any order,
  * use different format specifiers, but need to keep the same names.
  *
  * <p>Refer to {@link Localization} for more details.
- *
- * @see SettingsProvider#doesUserConsentNSFW(User)
  * @see Localization
  */
 public final class DefaultMessages {
