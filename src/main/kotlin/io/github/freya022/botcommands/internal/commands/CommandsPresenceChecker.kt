@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.declaration.Globa
 import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -25,10 +25,10 @@ private val commandAnnotations = listOf(
     JDASlashCommand::class.jvmName,
     JDAUserCommand::class.jvmName,
     JDAMessageCommand::class.jvmName,
-    JDATextCommandVariation::class.jvmName,
-    TextDeclaration::class.jvmName
+    JDATextCommandVariation::class.jvmName
 )
 private val declarationInterfaces = listOf(
+    TextCommandsDeclaration::class.jvmName,
     GuildApplicationCommandsDeclaration::class.jvmName,
     GlobalApplicationCommandsDeclaration::class.jvmName,
 )

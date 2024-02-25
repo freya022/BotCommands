@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuild
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -39,7 +40,7 @@ private val defaultExtraData = TextCommandData()
 internal class TextCommandAutoBuilder(
     context: BContextImpl,
     private val resolverContainer: ResolverContainer
-) {
+) : TextCommandsDeclaration {
     private class TextCommandContainer(val name: String) {
         var extraData: TextCommandData = defaultExtraData
         val hasExtraData get() = extraData !== defaultExtraData
@@ -113,7 +114,7 @@ internal class TextCommandAutoBuilder(
         }
     }
 
-    fun declare(manager: TextCommandManager) {
+    override fun declareTextCommands(manager: TextCommandManager) {
         containers.values.forEach { container ->
             try {
                 processCommand(manager, container)

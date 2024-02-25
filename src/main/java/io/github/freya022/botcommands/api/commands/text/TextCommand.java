@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation;
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration;
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 /**
  * Base class for <b>annotated</b> text commands.
  *
- * <p>You are not required to use this if you use the {@link TextDeclaration DSL declaration mode}
+ * <p>You are not required to use this if you use {@link TextCommandsDeclaration}
  *
  * @see JDATextCommandVariation @JDATextCommandVariation
  */

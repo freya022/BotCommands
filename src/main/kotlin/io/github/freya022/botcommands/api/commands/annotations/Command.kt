@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.declaration.Globa
 import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.declaration.TextCommandsDeclaration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 
 /**
@@ -24,7 +24,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
  * @see JDAMessageCommand @JDAMessageCommand
  * @see JDAUserCommand @JDAUserCommand
  *
- * @see TextDeclaration @TextDeclaration
+ * @see TextCommandsDeclaration
  * @see JDATextCommandVariation @JDATextCommandVariation
  */
 @Target(AnnotationTarget.CLASS)
