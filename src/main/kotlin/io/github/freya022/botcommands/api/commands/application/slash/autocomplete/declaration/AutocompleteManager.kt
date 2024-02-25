@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.application.slash.autocomplete
+package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import kotlin.reflect.KFunction
 
 /**
- * Allows programmatic declaration of autocomplete handlers using [AutocompleteDeclaration].
+ * Allows programmatic declaration of autocomplete handlers using [AutocompleteHandlerProvider].
  *
- * @see AutocompleteDeclaration
+ * @see AutocompleteHandlerProvider
  */
 interface AutocompleteManager {
     val context: BContext

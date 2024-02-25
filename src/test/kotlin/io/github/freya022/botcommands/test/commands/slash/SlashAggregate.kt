@@ -7,13 +7,13 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 @Command
-class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteDeclaration {
+class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProvider {
     @JvmInline
     value class MyInlineString(val yes: String)
 

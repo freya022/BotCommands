@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
@@ -89,11 +89,11 @@ annotation class SlashOption(
     /**
      * Name of the autocomplete handler.
      *
-     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler] or [AutocompleteDeclaration].
+     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler] or [AutocompleteHandlerProvider].
      *
      * @see AutocompleteTransformer
      * @see SlashCommandOptionBuilder.autocompleteByName DSL equivalent
-     * @see AutocompleteDeclaration Declaring an autocomplete handler using the DSL
+     * @see AutocompleteHandlerProvider Declaring an autocomplete handler using the DSL
      */
     val autocomplete: String = ""
 )

@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.utils.awaitUnit
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import org.apache.commons.collections4.map.CaseInsensitiveMap
@@ -14,7 +14,7 @@ import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate", "UNUSED_PARAMETER")
 @Command
-class SlashBasicAutocomplete : GlobalApplicationCommandProvider, AutocompleteDeclaration {
+class SlashBasicAutocomplete : GlobalApplicationCommandProvider, AutocompleteHandlerProvider {
     private val fruits: Set<String> = Collections.newSetFromMap<String>(CaseInsensitiveMap()).apply {
         add("Pineapple")
         add("Apple")

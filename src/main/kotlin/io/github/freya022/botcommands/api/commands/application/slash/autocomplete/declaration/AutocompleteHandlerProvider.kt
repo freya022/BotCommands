@@ -1,5 +1,6 @@
-package io.github.freya022.botcommands.api.commands.application.slash.autocomplete
+package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration
 
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -14,6 +15,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface AutocompleteDeclaration {
+interface AutocompleteHandlerProvider {
     fun declareAutocomplete(manager: AutocompleteManager)
 }

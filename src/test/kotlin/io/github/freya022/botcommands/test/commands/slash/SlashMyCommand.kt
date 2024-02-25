@@ -14,8 +14,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @Command
-class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, AutocompleteDeclaration {
+class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, AutocompleteHandlerProvider {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
         if (optionName == "string_option" || optionName == "string_annotated") {
             return listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))

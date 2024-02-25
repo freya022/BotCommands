@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.getService
