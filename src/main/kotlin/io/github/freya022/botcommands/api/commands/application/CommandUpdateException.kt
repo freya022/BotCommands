@@ -8,6 +8,6 @@ import kotlin.reflect.KFunction
  *
  * @see CommandUpdateResult
  */
-class CommandUpdateException internal constructor(val function: KFunction<*>, val throwable: Throwable) {
+class CommandUpdateException internal constructor(val function: KFunction<Unit>, val throwable: Throwable) {
     override fun toString(): String = "$throwable at: ${function.shortSignature}"
 }

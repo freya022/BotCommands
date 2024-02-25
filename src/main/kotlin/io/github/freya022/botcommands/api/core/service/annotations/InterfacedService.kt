@@ -1,12 +1,15 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
@@ -41,6 +44,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see GlobalExceptionHandler
  *
+ * @see TextCommandProvider
  * @see TextCommandFilter
  * @see DefaultEmbedSupplier
  * @see DefaultEmbedFooterIconSupplier
@@ -48,6 +52,8 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see HelpBuilderConsumer
  * @see TextSuggestionSupplier
  *
+ * @see GlobalApplicationCommandProvider
+ * @see GuildApplicationCommandProvider
  * @see AutocompleteDeclaration
  * @see AutocompleteTransformer
  * @see ApplicationCommandFilter

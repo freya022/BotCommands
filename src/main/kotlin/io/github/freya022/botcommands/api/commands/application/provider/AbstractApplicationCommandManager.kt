@@ -1,6 +1,7 @@
-package io.github.freya022.botcommands.api.commands.application
+package io.github.freya022.botcommands.api.commands.application.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand

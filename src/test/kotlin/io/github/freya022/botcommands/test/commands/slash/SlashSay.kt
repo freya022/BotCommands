@@ -4,8 +4,8 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -42,7 +42,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
 
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSayDsl(private val components: Components) {
+class SlashSayDsl(private val components: Components) : GlobalApplicationCommandProvider {
     suspend fun onSlashSay(
         event: GuildSlashEvent,
         channel: TextChannel,
@@ -61,8 +61,7 @@ class SlashSayDsl(private val components: Components) {
             .await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("say_dsl", function = ::onSlashSay) {
             description = "Sends a message in a channel"
 

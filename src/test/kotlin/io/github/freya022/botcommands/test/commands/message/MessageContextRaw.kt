@@ -6,11 +6,11 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import net.dv8tion.jda.api.entities.Guild
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 @Command
-class MessageContextRaw : ApplicationCommand() {
+class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandProvider {
     override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?,
@@ -47,9 +47,8 @@ class MessageContextRaw : ApplicationCommand() {
         event.reply_("Raw for message ID ${message.id}: $rawContent", ephemeral = true).queue()
     }
 
-    @AppDeclaration
-    fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD, ::onMessageContextRaw) {
+    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
+        manager.messageCommand("Raw content", CommandScope.GUILD, ::onMessageContextRaw) {
             option("message")
 
             generatedOption("rawContent") {

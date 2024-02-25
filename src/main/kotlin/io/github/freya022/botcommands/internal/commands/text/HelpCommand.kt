@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandManager
-import io.github.freya022.botcommands.api.commands.text.annotations.TextDeclaration
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
+import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
@@ -37,7 +37,7 @@ private val spacePattern = Regex("\\s+")
 @Command
 @ServiceName("builtinHelpCommand")
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
-internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand {
+internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand, TextCommandProvider {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
             // Try to get IHelpCommand interfaced services, except ours
@@ -147,9 +147,8 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         return builder
     }
 
-    @TextDeclaration
-    internal fun declare(manager: TextCommandManager) {
-		manager.textCommand("help") {
+    override fun declareTextCommands(manager: TextCommandManager) {
+        manager.textCommand("help") {
             category = "Utils"
             description = "Gives help for a command"
 

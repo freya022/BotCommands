@@ -1,13 +1,14 @@
 package io.github.freya022.botcommands.api.commands.application.context.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
-import io.github.freya022.botcommands.api.commands.application.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -45,7 +46,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * @see RateLimit @RateLimit
  * @see Filter @Filter
  *
- * @see AppDeclaration Declaring application commands using the DSL
+ * @see GlobalApplicationCommandProvider Declaring global application commands using the DSL
+ * @see GuildApplicationCommandProvider Declaring guild application commands using the DSL
  * @see AbstractApplicationCommandManager.userCommand DSL equivalent
  */
 @Target(AnnotationTarget.FUNCTION)

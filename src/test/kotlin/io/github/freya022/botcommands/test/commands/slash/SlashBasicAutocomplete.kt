@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.test.commands.slash
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteManager
@@ -14,7 +14,7 @@ import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate", "UNUSED_PARAMETER")
 @Command
-class SlashBasicAutocomplete : AutocompleteDeclaration {
+class SlashBasicAutocomplete : GlobalApplicationCommandProvider, AutocompleteDeclaration {
     private val fruits: Set<String> = Collections.newSetFromMap<String>(CaseInsensitiveMap()).apply {
         add("Pineapple")
         add("Apple")
@@ -32,9 +32,7 @@ class SlashBasicAutocomplete : AutocompleteDeclaration {
         return fruits.filter { it.startsWith(fruit, ignoreCase = true) }
     }
 
-    // This currently uses an annotation but will soon be replaced by an interface, similar to declareAutocomplete
-    @AppDeclaration
-    fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("basic_autocomplete", function = ::onSlashBasicAutocomplete) {
             option("fruit") {
                 // Reference an existing autocomplete value supplier for this option

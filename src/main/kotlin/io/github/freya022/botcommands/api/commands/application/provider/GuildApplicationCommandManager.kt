@@ -1,5 +1,6 @@
-package io.github.freya022.botcommands.api.commands.application
+package io.github.freya022.botcommands.api.commands.application.provider
 
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.Guild

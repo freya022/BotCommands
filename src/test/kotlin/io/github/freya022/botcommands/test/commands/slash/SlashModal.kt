@@ -5,8 +5,8 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Components
@@ -28,7 +28,7 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @Command
 @Dependencies(Components::class)
-class SlashModal(private val components: Components) : ApplicationCommand() {
+class SlashModal(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
@@ -81,9 +81,8 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
         println(event.message.interaction?.user?.asMention)
     }
 
-    @AppDeclaration
-    fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
-        applicationCommandManager.slashCommand("modal", function = ::onSlashModal) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
+        manager.slashCommand("modal", function = ::onSlashModal) {
             customOption("modals")
         }
     }

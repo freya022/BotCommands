@@ -42,16 +42,18 @@ internal object ReflectionUtils {
         }
     }
 
-    internal fun KFunction<*>.resolveReference(targetClass: KClass<*>): KFunction<Any?>? {
+    @Suppress("UNCHECKED_CAST")
+    internal fun <R> KFunction<R>.resolveReference(targetClass: KClass<*>): KFunction<R>? {
         if (this !is CallableReference)
             throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
 
-        return targetClass.declaredMemberFunctions.findFunction(this)
-            ?: targetClass.constructors.findFunction(this)
+        return targetClass.declaredMemberFunctions.findFunction(this) as KFunction<R>?
+            ?: targetClass.constructors.findFunction(this) as KFunction<R>?
     }
 
-    internal fun KProperty<*>.resolveReference(targetClass: KClass<*>): KProperty<*>? {
-        return targetClass.declaredMemberProperties.find { it.name == this.name }
+    @Suppress("UNCHECKED_CAST")
+    internal fun <V> KProperty<V>.resolveReference(targetClass: KClass<*>): KProperty<V>? {
+        return targetClass.declaredMemberProperties.find { it.name == this.name } as KProperty<V>?
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =

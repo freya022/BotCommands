@@ -1,46 +1,34 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.*
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
+import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.ClassPathFunction
-import io.github.freya022.botcommands.internal.core.requiredFilter
-import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
-import io.github.freya022.botcommands.internal.core.service.getParameters
-import io.github.freya022.botcommands.internal.utils.FunctionFilter
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
-import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
-    private val serviceContainer: ServiceContainerImpl
+    private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
+    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
 ) {
     private val logger = KotlinLogging.logger {  }
 
     private val applicationCommandsContext = context.applicationCommandsContext
-
-    private val globalDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
-    private val guildDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
 
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()
@@ -48,39 +36,6 @@ internal class ApplicationCommandsBuilder(
 
     private var firstGlobalUpdate = true
     private val firstGuildUpdates = hashSetOf<Long>()
-
-    init {
-        val slashCommandAutoBuilder = serviceContainer.getService<SlashCommandAutoBuilder>()
-        globalDeclarationFunctions += ClassPathFunction(slashCommandAutoBuilder, SlashCommandAutoBuilder::declareGlobal)
-        guildDeclarationFunctions += ClassPathFunction(slashCommandAutoBuilder, SlashCommandAutoBuilder::declareGuild)
-
-        val contextCommandAutoBuilder = serviceContainer.getService<ContextCommandAutoBuilder>()
-        globalDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGlobalMessage)
-        globalDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGlobalUser)
-        guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildMessage)
-        guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildUser)
-
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableFunctionsWithAnnotation<Command, AppDeclaration>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class))
-            .forEach { classPathFunction ->
-                when (classPathFunction.function.valueParameters.first().type.jvmErasure) {
-                    GlobalApplicationCommandManager::class -> globalDeclarationFunctions.add(classPathFunction)
-                    GuildApplicationCommandManager::class -> guildDeclarationFunctions.add(classPathFunction)
-                    else -> throwInternal("Function first param should have been checked")
-                }
-            }
-
-        logger.debug { "Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions" }
-        if (globalDeclarationFunctions.isNotEmpty()) {
-            logger.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinAsList { it.function.shortSignature } }
-        }
-
-        if (guildDeclarationFunctions.isNotEmpty()) {
-            logger.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinAsList { it.function.shortSignature } }
-        }
-    }
 
     @BEventListener
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
@@ -112,10 +67,10 @@ internal class ApplicationCommandsBuilder(
         val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
         val manager = GlobalApplicationCommandManager(context)
-        globalDeclarationFunctions.forEach { classPathFunction ->
+        globalApplicationCommandProviders.forEach { globalApplicationCommandProvider ->
             runCatching {
-                runDeclarationFunction(classPathFunction, manager)
-            }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
+                globalApplicationCommandsDeclaration.declareGlobalApplicationCommands(manager)
+            }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandsDeclaration::declareGlobalApplicationCommands.resolveReference(globalApplicationCommandsDeclaration::class)!!, it)) }
         }
 
         if (failedDeclarations.isNotEmpty() && firstGlobalUpdate) {
@@ -154,10 +109,10 @@ internal class ApplicationCommandsBuilder(
             val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
             val manager = GuildApplicationCommandManager(context, guild)
-            guildDeclarationFunctions.forEach { classPathFunction ->
+            guildApplicationCommandProviders.forEach { guildApplicationCommandProvider ->
                 runCatching {
-                    runDeclarationFunction(classPathFunction, manager)
-                }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
+                    guildApplicationCommandsDeclaration.declareGuildApplicationCommands(manager)
+                }.onFailure { failedDeclarations.add(CommandUpdateException(guildApplicationCommandsDeclaration::declareGuildApplicationCommands.resolveReference(guildApplicationCommandsDeclaration::class)!!, it)) }
             }
 
             if (failedDeclarations.isNotEmpty() && guild.idLong !in firstGuildUpdates) {
@@ -202,11 +157,5 @@ internal class ApplicationCommandsBuilder(
                 }
             }
         }
-    }
-
-    private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: AbstractApplicationCommandManager) {
-        val (instance, function) = classPathFunction
-        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
-        function.callSuspend(instance, manager, *args)
     }
 }
