@@ -1,7 +1,6 @@
-package io.github.freya022.botcommands.internal.commands.application.autocomplete
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc

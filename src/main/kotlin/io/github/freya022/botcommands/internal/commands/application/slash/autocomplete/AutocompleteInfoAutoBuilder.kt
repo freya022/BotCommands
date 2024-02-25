@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.application.autocomplete
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete

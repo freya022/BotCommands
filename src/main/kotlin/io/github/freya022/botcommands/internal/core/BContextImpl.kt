@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
-import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.core.service.*
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier

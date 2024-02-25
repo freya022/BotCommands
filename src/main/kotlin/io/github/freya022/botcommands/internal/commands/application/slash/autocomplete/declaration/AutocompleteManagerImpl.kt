@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import kotlin.reflect.KFunction
 
 internal class AutocompleteManagerImpl internal constructor(override val context: BContext) : AutocompleteManager {
