@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -69,8 +69,8 @@ internal class ApplicationCommandsBuilder(
         val manager = GlobalApplicationCommandManager(context)
         globalApplicationCommandProviders.forEach { globalApplicationCommandProvider ->
             runCatching {
-                globalApplicationCommandsDeclaration.declareGlobalApplicationCommands(manager)
-            }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandsDeclaration::declareGlobalApplicationCommands.resolveReference(globalApplicationCommandsDeclaration::class)!!, it)) }
+                globalApplicationCommandProvider.declareGlobalApplicationCommands(manager)
+            }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandProvider::declareGlobalApplicationCommands.resolveBestReference(), it)) }
         }
 
         if (failedDeclarations.isNotEmpty() && firstGlobalUpdate) {
@@ -111,8 +111,8 @@ internal class ApplicationCommandsBuilder(
             val manager = GuildApplicationCommandManager(context, guild)
             guildApplicationCommandProviders.forEach { guildApplicationCommandProvider ->
                 runCatching {
-                    guildApplicationCommandsDeclaration.declareGuildApplicationCommands(manager)
-                }.onFailure { failedDeclarations.add(CommandUpdateException(guildApplicationCommandsDeclaration::declareGuildApplicationCommands.resolveReference(guildApplicationCommandsDeclaration::class)!!, it)) }
+                    guildApplicationCommandProvider.declareGuildApplicationCommands(manager)
+                }.onFailure { failedDeclarations.add(CommandUpdateException(guildApplicationCommandProvider::declareGuildApplicationCommands.resolveBestReference(), it)) }
             }
 
             if (failedDeclarations.isNotEmpty() && guild.idLong !in firstGuildUpdates) {

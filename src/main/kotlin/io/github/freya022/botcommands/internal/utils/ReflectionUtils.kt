@@ -10,6 +10,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
@@ -35,20 +36,48 @@ internal object ReflectionUtils {
         return lock.withLock {
             reflectedMap.computeIfAbsent(this) {
                 when (this) { //Try to match the original function
-                    is CallableReference -> resolveReference(owner as KClass<*>) ?: throwInternal(this, "Unable to reflect function reference")
+                    // This used to give CallableReference#owner,
+                    // this function takes the owner if there is no receiver,
+                    // i.e., it is functionally the same or better.
+                    is CallableReference -> resolveBestReference()
                     else -> this
                 }
             } as KFunction<R>
         }
     }
 
+    /**
+     * Reflects the pure [KFunction] out of this [CallableReference].
+     *
+     * - If the callable reference is [bound to an instance][CallableReference.getBoundReceiver],
+     * that instance is used to find back the function.
+     * - If the callable reference is not bound,
+     * the [LHS][CallableReference.getOwner] is used to find back the function.
+     */
+    internal fun <R> KFunction<R>.resolveBestReference(): KFunction<R> {
+        if (this !is CallableReference)
+            throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
+
+        val targetClass = if (this.boundReceiver === CallableReference.NO_RECEIVER) {
+            this.owner as? KClass<*>
+                ?: throwInternal("Owner of callable reference is not class: ${this.owner}")
+        } else {
+            this.boundReceiver::class
+        }
+
+        return resolveReferenceOrNull(targetClass)
+            ?: throwInternal("Could not find best reference in ${targetClass.qualifiedName} of function $this")
+    }
+
     @Suppress("UNCHECKED_CAST")
-    internal fun <R> KFunction<R>.resolveReference(targetClass: KClass<*>): KFunction<R>? {
+    internal fun <R> KFunction<R>.resolveReferenceOrNull(targetClass: KClass<*>): KFunction<R>? {
         if (this !is CallableReference)
             throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
 
         return targetClass.declaredMemberFunctions.findFunction(this) as KFunction<R>?
             ?: targetClass.constructors.findFunction(this) as KFunction<R>?
+            // Superclass/interface recursion
+            ?: targetClass.superclasses.firstNotNullOfOrNull { resolveReferenceOrNull(it) }
     }
 
     @Suppress("UNCHECKED_CAST")

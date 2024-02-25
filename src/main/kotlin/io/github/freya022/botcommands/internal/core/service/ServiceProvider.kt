@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.createSingleton
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -138,7 +138,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,
                         // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = instance::checkServiceAvailability.resolveReference(instance::class)
+                        failedFunction = instance::checkServiceAvailability.resolveBestReference()
                     )
                 }
         }
@@ -159,7 +159,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
                     return errorType.toError(
                         errorMessage,
                         // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = checker::checkServiceAvailability.resolveReference(checker::class)
+                        failedFunction = checker::checkServiceAvailability.resolveBestReference()
                     )
                 }
         }
