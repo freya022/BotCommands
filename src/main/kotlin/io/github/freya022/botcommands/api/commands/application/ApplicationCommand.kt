@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 /**
  * Base class for **annotated** application commands such as slash / context commands.
  *
- * You are not required to use this if you use the [DSL declaration mode][AppDeclaration].
+ * You are not required to use this if you use the DSL declaration interfaces.
  *
  * @see JDASlashCommand @JDASlashCommand
  * @see JDAMessageCommand @JDAMessageCommand

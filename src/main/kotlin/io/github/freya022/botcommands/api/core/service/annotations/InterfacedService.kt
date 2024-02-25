@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
@@ -48,6 +50,8 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see HelpBuilderConsumer
  * @see TextSuggestionSupplier
  *
+ * @see GlobalApplicationCommandsDeclaration
+ * @see GuildApplicationCommandsDeclaration
  * @see AutocompleteDeclaration
  * @see AutocompleteTransformer
  * @see ApplicationCommandFilter

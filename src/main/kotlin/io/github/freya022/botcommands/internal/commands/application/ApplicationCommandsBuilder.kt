@@ -3,6 +3,9 @@ package io.github.freya022.botcommands.internal.commands.application
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.*
 import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent

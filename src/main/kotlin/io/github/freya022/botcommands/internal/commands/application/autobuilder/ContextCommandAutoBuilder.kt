@@ -3,7 +3,8 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.*
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
@@ -13,6 +14,9 @@ import io.github.freya022.botcommands.api.commands.application.context.builder.M
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
+import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer

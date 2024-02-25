@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.commands.application.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 
 /**

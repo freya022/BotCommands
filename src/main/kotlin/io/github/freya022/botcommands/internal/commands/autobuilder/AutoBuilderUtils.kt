@@ -2,9 +2,14 @@ package io.github.freya022.botcommands.internal.commands.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.application.*
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.declaration.AbstractApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
