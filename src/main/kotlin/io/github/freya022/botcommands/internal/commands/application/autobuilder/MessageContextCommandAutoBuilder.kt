@@ -47,10 +47,9 @@ internal class MessageContextCommandAutoBuilder(
             }
     }
 
-    //Separated functions so message errors don't prevent user commands from being registered
-    fun declareGlobalMessage(manager: GlobalApplicationCommandManager) = declareMessage(manager)
-
-    fun declareGuildMessage(manager: GuildApplicationCommandManager) = declareMessage(manager)
+    //Separated functions so global command errors don't prevent guild commands from being registered
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) = declareMessage(manager)
+    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declareMessage(manager)
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
         val skipLogger = SkipLogger(logger)

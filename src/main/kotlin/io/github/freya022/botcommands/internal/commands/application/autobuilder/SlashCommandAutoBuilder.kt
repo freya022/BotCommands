@@ -4,8 +4,12 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.*
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.LengthRange
+import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
+import io.github.freya022.botcommands.api.commands.application.declaration.*
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
@@ -43,7 +47,7 @@ private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 internal class SlashCommandAutoBuilder(
     context: BContextImpl,
     private val resolverContainer: ResolverContainer
-) {
+) : GlobalApplicationCommandsDeclaration, GuildApplicationCommandsDeclaration {
     private class TopLevelSlashCommandMetadata(
         val name: String,
         val annotation: TopLevelSlashCommandData,
@@ -169,9 +173,9 @@ internal class SlashCommandAutoBuilder(
 
     private fun SlashFunctionMetadata.toSubcommandGroupMetadata() = SlashSubcommandGroupMetadata(path.group!!)
 
-    fun declareGlobal(manager: GlobalApplicationCommandManager) = declare(manager)
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) = declare(manager)
 
-    fun declareGuild(manager: GuildApplicationCommandManager) = declare(manager)
+    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declare(manager)
 
     private fun declare(manager: AbstractApplicationCommandManager) {
         val skipLogger = SkipLogger(logger)

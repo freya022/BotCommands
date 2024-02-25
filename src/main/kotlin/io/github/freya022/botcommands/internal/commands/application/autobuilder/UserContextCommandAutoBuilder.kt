@@ -47,10 +47,9 @@ internal class UserContextCommandAutoBuilder(
             }
     }
 
-    //Separated functions so message errors don't prevent user commands from being registered
-    fun declareGlobalUser(manager: GlobalApplicationCommandManager) = declareUser(manager)
-
-    fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
+    //Separated functions so global command errors don't prevent guild commands from being registered
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) = declareUser(manager)
+    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
         val skipLogger = SkipLogger(logger)

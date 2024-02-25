@@ -5,8 +5,8 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GlobalApplicationCommandsDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
@@ -27,7 +27,7 @@ private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
 @Dependencies(Components::class)
-class SlashRateLimit(private val components: Components) : ApplicationCommand() {
+class SlashRateLimit(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandsDeclaration {
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(
 //        scope = RateLimitScope.USER,
@@ -50,9 +50,8 @@ class SlashRateLimit(private val components: Components) : ApplicationCommand() 
         event.reply_(components = button.into(), ephemeral = true).queue()
     }
 
-    @AppDeclaration
-    fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("rate_limit", function = ::onSlashRateLimit) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
+        manager.slashCommand("rate_limit", function = ::onSlashRateLimit) {
 //            rateLimit(bucketFactory)
             rateLimitReference(commandRateLimitGroup)
         }

@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
 import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.declaration.GuildApplicationCommandsDeclaration
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 private const val guildNicknameAutocompleteName = "NewSlashTest: guildNickname"
 
 @Command
-class SlashTest : ApplicationCommand() {
+class SlashTest : ApplicationCommand(), GuildApplicationCommandsDeclaration {
     override fun getGeneratedValueSupplier(
         guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,
@@ -54,9 +54,8 @@ class SlashTest : ApplicationCommand() {
         return listOf("${guildName}_nick ($guildNickname)").map { Choice(it, it) }
     }
 
-    @AppDeclaration
-    fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD, ::onSlashTest) {
+    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
+        manager.slashCommand("test", scope = CommandScope.GUILD, ::onSlashTest) {
             option("guildNickname")
 
             generatedOption("guildName") {
