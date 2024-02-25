@@ -55,7 +55,7 @@ class SlashTest : ApplicationCommand(), GuildApplicationCommandProvider {
     }
 
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
-        manager.slashCommand("test", scope = CommandScope.GUILD, ::onSlashTest) {
+        manager.slashCommand("test", function = ::onSlashTest) {
             option("guildNickname")
 
             generatedOption("guildName") {

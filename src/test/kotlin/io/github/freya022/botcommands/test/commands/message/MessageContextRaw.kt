@@ -48,7 +48,7 @@ class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandProvider 
     }
 
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
-        manager.messageCommand("Raw content", CommandScope.GUILD, ::onMessageContextRaw) {
+        manager.messageCommand("Raw content", function = ::onMessageContextRaw) {
             option("message")
 
             generatedOption("rawContent") {

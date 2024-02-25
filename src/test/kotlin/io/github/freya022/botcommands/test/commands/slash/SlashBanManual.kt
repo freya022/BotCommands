@@ -34,7 +34,7 @@ class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
     }
 
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
-        manager.slashCommand("ban", scope = CommandScope.GUILD, ::onSlashBan) {
+        manager.slashCommand("ban", function = ::onSlashBan) {
             description = "Get banned"
 
             isDefaultLocked = true

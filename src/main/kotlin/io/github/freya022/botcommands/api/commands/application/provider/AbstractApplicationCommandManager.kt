@@ -29,6 +29,8 @@ sealed class AbstractApplicationCommandManager(internal val context: BContext) {
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         get() = commandMap.map
 
+    internal abstract val defaultScope: CommandScope
+
     internal abstract fun isValidScope(scope: CommandScope): Boolean
 
     protected abstract fun checkScope(scope: CommandScope)
@@ -48,7 +50,7 @@ sealed class AbstractApplicationCommandManager(internal val context: BContext) {
      *
      * @see JDASlashCommand @JDASlashCommand
      */
-    fun slashCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+    fun slashCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         checkScope(scope)
 
         TopLevelSlashCommandBuilder(context, name, function, scope)
@@ -75,7 +77,7 @@ sealed class AbstractApplicationCommandManager(internal val context: BContext) {
      *
      * @see JDAUserCommand @JDAUserCommand
      */
-    fun userCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
+    fun userCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
         checkScope(scope)
 
         UserCommandBuilder(context, name, function, scope)
@@ -101,7 +103,7 @@ sealed class AbstractApplicationCommandManager(internal val context: BContext) {
      *
      * @see JDAMessageCommand
      */
-    fun messageCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
+    fun messageCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         checkScope(scope)
 
         MessageCommandBuilder(context, name, function, scope)

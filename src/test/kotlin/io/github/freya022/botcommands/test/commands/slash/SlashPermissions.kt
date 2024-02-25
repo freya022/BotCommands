@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -23,7 +22,7 @@ class SlashPermissions : ApplicationCommand(), GlobalApplicationCommandProvider 
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("permissions", scope = CommandScope.GLOBAL_NO_DM, function = ::onSlashPermissions) {
+        manager.slashCommand("permissions", function = ::onSlashPermissions) {
             botPermissions += Permission.MANAGE_EVENTS
             userPermissions = enumSetOf(Permission.MANAGE_SERVER, Permission.ADMINISTRATOR)
         }

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.test.commands.slash
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -22,7 +21,7 @@ class SlashVararg : ApplicationCommand(), GuildApplicationCommandProvider {
     }
 
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
-        manager.slashCommand("vararg", scope = CommandScope.GUILD, ::onSlashVararg) {
+        manager.slashCommand("vararg", function = ::onSlashVararg) {
             optionVararg("ints", 2, 1, { i -> "arg_1_$i" }) { i ->
                 description = "arg #$i arg of 1st group"
             }
