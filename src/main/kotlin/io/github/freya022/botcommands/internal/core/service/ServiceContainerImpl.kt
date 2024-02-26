@@ -7,6 +7,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.service.provider.ClassServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass

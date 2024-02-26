@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.service
+package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo

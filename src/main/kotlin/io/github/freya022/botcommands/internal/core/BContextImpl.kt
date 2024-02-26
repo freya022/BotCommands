@@ -15,7 +15,11 @@ import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
-import io.github.freya022.botcommands.internal.core.service.*
+import io.github.freya022.botcommands.internal.core.service.InstantiableServiceAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.ServiceAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.freya022.botcommands.internal.utils.unwrap

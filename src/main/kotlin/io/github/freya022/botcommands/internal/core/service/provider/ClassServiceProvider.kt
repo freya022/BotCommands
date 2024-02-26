@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.service
+package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KClass

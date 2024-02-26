@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.service
+package io.github.freya022.botcommands.internal.core.service.condition
 
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
