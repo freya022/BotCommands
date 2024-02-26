@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
+import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -241,7 +242,10 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
      */
     private fun getInstantiablePrimaryProvider(clazz: KClass<*>, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
         if (providers.isEmpty())
-            return NO_PROVIDER.toResult(errorMessage = "No service or factories found for type ${clazz.simpleNestedName}")
+            return NO_PROVIDER.toResult(
+                errorMessage = "No service or factories found for type ${clazz.simpleNestedName}",
+                extraMessage = clazz.findAnnotation<MissingServiceMessage>()?.message
+            )
 
         // Get instantiable providers, otherwise their errors
         val errors: MutableList<ServiceError> = arrayListOf()

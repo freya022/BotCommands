@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.hooks.IEventManager
@@ -44,6 +45,7 @@ import java.util.*
  * @see RequiredIntents @RequiredIntents
  */
 @InterfacedService(acceptMultiple = false)
+@MissingServiceMessage("A service extending JDAService must exist and has to be in the search path")
 abstract class JDAService {
     /**
      * The intents used by your bot,
