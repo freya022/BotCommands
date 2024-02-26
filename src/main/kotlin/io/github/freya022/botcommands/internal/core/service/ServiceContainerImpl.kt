@@ -283,7 +283,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }}
     """.trimIndent()
 
-    private fun canCreateService(provider: ServiceProvider): ServiceError? {
+    internal fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null
 
         return serviceCreationStack.withServiceCheckKey(provider) {

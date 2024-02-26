@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.lazy
@@ -48,38 +47,48 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         //Filter out non-instantiable classes
         .mapValues { (_, map) ->
             map.filterKeys { clazz ->
-                val serviceError = context.serviceContainer.canCreateService(clazz) ?: return@filterKeys true
+                // We still need to check every provider ourselves
+                context.serviceProviders.findAllForType(clazz).any { provider ->
+                    val serviceError = context.serviceContainer.canCreateService(provider) ?: return@any true
 
-                when (serviceError.errorType) {
-                    UNKNOWN -> throwInternal(serviceError.errorMessage)
-
-                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, NON_UNIQUE_PROVIDERS, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER, PROVIDER_RETURNED_NULL, FAILED_FATAL_CUSTOM_CONDITION ->
-                        throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
-
-                    UNAVAILABLE_DEPENDENCY, NO_USABLE_PROVIDER, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
-                        // If the service is lazy and is recoverable, then we assume the service is instantiable,
-                        // and will only be retrieved when instantiable
-                        if (clazz.findAnnotation<BService>()?.start == ServiceStart.LAZY
-                            // Conditions are only checked once
-                            && (serviceError.errorType != FAILED_CONDITION && serviceError.errorType != FAILED_CUSTOM_CONDITION)
-                        ) {
-                            return@filterKeys true
+                    if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
+                        if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
+                            throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
                         }
+                    }
 
-                        if (logger.isTraceEnabled()) {
-                            logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
-                        } else if (logger.isDebugEnabled()) {
-                            logger.debug {
-                                buildString {
-                                    append("Service ${clazz.simpleNestedName} not loaded")
-                                    serviceError.appendPostfixSimpleString()
+                    if (provider.isLazy) {
+                        when (serviceError.errorType) {
+                            UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+
+                            /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
+                                throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+
+                            else -> true
+                        }
+                    } else {
+                        when (serviceError.errorType) {
+                            UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+
+                            UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
+                                throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+
+                            UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
+                                } else if (logger.isDebugEnabled()) {
+                                    logger.debug {
+                                        buildString {
+                                            append("Service provider '${provider.name}' not loaded")
+                                            serviceError.appendPostfixSimpleString()
+                                        }
+                                    }
                                 }
+                                false
                             }
                         }
                     }
                 }
-
-                false
             }
         }
 
