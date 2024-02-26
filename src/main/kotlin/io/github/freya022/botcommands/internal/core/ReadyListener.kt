@@ -28,6 +28,7 @@ internal class ReadyListener {
             }
 
             context.putServiceAs(event.jda)
+            event.jda.shardManager?.let { context.putServiceAs(it) }
 
             context.eventDispatcher.dispatchEvent(InjectedJDAEvent(context, event.jda))
         }
