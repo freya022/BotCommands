@@ -42,6 +42,7 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val primaryType: KClass<*>
     val types: Set<KClass<*>>
     val isPrimary: Boolean
+    val isLazy: Boolean
     val priority: Int
 
     val instance: Any?

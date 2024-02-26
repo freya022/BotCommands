@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.events.PostLoadEvent
 import io.github.freya022.botcommands.api.core.events.PreLoadEvent
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -90,7 +89,7 @@ object BotCommands {
             if (!config.textConfig.usePingAsPrefix && config.textConfig.prefixes.isEmpty())
                 logger.info { "Text commands will not work as ping-as-prefix is disabled and no prefix has been added" }
 
-            context.serviceContainer.loadServices(ServiceStart.DEFAULT)
+            context.serviceContainer.loadServices()
 
             context.setStatus(BContext.Status.PRE_LOAD)
             context.eventDispatcher.dispatchEvent(PreLoadEvent(context))
@@ -102,7 +101,6 @@ object BotCommands {
             context.eventDispatcher.dispatchEvent(PostLoadEvent(context))
 
             context.setStatus(BContext.Status.READY)
-            context.serviceContainer.loadServices(ServiceStart.READY)
             context.eventDispatcher.dispatchEvent(BReadyEvent(context))
 
             context

@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 
 /**
  * Marks this class as a service, or this function as a service factory.
@@ -49,8 +48,8 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  * In Kotlin, you can request a [ServiceContainer] and use a delegated property,
  * such as `private val helpCommand: IHelpCommand by serviceContainer.lazy()`.
  *
- * Java users can request a [Lazy] with the type being the requested service,
- * and get the value with [Lazy.getValue()][Lazy.value].
+ * Java users can request a [kotlin.Lazy] with the type being the requested service,
+ * and get the value with [Lazy.getValue()][kotlin.Lazy.value].
  *
  * **Note:** Lazy services cannot hold a list of interfaced services, nor can a list of lazy services be requested.
  *
@@ -74,9 +73,12 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  *
  * ### Loading order
  *
- * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
+ * By default, the service is eagerly loaded at startup,
+ * when it is in the [framework's classpath][BConfigBuilder.addSearchPath],
+ * but you can make the service loaded only when requested, by using [@Lazy][Lazy].
  *
- * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
+ * **Note:** The service can be loaded early if it has an event listener,
+ * is a command, autocomplete, a modal handler, etc...
  *
  * **Note 2:** Service factories are prioritized over class annotations, see [ServicePriority] for more details.
  *
@@ -86,6 +88,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  *
  * @see Dependencies @Dependencies
  *
+ * @see Lazy @Lazy
  * @see Primary @Primary
  * @see ServiceType @ServiceType
  * @see ServiceName @ServiceName
@@ -95,13 +98,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceStart
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-annotation class BService( //Parameters tied to BServiceConfig#registerService
-    /**
-     * When the service should be started
-     *
-     * @see ServiceStart
-     */
-    val start: ServiceStart = ServiceStart.DEFAULT,
+annotation class BService(
     /**
      * The unique name of this service.
      *

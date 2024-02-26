@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.internal.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -13,7 +13,8 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 
-@BService(ServiceStart.LAZY) // The service is requested when JDA is available
+@Lazy // The service is requested when JDA is available
+@BService
 internal class ApplicationCommandsCache(jda: JDA) {
     private val cachePath: Path
 

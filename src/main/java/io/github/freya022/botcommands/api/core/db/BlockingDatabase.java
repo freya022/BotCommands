@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame;
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
-import io.github.freya022.botcommands.api.core.service.ServiceStart;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -57,7 +57,8 @@ import java.sql.SQLException;
  * @see Database
  * @see ParametrizedQueryFactory
  */
-@BService(start = ServiceStart.LAZY)
+@Lazy
+@BService
 @Dependencies(Database.class)
 @IgnoreStackFrame
 public class BlockingDatabase {

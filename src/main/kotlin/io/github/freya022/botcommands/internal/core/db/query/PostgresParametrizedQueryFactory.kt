@@ -4,15 +4,16 @@ import gnu.trove.map.TIntObjectMap
 import gnu.trove.map.hash.TIntObjectHashMap
 import io.github.freya022.botcommands.api.core.db.query.AbstractParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 import java.sql.Array as SqlArray
 
-@BService(start = ServiceStart.LAZY)
+@Lazy
+@BService
 internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<PostgresParametrizedQueryFactory.PostgresParametrizedQuery> {
     internal class PostgresParametrizedQuery internal constructor(
         preparedStatement: PreparedStatement,

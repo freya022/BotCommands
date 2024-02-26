@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
-import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -58,8 +57,8 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val lock = ReentrantLock()
     private val serviceCreationStack = ServiceCreationStack()
 
-    internal fun loadServices(requestedStart: ServiceStart) {
-        getLoadableService(requestedStart)
+    internal fun loadServices() {
+        getLoadableService()
             .mapTo(sortedSetOf()) { clazz ->
                 context.serviceProviders.findForType(clazz)
                     ?: throwInternal("Unable to find back service provider for ${clazz.jvmName}")
@@ -292,12 +291,9 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         }
     }
 
-    private fun getLoadableService(requestedServiceStart: ServiceStart) = context.instantiableServiceAnnotationsMap
+    private fun getLoadableService() = context.instantiableServiceAnnotationsMap
         .getAllInstantiableClasses()
-        .filter { kClass ->
-            val clazzServiceStart = kClass.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
-            return@filter requestedServiceStart == clazzServiceStart
-        }
+        .filterNot { it.hasAnnotation<io.github.freya022.botcommands.api.core.service.annotations.Lazy>() }
 }
 
 internal fun ServiceContainer.getFunctionService(function: KFunction<*>): Any = when {

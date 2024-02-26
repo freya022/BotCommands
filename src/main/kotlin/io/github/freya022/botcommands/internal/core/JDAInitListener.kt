@@ -3,16 +3,18 @@ package io.github.freya022.botcommands.internal.core
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
-import io.github.freya022.botcommands.api.core.service.ServiceStart
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-@BService(start = ServiceStart.LAZY)
+@Lazy
+@BService
 internal data object JDAInitListener {
     private val logger = KotlinLogging.logger { }
     private val lock = ReentrantLock()
@@ -29,7 +31,7 @@ internal data object JDAInitListener {
                     Possible solutions include:
                         - (Recommended) Use a service extending JDAService
                         - Building JDA after the BotCommands entry point has returned
-                        - Building JDA in a service annotated with ${annotationRef<BService>()}(start = ServiceStart.READY)
+                        - Building JDA in a ${classRef<BReadyEvent>()} event listener
                 """.trimIndent()
             )
             logger.error(exception) { "An exception occurred while initializing the framework" }

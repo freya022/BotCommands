@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
@@ -18,6 +19,7 @@ internal class FunctionServiceProvider(
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(primaryType)
     override val isPrimary = function.hasAnnotation<Primary>()
+    override val isLazy = function.hasAnnotation<Lazy>()
     override val priority = function.getAnnotatedServicePriority()
 
     /**
