@@ -116,7 +116,7 @@ fun KFunction<*>.getSignature(
     returnType: Boolean = false,
     source: Boolean = true
 ): String = buildString {
-    val declaringClassName = if (qualifiedClass) declaringClass.jvmName else declaringClass.simpleNestedName
+    val declaringClassName = if (qualifiedClass) declaringClass.let { it.qualifiedName ?: it.jvmName } else declaringClass.simpleNestedName
     val methodName = name
     val parameters = valueParameters.joinToString {
         val type = if (qualifiedTypes) it.type.qualifiedNestedName else it.type.simpleNestedName
