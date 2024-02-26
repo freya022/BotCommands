@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.BEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.*
@@ -68,11 +67,11 @@ private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFuncti
 class EventDispatcher internal constructor(
     private val context: BContextImpl,
     private val eventTreeService: EventTreeService,
+    private val jdaService: JDAService,
     functionAnnotationsMap: FunctionAnnotationsMap
 ) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager
-    private val jdaService: JDAService? = context.getServiceOrNull()
 
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
@@ -185,7 +184,7 @@ class EventDispatcher internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure = parameters.first().type.jvmErasure
-            if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf<Event>()) {
+            if (!annotation.ignoreIntents && eventErasure.isSubclassOf<Event>()) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
                 val missingIntents = requiredIntents - jdaService.intents - context.config.ignoredIntents
