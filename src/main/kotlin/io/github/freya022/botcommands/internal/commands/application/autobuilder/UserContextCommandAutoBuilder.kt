@@ -33,7 +33,7 @@ internal class UserContextCommandAutoBuilder(
     private val userFunctions: List<UserContextFunctionMetadata>
 
     init {
-        userFunctions = context.instantiableServiceAnnotationsMap
+        userFunctions = context.classAnnotationsMap
             .getInstantiableFunctionsWithAnnotation<Command, JDAUserCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))

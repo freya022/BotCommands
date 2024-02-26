@@ -33,7 +33,7 @@ internal class MessageContextCommandAutoBuilder(
     private val messageFunctions: List<MessageContextFunctionMetadata>
 
     init {
-        messageFunctions = context.instantiableServiceAnnotationsMap
+        messageFunctions = context.classAnnotationsMap
             .getInstantiableFunctionsWithAnnotation<Command, JDAMessageCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))

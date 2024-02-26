@@ -55,7 +55,7 @@ internal class TextCommandAutoBuilder(
     private val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
     init {
-        val functions = context.instantiableServiceAnnotationsMap
+        val functions = context.classAnnotationsMap
             .getInstantiableFunctionsWithAnnotation<Command, JDATextCommandVariation>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
