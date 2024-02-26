@@ -9,8 +9,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.core.utils.toImmutableMap
-import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -41,7 +39,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
 
     //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
     private val map: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
-        .toImmutableMap()
+        .map
         //Filter out non-instantiable classes
         .mapValues { (_, map) ->
             map.filterTo(hashSetOf()) { clazz ->
@@ -140,15 +138,16 @@ private val logger = KotlinLogging.logger { }
 
 internal class ServiceAnnotationsMap internal constructor() {
     // Annotation type => Classes with said annotation
-    private val map: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
+    private val _map: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
+
+    internal val map: Map<KClass<out Annotation>, Set<KClass<*>>>
+        get() = _map
 
     internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>) {
-        val annotatedClasses = map.computeIfAbsent(annotationType) { hashSetOf() }
+        val annotatedClasses = _map.computeIfAbsent(annotationType) { hashSetOf() }
         if (!annotatedClasses.add(annotationReceiver))
             return logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
     }
-
-    internal fun toImmutableMap() = map.mapValues { it.value.toImmutableSet() }.toImmutableMap()
 }
 
 internal class ServiceAnnotationsMapProcessor internal constructor(
