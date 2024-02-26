@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
+import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -39,11 +40,11 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
     }
 
     //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
-    private val map: Map<KClass<out Annotation>, Map<KClass<*>, Annotation>> = context.serviceAnnotationsMap
+    private val map: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
         .toImmutableMap()
         //Filter out non-instantiable classes
         .mapValues { (_, map) ->
-            map.filterKeys { clazz ->
+            map.filterTo(hashSetOf()) { clazz ->
                 // We still need to check every provider ourselves
                 context.serviceProviders.findAllForType(clazz).any { provider ->
                     val serviceError = context.serviceContainer.canCreateService(provider) ?: return@any true
@@ -130,29 +131,24 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    internal inline fun <reified A : Annotation> get(): Map<KClass<*>, A>? =
-        map[A::class] as Map<KClass<*>, A>?
+    internal inline fun <reified A : Annotation> get(): Set<KClass<*>>? = map[A::class]
 
-    internal fun getAllInstantiableClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap.keys }
+    internal fun getAllInstantiableClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap }
 }
 
 private val logger = KotlinLogging.logger { }
 
 internal class ServiceAnnotationsMap internal constructor() {
-    //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
-    private val map: MutableMap<KClass<out Annotation>, MutableMap<KClass<*>, Annotation>> = hashMapOf()
+    // Annotation type => Classes with said annotation
+    private val map: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
 
-    internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>, annotation: A) {
-        val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
-        if (annotationReceiver in instanceAnnotationMap) {
-            logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
-            return
-        }
-        instanceAnnotationMap.putIfAbsent(annotationReceiver, annotation)
+    internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>) {
+        val annotatedClasses = map.computeIfAbsent(annotationType) { hashSetOf() }
+        if (!annotatedClasses.add(annotationReceiver))
+            return logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
     }
 
-    internal fun toImmutableMap() = map.mapValues { it.value.toImmutableMap() }.toImmutableMap()
+    internal fun toImmutableMap() = map.mapValues { it.value.toImmutableSet() }.toImmutableMap()
 }
 
 internal class ServiceAnnotationsMapProcessor internal constructor(
@@ -166,8 +162,7 @@ internal class ServiceAnnotationsMapProcessor internal constructor(
                 if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
                     serviceAnnotationsMap.put(
                         annotationReceiver = kClass,
-                        annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
-                        annotation = annotationInfo.loadClassAndInstantiate()
+                        annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin
                     )
                 }
             }

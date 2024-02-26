@@ -17,7 +17,7 @@ internal class ClassAnnotationsMap(context: BContext) {
     private val functionAnnotationsMap by context.serviceContainer.lazy<FunctionAnnotationsMap>()
 
     internal inline fun <reified A : Annotation> getInstantiableClassesWithAnnotation(): Set<KClass<*>> =
-        serviceAnnotationsMap.get<A>()?.keys ?: emptySet()
+        serviceAnnotationsMap.get<A>() ?: emptySet()
 
     internal inline fun <reified CLASS_A : Annotation, reified FUNCTION_A : Annotation> getInstantiableFunctionsWithAnnotation(): List<ClassPathFunction> {
         val classes = getInstantiableClassesWithAnnotation<CLASS_A>()
