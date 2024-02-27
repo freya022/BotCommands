@@ -20,45 +20,43 @@ import kotlin.reflect.jvm.jvmName
 
 @BService(priority = Int.MAX_VALUE)
 internal class InstantiableServices internal constructor(private val context: BContextImpl) {
-    internal val availableProviders: Set<ServiceProvider> = buildSet(context.serviceProviders.allProviders.size) {
-        context.serviceProviders.allProviders.forEach { provider ->
-            fun addProvider() { add(provider) }
-            val serviceError = context.serviceContainer.canCreateService(provider) ?: return@forEach addProvider()
+    internal val availableProviders: Set<ServiceProvider> = context.serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
+        val serviceError = context.serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 
-            if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
-                if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
-                    throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
-                }
+        if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
+            if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
+                throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
             }
+        }
 
-            if (provider.isLazy) {
-                when (serviceError.errorType) {
-                    UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+        if (provider.isLazy) {
+            when (serviceError.errorType) {
+                UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
-                    /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
-                    throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
+                throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
-                    else -> addProvider()
-                }
-            } else {
-                when (serviceError.errorType) {
-                    UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+                else -> provider
+            }
+        } else {
+            when (serviceError.errorType) {
+                UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
-                    UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
-                        throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
+                    throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
-                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
-                        } else if (logger.isDebugEnabled()) {
-                            logger.debug {
-                                buildString {
-                                    append("Service provider '${provider.name}' not loaded")
-                                    serviceError.appendPostfixSimpleString()
-                                }
+                UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
+                    } else if (logger.isDebugEnabled()) {
+                        logger.debug {
+                            buildString {
+                                append("Service provider '${provider.name}' not loaded")
+                                serviceError.appendPostfixSimpleString()
                             }
                         }
                     }
+                    null
                 }
             }
         }
