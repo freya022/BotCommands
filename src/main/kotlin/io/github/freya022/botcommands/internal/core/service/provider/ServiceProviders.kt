@@ -33,7 +33,6 @@ internal class ServiceProviders : ClassGraphProcessor {
     }
 
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
-    internal fun findForType(type: KClass<*>): ServiceProvider? = typeMap[type]?.firstOrNull()
     internal fun findForName(name: String): ServiceProvider? = nameMap[name]
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
