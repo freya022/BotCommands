@@ -1,49 +1,36 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
-import io.github.freya022.botcommands.internal.utils.shortSignature
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrowInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
-import kotlin.time.DurationUnit
-import kotlin.time.measureTime
 
 private val logger = KotlinLogging.logger { }
 
-/**
- * This class holds all functions with at least one annotation
- */
 @BService(priority = Int.MAX_VALUE - 1)
 internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServices: InstantiableServices) {
     private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()
 
     init {
-        val duration = measureTime {
-            instantiableServices
-                .availableServices
-                .forEach { kClass ->
-                    kClass.memberFunctions.forEach { function ->
-                        function.annotations.forEach { annotation ->
-                            put(context, kClass, function, annotation.annotationClass)
-                        }
+        instantiableServices
+            .availableServices
+            .forEach { kClass ->
+                kClass.memberFunctions.forEach { function ->
+                    function.annotations.forEach { annotation ->
+                        put(context, kClass, function, annotation.annotationClass)
                     }
                 }
-        }
-
-        logger.trace { "Functions annotations reflection took ${duration.toDouble(DurationUnit.MILLISECONDS)} ms" }
+            }
     }
 
     private fun <A : Annotation> put(context: BContextImpl, kClass: KClass<*>, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
-        if (annotationReceiver in instanceAnnotationMap) {
-            logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on function '${annotationReceiver.shortSignature}'" }
-            return
-        }
-        instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, kClass, annotationReceiver)
+        // An annotation type cannot be present twice on a function, that wouldn't compile
+        instanceAnnotationMap.putIfAbsentOrThrowInternal(annotationReceiver, ClassPathFunction(context, kClass, annotationReceiver))
     }
 
     internal fun <A : Annotation> get(annotationClass: KClass<A>): Map<KFunction<*>, ClassPathFunction>? = map[annotationClass]
