@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -10,13 +9,12 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 
-@BService
+@BService(priority = Int.MAX_VALUE - 1)
 internal class ClassAnnotationsMap(
     context: BContextImpl,
-    instantiableServices: InstantiableServices
+    instantiableServices: InstantiableServices,
+    private val functionAnnotationsMap: FunctionAnnotationsMap
 ) {
-    private val functionAnnotationsMap by context.serviceContainer.lazy<FunctionAnnotationsMap>()
-
     private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
         .annotatedClasses
         //Filter out non-instantiable classes

@@ -17,7 +17,7 @@ private val logger = KotlinLogging.logger { }
 /**
  * This class holds all functions with at least one annotation
  */
-@BService
+@BService(priority = Int.MAX_VALUE - 1)
 internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServices: InstantiableServices) {
     private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()
 
