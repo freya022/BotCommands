@@ -127,6 +127,10 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
 
 private val logger = KotlinLogging.logger { }
 
+// NOTE: As this only contains annotated classes,
+//   this means that service factories are not checked for their annotations.
+// For example, you cannot retrieve services annotated with `@Command`,
+//   unless the class itself has the annotation
 internal class ServiceAnnotationsMap internal constructor() {
     // Annotation type => Classes with said annotation
     private val _annotatedClasses: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
