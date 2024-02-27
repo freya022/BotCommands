@@ -1,23 +1,33 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 
 @BService
-internal class ClassAnnotationsMap(context: BContext) {
-    private val serviceAnnotationsMap: InstantiableServiceAnnotationsMap = context.getService()
+internal class ClassAnnotationsMap(
+    context: BContextImpl,
+    instantiableServiceAnnotationsMap: InstantiableServiceAnnotationsMap
+) {
     private val functionAnnotationsMap by context.serviceContainer.lazy<FunctionAnnotationsMap>()
 
+    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
+        .annotatedClasses
+        //Filter out non-instantiable classes
+        .mapValues { (_, serviceTypes) ->
+            serviceTypes.intersect(instantiableServiceAnnotationsMap.availableServices)
+        }
+
+    internal inline fun <reified A : Annotation> get(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
+
     internal inline fun <reified A : Annotation> getInstantiableClassesWithAnnotation(): Set<KClass<*>> =
-        serviceAnnotationsMap.get<A>() ?: emptySet()
+        get<A>() ?: emptySet()
 
     internal inline fun <reified CLASS_A : Annotation, reified FUNCTION_A : Annotation> getInstantiableFunctionsWithAnnotation(): List<ClassPathFunction> {
         val classes = getInstantiableClassesWithAnnotation<CLASS_A>()

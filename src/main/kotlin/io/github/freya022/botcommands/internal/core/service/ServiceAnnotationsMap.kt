@@ -80,14 +80,8 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
             }
         }
     }
-    internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
-    private val map: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
-        .map
-        //Filter out non-instantiable classes
-        .mapValues { (_, serviceTypes) ->
-            serviceTypes.intersect(availableServices)
-        }
+    internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
     init {
         val typeToImplementations = hashMapOf<InterfacedType, MutableSet<ServiceProvider>>()
@@ -129,21 +123,19 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
             logger.trace { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
         }
     }
-
-    internal inline fun <reified A : Annotation> get(): Set<KClass<*>>? = map[A::class]
 }
 
 private val logger = KotlinLogging.logger { }
 
 internal class ServiceAnnotationsMap internal constructor() {
     // Annotation type => Classes with said annotation
-    private val _map: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
+    private val _annotatedClasses: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
 
-    internal val map: Map<KClass<out Annotation>, Set<KClass<*>>>
-        get() = _map
+    internal val annotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>>
+        get() = _annotatedClasses
 
     internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>) {
-        val annotatedClasses = _map.computeIfAbsent(annotationType) { hashSetOf() }
+        val annotatedClasses = _annotatedClasses.computeIfAbsent(annotationType) { hashSetOf() }
         if (!annotatedClasses.add(annotationReceiver))
             return logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
     }
