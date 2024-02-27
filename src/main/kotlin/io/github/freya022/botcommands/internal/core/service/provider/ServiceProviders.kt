@@ -19,6 +19,9 @@ internal class ServiceProviders : ClassGraphProcessor {
     private val nameMap: MutableMap<String, ServiceProvider> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
+    internal val allProviders: Collection<ServiceProvider>
+        get() = nameMap.values
+
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in nameMap)
             throw IllegalArgumentException("Service provider for '${serviceProvider.name}' already exists (tried to insert '${serviceProvider.providerKey}', existing provider: '${nameMap[serviceProvider.name]?.providerKey}')")

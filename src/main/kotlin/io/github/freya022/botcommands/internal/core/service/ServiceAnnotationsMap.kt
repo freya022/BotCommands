@@ -37,60 +37,61 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
     }
 
-    //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
-    private val map: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
-        .map
-        //Filter out non-instantiable classes
-        .mapValues { (_, map) ->
-            map.filterTo(hashSetOf()) { clazz ->
-                // We still need to check every provider ourselves
-                context.serviceProviders.findAllForType(clazz).any { provider ->
-                    val serviceError = context.serviceContainer.canCreateService(provider) ?: return@any true
+    internal val availableProviders: Set<ServiceProvider> = buildSet(context.serviceProviders.allProviders.size) {
+        context.serviceProviders.allProviders.forEach { provider ->
+            fun addProvider() { add(provider) }
+            val serviceError = context.serviceContainer.canCreateService(provider) ?: return@forEach addProvider()
 
-                    if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
-                        if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
-                            throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
-                        }
-                    }
+            if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
+                if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
+                    throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                }
+            }
 
-                    if (provider.isLazy) {
-                        when (serviceError.errorType) {
-                            UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+            if (provider.isLazy) {
+                when (serviceError.errorType) {
+                    UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
-                            /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
-                                throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                    /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
+                    throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
-                            else -> true
-                        }
-                    } else {
-                        when (serviceError.errorType) {
-                            UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
+                    else -> addProvider()
+                }
+            } else {
+                when (serviceError.errorType) {
+                    UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
-                            UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
-                                throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                    UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
+                        throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
-                            UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
-                                if (logger.isTraceEnabled()) {
-                                    logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
-                                } else if (logger.isDebugEnabled()) {
-                                    logger.debug {
-                                        buildString {
-                                            append("Service provider '${provider.name}' not loaded")
-                                            serviceError.appendPostfixSimpleString()
-                                        }
-                                    }
+                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
+                        } else if (logger.isDebugEnabled()) {
+                            logger.debug {
+                                buildString {
+                                    append("Service provider '${provider.name}' not loaded")
+                                    serviceError.appendPostfixSimpleString()
                                 }
-                                false
                             }
                         }
                     }
                 }
             }
         }
+    }
+    internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
+
+    private val map: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
+        .map
+        //Filter out non-instantiable classes
+        .mapValues { (_, serviceTypes) ->
+            serviceTypes.intersect(availableServices)
+        }
 
     init {
         val typeToImplementations = hashMapOf<InterfacedType, MutableSet<ServiceProvider>>()
-        getAllInstantiableClasses().forEach { kClass ->
+        availableServices.forEach { kClass ->
             // For each service, take their implemented interfaced services
             // and put them in a map as to figure out if multiple - instantiable - implementation exists
             val provider = context.serviceProviders.findForType(kClass)
@@ -130,8 +131,6 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
     }
 
     internal inline fun <reified A : Annotation> get(): Set<KClass<*>>? = map[A::class]
-
-    internal fun getAllInstantiableClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap }
 }
 
 private val logger = KotlinLogging.logger { }

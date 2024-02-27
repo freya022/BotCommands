@@ -62,11 +62,10 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices() {
-        getLoadableService()
-            .mapTo(sortedSetOf()) { clazz ->
-                context.serviceProviders.findForType(clazz)
-                    ?: throwInternal("Unable to find back service provider for ${clazz.jvmName}")
-            }
+        context.instantiableServiceAnnotationsMap
+            .availableProviders
+            .filterNot { it.isLazy }
+            // This should never throw as the providers are available and not lazy
             .forEach { provider -> tryGetService<Any>(provider).getOrThrow() }
     }
 
@@ -298,9 +297,6 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         }
     }
 
-    private fun getLoadableService() = context.instantiableServiceAnnotationsMap
-        .getAllInstantiableClasses()
-        .filterNot { it.hasAnnotation<io.github.freya022.botcommands.api.core.service.annotations.Lazy>() }
 }
 
 internal fun ServiceContainer.getFunctionService(function: KFunction<*>): Any = when {

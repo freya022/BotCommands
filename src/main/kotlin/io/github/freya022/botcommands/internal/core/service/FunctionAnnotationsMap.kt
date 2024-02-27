@@ -24,7 +24,7 @@ internal class FunctionAnnotationsMap(context: BContextImpl, instantiableService
     init {
         val duration = measureTime {
             instantiableServiceAnnotationsMap
-                .getAllInstantiableClasses()
+                .availableServices
                 .forEach { kClass ->
                     kClass.memberFunctions.forEach { function ->
                         function.annotations.forEach { annotation ->
