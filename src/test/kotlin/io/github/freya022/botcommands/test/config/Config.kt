@@ -12,7 +12,6 @@ data class DatabaseConfig(val serverName: String, val port: Int, val name: Strin
         get() = "jdbc:postgresql://$serverName:$port/$name"
 }
 
-@BService
 data class Config(val token: String,
                   val ownerIds: List<Long>,
                   val prefixes: List<String>,
