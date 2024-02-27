@@ -20,23 +20,6 @@ import kotlin.reflect.jvm.jvmName
 
 @BService(priority = Int.MAX_VALUE)
 internal class InstantiableServiceAnnotationsMap internal constructor(private val context: BContextImpl) {
-    private class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {
-        val acceptMultiple = annotation.acceptMultiple
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as InterfacedType
-
-            return clazz == other.clazz
-        }
-
-        override fun hashCode(): Int {
-            return clazz.hashCode()
-        }
-    }
-
     internal val availableProviders: Set<ServiceProvider> = buildSet(context.serviceProviders.allProviders.size) {
         context.serviceProviders.allProviders.forEach { provider ->
             fun addProvider() { add(provider) }
@@ -84,20 +67,31 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
     internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
     init {
+        class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {
+            val acceptMultiple = annotation.acceptMultiple
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as InterfacedType
+
+                return clazz == other.clazz
+            }
+
+            override fun hashCode(): Int {
+                return clazz.hashCode()
+            }
+        }
+
         val typeToImplementations = hashMapOf<InterfacedType, MutableSet<ServiceProvider>>()
-        availableServices.forEach { kClass ->
+        availableProviders.forEach { provider ->
             // For each service, take their implemented interfaced services
             // and put them in a map as to figure out if multiple - instantiable - implementation exists
-            val provider = context.serviceProviders.findForType(kClass)
-                ?: throwInternal("Could not find back service provider for ${kClass.simpleNestedName}")
-            val interfacedTypes = provider.types.mapNotNull { clazz ->
-                clazz.findAnnotation<InterfacedService>()?.let { InterfacedType(clazz, it) }
-            }
-            //Only check those implementing an interfaced service
-            if (interfacedTypes.isEmpty()) return@forEach
-            if (provider.canInstantiate(context.serviceContainer) != null) return@forEach
+            provider.types.forEach forEachType@{ clazz ->
+                val annotation = clazz.findAnnotation<InterfacedService>() ?: return@forEachType
+                val interfacedType = InterfacedType(clazz, annotation)
 
-            interfacedTypes.forEach { interfacedType ->
                 typeToImplementations
                     .computeIfAbsent(interfacedType) { hashSetOf() }
                     .add(provider)
