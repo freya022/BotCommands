@@ -33,7 +33,7 @@ internal class ClassAnnotationsMap(
         val classes = getInstantiableClassesWithAnnotation<CLASS_A>()
         val functions = functionAnnotationsMap.getFunctionsWithAnnotation<FUNCTION_A>()
 
-        return functions.filter { it.instance::class in classes }
+        return functions.filter { it.clazz in classes }
     }
 
     @Suppress("UNCHECKED_CAST")
