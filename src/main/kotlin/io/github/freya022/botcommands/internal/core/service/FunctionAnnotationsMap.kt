@@ -18,12 +18,12 @@ private val logger = KotlinLogging.logger { }
  * This class holds all functions with at least one annotation
  */
 @BService
-internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServiceAnnotationsMap: InstantiableServiceAnnotationsMap) {
+internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServices: InstantiableServices) {
     private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()
 
     init {
         val duration = measureTime {
-            instantiableServiceAnnotationsMap
+            instantiableServices
                 .availableServices
                 .forEach { kClass ->
                     kClass.memberFunctions.forEach { function ->

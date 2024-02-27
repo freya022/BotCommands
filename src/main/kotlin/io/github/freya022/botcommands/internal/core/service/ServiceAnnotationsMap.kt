@@ -19,7 +19,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmName
 
 @BService(priority = Int.MAX_VALUE)
-internal class InstantiableServiceAnnotationsMap internal constructor(private val context: BContextImpl) {
+internal class InstantiableServices internal constructor(private val context: BContextImpl) {
     internal val availableProviders: Set<ServiceProvider> = buildSet(context.serviceProviders.allProviders.size) {
         context.serviceProviders.allProviders.forEach { provider ->
             fun addProvider() { add(provider) }

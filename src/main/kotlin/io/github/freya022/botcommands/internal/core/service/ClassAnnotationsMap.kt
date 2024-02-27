@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 @BService
 internal class ClassAnnotationsMap(
     context: BContextImpl,
-    instantiableServiceAnnotationsMap: InstantiableServiceAnnotationsMap
+    instantiableServices: InstantiableServices
 ) {
     private val functionAnnotationsMap by context.serviceContainer.lazy<FunctionAnnotationsMap>()
 
@@ -21,7 +21,7 @@ internal class ClassAnnotationsMap(
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
-            serviceTypes.intersect(instantiableServiceAnnotationsMap.availableServices)
+            serviceTypes.intersect(instantiableServices.availableServices)
         }
 
     internal inline fun <reified A : Annotation> get(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]

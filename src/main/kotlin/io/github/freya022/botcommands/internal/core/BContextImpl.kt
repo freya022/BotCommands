@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.core.service.ClassAnnotationsMap
-import io.github.freya022.botcommands.internal.core.service.InstantiableServiceAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.InstantiableServices
 import io.github.freya022.botcommands.internal.core.service.ServiceAnnotationsMap
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
@@ -40,7 +40,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
     override val serviceContainer = ServiceContainerImpl(this) //Puts itself
 
     internal val serviceAnnotationsMap = ServiceAnnotationsMap()
-    internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
+    internal val instantiableServices get() = getService<InstantiableServices>()
     internal val classAnnotationsMap get() = getService<ClassAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
