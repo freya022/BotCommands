@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -8,6 +9,12 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 
+/**
+ * NOTE: As this only contains annotated classes,
+ * this means that service factories are not checked for their annotations.
+ * For example, you cannot retrieve services annotated with [@Command][Command],
+ * unless the class itself has the annotation
+ */
 @BService(priority = Int.MAX_VALUE - 1)
 internal class ClassAnnotationsMap(
     context: BContextImpl,

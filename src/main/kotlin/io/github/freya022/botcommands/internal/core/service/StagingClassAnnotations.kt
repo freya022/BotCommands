@@ -9,11 +9,6 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-// NOTE: As this only contains annotated classes,
-//   this means that service factories are not checked for their annotations.
-// For example, you cannot retrieve services annotated with `@Command`,
-//   unless the class itself has the annotation
-
 /**
  * Only used temporarily before [ClassAnnotationsMap] is created using this data
  */
