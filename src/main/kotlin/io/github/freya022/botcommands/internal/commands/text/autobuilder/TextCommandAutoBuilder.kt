@@ -22,8 +22,8 @@ import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.components
 import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
+import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -38,8 +38,8 @@ private val defaultExtraData = TextCommandData()
 
 @BService
 internal class TextCommandAutoBuilder(
-    context: BContextImpl,
-    private val resolverContainer: ResolverContainer
+    private val resolverContainer: ResolverContainer,
+    functionAnnotationsMap: FunctionAnnotationsMap
 ) : TextCommandProvider {
     private class TextCommandContainer(val name: String) {
         var extraData: TextCommandData = defaultExtraData
@@ -55,7 +55,7 @@ internal class TextCommandAutoBuilder(
     private val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
     init {
-        val functions = context.classAnnotationsMap
+        val functions = functionAnnotationsMap
             .getWithAnnotation<Command, JDATextCommandVariation>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))

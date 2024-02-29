@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -26,8 +27,8 @@ import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
+import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -45,8 +46,9 @@ private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
-    context: BContextImpl,
-    private val resolverContainer: ResolverContainer
+    applicationConfig: BApplicationConfig,
+    private val resolverContainer: ResolverContainer,
+    functionAnnotationsMap: FunctionAnnotationsMap
 ) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
     private class TopLevelSlashCommandMetadata(
         val name: String,
@@ -67,13 +69,13 @@ internal class SlashCommandAutoBuilder(
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
     }
 
-    private val forceGuildCommands = context.applicationConfig.forceGuildCommands
+    private val forceGuildCommands = applicationConfig.forceGuildCommands
 
     private val topLevelMetadata: MutableMap<String, TopLevelSlashCommandMetadata> = hashMapOf()
 
     init {
         val functions: List<SlashFunctionMetadata> =
-            context.classAnnotationsMap
+            functionAnnotationsMap
                 .getWithAnnotation<Command, JDASlashCommand>()
                 .requiredFilter(FunctionFilter.nonStatic())
                 .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))

@@ -9,13 +9,14 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
+import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -27,13 +28,14 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 internal class MessageContextCommandAutoBuilder(
-    context: BContextImpl,
-    resolverContainer: ResolverContainer
-) : ContextCommandAutoBuilder(context, resolverContainer) {
+    applicationConfig: BApplicationConfig,
+    resolverContainer: ResolverContainer,
+    functionAnnotationsMap: FunctionAnnotationsMap
+) : ContextCommandAutoBuilder(applicationConfig, resolverContainer) {
     private val messageFunctions: List<MessageContextFunctionMetadata>
 
     init {
-        messageFunctions = context.classAnnotationsMap
+        messageFunctions = functionAnnotationsMap
             .getWithAnnotation<Command, JDAMessageCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))

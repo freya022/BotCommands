@@ -9,10 +9,10 @@ import io.github.freya022.botcommands.api.commands.application.context.builder.M
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.autobuilder.requireCustomOption
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.findOptionName
@@ -22,10 +22,10 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 internal sealed class ContextCommandAutoBuilder(
-    context: BContextImpl,
+    applicationConfig: BApplicationConfig,
     private val resolverContainer: ResolverContainer
 ) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
-    protected val forceGuildCommands = context.applicationConfig.forceGuildCommands
+    protected val forceGuildCommands = applicationConfig.forceGuildCommands
 
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
