@@ -34,7 +34,7 @@ internal class ClassAnnotationsMap(
         getOrNull<A>() ?: emptySet()
 
     @Suppress("UNCHECKED_CAST")
-    internal inline fun <reified A : Annotation, reified T : Any> getInstantiableClassesWithAnnotationAndType(): Set<KClass<T>> =
+    internal inline fun <reified A : Annotation, reified T : Any> getWithType(): Set<KClass<T>> =
         get<A>().onEach {
             if (!it.isSubclassOf<T>()) {
                 throwUser("Class ${it.simpleNestedName} registered as a ${annotationRef<A>()} must extend ${T::class.simpleNestedName}")

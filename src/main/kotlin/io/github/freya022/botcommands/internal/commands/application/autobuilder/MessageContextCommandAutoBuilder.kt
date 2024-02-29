@@ -36,7 +36,7 @@ internal class MessageContextCommandAutoBuilder(
 
     init {
         messageFunctions = functionAnnotationsMap
-            .getWithAnnotation<Command, JDAMessageCommand>()
+            .getWithClassAnnotation<Command, JDAMessageCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
             .map {

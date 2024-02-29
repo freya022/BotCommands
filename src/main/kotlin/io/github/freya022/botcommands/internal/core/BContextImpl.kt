@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.internal.core.service.condition.CustomCond
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -40,7 +41,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(config.serviceConfig)
     internal val stagingClassAnnotations: StagingClassAnnotations
-        get() = _stagingClassAnnotations ?: throwInternal("Cannot use ServiceAnnotationsMap after it has been clearer")
+        get() = _stagingClassAnnotations ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
 

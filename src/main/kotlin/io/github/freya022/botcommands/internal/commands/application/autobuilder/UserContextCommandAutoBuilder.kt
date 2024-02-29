@@ -36,7 +36,7 @@ internal class UserContextCommandAutoBuilder(
 
     init {
         userFunctions = functionAnnotationsMap
-            .getWithAnnotation<Command, JDAUserCommand>()
+            .getWithClassAnnotation<Command, JDAUserCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
             .map {

@@ -268,8 +268,8 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl,
         else -> {
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
-                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { (_, errorMessage) ->
-                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed: $errorMessage")
+                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
+                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
                 }
             args[instanceParameter] = instance
 
