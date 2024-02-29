@@ -86,12 +86,14 @@ internal object ReflectionUtils {
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
-        this.find { kFunction ->
-            if (kFunction.name != callableReference.name) return@find false
-            if (kFunction.nonInstanceParameters.size != callableReference.nonInstanceParameters.size) return@find false
+        this.find { superFunction ->
+            if (superFunction.name != callableReference.name) return@find false
+            val superParameters = superFunction.nonInstanceParameters
+            val refParameters = callableReference.nonInstanceParameters
+            if (superParameters.size != refParameters.size) return@find false
 
-            return@find kFunction.nonInstanceParameters.zip(callableReference.nonInstanceParameters).all { (first, second) ->
-                first.type == second.type
+            return@find superParameters.zip(refParameters).all { (superParameter, refParameter) ->
+                superParameter.type.jvmErasure.isSubclassOf(refParameter.type.jvmErasure)
             }
         }
 
