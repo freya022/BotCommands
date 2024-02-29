@@ -8,8 +8,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 /**
  * Prevents usage of the annotated service if the required intents are not present in [JDAService.intents].
  *
- * **Requirement:** A [JDAService] instance.
- *
  * @see JDAService
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)

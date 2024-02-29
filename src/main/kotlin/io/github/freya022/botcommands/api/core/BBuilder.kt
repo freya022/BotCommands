@@ -14,8 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * Entry point for the BotCommands framework.
  *
- * Note: Building JDA before the framework will result in an error,
- * I strongly recommend that you create a service extending [JDAService],
+ * The only requirement for a basic bot is a service extending [JDAService],
  * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/from-scratch/#creating-a-jdaservice).
  *
  * @see BService @BService

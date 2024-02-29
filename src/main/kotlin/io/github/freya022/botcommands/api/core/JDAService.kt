@@ -17,7 +17,13 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.util.*
 
 /**
- * Optional interfaced service to be implemented by the service which creates a JDA instance.
+ * Interfaced service to be implemented by the service which creates a JDA instance.
+ *
+ * This has many advantages:
+ * - Checking gateway intents, cache flags, and member cache requirements for event listeners and event waiters
+ * - Conditionally enabling services based on gateway intents ([@RequiredIntents][RequiredIntents]),
+ * cache flags, and member cache
+ * - Starting JDA when every other service is ready
  *
  * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
