@@ -15,8 +15,8 @@ import io.github.freya022.botcommands.api.core.utils.logger
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
-import io.github.freya022.botcommands.internal.core.service.ServiceAnnotationsMap
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.StagingClassAnnotations
 import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
@@ -38,9 +38,9 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     override val serviceContainer = ServiceContainerImpl(this) //Puts itself
 
-    private var _serviceAnnotationsMap: ServiceAnnotationsMap? = ServiceAnnotationsMap()
-    internal val serviceAnnotationsMap: ServiceAnnotationsMap
-        get() = _serviceAnnotationsMap ?: throwInternal("Cannot use ServiceAnnotationsMap after it has been clearer")
+    private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(config.serviceConfig)
+    internal val stagingClassAnnotations: StagingClassAnnotations
+        get() = _stagingClassAnnotations ?: throwInternal("Cannot use ServiceAnnotationsMap after it has been clearer")
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
 
@@ -155,8 +155,8 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
         getService<AutocompleteInfoContainer>()[autocompleteHandler]?.invalidate()
     }
 
-    internal fun clearServiceAnnotationsMap() {
-        _serviceAnnotationsMap = null
+    internal fun clearStagingAnnotationsMap() {
+        _stagingClassAnnotations = null
     }
 
     internal fun setStatus(newStatus: Status) {

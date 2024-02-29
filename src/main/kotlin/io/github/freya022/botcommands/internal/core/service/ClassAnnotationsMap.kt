@@ -13,13 +13,13 @@ internal class ClassAnnotationsMap(
     context: BContextImpl,
     instantiableServices: InstantiableServices
 ) {
-    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.serviceAnnotationsMap
+    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.stagingClassAnnotations
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
             serviceTypes.intersect(instantiableServices.availableServices)
         }
-        .also { context.clearServiceAnnotationsMap() }
+        .also { context.clearStagingAnnotationsMap() }
 
     internal inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
 

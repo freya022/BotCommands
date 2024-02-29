@@ -1,9 +1,5 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.classgraph.ClassInfo
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -16,7 +12,8 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.jvmName
+
+private val logger = KotlinLogging.logger { }
 
 @BService(priority = Int.MAX_VALUE)
 internal class InstantiableServices internal constructor(private val context: BContextImpl) {
@@ -113,46 +110,6 @@ internal class InstantiableServices internal constructor(private val context: BC
 
         typeToImplementations.forEach { (interfacedType, providers) ->
             logger.trace { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
-        }
-    }
-}
-
-private val logger = KotlinLogging.logger { }
-
-// NOTE: As this only contains annotated classes,
-//   this means that service factories are not checked for their annotations.
-// For example, you cannot retrieve services annotated with `@Command`,
-//   unless the class itself has the annotation
-internal class ServiceAnnotationsMap internal constructor() {
-    // Annotation type => Classes with said annotation
-    private val _annotatedClasses: MutableMap<KClass<out Annotation>, MutableSet<KClass<*>>> = hashMapOf()
-
-    internal val annotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>>
-        get() = _annotatedClasses
-
-    internal fun put(annotationReceiver: KClass<*>, annotationType: KClass<Annotation>) {
-        val annotatedClasses = _annotatedClasses.computeIfAbsent(annotationType) { hashSetOf() }
-        // An annotation type cannot be present twice on a function, that wouldn't compile
-        if (!annotatedClasses.add(annotationReceiver))
-            throwInternal("An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'")
-    }
-}
-
-internal class ServiceAnnotationsMapProcessor internal constructor(
-    private val config: BConfig,
-    private val serviceAnnotationsMap: ServiceAnnotationsMap
-) : ClassGraphProcessor {
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
-        //Fill map with all the @Command, @Resolver, etc... declarations
-        if (isService) {
-            classInfo.annotationInfo.forEach { annotationInfo ->
-                if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
-                    serviceAnnotationsMap.put(
-                        annotationReceiver = kClass,
-                        annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin
-                    )
-                }
-            }
         }
     }
 }
