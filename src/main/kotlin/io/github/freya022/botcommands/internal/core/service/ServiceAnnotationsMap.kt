@@ -130,10 +130,11 @@ internal class ServiceAnnotationsMap internal constructor() {
     internal val annotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>>
         get() = _annotatedClasses
 
-    internal fun <A : Annotation> put(annotationReceiver: KClass<*>, annotationType: KClass<A>) {
+    internal fun put(annotationReceiver: KClass<*>, annotationType: KClass<Annotation>) {
         val annotatedClasses = _annotatedClasses.computeIfAbsent(annotationType) { hashSetOf() }
+        // An annotation type cannot be present twice on a function, that wouldn't compile
         if (!annotatedClasses.add(annotationReceiver))
-            return logger.warn { "An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'" }
+            throwInternal("An annotation instance of type '${annotationType.simpleNestedName}' already exists on class '${annotationReceiver.simpleNestedName}'")
     }
 }
 
