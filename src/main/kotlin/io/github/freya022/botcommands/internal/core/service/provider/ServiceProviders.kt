@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.service
+package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
@@ -19,6 +19,9 @@ internal class ServiceProviders : ClassGraphProcessor {
     private val nameMap: MutableMap<String, ServiceProvider> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
+    internal val allProviders: Collection<ServiceProvider>
+        get() = nameMap.values
+
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in nameMap)
             throw IllegalArgumentException("Service provider for '${serviceProvider.name}' already exists (tried to insert '${serviceProvider.providerKey}', existing provider: '${nameMap[serviceProvider.name]?.providerKey}')")
@@ -30,7 +33,6 @@ internal class ServiceProviders : ClassGraphProcessor {
     }
 
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
-    internal fun findForType(type: KClass<*>): ServiceProvider? = typeMap[type]?.firstOrNull()
     internal fun findForName(name: String): ServiceProvider? = nameMap[name]
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {

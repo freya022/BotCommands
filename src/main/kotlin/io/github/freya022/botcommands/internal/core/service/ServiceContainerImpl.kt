@@ -7,6 +7,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.service.provider.ClassServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -59,11 +62,10 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices() {
-        getLoadableService()
-            .mapTo(sortedSetOf()) { clazz ->
-                context.serviceProviders.findForType(clazz)
-                    ?: throwInternal("Unable to find back service provider for ${clazz.jvmName}")
-            }
+        getService<InstantiableServices>()
+            .availableProviders
+            .filterNot { it.isLazy }
+            // This should never throw as the providers are available and not lazy
             .forEach { provider -> tryGetService<Any>(provider).getOrThrow() }
     }
 
@@ -295,9 +297,6 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         }
     }
 
-    private fun getLoadableService() = context.instantiableServiceAnnotationsMap
-        .getAllInstantiableClasses()
-        .filterNot { it.hasAnnotation<io.github.freya022.botcommands.api.core.service.annotations.Lazy>() }
 }
 
 internal fun ServiceContainer.getFunctionService(function: KFunction<*>): Any = when {

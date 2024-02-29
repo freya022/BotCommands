@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.service
+package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
@@ -8,6 +8,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -266,8 +268,8 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl,
         else -> {
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
-                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { (_, errorMessage) ->
-                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed: $errorMessage")
+                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
+                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
                 }
             args[instanceParameter] = instance
 

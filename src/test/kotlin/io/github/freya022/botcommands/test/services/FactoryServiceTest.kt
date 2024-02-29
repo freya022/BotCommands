@@ -18,7 +18,6 @@ class FactoryServiceTest private constructor() {
     }
 }
 
-@BService
 class PropertyFactoryServiceTest private constructor() {
     //    @BService //Not necessary
     object PropertyFactoryServiceTestProvider {

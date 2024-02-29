@@ -78,7 +78,7 @@ class EventDispatcher internal constructor(
 
     init {
         functionAnnotationsMap
-            .getFunctionsWithAnnotation<BEventListener>()
+            .get<BEventListener>()
             .addAsEventListeners()
 
         //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually

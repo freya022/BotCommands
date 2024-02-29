@@ -42,7 +42,7 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
 
     init {
         val declarators = functionAnnotationsMap
-            .getFunctionsWithAnnotation<RateLimitDeclaration>()
+            .get<RateLimitDeclaration>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(RateLimitContainer::class))
             .requiredFilter(FunctionFilter.blocking())

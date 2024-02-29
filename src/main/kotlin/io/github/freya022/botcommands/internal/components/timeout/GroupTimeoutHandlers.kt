@@ -16,7 +16,7 @@ import kotlin.reflect.full.findAnnotation
 @Dependencies(Components::class)
 internal class GroupTimeoutHandlers(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) : TimeoutHandlerContainer {
     private val map: Map<String, TimeoutDescriptor<GroupTimeoutData>> =
-        functionAnnotationsMap.getFunctionsWithAnnotation<GroupTimeoutHandler>()
+        functionAnnotationsMap.get<GroupTimeoutHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GroupTimeoutData::class))
             .associate {

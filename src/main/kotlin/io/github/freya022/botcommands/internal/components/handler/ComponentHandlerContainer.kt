@@ -24,7 +24,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
 
     init {
-        functionAnnotationsMap.getFunctionsWithAnnotation<JDAButtonListener>()
+        functionAnnotationsMap.get<JDAButtonListener>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ButtonEvent::class))
             .forEach {
@@ -36,7 +36,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
                 }
             }
 
-        functionAnnotationsMap.getFunctionsWithAnnotation<JDASelectMenuListener>()
+        functionAnnotationsMap.get<JDASelectMenuListener>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(StringSelectEvent::class, EntitySelectEvent::class))
             .forEach {
