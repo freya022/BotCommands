@@ -19,6 +19,7 @@ internal class ClassAnnotationsMap(
         .mapValues { (_, serviceTypes) ->
             serviceTypes.intersect(instantiableServices.availableServices)
         }
+        .also { context.clearServiceAnnotationsMap() }
 
     internal inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
 

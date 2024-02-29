@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.internal.core.service.condition.CustomCond
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
@@ -37,7 +38,9 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     override val serviceContainer = ServiceContainerImpl(this) //Puts itself
 
-    internal val serviceAnnotationsMap = ServiceAnnotationsMap()
+    private var _serviceAnnotationsMap: ServiceAnnotationsMap? = ServiceAnnotationsMap()
+    internal val serviceAnnotationsMap: ServiceAnnotationsMap
+        get() = _serviceAnnotationsMap ?: throwInternal("Cannot use ServiceAnnotationsMap after it has been clearer")
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
 
@@ -150,6 +153,10 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
     override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) {
         getService<AutocompleteInfoContainer>()[autocompleteHandler]?.invalidate()
+    }
+
+    internal fun clearServiceAnnotationsMap() {
+        _serviceAnnotationsMap = null
     }
 
     internal fun setStatus(newStatus: Status) {
