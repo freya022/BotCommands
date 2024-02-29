@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
@@ -37,6 +38,22 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
  * - ✓ One is annotated with [@Primary][Primary], in which case this one is prioritized
  *
  * **Note:** You can still get all the [types][ServiceContainer.getInterfacedServiceTypes] / [instances][ServiceContainer.getInterfacedServices].
+ *
+ * #### Service types
+ *
+ * Registered services cannot be retrieved by every type they represent,
+ * i.e., they can only be retrieved by the types they are explicitly registered as:
+ * - Classes annotated as services are registered with the class type.
+ * - Service factories (including property getters) register their returned services as the function's return type.
+ *
+ * In both cases, supertypes can be added using [@ServiceType][ServiceType]
+ *
+ * Using service factories, if your function creates an implementation class, but returns the abstract class/interface,
+ * the service will only be retrievable by the latter.
+ *
+ * **Note:** Annotated functions in subclasses of services returned by service factories cannot be processed.
+ * For example, if you have a [@BEventListener][BEventListener] in your implementation class,
+ * but your service factory returns the abstract class/interface, then your listener will **not** work.
  *
  * #### Interfaced services
  *

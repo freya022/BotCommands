@@ -18,7 +18,11 @@ internal class FunctionAnnotationsMap(
 
     init {
         instantiableServices
-            .availableServices
+            // This cannot use "availableServices" as they contain types that would point to the same instance,
+            // under a supertype,
+            // thus having the same annotated function be returned more than once
+            .availableProviders
+            .map { it.primaryType }
             .forEach { kClass ->
                 kClass.memberFunctions.forEach { function ->
                     function.annotations.forEach { annotation ->

@@ -6,7 +6,9 @@ import kotlin.reflect.KClass
  * Adds additional types to register this service as.
  *
  * This may be useful in situations where implementation classes are services, but the interface needs to be constructible from it,
- * as the framework will find back the implementation from the declared service types
+ * as the framework will find back the implementation from the declared service types.
+ *
+ * See the "Service types" section in [@BService][BService] for more details.
  *
  * @see BService @BService
  * @see InjectedService @InjectedService
