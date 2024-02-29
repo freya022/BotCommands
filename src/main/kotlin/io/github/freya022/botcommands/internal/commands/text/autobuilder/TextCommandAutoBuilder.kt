@@ -56,7 +56,7 @@ internal class TextCommandAutoBuilder(
 
     init {
         val functions = context.classAnnotationsMap
-            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommandVariation>()
+            .getWithAnnotation<Command, JDATextCommandVariation>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {

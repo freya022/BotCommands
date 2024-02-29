@@ -16,7 +16,7 @@ internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsM
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 
     init {
-        functionAnnotationsMap.getFunctionsWithAnnotation<ModalHandler>()
+        functionAnnotationsMap.get<ModalHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ModalInteractionEvent::class))
             .forEach {

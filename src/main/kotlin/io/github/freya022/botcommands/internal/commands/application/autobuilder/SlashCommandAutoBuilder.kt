@@ -74,7 +74,7 @@ internal class SlashCommandAutoBuilder(
     init {
         val functions: List<SlashFunctionMetadata> =
             context.classAnnotationsMap
-                .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
+                .getWithAnnotation<Command, JDASlashCommand>()
                 .requiredFilter(FunctionFilter.nonStatic())
                 .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
                 .map {

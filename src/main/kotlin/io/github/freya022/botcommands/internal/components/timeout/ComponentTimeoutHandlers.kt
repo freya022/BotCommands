@@ -16,7 +16,7 @@ import kotlin.reflect.full.findAnnotation
 @Dependencies(Components::class)
 internal class ComponentTimeoutHandlers(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) : TimeoutHandlerContainer {
     private val map: Map<String, TimeoutDescriptor<ComponentTimeoutData>> =
-        functionAnnotationsMap.getFunctionsWithAnnotation<ComponentTimeoutHandler>()
+        functionAnnotationsMap.get<ComponentTimeoutHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ComponentTimeoutData::class))
             .associate {

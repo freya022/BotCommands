@@ -18,7 +18,7 @@ internal class AutocompleteInfoAutoBuilder internal constructor() : Autocomplete
     override fun declareAutocomplete(manager: AutocompleteManager) {
         val functionAnnotationsMap = manager.context.getService<FunctionAnnotationsMap>()
 
-        functionAnnotationsMap.getFunctionsWithAnnotation<AutocompleteHandler>()
+        functionAnnotationsMap.get<AutocompleteHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
             .requiredFilter(FunctionFilter.returnType<Collection<Any>>(ignoreNullability = false))
