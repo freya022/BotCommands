@@ -4,7 +4,7 @@ While V3 has most major features reworked and improved, this came to a cost;
 in particular, some parts of the API are now built toward Kotlin users. 
 It is not sure how the API may be adapted to fit Java users more.
 
-While some features which require configuration using a DSL appeal more to Kotlin users, 
+While some features that require configuration using a DSL appeal more to Kotlin users, 
 they should still be usable by Java users.
 
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
@@ -90,7 +90,7 @@ annotations with distinct scopes were introduced:
 
 Slash commands:
 - (Required) `@JDASlashCommand(name, group, subcommand, description)`
-- (Required on subcommands) `@TopLevelSlashCommandData(scope, defaultLocked, nsfw, description)`
+- (Required once, when using subcommands) `@TopLevelSlashCommandData(scope, defaultLocked, nsfw, description)`
 - (Optional) `@SlashCommandGroupData(description)`
 
 Text commands:
@@ -117,7 +117,7 @@ The DSL also enables you to declare commands with code, configure your names, de
 so you are not limited to static values with annotations.
 
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
-see `SlashBanDetailedFront#onDeclare`.
+see `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ## New option aggregates
 Option aggregates are a way to combine multiple options into one object, 
@@ -131,7 +131,7 @@ You can still insert options without declaring an aggregate; these options will 
 **Note:** Option aggregates are only available with DSL declaration (and components and modal handlers by using `@Aggregate`).
 
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
-see `aggregate` in `SlashBanDetailedFront#onDeclare`.
+see `aggregate` in `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ### Vararg options
 Vararg options are a special type of option aggregate, they are essentially an aggregate that generates N options, 
@@ -200,7 +200,7 @@ on `SlashSentence#onSentencePartAutocomplete`.
 
 Text commands no longer have a `name`/`group`/`subcommand`, they have a `path` instead, which is an array of string.
 
-**Note:** Text commands are still limited to three path components.
+**Note:** Text commands are still limited to three path parts.
 
 ## New built-in help command
 The command-specific embed has been revamped,
@@ -282,7 +282,9 @@ as well as having the handler, and the timeout handler be optional.
 
 As these handlers are optional, you can still handle them using coroutines, by using `await` on your component/group.
 
-**Note:** I recommend setting `timeout` when creating your component, with or without a handler, instead of using `withTimeout`. Be sure to catch `TimeoutCancellationException`.
+**Note:** Components have a default timeout (set in `Components`), which invalidates the button after expiration.
+You can disable the timeout if necessary using `noTimeout()`, or if you plan on putting the component in a group.
+Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
 An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
 
@@ -290,6 +292,10 @@ An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/c
 Just like components, modals are now created using a DSL, while their handlers are still annotated. 
 
 The DSL is very similar to the component's DSL, with your usual `bindTo` and `setTimeout` functions, you can also await on your modals.
+
+**Note:** Modals also have a default timeout (set in `Modals`), which invalidates the modal after expiration.
+You can disable the timeout if necessary using `noTimeout()`.
+Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt).
 
