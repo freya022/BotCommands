@@ -27,7 +27,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <kotlin.version>1.9.22</kotlin.version>
-        <kotlin.coroutine.version>1.7.3</kotlin.coroutine.version>
+        <kotlin.coroutine.version>1.8.0</kotlin.coroutine.version>
+        <flyway.version>10.8.1</flyway.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -418,7 +419,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.19</version>
+            <version>5.0.0-beta.20</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -437,7 +438,7 @@
         <dependency>
             <groupId>club.minnced</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>0.11.0-beta.19</version>
+            <version>0.11.0-beta.20</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -479,12 +480,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.9</version>
+            <version>2.0.12</version>
         </dependency>
         <dependency>
             <groupId>io.github.oshai</groupId>
             <artifactId>kotlin-logging-jvm</artifactId>
-            <version>6.0.1</version>
+            <version>6.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.bucket4j</groupId>
@@ -494,13 +495,13 @@
         <dependency>
             <groupId>dev.reformator.stacktracedecoroutinator</groupId>
             <artifactId>stacktrace-decoroutinator-jvm</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
+            <version>1.5.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -518,13 +519,13 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>10.1.0</version>
+            <version>${flyway.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency> <!-- https://github.com/flyway/flyway/issues/3780 -->
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>10.1.0</version>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>

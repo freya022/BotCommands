@@ -15,8 +15,7 @@ interface BDatabaseConfig {
      * Whether transactions should trigger a coroutine dump & thread dump
      * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
      *
-     * **Note:** You need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
-     * remember to turn off [DebugProbes.enableCreationStackTraces] in production environments.
+     * **Note:** You need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info.
      *
      * Default: `false`
      *
