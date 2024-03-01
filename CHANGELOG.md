@@ -163,8 +163,9 @@ forcing them to spread out your resource usage.
 
 Rate limits can be used with:
 - `@RateLimit` (for annotated commands)
+- `#rateLimit`/`#cooldown` (for DSL commands) 
 - `#rateLimitReference` (for DSL commands and components) 
-- A declarator function, annotated with `@RateLimitDeclaration`, using `RateLimitContainer#rateLimit`,
+- A provider, by implementing `RateLimitProvider` and using `RateLimitManager#rateLimit`,
   using them is as simple as using `@RateLimitReference` for annotated commands,
   or `#rateLimitReference` for DSL commands and components.
 
