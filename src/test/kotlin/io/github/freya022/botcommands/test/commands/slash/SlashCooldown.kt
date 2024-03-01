@@ -23,7 +23,7 @@ class SlashCooldown : GlobalApplicationCommandProvider, ApplicationCommand() {
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("cooldown", function = ::onSlashCooldown) {
-            cooldown(RateLimitScope.GUILD, 5.seconds)
+            cooldown(5.seconds, RateLimitScope.GUILD)
         }
     }
 }

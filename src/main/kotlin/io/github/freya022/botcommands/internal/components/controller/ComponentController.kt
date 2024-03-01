@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
-import io.github.freya022.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.IdentifiableComponent
@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
-import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import kotlinx.coroutines.CancellableContinuation
@@ -57,7 +56,7 @@ internal class ComponentController(
     private suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
-                "Rate limit group '$rateLimitGroup' was not registered using ${annotationRef<RateLimitDeclaration>()}"
+                "Rate limit group '$rateLimitGroup' was not registered using ${classRef<RateLimitProvider>()}"
             }
         }
 
