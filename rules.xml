@@ -1,0 +1,31 @@
+<ruleset comparisonMethod="maven"
+         xmlns="https://www.mojohaus.org/VERSIONS/RULE/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://www.mojohaus.org/VERSIONS/RULE/2.1.0 https://www.mojohaus.org/versions/versions-model/xsd/rule-2.1.0.xsd">
+    <rules>
+        <rule groupId="org.jetbrains.kotlin" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*-Beta.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.jetbrains.kotlinx" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*-RC</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.slf4j" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*-alpha.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="com.fasterxml.jackson" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*-rc.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="net.dv8tion" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*_DEV</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+    </rules>
+</ruleset>
