@@ -1,6 +1,8 @@
-package io.github.freya022.botcommands.api.commands.ratelimit
+package io.github.freya022.botcommands.internal.commands.ratelimit
 
 import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow

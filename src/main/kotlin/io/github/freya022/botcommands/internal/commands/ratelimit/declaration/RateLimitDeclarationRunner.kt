@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit.declaration
 
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }

@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.time.Duration

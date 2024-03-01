@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.ratelimit
 import io.github.bucket4j.Bucket
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
