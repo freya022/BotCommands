@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
@@ -71,6 +72,8 @@ internal class FunctionServiceProvider(
 
         return timedInstantiation.also { instance = it.result.getOrThrow() }
     }
+
+    override fun getProviderSignature(): String = function.shortSignature
 
     override fun toString() = providerKey
 }
