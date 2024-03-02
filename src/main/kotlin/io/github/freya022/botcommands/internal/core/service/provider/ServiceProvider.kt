@@ -66,7 +66,10 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
             return 1
         }
 
-        return name.compareTo(other.name)
+        val nameCmp = name.compareTo(other.name)
+        if (nameCmp != 0) return nameCmp
+
+        return providerKey.compareTo(other.providerKey)
     }
 
     companion object {
