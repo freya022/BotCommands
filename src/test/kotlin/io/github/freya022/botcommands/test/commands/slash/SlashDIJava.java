@@ -5,10 +5,10 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.internal.core.ReadyListener;
+import io.github.freya022.botcommands.test.services.INamedService;
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService;
 import kotlin.Lazy;
 import org.jetbrains.annotations.Nullable;
@@ -17,9 +17,9 @@ import java.util.List;
 
 @Command
 public class SlashDIJava extends ApplicationCommand {
-    public SlashDIJava(@ServiceName("builtinHelpCommand") @Nullable IHelpCommand builtinHelpCommand,
+    public SlashDIJava(@ServiceName("modifiedNamedService") INamedService namedService,
                        @javax.annotation.Nullable UnusedInterfacedService unusedInterfacedService) {
-        System.out.println("Built-in help command: " + builtinHelpCommand);
+        System.out.println("Named service: " + namedService);
         System.out.println("UnusedInterfacedService: " + unusedInterfacedService);
     }
 
