@@ -16,24 +16,25 @@ import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinFunction
 
 internal class ServiceProviders : ClassGraphProcessor {
-    private val nameMap: MutableMap<String, ServiceProvider> = ConcurrentHashMap()
+    private val nameMap: MutableMap<String, MutableSet<ServiceProvider>> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
     internal val allProviders: Collection<ServiceProvider>
-        get() = nameMap.values
+        get() = nameMap.values.flatten()
 
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in nameMap)
             throw IllegalArgumentException("Service provider for '${serviceProvider.name}' already exists (tried to insert '${serviceProvider.providerKey}', existing provider: '${nameMap[serviceProvider.name]?.providerKey}')")
 
-        nameMap[serviceProvider.name] = serviceProvider
+        nameMap.computeIfAbsent(serviceProvider.name) { ConcurrentSkipListSet() }.add(serviceProvider)
         serviceProvider.types.forEach { type ->
             typeMap.computeIfAbsent(type) { ConcurrentSkipListSet() }.add(serviceProvider)
         }
     }
 
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
-    internal fun findForName(name: String): ServiceProvider? = nameMap[name]
+    internal fun findForName(name: String): ServiceProvider? = nameMap[name]?.firstOrNull()
+    internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (isService) {
