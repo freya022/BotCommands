@@ -78,19 +78,6 @@ abstract class CommandBuilder internal constructor(val context: BContext, overri
         rateLimitInfo = RateLimitBuilder("$type: ${path.fullPath}", bucketFactory, limiterFactory).apply(block).build()
     }
 
-    // Different specifications with the same group will not exist
-    // as the function is only called if a single rate limit annotation is on a given command path,
-    // see singleValueOfVariants.
-    // A rate limiter may already exist in case a command gets declared more than once,
-    // such as guild commands, or after a command update.
-    internal fun rateLimitIfAbsent(bucketFactory: BucketFactory, limiterFactory: RateLimiterFactory) {
-        val rateLimitContainer = context.getService<RateLimitContainer>()
-        val group = "$type: ${path.fullPath}"
-        // Take existing info if rate limiter already exists
-        rateLimitInfo = rateLimitContainer[group]
-            ?: rateLimitContainer.rateLimit(group, bucketFactory, limiterFactory) {}
-    }
-
     /**
      * Sets the rate limiter of this command to one declared by a [RateLimitProvider].
      *

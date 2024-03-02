@@ -125,7 +125,7 @@ internal fun CommandBuilder.fillCommandBuilder(functions: Iterable<KFunction<*>>
     }
 
     rateLimitSpec?.let { (bucketFactory, rateLimiterFactory) ->
-        rateLimitIfAbsent(bucketFactory, rateLimiterFactory)
+        rateLimit(bucketFactory, rateLimiterFactory)
     }
 
     rateLimitRef?.let { rateLimitReference(it.group) }
