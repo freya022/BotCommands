@@ -23,7 +23,6 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.safeCast
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.DurationUnit
@@ -74,7 +73,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         if (providers.isEmpty())
             return null
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
         val provider = providerResult.service
         val providerError = providerResult.serviceError
 
@@ -95,25 +94,46 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
-        val provider = context.serviceProviders.findForName(name) ?: return null
-        if (!provider.primaryType.isSubclassOf(requiredType)) return null
+        val providers = context.serviceProviders.findAllForName(name)
+        if (providers.isEmpty())
+            return null
 
-        return provider.instance?.let { requiredType.safeCast(it) }
+        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
+        val provider = providerResult.service
+        val providerError = providerResult.serviceError
+
+        if (providerError != null) {
+            val (errorType, errorMessage) = providerError
+            if (errorType == NON_UNIQUE_PROVIDERS) {
+                logger.debug { errorMessage }
+            } else {
+                logger.trace { "Peeking service '$name' error: $errorMessage" }
+            }
+            return null
+        }
+
+        return when {
+            provider != null -> provider.instance?.let(requiredType::cast)
+            else -> throwInternal("No error yet no provider is present")
+        }
     }
 
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
-        val provider = context.serviceProviders.findForName(name)
-            ?: return NO_PROVIDER.toResult("No service or factories found for service name '$name'")
-        if (!provider.primaryType.isSubclassOf(requiredType))
-            return provider.createInvalidTypeError(requiredType)
+        val providers = context.serviceProviders.findAllForName(name)
 
-        return tryGetService(provider)
+        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
+        val provider = providerResult.service
+
+        return when {
+            provider != null -> tryGetService(provider)
+            else -> ServiceResult.fail(providerResult.serviceError ?: throwInternal("Can't have no provider and no error"))
+        }
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val providers = context.serviceProviders.findAllForType(clazz)
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
         val provider = providerResult.service
 
         return when {
@@ -162,13 +182,6 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         }
     }
 
-    private fun <T : Any> ServiceProvider.createInvalidTypeError(requiredType: KClass<T>): ServiceResult<T> =
-        INVALID_TYPE.toResult(
-            errorMessage = "A service was found but type is incorrect, " +
-                    "requested: ${requiredType.simpleNestedName}, actual: ${this.primaryType.simpleNestedName}",
-            extraMessage = "provider: ${this.providerKey}"
-        )
-
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
         return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
@@ -212,17 +225,21 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
-        val provider = context.serviceProviders.findForName(name)
-            ?: return NO_PROVIDER.toError("No service or factories found for service name '$name'")
-        if (!provider.primaryType.isSubclassOf(requiredType))
-            return provider.createInvalidTypeError(requiredType).serviceError
-        return canCreateService(provider)
+        val providers = context.serviceProviders.findAllForName(name)
+
+        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
+        val provider = providerResult.service
+
+        return when {
+            provider != null -> null
+            else -> providerResult.serviceError ?: throwInternal("Can't have no provider and no error")
+        }
     }
 
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
         val providers = context.serviceProviders.findAllForType(clazz)
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, providers)
+        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
         val provider = providerResult.service
 
         return when {
@@ -242,10 +259,10 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
      *
      * - **No usable provider:** The result contains the error.
      */
-    private fun getInstantiablePrimaryProvider(clazz: KClass<*>, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
+    private fun getInstantiablePrimaryProvider(clazz: KClass<*>, name: String?, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
         if (providers.isEmpty())
             return NO_PROVIDER.toResult(
-                errorMessage = "No service or factories found for type ${clazz.simpleNestedName}",
+                errorMessage = "No service or factories found for ${getProviderCharacteristicsQuery(clazz, name)}",
                 extraMessage = clazz.findAnnotation<MissingServiceMessage>()?.message
             )
 
@@ -262,21 +279,40 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         // If there's no primary provider, take all of them
         val primaryProviders = instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
 
-        if (primaryProviders.size > 1) {
+        val primaryProvider = if (primaryProviders.size > 1) {
             return NON_UNIQUE_PROVIDERS.toResult(primaryProviders.createNonUniqueProvidersMessage(clazz))
         } else if (errors.isEmpty()) {
-            val primaryProvider = primaryProviders.singleOrNull()
+            primaryProviders.singleOrNull()
                 ?: throwInternal("This collection cannot be empty as instantiable providers shouldn't be empty when there's no error, due to there being at least one provider")
-            return ServiceResult.pass(primaryProvider)
         } else { // One provider at most, or none and has errors
-            val primaryProvider = primaryProviders.firstOrNull()
+            primaryProviders.firstOrNull()
                 ?: return NO_USABLE_PROVIDER.toResult(
-                    errorMessage = "All providers returned an error for type ${clazz.simpleNestedName}",
+                    errorMessage = "All providers returned an error for ${getProviderCharacteristicsQuery(clazz, name)}",
                     nestedError = ServiceError.fromErrors(errors)
                 )
-
-            return ServiceResult.pass(primaryProvider)
         }
+
+        if (!primaryProvider.primaryType.isSubclassOf(clazz)) {
+            val errorMessage = "A provider was found but type is incorrect, " +
+                    "requested: ${clazz.simpleNestedName}, actual: ${primaryProvider.primaryType.simpleNestedName}"
+
+            // In the case we only requested by type,
+            // the caller should have already supplied type-compatible providers
+            if (name == null)
+                throwInternal(errorMessage)
+
+            return INVALID_TYPE.toResult(
+                errorMessage = errorMessage,
+                extraMessage = "provider: ${primaryProvider.providerKey}"
+            )
+        }
+
+        return ServiceResult.pass(primaryProvider)
+    }
+
+    private fun getProviderCharacteristicsQuery(clazz: KClass<*>, name: String?) = when {
+        name != null -> "type ${clazz.simpleNestedName} and name '$name'"
+        else -> "type ${clazz.simpleNestedName}"
     }
 
     private fun <T : Any> List<ServiceProvider>.createNonUniqueProvidersMessage(clazz: KClass<T>) = """
