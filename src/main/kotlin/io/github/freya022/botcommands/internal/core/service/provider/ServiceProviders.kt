@@ -23,9 +23,6 @@ internal class ServiceProviders : ClassGraphProcessor {
         get() = nameMap.values.flatten()
 
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
-        if (serviceProvider.name in nameMap)
-            throw IllegalArgumentException("Service provider for '${serviceProvider.name}' already exists (tried to insert '${serviceProvider.providerKey}', existing provider: '${nameMap[serviceProvider.name]?.providerKey}')")
-
         nameMap.computeIfAbsent(serviceProvider.name) { ConcurrentSkipListSet() }.add(serviceProvider)
         serviceProvider.types.forEach { type ->
             typeMap.computeIfAbsent(type) { ConcurrentSkipListSet() }.add(serviceProvider)
