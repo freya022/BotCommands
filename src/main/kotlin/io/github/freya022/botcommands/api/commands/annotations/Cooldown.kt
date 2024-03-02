@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.cooldown
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import java.time.temporal.ChronoUnit
 
 /**
@@ -17,7 +18,8 @@ import java.time.temporal.ChronoUnit
  *
  * @see RateLimit @RateLimit
  *
- * @see CommandBuilder.cooldown DSL equivalent
+ * @see CommandBuilder.cooldown In-command equivalent
+ * @see RateLimitManager.cooldown Code-declared equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

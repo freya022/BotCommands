@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.components.builder
 import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
@@ -41,7 +41,7 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
     val rateLimitGroup: String?
 
     /**
-     * Sets the rate limiter of this component to one declared by [@RateLimitDeclaration][RateLimitDeclaration].
+     * Sets the rate limiter of this component to one declared by [RateLimitProvider].
      *
      * An exception will be thrown when constructing the button if the group is invalid.
      *

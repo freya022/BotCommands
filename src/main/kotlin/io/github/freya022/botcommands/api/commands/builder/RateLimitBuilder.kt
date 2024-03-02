@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactor
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 
 @CommandDSL
-class RateLimitBuilder internal constructor(var bucketFactory: BucketFactory, var limiterFactory: RateLimiterFactory) {
+class RateLimitBuilder internal constructor(val group: String, var bucketFactory: BucketFactory, var limiterFactory: RateLimiterFactory) {
     internal fun build(): RateLimitInfo {
-        return RateLimitInfo(limiterFactory.get(bucketFactory))
+        return RateLimitInfo(group, limiterFactory.get(bucketFactory))
     }
 }

@@ -4,8 +4,9 @@ import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import java.time.temporal.ChronoUnit
 
 /**
@@ -63,18 +64,7 @@ annotation class Refill(
  * ### Rate limit cancellation
  * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
- * ### Example (Kotlin)
- * ```kt
- * @RateLimit(
- *     scope = RateLimitScope.USER,
- *     Bandwidth(5, Refill(RefillType.GREEDY, 5, 1, ChronoUnit.MINUTES)),
- *     Bandwidth(2, Refill(RefillType.INTERVAL, 2, 5, ChronoUnit.SECONDS))
- * )
- * @JDASlashCommands(...)
- * fun onSlashRateLimit(...) { ... }
- * ```
- *
- * ### Example (Java)
+ * ### Example
  * ```java
  * @RateLimit(
  *     scope = RateLimitScope.USER, bandwidths = {
@@ -89,7 +79,7 @@ annotation class Refill(
  * @see Bandwidth @Bandwidth
  * @see Bucket
  *
- * @see CommandBuilder.rateLimit DSL equivalent
+ * @see RateLimitManager.rateLimit DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
@@ -118,33 +108,9 @@ annotation class RateLimit(
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.
  *
- * ### Example
- * ```kt
- * @RateLimitDeclaration
- * fun declare(rateLimitContainer: RateLimitContainer) {
- *     val bucketFactory = BucketFactory.spikeProtected(5, 1.minutes, 2, 5.seconds)
- *     rateLimitContainer.rateLimit("SlashMyCommand: my_rate_limit", bucketFactory)
- * }
+ * See [RateLimitProvider] for examples.
  *
- * @RateLimitReference("SlashMyCommand: my_rate_limit")
- * @JDASlashCommand(...)
- * fun onSlashMyCommand(...) { ... }
- * ```
- *
- * ### Example (Java)
- * ```java
- * @RateLimitDeclaration
- * public void declare(RateLimitContainer rateLimitContainer) {
- *     var bucketFactory = BucketFactory.spikeProtected(5, Duration.ofMinutes(1), 2, Duration.ofSeconds(5))
- *     rateLimitContainer.rateLimit("SlashMyCommand: my_rate_limit", bucketFactory)
- * }
- *
- * @RateLimitReference(group = "SlashMyCommand: my_rate_limit")
- * @JDASlashCommand(...)
- * public void onSlashMyCommand(...) { ... }
- * ```
- *
- * @see RateLimitContainer.rateLimit
+ * @see RateLimitProvider
  * @see CommandBuilder.rateLimitReference DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
