@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.handle
@@ -35,7 +34,6 @@ private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
 @Command
-@ServiceName("builtinHelpCommand")
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
 internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand, TextCommandProvider {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
