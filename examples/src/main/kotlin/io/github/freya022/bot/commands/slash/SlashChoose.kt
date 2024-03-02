@@ -6,8 +6,8 @@ import io.github.freya022.bot.switches.SimpleFrontend
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -23,9 +23,8 @@ class SlashChoose {
 
 @Command
 @ConditionalService(FrontendChooser::class)
-class SlashChooseDetailedFront {
-    @AppDeclaration
-    fun onDeclare(manager: GlobalApplicationCommandManager) {
+class SlashChooseDetailedFront : GlobalApplicationCommandProvider {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("choose", function = SlashChoose::onSlashChoose) {
             description = "Randomly choose a value"
 

@@ -3,8 +3,8 @@ package io.github.freya022.wiki.commands.slash
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
@@ -27,7 +27,7 @@ class SlashPingKotlin : ApplicationCommand() {
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:ping-kotlin_dsl]
 @Command
-class SlashPingKotlinDsl {
+class SlashPingKotlinDsl : GlobalApplicationCommandProvider {
     suspend fun onSlashPing(event: GuildSlashEvent) {
         event.deferReply(true).queue()
 
@@ -35,8 +35,7 @@ class SlashPingKotlinDsl {
         event.hook.editOriginal("Pong! $ping ms").await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         // Default scope is global, guild-only (GUILD_NO_DM)
         manager.slashCommand("ping", function = ::onSlashPing) {
             description = "Pong!"

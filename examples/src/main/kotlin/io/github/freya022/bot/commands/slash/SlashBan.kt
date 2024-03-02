@@ -8,8 +8,8 @@ import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -63,17 +63,21 @@ class SlashBan(private val componentsService: Components, private val banService
         }
 
         val cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")) {
+            // This is required as the button is in a group
+            noTimeout()
             oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
         val confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm")) {
+            // This is required as the button is in a group
+            noTimeout()
             oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
 
-        val componentGroup = componentsService.newEphemeralGroup(cancelButton, confirmButton) {
+        val componentGroup = componentsService.ephemeralGroup(cancelButton, confirmButton) {
             timeout(1.minutes)
         }
 
@@ -117,9 +121,8 @@ class SlashBan(private val componentsService: Components, private val banService
 
 @Command
 @ConditionalService(FrontendChooser::class)
-class SlashBanDetailedFront {
-    @AppDeclaration
-    fun onDeclare(manager: GlobalApplicationCommandManager) {
+class SlashBanDetailedFront : GlobalApplicationCommandProvider {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("ban", function = SlashBan::onSlashBan) {
             description = "Ban any user from this guild"
 

@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.parameters.Resolvers;
 import io.github.freya022.wiki.switches.wiki.WikiDetailProfile;
 import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUnitResolverSimplified {
@@ -17,7 +18,7 @@ public class TimeUnitResolverSimplified {
     @Resolver
     public static ParameterResolver<?, TimeUnit> getTimeUnitResolverSimplified() {
         // The displayed name should be lowercase with the first letter uppercase, see Resolvers#toHumanName
-        return Resolvers.enumResolver(TimeUnit.class, new TimeUnit[]{TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS});
+        return Resolvers.enumResolver(TimeUnit.class, EnumSet.of(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS));
     }
 }
 // --8<-- [end:time_unit_resolver-simplified-java]

@@ -6,8 +6,8 @@ import io.github.freya022.bot.switches.SimpleFrontend
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -54,9 +54,8 @@ class SlashSentence {
 
 @Command
 @ConditionalService(FrontendChooser::class)
-class SlashSentenceDetailedFront {
-    @AppDeclaration
-    fun onDeclare(manager: GlobalApplicationCommandManager) {
+class SlashSentenceDetailedFront : GlobalApplicationCommandProvider {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("sentence", function = SlashSentence::onSlashSentence) {
             description = "Make a sentence"
 
@@ -68,7 +67,7 @@ class SlashSentenceDetailedFront {
             ) { count ->
                 description = "Sentence part N°$count"
 
-                autocompleteReference(sentencePartAutocompleteName)
+                autocompleteByFunction(SlashSentence::onSentencePartAutocomplete)
             }
         }
     }

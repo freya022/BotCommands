@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -52,13 +52,12 @@ class SlashCreateTimeKotlin : ApplicationCommand() {
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:create_time-kotlin_dsl]
 @Command
-class SlashCreateTimeKotlinDsl {
+class SlashCreateTimeKotlinDsl : GlobalApplicationCommandProvider {
     suspend fun onSlashCreateTime(event: GuildSlashEvent, timestamp: Instant) {
         event.reply("I was created on ${TimeFormat.DATE_TIME_SHORT.format(timestamp)}").await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("create_time", function = ::onSlashCreateTime) {
             description = "Shows the creation time of this command"
 

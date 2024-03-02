@@ -1,8 +1,8 @@
 package io.github.freya022.wiki.commands.slash
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -31,9 +31,8 @@ class SlashBan {
 }
 
 @Command
-class SlashBanDetailedFront {
-    @AppDeclaration
-    fun onDeclare(manager: GlobalApplicationCommandManager) {
+class SlashBanDetailedFront : GlobalApplicationCommandProvider {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("ban", function = SlashBan::onSlashBan) {
             // ...
 

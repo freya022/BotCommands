@@ -4,8 +4,8 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -47,13 +47,12 @@ class SlashConvertKotlin : ApplicationCommand() {
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:convert-kotlin_dsl]
 @Command
-class SlashConvertKotlinDsl {
+class SlashConvertKotlinDsl : GlobalApplicationCommandProvider {
     suspend fun onSlashConvert(event: GuildSlashEvent, time: Long, from: TimeUnit, to: TimeUnit) {
         event.reply("${to.convert(time, from)} ${to.name.lowercase()}").await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("convert", function = ::onSlashConvert) {
             description = "Convert time to another unit"
 

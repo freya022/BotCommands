@@ -6,23 +6,17 @@
         </encoder>
     </appender>
 
-    <!-- JDA logs -->
-    <logger name="net.dv8tion.jda" level="debug" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <!-- JDA -->
+    <logger name="net.dv8tion.jda" level="info"/>
 
-    <!-- HikariCP logs -->
-    <logger name="com.zaxxer.hikari" level="info" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <!-- HikariCP -->
+    <logger name="com.zaxxer.hikari" level="info"/>
 
-    <!-- BotCommands logs -->
-    <logger name="io.github.freya022.botcommands" level="debug" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <!-- BotCommands -->
+    <logger name="io.github.freya022.botcommands" level="debug"/>
 
     <!-- Other logs -->
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

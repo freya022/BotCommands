@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -22,8 +23,9 @@ private const val buttonListenerName = "SlashButton: persistentButton" //ClassNa
 
 @Command
 class SlashButton(private val componentsService: Components) : ApplicationCommand() {
-    @JDASlashCommand(scope = CommandScope.GLOBAL, name = "button", description = "Try out the new buttons!")
-    fun onSlashButton(event: GlobalSlashEvent) {
+    @TopLevelSlashCommandData(scope = CommandScope.GLOBAL)
+    @JDASlashCommand(name = "button", description = "Try out the new buttons!")
+    suspend fun onSlashButton(event: GlobalSlashEvent) {
         val components: MutableList<Button> = arrayListOf()
         components += componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds") {
             timeout(5.seconds) {

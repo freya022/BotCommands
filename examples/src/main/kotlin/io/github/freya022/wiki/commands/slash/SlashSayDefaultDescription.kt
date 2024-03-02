@@ -3,8 +3,8 @@ package io.github.freya022.wiki.commands.slash
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.GlobalApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.annotations.AppDeclaration
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -24,13 +24,12 @@ class SlashSayDefaultDescriptionKotlin : ApplicationCommand() {
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:say_default_description-kotlin_dsl]
 @Command
-class SlashSayDefaultDescriptionKotlinDsl {
+class SlashSayDefaultDescriptionKotlinDsl : GlobalApplicationCommandProvider {
     suspend fun onSlashSayDefaultDescription(event: GuildSlashEvent, content: String) {
         event.reply(content).await()
     }
 
-    @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("say_default_description", function = ::onSlashSayDefaultDescription) {
             option("content")
         }
