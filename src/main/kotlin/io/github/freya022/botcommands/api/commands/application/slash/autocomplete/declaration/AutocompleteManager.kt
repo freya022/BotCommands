@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import kotlin.reflect.KFunction
 
 /**
- * Allows programmatic declaration of autocomplete handlers using [AutocompleteHandlerProvider].
+ * Allows programmatic declaration of autocomplete handlers using [AutocompleteHandlerProvider] in Kotlin source code.
  *
  * @see AutocompleteHandlerProvider
  */

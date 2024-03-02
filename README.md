@@ -1,7 +1,7 @@
 [bc-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3
 [bc-maven-central-link]: https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest
 [bc-releases]: #getting-the-library
-[jda-version]: https://img.shields.io/badge/JDA%20Version-5.0.0--beta.19+-important
+[jda-version]: https://img.shields.io/badge/JDA%20Version-5.0.0--beta.20+-important
 [jda-releases]: https://github.com/discord-jda/JDA/releases
 [discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
 [discord-invite]: https://discord.gg/frpCcQfvTz

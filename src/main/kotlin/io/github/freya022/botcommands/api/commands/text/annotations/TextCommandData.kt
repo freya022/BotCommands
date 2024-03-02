@@ -9,7 +9,9 @@ import net.dv8tion.jda.internal.utils.Checks
 /**
  * Additional annotation for text commands.
  *
- * This is only used to specify properties on the annotated text command.
+ * This is only used to specify properties on the annotated text command,
+ * if the path this annotation applies to is omitted,
+ * then the path of the [variation][JDATextCommandVariation] is used.
  *
  * This can be specified at most once per slash command path,
  * e.g., if you have `tag create` and `tag edit`, you can annotate at most one of them.
