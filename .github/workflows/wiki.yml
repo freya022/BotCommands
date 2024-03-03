@@ -43,7 +43,7 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       # https://github.com/webfactory/ssh-agent#support-for-github-deploy-keys
       # https://github.com/webfactory/ssh-agent#creating-ssh-keys
-      - uses: webfactory/ssh-agent@v0.8.0
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
       - name: Add pages remote
@@ -51,7 +51,7 @@ jobs:
           git remote add staging-remote git@github.com:freya022/BotCommands-Pages-Staging.git
           git fetch staging-remote staging:staging --depth=1
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
           cache: 'pip'
@@ -93,10 +93,10 @@ jobs:
           repository: freya022/BotCommands-Pages-Staging
           ref: staging
       - name: Upload staging repository
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: .
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
