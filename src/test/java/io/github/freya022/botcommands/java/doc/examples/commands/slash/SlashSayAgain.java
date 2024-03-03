@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.commands.slash;
+package io.github.freya022.botcommands.java.doc.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
@@ -17,10 +17,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
-// -------------------------------------------- USED AS AN EXAMPLE --------------------------------------------
 @Command
 @TestLanguage(TestLanguage.Language.JAVA)
-public class SlashSayAgainJava extends ApplicationCommand {
+public class SlashSayAgain extends ApplicationCommand {
     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgain: saySentenceButton";
 
     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.filters;
+package io.github.freya022.botcommands.java.doc.examples.filters;
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 @BService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyComponentRejectionHandlerJava implements ComponentInteractionRejectionHandler<String> {
+public class MyComponentRejectionHandler implements ComponentInteractionRejectionHandler<String> {
     @Override
     public void handle(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName, @NotNull String userData) {
         event.reply(userData).setEphemeral(true).queue();

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.filters;
+package io.github.freya022.botcommands.java.doc.examples.filters;
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 @BService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyTextCommandRejectionHandlerJava implements TextCommandRejectionHandler<String> {
+public class MyTextCommandRejectionHandler implements TextCommandRejectionHandler<String> {
     @Override
     public void handle(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation variation, @NotNull String args, @NotNull String userData) {
         event.getMessage().reply(userData).queue();

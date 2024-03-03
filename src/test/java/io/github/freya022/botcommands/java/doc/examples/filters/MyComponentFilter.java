@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.filters;
+package io.github.freya022.botcommands.java.doc.examples.filters;
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter;
 import io.github.freya022.botcommands.api.core.BContext;
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 @BService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyComponentFilterJava implements ComponentInteractionFilter<String> {
+public class MyComponentFilter implements ComponentInteractionFilter<String> {
     private final BContext context;
 
-    public MyComponentFilterJava(BContext context) {
+    public MyComponentFilter(BContext context) {
         this.context = context;
     }
 

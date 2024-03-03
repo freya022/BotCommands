@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.filters;
+package io.github.freya022.botcommands.java.doc.examples.filters;
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter;
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 @BService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyCommandFiltersJava implements TextCommandFilter<String>, ApplicationCommandFilter<String> {
+public class MyCommandFilters implements TextCommandFilter<String>, ApplicationCommandFilter<String> {
     @Nullable
     @Override
     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {

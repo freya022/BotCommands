@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.filters
+package io.github.freya022.botcommands.kotlin.doc.examples.filters
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
