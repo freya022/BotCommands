@@ -37,6 +37,8 @@ while the declaring class must extend `ApplicationCommand`.
         --8<-- "wiki/java/commands/slash/SlashPing.java:ping-java"
         ```
 
+[//]: # (TODO add subcommands)
+
 ### Adding options
 
 Options can be added with a parameter annotated with `#!java @SlashOption`.
@@ -102,23 +104,24 @@ As always, make sure to check against the command path as well as the option's d
 
 ## DSL commands (Kotlin)
 
-Commands can be DSL-declared in a public method annotated with `#!java @AppDeclaration`,
-where the first parameter is a `GlobalApplicationCommandManager` (for global / guild-only global) commands, 
-or `GuildApplicationCommandManager` for guild commands.
+Commands can be DSL-declared by either implementing:
 
-You can then use the `slashCommand` method, give it the command name, the command method, 
+- `GlobalApplicationCommandProvider` (for global / guild-only global application commands), or,
+- `GuildApplicationCommandProvider` (for guild-specific application commands)
+
+You can then use the `slashCommand` method on the `manager`, give it the command name, the command method, 
 and then configure your command.
 
 !!! tip
     You are allowed to not add any command at all, for example, 
     if the `guild` in `GuildApplicationCommandManager` isn't a guild you want the command to appear in.
 
-[//]: # (TODO add tip with live template)
-
 !!! example
     ```kotlin
     --8<-- "wiki/commands/slash/SlashPing.kt:ping-kotlin_dsl"
     ```
+
+[//]: # (TODO add subcommands)
 
 ### Adding options
 

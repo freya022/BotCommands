@@ -36,5 +36,4 @@ DSL commands were added in V3 to help create commands dynamically,
 whether it's to let the user filter commands themselves, or adding subcommands/options in a loop;
 you can almost do anything you want while keeping the simplicity of your command method.
 
-Commands can be added by declaring a method, which will declare your commands when called,
-the method parameters and its annotations will depend on which commands you want to declare.
+Commands can be declared by implementing an interface, which will allow you to add commands using the provided manager.
