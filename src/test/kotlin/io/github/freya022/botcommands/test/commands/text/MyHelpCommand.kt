@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.service.annotations.ServicePriority
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 
@@ -15,6 +16,7 @@ object HelpCondition : ConditionalServiceChecker {
     }
 }
 
+@ServiceName("helpCommand") // Just to make sure there is no name collision with the built-in help
 @BService(priority = -1)
 @ConditionalService(HelpCondition::class)
 class MyHelpCommand : IHelpCommand {

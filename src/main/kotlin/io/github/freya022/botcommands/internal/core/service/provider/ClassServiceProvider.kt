@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KClass
@@ -168,6 +169,12 @@ internal class ClassServiceProvider private constructor(
         }
 
         return ServiceResult.pass(constructor)
+    }
+
+    override fun getProviderSignature(): String {
+        return clazz.constructors.singleOrNull()?.shortSignature
+            ?: clazz.qualifiedName
+            ?: clazz.jvmName
     }
 
     override fun toString() = providerKey

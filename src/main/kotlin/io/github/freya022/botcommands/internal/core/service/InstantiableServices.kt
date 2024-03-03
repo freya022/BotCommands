@@ -59,6 +59,22 @@ internal class InstantiableServices internal constructor(private val context: BC
         }
     }
 
+    init {
+        // Lazy providers are counted as available, and can be reported as duplicated, this is the correct behavior.
+        val duplicatedNamedProviders = availableProviders
+            .groupBy { it.name }
+            .filter { it.value.size > 1 }
+
+        check(duplicatedNamedProviders.isEmpty()) {
+            buildString {
+                appendLine("More than one service provider define usable services by the same name:")
+                appendLine(duplicatedNamedProviders.entries.joinAsList("-") { (k, v) -> "$k\n${v.joinAsList(linePrefix = "    -") { it.getProviderSignature() }}" })
+                appendLine()
+                appendLine("Consider using a condition so only one of them can be used, or use a different name")
+            }
+        }
+    }
+
     internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
     init {

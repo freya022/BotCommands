@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-@BService(name = "firstReadyListener")
+@BService(name = "bcFirstReadyListener")
 internal class ReadyListener {
     private val lock = ReentrantLock()
     private var connected = false

@@ -6,21 +6,24 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.internal.core.ReadyListener
+import io.github.freya022.botcommands.test.services.INamedService
+import io.github.freya022.botcommands.test.services.NamedService1
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService
 
 @Command
 class SlashDI internal constructor(
-    @ServiceName("builtinHelpCommand") builtinHelpCommand: IHelpCommand?,
+    @ServiceName("modifiedNamedService") namedService: INamedService?,
     @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default(),
     unusedInterfacedService: UnusedInterfacedService?
 ) : ApplicationCommand() {
     init {
-        println("Built-in help command: $builtinHelpCommand")
+        check(namedService is NamedService1)
+
+        println("Named service: $namedService")
         println("Default embed supplier: $defaultService")
         println("UnusedInterfacedService: $unusedInterfacedService")
     }

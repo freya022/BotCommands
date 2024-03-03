@@ -7,14 +7,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider;
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-@ServiceName("slashSkipJava")
 @TestLanguage(TestLanguage.Language.JAVA)
 @Command
 public class SlashSkip implements RateLimitProvider {
