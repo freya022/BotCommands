@@ -4,7 +4,6 @@ import io.github.freya022.bot.config.Config;
 import io.github.freya022.botcommands.api.core.JDAService;
 import io.github.freya022.botcommands.api.core.events.BReadyEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-@ServiceName("javaBot")
 @WikiLanguage(WikiLanguage.Language.JAVA)
 // --8<-- [start:jdaservice-java]
 @BService

@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import java.time.Instant;
 import java.util.List;
 
 @WikiLanguage(WikiLanguage.Language.JAVA)
-@ServiceName("slashDbJava")
 @Command
 public class SlashDb extends ApplicationCommand {
     private static final Logger LOGGER = Logging.getLogger();

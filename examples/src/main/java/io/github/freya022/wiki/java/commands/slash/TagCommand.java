@@ -5,12 +5,10 @@ import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker;
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService;
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.wiki.switches.wiki.WikiLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@ServiceName("tagCommandJava")
 @WikiLanguage(WikiLanguage.Language.JAVA)
 // --8<-- [start:tag_interfaced_condition-java]
 @Command
