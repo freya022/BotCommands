@@ -60,6 +60,7 @@ internal class InstantiableServices internal constructor(private val context: BC
     }
 
     init {
+        // Lazy providers are counted as available, and can be reported as duplicated, this is the correct behavior.
         val duplicatedNamedProviders = availableProviders
             .groupBy { it.name }
             .filter { it.value.size > 1 }
