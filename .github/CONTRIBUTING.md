@@ -42,3 +42,16 @@ You can build the library and publish it to your *local* Maven repository by run
 at which point you can use the library with the build tool of your choice, 
 with the artifact `io.github.freya022:BotCommands:$version`, 
 where `$version` is the version in the `pom.xml` suffixed with `_DEV`.
+
+## Running the test bot
+
+### Additional requirements
+
+* A PostgreSQL database
+* Your bot token
+
+### Configuration
+In the project root, duplicate the `config-template` folder as `dev-config`,
+and edit the `config.json`, with your bot token, prefixes, owner ID and the database details.
+
+You can then run the `Main` class of the `test` package.
