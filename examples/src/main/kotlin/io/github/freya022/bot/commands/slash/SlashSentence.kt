@@ -1,8 +1,7 @@
 package io.github.freya022.bot.commands.slash
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.bot.switches.FrontendChooser
-import io.github.freya022.bot.switches.SimpleFrontend
+import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -14,7 +13,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.annotations.Handler
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
@@ -53,7 +51,7 @@ class SlashSentence {
 }
 
 @Command
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN_DSL)
 class SlashSentenceDetailedFront : GlobalApplicationCommandProvider {
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("sentence", function = SlashSentence::onSlashSentence) {
@@ -74,8 +72,7 @@ class SlashSentenceDetailedFront : GlobalApplicationCommandProvider {
 }
 
 @Command
-@SimpleFrontend
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
 class SlashSentenceSimplifiedFront(private val slashSentence: SlashSentence) : ApplicationCommand() {
     @JDASlashCommand(name = "sentence", description = "Make a sentence")
     fun onSlashSentence(

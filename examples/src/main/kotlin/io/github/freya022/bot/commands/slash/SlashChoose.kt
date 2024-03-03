@@ -1,8 +1,7 @@
 package io.github.freya022.bot.commands.slash
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.bot.switches.FrontendChooser
-import io.github.freya022.bot.switches.SimpleFrontend
+import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -12,7 +11,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 
 @BService
 class SlashChoose {
@@ -22,7 +20,7 @@ class SlashChoose {
 }
 
 @Command
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN_DSL)
 class SlashChooseDetailedFront : GlobalApplicationCommandProvider {
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("choose", function = SlashChoose::onSlashChoose) {
@@ -41,8 +39,7 @@ class SlashChooseDetailedFront : GlobalApplicationCommandProvider {
 }
 
 @Command
-@SimpleFrontend
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
 class SlashChooseSimplifiedFront(private val slashChoose: SlashChoose) : ApplicationCommand() {
     @JDASlashCommand(name = "choose", description = "Randomly choose a value")
     fun onSlashBan(

@@ -2,8 +2,7 @@ package io.github.freya022.bot.commands.slash
 
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
-import io.github.freya022.bot.switches.FrontendChooser
-import io.github.freya022.bot.switches.SimpleFrontend
+import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
@@ -18,7 +17,6 @@ import io.github.freya022.botcommands.api.components.awaitAny
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -120,7 +118,7 @@ class SlashBan(private val componentsService: Components, private val banService
 }
 
 @Command
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN_DSL)
 class SlashBanDetailedFront : GlobalApplicationCommandProvider {
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("ban", function = SlashBan::onSlashBan) {
@@ -157,8 +155,7 @@ class SlashBanDetailedFront : GlobalApplicationCommandProvider {
 }
 
 @Command
-@SimpleFrontend
-@ConditionalService(FrontendChooser::class)
+@KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
 class SlashBanSimplifiedFront(private val banImpl: SlashBan) : ApplicationCommand() {
     @UserPermissions(Permission.BAN_MEMBERS)
     @BotPermissions(Permission.BAN_MEMBERS)
