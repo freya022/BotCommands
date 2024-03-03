@@ -30,6 +30,11 @@
     <!-- HikariCP -->
     <logger name="com.zaxxer.hikari" level="info"/>
 
+    <!-- Flyway -->
+    <logger name="org.flywaydb" level="info"/>
+
+<!--    <logger name="net.dv8tion.jda.internal.requests.Requester" level="trace"/>-->
+
     <!-- BotCommands -->
     <logger name="io.github.freya022.botcommands" level="debug"/>
 

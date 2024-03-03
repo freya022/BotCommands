@@ -292,6 +292,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                                <!-- Examples -->
+                                <sourceDir>${project.basedir}/src/examples/kotlin</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -354,6 +356,32 @@
                                 <!-- Somehow fixes maven taking already compiled classes (by IJ) into the final JAR -->
                                 <source>${project.build.directory}/generated-sources</source>
                             </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>examples-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/examples/kotlin</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>examples-test-resources</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/examples/resources</directory>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>

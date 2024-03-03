@@ -225,7 +225,7 @@ public class SlashSay extends ApplicationCommand {
 
 ## Examples
 
-You can find a number of feature demonstrations in the [examples subproject](examples).
+You can find a number of feature demonstrations in the [examples](src/examples).
 
 ## Debugging tips
 

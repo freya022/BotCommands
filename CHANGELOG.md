@@ -9,7 +9,7 @@ they should still be usable by Java users.
 
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
 
-You can also refer to the [examples](examples) 
+You can also refer to the [examples](src/examples) 
 and bot templates ([Java](https://github.com/freya022/BotCommands-Template-Java/tree/3.X) / [Kotlin](https://github.com/freya022/BotCommands-Template-Kotlin/tree/3.X)) 
 to have an idea on how V3 is supposed to be used.
 
@@ -69,7 +69,7 @@ For example, if you want to override the help command, you will need to make an 
 Most interfaces that were configurable in `CommandsBuilder` were replaced by interfaced services,
 such as command/component filters, `SettingsProvider`, `ExceptionHandler`, `AutocompleteTransformer`, etc...
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
+An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
 
 ### Dynamic suppliers
 Dynamic suppliers are interfaced services (that you can make multiple instances of), 
@@ -78,7 +78,7 @@ The framework will give you the class of what it wants to instantiate,
 and you can then tell if your supplier supports the class, or not, 
 or if it is supported but cannot create an instance of it.
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/ban/BanService.kt).
+An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/ban/BanService.kt).
 
 ## Annotated command changes
 Annotated text and slash commands suffered from several issues, 
@@ -116,7 +116,7 @@ and also enables more features, such as [option aggregates](#option-aggregates).
 The DSL also enables you to declare commands with code, configure your names, descriptions, choices... everything by code, 
 so you are not limited to static values with annotations.
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
 see `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ## New option aggregates
@@ -130,7 +130,7 @@ You can still insert options without declaring an aggregate; these options will 
 
 **Note:** Option aggregates are only available with DSL declaration (and components and modal handlers by using `@Aggregate`).
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
 see `aggregate` in `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ### Vararg options
@@ -141,7 +141,7 @@ You can use these with `optionVararg`.
 
 **Note**: Aggregators can accept `List` parameters, but all the options must be under the same *declared* parameter name, so they can be all put in the list.
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashChoose.kt).
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashChoose.kt).
 
 ### Inline class options
 Kotlin's inline classes can also be used as options, 
@@ -149,7 +149,7 @@ you can use `inlineClassOption` to declare one in the DSL, they also automatical
 
 `inlineClassOptionVararg` can also be used for inline classes that accept a varargs.
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 with `SlashSentence.SentenceParts`.
 
 ## New rate limiting
@@ -194,7 +194,7 @@ even if the option is not being used by the autocomplete handler itself.
 
 The slash command DSL also let you configure autocomplete by using `SlashCommandOptionBuilder#autocomplete` (or `SlashCommandOptionBuilder#autocompleteReference` for handlers defined by annotation).
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 on `SlashSentence#onSentencePartAutocomplete`.
 
 ## Text command changes
@@ -242,7 +242,7 @@ which lets you get your stuff started up before the bot goes fully online.
 
 Building JDA before the framework will result in an error, I strongly recommend that you use a service which implements `JDAService`.
 
-You can also refer to [the example JDA service](examples/src/main/kotlin/io/github/freya022/bot/Bot.kt).
+You can also refer to [the example JDA service](src/examples/kotlin/io/github/freya022/bot/Bot.kt).
 
 ## Enhanced database support
 A `Database` service has been added, 
@@ -287,7 +287,7 @@ As these handlers are optional, you can still handle them using coroutines, by u
 You can disable the timeout if necessary using `noTimeout()`, or if you plan on putting the component in a group.
 Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
+An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
 
 ## New modals
 Just like components, modals are now created using a DSL, while their handlers are still annotated. 
@@ -298,14 +298,14 @@ The DSL is very similar to the component's DSL, with your usual `bindTo` and `se
 You can disable the timeout if necessary using `noTimeout()`.
 Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt).
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt).
 
 ## New event handler
 
 `@BEventListener` can now be specified to be run asynchronously (within the parallelism limits of `BCoroutineScopesConfig#eventDispatcherScope`), 
 they can also have a priority assigned to them, as well as a timeout, used for suspending handlers.
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/ReadyListener.kt).
+An example can be found [here](src/examples/kotlin/io/github/freya022/bot/ReadyListener.kt).
 
 ## Suspend resolvers & resolver factories
 `ParameterResolver` is now type safe and also supports coroutines.
@@ -355,7 +355,7 @@ or use `switchBundle` which changes the target bundle and clears the prefix.
 
 In addition, `#localize[X]orNull` can help you return `null` in case the given localization path does not exist.
 
-You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
+You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
 
 ## Misc
 
