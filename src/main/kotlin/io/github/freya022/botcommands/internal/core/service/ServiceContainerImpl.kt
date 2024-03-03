@@ -236,7 +236,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private fun getInstantiablePrimaryProvider(clazz: KClass<*>, name: String?, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
         if (providers.isEmpty())
             return NO_PROVIDER.toResult(
-                errorMessage = "No service or factories found for ${getProviderCharacteristicsQuery(clazz, name)}",
+                errorMessage = "No service or factories found for ${getProviderCharacteristics(clazz, name)}",
                 extraMessage = clazz.findAnnotation<MissingServiceMessage>()?.message
             )
 
@@ -271,7 +271,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         } else { // One provider at most, or none and has errors
             primaryProviders.firstOrNull()
                 ?: return NO_USABLE_PROVIDER.toResult(
-                    errorMessage = "All providers returned an error for ${getProviderCharacteristicsQuery(clazz, name)}",
+                    errorMessage = "All providers returned an error for ${getProviderCharacteristics(clazz, name)}",
                     nestedError = ServiceError.fromErrors(errors)
                 )
         }
@@ -294,7 +294,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         return ServiceResult.pass(primaryProvider)
     }
 
-    private fun getProviderCharacteristicsQuery(clazz: KClass<*>, name: String?) = when {
+    private fun getProviderCharacteristics(clazz: KClass<*>, name: String?) = when {
         name != null -> "type ${clazz.simpleNestedName} and name '$name'"
         else -> "type ${clazz.simpleNestedName}"
     }
