@@ -276,12 +276,22 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             }
         }
 
-        // If there's no primary provider, take all of them
-        val primaryProviders = instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
+        val primaryProviders = when {
+            // Filter by primary if we're getting providers by type, if there's no primary provider, take all of them
+            name == null -> instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
+            // If we got providers by name, use them
+            else -> instantiableProviders
+        }
 
-        val primaryProvider = if (primaryProviders.size > 1) {
+        if (primaryProviders.size > 1) {
+            // Getting a provider by name cannot give multiple providers
+            if (name != null)
+                throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
+
             return NON_UNIQUE_PROVIDERS.toResult(primaryProviders.createNonUniqueProvidersMessage(clazz))
-        } else if (errors.isEmpty()) {
+        }
+
+        val primaryProvider = if (errors.isEmpty()) {
             primaryProviders.singleOrNull()
                 ?: throwInternal("This collection cannot be empty as instantiable providers shouldn't be empty when there's no error, due to there being at least one provider")
         } else { // One provider at most, or none and has errors
