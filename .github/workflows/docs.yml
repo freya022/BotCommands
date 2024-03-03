@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -38,7 +38,7 @@ jobs:
         run: mvn -B -P check-docs javadoc:javadoc
       # The docs are uploaded to a directory in the staging repository
       - name: Upload to staging repository
-        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           git-config-name: GitHub Actions
           git-config-email: 41898282+github-actions[bot]@users.noreply.github.com
@@ -71,10 +71,10 @@ jobs:
           repository: freya022/BotCommands-Pages-Staging
           ref: staging
       - name: Upload staging repository
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: .
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
