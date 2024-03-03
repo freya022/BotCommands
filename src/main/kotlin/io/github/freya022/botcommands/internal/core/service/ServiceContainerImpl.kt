@@ -69,11 +69,18 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
-        val providers = context.serviceProviders.findAllForType(clazz)
+        peekServiceOrNull(clazz, null, context.serviceProviders.findAllForType(clazz))
+    }
+
+    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
+        peekServiceOrNull(requiredType, name, context.serviceProviders.findAllForName(name))
+    }
+
+    private fun <T : Any> peekServiceOrNull(clazz: KClass<T>, name: String?, providers: Collection<ServiceProvider>): T? {
         if (providers.isEmpty())
             return null
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
+        val providerResult = getInstantiablePrimaryProvider(clazz, name, providers)
         val provider = providerResult.service
         val providerError = providerResult.serviceError
 
@@ -82,7 +89,11 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             if (errorType == NON_UNIQUE_PROVIDERS) {
                 logger.debug { errorMessage }
             } else {
-                logger.trace { "Peeking service ${clazz.simpleNestedName} error: $errorMessage" }
+                if (name != null) {
+                    logger.trace { "Peeking service '$name' error: $errorMessage" }
+                } else {
+                    logger.trace { "Peeking service ${clazz.simpleNestedName} error: $errorMessage" }
+                }
             }
             return null
         }
@@ -93,47 +104,16 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         }
     }
 
-    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
-        val providers = context.serviceProviders.findAllForName(name)
-        if (providers.isEmpty())
-            return null
-
-        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
-        val provider = providerResult.service
-        val providerError = providerResult.serviceError
-
-        if (providerError != null) {
-            val (errorType, errorMessage) = providerError
-            if (errorType == NON_UNIQUE_PROVIDERS) {
-                logger.debug { errorMessage }
-            } else {
-                logger.trace { "Peeking service '$name' error: $errorMessage" }
-            }
-            return null
-        }
-
-        return when {
-            provider != null -> provider.instance?.let(requiredType::cast)
-            else -> throwInternal("No error yet no provider is present")
-        }
-    }
-
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
-        val providers = context.serviceProviders.findAllForName(name)
-
-        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
-        val provider = providerResult.service
-
-        return when {
-            provider != null -> tryGetService(provider)
-            else -> ServiceResult.fail(providerResult.serviceError ?: throwInternal("Can't have no provider and no error"))
-        }
+        tryGetService(requiredType, name, context.serviceProviders.findAllForName(name))
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        val providers = context.serviceProviders.findAllForType(clazz)
+        tryGetService(clazz, null, context.serviceProviders.findAllForType(clazz))
+    }
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
+    private fun <T : Any> tryGetService(clazz: KClass<T>, name: String?, providers: Collection<ServiceProvider>): ServiceResult<T> {
+        val providerResult = getInstantiablePrimaryProvider(clazz, name, providers)
         val provider = providerResult.service
 
         return when {
@@ -225,21 +205,15 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
-        val providers = context.serviceProviders.findAllForName(name)
-
-        val providerResult = getInstantiablePrimaryProvider(requiredType, name, providers)
-        val provider = providerResult.service
-
-        return when {
-            provider != null -> null
-            else -> providerResult.serviceError ?: throwInternal("Can't have no provider and no error")
-        }
+        return canCreateService(requiredType, name, context.serviceProviders.findAllForName(name))
     }
 
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
-        val providers = context.serviceProviders.findAllForType(clazz)
+        return canCreateService(clazz, null, context.serviceProviders.findAllForType(clazz))
+    }
 
-        val providerResult = getInstantiablePrimaryProvider(clazz, name = null, providers)
+    private fun canCreateService(clazz: KClass<*>, name: String?, providers: Collection<ServiceProvider>): ServiceError? {
+        val providerResult = getInstantiablePrimaryProvider(clazz, name, providers)
         val provider = providerResult.service
 
         return when {
