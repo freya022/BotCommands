@@ -51,7 +51,7 @@ where `$version` is the version in the `pom.xml` suffixed with `_DEV`.
 * Your bot token
 
 ### Configuration
-In the project root, duplicate the `config-template` folder as `dev-config`,
+Go to `/test-files/test` from the project root, duplicate the `config-template` folder as `dev-config`,
 and edit the `config.json`, with your bot token, prefixes, owner ID and the database details.
 
 You can then run the `Main` class of the `test` package.

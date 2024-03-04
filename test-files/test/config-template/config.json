@@ -1,0 +1,18 @@
+{
+  "token": "",
+  "ownerIds": [
+
+  ],
+  "prefixes": [
+    "<ping>",
+    "!"
+  ],
+  "testGuildIds": [],
+  "databaseConfig": {
+    "serverName": "localhost",
+    "port": 5432,
+    "name": "",
+    "user": "",
+    "password": ""
+  }
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true"> <!-- Reloads every minute -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %boldCyan(%-26.-26thread) %boldYellow(%-20.-20logger{0}) %highlight(%-6level) %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <!-- JDA -->
+    <logger name="net.dv8tion.jda" level="info"/>
+
+    <!-- HikariCP -->
+    <logger name="com.zaxxer.hikari" level="info"/>
+
+    <!-- Flyway -->
+    <logger name="org.flywaydb" level="warn"/>
+
+    <!-- BotCommands -->
+    <logger name="io.github.freya022.botcommands" level="debug"/>
+
+<!--    <logger name="net.dv8tion.jda.internal.requests.Requester" level="trace"/>-->
+
+    <!-- Other logs -->
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
