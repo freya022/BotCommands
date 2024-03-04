@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.freya022</groupId>
-    <artifactId>ExampleBot</artifactId>
+    <artifactId>WikiBot</artifactId>
     <version>1.0</version>
 
     <properties>
