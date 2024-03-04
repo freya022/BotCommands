@@ -58,7 +58,7 @@ which enables this annotation to represent a custom condition for service creati
 
 You can also specify if failure of these annotations throws an exception.
 
-An example can be found [here](examples/src/main/kotlin/io/github/freya022/wiki/switches/wiki/WikiLanguage.kt).
+An example can be found [here](wiki/src/main/kotlin/io/github/freya022/wiki/switches/wiki/WikiLanguage.kt).
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>
