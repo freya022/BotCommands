@@ -6,3 +6,5 @@ site
 *.iml
 .idea
 target
+
+dev-config

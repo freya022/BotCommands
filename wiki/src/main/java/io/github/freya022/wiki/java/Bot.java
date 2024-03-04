@@ -1,6 +1,6 @@
 package io.github.freya022.wiki.java;
 
-import io.github.freya022.bot.config.Config;
+import io.github.freya022.wiki.config.Config;
 import io.github.freya022.botcommands.api.core.JDAService;
 import io.github.freya022.botcommands.api.core.events.BReadyEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;

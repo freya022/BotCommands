@@ -1,6 +1,6 @@
 package io.github.freya022.wiki.java.commands.slash;
 
-import io.github.freya022.bot.config.Config;
+import io.github.freya022.wiki.config.Config;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker;

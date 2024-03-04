@@ -1,6 +1,6 @@
 package io.github.freya022.wiki.java.switches;
 
-import io.github.freya022.bot.config.Config;
+import io.github.freya022.wiki.config.Config;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker;
 import org.jetbrains.annotations.NotNull;

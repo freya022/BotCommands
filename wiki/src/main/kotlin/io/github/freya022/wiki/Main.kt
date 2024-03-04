@@ -3,8 +3,8 @@ package io.github.freya022.wiki
 import ch.qos.logback.classic.ClassicConstants
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
-import io.github.freya022.bot.config.Config
-import io.github.freya022.bot.config.Environment
+import io.github.freya022.wiki.config.Config
+import io.github.freya022.wiki.config.Environment
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
