@@ -6,16 +6,8 @@
 target
 release.properties
 pom.xml.releaseBackup
-/src/test/java/io/github/freya022/botcommands/oldtests
-/src/test/kotlin/io/github/freya022/botcommands/oldtests
-/src/test/resources/io/github/freya022/botcommands/oldtests
-/src/test/resources/io/github/freya022/botcommands/test/Config.json
-
-logs
-TestDB
 
 schemas/Test.json
 /schemas
-/src/test/resources/logback-test.xml
 dev-config
 dev-data
