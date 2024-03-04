@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.java.doc.examples.filters;
+package doc.java.examples.filters;
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.java.doc.examples.commands.slash;
+package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
