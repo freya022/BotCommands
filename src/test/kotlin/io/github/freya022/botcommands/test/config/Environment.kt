@@ -6,17 +6,15 @@ import kotlin.io.path.exists
 
 object Environment {
     /**
+     * The folder where the data and configuration directories reside.
+     */
+    val folder: Path = Path("test-files", "test")
+
+    /**
      * The mode is determined by checking if the
      * `dev-config` directory exists in the current directory.
      */
-    val isDev: Boolean = Path("dev-config").exists()
-
-    /**
-     * The folder where the data and configuration directories reside.
-     *
-     * This is the current **working directory**.
-     */
-    val folder: Path = Path("")
+    val isDev: Boolean = folder.resolve("dev-config").exists()
 
     val configFolder: Path =
         folder.resolve(if (isDev) "dev-config" else "config")

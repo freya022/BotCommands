@@ -7,8 +7,6 @@ import kotlin.io.path.exists
 object Environment {
     /**
      * The folder where the data and configuration directories reside.
-     *
-     * This is the current **working directory**.
      */
     val folder: Path = Path("")
 
