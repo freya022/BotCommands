@@ -95,11 +95,11 @@ nav:
       - Database: using-botcommands/database.md
 #      - Rate limiting: foo
 #      - Localization: foo
+      - Java parameter names: using-botcommands/parameter-names.md
   - Using commands:
       - Common details: using-commands/common-command-details.md
 #      - Interaction filters: foo
 #      - Cooldowns: foo
-#      - Inferred option names: foo
 #      - Text commands:
 #        - Creating text commands: foo
 #        - Built-in help command: foo
