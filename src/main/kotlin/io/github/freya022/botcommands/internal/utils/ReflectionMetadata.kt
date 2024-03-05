@@ -131,11 +131,15 @@ internal object ReflectionMetadata {
         }
     }
 
-    private fun ClassInfo.isService(config: BConfig) =
-        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> annotations.directOnly().containsName(serviceAnnotation.jvmName) }
+    private fun ClassInfo.isService(config: BConfig): Boolean {
+        val declaredAnnotations = annotations.directOnly()
+        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
+    }
 
-    private fun MethodInfo.isService(config: BConfig) =
-        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> annotationInfo.directOnly().containsName(serviceAnnotation.jvmName) }
+    private fun MethodInfo.isService(config: BConfig): Boolean {
+        val declaredAnnotations = annotationInfo.directOnly()
+        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
+    }
 
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
