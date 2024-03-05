@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.config
+package io.github.freya022.wiki.config
 
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -8,7 +8,7 @@ object Environment {
     /**
      * The folder where the data and configuration directories reside.
      */
-    val folder: Path = Path("test-files", "test")
+    val folder: Path = Path("")
 
     /**
      * The mode is determined by checking if the

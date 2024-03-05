@@ -64,9 +64,9 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.snippets:
       base_path:
-       - "../examples/src/main/java/io/github/freya022"
-       - "../examples/src/main/kotlin/io/github/freya022"
-       - "../examples/src/main/resources"
+       - "./src/main/java/io/github/freya022"
+       - "./src/main/kotlin/io/github/freya022"
+       - "./src/main/resources"
        - "."
        - ".."
       url_download: true

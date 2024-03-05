@@ -1,1 +1,10 @@
 site
+
+# Default ignored files
+/.idea/workspace.xml
+
+*.iml
+.idea
+target
+
+dev-config
