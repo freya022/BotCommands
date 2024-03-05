@@ -7,13 +7,13 @@ import kotlin.reflect.KClass
 
 @BService
 object DynamicServiceProvider : DynamicSupplier {
-    override fun getInstantiability(clazz: KClass<*>): Instantiability {
+    override fun getInstantiability(clazz: KClass<*>, name: String?): Instantiability {
         if (clazz == Serv2::class) return Instantiability.instantiable()
 
         return Instantiability.unsupportedType()
     }
 
-    override fun get(clazz: KClass<*>): Any {
+    override fun get(clazz: KClass<*>, name: String?): Any {
         if (clazz == Serv2::class) {
             return Serv2()
         }

@@ -36,7 +36,7 @@ interface DynamicSupplier {
      * @see Instantiability.InstantiabilityType
      * @see ReflectionUtils
      */
-    fun getInstantiability(clazz: KClass<*>): Instantiability
+    fun getInstantiability(clazz: KClass<*>, name: String?): Instantiability
 
     /**
      * Returns an instance of the requested service.
@@ -46,5 +46,5 @@ interface DynamicSupplier {
      * @see Instantiability.InstantiabilityType
      * @see ReflectionUtils
      */
-    fun get(clazz: KClass<*>): Any
+    fun get(clazz: KClass<*>, name: String?): Any
 }

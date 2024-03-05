@@ -78,7 +78,7 @@ internal class ClassServiceProvider private constructor(
 
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(clazz)
+            val instantiability = dynamicSupplier.getInstantiability(clazz, name)
             when (instantiability.type) {
                 //Return error message
                 InstantiabilityType.NOT_INSTANTIABLE ->
@@ -127,7 +127,7 @@ internal class ClassServiceProvider private constructor(
         }
 
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(clazz)
+            val instantiability = dynamicSupplier.getInstantiability(clazz, name)
             when (instantiability.type) {
                 // This should have been checked in canInstantiate!
                 InstantiabilityType.NOT_INSTANTIABLE ->
@@ -137,7 +137,7 @@ internal class ClassServiceProvider private constructor(
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
 
                 //Found a supplier, return instance
-                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz) }
+                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz, name) }
             }
         }
 
