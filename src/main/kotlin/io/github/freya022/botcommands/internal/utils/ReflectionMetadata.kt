@@ -132,10 +132,10 @@ internal object ReflectionMetadata {
     }
 
     private fun ClassInfo.isService(config: BConfig) =
-        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> annotations.directOnly().containsName(serviceAnnotation.jvmName) }
 
     private fun MethodInfo.isService(config: BConfig) =
-        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> annotationInfo.directOnly().containsName(serviceAnnotation.jvmName) }
 
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }

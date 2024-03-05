@@ -19,7 +19,7 @@ internal class StagingClassAnnotations internal constructor(private val serviceC
         override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
             //Fill map with all the @Command, @Resolver, etc... declarations
             if (isService) {
-                classInfo.annotationInfo.forEach { annotationInfo ->
+                classInfo.annotationInfo.directOnly().forEach { annotationInfo ->
                     if (serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
                         put(
                             annotationReceiver = kClass,
