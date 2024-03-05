@@ -29,6 +29,7 @@ class ServiceError private constructor(
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
         UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),
         FAILED_CONDITION("At least one check returned an error message"),
+        UNAVAILABLE_INSTANCE("The instance required by a service factory was unavailable"),
         UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing"),
         FAILED_CUSTOM_CONDITION("At least one custom check returned an error message"),
         FAILED_FATAL_CUSTOM_CONDITION("At least one custom check returned an error message, and was configured to fail");

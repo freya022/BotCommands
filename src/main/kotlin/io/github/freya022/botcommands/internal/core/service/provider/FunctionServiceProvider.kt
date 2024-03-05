@@ -4,12 +4,15 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
 internal class FunctionServiceProvider(
@@ -47,6 +50,22 @@ internal class FunctionServiceProvider(
     private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         function.commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
+
+        function.instanceParameter?.let { instanceParameter ->
+            val erasure = instanceParameter.type.jvmErasure
+            // If an object, don't check if it can be created,
+            // as it may not be annotated as a service but still be usable
+            if (erasure.isObject)
+                return@let
+
+            serviceContainer.canCreateService(erasure)?.let { serviceError ->
+                return ServiceError.ErrorType.UNAVAILABLE_INSTANCE.toError(
+                    errorMessage = "The '${instanceParameter.type.simpleNestedName}' instance required by the service factory was unavailable",
+                    failedFunction = function,
+                    nestedError = serviceError
+                )
+            }
+        }
 
         return null
     }

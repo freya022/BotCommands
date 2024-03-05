@@ -42,7 +42,7 @@ internal class InstantiableServices internal constructor(private val context: BC
                 UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
                     throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
-                UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION -> {
+                UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION, UNAVAILABLE_INSTANCE -> {
                     if (logger.isTraceEnabled()) {
                         logger.trace { "Service provider '${provider.name}' not loaded:\n${serviceError.toDetailedString()}" }
                     } else if (logger.isDebugEnabled()) {
