@@ -11,6 +11,7 @@ import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.superclasses
+import kotlin.reflect.jvm.internal.impl.descriptors.ClassKind
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
@@ -143,6 +144,12 @@ internal object ReflectionUtils {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 }
+
+internal val KClass<*>.kind: ClassKind
+    get() = ReflectionMetadataAccessor.getClassKind(this)
+
+internal val KClass<*>.isObject: Boolean
+    get() = kind == ClassKind.OBJECT
 
 internal fun KParameter.findDeclarationName(): String =
     name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")

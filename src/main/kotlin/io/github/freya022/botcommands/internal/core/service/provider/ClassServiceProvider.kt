@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwService
@@ -69,7 +70,7 @@ internal class ClassServiceProvider private constructor(
         clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
-        if (clazz.objectInstance != null) return null
+        if (clazz.isObject) return null
 
         //Check if an instance supplier exists
         if (serviceContainer.context.serviceConfig.instanceSupplierMap[clazz] != null)
