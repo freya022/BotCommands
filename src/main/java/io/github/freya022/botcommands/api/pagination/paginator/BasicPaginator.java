@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.pagination.paginator;
 import io.github.freya022.botcommands.api.components.Components;
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
-import io.github.freya022.botcommands.api.core.Logging;
 import io.github.freya022.botcommands.api.pagination.BasicPagination;
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
 import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
@@ -17,7 +16,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -26,8 +24,6 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
-	private static final Logger LOGGER = Logging.getLogger();
-	private static final MessageEditData DELETED_MESSAGE = MessageEditData.fromContent("[deleted]");
 	protected final PaginatorSupplier<T> supplier;
 	private final Button deleteButton;
 	protected int maxPages;
@@ -121,14 +117,8 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	private void onDeleteClicked(ButtonEvent e) {
 		cancelTimeout();
 
-		if (!e.getMessage().isEphemeral()) {
-			e.deferEdit().queue();
-			e.getHook().deleteOriginal().queue();
-		} else {
-			e.editMessage(DELETED_MESSAGE).queue();
-
-			LOGGER.warn("Attempted to delete a ephemeral message using a Paginator delete button, consider disabling the delete button in the constructor or making your message not ephemeral, pagination supplier comes from {}", supplier.getClass().getName());
-		}
+		e.deferEdit().queue();
+		e.getHook().deleteOriginal().queue();
 
 		cleanup();
 	}
