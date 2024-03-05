@@ -22,7 +22,7 @@ internal class FunctionAnnotationsMap(
             // under a supertype,
             // thus having the same annotated function be returned more than once
             .availableProviders
-            .map { it.primaryType }
+            .mapTo(hashSetOf()) { it.primaryType }
             .forEach { kClass ->
                 kClass.memberFunctions.forEach { function ->
                     function.annotations.forEach { annotation ->
