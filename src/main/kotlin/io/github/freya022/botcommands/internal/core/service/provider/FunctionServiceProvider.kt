@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
@@ -97,4 +98,7 @@ internal class FunctionServiceProvider(
     override fun toString() = providerKey
 }
 
-internal fun KFunction<*>.getServiceName(): String = getAnnotatedServiceName() ?: this.name
+internal fun KFunction<*>.getServiceName(): String =
+    getAnnotatedServiceName()
+        ?: (this as? KProperty.Getter<*>)?.property?.name
+        ?: this.name
