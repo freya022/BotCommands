@@ -2,7 +2,8 @@ Any class given by a service provider can be injected into other service provide
 requesting a service is as simple as declaring a parameter in the class's constructor, 
 or the service factory's parameters.
 
-Named services can be retrieved by using `#!java @ServiceName` on the parameter.
+Named services can be retrieved by using `#!java @ServiceName` on the parameter,
+this can be omitted if the parameter name matches a service with a compatible type.
 
 !!! tip
 
@@ -56,11 +57,67 @@ Named services can be retrieved by using `#!java @ServiceName` on the parameter.
         }
         ```
 
+??? example "Retrieving services by name"
+
+    Consider the following service providers:
+
+    === "Kotlin"
+    
+        ```kotlin
+        --8<-- "wiki/providers/HttpClientProvider.kt:http_client_provider-kotlin"
+        ```
+
+        === "With `@ServiceName`"
+        
+            ```kotlin
+            @BService
+            class MyApi(@ServiceName("cachedHttpClient") httpClient: HttpClient)
+            ```
+
+        === "With parameter names"
+
+            ```kotlin
+            @BService
+            class MyApi(private val cachedHttpClient: HttpClient)
+            ```
+
+    === "Java"
+
+        ```java
+        --8<-- "wiki/java/providers/HttpClientProvider.java:http_client_provider-java"
+        ```
+
+        === "With `@ServiceName`"
+        
+            ```java
+            @BService
+            public class MyApi {
+                public MyApi(@ServiceName("cachedHttpClient") HttpClient httpClient) {
+                    // ...
+                }
+            }
+            ```
+
+        === "With parameter names"
+
+            ```java
+            @BService
+            public class MyApi {
+                public MyApi(HttpClient cachedHttpClient) {
+                    // ...
+                }
+            }
+            ```
+
+            !!! warning
+
+                For this to work, you need to [enable Java parameter names](../parameter-names.md)
+
 ### Primary providers
 
 When requesting a service of a specific type/name, there must be at most one *usable* service provider.
 
-For example, if you have two [service factories](#service-factories) with the same return type:
+For example, if you have two [service factories](creating-services.md#service-factories) with the same return type:
 
 - :x: If both are usable
 - :white_check_mark: One has a failing condition, meaning you have one usable provider
@@ -100,7 +157,7 @@ or to get services that are not yet available, such as manually injected service
     nor can a list of lazy services be requested.
 
 ### Optional services
-When a requested service is not available, and is not a [soft-dependency](#dependencies), 
+When a requested service is not available, and is not a [soft-dependency](creating-services.md#dependencies), 
 service creation will fail.
 
 [null-safety]: https://kotlinlang.org/docs/null-safety.html
