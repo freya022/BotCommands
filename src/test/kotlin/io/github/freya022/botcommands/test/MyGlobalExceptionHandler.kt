@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.Event
 
 @BService
 @TestService
-object MyGlobalExceptionHandler : GlobalExceptionHandlerAdapter() {
+class MyGlobalExceptionHandler : GlobalExceptionHandlerAdapter() {
     private val logger = KotlinLogging.logger { }
 
     override fun handle(event: Event?, throwable: Throwable) {

@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
+import io.github.freya022.botcommands.internal.core.service.ConditionalObjectChecker
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -93,6 +94,7 @@ internal object ReflectionMetadata {
 
         val lowercaseInnerClassRegex = Regex("\\$[a-z]")
         val classGraphProcessors = context.config.classGraphProcessors +
+                ConditionalObjectChecker +
                 listOf(context.serviceProviders, context.customConditionsContainer, context.stagingClassAnnotations.processor) +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
         return scanned.forEach { (_, classes) ->

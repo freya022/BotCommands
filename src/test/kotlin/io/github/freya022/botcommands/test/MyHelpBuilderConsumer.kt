@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 
 @BService
 @TestService
-object MyHelpBuilderConsumer : HelpBuilderConsumer {
+class MyHelpBuilderConsumer : HelpBuilderConsumer {
     override fun accept(builder: EmbedBuilder, isGlobal: Boolean, commandInfo: TextCommandInfo?) {
         builder.addField("A field name", "Test for ${javaClass.simpleName}", false)
     }

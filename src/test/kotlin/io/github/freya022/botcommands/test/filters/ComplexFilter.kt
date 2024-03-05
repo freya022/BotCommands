@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
 @TestService
-object InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
+class InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
@@ -46,7 +46,7 @@ object InVoiceChannel : ApplicationCommandFilter<String>, TextCommandFilter<Stri
 
 @BService
 @TestService
-object IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
+class IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
