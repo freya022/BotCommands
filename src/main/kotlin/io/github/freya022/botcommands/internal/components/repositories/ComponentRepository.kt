@@ -188,11 +188,11 @@ internal class ComponentRepository(
         filterNames: Array<out String>
     ): Int = preparedStatement(
         "insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?)",
-        columnIndexes = intArrayOf(1)
+        columnNames = arrayOf("component_id")
     ) {
         executeReturningUpdate(componentType.key, lifetimeType.key, oneUse, rateLimitGroup, filterNames)
             .read()
-            .getInt(1)
+            .getInt("component_id")
     }
 
     context(Transaction)
