@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.createSingleton
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.collections.set
@@ -53,7 +54,9 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 
     fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
 
-    fun getProviderSignature(): String
+    fun getProviderFunction(): KFunction<*>
+
+    fun getProviderSignature(): String = getProviderFunction().shortSignature
 
     override fun compareTo(other: ServiceProvider): Int {
         val priorityCmp = other.priority.compareTo(priority) // Reverse order
