@@ -1,11 +1,12 @@
 package io.github.freya022.botcommands.test.resolvers
 
+import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.enumResolver
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
-@Suppress("unused")
+@BConfiguration
 object EnumResolvers {
     @Resolver
     fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)

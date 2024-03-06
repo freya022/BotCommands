@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.services
 
+import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
@@ -10,7 +11,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 class FactoryServiceTestUser(service: FactoryServiceTest)
 
 class FactoryServiceTest private constructor() {
-//    @BService //Not necessary
+    @BConfiguration
     object FactoryServiceTestProvider {
         @BService
         @ConditionalService(ConditionalServiceTest.Companion::class)
@@ -19,7 +20,7 @@ class FactoryServiceTest private constructor() {
 }
 
 class PropertyFactoryServiceTest private constructor() {
-    //    @BService //Not necessary
+    @BConfiguration
     object PropertyFactoryServiceTestProvider {
         @get:BService
         val factory = PropertyFactoryServiceTest()

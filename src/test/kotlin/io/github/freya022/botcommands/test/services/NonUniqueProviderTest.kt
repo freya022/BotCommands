@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.services
 
+import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 
@@ -9,6 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 class NonUniqueProviderTest(val service1: Service1) {
     class Service1()
 
+    @BConfiguration
     object Service1Provider {
         // Commenting this should NOT throw, as NonUniqueProviderTest is lazy
         @BService
