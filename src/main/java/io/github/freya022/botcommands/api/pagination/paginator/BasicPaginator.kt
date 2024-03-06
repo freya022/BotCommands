@@ -1,189 +1,169 @@
-package io.github.freya022.botcommands.api.pagination.paginator;
+package io.github.freya022.botcommands.api.pagination.paginator
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
-import io.github.freya022.botcommands.api.components.event.ButtonEvent;
-import io.github.freya022.botcommands.api.pagination.BasicPagination;
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
-import io.github.freya022.botcommands.api.utils.ButtonContent;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.pagination.BasicPagination
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
+import io.github.freya022.botcommands.api.pagination.TimeoutInfo
+import io.github.freya022.botcommands.api.utils.ButtonContent
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.utils.messages.MessageEditData
+import kotlin.math.max
 
 /**
- * @param <T> Type of the implementor
+ * @param T Type of the implementor
  */
-@SuppressWarnings("unchecked")
-public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
-	protected final PaginatorSupplier<T> supplier;
-	private final Button deleteButton;
-	protected int maxPages;
-	protected int page = 0;
-	private Button firstButton, previousButton, nextButton, lastButton;
+abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
+    componentsService: Components,
+    constraints: InteractionConstraints,
+    timeout: TimeoutInfo<T>?,
+    maxPages: Int,
+    @JvmField
+    protected val supplier: PaginatorSupplier<T>?,
+    hasDeleteButton: Boolean,
+    firstContent: ButtonContent,
+    previousContent: ButtonContent,
+    nextContent: ButtonContent,
+    lastContent: ButtonContent,
+    deleteContent: ButtonContent
+) : BasicPagination<T>(componentsService, constraints, timeout) {
+    var maxPages: Int = maxPages
+        protected set
+    /**
+     * The page number, after changing this value, you can update the message with the new content from [get].
+     *
+     * The page must be between `0` and [`maxPages - 1`][maxPages]
+     */
+    var page: Int = 0
+        set(value) {
+            // 0 <= value < maxPages
+            check(value in 0..<maxPages) {
+                "Page needs to be between 0 and $maxPages (excluded)"
+            }
+            field = value
+        }
 
-	protected BasicPaginator(@NotNull Components componentsService,
-							 InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
-							 ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(componentsService, constraints, timeout);
+    val isFirstPage: Boolean
+        get() = page == 0
+    val isLastPage: Boolean
+        get() = page >= maxPages - 1
 
-		this.maxPages = _maxPages;
-		this.supplier = supplier;
+    private var firstButton: Button
+    private var previousButton: Button
+    private var nextButton: Button
+    private var lastButton: Button
+    private var deleteButton: Button? = null
 
-		firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent)
-				.bindTo(e -> {
-					page = 0;
+    init {
+        firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent)
+            .bindTo { e: ButtonEvent ->
+                page = 0
+                e.editMessage(get()).queue()
+            }
+            .constraints(constraints)
+            .build()
 
-					e.editMessage(get()).queue();
-				})
-				.constraints(constraints)
-				.build();
+        previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent)
+            .bindTo { e: ButtonEvent ->
+                page = max(0.0, (page - 1).toDouble()).toInt()
+                e.editMessage(get()).queue()
+            }
+            .constraints(constraints)
+            .build()
 
-		previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent)
-				.bindTo(e -> {
-					page = Math.max(0, page - 1);
+        nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent)
+            .bindTo { e: ButtonEvent ->
+                page = (page + 1).coerceAtMost(maxPages - 1)
+                e.editMessage(get()).queue()
+            }
+            .constraints(constraints)
+            .build()
 
-					e.editMessage(get()).queue();
-				})
-				.constraints(constraints)
-				.build();
+        lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent)
+            .bindTo { e: ButtonEvent ->
+                page = maxPages - 1
+                e.editMessage(get()).queue()
+            }
+            .constraints(constraints)
+            .build()
 
-		nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent)
-				.bindTo(e -> {
-					page = Math.min(maxPages - 1, page + 1);
+        if (hasDeleteButton) {
+            //Unique use in the case the message isn't ephemeral
+            this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent)
+                .bindTo(::onDeleteClicked)
+                .constraints(constraints)
+                .oneUse(true)
+                .build()
+        } else {
+            this.deleteButton = null
+        }
+    }
 
-					e.editMessage(get()).queue();
-				})
-				.constraints(constraints)
-				.build();
+    private fun onDeleteClicked(e: ButtonEvent) {
+        cancelTimeout()
 
-		lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent)
-				.bindTo(e -> {
-					page = maxPages - 1;
+        e.deferEdit().queue()
+        e.hook.deleteOriginal().queue()
 
-					e.editMessage(get()).queue();
-				})
-				.constraints(constraints)
-				.build();
+        cleanup()
+    }
 
-		if (hasDeleteButton) {
-			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent)
-					.bindTo(this::onDeleteClicked)
-					.constraints(constraints)
-					.oneUse(true)
-					.build();
-		} else {
-			this.deleteButton = null;
-		}
-	}
+    override fun get(): MessageEditData {
+        onPreGet()
 
-	public int getMaxPages() {
-		return maxPages;
-	}
+        putComponents()
 
-	public int getPage() {
-		return page;
-	}
+        val embed = getEmbed()
 
-	/**
-	 * Sets the page number, <b>this does not update the embed in any way</b>,
-	 * you can use {@link #get()} with an {@link InteractionHook#editOriginal(MessageEditData)} in order to update the embed on Discord
-	 *
-	 * @param page Number of the page, from {@code 0} to {@code maxPages - 1}
-	 * @return This instance for chaining convenience
-	 */
-	public T setPage(int page) {
-		Checks.check(page >= 0, "Page cannot be negative");
-		Checks.check(page < maxPages, "Page cannot be higher than max page (%d)", maxPages);
+        messageBuilder.setEmbeds(embed)
 
-		this.page = page;
+        val rows = components.actionRows
+        messageBuilder.setComponents(rows)
 
-		return (T) this;
-	}
+        onPostGet()
 
-	protected void setMaxPages(int maxPages) {
-		this.maxPages = maxPages;
-	}
+        return messageBuilder.build()
+    }
 
-	private void onDeleteClicked(ButtonEvent e) {
-		cancelTimeout();
+    protected open fun getEmbed(): MessageEmbed =
+        //TODO sussy
+        supplier!!.get(this as T, messageBuilder, components, page)
 
-		e.deferEdit().queue();
-		e.getHook().deleteOriginal().queue();
+    protected open fun putComponents() {
+        if (isFirstPage) {
+            previousButton = previousButton.asDisabled()
+            firstButton = firstButton.asDisabled()
+        } else {
+            previousButton = previousButton.asEnabled()
+            firstButton = firstButton.asEnabled()
+        }
 
-		cleanup();
-	}
+        if (isLastPage) {
+            nextButton = nextButton.asDisabled()
+            lastButton = lastButton.asDisabled()
+        } else {
+            nextButton = nextButton.asEnabled()
+            lastButton = lastButton.asEnabled()
+        }
 
-	/**
-	 * Returns the current page as a Message, you only need to use this once to send the initial embed. <br>
-	 * The user can then use the navigation buttons to navigate.
-	 *
-	 * @return The {@link Message} for this Paginator
-	 */
-	@Override
-	public MessageEditData get() {
-		onPreGet();
-
-		putComponents();
-
-		final MessageEmbed embed = getEmbed();
-
-		messageBuilder.setEmbeds(embed);
-
-		final List<ActionRow> rows = components.getActionRows();
-		messageBuilder.setComponents(rows);
-
-		onPostGet();
-
-		return messageBuilder.build();
-	}
-
-	@NotNull
-	protected MessageEmbed getEmbed() {
-		return supplier.get((T) this, messageBuilder, components, page);
-	}
-
-	protected void putComponents() {
-		if (page == 0) {
-			previousButton = previousButton.asDisabled();
-			firstButton = firstButton.asDisabled();
-		} else {
-			previousButton = previousButton.asEnabled();
-			firstButton = firstButton.asEnabled();
-		}
-
-		if (page >= maxPages - 1) {
-			nextButton = nextButton.asDisabled();
-			lastButton = lastButton.asDisabled();
-		} else {
-			nextButton = nextButton.asEnabled();
-			lastButton = lastButton.asEnabled();
-		}
-
-		if (deleteButton != null) {
-			components.addComponents(
-					firstButton,
-					previousButton,
-					nextButton,
-					lastButton,
-					deleteButton
-			);
-		} else {
-			components.addComponents(
-					firstButton,
-					previousButton,
-					nextButton,
-					lastButton
-			);
-		}
-	}
+        if (deleteButton != null) {
+            components.addComponents(
+                firstButton,
+                previousButton,
+                nextButton,
+                lastButton,
+                deleteButton
+            )
+        } else {
+            components.addComponents(
+                firstButton,
+                previousButton,
+                nextButton,
+                lastButton
+            )
+        }
+    }
 }

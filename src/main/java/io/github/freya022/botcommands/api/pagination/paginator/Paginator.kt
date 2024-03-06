@@ -1,28 +1,48 @@
-package io.github.freya022.botcommands.api.pagination.paginator;
+package io.github.freya022.botcommands.api.pagination.paginator
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
-import io.github.freya022.botcommands.api.pagination.PaginatorComponents;
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
-import io.github.freya022.botcommands.api.pagination.menu.Menu;
-import io.github.freya022.botcommands.api.utils.ButtonContent;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.pagination.PaginatorComponents
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
+import io.github.freya022.botcommands.api.pagination.TimeoutInfo
+import io.github.freya022.botcommands.api.pagination.menu.Menu
+import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
- * Classic paginator, pages are supplied from {@link PaginatorBuilder#setPaginatorSupplier(PaginatorSupplier) paginator suppliers}.
- * <br>You provide the pages, it displays them one by one.
- * <br>Initial page is page 0, there is navigation buttons and an optional delete button
- * <br><b>The delete button cannot be used if the message is ephemeral</b>
+ * Classic paginator, pages are supplied from [paginator suppliers][PaginatorBuilder.setPaginatorSupplier].
  *
- * <p>
- * <b>The button IDs used by this paginator and those registered by the {@link PaginatorComponents} in the {@link PaginatorSupplier} are cleaned up once the embed is removed with the button</b>
- * <br>When the message is deleted, you would also have to call {@link #cleanup()}
+ * You provide the pages, it displays them one by one.
+ *
+ * Initial page is page 0, there is navigation buttons and an optional delete button
+ *
+ * **The button IDs used by this paginator and those registered by the [PaginatorComponents] in the [PaginatorSupplier] are cleaned up once the embed is removed with the button**
+ *
+ * When the message is deleted, you would also have to call [cleanup]
  *
  * @see Menu
  */
-public final class Paginator extends BasicPaginator<Paginator> {
-	Paginator(@NotNull Components componentsService, InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier<Paginator> supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(componentsService, constraints, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
-	}
-}
+class Paginator internal constructor(
+    componentsService: Components,
+    constraints: InteractionConstraints,
+    timeout: TimeoutInfo<Paginator>?,
+    maxPages: Int,
+    supplier: PaginatorSupplier<Paginator>?,
+    hasDeleteButton: Boolean,
+    firstContent: ButtonContent,
+    previousContent: ButtonContent,
+    nextContent: ButtonContent,
+    lastContent: ButtonContent,
+    deleteContent: ButtonContent
+) : BasicPaginator<Paginator>(
+    componentsService,
+    constraints,
+    timeout,
+    maxPages,
+    supplier,
+    hasDeleteButton,
+    firstContent,
+    previousContent,
+    nextContent,
+    lastContent,
+    deleteContent
+)

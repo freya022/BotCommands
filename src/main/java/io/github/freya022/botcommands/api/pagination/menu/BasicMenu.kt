@@ -1,95 +1,98 @@
-package io.github.freya022.botcommands.api.pagination.menu;
+package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator;
-import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer;
-import io.github.freya022.botcommands.api.utils.ButtonContent;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
+import io.github.freya022.botcommands.api.pagination.TimeoutInfo
+import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
+import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
+import io.github.freya022.botcommands.api.utils.ButtonContent
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.internal.utils.Checks
 
 /**
- * @param <E> Type of the menu elements
- * @param <T> Type of the implementor
+ * @param E Type of the menu elements
+ * @param T Type of the implementor
  */
-public abstract class BasicMenu<E, T extends BasicMenu<E, T>> extends BasicPaginator<T> {
-	protected final Map<Integer, MenuPage<E>> pages;
+abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
+    componentsService: Components,
+    constraints: InteractionConstraints,
+    timeout: TimeoutInfo<T>?,
+    hasDeleteButton: Boolean,
+    firstContent: ButtonContent,
+    previousContent: ButtonContent,
+    nextContent: ButtonContent,
+    lastContent: ButtonContent,
+    deleteContent: ButtonContent,
+    protected val pages: Map<Int, MenuPage<E>>,
+    supplier: PaginatorSupplier<T>?
+) : BasicPaginator<T>(
+    componentsService,
+    constraints,
+    timeout,
+    //TODO if we copied from a builder, that builder could always just set the max pages, when in reality, we control it
+    // should we abuse delegates (only on builder tho)?
+    pages.size,
+    supplier,
+    hasDeleteButton,
+    firstContent,
+    previousContent,
+    nextContent,
+    lastContent,
+    deleteContent
+) {
+    override fun getEmbed(): MessageEmbed {
+        val builder = when {
+            supplier != null -> EmbedBuilder(supplier.get(this as T, messageBuilder, components, page))
+            else -> EmbedBuilder()
+        }
 
-	protected BasicMenu(@NotNull Components componentsService,
-						InteractionConstraints constraints,
-						TimeoutInfo<T> timeout,
-						boolean hasDeleteButton,
-						ButtonContent firstContent,
-						ButtonContent previousContent,
-						ButtonContent nextContent,
-						ButtonContent lastContent,
-						ButtonContent deleteContent,
-						@NotNull Map<Integer, MenuPage<E>> pages,
-						@Nullable PaginatorSupplier<T> supplier) {
-		super(componentsService, constraints, timeout, pages.size(), supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+        val menuPage = pages[page]!!
 
-		this.pages = pages;
-	}
+        builder.appendDescription(menuPage.content)
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@NotNull
-	protected MessageEmbed getEmbed() {
-		final EmbedBuilder builder;
+        return builder.build()
+    }
 
-		if (supplier != null) {
-			builder = new EmbedBuilder(supplier.get((T) this, messageBuilder, components, page));
-		} else {
-			builder = new EmbedBuilder();
-		}
+    companion object {
+        @JvmStatic
+        protected fun <E> makePages(
+            entries: List<E>,
+            transformer: EntryTransformer<in E>,
+            rowPrefixSupplier: RowPrefixSupplier,
+            maxEntriesPerPage: Int
+        ): Map<Int, MenuPage<E>> {
+            val pages: MutableMap<Int, MenuPage<E>> = HashMap()
 
-		final MenuPage<E> menuPage = pages.get(page);
+            var page = 0
+            var oldEntry = 0
+            val builder = StringBuilder()
 
-		builder.appendDescription(menuPage.content());
+            var i = 0
+            val entriesSize = entries.size
+            while (i < entriesSize) {
+                val entry = entries[i]
 
-		return builder.build();
-	}
+                val s = transformer.toString(entry)
+                Checks.notLonger(s, MessageEmbed.TEXT_MAX_LENGTH - 8, "Entry #$i string")
 
-	@NotNull
-	protected static <E> Map<Integer, MenuPage<E>> makePages(@NotNull List<E> entries,
-	                                                         @NotNull EntryTransformer<? super E> transformer,
-	                                                         @NotNull RowPrefixSupplier rowPrefixSupplier,
-	                                                         int maxEntriesPerPage) {
-		final Map<Integer, MenuPage<E>> pages = new HashMap<>();
+                if (i - oldEntry >= maxEntriesPerPage || builder.length + s.length > MessageEmbed.TEXT_MAX_LENGTH - 8) {
+                    pages[page] = MenuPage(builder.toString(), entries.subList(oldEntry, i))
 
-		int page = 0;
-		int oldEntry = 0;
-		StringBuilder builder = new StringBuilder();
+                    page++
+                    oldEntry = i
 
-		for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
-			E entry = entries.get(i);
+                    builder.setLength(0)
+                }
 
-			final String s = transformer.toString(entry);
-			Checks.notLonger(s, MessageEmbed.TEXT_MAX_LENGTH - 8, "Entry #" + i + " string");
+                builder.append(rowPrefixSupplier.apply(i - oldEntry + 1, maxEntriesPerPage)).append(s).append('\n')
+                i++
+            }
 
-			if (i - oldEntry >= maxEntriesPerPage || builder.length() + s.length() > MessageEmbed.TEXT_MAX_LENGTH - 8) {
-				pages.put(page, new MenuPage<>(builder.toString(), entries.subList(oldEntry, i)));
+            pages[page] = MenuPage(builder.toString(), entries.subList(oldEntry, entries.size))
 
-				page++;
-				oldEntry = i;
-
-				builder.setLength(0);
-			}
-
-			builder.append(rowPrefixSupplier.apply(i - oldEntry + 1, maxEntriesPerPage)).append(s).append('\n');
-		}
-
-		pages.put(page, new MenuPage<>(builder.toString(), entries.subList(oldEntry, entries.size())));
-
-		return pages;
-	}
+            return pages
+        }
+    }
 }

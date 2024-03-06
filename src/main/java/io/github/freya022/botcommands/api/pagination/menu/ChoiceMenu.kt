@@ -1,78 +1,84 @@
-package io.github.freya022.botcommands.api.pagination.menu;
+package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
-import io.github.freya022.botcommands.api.pagination.ButtonContentSupplier;
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
-import io.github.freya022.botcommands.api.pagination.paginator.Paginator;
-import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer;
-import io.github.freya022.botcommands.api.utils.ButtonContent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.pagination.ButtonContentSupplier
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
+import io.github.freya022.botcommands.api.pagination.TimeoutInfo
+import io.github.freya022.botcommands.api.pagination.paginator.Paginator
+import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
+import io.github.freya022.botcommands.api.utils.ButtonContent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.internal.utils.Checks
 
 /**
  * Paginator where pages are made from a list of entries, also adds buttons to choose an entry.
  *
- * @param <E> Type of the entries
+ * @param E Type of the entries
+ *
  * @see Paginator
  * @see Menu
  */
-public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
-	private final ButtonContentSupplier<E> buttonContentSupplier;
-	private final ChoiceCallback<E> callback;
+class ChoiceMenu<E> internal constructor(
+    componentsService: Components,
+    constraints: InteractionConstraints,
+    timeout: TimeoutInfo<ChoiceMenu<E>>?,
+    hasDeleteButton: Boolean,
+    firstContent: ButtonContent,
+    previousContent: ButtonContent,
+    nextContent: ButtonContent,
+    lastContent: ButtonContent,
+    deleteContent: ButtonContent,
+    entries: List<E>,
+    maxEntriesPerPage: Int,
+    transformer: EntryTransformer<in E>,
+    rowPrefixSupplier: RowPrefixSupplier,
+    supplier: PaginatorSupplier<ChoiceMenu<E>>?,
+    buttonContentSupplier: ButtonContentSupplier<E>,
+    callback: ChoiceCallback<E>
+) : BasicMenu<E, ChoiceMenu<E>>(
+    componentsService,
+    constraints,
+    timeout,
+    hasDeleteButton,
+    firstContent,
+    previousContent,
+    nextContent,
+    lastContent,
+    deleteContent,
+    makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
+    supplier
+) {
+    private val buttonContentSupplier: ButtonContentSupplier<E>
+    private val callback: ChoiceCallback<E>
 
-	ChoiceMenu(@NotNull Components componentsService,
-			   InteractionConstraints constraints,
-			   TimeoutInfo<ChoiceMenu<E>> timeout,
-			   boolean hasDeleteButton,
-			   ButtonContent firstContent,
-			   ButtonContent previousContent,
-			   ButtonContent nextContent,
-			   ButtonContent lastContent,
-			   ButtonContent deleteContent,
-			   List<E> entries,
-			   int maxEntriesPerPage,
-			   EntryTransformer<? super E> transformer,
-			   RowPrefixSupplier rowPrefixSupplier,
-			   PaginatorSupplier<ChoiceMenu<E>> supplier,
-			   ButtonContentSupplier<E> buttonContentSupplier,
-			   ChoiceCallback<E> callback) {
-		super(componentsService, constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
-				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
-				supplier);
+    init {
+        Checks.notNull(buttonContentSupplier, "Button content supplier")
+        Checks.notNull(callback, "Callback")
 
-		Checks.notNull(buttonContentSupplier, "Button content supplier");
-		Checks.notNull(callback, "Callback");
+        this.buttonContentSupplier = buttonContentSupplier
+        this.callback = callback
+    }
 
-		this.buttonContentSupplier = buttonContentSupplier;
-		this.callback = callback;
-	}
+    override fun putComponents() {
+        super.putComponents()
 
-	@Override
-	protected void putComponents() {
-		super.putComponents();
+        val page = pages[page]!!
+        val entries = page.entries
 
-		final MenuPage<E> page = pages.get(this.page);
-		final List<E> entries = page.entries();
+        entries.forEachIndexed { i, item ->
+            val content = buttonContentSupplier.apply(item, i)
+            val choiceButton: Button = componentsService.ephemeralButton(ButtonStyle.PRIMARY, content)
+                .bindTo { event: ButtonEvent ->
+                    this.cleanup()
+                    callback.accept(event, item)
+                }
+                .constraints(constraints)
+                .build()
 
-		for (int i = 0; i < entries.size(); i++) {
-			final E item = entries.get(i);
-			final ButtonContent content = buttonContentSupplier.apply(item, i);
-			final Button choiceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, content)
-					.bindTo(event -> {
-						this.cleanup();
-
-						callback.accept(event, item);
-					})
-					.constraints(constraints)
-					.build();
-
-			components.addComponents(1 + (i / 5), choiceButton);
-		}
-	}
+            components.addComponents(1 + (i / 5), choiceButton)
+        }
+    }
 }
