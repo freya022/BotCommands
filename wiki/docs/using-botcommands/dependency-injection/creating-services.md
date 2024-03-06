@@ -30,9 +30,10 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
 
             /* */
 
-            // Service factory, registers as "Config" (as it is the return type)
+            // Service factory, registers as "Config" (as it is the return type), with the name "config"
+            // You can use any method name, but the method name is what the service is registered as
             @BService
-            public static Config getInstance() {
+            public static Config config() {
                 if (INSTANCE == null) {
                     // Of course here you would load the config from a file
                     INSTANCE = new Config();
@@ -49,9 +50,10 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
             /* */
 
             companion object {
-                // Service factory, registers as "Config" (as it is the return type)
-                // You can use any method name
-                fun createConfig(): Config {
+                // Service factory, registers as Config (as it is the return type), with the name "config"
+                // You can use any method name, but the method name is what the service is registered as
+                @BService
+                fun config(): Config {
                     // Of course here you would load the config from a file
                     Config()
                 }
@@ -65,15 +67,20 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
             /* */
 
             companion object {
-                // Service factory, registers as "Config" (as it is the return type)
+                // Service factory, registers as Config (as it is the return type), with the name "config"
                 @get:BService
-                val instance: Config by lazy {
+                val config: Config by lazy {
                     // Of course here you would load the config from a file
                     Config()
                 }
             }
         }
         ```
+
+!!! tip
+
+    To suppress unused warnings on the declaring class, you can use `#!java @BConfiguration`,
+    unless the declaring class itself must be a service.
 
 ### Conditional services
 Some services may not always be instantiable, 
@@ -218,7 +225,7 @@ In addition to the type of the service provider,
 Service priorities control how service providers are sorted.
 
 A higher priority means that the service will be loaded first,
-or that an interfaced service will appear first when [requesting interfaced services](#interfaced-services-1).
+or that an interfaced service will appear first when [requesting interfaced services](#interfaced-services).
 
 The priority is either defined by using `#!java @ServicePriority`, or with `BService#priority` on the service provider, 
 see their documentation to learn what how service providers are sorted.
