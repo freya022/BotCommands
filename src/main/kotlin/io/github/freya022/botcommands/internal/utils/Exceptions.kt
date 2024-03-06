@@ -1,11 +1,9 @@
 package io.github.freya022.botcommands.internal.utils
 
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
-import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -33,14 +31,6 @@ internal fun rethrowUser(message: String, e: Throwable): Nothing =
 
 internal fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
-
-internal fun throwService(serviceError: ServiceError): Nothing =
-    throw ServiceException("\n${serviceError.toDetailedString()}")
-
-internal fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
-    null -> throw ServiceException(message)
-    else -> throw ServiceException("${function.shortSignature} : $message")
-}
 
 @OptIn(ExperimentalContracts::class)
 internal inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -> String) {

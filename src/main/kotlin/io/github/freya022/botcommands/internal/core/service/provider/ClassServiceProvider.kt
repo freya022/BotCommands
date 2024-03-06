@@ -10,11 +10,12 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -148,7 +149,12 @@ internal class ClassServiceProvider private constructor(
         if (instanceSupplier != null) {
             return measureTimedInstantiation {
                 instanceSupplier.supply(serviceContainer.context)
-                    ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                    ?: throw ServiceException(
+                        ErrorType.PROVIDER_RETURNED_NULL.toError(
+                            errorMessage = "Supplier function in class '${instanceSupplier.javaClass.simpleNestedName}' returned null",
+                            failedFunction = instanceSupplier::supply.resolveBestReference()
+                        )
+                    )
             }
         }
 

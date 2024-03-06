@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.core.service
 
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwService
 import kotlin.reflect.KFunction
 
 class ServiceError private constructor(
@@ -116,7 +116,7 @@ class ServiceResult<T : Any> private constructor(val service: T?, val serviceErr
 
     fun getOrThrow(): T = when {
         service != null -> service
-        serviceError != null -> throwService(serviceError)
+        serviceError != null -> throw ServiceException(serviceError)
         else -> throwInternal("ServiceResult should contain either the service or the error message")
     }
 
