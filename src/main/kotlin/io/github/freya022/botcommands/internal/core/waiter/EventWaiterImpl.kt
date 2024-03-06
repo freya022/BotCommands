@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.logger
@@ -33,7 +32,6 @@ import kotlin.concurrent.withLock
 private val logger = KotlinLogging.logger<EventWaiter>()
 
 @BService
-@ServiceType(EventWaiter::class)
 internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private val exceptionHandler = ExceptionHandler(context, logger)
 

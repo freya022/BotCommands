@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.core.waiter
 
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import net.dv8tion.jda.api.events.Event
 
 /**
@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.events.Event
  *
  * @see BConfigBuilder.ignoredEventIntents
  */
-@InjectedService
+@InterfacedService(acceptMultiple = false)
 interface EventWaiter {
     /**
      * Creates a new event waiter builder with the specified event type being awaited.
