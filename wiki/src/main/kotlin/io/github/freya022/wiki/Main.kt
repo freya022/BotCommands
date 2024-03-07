@@ -3,11 +3,11 @@ package io.github.freya022.wiki
 import ch.qos.logback.classic.ClassicConstants
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
-import io.github.freya022.wiki.config.Config
-import io.github.freya022.wiki.config.Environment
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.wiki.config.Config
+import io.github.freya022.wiki.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.events.session.ShutdownEvent
@@ -61,7 +61,6 @@ object Main {
                 addOwners(*config.ownerIds.toLongArray())
 
                 addSearchPath(mainPackageName)
-                addSearchPath("io.github.freya022.bot.config")
 
                 textCommands {
                     //Use ping as prefix if configured
