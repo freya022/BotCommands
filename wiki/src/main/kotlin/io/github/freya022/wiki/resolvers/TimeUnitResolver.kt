@@ -32,7 +32,7 @@ object TimeUnitResolverSimplified {
 @WikiDetailProfile(WikiDetailProfile.Profile.DETAILED)
 // --8<-- [start:time_unit_resolver-detailed-kotlin]
 @Resolver
-object TimeUnitResolver :
+class TimeUnitResolver :
     ClassParameterResolver<TimeUnitResolver, TimeUnit>(TimeUnit::class),
     SlashParameterResolver<TimeUnitResolver, TimeUnit> {
 
