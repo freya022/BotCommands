@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import kotlin.reflect.KFunction
 
-sealed class AbstractApplicationCommandManager(internal val context: BContext) {
+sealed class AbstractApplicationCommandManager(val context: BContext) {
     private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         get() = commandMap.map
