@@ -9,13 +9,9 @@ import kotlin.reflect.KFunction
 class ServiceError private constructor(
     val errorType: ErrorType,
     val errorMessage: String,
-    val extraMessage: String?,
-    /**
-     * This is to be handled by the code throwing the exception, as this is required to be on the first line
-     */
-    val failedFunction: KFunction<*>?,
     val nestedError: ServiceError?,
-    val siblingErrors: List<ServiceError>
+    val siblingErrors: List<ServiceError>,
+    val extra: Map<String, Any>,
 ) {
     enum class ErrorType(val explanation: String) {
         UNKNOWN("Unknown service error"),
@@ -35,38 +31,36 @@ class ServiceError private constructor(
         FAILED_FATAL_CUSTOM_CONDITION("At least one custom check returned an error message, and was configured to fail");
 
         @JvmOverloads
-        fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList()) =
-            ServiceError(this, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors)
+        fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
+            ServiceError(this, errorMessage, nestedError, siblingErrors, buildMap(2) {
+                if (extraMessage != null) put("Extra message", extraMessage)
+                if (failedFunction != null) put("Failed function", lazy { failedFunction.shortSignature })
+            } + extra)
 
-        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList()) =
-            ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError, siblingErrors))
+        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
+            ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError, siblingErrors, extra))
     }
 
     operator fun component1() = errorType
     operator fun component2() = errorMessage
-    operator fun component3() = extraMessage
-    operator fun component4() = nestedError
 
     fun withErrorType(errorType: ErrorType): ServiceError =
-        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors)
+        ServiceError(errorType, errorMessage, nestedError, siblingErrors, extra)
 
     fun withSibling(serviceError: ServiceError): ServiceError =
-        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
+        ServiceError(errorType, errorMessage, nestedError, siblingErrors + serviceError, extra)
 
     fun withSiblings(serviceErrors: List<ServiceError>): ServiceError =
-        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceErrors)
+        ServiceError(errorType, errorMessage, nestedError, siblingErrors + serviceErrors, extra)
 
     fun toSimpleString(): String = when {
         siblingErrors.isEmpty() -> this.toSingleSimpleString()
         else -> (listOf(this) + siblingErrors).joinAsList { it.toSingleSimpleString() }
     }
 
-    private fun toSingleSimpleString(): String = when {
-        extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
-        else -> "$errorMessage (${errorType.explanation})"
-    }
+    private fun toSingleSimpleString(): String = "$errorMessage (${errorType.explanation})"
 
-    fun toDetailedString(): String = (listOf(this) + siblingErrors).joinToString("\n") { it.toSingleDetailedString() }
+    fun toDetailedString(): String = (listOf(this) + siblingErrors).joinToString("\nSee also:\n") { it.toSingleDetailedString() }
 
     context(StringBuilder)
     internal fun appendPostfixSimpleString() {
@@ -80,25 +74,26 @@ class ServiceError private constructor(
     }
 
     private fun toSingleDetailedString(): String = buildString {
-        appendLine("Error message: $errorMessage")
-        if (failedFunction != null)
-            appendLine("Failed function: ${failedFunction.shortSignature}")
-        appendLine("Error type: ${errorType.explanation}")
-        if (extraMessage != null)
-            appendLine("Extra message: $extraMessage")
+        appendLine("    Error message: $errorMessage")
+        forEachExtra { name, value ->
+            appendLine("    $name: $value")
+        }
 
         if (nestedError != null) {
-            val causedByHeader = " ".repeat(4) + "Caused by: "
-            append(causedByHeader)
+            appendLine("Caused by:")
+            appendLine(nestedError.toDetailedString())
+        }
+    }.trimEnd()
 
-            val lines = nestedError.toDetailedString().trimIndent().lines()
-            appendLine(lines.first())
-            lines.drop(1).forEach {
-                append(" ".repeat(causedByHeader.length))
-                appendLine(it)
+    private inline fun forEachExtra(block: (name: String, value: String) -> Unit) {
+        extra.forEach { (k, v) ->
+            if (v is Lazy<*>) {
+                block(k, v.value.toString())
+            } else {
+                block(k, v.toString())
             }
         }
-    }.prependIndent()
+    }
 
     companion object {
         fun fromErrors(errors: List<ServiceError>): ServiceError {

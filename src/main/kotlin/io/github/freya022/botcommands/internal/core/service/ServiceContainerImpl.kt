@@ -262,7 +262,10 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             if (name != null)
                 throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
 
-            return NON_UNIQUE_PROVIDERS.toResult(primaryProviders.createNonUniqueProvidersMessage(clazz))
+            return NON_UNIQUE_PROVIDERS.toResult(
+                errorMessage = "Requested service of ${getProviderCharacteristics(clazz, name = null)} had multiple providers",
+                extra = mapOf("Providers" to lazy { '\n' + primaryProviders.toPrimaryProviderString().prependIndent() })
+            )
         }
 
         val primaryProvider = if (errors.isEmpty()) {
@@ -299,15 +302,12 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         else -> "type ${clazz.simpleNestedName}"
     }
 
-    private fun <T : Any> List<ServiceProvider>.createNonUniqueProvidersMessage(clazz: KClass<T>) = """
-        Requested service of type '${clazz.simpleNestedName}' had multiple providers:
-        ${this.joinAsList {
+    private fun List<ServiceProvider>.toPrimaryProviderString() = joinAsList {
         buildString {
             if (it.isPrimary) append("[Primary] ")
-            append("${it.primaryType.simpleNestedName} (${it.providerKey})")
+            append(it.getProviderSignature())
         }
-    }}
-    """.trimIndent()
+    }
 
     internal fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null
