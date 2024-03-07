@@ -4,27 +4,27 @@
     <rules>
         <rule groupId="org.jetbrains.kotlin" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.*-Beta.*</ignoreVersion>
+                <ignoreVersion type="regex">.+-Beta.+</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jetbrains.kotlinx" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.*-RC</ignoreVersion>
+                <ignoreVersion type="regex">.+-RC.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.slf4j" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.*-alpha.*</ignoreVersion>
+                <ignoreVersion type="regex">.+-alpha.+</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="com.fasterxml.jackson" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.*-rc.*</ignoreVersion>
+                <ignoreVersion type="regex">.+-rc.+</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="net.dv8tion" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.*_DEV</ignoreVersion>
+                <ignoreVersion type="regex">.+_DEV</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>
