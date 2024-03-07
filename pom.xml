@@ -46,7 +46,7 @@
         <connection>scm:git:https://github.com/freya022/BotCommands.git</connection>
         <developerConnection>scm:git:https://github.com/freya022/BotCommands.git</developerConnection>
         <url>https://github.com/freya022/BotCommands</url>
-        <tag>HEAD</tag>
+        <tag>3.X</tag>
     </scm>
 
     <distributionManagement>
