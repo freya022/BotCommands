@@ -131,11 +131,12 @@ internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KCla
     return explicitTypes + interfacedServiceTypes
 }
 
+context(ServiceProvider)
 internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
     findAnnotation<Dependencies>()?.value?.let { dependencies ->
         dependencies.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
-                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
+                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
             }
         }
     }
