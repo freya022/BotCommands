@@ -150,7 +150,10 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,
                         // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = instance::checkServiceAvailability.resolveBestReference()
+                        extra = mapOf(
+                            "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
+                            "For" to getProviderFunction()
+                        )
                     )
                 }
         }
@@ -170,8 +173,11 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
 
                     return errorType.toError(
                         errorMessage,
-                        // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = checker::checkServiceAvailability.resolveBestReference()
+                        // checker::checkServiceAvailability does not bind to the actual instance
+                        extra = mapOf(
+                            "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
+                            "For" to getProviderFunction()
+                        )
                     )
                 }
         }
