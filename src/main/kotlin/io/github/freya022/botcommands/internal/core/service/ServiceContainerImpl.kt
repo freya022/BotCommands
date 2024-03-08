@@ -273,10 +273,13 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
                 ?: throwInternal("This collection cannot be empty as instantiable providers shouldn't be empty when there's no error, due to there being at least one provider")
         } else { // One provider at most, or none and has errors
             primaryProviders.firstOrNull()
-                ?: return NO_USABLE_PROVIDER.toResult(
-                    errorMessage = "All providers returned an error for ${getProviderCharacteristics(clazz, name)}",
-                    nestedError = ServiceError.fromErrors(errors)
-                )
+                ?: return when {
+                    errors.size == 1 -> ServiceResult.fail(errors.single())
+                    else -> NO_USABLE_PROVIDER.toResult(
+                        errorMessage = "All providers returned an error for ${getProviderCharacteristics(clazz, name)}",
+                        nestedError = ServiceError.fromErrors(errors)
+                    )
+                }
         }
 
         if (!primaryProvider.primaryType.isSubclassOf(clazz)) {
