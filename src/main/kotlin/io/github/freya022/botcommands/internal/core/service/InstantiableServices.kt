@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
+import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -114,11 +115,11 @@ internal class InstantiableServices internal constructor(private val context: BC
             .filter { (interfacedType, providers) -> !interfacedType.acceptMultiple && providers.size > 1 }
         if (nonUniqueImplementations.isNotEmpty()) {
             val message = buildString {
-                appendLine("Interfaced services with 'acceptMultiple = false' cannot have multiple implementations, " +
+                appendLine("Interfaced services with '${InterfacedService::acceptMultiple.reference} = false' cannot have multiple implementations, " +
                         "please adjust your services so at most one implementation is instantiable:")
 
                 nonUniqueImplementations.forEach { (interfacedServiceType, implementations) ->
-                    appendLine("${interfacedServiceType.clazz.simpleNestedName}:\n${implementations.joinAsList { it.providerKey }}")
+                    appendLine("${interfacedServiceType.clazz.simpleNestedName}:\n${implementations.joinAsList { it.getProviderSignature() }}")
                 }
             }
             throw IllegalStateException(message)

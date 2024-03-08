@@ -111,7 +111,7 @@ internal class ClassServiceProvider private constructor(
         serviceError?.let { serviceError ->
             throwInternal("""
                 Tried to create an instance while a service error exists / hasn't been determined
-                Provider: $providerKey
+                Provider: ${getProviderSignature()}
                 Error: ${serviceError.toSimpleString()}
             """.trimIndent())
         }

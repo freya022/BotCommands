@@ -149,7 +149,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
                 val instance = result.getOrThrow()
                 if (!provider.primaryType.isInstance(instance))
-                    throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.providerKey}")
+                    throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
 
                 logger.trace {
                     val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
@@ -290,7 +290,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
             return INVALID_TYPE.toResult(
                 errorMessage = errorMessage,
-                extraMessage = "provider: ${primaryProvider.providerKey}"
+                failedFunction = primaryProvider.getProviderFunction()
             )
         }
 
