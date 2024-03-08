@@ -24,7 +24,6 @@ class ServiceError private constructor(
         NON_UNIQUE_PROVIDERS("Multiple providers were found but none were marked as primary"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
         PROVIDER_RETURNED_NULL("The service provider returned no service"),
-        UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
         UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),
         FAILED_CONDITION("At least one check returned an error message"),
         UNAVAILABLE_INSTANCE("The instance required by a service factory was unavailable"),

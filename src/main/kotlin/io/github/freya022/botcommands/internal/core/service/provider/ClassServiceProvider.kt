@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantia
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
@@ -18,7 +17,6 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmName
 
@@ -49,7 +47,7 @@ internal class ClassServiceProvider private constructor(
         val serviceError = checkInstantiate(serviceContainer)
         //Do not cache service error if a parameter is unavailable, a retrial is allowed
         when (serviceError?.errorType) {
-            ErrorType.UNAVAILABLE_PARAMETER, ErrorType.UNAVAILABLE_DEPENDENCY, ErrorType.UNAVAILABLE_INJECTED_SERVICE -> {}
+            ErrorType.UNAVAILABLE_PARAMETER, ErrorType.UNAVAILABLE_DEPENDENCY -> {}
 
             else -> this.serviceError = serviceError
         }

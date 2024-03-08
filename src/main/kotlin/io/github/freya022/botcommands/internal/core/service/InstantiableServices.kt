@@ -40,7 +40,7 @@ internal class InstantiableServices internal constructor(private val context: BC
             when (serviceError.errorType) {
                 UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
-                UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
+                UNAVAILABLE_PARAMETER, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
                     throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
                 UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION, UNAVAILABLE_INSTANCE -> {

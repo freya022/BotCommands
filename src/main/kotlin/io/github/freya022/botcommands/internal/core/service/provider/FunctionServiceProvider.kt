@@ -39,7 +39,7 @@ internal class FunctionServiceProvider(
         val serviceError = checkInstantiate(serviceContainer)
         //Do not cache service error if a parameter is unavailable, a retrial is allowed
         when (serviceError?.errorType) {
-            ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY, ServiceError.ErrorType.UNAVAILABLE_INJECTED_SERVICE -> {}
+            ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY -> {}
 
             else -> this.serviceError = serviceError
         }
