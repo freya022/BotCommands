@@ -167,7 +167,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
         return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
     }
 
-    private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    private val failedInterfacedServices: MutableSet<KClass<*>> = ConcurrentHashMap.newKeySet()
     override fun <T : Any> getInterfacedServices(clazz: KClass<T>): List<T> {
         return context.serviceProviders
             .findAllForType(clazz)
@@ -176,21 +176,21 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             .mapNotNull {
                 val serviceResult = tryGetService<T>(it)
                 serviceResult.serviceError?.let { serviceError ->
-                    val warnMessage = buildString {
-                        append("Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey})")
-
-                        if (logger.isTraceEnabled()) {
-                            append("\n")
-                            append(serviceError.toDetailedString())
-                        } else {
+                    if (failedInterfacedServices.add(it.primaryType)) {
+                        fun createDebugMessage(): String = buildString {
+                            append("Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName}")
                             serviceError.appendPostfixSimpleString()
                         }
-                    }
-                    if (interfacedServiceErrors.add(warnMessage)) {
+
+                        fun createTraceMessage(): String = buildString {
+                            appendLine("Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.getProviderSignature()})")
+                            append(serviceError.toDetailedString())
+                        }
+
                         if (logger.isTraceEnabled()) {
-                            logger.trace { warnMessage }
+                            logger.trace { createTraceMessage() }
                         } else {
-                            logger.debug { warnMessage }
+                            logger.debug { createDebugMessage() }
                         }
                     }
                 }
