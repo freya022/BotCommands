@@ -72,7 +72,7 @@ private val logger = KotlinLogging.logger { }
  * @see BlockingDatabase
  * @see ParametrizedQueryFactory
  */
-@InterfacedService(acceptMultiple = true)
+@InterfacedService(acceptMultiple = false)
 interface Database {
     val databaseConfig: BDatabaseConfig
     val connectionSupplier: ConnectionSupplier

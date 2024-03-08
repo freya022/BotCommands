@@ -121,14 +121,15 @@ internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KCla
             }
         }
     }
+    val removedTypes = findAnnotation<IgnoreServiceTypes>()?.types?.toSet() ?: emptySet()
 
     val interfacedServiceTypes = primaryType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
-    val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes)
+    val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes) - removedTypes
     if (existingServiceTypes.isNotEmpty()) {
         logger.warn { "Instance of ${primaryType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
     }
 
-    return explicitTypes + interfacedServiceTypes
+    return (explicitTypes + interfacedServiceTypes) - removedTypes
 }
 
 context(ServiceProvider)

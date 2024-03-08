@@ -34,6 +34,8 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * or [ServiceContainer.getInterfacedServiceTypes].
  * The returned collection is sorted by [service priority][ServicePriority].
  *
+ * @see IgnoreServiceTypes @IgnoreServiceTypes
+ *
  * @see DynamicSupplier
  *
  * @see JDAService
