@@ -1,9 +1,11 @@
 package io.github.freya022.botcommands.api.core.service
 
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 class ServiceError private constructor(
@@ -34,7 +36,7 @@ class ServiceError private constructor(
         fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
             ServiceError(this, errorMessage, nestedError, siblingErrors, buildMap(2) {
                 if (extraMessage != null) put("Extra message", extraMessage)
-                if (failedFunction != null) put("Failed function", lazy { failedFunction.shortSignature })
+                if (failedFunction != null) put("Failed function", failedFunction)
             } + extra)
 
         fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
@@ -95,11 +97,13 @@ class ServiceError private constructor(
 
     private inline fun forEachExtra(block: (name: String, value: String) -> Unit) {
         extra.forEach { (k, v) ->
-            if (v is Lazy<*>) {
-                block(k, v.value.toString())
-            } else {
-                block(k, v.toString())
+            val valueStr: String = when (v) {
+                is KFunction<*> -> v.shortSignature
+                is KClass<*> -> v.simpleNestedName
+                is Lazy<*> -> v.value.toString()
+                else -> v.toString()
             }
+            block(k, valueStr)
         }
     }
 
