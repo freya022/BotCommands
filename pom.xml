@@ -493,7 +493,6 @@
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>4.8.165</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.trove4j</groupId>
@@ -559,6 +558,7 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
             <version>${flyway.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
