@@ -6,5 +6,5 @@ package io.github.freya022.botcommands.api.core.service.annotations
  * @see BService @BService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS)
 annotation class MissingServiceMessage(@get:JvmName("value") val message: String)
