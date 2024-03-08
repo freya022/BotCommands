@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -72,7 +72,7 @@ private val logger = KotlinLogging.logger { }
  * @see BlockingDatabase
  * @see ParametrizedQueryFactory
  */
-@InjectedService("Requires a ConnectionSupplier service")
+@InterfacedService(acceptMultiple = true)
 interface Database {
     val databaseConfig: BDatabaseConfig
     val connectionSupplier: ConnectionSupplier

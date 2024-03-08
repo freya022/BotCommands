@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
 import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration
@@ -62,7 +62,7 @@ import java.time.Duration
  * @see BlockingDatabase
  */
 @InterfacedService(acceptMultiple = false)
-@InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService needs to be set in order to use the database")
+@MissingServiceMessage("Using a database required a service implementing ConnectionSupplier")
 interface ConnectionSupplier {
     /**
      * The maximum number of connections retrievable without blocking.

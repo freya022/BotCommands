@@ -46,11 +46,6 @@ internal class ClassServiceProvider private constructor(
         // Returns null if there is no error, the error itself if there's one
         if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
-        clazz.findAnnotation<InjectedService>()?.let {
-            //Skips cache
-            return ErrorType.UNAVAILABLE_INJECTED_SERVICE.toError("Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}")
-        }
-
         val serviceError = checkInstantiate(serviceContainer)
         //Do not cache service error if a parameter is unavailable, a retrial is allowed
         when (serviceError?.errorType) {
