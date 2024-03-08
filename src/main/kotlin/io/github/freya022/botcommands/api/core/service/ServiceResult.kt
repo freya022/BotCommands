@@ -60,7 +60,15 @@ class ServiceError private constructor(
 
     private fun toSingleSimpleString(): String = "$errorMessage (${errorType.explanation})"
 
-    fun toDetailedString(): String = (listOf(this) + siblingErrors).joinToString("\nSee also:\n") { it.toSingleDetailedString() }
+    fun toDetailedString(): String = buildString {
+        append(toSingleDetailedString())
+
+        siblingErrors.forEach {
+            appendLine()
+            appendLine("See also:".prependIndent())
+            append(it.toDetailedString().prependIndent())
+        }
+    }
 
     context(StringBuilder)
     internal fun appendPostfixSimpleString() {
