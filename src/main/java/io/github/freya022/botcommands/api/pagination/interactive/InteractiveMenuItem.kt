@@ -1,3 +1,7 @@
-package io.github.freya022.botcommands.api.pagination.interactive;
+package io.github.freya022.botcommands.api.pagination.interactive
 
-public record InteractiveMenuItem<R extends BasicInteractiveMenu<R>>(SelectContent content, int maxPages, InteractiveMenuSupplier<R> supplier) {}
+data class InteractiveMenuItem<R : BasicInteractiveMenu<R>>(
+    val content: SelectContent,
+    val maxPages: Int,
+    val supplier: InteractiveMenuSupplier<R>
+) 

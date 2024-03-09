@@ -1,29 +1,31 @@
-package io.github.freya022.botcommands.api.pagination.interactive;
+package io.github.freya022.botcommands.api.pagination.interactive
 
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+data class SelectContent(val label: String, val description: String?, val emoji: Emoji?) {
+    fun toSelectOption(value: String): SelectOption {
+        var selectOption = SelectOption.of(label, value)
+        description?.let { selectOption = selectOption.withDescription(description) }
+        emoji?.let { selectOption = selectOption.withEmoji(emoji) }
 
-public record SelectContent(@NotNull String label, @Nullable String description, @Nullable Emoji emoji) {
-	@NotNull
-	SelectOption toSelectOption(@NotNull String value) {
-		return SelectOption.of(label, value).withDescription(description).withEmoji(emoji);
-	}
+        return selectOption
+    }
 
-	@NotNull
-	public static SelectContent of(@NotNull String label) {
-		return new SelectContent(label, null, null);
-	}
+    companion object {
+        @JvmStatic
+        fun of(label: String): SelectContent {
+            return SelectContent(label, null, null)
+        }
 
-	@NotNull
-	public static SelectContent of(@NotNull String label, @Nullable String description) {
-		return new SelectContent(label, description, null);
-	}
+        @JvmStatic
+        fun of(label: String, description: String?): SelectContent {
+            return SelectContent(label, description, null)
+        }
 
-	@NotNull
-	public static SelectContent of(@NotNull String label, @Nullable String description, @Nullable Emoji emoji) {
-		return new SelectContent(label, description, emoji);
-	}
+        @JvmStatic
+        fun of(label: String, description: String?, emoji: Emoji?): SelectContent {
+            return SelectContent(label, description, emoji)
+        }
+    }
 }

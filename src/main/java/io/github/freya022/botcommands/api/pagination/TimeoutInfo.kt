@@ -1,7 +1,9 @@
-package io.github.freya022.botcommands.api.pagination;
+package io.github.freya022.botcommands.api.pagination
 
-import org.jetbrains.annotations.NotNull;
+import java.util.concurrent.TimeUnit
 
-import java.util.concurrent.TimeUnit;
-
-public record TimeoutInfo<T extends BasicPagination<T>>(long timeout, @NotNull TimeUnit unit, @NotNull PaginationTimeoutConsumer<T> onTimeout) {}
+data class TimeoutInfo<T : BasicPagination<T>>(
+    val timeout: Long,
+    val unit: TimeUnit,
+    val onTimeout: PaginationTimeoutConsumer<T>
+) 
