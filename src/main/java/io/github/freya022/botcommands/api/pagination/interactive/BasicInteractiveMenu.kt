@@ -1,136 +1,144 @@
-package io.github.freya022.botcommands.api.pagination.interactive;
+package io.github.freya022.botcommands.api.pagination.interactive
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints;
-import io.github.freya022.botcommands.api.components.event.StringSelectEvent;
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo;
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator;
-import io.github.freya022.botcommands.api.utils.ButtonContent;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
+import io.github.freya022.botcommands.api.pagination.TimeoutInfo
+import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
+import io.github.freya022.botcommands.api.utils.ButtonContent
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.utils.messages.MessageEditData
+import net.dv8tion.jda.internal.utils.Checks
 
 /**
- * @param <T> Type of the implementor
+ * @param T Type of the implementor
  */
-@SuppressWarnings("unchecked")
-public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> extends BasicPaginator<T> {
-	protected final List<InteractiveMenuItem<T>> items;
+abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected constructor(
+    componentsService: Components,
+    constraints: InteractionConstraints,
+    timeout: TimeoutInfo<T>?,
+    hasDeleteButton: Boolean,
+    firstContent: ButtonContent,
+    previousContent: ButtonContent,
+    nextContent: ButtonContent,
+    lastContent: ButtonContent,
+    deleteContent: ButtonContent,
+    @JvmField
+    protected val items: List<InteractiveMenuItem<T>>,
+    @JvmField
+    protected val usePaginator: Boolean
+) : BasicPaginator<T>(
+    componentsService,
+    constraints,
+    timeout,
+    0,
+    PaginatorSupplier { _, _, _, _ -> EmbedBuilder().build() },
+    hasDeleteButton,
+    firstContent,
+    previousContent,
+    nextContent,
+    lastContent,
+    deleteContent
+) {
+    var selectedItem: Int = 0
+        protected set
+    val selectedItemContent: SelectContent
+        get() = items[selectedItem].content
 
-	protected int selectedItem = 0;
-	protected final boolean usePaginator;
+    init {
+        check(items.isNotEmpty()) { "No interactive menu items has been added" }
 
-	protected BasicInteractiveMenu(@NotNull Components componentsService,
-								   InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
-								   ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-								   @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
-		super(componentsService, constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+        setSelectedItem(0)
+    }
 
-		if (items.isEmpty()) throw new IllegalStateException("No interactive menu items has been added");
+    protected fun createSelectMenu(): StringSelectMenu {
+        val options = arrayOfNulls<SelectOption>(items.size)
+        var i = 0
+        val itemsSize = items.size
+        while (i < itemsSize) {
+            val item = items[i]
 
-		this.usePaginator = usePaginator;
-		this.items = items;
-		setSelectedItem(0);
-	}
+            var option = item.content.toSelectOption(i.toString())
+            if (i == selectedItem) option = option.withDefault(true)
 
-	@NotNull
-	protected StringSelectMenu createSelectMenu() {
-		final SelectOption[] options = new SelectOption[items.size()];
-		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
-			InteractiveMenuItem<T> item = items.get(i);
+            options[i] = option
+            i++
+        }
 
-			SelectOption option = item.content().toSelectOption(String.valueOf(i));
-			if (i == selectedItem) option = option.withDefault(true);
+        return componentsService.ephemeralStringSelectMenu()
+            .bindTo { event: StringSelectEvent -> this.onItemSelected(event) }
+            .oneUse(true)
+            .constraints(constraints)
+            .addOptions(*options)
+            .build()
+    }
 
-			options[i] = option;
-		}
+    private fun onItemSelected(event: StringSelectEvent) {
+        selectedItem = event.values[0].toInt()
 
-		return componentsService.ephemeralStringSelectMenu()
-				.bindTo(this::onItemSelected)
-				.oneUse(true)
-				.constraints(constraints)
-				.addOptions(options)
-				.build();
-	}
+        event.editMessage(get()).queue()
+    }
 
-	private void onItemSelected(StringSelectEvent event) {
-		selectedItem = Integer.parseInt(event.getValues().get(0));
+    /**
+     * Sets the interactive menu item number, **this does not update the embed in any way**,
+     * you can use [get] with an [InteractionHook.editOriginal] in order to update the embed on Discord
+     *
+     * @param itemIndex Index of the item, from `0` to `[the number of menus] - 1`
+     *
+     * @return This instance for chaining convenience
+     */
+    fun setSelectedItem(itemIndex: Int): T {
+        Checks.check(itemIndex >= 0, "Item index cannot be negative")
+        Checks.check(itemIndex < items.size, "Item index cannot be higher than max items count (%d)", items.size)
 
-		event.editMessage(get()).queue();
-	}
+        this.selectedItem = itemIndex
+        maxPages = items[itemIndex].maxPages
+        page = 0
 
-	public int getSelectedItem() {
-		return selectedItem;
-	}
+        return this as T
+    }
 
-	public SelectContent getSelectedItemContent() {
-		return items.get(selectedItem).content();
-	}
+    /**
+     * Sets the interactive menu item number, via it's label (O(n) search), **this does not update the embed in any way**,
+     * you can use [get] with an [InteractionHook.editOriginal] in order to update the embed on Discord
+     *
+     * @param itemLabel Label of the item, must be a valid label from any of the interactive menu items
+     *
+     * @return This instance for chaining convenience
+     */
+    fun setSelectedItem(itemLabel: String): T {
+        Checks.notEmpty(itemLabel, "Item name cannot be empty")
 
-	/**
-	 * Sets the interactive menu item number, <b>this does not update the embed in any way</b>,
-	 * you can use {@link #get()} with an {@code editOriginal} in order to update the embed on Discord
-	 *
-	 * @param itemIndex Index of the item, from {@code 0} to {@code [the number of menus] - 1}
-	 *
-	 * @return This instance for chaining convenience
-	 */
-	public T setSelectedItem(int itemIndex) {
-		Checks.check(itemIndex >= 0, "Item index cannot be negative");
-		Checks.check(itemIndex < items.size(), "Item index cannot be higher than max items count (%d)", items.size());
+        for (i in items.indices) {
+            val label = items[i].content.label
 
-		this.selectedItem = itemIndex;
-		setMaxPages(items.get(itemIndex).maxPages());
-		setPage(0);
+            if (label == itemLabel) {
+                return setSelectedItem(i)
+            }
+        }
 
-		return (T) this;
-	}
+        throw IllegalArgumentException("Item name '$itemLabel' cannot be found in this interactive menu")
+    }
 
-	/**
-	 * Sets the interactive menu item number, via it's label (O(n) search), <b>this does not update the embed in any way</b>,
-	 * you can use {@link #get()} with an {@link InteractionHook#editOriginal(MessageEditData)} in order to update the embed on Discord
-	 *
-	 * @param itemLabel Label of the item, must be a valid label from any of the interactive menu items
-	 *
-	 * @return This instance for chaining convenience
-	 */
-	public T setSelectedItem(String itemLabel) {
-		Checks.notEmpty(itemLabel, "Item name cannot be empty");
+    override fun get(): MessageEditData {
+        onPreGet()
 
-		for (int i = 0; i < items.size(); i++) {
-			final String label = items.get(i).content().label();
+        if (usePaginator) {
+            putComponents()
+        }
 
-			if (label.equals(itemLabel)) {
-				return setSelectedItem(i);
-			}
-		}
+        components.addComponents(createSelectMenu())
 
-		throw new IllegalArgumentException("Item name '" + itemLabel + "' cannot be found in this interactive menu");
-	}
+        val embed = items[selectedItem].supplier.get(this as T, page, messageBuilder, components)
+        messageBuilder.setEmbeds(embed)
+        messageBuilder.setComponents(components.actionRows)
 
-	@Override
-	public MessageEditData get() {
-		onPreGet();
+        onPostGet()
 
-		if (usePaginator) {
-			putComponents();
-		}
-
-		components.addComponents(createSelectMenu());
-
-		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
-		messageBuilder.setEmbeds(embed);
-		messageBuilder.setComponents(components.getActionRows());
-
-		onPostGet();
-
-		return messageBuilder.build();
-	}
+        return messageBuilder.build()
+    }
 }

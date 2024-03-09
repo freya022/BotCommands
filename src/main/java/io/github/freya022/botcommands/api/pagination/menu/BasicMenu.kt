@@ -32,8 +32,7 @@ abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
     constraints,
     timeout,
     //TODO if we copied from a builder, that builder could always just set the max pages, when in reality, we control it
-    // should we abuse delegates (only on builder tho)?
-    pages.size,
+    pages.size, //TODO abstract property
     supplier,
     hasDeleteButton,
     firstContent,
