@@ -1,5 +1,5 @@
-package io.github.freya022.botcommands.api.pagination.menu;
+package io.github.freya022.botcommands.api.pagination.menu
 
-public interface RowPrefixSupplier {
-	String apply(int entryNum, int maxEntries);
+fun interface RowPrefixSupplier {
+    fun apply(entryNum: Int, maxEntries: Int): String
 }

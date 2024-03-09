@@ -1,8 +1,5 @@
-package io.github.freya022.botcommands.api.pagination.transformer;
+package io.github.freya022.botcommands.api.pagination.transformer
 
-public class StringTransformer implements EntryTransformer<Object> {
-	@Override
-	public String toString(Object o) {
-		return o.toString();
-	}
+class StringTransformer : EntryTransformer<Any> {
+    override fun toString(entry: Any): String = entry.toString()
 }

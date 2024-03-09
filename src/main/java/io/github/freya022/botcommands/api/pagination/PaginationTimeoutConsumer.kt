@@ -1,9 +1,7 @@
-package io.github.freya022.botcommands.api.pagination;
+package io.github.freya022.botcommands.api.pagination
 
-import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.dv8tion.jda.api.entities.Message
 
-public interface PaginationTimeoutConsumer<T extends BasicPagination<T>> {
-	void accept(@NotNull T paginator, @Nullable Message message);
+fun interface PaginationTimeoutConsumer<T : BasicPagination<T>> {
+    fun accept(paginator: T, message: Message?)
 }
