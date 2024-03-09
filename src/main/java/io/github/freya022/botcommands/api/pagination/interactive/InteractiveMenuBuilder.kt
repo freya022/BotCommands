@@ -1,25 +1,29 @@
-package io.github.freya022.botcommands.api.pagination.interactive;
+package io.github.freya022.botcommands.api.pagination.interactive
 
-import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
 
 /**
- * Builds an {@link InteractiveMenu}
+ * Builds an [InteractiveMenu]
  */
-public final class InteractiveMenuBuilder extends BasicInteractiveMenuBuilder<InteractiveMenuBuilder, InteractiveMenu> {
-	public InteractiveMenuBuilder(@NotNull Components componentsService) {
-		super(componentsService);
-	}
+class InteractiveMenuBuilder internal constructor(
+    componentsService: Components
+) : BasicInteractiveMenuBuilder<InteractiveMenuBuilder, InteractiveMenu>(componentsService) {
+    override fun build(): InteractiveMenu = InteractiveMenu(
+        componentsService,
+        constraints,
+        timeout,
+        hasDeleteButton,
+        firstContent,
+        previousContent,
+        nextContent,
+        lastContent,
+        deleteContent,
+        items,
+        usePaginator
+    )
 
-	@Override
-	@NotNull
-	public InteractiveMenu build() {
-		return new InteractiveMenu(componentsService, constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
-	}
-
-	@Override
-	public InteractiveMenuBuilder setPaginatorSupplier(@NotNull PaginatorSupplier<InteractiveMenu> paginatorSupplier) {
-		throw new IllegalStateException("Interactive menu builder cannot have a PaginatorSupplier");
-	}
+    override fun setPaginatorSupplier(paginatorSupplier: PaginatorSupplier<InteractiveMenu>): Nothing {
+        throw IllegalStateException("Interactive menu builder cannot have a PaginatorSupplier")
+    }
 }

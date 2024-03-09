@@ -32,7 +32,7 @@ class ChoiceMenu<E> internal constructor(
     deleteContent: ButtonContent,
     entries: List<E>,
     maxEntriesPerPage: Int,
-    transformer: EntryTransformer<in E>,
+    transformer: EntryTransformer<E>,
     rowPrefixSupplier: RowPrefixSupplier,
     supplier: PaginatorSupplier<ChoiceMenu<E>>?,
     buttonContentSupplier: ButtonContentSupplier<E>,

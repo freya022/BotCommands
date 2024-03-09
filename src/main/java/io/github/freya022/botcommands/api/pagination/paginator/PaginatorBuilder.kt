@@ -1,27 +1,32 @@
-package io.github.freya022.botcommands.api.pagination.paginator;
+package io.github.freya022.botcommands.api.pagination.paginator
 
-import io.github.freya022.botcommands.api.components.Components;
-import org.jetbrains.annotations.NotNull;
+import io.github.freya022.botcommands.api.components.Components
 
 /**
- * Builds a {@link Paginator}
+ * Builds a [Paginator]
  */
-public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Paginator> {
-	private int maxPages;
+class PaginatorBuilder internal constructor(
+    componentsService: Components
+) : BasicPaginatorBuilder<PaginatorBuilder, Paginator>(componentsService) {
+    var maxPages = 0
+        private set
 
-	public PaginatorBuilder(@NotNull Components componentsService) {
-		super(componentsService);
-	}
+    fun setMaxPages(maxPages: Int): PaginatorBuilder = config {
+        check(maxPages > 0) { "Max pages must be > 0" }
+        this.maxPages = maxPages
+    }
 
-	public PaginatorBuilder setMaxPages(int maxPages) {
-		this.maxPages = maxPages;
-
-		return this;
-	}
-
-	@Override
-	@NotNull
-	public Paginator build() {
-		return new Paginator(componentsService, constraints, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
-	}
+    override fun build(): Paginator = Paginator(
+        componentsService,
+        constraints,
+        timeout,
+        maxPages,
+        paginatorSupplier,
+        hasDeleteButton,
+        firstContent,
+        previousContent,
+        nextContent,
+        lastContent,
+        deleteContent
+    )
 }
