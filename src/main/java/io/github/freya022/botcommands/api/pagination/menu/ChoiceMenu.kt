@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.pagination.menu
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.pagination.ButtonContentSupplier
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
 import io.github.freya022.botcommands.api.pagination.TimeoutInfo
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.pagination
+package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
  * @see ButtonContent.withString
  * @see ButtonContent.withEmoji
  */
-//TODO move to menu package
 fun interface ButtonContentSupplier<T> {
     /**
      * Returns a [ButtonContent] based on the given item and the current page number of the paginator

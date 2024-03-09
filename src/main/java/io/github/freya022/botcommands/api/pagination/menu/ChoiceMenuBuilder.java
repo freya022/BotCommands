@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.menu;
 
 import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.pagination.ButtonContentSupplier;
 import io.github.freya022.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
