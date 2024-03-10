@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.pagination.PageEditor
-import io.github.freya022.botcommands.api.pagination.PaginatorComponents
 import io.github.freya022.botcommands.api.pagination.menu.Menu
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder

@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.api.pagination
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
-import io.github.freya022.botcommands.api.core.Logging.getLogger
 import io.github.freya022.botcommands.api.core.utils.toEditData
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
@@ -13,7 +13,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 
-private val LOGGER = getLogger()
 private val TIMEOUT_SERVICE: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
 /**
@@ -30,7 +29,15 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
 
     //TODO nullable
     private lateinit var timeoutFuture: ScheduledFuture<*>
-    private var message: Message? = null
+
+    /**
+     * The [Message] associated to this paginator
+     *
+     * You can optionally set this after sending the message in a channel.
+     *
+     * For interactions, you should rather use your [InteractionHook].
+     */
+    var message: Message? = null
 
     private var timeoutPassed = false
 
@@ -64,21 +71,6 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
     }
 
     /**
-     * Sets the [Message] associated to this paginator
-     *
-     * This is an optional operation and will only provide the [Message] object through the [PaginationTimeoutConsumer] you have set in your paginator builder
-     *
-     * **This message instance is not updated, this should only help you get the message's ID and not what's inside it**
-     *
-     * @param message The [Message] object associated to this paginator
-     * @see BasicPaginationBuilder.setTimeout
-     */
-    //TODO move to property setter, enable getter
-    fun setMessage(message: Message) {
-        this.message = message
-    }
-
-    /**
      * Restarts the timeout of this pagination instance
      *
      * This means the timeout will be scheduled again, as if you called [.get], but without changing the actual content
@@ -96,7 +88,7 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
             // Also don't want to do an abstract T getThis()
             timeoutFuture = TIMEOUT_SERVICE.schedule({
                 timeoutPassed = true
-                timeout.onTimeout.accept(this as T, message)
+                timeout.onTimeout.accept(this as T)
             }, timeout.timeout, timeout.unit)
         }
     }

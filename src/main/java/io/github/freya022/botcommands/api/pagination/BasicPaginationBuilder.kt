@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.concurrent.TimeUnit
 
@@ -31,14 +30,10 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
     /**
      * Sets the timeout for this pagination instance
      *
-     * **On timeout, only the consumer is called, no message are deleted, and it is up to you to clean up components with [BasicPagination.cleanup]**
+     * On timeout, only the consumer is called, no messages are deleted,
+     * and it is up to you to clean up components with [BasicPagination.cleanup].
      *
-     * How to manipulate the message on timeout, for example, you want to delete the message, or replace its content:
-     *
-     * - For application commands: You can use the [Interaction hook][IDeferrableCallback.getHook] of application event
-     * - For text commands: You can use [BasicPagination.setMessage] when the message has been sent successfully, so in your queue success consumer,
-     * you will then receive that same message in the [PaginationTimeoutConsumer] you have set
-     *
+     * See [BasicPagination.message] to get the message in the timeout consumer
      *
      * @param timeout     Amount of time before the timeout occurs
      * @param timeoutUnit Unit of time for the supplied timeout
