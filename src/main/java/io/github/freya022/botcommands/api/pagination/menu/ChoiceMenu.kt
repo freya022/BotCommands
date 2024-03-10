@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.pagination.transformer.EntryTransforme
 import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.internal.utils.Checks
 
 /**
  * Paginator where pages are made from a list of entries, also adds buttons to choose an entry.
@@ -35,8 +34,8 @@ class ChoiceMenu<E> internal constructor(
     transformer: EntryTransformer<E>,
     rowPrefixSupplier: RowPrefixSupplier,
     supplier: PaginatorSupplier<ChoiceMenu<E>>?,
-    buttonContentSupplier: ButtonContentSupplier<E>,
-    callback: ChoiceCallback<E>
+    private val buttonContentSupplier: ButtonContentSupplier<E>,
+    private val callback: ChoiceCallback<E>
 ) : BasicMenu<E, ChoiceMenu<E>>(
     componentsService,
     constraints,
@@ -50,17 +49,6 @@ class ChoiceMenu<E> internal constructor(
     makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
     supplier
 ) {
-    private val buttonContentSupplier: ButtonContentSupplier<E>
-    private val callback: ChoiceCallback<E>
-
-    init {
-        Checks.notNull(buttonContentSupplier, "Button content supplier")
-        Checks.notNull(callback, "Callback")
-
-        this.buttonContentSupplier = buttonContentSupplier
-        this.callback = callback
-    }
-
     override fun putComponents() {
         super.putComponents()
 

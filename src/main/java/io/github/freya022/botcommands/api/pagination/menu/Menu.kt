@@ -28,7 +28,7 @@ class Menu<E> internal constructor(
     deleteContent: ButtonContent,
     entries: List<E>,
     maxEntriesPerPage: Int,
-    transformer: EntryTransformer<in E>,
+    transformer: EntryTransformer<E>,
     rowPrefixSupplier: RowPrefixSupplier?,
     supplier: PaginatorSupplier<Menu<E>>?
 ) : BasicMenu<E, Menu<E>>(
