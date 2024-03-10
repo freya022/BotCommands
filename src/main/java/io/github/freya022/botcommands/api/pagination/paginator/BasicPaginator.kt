@@ -3,12 +3,10 @@ package io.github.freya022.botcommands.api.pagination.paginator
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.pagination.BasicPagination
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.utils.messages.MessageEditData
-import kotlin.math.max
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**
  * @param T Type of the implementor
@@ -17,12 +15,11 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     componentsService: Components,
     builder: BasicPaginatorBuilder<*, T>
 ) : BasicPagination<T>(componentsService, builder) {
-    protected val supplier: PaginatorSupplier<T>? = builder.paginatorSupplier
-
     abstract var maxPages: Int
         protected set
+
     /**
-     * The page number, after changing this value, you can update the message with the new content from [get].
+     * The page number, after changing this value, you can update the message with the new content from [getCurrentMessage].
      *
      * The page must be between `0` and [`maxPages - 1`][maxPages]
      */
@@ -50,15 +47,15 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
         firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.firstContent)
             .bindTo { e: ButtonEvent ->
                 page = 0
-                e.editMessage(get()).queue()
+                e.editMessage(getCurrentMessage()).queue()
             }
             .constraints(constraints)
             .build()
 
         previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.previousContent)
             .bindTo { e: ButtonEvent ->
-                page = max(0.0, (page - 1).toDouble()).toInt()
-                e.editMessage(get()).queue()
+                page = (page - 1).coerceAtLeast(0)
+                e.editMessage(getCurrentMessage()).queue()
             }
             .constraints(constraints)
             .build()
@@ -66,7 +63,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
         nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.nextContent)
             .bindTo { e: ButtonEvent ->
                 page = (page + 1).coerceAtMost(maxPages - 1)
-                e.editMessage(get()).queue()
+                e.editMessage(getCurrentMessage()).queue()
             }
             .constraints(constraints)
             .build()
@@ -74,7 +71,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
         lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.lastContent)
             .bindTo { e: ButtonEvent ->
                 page = maxPages - 1
-                e.editMessage(get()).queue()
+                e.editMessage(getCurrentMessage()).queue()
             }
             .constraints(constraints)
             .build()
@@ -100,28 +97,11 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
         cleanup()
     }
 
-    override fun get(): MessageEditData {
-        onPreGet()
-
-        putComponents()
-
-        val embed = getEmbed()
-
-        messageBuilder.setEmbeds(embed)
-
-        val rows = components.actionRows
-        messageBuilder.setComponents(rows)
-
-        onPostGet()
-
-        return messageBuilder.build()
+    override fun writeMessage(builder: MessageCreateBuilder) {
+        putComponents(builder)
     }
 
-    protected open fun getEmbed(): MessageEmbed =
-        //TODO sussy
-        supplier!!.get(this as T, messageBuilder, components, page)
-
-    protected open fun putComponents() {
+    protected open fun putComponents(builder: MessageCreateBuilder) {
         if (isFirstPage) {
             previousButton = previousButton.asDisabled()
             firstButton = firstButton.asDisabled()
@@ -138,21 +118,12 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
             lastButton = lastButton.asEnabled()
         }
 
-        if (deleteButton != null) {
-            components.addComponents(
-                firstButton,
-                previousButton,
-                nextButton,
-                lastButton,
-                deleteButton
-            )
+        val deleteButton = deleteButton
+        val row = if (deleteButton != null) {
+            ActionRow.of(firstButton, previousButton, nextButton, lastButton, deleteButton)
         } else {
-            components.addComponents(
-                firstButton,
-                previousButton,
-                nextButton,
-                lastButton
-            )
+            ActionRow.of(firstButton, previousButton, nextButton, lastButton)
         }
+        builder.addComponents(row)
     }
 }

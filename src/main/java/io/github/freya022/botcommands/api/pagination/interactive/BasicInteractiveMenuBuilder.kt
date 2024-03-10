@@ -27,7 +27,7 @@ abstract class BasicInteractiveMenuBuilder<T : BasicInteractiveMenuBuilder<T, R>
      *
      * @see SelectContent.of
      */
-    fun addMenu(content: SelectContent, maxPages: Int, supplier: InteractiveMenuSupplier<R>): T = config {
+    fun addMenu(content: SelectContent, maxPages: Int, supplier: InteractiveMenuPageEditor<R>): T = config {
         items.add(InteractiveMenuItem(content, maxPages, supplier))
     }
 

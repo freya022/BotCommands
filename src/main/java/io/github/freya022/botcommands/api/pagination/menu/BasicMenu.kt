@@ -1,10 +1,12 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
 import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
@@ -19,19 +21,20 @@ abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
     componentsService,
     builder
 ) {
+    private val editor: PageEditor<T>? = builder.pageEditor
+
     override var maxPages: Int = pages.size
 
-    override fun getEmbed(): MessageEmbed {
-        val builder = when {
-            supplier != null -> EmbedBuilder(supplier.get(this as T, messageBuilder, components, page))
-            else -> EmbedBuilder()
-        }
+    override fun writeMessage(builder: MessageCreateBuilder) {
+        super.writeMessage(builder)
 
         val menuPage = pages[page]!!
+        val embedBuilder = EmbedBuilder()
+        embedBuilder.setDescription(menuPage.content)
+        @Suppress("UNCHECKED_CAST")
+        editor?.accept(this as T, builder, embedBuilder, page)
 
-        builder.appendDescription(menuPage.content)
-
-        return builder.build()
+        builder.setEmbeds(embedBuilder.build())
     }
 
     companion object {

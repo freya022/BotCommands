@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
 import io.github.freya022.botcommands.api.pagination.transformer.StringTransformer
@@ -19,6 +20,9 @@ abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<
     componentsService: Components,
     val entries: List<E>
 ) : BasicPaginatorBuilder<T, R>(componentsService) {
+    var pageEditor: PageEditor<R>? = null
+        private set
+
     var maxEntriesPerPage: Int = 5
         private set
 
@@ -31,6 +35,11 @@ abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<
         "`" + " ".repeat(spaces) + entryNum + ".` "
     }
         private set
+
+    fun setPageEditor(pageEditor: PageEditor<R>): T = config {
+        this.pageEditor = pageEditor
+    }
+
     /**
      * Sets the maximum number of entries per page
      * **This does not mean there will be X entries per page** but rather it will try to fit 5 entries maximum per page, if some text is too long it'll cut down the number of entries

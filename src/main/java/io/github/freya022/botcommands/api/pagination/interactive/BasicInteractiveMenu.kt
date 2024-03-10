@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.utils.messages.MessageEditData
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import okhttp3.internal.toImmutableList
 
@@ -60,8 +60,7 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
 
     private fun onItemSelected(event: StringSelectEvent) {
         selectedItem = event.values[0].toInt()
-
-        event.editMessage(get()).queue()
+        event.editMessage(getCurrentMessage()).queue()
     }
 
     /**
@@ -105,21 +104,18 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
         throw IllegalArgumentException("Item name '$itemLabel' cannot be found in this interactive menu")
     }
 
-    override fun get(): MessageEditData {
-        onPreGet()
+    override fun writeMessage(builder: MessageCreateBuilder) {
+        super.writeMessage(builder)
 
+        @Suppress("UNCHECKED_CAST")
+        items[selectedItem].supplier.accept(this as T, builder, page)
+    }
+
+    override fun putComponents(builder: MessageCreateBuilder) {
         if (usePaginator) {
-            putComponents()
+            super.putComponents(builder)
         }
 
-        components.addComponents(createSelectMenu())
-
-        val embed = items[selectedItem].supplier.get(this as T, page, messageBuilder, components)
-        messageBuilder.setEmbeds(embed)
-        messageBuilder.setComponents(components.actionRows)
-
-        onPostGet()
-
-        return messageBuilder.build()
+        builder.addActionRow(createSelectMenu())
     }
 }

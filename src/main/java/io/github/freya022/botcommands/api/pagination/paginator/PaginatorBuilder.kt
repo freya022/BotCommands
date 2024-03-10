@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.pagination.PageEditor
 
 /**
  * Builds a [Paginator]
  */
 class PaginatorBuilder internal constructor(
-    componentsService: Components
+    componentsService: Components,
+    val pageEditor: PageEditor<Paginator>
 ) : BasicPaginatorBuilder<PaginatorBuilder, Paginator>(componentsService) {
     var maxPages = 0
         private set(value) {

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.pagination.paginator
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.pagination.BasicPagination
 import io.github.freya022.botcommands.api.pagination.BasicPaginationBuilder
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
@@ -15,9 +14,6 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
 abstract class BasicPaginatorBuilder<T : BasicPaginationBuilder<T, R>, R : BasicPagination<R>>(
     componentsService: Components
 ) : BasicPaginationBuilder<T, R>(componentsService) {
-    var paginatorSupplier: PaginatorSupplier<R>? = null
-        private set
-
     var firstContent: ButtonContent = DEFAULT_FIRST_CONTENT
         private set
     var previousContent: ButtonContent = DEFAULT_PREVIOUS_CONTENT
@@ -31,19 +27,6 @@ abstract class BasicPaginatorBuilder<T : BasicPaginationBuilder<T, R>, R : Basic
 
     var hasDeleteButton: Boolean = false
         private set
-
-    /**
-     * Sets the [PaginatorSupplier] for this paginator
-     *
-     * This is what supplies the pages dynamically for this paginator
-     *
-     * @param paginatorSupplier The [PaginatorSupplier] for this paginator
-     *
-     * @return This builder for chaining convenience
-     */
-    open fun setPaginatorSupplier(paginatorSupplier: PaginatorSupplier<R>): T = config {
-        this.paginatorSupplier = paginatorSupplier
-    }
 
     /**
      * Specifies whether this paginator should have a delete button.
