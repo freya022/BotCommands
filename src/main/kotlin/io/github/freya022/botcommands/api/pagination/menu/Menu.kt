@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 
 /**
@@ -12,10 +12,10 @@ import io.github.freya022.botcommands.api.pagination.paginator.Paginator
  * @see ChoiceMenu
  */
 class Menu<E> internal constructor(
-    componentsService: Components,
+    context: BContext,
     builder: MenuBuilder<E>
 ) : BasicMenu<E, Menu<E>>(
-    componentsService,
+    context,
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 )

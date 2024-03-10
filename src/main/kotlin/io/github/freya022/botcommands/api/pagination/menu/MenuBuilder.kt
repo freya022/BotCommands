@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 
 /**
  * Builds a [Menu]
@@ -8,8 +8,8 @@ import io.github.freya022.botcommands.api.components.Components
  * @param E Type of the entries
  */
 class MenuBuilder<E>(
-    componentsService: Components,
+    context: BContext,
     entries: List<E>
-) : BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>>(componentsService, entries) {
-    override fun build(): Menu<E> = Menu(componentsService, this)
+) : BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>>(context, entries) {
+    override fun build(): Menu<E> = Menu(context, this)
 }

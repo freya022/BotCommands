@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.menu.Menu
 import net.dv8tion.jda.api.EmbedBuilder
@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
  * @see Menu
  */
 class Paginator internal constructor(
-    componentsService: Components,
+    context: BContext,
     builder: PaginatorBuilder
 ) : BasicPaginator<Paginator>(
-    componentsService,
+    context,
     builder
 ) {
     private val editor: PageEditor<Paginator> = builder.pageEditor

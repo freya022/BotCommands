@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.interactive
 
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
@@ -14,10 +14,10 @@ import okhttp3.internal.toImmutableList
  * @param T Type of the implementor
  */
 abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected constructor(
-    componentsService: Components,
+    context: BContext,
     builder: BasicInteractiveMenuBuilder<*, T>
 ) : BasicPaginator<T>(
-    componentsService,
+    context,
     builder
 ) {
     protected val items: List<InteractiveMenuItem<T>> = builder.items.toImmutableList()
@@ -79,6 +79,7 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
         maxPages = items[itemIndex].maxPages
         page = 0
 
+        @Suppress("UNCHECKED_CAST")
         return this as T
     }
 

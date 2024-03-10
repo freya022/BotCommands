@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
@@ -17,9 +17,9 @@ import kotlin.math.log10
  * @param R Type of the built pagination
  */
 abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<E, R>> protected constructor(
-    componentsService: Components,
+    context: BContext,
     val entries: List<E>
-) : BasicPaginatorBuilder<T, R>(componentsService) {
+) : BasicPaginatorBuilder<T, R>(context) {
     var pageEditor: PageEditor<R>? = null
         private set
 

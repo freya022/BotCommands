@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.pagination
 
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
@@ -15,7 +15,7 @@ import java.time.Duration as JavaDuration
  * @param R Type of the built pagination
  */
 abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : BasicPagination<R>> protected constructor(
-    protected val componentsService: Components
+    protected val context: BContext
 ) {
     @Suppress("UNCHECKED_CAST")
     protected val instance: T get() = this as T

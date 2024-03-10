@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -15,10 +15,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
  * @see Menu
  */
 class ChoiceMenu<E> internal constructor(
-    componentsService: Components,
+    context: BContext,
     builder: ChoiceMenuBuilder<E>
 ) : BasicMenu<E, ChoiceMenu<E>>(
-    componentsService,
+    context,
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 ) {

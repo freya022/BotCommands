@@ -2,33 +2,39 @@ package io.github.freya022.botcommands.api.pagination
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.toEditData
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
+import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledFuture
-
-private val TIMEOUT_SERVICE: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
 /**
  * @param T Type of the implementor
  */
 abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
-    protected val componentsService: Components,
+    val context: BContext,
     builder: BasicPaginatorBuilder<*, T>
 ) {
+    protected val componentsService: Components = context.getService()
+    protected val paginationTimeoutScope: CoroutineScope
+        get() = context.coroutineScopesConfig.paginationTimeoutScope
+
     protected val constraints: InteractionConstraints = builder.constraints
     protected val timeout: TimeoutInfo<T>? = builder.timeout
 
     private val usedIds: MutableSet<String> = hashSetOf()
 
-    //TODO nullable
-    private lateinit var timeoutFuture: ScheduledFuture<*>
+    private lateinit var timeoutJob: Job
+    private var timeoutPassed = false
 
     /**
      * The [Message] associated to this paginator
@@ -38,8 +44,6 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
      * For interactions, you should rather use your [InteractionHook].
      */
     var message: Message? = null
-
-    private var timeoutPassed = false
 
     /**
      * Returns the message data that represents the current state of this pagination.
@@ -77,20 +81,25 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
      */
     open fun restartTimeout() {
         if (timeout != null) {
-            check(!timeoutPassed) {
-                "Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: ${timeout.onTimeout.javaClass.nestHost}"
+            if (::timeoutJob.isInitialized) {
+                // The job cannot be rescheduled if the timeout handler has run
+                check(!timeoutPassed) {
+                    "Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: ${timeout.onTimeout.javaClass.nestHost}"
+                }
+
+                timeoutJob.cancel()
             }
 
-            if (::timeoutFuture.isInitialized)
-                timeoutFuture.cancel(false)
-
-            //Can't supply instance on by calling super constructor
-            // Also don't want to do an abstract T getThis()
-            timeoutFuture = TIMEOUT_SERVICE.schedule({
+            timeoutJob = paginationTimeoutScope.launchCatchingDelayed(timeout.timeout, { onTimeoutHandlerException(it) }) {
                 timeoutPassed = true
-                timeout.onTimeout.accept(this as T)
-            }, timeout.timeout, timeout.unit)
+                @Suppress("UNCHECKED_CAST")
+                timeout.onTimeout(this as T)
+            }
         }
+    }
+
+    private fun onTimeoutHandlerException(e: Throwable) {
+        ExceptionHandler(context, KotlinLogging.logger { }).handleException(null, e, "timeout handler", emptyMap())
     }
 
     protected open fun preProcess(builder: MessageCreateBuilder) { }
@@ -114,9 +123,9 @@ abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
      *
      * The timeout will be enabled back if the page changes
      */
-    fun cancelTimeout() {
-        if (::timeoutFuture.isInitialized) {
-            timeoutFuture.cancel(false)
+    open fun cancelTimeout() {
+        if (::timeoutJob.isInitialized) {
+            timeoutJob.cancel()
         }
     }
 

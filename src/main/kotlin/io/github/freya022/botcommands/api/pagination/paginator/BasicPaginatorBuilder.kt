@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.BasicPagination
 import io.github.freya022.botcommands.api.pagination.BasicPaginationBuilder
 import io.github.freya022.botcommands.api.utils.ButtonContent
@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
  * @param R Type of the built pagination
  */
 abstract class BasicPaginatorBuilder<T : BasicPaginationBuilder<T, R>, R : BasicPagination<R>>(
-    componentsService: Components
-) : BasicPaginationBuilder<T, R>(componentsService) {
+    context: BContext
+) : BasicPaginationBuilder<T, R>(context) {
     var firstContent: ButtonContent = DEFAULT_FIRST_CONTENT
         private set
     var previousContent: ButtonContent = DEFAULT_PREVIOUS_CONTENT

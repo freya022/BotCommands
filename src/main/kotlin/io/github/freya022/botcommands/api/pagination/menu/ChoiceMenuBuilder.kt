@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
@@ -11,9 +11,9 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
  * @param E Type of the entries
  */
 class ChoiceMenuBuilder<E>(
-    componentsService: Components,
+    context: BContext,
     entries: List<E>
-) : BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>>(componentsService, entries) {
+) : BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>>(context, entries) {
     lateinit var callback: ChoiceCallback<E>
         private set
     lateinit var buttonContentSupplier: ButtonContentSupplier<E>
@@ -48,8 +48,5 @@ class ChoiceMenuBuilder<E>(
         this.buttonContentSupplier = buttonContentSupplier
     }
 
-    override fun build(): ChoiceMenu<E> = ChoiceMenu(
-        componentsService,
-        this
-    )
+    override fun build(): ChoiceMenu<E> = ChoiceMenu(context, this)
 }
