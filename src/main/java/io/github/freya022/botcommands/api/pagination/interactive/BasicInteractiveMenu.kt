@@ -35,7 +35,6 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
     componentsService,
     constraints,
     timeout,
-    0,
     PaginatorSupplier { _, _, _, _ -> EmbedBuilder().build() },
     hasDeleteButton,
     firstContent,
@@ -44,6 +43,8 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
     lastContent,
     deleteContent
 ) {
+    override var maxPages: Int = 0
+
     var selectedItem: Int = 0
         protected set
     val selectedItemContent: SelectContent

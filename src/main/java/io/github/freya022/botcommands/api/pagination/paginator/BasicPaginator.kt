@@ -20,7 +20,6 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     componentsService: Components,
     constraints: InteractionConstraints,
     timeout: TimeoutInfo<T>?,
-    maxPages: Int,
     @JvmField
     protected val supplier: PaginatorSupplier<T>?,
     hasDeleteButton: Boolean,
@@ -30,7 +29,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     lastContent: ButtonContent,
     deleteContent: ButtonContent
 ) : BasicPagination<T>(componentsService, constraints, timeout) {
-    var maxPages: Int = maxPages
+    abstract var maxPages: Int
         protected set
     /**
      * The page number, after changing this value, you can update the message with the new content from [get].

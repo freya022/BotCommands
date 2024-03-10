@@ -31,8 +31,6 @@ abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
     componentsService,
     constraints,
     timeout,
-    //TODO if we copied from a builder, that builder could always just set the max pages, when in reality, we control it
-    pages.size, //TODO abstract property
     supplier,
     hasDeleteButton,
     firstContent,
@@ -41,6 +39,8 @@ abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
     lastContent,
     deleteContent
 ) {
+    override var maxPages: Int = pages.size
+
     override fun getEmbed(): MessageEmbed {
         val builder = when {
             supplier != null -> EmbedBuilder(supplier.get(this as T, messageBuilder, components, page))
