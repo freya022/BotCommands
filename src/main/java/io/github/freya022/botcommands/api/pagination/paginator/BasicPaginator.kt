@@ -20,7 +20,6 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     componentsService: Components,
     constraints: InteractionConstraints,
     timeout: TimeoutInfo<T>?,
-    @JvmField
     protected val supplier: PaginatorSupplier<T>?,
     hasDeleteButton: Boolean,
     firstContent: ButtonContent,

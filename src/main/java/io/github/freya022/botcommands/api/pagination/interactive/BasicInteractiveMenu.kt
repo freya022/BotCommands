@@ -27,9 +27,7 @@ abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected const
     nextContent: ButtonContent,
     lastContent: ButtonContent,
     deleteContent: ButtonContent,
-    @JvmField
     protected val items: List<InteractiveMenuItem<T>>,
-    @JvmField
     protected val usePaginator: Boolean
 ) : BasicPaginator<T>(
     componentsService,

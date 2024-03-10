@@ -19,16 +19,11 @@ private val TIMEOUT_SERVICE: ScheduledExecutorService = Executors.newSingleThrea
  * @param T Type of the implementor
  */
 abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
-    @JvmField
     protected val componentsService: Components,
-    @JvmField
     protected val constraints: InteractionConstraints,
-    @JvmField
     protected val timeout: TimeoutInfo<T>?
 ) {
-    @JvmField
     protected val messageBuilder: MessageEditBuilder = MessageEditBuilder()
-    @JvmField
     protected val components: PaginatorComponents = PaginatorComponents()
 
     private val usedIds: MutableSet<String> = HashSet()
