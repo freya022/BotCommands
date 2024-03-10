@@ -1,12 +1,8 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
 import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.internal.utils.Checks
@@ -17,27 +13,11 @@ import net.dv8tion.jda.internal.utils.Checks
  */
 abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
     componentsService: Components,
-    constraints: InteractionConstraints,
-    timeout: TimeoutInfo<T>?,
-    hasDeleteButton: Boolean,
-    firstContent: ButtonContent,
-    previousContent: ButtonContent,
-    nextContent: ButtonContent,
-    lastContent: ButtonContent,
-    deleteContent: ButtonContent,
-    protected val pages: Map<Int, MenuPage<E>>,
-    supplier: PaginatorSupplier<T>?
+    builder: BasicMenuBuilder<*, *, T>,
+    protected val pages: Map<Int, MenuPage<E>>
 ) : BasicPaginator<T>(
     componentsService,
-    constraints,
-    timeout,
-    supplier,
-    hasDeleteButton,
-    firstContent,
-    previousContent,
-    nextContent,
-    lastContent,
-    deleteContent
+    builder
 ) {
     override var maxPages: Int = pages.size
 
@@ -58,7 +38,7 @@ abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
         @JvmStatic
         protected fun <E> makePages(
             entries: List<E>,
-            transformer: EntryTransformer<in E>,
+            transformer: EntryTransformer<E>,
             rowPrefixSupplier: RowPrefixSupplier,
             maxEntriesPerPage: Int
         ): Map<Int, MenuPage<E>> {

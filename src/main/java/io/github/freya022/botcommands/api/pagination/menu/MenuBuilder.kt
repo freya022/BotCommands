@@ -11,20 +11,5 @@ class MenuBuilder<E>(
     componentsService: Components,
     entries: List<E>
 ) : BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>>(componentsService, entries) {
-    override fun build(): Menu<E> = Menu(
-        componentsService,
-        constraints,
-        timeout,
-        hasDeleteButton,
-        firstContent,
-        previousContent,
-        nextContent,
-        lastContent,
-        deleteContent,
-        entries,
-        maxEntriesPerPage,
-        transformer,
-        rowPrefixSupplier,
-        paginatorSupplier
-    )
+    override fun build(): Menu<E> = Menu(componentsService, this)
 }

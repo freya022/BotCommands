@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 abstract class BasicInteractiveMenuBuilder<T : BasicInteractiveMenuBuilder<T, R>, R : BasicInteractiveMenu<R>> protected constructor(
     componentsService: Components
 ) : BasicPaginatorBuilder<T, R>(componentsService) {
-    protected val items: MutableList<InteractiveMenuItem<R>> = ArrayList()
+    val items: MutableList<InteractiveMenuItem<R>> = ArrayList()
     var usePaginator: Boolean = false
         private set
 

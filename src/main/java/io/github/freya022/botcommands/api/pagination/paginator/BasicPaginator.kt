@@ -1,12 +1,9 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.pagination.BasicPagination
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -18,16 +15,10 @@ import kotlin.math.max
  */
 abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     componentsService: Components,
-    constraints: InteractionConstraints,
-    timeout: TimeoutInfo<T>?,
-    protected val supplier: PaginatorSupplier<T>?,
-    hasDeleteButton: Boolean,
-    firstContent: ButtonContent,
-    previousContent: ButtonContent,
-    nextContent: ButtonContent,
-    lastContent: ButtonContent,
-    deleteContent: ButtonContent
-) : BasicPagination<T>(componentsService, constraints, timeout) {
+    builder: BasicPaginatorBuilder<*, T>
+) : BasicPagination<T>(componentsService, builder) {
+    protected val supplier: PaginatorSupplier<T>? = builder.paginatorSupplier
+
     abstract var maxPages: Int
         protected set
     /**
@@ -56,7 +47,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
     private var deleteButton: Button? = null
 
     init {
-        firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent)
+        firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.firstContent)
             .bindTo { e: ButtonEvent ->
                 page = 0
                 e.editMessage(get()).queue()
@@ -64,7 +55,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
             .constraints(constraints)
             .build()
 
-        previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent)
+        previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.previousContent)
             .bindTo { e: ButtonEvent ->
                 page = max(0.0, (page - 1).toDouble()).toInt()
                 e.editMessage(get()).queue()
@@ -72,7 +63,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
             .constraints(constraints)
             .build()
 
-        nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent)
+        nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.nextContent)
             .bindTo { e: ButtonEvent ->
                 page = (page + 1).coerceAtMost(maxPages - 1)
                 e.editMessage(get()).queue()
@@ -80,7 +71,7 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
             .constraints(constraints)
             .build()
 
-        lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent)
+        lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, builder.lastContent)
             .bindTo { e: ButtonEvent ->
                 page = maxPages - 1
                 e.editMessage(get()).queue()
@@ -88,9 +79,9 @@ abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
             .constraints(constraints)
             .build()
 
-        if (hasDeleteButton) {
+        if (builder.hasDeleteButton) {
             //Unique use in the case the message isn't ephemeral
-            this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent)
+            this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, builder.deleteContent)
                 .bindTo(::onDeleteClicked)
                 .constraints(constraints)
                 .oneUse(true)

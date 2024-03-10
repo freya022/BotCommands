@@ -1,12 +1,9 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.pagination.PaginatorComponents
 import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo
 import io.github.freya022.botcommands.api.pagination.menu.Menu
-import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
  * Classic paginator, pages are supplied from [paginator suppliers][PaginatorBuilder.setPaginatorSupplier].
@@ -23,25 +20,10 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
  */
 class Paginator internal constructor(
     componentsService: Components,
-    constraints: InteractionConstraints,
-    timeout: TimeoutInfo<Paginator>?,
-    override var maxPages: Int,
-    supplier: PaginatorSupplier<Paginator>?,
-    hasDeleteButton: Boolean,
-    firstContent: ButtonContent,
-    previousContent: ButtonContent,
-    nextContent: ButtonContent,
-    lastContent: ButtonContent,
-    deleteContent: ButtonContent
+    builder: PaginatorBuilder
 ) : BasicPaginator<Paginator>(
     componentsService,
-    constraints,
-    timeout,
-    supplier,
-    hasDeleteButton,
-    firstContent,
-    previousContent,
-    nextContent,
-    lastContent,
-    deleteContent
-)
+    builder
+) {
+    override var maxPages: Int = builder.maxPages
+}

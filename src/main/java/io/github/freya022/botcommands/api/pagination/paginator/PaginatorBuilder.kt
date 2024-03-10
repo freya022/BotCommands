@@ -9,24 +9,14 @@ class PaginatorBuilder internal constructor(
     componentsService: Components
 ) : BasicPaginatorBuilder<PaginatorBuilder, Paginator>(componentsService) {
     var maxPages = 0
-        private set
+        private set(value) {
+            check(maxPages > 0) { "Max pages must be > 0" }
+            field = value
+        }
 
     fun setMaxPages(maxPages: Int): PaginatorBuilder = config {
-        check(maxPages > 0) { "Max pages must be > 0" }
         this.maxPages = maxPages
     }
 
-    override fun build(): Paginator = Paginator(
-        componentsService,
-        constraints,
-        timeout,
-        maxPages,
-        paginatorSupplier,
-        hasDeleteButton,
-        firstContent,
-        previousContent,
-        nextContent,
-        lastContent,
-        deleteContent
-    )
+    override fun build(): Paginator = Paginator(componentsService, this)
 }

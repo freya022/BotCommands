@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.Logging.getLogger
 import io.github.freya022.botcommands.api.core.utils.toCreateData
+import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
@@ -20,13 +21,15 @@ private val TIMEOUT_SERVICE: ScheduledExecutorService = Executors.newSingleThrea
  */
 abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
     protected val componentsService: Components,
-    protected val constraints: InteractionConstraints,
-    protected val timeout: TimeoutInfo<T>?
+    builder: BasicPaginatorBuilder<*, T>
 ) {
+    protected val constraints: InteractionConstraints = builder.constraints
+    protected val timeout: TimeoutInfo<T>? = builder.timeout
+
     protected val messageBuilder: MessageEditBuilder = MessageEditBuilder()
     protected val components: PaginatorComponents = PaginatorComponents()
 
-    private val usedIds: MutableSet<String> = HashSet()
+    private val usedIds: MutableSet<String> = hashSetOf()
 
     //TODO nullable
     private lateinit var timeoutFuture: ScheduledFuture<*>

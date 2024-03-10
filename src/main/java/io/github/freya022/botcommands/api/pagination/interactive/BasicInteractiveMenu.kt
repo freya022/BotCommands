@@ -1,46 +1,28 @@
 package io.github.freya022.botcommands.api.pagination.interactive
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
-import io.github.freya022.botcommands.api.utils.ButtonContent
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.dv8tion.jda.internal.utils.Checks
+import okhttp3.internal.toImmutableList
 
 /**
  * @param T Type of the implementor
  */
 abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected constructor(
     componentsService: Components,
-    constraints: InteractionConstraints,
-    timeout: TimeoutInfo<T>?,
-    hasDeleteButton: Boolean,
-    firstContent: ButtonContent,
-    previousContent: ButtonContent,
-    nextContent: ButtonContent,
-    lastContent: ButtonContent,
-    deleteContent: ButtonContent,
-    protected val items: List<InteractiveMenuItem<T>>,
-    protected val usePaginator: Boolean
+    builder: BasicInteractiveMenuBuilder<*, T>
 ) : BasicPaginator<T>(
     componentsService,
-    constraints,
-    timeout,
-    PaginatorSupplier { _, _, _, _ -> EmbedBuilder().build() },
-    hasDeleteButton,
-    firstContent,
-    previousContent,
-    nextContent,
-    lastContent,
-    deleteContent
+    builder
 ) {
+    protected val items: List<InteractiveMenuItem<T>> = builder.items.toImmutableList()
+    protected val usePaginator: Boolean = builder.usePaginator
+
     override var maxPages: Int = 0
 
     var selectedItem: Int = 0

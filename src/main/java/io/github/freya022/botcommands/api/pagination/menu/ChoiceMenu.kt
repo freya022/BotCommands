@@ -1,13 +1,8 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.pagination.PaginatorSupplier
-import io.github.freya022.botcommands.api.pagination.TimeoutInfo
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
-import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
@@ -21,34 +16,15 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
  */
 class ChoiceMenu<E> internal constructor(
     componentsService: Components,
-    constraints: InteractionConstraints,
-    timeout: TimeoutInfo<ChoiceMenu<E>>?,
-    hasDeleteButton: Boolean,
-    firstContent: ButtonContent,
-    previousContent: ButtonContent,
-    nextContent: ButtonContent,
-    lastContent: ButtonContent,
-    deleteContent: ButtonContent,
-    entries: List<E>,
-    maxEntriesPerPage: Int,
-    transformer: EntryTransformer<E>,
-    rowPrefixSupplier: RowPrefixSupplier,
-    supplier: PaginatorSupplier<ChoiceMenu<E>>?,
-    private val buttonContentSupplier: ButtonContentSupplier<E>,
-    private val callback: ChoiceCallback<E>
+    builder: ChoiceMenuBuilder<E>
 ) : BasicMenu<E, ChoiceMenu<E>>(
     componentsService,
-    constraints,
-    timeout,
-    hasDeleteButton,
-    firstContent,
-    previousContent,
-    nextContent,
-    lastContent,
-    deleteContent,
-    makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
-    supplier
+    builder,
+    makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 ) {
+    private val buttonContentSupplier: ButtonContentSupplier<E> = builder.buttonContentSupplier
+    private val callback: ChoiceCallback<E> = builder.callback
+
     override fun putComponents() {
         super.putComponents()
 

@@ -17,11 +17,12 @@ import kotlin.math.log10
  */
 abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<E, R>> protected constructor(
     componentsService: Components,
-    protected val entries: List<E>
+    val entries: List<E>
 ) : BasicPaginatorBuilder<T, R>(componentsService) {
     var maxEntriesPerPage: Int = 5
         private set
 
+    @Suppress("UNCHECKED_CAST")
     var transformer: EntryTransformer<E> = StringTransformer() as EntryTransformer<E>
         private set
 
@@ -31,7 +32,7 @@ abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<
     }
         private set
     /**
-     * Sets the maximum number of entries per page<br></br>
+     * Sets the maximum number of entries per page
      * **This does not mean there will be X entries per page** but rather it will try to fit 5 entries maximum per page, if some text is too long it'll cut down the number of entries
      *
      * @param maxEntriesPerPage The maximum amount of entries per page

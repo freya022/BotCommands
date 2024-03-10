@@ -14,8 +14,10 @@ class ChoiceMenuBuilder<E>(
     componentsService: Components,
     entries: List<E>
 ) : BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>>(componentsService, entries) {
-    private lateinit var callback: ChoiceCallback<E>
-    private lateinit var buttonContentSupplier: ButtonContentSupplier<E>
+    lateinit var callback: ChoiceCallback<E>
+        private set
+    lateinit var buttonContentSupplier: ButtonContentSupplier<E>
+        private set
 
     /**
      * Sets the callback for this menu
@@ -48,20 +50,6 @@ class ChoiceMenuBuilder<E>(
 
     override fun build(): ChoiceMenu<E> = ChoiceMenu(
         componentsService,
-        constraints,
-        timeout,
-        hasDeleteButton,
-        firstContent,
-        previousContent,
-        nextContent,
-        lastContent,
-        deleteContent,
-        entries,
-        maxEntriesPerPage,
-        transformer,
-        rowPrefixSupplier,
-        paginatorSupplier,
-        buttonContentSupplier,
-        callback
+        this
     )
 }
