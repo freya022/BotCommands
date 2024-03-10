@@ -4,8 +4,9 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
-import net.dv8tion.jda.internal.utils.Checks
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 /**
  * Most basic pagination builder.
@@ -28,26 +29,42 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
     protected inline fun config(block: () -> Unit): T = instance.apply { block() }
 
     /**
-     * Sets the timeout for this pagination instance
+     * Sets the timeout for this pagination instance.
      *
      * On timeout, only the consumer is called, no messages are deleted,
      * and it is up to you to clean up components with [BasicPagination.cleanup].
      *
      * See [BasicPagination.message] to get the message in the timeout consumer
      *
-     * @param timeout     Amount of time before the timeout occurs
-     * @param timeoutUnit Unit of time for the supplied timeout
+     * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
      *
      * @return This builder for chaining convenience
      */
-    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit, onTimeout: PaginationTimeoutConsumer<R>): T = config {
-        Checks.positive(timeout, "Timeout")
+    fun setTimeout(timeout: JavaDuration, onTimeout: PaginationTimeoutConsumer<R>): T =
+        setTimeout(timeout.toKotlinDuration()) { onTimeout.accept(it) }
 
-        this.timeout = TimeoutInfo(timeout, timeoutUnit, onTimeout)
+    /**
+     * Sets the timeout for this pagination instance.
+     *
+     * On timeout, only the consumer is called, no messages are deleted,
+     * and it is up to you to clean up components with [BasicPagination.cleanup].
+     *
+     * See [BasicPagination.message] to get the message in the timeout consumer
+     *
+     * @param timeout     Duration before the pagination expires
+     * @param onTimeout   The consumer fired on timeout, long operations should not run here
+     *
+     * @return This builder for chaining convenience
+     */
+    @JvmSynthetic
+    fun setTimeout(timeout: Duration, onTimeout: suspend (R) -> Unit): T = config {
+        check(timeout.isFinite() && timeout.isPositive()) {
+            "Timeout must be finite and positive"
+        }
+
+        this.timeout = TimeoutInfo(timeout, onTimeout)
     }
-
-    //TODO timeout overloads, J/K duration
 
     /**
      * Sets the interaction constraints for this pagination object
