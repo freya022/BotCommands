@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.toEditData
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 /**
  * @param T Type of the implementor
  */
-abstract class BasicPagination<T : BasicPagination<T>> protected constructor(
+abstract class AbstractPagination<T : AbstractPagination<T>> protected constructor(
     val context: BContext,
-    builder: BasicPaginatorBuilder<*, T>
+    builder: AbstractPaginatorBuilder<*, T>
 ) {
     protected val componentsService: Components = context.getService()
     protected val paginationTimeoutScope: CoroutineScope

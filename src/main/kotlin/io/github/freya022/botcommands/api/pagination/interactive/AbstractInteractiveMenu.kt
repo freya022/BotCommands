@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.pagination.interactive
 
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
@@ -13,10 +13,10 @@ import okhttp3.internal.toImmutableList
 /**
  * @param T Type of the implementor
  */
-abstract class BasicInteractiveMenu<T : BasicInteractiveMenu<T>> protected constructor(
+abstract class AbstractInteractiveMenu<T : AbstractInteractiveMenu<T>> protected constructor(
     context: BContext,
-    builder: BasicInteractiveMenuBuilder<*, T>
-) : BasicPaginator<T>(
+    builder: AbstractInteractiveMenuBuilder<*, T>
+) : AbstractPaginator<T>(
     context,
     builder
 ) {

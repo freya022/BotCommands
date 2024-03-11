@@ -15,6 +15,6 @@ class ChoiceMenuBuilder<E> internal constructor(
     entries: List<E>,
     val buttonContentSupplier: ButtonContentSupplier<E>,
     val callback: SuspendingChoiceCallback<E>
-) : BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>>(context, entries) {
+) : AbstractMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>>(context, entries) {
     override fun build(): ChoiceMenu<E> = ChoiceMenu(context, this)
 }

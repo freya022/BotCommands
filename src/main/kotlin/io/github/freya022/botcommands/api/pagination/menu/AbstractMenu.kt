@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
 import io.github.freya022.botcommands.api.pagination.menu.transformer.EntryTransformer
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -13,11 +13,11 @@ import net.dv8tion.jda.internal.utils.Checks
  * @param E Type of the menu elements
  * @param T Type of the implementor
  */
-abstract class BasicMenu<E, T : BasicMenu<E, T>> protected constructor(
+abstract class AbstractMenu<E, T : AbstractMenu<E, T>> protected constructor(
     context: BContext,
-    builder: BasicMenuBuilder<*, *, T>,
+    builder: AbstractMenuBuilder<*, *, T>,
     protected val pages: Map<Int, MenuPage<E>>
-) : BasicPaginator<T>(
+) : AbstractPaginator<T>(
     context,
     builder
 ) {

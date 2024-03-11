@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.pagination
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
@@ -14,7 +14,7 @@ import java.time.Duration as JavaDuration
  * @param T Type of the pagination builder
  * @param R Type of the built pagination
  */
-abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : BasicPagination<R>> protected constructor(
+abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R : AbstractPagination<R>> protected constructor(
     protected val context: BContext
 ) {
     @Suppress("UNCHECKED_CAST")
@@ -33,9 +33,9 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
      * Sets the timeout for this pagination instance.
      *
      * On timeout, only the consumer is called, no messages are deleted,
-     * and it is up to you to clean up components with [BasicPagination.cleanup].
+     * and it is up to you to clean up components with [AbstractPagination.cleanup].
      *
-     * See [BasicPagination.message] to get the message in the timeout consumer
+     * See [AbstractPagination.message] to get the message in the timeout consumer
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
@@ -49,9 +49,9 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
      * Sets the timeout for this pagination instance.
      *
      * On timeout, only the consumer is called, no messages are deleted,
-     * and it is up to you to clean up components with [BasicPagination.cleanup].
+     * and it is up to you to clean up components with [AbstractPagination.cleanup].
      *
-     * See [BasicPagination.message] to get the message in the timeout consumer
+     * See [AbstractPagination.message] to get the message in the timeout consumer
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
@@ -70,7 +70,7 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
     /**
      * Sets the interaction constraints for this pagination object
      *
-     * These constraints control who can use this pagination object, including [delete buttons][BasicPaginatorBuilder.useDeleteButton]
+     * These constraints control who can use this pagination object, including [delete buttons][AbstractPaginatorBuilder.useDeleteButton]
      *
      * @param constraints The [InteractionConstraints] for this pagination object
      *

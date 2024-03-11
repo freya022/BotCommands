@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.api.pagination.Paginators
 class InteractiveMenu internal constructor(
     context: BContext,
     builder: InteractiveMenuBuilder
-) : BasicInteractiveMenu<InteractiveMenu>(
+) : AbstractInteractiveMenu<InteractiveMenu>(
     context,
     builder
 )

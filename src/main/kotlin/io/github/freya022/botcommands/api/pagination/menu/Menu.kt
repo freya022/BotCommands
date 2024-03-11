@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.pagination.Paginators
 class Menu<E> internal constructor(
     context: BContext,
     builder: MenuBuilder<E>
-) : BasicMenu<E, Menu<E>>(
+) : AbstractMenu<E, Menu<E>>(
     context,
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)

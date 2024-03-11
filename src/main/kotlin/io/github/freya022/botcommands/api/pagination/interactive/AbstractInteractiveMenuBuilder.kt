@@ -1,16 +1,16 @@
 package io.github.freya022.botcommands.api.pagination.interactive
 
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 
 /**
  * @param T Type of the pagination builder
  * @param R Type of the built pagination
  */
-abstract class BasicInteractiveMenuBuilder<T : BasicInteractiveMenuBuilder<T, R>, R : BasicInteractiveMenu<R>> protected constructor(
+abstract class AbstractInteractiveMenuBuilder<T : AbstractInteractiveMenuBuilder<T, R>, R : AbstractInteractiveMenu<R>> protected constructor(
     context: BContext
-) : BasicPaginatorBuilder<T, R>(context) {
+) : AbstractPaginatorBuilder<T, R>(context) {
     val items: MutableList<InteractiveMenuItem<R>> = ArrayList()
     var usePaginator: Boolean = false
         private set

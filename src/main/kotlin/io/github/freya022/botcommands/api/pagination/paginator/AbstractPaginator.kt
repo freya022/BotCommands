@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.pagination.BasicPagination
+import io.github.freya022.botcommands.api.pagination.AbstractPagination
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -11,10 +11,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 /**
  * @param T Type of the implementor
  */
-abstract class BasicPaginator<T : BasicPaginator<T>> protected constructor(
+abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor(
     context: BContext,
-    builder: BasicPaginatorBuilder<*, T>
-) : BasicPagination<T>(context, builder) {
+    builder: AbstractPaginatorBuilder<*, T>
+) : AbstractPagination<T>(context, builder) {
     abstract var maxPages: Int
         protected set
 

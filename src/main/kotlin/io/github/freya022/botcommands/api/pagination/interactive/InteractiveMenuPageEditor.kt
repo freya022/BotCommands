@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
  *
  * @see accept
  */
-fun interface InteractiveMenuPageEditor<T : BasicInteractiveMenu<T>> {
+fun interface InteractiveMenuPageEditor<T : AbstractInteractiveMenu<T>> {
     /**
      * Edits the page being created.
      *

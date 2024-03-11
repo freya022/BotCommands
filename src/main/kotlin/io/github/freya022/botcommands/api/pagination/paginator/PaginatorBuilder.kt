@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.pagination.Paginators
 class PaginatorBuilder internal constructor(
     context: BContext,
     val pageEditor: PageEditor<Paginator>
-) : BasicPaginatorBuilder<PaginatorBuilder, Paginator>(context) {
+) : AbstractPaginatorBuilder<PaginatorBuilder, Paginator>(context) {
     var maxPages = 0
         private set(value) {
             check(maxPages > 0) { "Max pages must be > 0" }

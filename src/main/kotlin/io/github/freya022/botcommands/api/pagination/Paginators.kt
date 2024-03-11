@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.interactive.InteractiveMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.*
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
 import io.github.freya022.botcommands.api.utils.ButtonContent
@@ -25,7 +25,7 @@ class Paginators(private val context: BContext) {
      * are added to navigate from page to page.
      *
      * In an effort to reduce resource consumption,
-     * you should call [BasicPaginator.cleanup] when the message is deleted.
+     * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     fun paginator(pageEditor: PageEditor<Paginator>): PaginatorBuilder =
         PaginatorBuilder(context, pageEditor)
@@ -33,13 +33,13 @@ class Paginators(private val context: BContext) {
     /**
      * A paginator where each page is filled with a list of entries.
      *
-     * Each page can be limited to [a specified number of entries][BasicMenuBuilder.maxEntriesPerPage].
+     * Each page can be limited to [a specified number of entries][AbstractMenuBuilder.maxEntriesPerPage].
      *
-     * Each entry can have its [prefix][BasicMenuBuilder.rowPrefixSupplier]
-     * and its [string representation][BasicMenuBuilder.transformer] customized.
+     * Each entry can have its [prefix][AbstractMenuBuilder.rowPrefixSupplier]
+     * and its [string representation][AbstractMenuBuilder.transformer] customized.
      *
      * In an effort to reduce resource consumption,
-     * you should call [BasicPaginator.cleanup] when the message is deleted.
+     * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     fun <E> menu(entries: List<E>): MenuBuilder<E> =
         MenuBuilder(context, entries)
@@ -47,16 +47,16 @@ class Paginators(private val context: BContext) {
     /**
      * A paginator where each page is filled with a list of entries.
      *
-     * Each page can be limited to [a specified number of entries][BasicMenuBuilder.maxEntriesPerPage].
+     * Each page can be limited to [a specified number of entries][AbstractMenuBuilder.maxEntriesPerPage].
      *
-     * Each entry can have its [prefix][BasicMenuBuilder.rowPrefixSupplier]
-     * and its [string representation][BasicMenuBuilder.transformer] customized.
+     * Each entry can have its [prefix][AbstractMenuBuilder.rowPrefixSupplier]
+     * and its [string representation][AbstractMenuBuilder.transformer] customized.
      *
      * In addition, each entry is associated to a [Button],
      * when clicked, the [callback][ChoiceMenuBuilder.callback] is run.
      *
      * In an effort to reduce resource consumption,
-     * you should call [BasicPaginator.cleanup] when the message is deleted.
+     * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ChoiceMenuBuilder<E> =
         ChoiceMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
@@ -64,16 +64,16 @@ class Paginators(private val context: BContext) {
     /**
      * A paginator where each page is filled with a list of entries.
      *
-     * Each page can be limited to [a specified number of entries][BasicMenuBuilder.maxEntriesPerPage].
+     * Each page can be limited to [a specified number of entries][AbstractMenuBuilder.maxEntriesPerPage].
      *
-     * Each entry can have its [prefix][BasicMenuBuilder.rowPrefixSupplier]
-     * and its [string representation][BasicMenuBuilder.transformer] customized.
+     * Each entry can have its [prefix][AbstractMenuBuilder.rowPrefixSupplier]
+     * and its [string representation][AbstractMenuBuilder.transformer] customized.
      *
      * In addition, each entry is associated to a [Button],
      * when clicked, the [callback][ChoiceMenuBuilder.callback] is run.
      *
      * In an effort to reduce resource consumption,
-     * you should call [BasicPaginator.cleanup] when the message is deleted.
+     * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     @JvmSynthetic
     fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ChoiceMenuBuilder<E> =

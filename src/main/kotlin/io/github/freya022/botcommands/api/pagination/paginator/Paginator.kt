@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 class Paginator internal constructor(
     context: BContext,
     builder: PaginatorBuilder
-) : BasicPaginator<Paginator>(
+) : AbstractPaginator<Paginator>(
     context,
     builder
 ) {

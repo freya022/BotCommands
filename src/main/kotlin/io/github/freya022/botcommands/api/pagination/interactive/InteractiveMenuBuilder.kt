@@ -10,6 +10,6 @@ import io.github.freya022.botcommands.api.pagination.Paginators
  */
 class InteractiveMenuBuilder internal constructor(
     context: BContext
-) : BasicInteractiveMenuBuilder<InteractiveMenuBuilder, InteractiveMenu>(context) {
+) : AbstractInteractiveMenuBuilder<InteractiveMenuBuilder, InteractiveMenu>(context) {
     override fun build(): InteractiveMenu = InteractiveMenu(context, this)
 }

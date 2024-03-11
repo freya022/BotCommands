@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 class ChoiceMenu<E> internal constructor(
     context: BContext,
     builder: ChoiceMenuBuilder<E>
-) : BasicMenu<E, ChoiceMenu<E>>(
+) : AbstractMenu<E, ChoiceMenu<E>>(
     context,
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)

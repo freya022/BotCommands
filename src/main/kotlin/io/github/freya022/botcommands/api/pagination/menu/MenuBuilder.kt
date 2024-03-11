@@ -13,6 +13,6 @@ import io.github.freya022.botcommands.api.pagination.Paginators
 class MenuBuilder<E> internal constructor(
     context: BContext,
     entries: List<E>
-) : BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>>(context, entries) {
+) : AbstractMenuBuilder<E, MenuBuilder<E>, Menu<E>>(context, entries) {
     override fun build(): Menu<E> = Menu(context, this)
 }

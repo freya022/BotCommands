@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.menu.transformer.EntryTransformer
 import io.github.freya022.botcommands.api.pagination.menu.transformer.StringTransformer
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
@@ -14,10 +14,10 @@ import net.dv8tion.jda.internal.utils.Checks
  * @param T Type of the pagination builder
  * @param R Type of the built pagination
  */
-abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<E, R>> protected constructor(
+abstract class AbstractMenuBuilder<E, T : AbstractMenuBuilder<E, T, R>, R : AbstractMenu<E, R>> protected constructor(
     context: BContext,
     val entries: List<E>
-) : BasicPaginatorBuilder<T, R>(context) {
+) : AbstractPaginatorBuilder<T, R>(context) {
     var pageEditor: PageEditor<R>? = null
         private set
 
