@@ -58,8 +58,25 @@ class Paginators(private val context: BContext) {
      * In an effort to reduce resource consumption,
      * you should call [BasicPaginator.cleanup] when the message is deleted.
      */
-    //TODO suspending supplier and callback
-    fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: ChoiceCallback<E>): ChoiceMenuBuilder<E> =
+    fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ChoiceMenuBuilder<E> =
+        ChoiceMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
+
+    /**
+     * A paginator where each page is filled with a list of entries.
+     *
+     * Each page can be limited to [a specified number of entries][BasicMenuBuilder.maxEntriesPerPage].
+     *
+     * Each entry can have its [prefix][BasicMenuBuilder.rowPrefixSupplier]
+     * and its [string representation][BasicMenuBuilder.transformer] customized.
+     *
+     * In addition, each entry is associated to a [Button],
+     * when clicked, the [callback][ChoiceMenuBuilder.callback] is run.
+     *
+     * In an effort to reduce resource consumption,
+     * you should call [BasicPaginator.cleanup] when the message is deleted.
+     */
+    @JvmSynthetic
+    fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ChoiceMenuBuilder<E> =
         ChoiceMenuBuilder(context, entries, buttonContentSupplier, callback)
 
     fun interactionMenu(): InteractiveMenuBuilder =

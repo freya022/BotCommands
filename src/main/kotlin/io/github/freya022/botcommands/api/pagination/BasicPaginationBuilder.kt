@@ -42,7 +42,7 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
      *
      * @return This builder for chaining convenience
      */
-    fun setTimeout(timeout: JavaDuration, onTimeout: PaginationTimeoutConsumer<R>): T =
+    fun setTimeout(timeout: JavaDuration, onTimeout: BlockingPaginationTimeoutConsumer<R>): T =
         setTimeout(timeout.toKotlinDuration()) { onTimeout.accept(it) }
 
     /**
@@ -59,7 +59,7 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
      * @return This builder for chaining convenience
      */
     @JvmSynthetic
-    fun setTimeout(timeout: Duration, onTimeout: suspend (R) -> Unit): T = config {
+    fun setTimeout(timeout: Duration, onTimeout: SuspendingPaginationTimeoutConsumer<R>): T = config {
         check(timeout.isFinite() && timeout.isPositive()) {
             "Timeout must be finite and positive"
         }

@@ -22,7 +22,7 @@ class ChoiceMenu<E> internal constructor(
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 ) {
     private val buttonContentSupplier: ButtonContentSupplier<E> = builder.buttonContentSupplier
-    private val callback: ChoiceCallback<E> = builder.callback
+    private val callback: SuspendingChoiceCallback<E> = builder.callback
 
     override fun putComponents(builder: MessageCreateBuilder) {
         super.putComponents(builder)
@@ -34,7 +34,7 @@ class ChoiceMenu<E> internal constructor(
                 componentsService.ephemeralButton(ButtonStyle.PRIMARY, content)
                     .bindTo { event: ButtonEvent ->
                         this.cleanup()
-                        callback.accept(event, item)
+                        callback(event, item)
                     }
                     .constraints(constraints)
                     .build()

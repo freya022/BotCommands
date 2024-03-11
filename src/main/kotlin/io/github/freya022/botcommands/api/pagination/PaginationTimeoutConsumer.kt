@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.pagination
 
-fun interface PaginationTimeoutConsumer<T : BasicPagination<T>> {
+typealias SuspendingPaginationTimeoutConsumer<T> = suspend (T) -> Unit
+
+fun interface BlockingPaginationTimeoutConsumer<T : BasicPagination<T>> {
     fun accept(paginator: T)
 }
