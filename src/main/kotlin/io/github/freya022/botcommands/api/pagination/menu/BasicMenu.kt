@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.pagination.menu
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginator
-import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
+import io.github.freya022.botcommands.api.pagination.menu.transformer.EntryTransformer
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder

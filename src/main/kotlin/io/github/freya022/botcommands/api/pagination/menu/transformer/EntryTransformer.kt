@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.pagination.transformer
+package io.github.freya022.botcommands.api.pagination.menu.transformer
 
 /**
  * Interface to transform pagination entries into strings

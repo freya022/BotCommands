@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.pagination.transformer
+package io.github.freya022.botcommands.api.pagination.menu.transformer
 
 import net.dv8tion.jda.api.entities.IMentionable
 

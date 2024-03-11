@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.api.pagination.menu
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
-import io.github.freya022.botcommands.api.pagination.transformer.EntryTransformer
-import io.github.freya022.botcommands.api.pagination.transformer.StringTransformer
+import io.github.freya022.botcommands.api.pagination.menu.transformer.EntryTransformer
+import io.github.freya022.botcommands.api.pagination.menu.transformer.StringTransformer
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.math.floor
 import kotlin.math.log10
