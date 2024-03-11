@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.pagination.paginator
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.BasicPagination
 import io.github.freya022.botcommands.api.pagination.BasicPaginationBuilder
+import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
@@ -14,15 +15,15 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
 abstract class BasicPaginatorBuilder<T : BasicPaginationBuilder<T, R>, R : BasicPagination<R>>(
     context: BContext
 ) : BasicPaginationBuilder<T, R>(context) {
-    var firstContent: ButtonContent = DEFAULT_FIRST_CONTENT
+    var firstContent: ButtonContent = Paginators.Defaults.firstPageButtonContent
         private set
-    var previousContent: ButtonContent = DEFAULT_PREVIOUS_CONTENT
+    var previousContent: ButtonContent = Paginators.Defaults.previousPageButtonContent
         private set
-    var nextContent: ButtonContent = DEFAULT_NEXT_CONTENT
+    var nextContent: ButtonContent = Paginators.Defaults.nextPageButtonContent
         private set
-    var lastContent: ButtonContent = DEFAULT_LAST_CONTENT
+    var lastContent: ButtonContent = Paginators.Defaults.lastPageButtonContent
         private set
-    var deleteContent: ButtonContent = DEFAULT_DELETE_CONTENT
+    var deleteContent: ButtonContent = Paginators.Defaults.deleteButtonContent
         private set
 
     var hasDeleteButton: Boolean = false
@@ -96,19 +97,5 @@ abstract class BasicPaginatorBuilder<T : BasicPaginationBuilder<T, R>, R : Basic
      */
     fun setDeleteContent(deleteContent: ButtonContent): T = config {
         this.deleteContent = deleteContent
-    }
-
-    companion object {
-        // TODO put in PaginatorBuilder
-        @JvmStatic
-        var DEFAULT_FIRST_CONTENT: ButtonContent = ButtonContent.withShortcode("rewind")
-        @JvmStatic
-        var DEFAULT_PREVIOUS_CONTENT: ButtonContent = ButtonContent.withShortcode("arrow_backward")
-        @JvmStatic
-        var DEFAULT_NEXT_CONTENT: ButtonContent = ButtonContent.withShortcode("arrow_forward")
-        @JvmStatic
-        var DEFAULT_LAST_CONTENT: ButtonContent = ButtonContent.withShortcode("fast_forward")
-        @JvmStatic
-        var DEFAULT_DELETE_CONTENT: ButtonContent = ButtonContent.withShortcode("wastebasket")
     }
 }

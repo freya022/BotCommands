@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
-import io.github.freya022.botcommands.api.pagination.menu.Menu
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
@@ -16,8 +15,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
  * **The button IDs used by this paginator and those registered by the [PaginatorComponents] in the [PageEditor] are cleaned up once the embed is removed with the button**
  *
  * When the message is deleted, you would also have to call [cleanup]
- *
- * @see Menu
  */
 class Paginator internal constructor(
     context: BContext,
