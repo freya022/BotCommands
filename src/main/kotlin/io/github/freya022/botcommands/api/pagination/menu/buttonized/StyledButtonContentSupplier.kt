@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
  * @see ButtonContent.withString
  * @see ButtonContent.withEmoji
  */
-fun interface ButtonContentSupplier<T> {
+fun interface StyledButtonContentSupplier<T> {
     /**
      * Returns a [ButtonContent] based on the given item and the current page number of the paginator
      *
@@ -19,5 +19,5 @@ fun interface ButtonContentSupplier<T> {
      * @param index The index of this item on the current page number of the paginator
      * @return The [ButtonContent] of this item
      */
-    fun apply(item: T, index: Int): ButtonContent
+    fun apply(item: T, index: Int): StyledButtonContent
 }

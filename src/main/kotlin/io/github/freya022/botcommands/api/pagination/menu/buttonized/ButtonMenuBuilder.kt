@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 class ButtonMenuBuilder<E> internal constructor(
     context: BContext,
     entries: List<E>,
-    val buttonContentSupplier: ButtonContentSupplier<E>,
+    val styledButtonContentSupplier: StyledButtonContentSupplier<E>,
     val callback: SuspendingChoiceCallback<E>
 ) : AbstractMenuBuilder<E, ButtonMenuBuilder<E>, ButtonMenu<E>>(context, entries) {
     override fun build(): ButtonMenu<E> = ButtonMenu(context, this)

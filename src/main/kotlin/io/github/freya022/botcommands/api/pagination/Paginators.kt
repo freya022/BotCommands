@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.pagination.interactive.InteractiveMenu
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.MenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.BlockingChoiceCallback
-import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonContentSupplier
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenuBuilder
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.StyledButtonContentSupplier
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.SuspendingChoiceCallback
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
@@ -63,8 +63,8 @@ class Paginators(private val context: BContext) {
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
-    fun <E> buttonMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
-        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
+    fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback::accept)
 
     /**
      * A paginator where each page is filled with a list of entries.
@@ -81,8 +81,8 @@ class Paginators(private val context: BContext) {
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     @JvmSynthetic
-    fun <E> buttonMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
-        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback)
+    fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback)
 
     fun interactionMenu(): InteractiveMenuBuilder =
         InteractiveMenuBuilder(context)

@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**
@@ -22,7 +21,7 @@ class ButtonMenu<E> internal constructor(
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 ) {
-    private val buttonContentSupplier: ButtonContentSupplier<E> = builder.buttonContentSupplier
+    private val styledButtonContentSupplier: StyledButtonContentSupplier<E> = builder.styledButtonContentSupplier
     private val callback: SuspendingChoiceCallback<E> = builder.callback
 
     override fun putComponents(builder: MessageCreateBuilder) {
@@ -31,8 +30,8 @@ class ButtonMenu<E> internal constructor(
         val page = pages[page]!!
         page.entries.chunked(5) { items ->
             items.mapIndexed { i, item ->
-                val content = buttonContentSupplier.apply(item, i)
-                componentsService.ephemeralButton(ButtonStyle.PRIMARY, content)
+                val styledContent = styledButtonContentSupplier.apply(item, i)
+                componentsService.ephemeralButton(styledContent.style, styledContent.content)
                     .bindTo { event: ButtonEvent ->
                         this.cleanup()
                         callback(event, item)
