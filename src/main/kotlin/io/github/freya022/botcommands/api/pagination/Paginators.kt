@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.api.pagination.interactive.InteractiveMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.MenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.BlockingChoiceCallback
@@ -15,6 +14,7 @@ import io.github.freya022.botcommands.api.pagination.menu.buttonized.SuspendingC
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.wrapper.PaginationWrapperBuilder
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
@@ -84,8 +84,14 @@ class Paginators(private val context: BContext) {
     fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
         ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback)
 
-    fun interactionMenu(): InteractiveMenuBuilder =
-        InteractiveMenuBuilder(context)
+    /**
+     * A paginator which wraps other paginators, with a select menu to switch between them.
+     *
+     * In an effort to reduce resource consumption,
+     * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     */
+    fun <W : AbstractPagination<W>> paginationWrapper(): PaginationWrapperBuilder<W> =
+        PaginationWrapperBuilder(context)
 
     object Defaults {
         @JvmStatic
