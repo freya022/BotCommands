@@ -14,17 +14,8 @@ data class SelectContent(val label: String, val description: String?, val emoji:
 
     companion object {
         @JvmStatic
-        fun of(label: String): SelectContent {
-            return SelectContent(label, null, null)
-        }
-
-        @JvmStatic
-        fun of(label: String, description: String?): SelectContent {
-            return SelectContent(label, description, null)
-        }
-
-        @JvmStatic
-        fun of(label: String, description: String?, emoji: Emoji?): SelectContent {
+        @JvmOverloads
+        fun of(label: String, description: String? = null, emoji: Emoji? = null): SelectContent {
             return SelectContent(label, description, emoji)
         }
     }
