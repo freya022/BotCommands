@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.pagination.interactive
+package io.github.freya022.botcommands.api.components.utils
 
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
