@@ -42,8 +42,8 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      *
      * @return This builder for chaining convenience
      */
-    fun setTimeout(timeout: JavaDuration, onTimeout: BlockingPaginationTimeoutConsumer<R>): T =
-        setTimeout(timeout.toKotlinDuration()) { onTimeout.accept(it) }
+    fun setTimeout(timeout: JavaDuration, onTimeout: BlockingPaginationTimeoutConsumer<R>?): T =
+        setTimeout(timeout.toKotlinDuration(), onTimeout?.let { { onTimeout.accept(it) } })
 
     /**
      * Sets the timeout for this pagination instance.
@@ -59,7 +59,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      * @return This builder for chaining convenience
      */
     @JvmSynthetic
-    fun setTimeout(timeout: Duration, onTimeout: SuspendingPaginationTimeoutConsumer<R>): T = config {
+    fun setTimeout(timeout: Duration, onTimeout: SuspendingPaginationTimeoutConsumer<R>?): T = config {
         check(timeout.isFinite() && timeout.isPositive()) {
             "Timeout must be finite and positive"
         }
