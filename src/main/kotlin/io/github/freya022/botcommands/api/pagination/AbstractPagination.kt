@@ -103,7 +103,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
 
     protected open fun preProcess(builder: MessageCreateBuilder) { }
 
-    abstract fun writeMessage(builder: MessageCreateBuilder)
+    protected abstract fun writeMessage(builder: MessageCreateBuilder)
 
     protected open fun postProcess(builder: MessageCreateBuilder) { }
 
