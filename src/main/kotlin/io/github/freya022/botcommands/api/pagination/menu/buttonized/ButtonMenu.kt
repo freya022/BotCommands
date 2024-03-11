@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**
- * Paginator where pages are made from a list of entries, also adds buttons to choose an entry.
+ * A paginator where each page is filled with a list of entries.
  *
  * @param E Type of the entries
  *

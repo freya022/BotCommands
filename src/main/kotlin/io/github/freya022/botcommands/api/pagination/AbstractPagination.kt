@@ -131,7 +131,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
     /**
      * Cleans up the button IDs used in this paginator
      *
-     * This will remove every stored button IDs, even then buttons you included yourself
+     * This will remove every stored button ID, even then buttons you included yourself
      */
     fun cleanup() {
         componentsService.deleteComponentsByIdJava(usedIds)

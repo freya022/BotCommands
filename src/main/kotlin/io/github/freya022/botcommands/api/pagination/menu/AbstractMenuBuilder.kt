@@ -46,7 +46,7 @@ abstract class AbstractMenuBuilder<E, T : AbstractMenuBuilder<E, T, R>, R : Abst
      * Sets the maximum number of entries per page
      * **This does not mean there will be X entries per page** but rather it will try to fit 5 entries maximum per page, if some text is too long it'll cut down the number of entries
      *
-     * @param maxEntriesPerPage The maximum amount of entries per page
+     * @param maxEntriesPerPage The maximum number of entries per page
      *
      * @return This builder for chaining convenience
      */
