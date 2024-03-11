@@ -51,11 +51,7 @@ abstract class AbstractMenu<E, T : AbstractMenu<E, T>> protected constructor(
             var oldEntry = 0
             val builder = StringBuilder()
 
-            var i = 0
-            val entriesSize = entries.size
-            while (i < entriesSize) {
-                val entry = entries[i]
-
+            entries.forEachIndexed { i, entry ->
                 val s = transformer.toString(entry)
                 Checks.notLonger(s, MessageEmbed.TEXT_MAX_LENGTH - 8, "Entry #$i string")
 
@@ -69,7 +65,6 @@ abstract class AbstractMenu<E, T : AbstractMenu<E, T>> protected constructor(
                 }
 
                 builder.append(rowPrefixSupplier.apply(i - oldEntry + 1, maxEntriesPerPage)).append(s).append('\n')
-                i++
             }
 
             pages[page] = MenuPage(builder.toString(), entries.subList(oldEntry, entries.size))
