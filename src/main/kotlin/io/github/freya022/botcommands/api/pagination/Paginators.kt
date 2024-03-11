@@ -6,7 +6,12 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.interactive.InteractiveMenuBuilder
-import io.github.freya022.botcommands.api.pagination.menu.*
+import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
+import io.github.freya022.botcommands.api.pagination.menu.MenuBuilder
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.BlockingChoiceCallback
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonContentSupplier
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenuBuilder
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.SuspendingChoiceCallback
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
@@ -53,13 +58,13 @@ class Paginators(private val context: BContext) {
      * and its [string representation][AbstractMenuBuilder.transformer] customized.
      *
      * In addition, each entry is associated to a [Button],
-     * when clicked, the [callback][ChoiceMenuBuilder.callback] is run.
+     * when clicked, the [callback][ButtonMenuBuilder.callback] is run.
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
-    fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ChoiceMenuBuilder<E> =
-        ChoiceMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
+    fun <E> buttonMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
 
     /**
      * A paginator where each page is filled with a list of entries.
@@ -70,14 +75,14 @@ class Paginators(private val context: BContext) {
      * and its [string representation][AbstractMenuBuilder.transformer] customized.
      *
      * In addition, each entry is associated to a [Button],
-     * when clicked, the [callback][ChoiceMenuBuilder.callback] is run.
+     * when clicked, the [callback][ButtonMenuBuilder.callback] is run.
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
     @JvmSynthetic
-    fun <E> choiceMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ChoiceMenuBuilder<E> =
-        ChoiceMenuBuilder(context, entries, buttonContentSupplier, callback)
+    fun <E> buttonMenu(entries: List<E>, buttonContentSupplier: ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback)
 
     fun interactionMenu(): InteractiveMenuBuilder =
         InteractiveMenuBuilder(context)

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.pagination.menu
+package io.github.freya022.botcommands.api.pagination.menu.buttonized
 
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
