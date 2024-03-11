@@ -32,8 +32,8 @@ class Paginators(private val context: BContext) {
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
-    fun paginator(pageEditor: PageEditor<Paginator>): PaginatorBuilder =
-        PaginatorBuilder(context, pageEditor)
+    fun paginator(maxPages: Int, pageEditor: PageEditor<Paginator>): PaginatorBuilder =
+        PaginatorBuilder(context, maxPages, pageEditor)
 
     /**
      * A paginator where each page is filled with a list of entries.

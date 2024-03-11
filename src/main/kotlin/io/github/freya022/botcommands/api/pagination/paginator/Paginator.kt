@@ -22,6 +22,10 @@ class Paginator internal constructor(
 
     override var maxPages: Int = builder.maxPages
 
+    init {
+        check(maxPages > 0) { "Max pages must be > 0" }
+    }
+
     override fun writeMessage(builder: MessageCreateBuilder) {
         super.writeMessage(builder)
 
