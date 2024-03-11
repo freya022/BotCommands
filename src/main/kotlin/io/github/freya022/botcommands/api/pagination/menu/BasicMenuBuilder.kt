@@ -2,12 +2,10 @@ package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
-import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.menu.transformer.EntryTransformer
 import io.github.freya022.botcommands.api.pagination.menu.transformer.StringTransformer
+import io.github.freya022.botcommands.api.pagination.paginator.BasicPaginatorBuilder
 import net.dv8tion.jda.internal.utils.Checks
-import kotlin.math.floor
-import kotlin.math.log10
 
 /**
  * Provides base for a menu builder
@@ -30,13 +28,17 @@ abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<
     var transformer: EntryTransformer<E> = StringTransformer() as EntryTransformer<E>
         private set
 
-    var rowPrefixSupplier: RowPrefixSupplier = RowPrefixSupplier { entryNum: Int, maxEntry: Int ->
-        val spaces = getPadding(entryNum, maxEntry)
-        "`" + " ".repeat(spaces) + entryNum + ".` "
-    }
+    var rowPrefixSupplier: RowPrefixSupplier = RowPrefixSupplier.paddedNumberPrefix
         private set
 
-    fun setPageEditor(pageEditor: PageEditor<R>): T = config {
+    /**
+     * Sets an optional the [PageEditor] for this menu.
+     *
+     * This allows you to edit the message and/or the embed being built.
+     *
+     * @return This builder for chaining convenience
+     */
+    fun setPageEditor(pageEditor: PageEditor<R>?): T = config {
         this.pageEditor = pageEditor
     }
 
@@ -75,22 +77,5 @@ abstract class BasicMenuBuilder<E, T : BasicMenuBuilder<E, T, R>, R : BasicMenu<
      */
     fun setTransformer(transformer: EntryTransformer<E>): T = config {
         this.transformer = transformer
-    }
-
-    companion object {
-        /**
-         * Returns the padding needed between this entry number and the maximum entry number
-         *
-         * @param entryNum The current entry number
-         * @param maxEntry The maximum entry number
-         *
-         * @return The number of padding spaces needed
-         */
-        @JvmStatic
-        fun getPadding(entryNum: Int, maxEntry: Int): Int {
-            val entryDigits = floor(log10(entryNum.toDouble()) + 1)
-            val maxEntryDigits = floor(log10(maxEntry.toDouble()) + 1)
-            return (maxEntryDigits - entryDigits).toInt()
-        }
     }
 }
