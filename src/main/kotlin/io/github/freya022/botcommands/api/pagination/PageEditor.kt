@@ -19,7 +19,7 @@ fun interface PageEditor<T> {
      * @param paginator    The paginator instance this is for
      * @param builder      The [MessageCreateBuilder] for the current page
      * @param embedBuilder The [EmbedBuilder] for the current page
-     * @param pageNumber   The page number of the currently displayed paginator
+     * @param page         The page number of the currently displayed paginator
      */
     fun accept(paginator: T, builder: MessageCreateBuilder, embedBuilder: EmbedBuilder, page: Int)
 }

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.pagination.interactive
 
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.pagination.Paginators
 
 /**
  * A type of pagination which shows embeds and provides a [StringSelectMenu] to navigate between menus.
@@ -9,6 +10,8 @@ import io.github.freya022.botcommands.api.core.BContext
  * Each embed is bound to a selection menu.
  *
  * *This does not provide pagination for each embed* (no arrow buttons, only the selection menu).
+ *
+ * @see Paginators.interactionMenu
  */
 class InteractiveMenu internal constructor(
     context: BContext,

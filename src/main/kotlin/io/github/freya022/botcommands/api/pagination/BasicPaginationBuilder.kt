@@ -22,6 +22,7 @@ abstract class BasicPaginationBuilder<T : BasicPaginationBuilder<T, R>, R : Basi
 
     var constraints: InteractionConstraints = empty()
         private set
+    //TODO default timeout (still nullable), nullable handler
     var timeout: TimeoutInfo<R>? = null
         private set
 

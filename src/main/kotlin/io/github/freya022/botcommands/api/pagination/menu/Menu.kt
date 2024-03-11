@@ -1,11 +1,14 @@
 package io.github.freya022.botcommands.api.pagination.menu
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.pagination.Paginators
 
 /**
- * Paginator where pages are made from a list of entries.
+ * A paginator where each page is filled with a list of entries.
  *
  * @param E Type of the entries
+ *
+ * @see Paginators.menu
  */
 class Menu<E> internal constructor(
     context: BContext,
