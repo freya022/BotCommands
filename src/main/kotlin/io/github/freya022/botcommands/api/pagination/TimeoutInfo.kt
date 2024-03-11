@@ -4,5 +4,5 @@ import kotlin.time.Duration
 
 data class TimeoutInfo<T : AbstractPagination<T>>(
     val timeout: Duration,
-    val onTimeout: suspend (T) -> Unit
+    val onTimeout: (suspend (T) -> Unit)?
 ) 

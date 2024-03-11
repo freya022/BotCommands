@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.pagination
 
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.core.BContext
@@ -22,8 +23,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
 
     var constraints: InteractionConstraints = empty()
         private set
-    //TODO default timeout (still nullable), nullable handler
-    var timeout: TimeoutInfo<R>? = null
+    var timeout: TimeoutInfo<R> = TimeoutInfo(Components.defaultTimeout, onTimeout = null)
         private set
 
     @JvmSynthetic

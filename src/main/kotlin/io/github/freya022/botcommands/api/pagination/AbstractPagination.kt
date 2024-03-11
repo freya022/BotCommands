@@ -29,7 +29,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
         get() = context.coroutineScopesConfig.paginationTimeoutScope
 
     protected val constraints: InteractionConstraints = builder.constraints
-    protected val timeout: TimeoutInfo<T>? = builder.timeout
+    protected val timeout: TimeoutInfo<T>? = builder.timeout.takeIf { it.timeout.isFinite() && it.timeout.isPositive() }
 
     private val usedIds: MutableSet<String> = hashSetOf()
 
@@ -84,7 +84,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
             if (::timeoutJob.isInitialized) {
                 // The job cannot be rescheduled if the timeout handler has run
                 check(!timeoutPassed) {
-                    "Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: ${timeout.onTimeout.javaClass.nestHost}"
+                    "Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: ${timeout.onTimeout?.javaClass?.nestHost}"
                 }
 
                 timeoutJob.cancel()
@@ -93,7 +93,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
             timeoutJob = paginationTimeoutScope.launchCatchingDelayed(timeout.timeout, { onTimeoutHandlerException(it) }) {
                 timeoutPassed = true
                 @Suppress("UNCHECKED_CAST")
-                timeout.onTimeout(this as T)
+                timeout.onTimeout?.invoke(this as T)
             }
         }
     }
