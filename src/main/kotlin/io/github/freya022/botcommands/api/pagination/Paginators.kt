@@ -31,6 +31,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     fun singlePage(pageEditor: CustomPageEditor<CustomPagination>): CustomPaginationBuilder =
         CustomPaginationBuilder(context, 1, pageEditor)
@@ -40,6 +43,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     fun customPagination(maxPages: Int, pageEditor: CustomPageEditor<CustomPagination>): CustomPaginationBuilder =
         CustomPaginationBuilder(context, maxPages, pageEditor)
@@ -52,6 +58,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     fun paginator(maxPages: Int, pageEditor: PageEditor<Paginator>): PaginatorBuilder =
         PaginatorBuilder(context, maxPages, pageEditor)
@@ -66,6 +75,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     fun <E> menu(entries: List<E>): MenuBuilder<E> =
         MenuBuilder(context, entries)
@@ -83,6 +95,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     @JvmName("buttonMenu")
     fun <E> buttonMenuJava(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
@@ -101,6 +116,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     @JvmSynthetic
     fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
@@ -111,6 +129,9 @@ class Paginators(private val context: BContext) {
      *
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
+     *
+     * The built pagination has a default timeout set to [Components.defaultTimeout],
+     * but can be modified using [AbstractPaginationBuilder.setTimeout] or [AbstractPaginationBuilder.noTimeout].
      */
     fun nestedPagination(): NestedPaginatorBuilder =
         NestedPaginatorBuilder(context)

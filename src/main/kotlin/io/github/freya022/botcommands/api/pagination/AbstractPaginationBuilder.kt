@@ -23,7 +23,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
 
     var constraints: InteractionConstraints = empty()
         private set
-    var timeout: TimeoutInfo<R> = TimeoutInfo(Components.defaultTimeout, onTimeout = null)
+    var timeout: TimeoutInfo<R>? = TimeoutInfo(Components.defaultTimeout, onTimeout = null)
         private set
 
     @JvmSynthetic
@@ -35,7 +35,9 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      * On timeout, only the consumer is called, no messages are deleted,
      * and it is up to you to clean up components with [AbstractPagination.cleanup].
      *
-     * See [AbstractPagination.message] to get the message in the timeout consumer
+     * See [AbstractPagination.message] to get the message in the timeout consumer.
+     *
+     * The default timeout is set to [Components.defaultTimeout].
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
@@ -51,7 +53,9 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      * On timeout, only the consumer is called, no messages are deleted,
      * and it is up to you to clean up components with [AbstractPagination.cleanup].
      *
-     * See [AbstractPagination.message] to get the message in the timeout consumer
+     * See [AbstractPagination.message] to get the message in the timeout consumer.
+     *
+     * The default timeout is set to [Components.defaultTimeout].
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
@@ -65,6 +69,15 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
         }
 
         this.timeout = TimeoutInfo(timeout, onTimeout)
+    }
+
+    /**
+     * Disables the timeout for this pagination instance.
+     *
+     * @return This builder for chaining convenience
+     */
+    fun noTimeout(): T = config {
+        this.timeout = null
     }
 
     /**

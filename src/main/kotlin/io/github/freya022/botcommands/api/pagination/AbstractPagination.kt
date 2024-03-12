@@ -29,7 +29,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
         get() = context.coroutineScopesConfig.paginationTimeoutScope
 
     val constraints: InteractionConstraints = builder.constraints
-    protected val timeout: TimeoutInfo<T>? = builder.timeout.takeIf { it.timeout.isFinite() && it.timeout.isPositive() }
+    protected val timeout: TimeoutInfo<T>? = builder.timeout?.takeIf { it.timeout.isFinite() && it.timeout.isPositive() }
 
     private val usedIds: MutableSet<String> = hashSetOf()
 
