@@ -119,17 +119,27 @@ class Paginators(private val context: BContext) {
         PaginationWrapperBuilder(context)
 
     object Defaults {
+        /** @see PaginatorBuilder.setFirstContent */
         @JvmStatic
         var firstPageButtonContent: ButtonContent = ButtonContent.withShortcode("rewind")
+
+        /** @see PaginatorBuilder.setPreviousContent */
         @JvmStatic
         var previousPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_backward")
+
+        /** @see PaginatorBuilder.setNextContent */
         @JvmStatic
         var nextPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_forward")
+
+        /** @see PaginatorBuilder.setLastContent */
         @JvmStatic
         var lastPageButtonContent: ButtonContent = ButtonContent.withShortcode("fast_forward")
+
+        /** @see PaginatorBuilder.setDeleteContent */
         @JvmStatic
         var deleteButtonContent: ButtonContent = ButtonContent.withShortcode("wastebasket")
 
+        /** @see PaginatorBuilder.useDeleteButton */
         @JvmStatic
         var useDeleteButton: Boolean = false
     }
