@@ -21,14 +21,14 @@ abstract class AbstractMenuBuilder<E, T : AbstractMenuBuilder<E, T, R>, R : Abst
     var pageEditor: PageEditor<R>? = null
         private set
 
-    var maxEntriesPerPage: Int = 5
+    var maxEntriesPerPage: Int = Menu.Defaults.maxEntriesPerPage
         private set
 
     @Suppress("UNCHECKED_CAST")
     var transformer: EntryTransformer<E> = StringTransformer() as EntryTransformer<E>
         private set
 
-    var rowPrefixSupplier: RowPrefixSupplier = RowPrefixSupplier.paddedNumberPrefix
+    var rowPrefixSupplier: RowPrefixSupplier = Menu.Defaults.rowPrefixSupplier
         private set
 
     /**
@@ -43,10 +43,11 @@ abstract class AbstractMenuBuilder<E, T : AbstractMenuBuilder<E, T, R>, R : Abst
     }
 
     /**
-     * Sets the maximum number of entries per page
-     * **This does not mean there will be X entries per page** but rather it will try to fit 5 entries maximum per page, if some text is too long it'll cut down the number of entries
+     * Sets the maximum number of entries per page.
      *
-     * @param maxEntriesPerPage The maximum number of entries per page
+     * If the content of the menu cannot fit all of these entries, they will go to the next page.
+     *
+     * The default value can be changed in [Menu.Defaults.maxEntriesPerPage].
      *
      * @return This builder for chaining convenience
      */
@@ -56,11 +57,11 @@ abstract class AbstractMenuBuilder<E, T : AbstractMenuBuilder<E, T, R>, R : Abst
     }
 
     /**
-     * Sets the row prefix supplier for this menu
+     * Sets the row prefix supplier for this menu.
      *
-     * This is what gets printed before each entry when it gets displayed
+     * This is the prefix set before appending an entry.
      *
-     * @param rowPrefixSupplier The row prefix supplier, the first parameter is the entry number, and the second parameter is the max entries number
+     * The default value can be changed in [Menu.Defaults.rowPrefixSupplier].
      *
      * @return This builder for chaining convenience
      */

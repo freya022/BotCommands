@@ -17,4 +17,11 @@ class Menu<E> internal constructor(
     context,
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
-)
+) {
+    object Defaults {
+        @JvmStatic
+        var maxEntriesPerPage: Int = 5
+        @JvmStatic
+        var rowPrefixSupplier: RowPrefixSupplier = RowPrefixSupplier.paddedNumberPrefix
+    }
+}
