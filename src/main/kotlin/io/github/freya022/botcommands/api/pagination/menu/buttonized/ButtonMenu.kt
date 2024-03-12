@@ -34,8 +34,11 @@ class ButtonMenu<E> internal constructor(
                 val styledContent = styledButtonContentSupplier.apply(item, i)
                 componentsService.ephemeralButton(styledContent.style, styledContent.content)
                     .bindTo { event: ButtonEvent ->
-                        if (!reusable)
-                            this.cleanup()
+                        if (reusable) {
+                            restartTimeout()
+                        } else {
+                            cleanup()
+                        }
                         callback(event, item)
                     }
                     .constraints(constraints)
