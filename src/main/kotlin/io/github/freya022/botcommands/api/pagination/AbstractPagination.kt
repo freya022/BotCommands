@@ -90,7 +90,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
             timeoutJob = paginationTimeoutScope.launchCatchingDelayed(timeout.timeout, { onTimeoutHandlerException(it) }) {
                 timeoutPassed = true
                 @Suppress("UNCHECKED_CAST")
-                timeout.onTimeout?.invoke(this as T)
+                timeout.onTimeout?.invoke(this@AbstractPagination as T)
             }
         }
     }
