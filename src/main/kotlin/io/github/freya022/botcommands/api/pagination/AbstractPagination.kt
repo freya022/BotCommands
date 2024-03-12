@@ -51,11 +51,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
      *
      * @see getInitialMessage
      */
-    fun getCurrentMessage(): MessageEditData {
-        restartTimeout()
-
-        return getInitialMessage().toEditData()
-    }
+    fun getCurrentMessage(): MessageEditData = getInitialMessage().toEditData()
 
     /**
      * Returns the message data that represents the initial state of this pagination.
@@ -63,6 +59,8 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
      * @see getCurrentMessage
      */
     fun getInitialMessage(): MessageCreateData {
+        restartTimeout()
+
         val builder = MessageCreateBuilder()
 
         preProcess(builder)
