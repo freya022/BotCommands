@@ -88,12 +88,11 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
         }
     }
 
-    private fun onDeleteClicked(e: ButtonEvent) {
-        cancelTimeout()
-
+    private suspend fun onDeleteClicked(e: ButtonEvent) {
         e.deferEdit().queue()
         e.hook.deleteOriginal().queue()
 
+        cancelTimeout()
         cleanup()
     }
 
