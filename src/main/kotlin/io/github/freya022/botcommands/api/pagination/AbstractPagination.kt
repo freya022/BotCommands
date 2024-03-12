@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -131,8 +132,17 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
      *
      * This will remove every stored button ID, even then buttons you included yourself
      */
-    fun cleanup() {
-        componentsService.deleteComponentsByIdJava(usedIds)
+    @JvmName("cleanup")
+    fun cleanupJava() = runBlocking { cleanup() }
+
+    /**
+     * Cleans up the button IDs used in this paginator
+     *
+     * This will remove every stored button ID, even then buttons you included yourself
+     */
+    @JvmSynthetic
+    suspend fun cleanup() {
+        componentsService.deleteComponentsById(usedIds)
 
         usedIds.clear()
     }
