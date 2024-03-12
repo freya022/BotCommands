@@ -82,7 +82,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
             if (::timeoutJob.isInitialized) {
                 // The job cannot be rescheduled if the timeout handler has run
                 check(!timeoutPassed) {
-                    "Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: ${timeout.onTimeout?.javaClass?.nestHost}"
+                    "Cannot use this pagination instance after the timeout has elapsed"
                 }
 
                 timeoutJob.cancel()
