@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
+import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**
@@ -27,9 +28,8 @@ class ButtonMenu<E> internal constructor(
     override fun putComponents(builder: MessageCreateBuilder) {
         super.putComponents(builder)
 
-        val page = pages[page]!!
-        page.entries.chunked(5) { items ->
-            items.mapIndexed { i, item ->
+        pages[page]!!.entries
+            .mapIndexed { i, item ->
                 val styledContent = styledButtonContentSupplier.apply(item, i)
                 componentsService.ephemeralButton(styledContent.style, styledContent.content)
                     .bindTo { event: ButtonEvent ->
@@ -39,6 +39,7 @@ class ButtonMenu<E> internal constructor(
                     .constraints(constraints)
                     .build()
             }
-        }
+            .chunked(5, ActionRow::of)
+            .also(builder::addComponents)
     }
 }
