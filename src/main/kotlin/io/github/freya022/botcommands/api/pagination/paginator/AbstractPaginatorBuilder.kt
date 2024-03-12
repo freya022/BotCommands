@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.pagination.paginator
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPagination
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
-import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
@@ -15,15 +14,15 @@ import io.github.freya022.botcommands.api.utils.ButtonContent
 abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R : AbstractPagination<R>>(
     context: BContext
 ) : AbstractPaginationBuilder<T, R>(context) {
-    var firstContent: ButtonContent = Paginators.Defaults.firstPageButtonContent
+    var firstContent: ButtonContent = Paginator.Defaults.firstPageButtonContent
         private set
-    var previousContent: ButtonContent = Paginators.Defaults.previousPageButtonContent
+    var previousContent: ButtonContent = Paginator.Defaults.previousPageButtonContent
         private set
-    var nextContent: ButtonContent = Paginators.Defaults.nextPageButtonContent
+    var nextContent: ButtonContent = Paginator.Defaults.nextPageButtonContent
         private set
-    var lastContent: ButtonContent = Paginators.Defaults.lastPageButtonContent
+    var lastContent: ButtonContent = Paginator.Defaults.lastPageButtonContent
         private set
-    var deleteContent: ButtonContent = Paginators.Defaults.deleteButtonContent
+    var deleteContent: ButtonContent = Paginator.Defaults.deleteButtonContent
         private set
 
     var hasDeleteButton: Boolean = false
@@ -34,7 +33,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
      *
      * The button can only be used by those satisfying [the constraints][setConstraints].
      *
-     * The default value can be changed in [Paginators.Defaults.useDeleteButton].
+     * The default value can be changed in [Paginator.Defaults.useDeleteButton].
      *
      * @return This builder for chaining convenience
      *
@@ -47,7 +46,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
     /**
      * Sets the content for the button which goes to the first page
      *
-     * The default value can be changed in [Paginators.Defaults.firstPageButtonContent].
+     * The default value can be changed in [Paginator.Defaults.firstPageButtonContent].
      *
      * @return This builder for chaining convenience
      */
@@ -58,7 +57,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
     /**
      * Sets the content for the button which goes to the previous page
      *
-     * The default value can be changed in [Paginators.Defaults.previousPageButtonContent].
+     * The default value can be changed in [Paginator.Defaults.previousPageButtonContent].
      *
      * @return This builder for chaining convenience
      */
@@ -69,7 +68,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
     /**
      * Sets the content for the button which goes to the next page
      *
-     * The default value can be changed in [Paginators.Defaults.nextPageButtonContent].
+     * The default value can be changed in [Paginator.Defaults.nextPageButtonContent].
      *
      * @return This builder for chaining convenience
      */
@@ -80,7 +79,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
     /**
      * Sets the content for the button which goes to the last page
      *
-     * The default value can be changed in [Paginators.Defaults.lastPageButtonContent].
+     * The default value can be changed in [Paginator.Defaults.lastPageButtonContent].
      *
      * @return This builder for chaining convenience
      */
@@ -91,7 +90,7 @@ abstract class AbstractPaginatorBuilder<T : AbstractPaginationBuilder<T, R>, R :
     /**
      * Sets the content for the button which deletes this paginator
      *
-     * The default value can be changed in [Paginators.Defaults.deleteButtonContent].
+     * The default value can be changed in [Paginator.Defaults.deleteButtonContent].
      *
      * @return This builder for chaining convenience
      */

@@ -18,7 +18,6 @@ import io.github.freya022.botcommands.api.pagination.nested.NestedPaginatorBuild
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
-import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
  * Factory for multiple pagination types.
@@ -135,30 +134,4 @@ class Paginators(private val context: BContext) {
      */
     fun nestedPagination(): NestedPaginatorBuilder =
         NestedPaginatorBuilder(context)
-
-    object Defaults {
-        /** @see PaginatorBuilder.setFirstContent */
-        @JvmStatic
-        var firstPageButtonContent: ButtonContent = ButtonContent.withShortcode("rewind")
-
-        /** @see PaginatorBuilder.setPreviousContent */
-        @JvmStatic
-        var previousPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_backward")
-
-        /** @see PaginatorBuilder.setNextContent */
-        @JvmStatic
-        var nextPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_forward")
-
-        /** @see PaginatorBuilder.setLastContent */
-        @JvmStatic
-        var lastPageButtonContent: ButtonContent = ButtonContent.withShortcode("fast_forward")
-
-        /** @see PaginatorBuilder.setDeleteContent */
-        @JvmStatic
-        var deleteButtonContent: ButtonContent = ButtonContent.withShortcode("wastebasket")
-
-        /** @see PaginatorBuilder.useDeleteButton */
-        @JvmStatic
-        var useDeleteButton: Boolean = false
-    }
 }

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.pagination.paginator
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.Paginators
+import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
@@ -32,5 +33,31 @@ class Paginator internal constructor(
         val embedBuilder = EmbedBuilder()
         editor.accept(this, builder, embedBuilder, page)
         builder.setEmbeds(embedBuilder.build())
+    }
+
+    object Defaults {
+        /** @see PaginatorBuilder.setFirstContent */
+        @JvmStatic
+        var firstPageButtonContent: ButtonContent = ButtonContent.withShortcode("rewind")
+
+        /** @see PaginatorBuilder.setPreviousContent */
+        @JvmStatic
+        var previousPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_backward")
+
+        /** @see PaginatorBuilder.setNextContent */
+        @JvmStatic
+        var nextPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_forward")
+
+        /** @see PaginatorBuilder.setLastContent */
+        @JvmStatic
+        var lastPageButtonContent: ButtonContent = ButtonContent.withShortcode("fast_forward")
+
+        /** @see PaginatorBuilder.setDeleteContent */
+        @JvmStatic
+        var deleteButtonContent: ButtonContent = ButtonContent.withShortcode("wastebasket")
+
+        /** @see PaginatorBuilder.useDeleteButton */
+        @JvmStatic
+        var useDeleteButton: Boolean = false
     }
 }
