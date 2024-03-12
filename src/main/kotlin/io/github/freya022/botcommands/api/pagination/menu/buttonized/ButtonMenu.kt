@@ -24,6 +24,7 @@ class ButtonMenu<E> internal constructor(
 ) {
     private val styledButtonContentSupplier: StyledButtonContentSupplier<E> = builder.styledButtonContentSupplier
     private val callback: SuspendingChoiceCallback<E> = builder.callback
+    private val reusable: Boolean = builder.reusable
 
     override fun putComponents(builder: MessageCreateBuilder) {
         super.putComponents(builder)
@@ -33,7 +34,8 @@ class ButtonMenu<E> internal constructor(
                 val styledContent = styledButtonContentSupplier.apply(item, i)
                 componentsService.ephemeralButton(styledContent.style, styledContent.content)
                     .bindTo { event: ButtonEvent ->
-                        this.cleanup()
+                        if (!reusable)
+                            this.cleanup()
                         callback(event, item)
                     }
                     .constraints(constraints)
@@ -41,5 +43,11 @@ class ButtonMenu<E> internal constructor(
             }
             .chunked(5, ActionRow::of)
             .also(builder::addComponents)
+    }
+
+    object Defaults {
+        /** @see ButtonMenuBuilder.setReusable */
+        @JvmStatic
+        var reusable: Boolean = false
     }
 }
