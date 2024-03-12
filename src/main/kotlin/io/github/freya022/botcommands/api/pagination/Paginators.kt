@@ -129,5 +129,8 @@ class Paginators(private val context: BContext) {
         var lastPageButtonContent: ButtonContent = ButtonContent.withShortcode("fast_forward")
         @JvmStatic
         var deleteButtonContent: ButtonContent = ButtonContent.withShortcode("wastebasket")
+
+        @JvmStatic
+        var useDeleteButton: Boolean = false
     }
 }
