@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
@@ -23,7 +24,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
 
     var constraints: InteractionConstraints = empty()
         private set
-    var timeout: TimeoutInfo<R>? = TimeoutInfo(Components.defaultTimeout, onTimeout = null)
+    var timeout: TimeoutInfo<R>? = Components.defaultTimeout.takeIfFinite()?.let { TimeoutInfo(it, onTimeout = null) }
         private set
 
     @JvmSynthetic
