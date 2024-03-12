@@ -1,9 +1,10 @@
-package io.github.freya022.botcommands.api.pagination.wrapper
+package io.github.freya022.botcommands.api.pagination.nested
 
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.pagination.AbstractPagination
+import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -13,22 +14,29 @@ import okhttp3.internal.toImmutableList
 /**
  * @param T Type of the implementor
  */
-abstract class AbstractPaginationWrapper<T : AbstractPaginationWrapper<T, W>, W : AbstractPagination<W>> protected constructor(
+abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected constructor(
     context: BContext,
-    builder: AbstractPaginationWrapperBuilder<*, T, W>
-) : AbstractPagination<T>(
+    builder: AbstractNestedPaginatorBuilder<*, T>
+) : AbstractPaginator<T>(
     context,
     builder
 ) {
-    protected val editor: PaginationWrapperPageEditor<T>? = builder.editor
+    val usePaginatorControls: Boolean = builder.usePaginatorControls
 
-    protected val items: List<WrappedPaginationItem<W>> = builder.items.toImmutableList()
+    private val items: List<NestedPaginationItem<T>> = builder.items.toImmutableList()
     private val selectOptions = items.mapIndexed { i, item -> item.content.toSelectOption(i.toString()) }
 
     var selectedItemIndex: Int = 0
-        protected set
-    val selectedItem: WrappedPaginationItem<W>
+        protected set(value) {
+            selectedItem.page = page
+            field = value
+            page = selectedItem.page
+            maxPages = selectedItem.maxPages
+        }
+    val selectedItem: NestedPaginationItem<T>
         get() = items[selectedItemIndex]
+
+    override var maxPages: Int = selectedItem.maxPages
 
     init {
         check(items.isNotEmpty()) { "No wrapped paginator have been added" }
@@ -40,7 +48,7 @@ abstract class AbstractPaginationWrapper<T : AbstractPaginationWrapper<T, W>, W 
         val options = selectOptions.onEachIndexed { i, it -> it.withDefault(i == selectedItemIndex) }
 
         return componentsService.ephemeralStringSelectMenu()
-            .bindTo { event: StringSelectEvent -> this.onItemSelected(event) }
+            .bindTo(this::onItemSelected)
             .oneUse(true)
             .constraints(constraints)
             .addOptions(options)
@@ -94,26 +102,20 @@ abstract class AbstractPaginationWrapper<T : AbstractPaginationWrapper<T, W>, W 
         throw IllegalArgumentException("Item named '$itemLabel' cannot be found in this pagination wrapper")
     }
 
-    override fun restartTimeout() = forEachInitializedPagination { it.restartTimeout() }
-
-    override fun cancelTimeout() = forEachInitializedPagination { it.cancelTimeout() }
-
-    private inline fun forEachInitializedPagination(block: (W) -> Unit) = items.forEach {
-        if ((it::wrappedPagination.getDelegate() as Lazy<*>).isInitialized()) {
-            block(it.wrappedPagination)
-        }
-    }
-
     override fun writeMessage(builder: MessageCreateBuilder) {
-        builder.applyData(selectedItem.wrappedPagination.getInitialMessage())
+        super.writeMessage(builder)
 
-        putComponents(builder)
-
+        val embedBuilder = EmbedBuilder()
         @Suppress("UNCHECKED_CAST")
-        editor?.accept(this as T, builder)
+        selectedItem.pageEditor.accept(this as T, builder, embedBuilder, page)
+        builder.setEmbeds(embedBuilder.build())
     }
 
-    protected open fun putComponents(builder: MessageCreateBuilder) {
+    override fun putComponents(builder: MessageCreateBuilder) {
+        if (usePaginatorControls) {
+            super.putComponents(builder)
+        }
+
         builder.addActionRow(createSelectMenu())
     }
 }
