@@ -88,7 +88,8 @@ class Paginators(private val context: BContext) {
      * In an effort to reduce resource consumption,
      * you should call [AbstractPaginator.cleanup] when the message is deleted.
      */
-    fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
+    @JvmName("buttonMenu")
+    fun <E> buttonMenuJava(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
         ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback::accept)
 
     /**
