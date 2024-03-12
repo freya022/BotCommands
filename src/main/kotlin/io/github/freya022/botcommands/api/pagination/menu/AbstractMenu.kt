@@ -64,7 +64,7 @@ abstract class AbstractMenu<E, T : AbstractMenu<E, T>> protected constructor(
                     builder.setLength(0)
                 }
 
-                builder.append(rowPrefixSupplier.apply(i - oldEntry + 1, maxEntriesPerPage)).append(s).append('\n')
+                builder.append(rowPrefixSupplier.apply(i - oldEntry, maxEntriesPerPage)).append(s).append('\n')
             }
 
             pages[page] = MenuPage(builder.toString(), entries.subList(oldEntry, entries.size))
