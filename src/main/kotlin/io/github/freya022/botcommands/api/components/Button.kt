@@ -13,6 +13,10 @@ class Button internal constructor(
     override val internalId: Int,
     private val button: JDAButton
 ) : JDAButton by button, IdentifiableComponent {
+    override fun asDisabled(): Button = withDisabled(true)
+
+    override fun asEnabled(): Button = withDisabled(false)
+
     override fun withDisabled(disabled: Boolean): Button {
         return Button(componentController, internalId, super.withDisabled(disabled))
     }
