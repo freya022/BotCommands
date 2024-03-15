@@ -21,7 +21,7 @@ class CustomPagination internal constructor(
 
     override var maxPages: Int = builder.maxPages
         public set(value) {
-            check(maxPages > 0) { "Max pages must be > 0" }
+            require(maxPages > 0) { "Max pages must be > 0" }
             field = value
         }
 

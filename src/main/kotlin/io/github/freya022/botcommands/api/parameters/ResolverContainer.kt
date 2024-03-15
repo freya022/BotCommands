@@ -76,7 +76,7 @@ class ResolverContainer internal constructor(
     @JvmSynthetic
     internal fun getResolverFactoryOrNull(parameter: ParameterWrapper): ParameterResolverFactory<*>? {
         val resolvableFactories = factories.filter { it.isResolvable(parameter) }
-        check(resolvableFactories.size <= 1) {
+        require(resolvableFactories.size <= 1) {
             val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
             "Found multiple compatible resolvers for parameter of type ${parameter.type.simpleNestedName}\n$factoryNameList"
         }

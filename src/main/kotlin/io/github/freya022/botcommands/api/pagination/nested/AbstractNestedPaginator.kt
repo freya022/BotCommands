@@ -39,7 +39,7 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
     override var maxPages: Int = selectedItem.maxPages
 
     init {
-        check(items.isNotEmpty()) { "No wrapped paginator have been added" }
+        require(items.isNotEmpty()) { "No wrapped paginator have been added" }
 
         setSelectedItem(0)
     }

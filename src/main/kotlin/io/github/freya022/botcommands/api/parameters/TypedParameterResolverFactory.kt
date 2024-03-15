@@ -29,7 +29,7 @@ abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     constructor(resolverType: Class<T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
 
     init {
-        check(!type.isMarkedNullable) {
+        require(!type.isMarkedNullable) {
             "Typed parameter resolver factories cannot have a nullable type"
         }
     }

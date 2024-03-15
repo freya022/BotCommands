@@ -21,7 +21,7 @@ abstract class AbstractCustomPagination<T : AbstractCustomPagination<T>> protect
     var page: Int = 0
         set(value) {
             // 0 <= value < maxPages
-            check(value in 0..<maxPages) {
+            require(value in 0..<maxPages) {
                 "Page needs to be between 0 and $maxPages (excluded)"
             }
             field = value

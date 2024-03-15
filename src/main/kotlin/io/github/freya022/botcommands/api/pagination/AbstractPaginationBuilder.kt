@@ -82,7 +82,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      */
     @JvmSynthetic
     fun setTimeout(timeout: Duration, onTimeout: SuspendingPaginationTimeoutConsumer<R>?): T = config {
-        check(timeout.isFinite() && timeout.isPositive()) {
+        require(timeout.isFinite() && timeout.isPositive()) {
             "Timeout must be finite and positive"
         }
 
