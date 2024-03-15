@@ -23,7 +23,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
     @Suppress("UNCHECKED_CAST")
     protected val instance: T get() = this as T
 
-    var cleanAfterRefresh: Boolean = true
+    var cleanAfterRefresh: Boolean = Paginator.Defaults.cleanAfterRefresh
         private set
     var constraints: InteractionConstraints = empty()
         private set
