@@ -287,7 +287,18 @@ class Components internal constructor(private val componentController: Component
 
     @JvmSynthetic
     suspend fun deleteComponentsById(ids: Collection<String>) {
-        componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() }, throwTimeouts = false)
+        val parsedIds = ids
+            .filter {
+                if (ComponentController.isCompatibleComponent(it)) {
+                    true
+                } else {
+                    logger.warn { "Tried to delete an incompatible component ID '$it'" }
+                    false
+                }
+            }
+            .map { ComponentController.parseComponentId(it) }
+
+        componentController.deleteComponentsById(parsedIds, throwTimeouts = false)
     }
 
     companion object {
