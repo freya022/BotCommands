@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPagination
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**
@@ -63,7 +62,7 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
             this += lastButton.toPageButton(targetPage = maxPages - 1).withDisabled(isLastPage)
 
             if (deleteButton != null) {
-                this += componentsService.ephemeralButton(ButtonStyle.DANGER, deleteButton)
+                this += componentsService.ephemeralButton(deleteButton)
                     .bindTo(::onDeleteClicked)
                     .constraints(constraints)
                     .build()
@@ -74,7 +73,7 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
     }
 
     private fun ButtonContent.toPageButton(targetPage: Int) =
-        componentsService.ephemeralButton(ButtonStyle.PRIMARY, this)
+        componentsService.ephemeralButton(this)
             .bindTo { e: ButtonEvent ->
                 page = targetPage.coerceIn(0, maxPages - 1)
                 e.editMessage(getCurrentMessage()).queue()

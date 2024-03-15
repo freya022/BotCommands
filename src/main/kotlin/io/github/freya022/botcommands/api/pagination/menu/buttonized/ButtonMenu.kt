@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.menu.buttonized
 
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
@@ -22,7 +23,27 @@ class ButtonMenu<E> internal constructor(
     builder,
     makePages(builder.entries, builder.transformer, builder.rowPrefixSupplier, builder.maxEntriesPerPage)
 ) {
-    private val styledButtonContentSupplier: StyledButtonContentSupplier<E> = builder.styledButtonContentSupplier
+    /**
+     * A [ButtonContent] supplier for use in different paginators,
+     * allowing you to use your own text and emojis on buttons.
+     *
+     * @param T Item type
+     *
+     * @see ButtonContent.fromLabel
+     * @see ButtonContent.fromEmoji
+     */
+    fun interface ButtonContentSupplier<T> {
+        /**
+         * Returns a [ButtonContent] based on the given item and the current page number of the paginator
+         *
+         * @param item  The item bound to this button
+         * @param index The index of this item on the current page number of the paginator
+         * @return The [ButtonContent] of this item
+         */
+        fun apply(item: T, index: Int): ButtonContent
+    }
+
+    private val buttonContentSupplier: ButtonContentSupplier<E> = builder.buttonContentSupplier
     private val callback: SuspendingChoiceCallback<E> = builder.callback
     private val reusable: Boolean = builder.reusable
 
@@ -31,8 +52,8 @@ class ButtonMenu<E> internal constructor(
 
         pages[page]!!.entries
             .mapIndexed { i, item ->
-                val styledContent = styledButtonContentSupplier.apply(item, i)
-                componentsService.ephemeralButton(styledContent.style, styledContent.content)
+                val styledContent = buttonContentSupplier.apply(item, i)
+                componentsService.ephemeralButton(styledContent)
                     .bindTo { event: ButtonEvent ->
                         if (reusable) {
                             restartTimeout()

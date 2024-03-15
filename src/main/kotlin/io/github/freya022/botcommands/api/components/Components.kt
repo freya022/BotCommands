@@ -196,12 +196,12 @@ class Components internal constructor(private val componentController: Component
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @CheckReturnValue
-    fun persistentButton(style: ButtonStyle, content: ButtonContent) =
-        persistentButton(style, content.label, content.emoji)
+    fun persistentButton(content: ButtonContent) =
+        persistentButton(content.style, content.label, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    suspend inline fun persistentButton(style: ButtonStyle, content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
-        persistentButton(style, content.label, content.emoji, block)
+    suspend inline fun persistentButton(content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
+        persistentButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
@@ -217,12 +217,12 @@ class Components internal constructor(private val componentController: Component
 
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @CheckReturnValue
-    fun ephemeralButton(style: ButtonStyle, content: ButtonContent) =
-        ephemeralButton(style, content.label, content.emoji)
+    fun ephemeralButton(content: ButtonContent) =
+        ephemeralButton(content.style, content.label, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
-    suspend inline fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
-        ephemeralButton(style, content.label, content.emoji, block)
+    suspend inline fun ephemeralButton( content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
+        ephemeralButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
 

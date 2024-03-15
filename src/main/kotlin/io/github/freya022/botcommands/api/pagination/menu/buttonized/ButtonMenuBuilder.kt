@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 class ButtonMenuBuilder<E> internal constructor(
     context: BContext,
     entries: List<E>,
-    val styledButtonContentSupplier: StyledButtonContentSupplier<E>,
+    val buttonContentSupplier: ButtonMenu.ButtonContentSupplier<E>,
     val callback: SuspendingChoiceCallback<E>
 ) : AbstractMenuBuilder<E, ButtonMenuBuilder<E>, ButtonMenu<E>>(context, entries) {
     var reusable: Boolean = ButtonMenu.Defaults.reusable

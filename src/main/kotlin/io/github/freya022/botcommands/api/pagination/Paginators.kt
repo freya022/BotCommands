@@ -11,8 +11,8 @@ import io.github.freya022.botcommands.api.pagination.custom.CustomPaginationBuil
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.MenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.BlockingChoiceCallback
+import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenu
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenuBuilder
-import io.github.freya022.botcommands.api.pagination.menu.buttonized.StyledButtonContentSupplier
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.SuspendingChoiceCallback
 import io.github.freya022.botcommands.api.pagination.nested.NestedPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
@@ -89,8 +89,8 @@ class Paginators(private val context: BContext) {
      * when clicked, the [callback][ButtonMenuBuilder.callback] is run.
      */
     @JvmName("buttonMenu")
-    fun <E> buttonMenuJava(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
-        ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback::accept)
+    fun <E> buttonMenuJava(entries: List<E>, buttonContentSupplier: ButtonMenu.ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
 
     /**
      * A paginator where each page is filled with a list of entries.
@@ -104,8 +104,8 @@ class Paginators(private val context: BContext) {
      * when clicked, the [callback][ButtonMenuBuilder.callback] is run.
      */
     @JvmSynthetic
-    fun <E> buttonMenu(entries: List<E>, styledButtonContentSupplier: StyledButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
-        ButtonMenuBuilder(context, entries, styledButtonContentSupplier, callback)
+    fun <E> buttonMenu(entries: List<E>, buttonContentSupplier: ButtonMenu.ButtonContentSupplier<E>, callback: SuspendingChoiceCallback<E>): ButtonMenuBuilder<E> =
+        ButtonMenuBuilder(context, entries, buttonContentSupplier, callback)
 
     /**
      * A paginator which wraps a paginator, with a select menu to switch between them.

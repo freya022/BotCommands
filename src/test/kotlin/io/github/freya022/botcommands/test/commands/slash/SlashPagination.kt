@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
-import io.github.freya022.botcommands.api.components.utils.StyledButtonContent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.Paginators
@@ -39,11 +38,11 @@ class SlashPagination(private val paginators: Paginators, private val components
     private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
 
     init {
-        Paginator.Defaults.firstPageButtonContent = ButtonContent.fromLabel("[Default] First")
-        Paginator.Defaults.previousPageButtonContent = ButtonContent.fromLabel("[Default] Previous")
-        Paginator.Defaults.nextPageButtonContent = ButtonContent.fromLabel("[Default] Next")
-        Paginator.Defaults.lastPageButtonContent = ButtonContent.fromLabel("[Default] Last")
-        Paginator.Defaults.deleteButtonContent = ButtonContent.fromLabel("[Default] Delete")
+        Paginator.Defaults.firstPageButtonContent = ButtonContent.fromLabel(ButtonStyle.SECONDARY, "[Default] First")
+        Paginator.Defaults.previousPageButtonContent = ButtonContent.fromLabel(ButtonStyle.SECONDARY, "[Default] Previous")
+        Paginator.Defaults.nextPageButtonContent = ButtonContent.fromLabel(ButtonStyle.SECONDARY, "[Default] Next")
+        Paginator.Defaults.lastPageButtonContent = ButtonContent.fromLabel(ButtonStyle.SECONDARY, "[Default] Last")
+        Paginator.Defaults.deleteButtonContent = ButtonContent.fromLabel(ButtonStyle.SUCCESS, "[Default] Delete")
 
         Menu.Defaults.maxEntriesPerPage = 5
         Menu.Defaults.rowPrefixSupplier = RowPrefixSupplier { entryNum, _ -> "[Default] $entryNum: " }
@@ -115,7 +114,7 @@ class SlashPagination(private val paginators: Paginators, private val components
         val buttonMenu = paginators
             .buttonMenu(
                 menuEntries,
-                styledButtonContentSupplier = { item, _ -> StyledButtonContent(ButtonStyle.PRIMARY, ButtonContent.fromLabel(item)) },
+                buttonContentSupplier = { item, _ -> ButtonContent.fromLabel(ButtonStyle.PRIMARY, item) },
                 callback = { buttonEvent, entry ->
                     buttonEvent.reply_("You have chosen '$entry'", ephemeral = true).await()
                 }
@@ -160,11 +159,11 @@ class SlashPagination(private val paginators: Paginators, private val components
 
     private fun <T : AbstractPaginatorBuilder<T, *>> T.configurePaginator(useDefaults: Boolean): T =
         if (!useDefaults) {
-            this.setFirstContent(ButtonContent.fromLabel("First"))
-                .setPreviousContent(ButtonContent.fromLabel("Previous"))
-                .setNextContent(ButtonContent.fromLabel("Next"))
-                .setLastContent(ButtonContent.fromLabel("Last"))
-                .setDeleteContent(ButtonContent.fromLabel("Delete"))
+            this.setFirstContent(ButtonContent.fromLabel(ButtonStyle.PRIMARY, "First"))
+                .setPreviousContent(ButtonContent.fromLabel(ButtonStyle.PRIMARY, "Previous"))
+                .setNextContent(ButtonContent.fromLabel(ButtonStyle.PRIMARY, "Next"))
+                .setLastContent(ButtonContent.fromLabel(ButtonStyle.PRIMARY, "Last"))
+                .setDeleteContent(ButtonContent.fromLabel(ButtonStyle.DANGER, "Delete"))
                 .useDeleteButton(true)
         } else {
             this
