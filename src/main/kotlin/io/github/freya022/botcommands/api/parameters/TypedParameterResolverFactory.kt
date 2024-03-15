@@ -21,7 +21,7 @@ import kotlin.reflect.full.withNullability
  */
 abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
     resolverType: KClass<out T>,
-    protected val type: KType
+    val type: KType
 ) : ParameterResolverFactory<T>(resolverType) {
     override val supportedTypesStr: List<String> = listOf(type.simpleNestedName)
 
