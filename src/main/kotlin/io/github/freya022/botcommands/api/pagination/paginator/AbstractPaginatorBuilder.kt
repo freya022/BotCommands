@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
+import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPagination
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
-import io.github.freya022.botcommands.api.utils.ButtonContent
 
 /**
  * Most basic paginator builder.

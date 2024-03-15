@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
+import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.Paginators
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
@@ -43,23 +43,23 @@ class Paginator internal constructor(
 
         /** @see PaginatorBuilder.setFirstContent */
         @JvmStatic
-        var firstPageButtonContent: ButtonContent = ButtonContent.withShortcode("rewind")
+        var firstPageButtonContent: ButtonContent = ButtonContent.fromShortcode("rewind")
 
         /** @see PaginatorBuilder.setPreviousContent */
         @JvmStatic
-        var previousPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_backward")
+        var previousPageButtonContent: ButtonContent = ButtonContent.fromShortcode("arrow_backward")
 
         /** @see PaginatorBuilder.setNextContent */
         @JvmStatic
-        var nextPageButtonContent: ButtonContent = ButtonContent.withShortcode("arrow_forward")
+        var nextPageButtonContent: ButtonContent = ButtonContent.fromShortcode("arrow_forward")
 
         /** @see PaginatorBuilder.setLastContent */
         @JvmStatic
-        var lastPageButtonContent: ButtonContent = ButtonContent.withShortcode("fast_forward")
+        var lastPageButtonContent: ButtonContent = ButtonContent.fromShortcode("fast_forward")
 
         /** @see PaginatorBuilder.setDeleteContent */
         @JvmStatic
-        var deleteButtonContent: ButtonContent = ButtonContent.withShortcode("wastebasket")
+        var deleteButtonContent: ButtonContent = ButtonContent.fromShortcode("wastebasket")
 
         /** @see PaginatorBuilder.useDeleteButton */
         @JvmStatic

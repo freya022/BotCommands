@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
@@ -22,7 +23,6 @@ import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenu
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.StyledButtonContent
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
@@ -39,11 +39,11 @@ class SlashPagination(private val paginators: Paginators, private val components
     private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
 
     init {
-        Paginator.Defaults.firstPageButtonContent = ButtonContent.withString("[Default] First")
-        Paginator.Defaults.previousPageButtonContent = ButtonContent.withString("[Default] Previous")
-        Paginator.Defaults.nextPageButtonContent = ButtonContent.withString("[Default] Next")
-        Paginator.Defaults.lastPageButtonContent = ButtonContent.withString("[Default] Last")
-        Paginator.Defaults.deleteButtonContent = ButtonContent.withString("[Default] Delete")
+        Paginator.Defaults.firstPageButtonContent = ButtonContent.fromLabel("[Default] First")
+        Paginator.Defaults.previousPageButtonContent = ButtonContent.fromLabel("[Default] Previous")
+        Paginator.Defaults.nextPageButtonContent = ButtonContent.fromLabel("[Default] Next")
+        Paginator.Defaults.lastPageButtonContent = ButtonContent.fromLabel("[Default] Last")
+        Paginator.Defaults.deleteButtonContent = ButtonContent.fromLabel("[Default] Delete")
 
         Menu.Defaults.maxEntriesPerPage = 5
         Menu.Defaults.rowPrefixSupplier = RowPrefixSupplier { entryNum, _ -> "[Default] $entryNum: " }
@@ -115,7 +115,7 @@ class SlashPagination(private val paginators: Paginators, private val components
         val buttonMenu = paginators
             .buttonMenu(
                 menuEntries,
-                styledButtonContentSupplier = { item, _ -> StyledButtonContent(ButtonStyle.PRIMARY, ButtonContent.withString(item)) },
+                styledButtonContentSupplier = { item, _ -> StyledButtonContent(ButtonStyle.PRIMARY, ButtonContent.fromLabel(item)) },
                 callback = { buttonEvent, entry ->
                     buttonEvent.reply_("You have chosen '$entry'", ephemeral = true).await()
                 }
@@ -160,11 +160,11 @@ class SlashPagination(private val paginators: Paginators, private val components
 
     private fun <T : AbstractPaginatorBuilder<T, *>> T.configurePaginator(useDefaults: Boolean): T =
         if (!useDefaults) {
-            this.setFirstContent(ButtonContent.withString("First"))
-                .setPreviousContent(ButtonContent.withString("Previous"))
-                .setNextContent(ButtonContent.withString("Next"))
-                .setLastContent(ButtonContent.withString("Last"))
-                .setDeleteContent(ButtonContent.withString("Delete"))
+            this.setFirstContent(ButtonContent.fromLabel("First"))
+                .setPreviousContent(ButtonContent.fromLabel("Previous"))
+                .setNextContent(ButtonContent.fromLabel("Next"))
+                .setLastContent(ButtonContent.fromLabel("Last"))
+                .setDeleteContent(ButtonContent.fromLabel("Delete"))
                 .useDeleteButton(true)
         } else {
             this

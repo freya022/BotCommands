@@ -10,13 +10,13 @@ import io.github.freya022.botcommands.api.components.builder.select.ephemeral.Ep
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
+import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BComponentsConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.utils.ButtonContent
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.reference
@@ -197,11 +197,11 @@ class Components internal constructor(private val componentController: Component
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @CheckReturnValue
     fun persistentButton(style: ButtonStyle, content: ButtonContent) =
-        persistentButton(style, content.text, content.emoji)
+        persistentButton(style, content.label, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
     suspend inline fun persistentButton(style: ButtonStyle, content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
-        persistentButton(style, content.text, content.emoji, block)
+        persistentButton(style, content.label, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
@@ -218,11 +218,11 @@ class Components internal constructor(private val componentController: Component
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @CheckReturnValue
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent) =
-        ephemeralButton(style, content.text, content.emoji)
+        ephemeralButton(style, content.label, content.emoji)
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
     suspend inline fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
-        ephemeralButton(style, content.text, content.emoji, block)
+        ephemeralButton(style, content.label, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
 
