@@ -21,6 +21,8 @@ import java.util.*
  *
  * You can create interaction constraints from the static methods or by using the existing instance in the component builders
  */
+//TODO reimplement using a separate mutable type
+// use a separate implementation class, move isAllowed as an internal extension
 class InteractionConstraints private constructor() {
     val userList = TLongArrayList()
     val roleList = TLongArrayList()

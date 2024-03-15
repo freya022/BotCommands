@@ -357,6 +357,35 @@ In addition, `#localize[X]orNull` can help you return `null` in case the given l
 
 You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
 
+## New pagination
+
+All paginators were reworked with several improvements, here is a list of the changes:
+### Name changes
+* `ButtonMenu` -> `ChoiceMenu`
+* `InteractiveMenu` -> `NestedPagination`
+
+### Usage changes
+* A `Paginators` service that serves as a pagination factory has to be used, improving discoverability
+* Mandatory parameters are no longer behind setters, they are requested by the factory
+
+### New features
+* `ButtonMenu` can now change the button style
+* `ButtonMenu` can have its buttons reused
+* Added support for Kotlin coroutines and `Duration`
+  * Some callbacks (like `PageEditor`) cannot use coroutines as they are called by method overridable by Java users
+* `NestedPagination` saves the page number before switching
+
+### Changes
+* Most options use default values, such as paginator buttons and timeouts
+* Requesting a new page invalidates the replaced page's components, can be disabled
+* Paginators expire by default using the same timeout as in `Components`
+* Timeout consumers are optional, timeout can be entirely disabled
+* Page editors no longer require returning an embed, you can freely edit the message and/or the existing embed
+
+### Extension changes
+* Builders are passed instead of their individual values
+* Creating a message from the pagination's state is fully handled by the base class, and decomposed into steps that can be overridden
+
 ## Misc
 
 ### Command / Component filters

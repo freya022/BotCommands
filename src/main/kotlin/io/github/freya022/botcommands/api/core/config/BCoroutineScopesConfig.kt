@@ -23,6 +23,7 @@ interface BCoroutineScopesConfig {
     val componentTimeoutScope: CoroutineScope       //Should not be long-running, spends time waiting
     val modalScope: CoroutineScope                  //Should not be long-running
     val modalTimeoutScope: CoroutineScope           //Should not be long-running, spends time waiting
+    val paginationTimeoutScope: CoroutineScope      //Should not be long-running
 }
 
 fun interface CoroutineScopeFactory {
@@ -39,6 +40,7 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
     override val componentTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
     override val modalScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
     override val modalTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val paginationTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
 
     var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 0)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
@@ -48,6 +50,7 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
     var componentTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Component timeout handler", 2)
     var modalScopeFactory: CoroutineScopeFactory = defaultFactory("Modal handler", 2)
     var modalTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Modal timeout handler", 2)
+    var paginationTimeoutScopeFactory: CoroutineScopeFactory = defaultFactory("Pagination timeout handler", 2)
 
     /**
      * Creates a new coroutine scope factory out of an executor.
@@ -83,5 +86,6 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
         override val componentTimeoutScope = componentTimeoutScopeFactory.create()
         override val modalScope = modalScopeFactory.create()
         override val modalTimeoutScope = modalTimeoutScopeFactory.create()
+        override val paginationTimeoutScope = paginationTimeoutScopeFactory.create()
     }
 }
