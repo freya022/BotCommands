@@ -292,7 +292,9 @@ class Components internal constructor(private val componentController: Component
 
     companion object {
         /**
-         * The default timeout for components and component groups
+         * The default timeout for components and component groups.
+         *
+         * Non-positive and infinite durations are considered as a disabled timeout.
          */
         @JvmSynthetic
         var defaultTimeout: Duration = 15.minutes
@@ -300,6 +302,11 @@ class Components internal constructor(private val componentController: Component
         @JvmStatic
         fun getDefaultTimeout(): JavaDuration = defaultTimeout.toJavaDuration()
 
+        /**
+         * Sets the default timeout for components and component groups.
+         *
+         * Non-positive and infinite durations are considered as a disabled timeout.
+         */
         @JvmStatic
         fun setDefaultTimeout(defaultTimeout: JavaDuration) {
             this.defaultTimeout = defaultTimeout.toKotlinDuration()
