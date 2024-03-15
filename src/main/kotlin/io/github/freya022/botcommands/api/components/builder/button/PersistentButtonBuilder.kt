@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
 class PersistentButtonBuilder internal constructor(
-    style: ButtonStyle,
     componentController: ComponentController,
+    style: ButtonStyle,
     label: String?,
     emoji: Emoji?,
     instanceRetriever: InstanceRetriever<PersistentButtonBuilder>

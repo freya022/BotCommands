@@ -188,7 +188,7 @@ class Components internal constructor(private val componentController: Component
     @JvmOverloads
     @CheckReturnValue
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
-        PersistentButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
+        PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
     suspend inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: PersistentButtonBuilder.() -> Unit) =
@@ -209,7 +209,7 @@ class Components internal constructor(private val componentController: Component
     @JvmOverloads
     @CheckReturnValue
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
-        EphemeralButtonBuilder(style, componentController, label, emoji, InstanceRetriever())
+        EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
     /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmSynthetic
     suspend inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: EphemeralButtonBuilder.() -> Unit) =
