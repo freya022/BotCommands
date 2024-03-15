@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints.Companion.empty
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
+import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
@@ -22,6 +23,8 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
     @Suppress("UNCHECKED_CAST")
     protected val instance: T get() = this as T
 
+    var cleanAfterRefresh: Boolean = true
+        private set
     var constraints: InteractionConstraints = empty()
         private set
     var timeout: TimeoutInfo<R>? = Components.defaultTimeout.takeIfFinite()?.let { TimeoutInfo(it, onTimeout = null) }
@@ -29,6 +32,20 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
 
     @JvmSynthetic
     protected inline fun config(block: () -> Unit): T = instance.apply { block() }
+
+    /**
+     * Sets whether the components of the pagination should be invalidated after a refresh,
+     * enabling you to save memory when a new page is requested.
+     *
+     * When enabled, if components are detected to be reused between two pages, then no cleanup will occur.
+     *
+     * If disabled, all components are invalidated once the pagination expires.
+     *
+     * The default value is set to [Paginator.Defaults.cleanAfterRefresh].
+     */
+    fun cleanAfterRefresh(cleanAfterRefresh: Boolean): T = config {
+        this.cleanAfterRefresh = cleanAfterRefresh
+    }
 
     /**
      * Sets the timeout for this pagination instance.

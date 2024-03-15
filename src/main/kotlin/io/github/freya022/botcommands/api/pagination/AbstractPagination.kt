@@ -31,7 +31,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
     val constraints: InteractionConstraints = builder.constraints
     protected val timeout: TimeoutInfo<T>? = builder.timeout?.takeIf { it.timeout.isFinite() && it.timeout.isPositive() }
 
-    private val usedIds: MutableSet<String> = hashSetOf()
+    private val usedComponents = UsedComponentSet(componentsService, builder.cleanAfterRefresh)
 
     private lateinit var timeoutJob: Job
     private var timeoutPassed = false
@@ -107,14 +107,8 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
 
     protected open fun postProcess(builder: MessageCreateBuilder) { }
 
-    protected open fun saveUsedComponents(builder: MessageCreateBuilder) {
-        for (row in builder.components) {
-            for (component in row.actionComponents) {
-                val id = component.id ?: continue
-
-                usedIds.add(id)
-            }
-        }
+    private fun saveUsedComponents(builder: MessageCreateBuilder) {
+        usedComponents.setComponents(builder.components)
     }
 
     /**
@@ -143,8 +137,6 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
      */
     @JvmSynthetic
     suspend fun cleanup() {
-        componentsService.deleteComponentsById(usedIds)
-
-        usedIds.clear()
+        usedComponents.cleanup()
     }
 }

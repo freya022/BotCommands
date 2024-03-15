@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.utils.ButtonContent
@@ -36,6 +37,10 @@ class Paginator internal constructor(
     }
 
     object Defaults {
+        /** @see AbstractPaginationBuilder.cleanAfterRefresh */
+        @JvmStatic
+        var cleanAfterRefresh: Boolean = true
+
         /** @see PaginatorBuilder.setFirstContent */
         @JvmStatic
         var firstPageButtonContent: ButtonContent = ButtonContent.withShortcode("rewind")
