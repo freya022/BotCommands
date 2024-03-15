@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
+import io.github.freya022.botcommands.api.components.utils.StyledButtonContent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.Paginators
@@ -20,7 +21,6 @@ import io.github.freya022.botcommands.api.pagination.menu.AbstractMenuBuilder
 import io.github.freya022.botcommands.api.pagination.menu.Menu
 import io.github.freya022.botcommands.api.pagination.menu.RowPrefixSupplier
 import io.github.freya022.botcommands.api.pagination.menu.buttonized.ButtonMenu
-import io.github.freya022.botcommands.api.pagination.menu.buttonized.StyledButtonContent
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.oshai.kotlinlogging.KotlinLogging

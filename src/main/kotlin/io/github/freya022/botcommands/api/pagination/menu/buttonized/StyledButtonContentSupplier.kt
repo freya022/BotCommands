@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.pagination.menu.buttonized
 
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
+import io.github.freya022.botcommands.api.components.utils.StyledButtonContent
 
 /**
  * A [ButtonContent] supplier for use in different paginators,
