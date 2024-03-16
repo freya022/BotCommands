@@ -19,6 +19,35 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         }
     }
 
+    /**
+     * Creates a new button content with the provided emoji alias / emoji unicode.
+     *
+     * ### Example
+     * ```kt
+     * // Emoji alias
+     * withEmoji(":smiley:")
+     * // Unicode emoji
+     * withEmoji("😃")
+     *
+     * // Animated custom emoji
+     * withEmoji("<a:dance:123456789123456789>")
+     * // Not animated custom emoji
+     * withEmoji("<:dog:123456789123456789>")
+     *
+     * // Unicode emoji, escape codes
+     * withEmoji("&#92;uD83D&#92;uDE03")
+     * // Codepoint notation
+     * withEmoji("U+1F602")
+     * ```
+     */
+    fun withEmoji(aliasOrUnicode: String?): ButtonContent {
+        val newEmoji = aliasOrUnicode?.let {
+            EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
+        }
+
+        return ButtonContent(style, label, newEmoji)
+    }
+
     companion object {
         /**
          * Constructs a [ButtonContent] with a label.
