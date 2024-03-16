@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
@@ -25,7 +24,7 @@ class SlashTimeUnit(private val componentsService: Components) : ApplicationComm
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
     ) {
-        val button = componentsService.button(ButtonStyle.PRIMARY, "TimeUnit: ${timeUnit.name}").persistent() {
+        val button = componentsService.primaryButton("TimeUnit: ${timeUnit.name}").persistent() {
             oneUse = true
             bindTo(::onTimeUnitClicked, timeUnit)
         }

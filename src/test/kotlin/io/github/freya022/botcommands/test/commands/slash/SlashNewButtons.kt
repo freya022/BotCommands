@@ -78,7 +78,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = components.button(ButtonStyle.PRIMARY, "Persistent").persistent {
+        val firstButton = components.primaryButton("Persistent").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -86,7 +86,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val secondButton = components.button(ButtonStyle.PRIMARY, "Invisible").persistent {
+        val secondButton = components.primaryButton("Invisible").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -94,7 +94,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val timeoutEdButton = components.button(ButtonStyle.PRIMARY, "Invisible").persistent {
+        val timeoutEdButton = components.primaryButton("Invisible").persistent {
             timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
         }
 

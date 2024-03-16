@@ -20,7 +20,6 @@ import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.seconds
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
@@ -68,7 +67,7 @@ class SlashModal(private val components: Components) : ApplicationCommand(), Glo
             definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
-            components = listOf(row(components.button(ButtonStyle.PRIMARY, "Test button").ephemeral {
+            components = listOf(row(components.primaryButton("Test button").ephemeral {
                 bindTo(::handleButton)
             })),
             ephemeral = true

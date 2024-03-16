@@ -354,6 +354,45 @@ class Components internal constructor(private val componentController: Component
     fun button(content: ButtonContent): ButtonFactory =
         ButtonFactory(componentController, content.style, content.label, content.emoji)
 
+    /**
+     * Creates a primary button factory with the label provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun primaryButton(label: String): ButtonFactory =
+        button(ButtonStyle.PRIMARY, label)
+
+    /**
+     * Creates a primary button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun primaryButton(emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.PRIMARY, emoji)
+
+    /**
+     * Creates a primary button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun primaryButton(label: String, emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.PRIMARY, label, emoji)
+
     // -------------------- Select menus --------------------
 
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */

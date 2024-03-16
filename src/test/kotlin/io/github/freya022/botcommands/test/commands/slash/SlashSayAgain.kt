@@ -40,7 +40,7 @@ class SlashSayAgain : ApplicationCommand() {
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         // We have to use lateinit as the button is used in a callback
         lateinit var temporarySaySentenceButton: Button
-        temporarySaySentenceButton = componentsService.button(ButtonStyle.PRIMARY, "Say '$sentence'").ephemeral {
+        temporarySaySentenceButton = componentsService.primaryButton("Say '$sentence'").ephemeral {
             // The code to run when the button gets clicked
             bindTo { buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).await() }
 

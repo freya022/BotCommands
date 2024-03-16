@@ -39,7 +39,7 @@ public class SlashSayAgain extends ApplicationCommand {
 
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         AtomicReference<Button> temporaryButtonRef = new AtomicReference<>();
-        final var temporarySaySentenceButton = componentsService.button(ButtonStyle.PRIMARY, "Say '" + sentence + "'").ephemeral()
+        final var temporarySaySentenceButton = componentsService.primaryButton("Say '" + sentence + "'").ephemeral()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The code to run when the button gets clicked

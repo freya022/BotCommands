@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import kotlinx.coroutines.delay
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.system.measureTimeMillis
 
 @Command
@@ -23,7 +22,7 @@ class TextDelay : TextCommand() {
 
         event.message.reply("delayed after $millis ms")
                 .setActionRow(
-                        components.button(ButtonStyle.PRIMARY, "Delay").persistent {
+                        components.primaryButton("Delay").persistent {
                             bindTo("delayButton")
                         }
                 )

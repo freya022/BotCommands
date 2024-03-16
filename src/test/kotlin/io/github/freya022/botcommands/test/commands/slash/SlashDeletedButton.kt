@@ -13,7 +13,7 @@ class SlashDeletedButton(private val components: Components) : ApplicationComman
     @JDASlashCommand(name = "deleted_button")
     suspend fun onSlashDeletedButton(event: GuildSlashEvent) {
         val trap = components.button(ButtonStyle.DANGER, "DO NOT SEND").ephemeral {}
-        val deleteButton = components.button(ButtonStyle.PRIMARY, "Delete").ephemeral {
+        val deleteButton = components.primaryButton("Delete").ephemeral {
             bindTo {
                 it.deferEdit().queue()
                 it.hook.deleteOriginal().queue()

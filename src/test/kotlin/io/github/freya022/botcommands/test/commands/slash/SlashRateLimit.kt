@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLim
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -36,7 +35,7 @@ class SlashRateLimit(private val components: Components) : ApplicationCommand(),
 //    )
     @RateLimitReference(commandRateLimitGroup)
     suspend fun onSlashRateLimit(event: GuildSlashEvent) {
-        val button = components.button(ButtonStyle.PRIMARY, "Retry (5 clicks in 1 minute)").ephemeral {
+        val button = components.primaryButton("Retry (5 clicks in 1 minute)").ephemeral {
             rateLimitReference(retryRateLimitGroup)
             bindTo { event ->
                 if (Math.random() > 0.5) {

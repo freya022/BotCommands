@@ -60,7 +60,7 @@ class SlashBan(private val componentsService: Components, private val banService
             }
         }
 
-        val cancelButton = componentsService.button(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")).ephemeral {
+        val cancelButton = componentsService.primaryButton(localizationContext.localize("buttons.cancel")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true
