@@ -62,7 +62,7 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
             this += lastButton.toPageButton(targetPage = maxPages - 1).withDisabled(isLastPage)
 
             if (deleteButton != null) {
-                this += buttons.button(deleteButton).ephemeral()
+                this += buttons.of(deleteButton).ephemeral()
                     .bindTo(::onDeleteClicked)
                     .constraints(constraints)
                     .build()
@@ -73,7 +73,7 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
     }
 
     private fun ButtonContent.toPageButton(targetPage: Int) =
-        buttons.button(this).ephemeral()
+        buttons.of(this).ephemeral()
             .bindTo { e: ButtonEvent ->
                 page = targetPage.coerceIn(0, maxPages - 1)
                 e.editMessage(getCurrentMessage()).queue()

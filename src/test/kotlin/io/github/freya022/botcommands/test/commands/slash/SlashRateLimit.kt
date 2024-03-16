@@ -36,7 +36,7 @@ class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), Globa
 //    )
     @RateLimitReference(commandRateLimitGroup)
     suspend fun onSlashRateLimit(event: GuildSlashEvent) {
-        val button = buttons.primaryButton("Retry (5 clicks in 1 minute)").ephemeral {
+        val button = buttons.primary("Retry (5 clicks in 1 minute)").ephemeral {
             rateLimitReference(retryRateLimitGroup)
             bindTo { event ->
                 if (Math.random() > 0.5) {

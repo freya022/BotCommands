@@ -28,7 +28,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, label: String): ButtonFactory =
+    fun of(style: ButtonStyle, label: String): ButtonFactory =
         ButtonFactory(componentController, style, label, null)
 
     /**
@@ -40,7 +40,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, emoji: Emoji): ButtonFactory =
+    fun of(style: ButtonStyle, emoji: Emoji): ButtonFactory =
         ButtonFactory(componentController, style, null, emoji)
 
     /**
@@ -54,7 +54,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, label: String, emoji: Emoji): ButtonFactory =
+    fun of(style: ButtonStyle, label: String, emoji: Emoji): ButtonFactory =
         ButtonFactory(componentController, style, label, emoji)
 
     /**
@@ -68,7 +68,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonContent.withEmoji
      */
     @CheckReturnValue
-    fun button(content: ButtonContent): ButtonFactory =
+    fun of(content: ButtonContent): ButtonFactory =
         ButtonFactory(componentController, content.style, content.label, content.emoji)
 
     /**
@@ -81,8 +81,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun primaryButton(label: String): ButtonFactory =
-        button(ButtonStyle.PRIMARY, label)
+    fun primary(label: String): ButtonFactory =
+        of(ButtonStyle.PRIMARY, label)
 
     /**
      * Creates a primary button factory with the emoji provided.
@@ -93,8 +93,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun primaryButton(emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.PRIMARY, emoji)
+    fun primary(emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.PRIMARY, emoji)
 
     /**
      * Creates a primary button factory with the emoji provided.
@@ -107,8 +107,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun primaryButton(label: String, emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.PRIMARY, label, emoji)
+    fun primary(label: String, emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.PRIMARY, label, emoji)
 
     /**
      * Creates a secondary button factory with the label provided.
@@ -120,8 +120,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun secondaryButton(label: String): ButtonFactory =
-        button(ButtonStyle.SECONDARY, label)
+    fun secondary(label: String): ButtonFactory =
+        of(ButtonStyle.SECONDARY, label)
 
     /**
      * Creates a secondary button factory with the emoji provided.
@@ -132,8 +132,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun secondaryButton(emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.SECONDARY, emoji)
+    fun secondary(emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.SECONDARY, emoji)
 
     /**
      * Creates a secondary button factory with the emoji provided.
@@ -146,8 +146,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun secondaryButton(label: String, emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.SECONDARY, label, emoji)
+    fun secondary(label: String, emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.SECONDARY, label, emoji)
 
     /**
      * Creates a success button factory with the label provided.
@@ -159,8 +159,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun successButton(label: String): ButtonFactory =
-        button(ButtonStyle.SUCCESS, label)
+    fun success(label: String): ButtonFactory =
+        of(ButtonStyle.SUCCESS, label)
 
     /**
      * Creates a success button factory with the emoji provided.
@@ -171,8 +171,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun successButton(emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.SUCCESS, emoji)
+    fun success(emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.SUCCESS, emoji)
 
     /**
      * Creates a success button factory with the emoji provided.
@@ -185,8 +185,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun successButton(label: String, emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.SUCCESS, label, emoji)
+    fun success(label: String, emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.SUCCESS, label, emoji)
 
     /**
      * Creates a danger button factory with the label provided.
@@ -198,8 +198,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun dangerButton(label: String): ButtonFactory =
-        button(ButtonStyle.DANGER, label)
+    fun danger(label: String): ButtonFactory =
+        of(ButtonStyle.DANGER, label)
 
     /**
      * Creates a danger button factory with the emoji provided.
@@ -210,8 +210,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun dangerButton(emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.DANGER, emoji)
+    fun danger(emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.DANGER, emoji)
 
     /**
      * Creates a danger button factory with the emoji provided.
@@ -224,8 +224,8 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun dangerButton(label: String, emoji: Emoji): ButtonFactory =
-        button(ButtonStyle.DANGER, label, emoji)
+    fun danger(label: String, emoji: Emoji): ButtonFactory =
+        of(ButtonStyle.DANGER, label, emoji)
 
     /**
      * Creates a danger button factory with the label provided.
@@ -235,7 +235,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @throws IllegalArgumentException If the url/label is empty
      */
     @CheckReturnValue
-    fun linkButton(url: String, label: String): Button =
+    fun link(url: String, label: String): Button =
         Button.link(url, label)
 
     /**
@@ -248,7 +248,7 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see EmojiUtils.resolveJDAEmoji
      */
     @CheckReturnValue
-    fun linkButton(url: String, emoji: Emoji): Button =
+    fun link(url: String, emoji: Emoji): Button =
         Button.link(url, emoji)
 
     /**
@@ -261,6 +261,6 @@ class Buttons internal constructor(private val componentController: ComponentCon
      * @see EmojiUtils.resolveJDAEmoji
      */
     @CheckReturnValue
-    fun linkButton(url: String, label: String, emoji: Emoji): Button =
+    fun link(url: String, label: String, emoji: Emoji): Button =
         Button.link(url, label).withEmoji(emoji)
 }

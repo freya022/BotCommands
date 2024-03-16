@@ -27,7 +27,7 @@ class SlashSayAgain : ApplicationCommand() {
         buttons: Buttons
     ) {
         // A button that always works, even after a restart
-        val persistentSaySentenceButton = buttons.secondaryButton("Say '$sentence'").persistent {
+        val persistentSaySentenceButton = buttons.secondary("Say '$sentence'").persistent {
             // Make sure only the caller can use the button
             constraints += event.user
 
@@ -39,7 +39,7 @@ class SlashSayAgain : ApplicationCommand() {
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         // We have to use lateinit as the button is used in a callback
         lateinit var temporarySaySentenceButton: Button
-        temporarySaySentenceButton = buttons.primaryButton("Say '$sentence'").ephemeral {
+        temporarySaySentenceButton = buttons.primary("Say '$sentence'").ephemeral {
             // The code to run when the button gets clicked
             bindTo { buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).await() }
 

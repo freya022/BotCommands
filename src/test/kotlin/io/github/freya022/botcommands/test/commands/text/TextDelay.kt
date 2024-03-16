@@ -23,7 +23,7 @@ class TextDelay : TextCommand() {
 
         event.message.reply("delayed after $millis ms")
                 .setActionRow(
-                        buttons.primaryButton("Delay").persistent {
+                        buttons.primary("Delay").persistent {
                             bindTo("delayButton")
                         }
                 )

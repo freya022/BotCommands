@@ -30,7 +30,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(buttons.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -52,7 +52,7 @@ class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvid
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(buttons.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()

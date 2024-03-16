@@ -68,7 +68,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
             definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
-            components = listOf(row(buttons.primaryButton("Test button").ephemeral {
+            components = listOf(row(buttons.primary("Test button").ephemeral {
                 bindTo(::handleButton)
             })),
             ephemeral = true

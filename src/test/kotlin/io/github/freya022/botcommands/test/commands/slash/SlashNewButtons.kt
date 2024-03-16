@@ -61,7 +61,7 @@ class SlashNewButtons(
         }
     }
 
-    private suspend fun filteredButton() = buttons.dangerButton("Leave VC").ephemeral {
+    private suspend fun filteredButton() = buttons.danger("Leave VC").ephemeral {
         filters += filter<InVoiceChannel>()
         bindTo {
             it.guild!!.kickVoiceMember(it.member!!).await()
@@ -70,14 +70,14 @@ class SlashNewButtons(
     }
 
     private suspend fun noGroupButton(event: GuildSlashEvent) =
-        buttons.dangerButton("Delete").ephemeral {
+        buttons.danger("Delete").ephemeral {
             oneUse = true
             bindTo { event.hook.deleteOriginal().queue() }
             timeout(5.seconds)
         }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = buttons.primaryButton("Persistent").persistent {
+        val firstButton = buttons.primary("Persistent").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -85,7 +85,7 @@ class SlashNewButtons(
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val secondButton = buttons.primaryButton("Invisible").persistent {
+        val secondButton = buttons.primary("Invisible").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -93,7 +93,7 @@ class SlashNewButtons(
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val timeoutEdButton = buttons.primaryButton("Invisible").persistent {
+        val timeoutEdButton = buttons.primary("Invisible").persistent {
             timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
         }
 
@@ -104,7 +104,7 @@ class SlashNewButtons(
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = buttons.secondaryButton("Ephemeral").ephemeral {
+        val firstButton = buttons.secondary("Ephemeral").ephemeral {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)

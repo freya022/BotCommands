@@ -79,7 +79,7 @@ class SlashPagination(private val paginators: Paginators, private val buttons: B
 
                 // Certified java callback moment
                 runBlocking {
-                    builder.addActionRow(buttons.primaryButton("Random page").ephemeral {
+                    builder.addActionRow(buttons.primary("Random page").ephemeral {
                         constraints(paginator.constraints)
                         bindTo {
                             paginator.page = Random.nextInt(0..<paginator.maxPages)

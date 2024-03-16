@@ -26,7 +26,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
     suspend fun onSlashButton(event: GlobalSlashEvent) {
         val components: MutableList<Button> = arrayListOf()
-        components += buttons.primaryButton("Click me under 5 seconds").ephemeral {
+        components += buttons.primary("Click me under 5 seconds").ephemeral {
             timeout(5.seconds) {
                 event.hook.editOriginalComponents(components.map(Button::asDisabled).row()).queue()
             }
@@ -35,7 +35,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
             }
         }
 
-        components += buttons.secondaryButton("Click me anytime").persistent {
+        components += buttons.secondary("Click me anytime").persistent {
             bindTo(buttonListenerName)
 //            bindTo(::onPersistentButtonClick) //Also works
         }

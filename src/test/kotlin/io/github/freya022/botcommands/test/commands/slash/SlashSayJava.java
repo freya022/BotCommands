@@ -36,7 +36,7 @@ public class SlashSayJava extends ApplicationCommand {
                 .flatMap(InteractionHook::deleteOriginal)
                 .queue();
 
-        final Button deleteButton = buttons.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
+        final Button deleteButton = buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

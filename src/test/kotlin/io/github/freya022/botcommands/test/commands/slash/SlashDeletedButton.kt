@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.api.components.Components
 class SlashDeletedButton(private val components: Components, private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "deleted_button")
     suspend fun onSlashDeletedButton(event: GuildSlashEvent) {
-        val trap = buttons.dangerButton("DO NOT SEND").ephemeral {}
-        val deleteButton = buttons.primaryButton("Delete").ephemeral {
+        val trap = buttons.danger("DO NOT SEND").ephemeral {}
+        val deleteButton = buttons.primary("Delete").ephemeral {
             bindTo {
                 it.deferEdit().queue()
                 it.hook.deleteOriginal().queue()
