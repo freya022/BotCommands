@@ -38,7 +38,7 @@ class UsedComponentSet(private val componentsService: Components, private val cl
                     "Paginators cannot reuse components when ${property.reference} is enabled"
                 }
             } else {
-                componentsService.deleteComponentsByIdJava(currentIds)
+                componentsService.deleteComponentsByIdsJava(currentIds)
                 currentIds = newIds
             }
         } else {
@@ -49,6 +49,6 @@ class UsedComponentSet(private val componentsService: Components, private val cl
     }
 
     suspend fun cleanup() {
-        componentsService.deleteComponentsById(currentIds)
+        componentsService.deleteComponentsByIds(currentIds)
     }
 }

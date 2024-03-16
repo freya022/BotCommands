@@ -16,7 +16,7 @@ class SlashDeletedButton(private val buttons: Buttons) : ApplicationCommand() {
             bindTo {
                 it.deferEdit().queue()
                 it.hook.deleteOriginal().queue()
-                buttons.deleteComponentsById(listOf(trap.id))
+                buttons.deleteComponentsByIds(listOf(it.componentId, trap.id))
             }
         }
 

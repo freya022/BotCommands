@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.builder.group.ComponentGrou
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval
 import javax.annotation.CheckReturnValue
 
 abstract class AbstractComponentFactory internal constructor(internal val componentController: ComponentController) {
@@ -13,11 +14,11 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
     fun group(vararg components: IdentifiableComponent): ComponentGroupFactory =
         ComponentGroupFactory(componentController, components)
 
-    @JvmName("deleteComponentsById")
-    fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
+    @JvmName("deleteComponentsByIds")
+    fun deleteComponentsByIdsJava(ids: Collection<String>) = runBlocking { deleteComponentsByIds(ids) }
 
     @JvmSynthetic
-    suspend fun deleteComponentsById(ids: Collection<String>) {
+    suspend fun deleteComponentsByIds(ids: Collection<String>) {
         val parsedIds = ids
             .filter {
                 if (ComponentController.isCompatibleComponent(it)) {
@@ -31,4 +32,14 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
 
         componentController.deleteComponentsById(parsedIds, throwTimeouts = false)
     }
+
+    @Deprecated("Use deleteComponentsByIds", replaceWith = ReplaceWith("deleteComponentsByIdsJava(ids)"))
+    @JvmName("deleteComponentsById")
+    @ScheduledForRemoval
+    fun deleteComponentsByIdJava(ids: Collection<String>) = deleteComponentsByIdsJava(ids)
+
+    @Deprecated("Use deleteComponentsByIds", replaceWith = ReplaceWith("deleteComponentsByIds(ids)"))
+    @JvmSynthetic
+    @ScheduledForRemoval
+    suspend fun deleteComponentsById(ids: Collection<String>) = deleteComponentsByIds(ids)
 }
