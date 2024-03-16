@@ -30,6 +30,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval
 import java.util.*
 import javax.annotation.CheckReturnValue
 import kotlin.time.Duration
@@ -172,11 +173,13 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentGroup(vararg components: IdentifiableComponent): PersistentComponentGroupBuilder =
         PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
 
     @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent { \nblock() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentGroup(vararg components: IdentifiableComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
         persistentGroup(*components).apply(block).buildSuspend()
 
@@ -184,11 +187,13 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralGroup(vararg components: IdentifiableComponent): EphemeralComponentGroupBuilder =
         EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
 
     @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralGroup(vararg components: IdentifiableComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
         ephemeralGroup(*components).apply(block).buildSuspend()
 
@@ -197,6 +202,7 @@ class Components internal constructor(private val componentController: Component
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent()"))
     @JvmOverloads
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent { block() }"))
@@ -206,10 +212,12 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentButton(content: ButtonContent) =
         persistentButton(content.style, content.label, content.emoji)
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentButton(content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
         persistentButton(content.style, content.label, content.emoji, block)
 
@@ -218,6 +226,7 @@ class Components internal constructor(private val componentController: Component
     @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral()"))
     @JvmOverloads
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
     @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral { block() }"))
@@ -227,10 +236,12 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralButton(content: ButtonContent) =
         ephemeralButton(content.style, content.label, content.emoji)
     @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralButton( content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(content.style, content.label, content.emoji, block)
 
@@ -238,28 +249,34 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentStringSelectMenu() =
         PersistentStringSelectBuilder(componentController, InstanceRetriever())
     @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentStringSelectMenu(block: PersistentStringSelectBuilder.() -> Unit) =
         persistentStringSelectMenu().apply(block).buildSuspend()
 
     @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentEntitySelectMenu(target: SelectTarget) =
         persistentEntitySelectMenu(enumSetOf(target))
     @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentEntitySelectMenu(target: SelectTarget, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(enumSetOf(target), block)
 
     @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentEntitySelectMenu(targets: Collection<SelectTarget>) =
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
     @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(targets).apply(block).buildSuspend()
 
@@ -267,29 +284,35 @@ class Components internal constructor(private val componentController: Component
 
     @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralStringSelectMenu() =
         EphemeralStringSelectBuilder(componentController, InstanceRetriever())
     @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralStringSelectMenu(block: EphemeralStringSelectBuilder.() -> Unit) =
         ephemeralStringSelectMenu().apply(block).buildSuspend()
 
     @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralEntitySelectMenu(target: SelectTarget) =
         ephemeralEntitySelectMenu(enumSetOf(target))
     @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(enumSetOf(target), block)
 
     @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>) =
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
 
     @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(targets).apply(block).buildSuspend()
 
