@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
+import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
@@ -29,12 +30,15 @@ import kotlin.time.Duration.Companion.seconds
 
 @Command
 @Dependencies(Components::class)
-class SlashNewSelects(private val components: Components) : ApplicationCommand() {
+class SlashNewSelects(
+    private val components: Components,
+    private val selectMenus: SelectMenus
+) : ApplicationCommand() {
     @JDASlashCommand(name = "new_selects")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentSelect = persistentGroupTest(event)
         val ephemeralSelect = ephemeralGroupTest(event)
-        val voiceSelect = components.entitySelectMenu(SelectTarget.CHANNEL).ephemeral {
+        val voiceSelect = selectMenus.entitySelectMenu(SelectTarget.CHANNEL).ephemeral {
             setChannelTypes(ChannelType.VOICE)
             filters += filter<InVoiceChannel>()
             bindTo {
@@ -51,7 +55,8 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {
-        val firstSelect = components.stringSelectMenu().persistent {
+        val firstSelect = selectMenus.stringSelectMenu().persistent {
+            noTimeout()
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -64,7 +69,8 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             addOption("Bar", "Bar")
         }
 
-        val secondSelect = components.stringSelectMenu().persistent {
+        val secondSelect = selectMenus.stringSelectMenu().persistent {
+            noTimeout()
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -84,7 +90,8 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): EntitySelectMenu {
-        val firstSelect = components.entitySelectMenu(SelectTarget.ROLE).ephemeral {
+        val firstSelect = selectMenus.entitySelectMenu(SelectTarget.ROLE).ephemeral {
+            noTimeout()
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)

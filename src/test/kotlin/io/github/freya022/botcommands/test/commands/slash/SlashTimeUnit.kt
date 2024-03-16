@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.bindTo
@@ -17,14 +18,14 @@ import java.util.concurrent.TimeUnit
 
 @Command
 @Dependencies(Components::class)
-class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
+class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
     suspend fun onSlashTimeUnit(
         event: GuildSlashEvent,
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
     ) {
-        val button = componentsService.primaryButton("TimeUnit: ${timeUnit.name}").persistent() {
+        val button = buttons.primaryButton("TimeUnit: ${timeUnit.name}").persistent() {
             oneUse = true
             bindTo(::onTimeUnitClicked, timeUnit)
         }

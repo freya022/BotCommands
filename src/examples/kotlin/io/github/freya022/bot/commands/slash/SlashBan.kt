@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.awaitAny
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -43,7 +44,7 @@ data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
 // --8<-- [end:aggregated_object-kotlin]
 
 @BService
-class SlashBan(private val componentsService: Components, private val banService: BanService) {
+class SlashBan(private val components: Components, private val buttons: Buttons, private val banService: BanService) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
@@ -59,14 +60,14 @@ class SlashBan(private val componentsService: Components, private val banService
             }
         }
 
-        val cancelButton = componentsService.primaryButton(localizationContext.localize("buttons.cancel")).ephemeral {
+        val cancelButton = buttons.primaryButton(localizationContext.localize("buttons.cancel")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
-        val confirmButton = componentsService.dangerButton(localizationContext.localize("buttons.confirm")).ephemeral {
+        val confirmButton = buttons.dangerButton(localizationContext.localize("buttons.confirm")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true
@@ -74,7 +75,7 @@ class SlashBan(private val componentsService: Components, private val banService
             constraints += event.user
         }
 
-        val componentGroup = componentsService.group(cancelButton, confirmButton).ephemeral {
+        val componentGroup = components.group(cancelButton, confirmButton).ephemeral {
             timeout(1.minutes)
         }
 

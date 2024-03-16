@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
-import io.github.freya022.botcommands.api.components.Components;
+import io.github.freya022.botcommands.api.components.Buttons;
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
@@ -25,10 +25,10 @@ public class SlashSayAgain extends ApplicationCommand {
     public void onSlashSayAgain(
             GuildSlashEvent event,
             @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) String sentence,
-            Components componentsService
+            Buttons buttons
     ) {
         // A button that always works, even after a restart
-        final var persistentSaySentenceButton = componentsService.secondaryButton("Say '" + sentence + "'").persistent()
+        final var persistentSaySentenceButton = buttons.secondaryButton("Say '" + sentence + "'").persistent()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The method annotated with a JDAButtonListener of the same name will get called,
@@ -38,7 +38,7 @@ public class SlashSayAgain extends ApplicationCommand {
 
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         AtomicReference<Button> temporaryButtonRef = new AtomicReference<>();
-        final var temporarySaySentenceButton = componentsService.primaryButton("Say '" + sentence + "'").ephemeral()
+        final var temporarySaySentenceButton = buttons.primaryButton("Say '" + sentence + "'").ephemeral()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The code to run when the button gets clicked

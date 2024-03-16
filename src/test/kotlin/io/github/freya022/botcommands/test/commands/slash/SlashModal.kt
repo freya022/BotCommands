@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
@@ -27,7 +28,7 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @Command
 @Dependencies(Components::class)
-class SlashModal(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
@@ -67,7 +68,7 @@ class SlashModal(private val components: Components) : ApplicationCommand(), Glo
             definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
-            components = listOf(row(components.primaryButton("Test button").ephemeral {
+            components = listOf(row(buttons.primaryButton("Test button").ephemeral {
                 bindTo(::handleButton)
             })),
             ephemeral = true

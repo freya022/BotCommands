@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.pagination
 
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
@@ -24,7 +26,9 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
     val context: BContext,
     builder: AbstractPaginationBuilder<*, T>
 ) {
-    protected val componentsService: Components = context.getService()
+    protected val componentsService: Components get() = context.getService()
+    protected val buttons: Buttons = context.getService()
+    protected val selectMenus: SelectMenus get() = context.getService()
     protected val paginationTimeoutScope: CoroutineScope
         get() = context.coroutineScopesConfig.paginationTimeoutScope
 

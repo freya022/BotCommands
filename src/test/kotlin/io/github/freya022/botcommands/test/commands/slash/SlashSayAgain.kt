@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -24,10 +24,10 @@ class SlashSayAgain : ApplicationCommand() {
     suspend fun onSlashSayAgain(
         event: GuildSlashEvent,
         @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) sentence: String,
-        componentsService: Components
+        buttons: Buttons
     ) {
         // A button that always works, even after a restart
-        val persistentSaySentenceButton = componentsService.secondaryButton("Say '$sentence'").persistent {
+        val persistentSaySentenceButton = buttons.secondaryButton("Say '$sentence'").persistent {
             // Make sure only the caller can use the button
             constraints += event.user
 
@@ -39,7 +39,7 @@ class SlashSayAgain : ApplicationCommand() {
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         // We have to use lateinit as the button is used in a callback
         lateinit var temporarySaySentenceButton: Button
-        temporarySaySentenceButton = componentsService.primaryButton("Say '$sentence'").ephemeral {
+        temporarySaySentenceButton = buttons.primaryButton("Say '$sentence'").ephemeral {
             // The code to run when the button gets clicked
             bindTo { buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).await() }
 

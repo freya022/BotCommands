@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.components.Button;
+import io.github.freya022.botcommands.api.components.Buttons;
 import io.github.freya022.botcommands.api.components.Components;
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
@@ -17,10 +18,10 @@ import java.time.Duration;
 @Command
 @Dependencies(Components.class) // Disables the command if components are not enabled
 public class SlashSayJava extends ApplicationCommand {
-    private final Components components;
+    private final Buttons buttons;
 
-    public SlashSayJava(Components components) {
-        this.components = components;
+    public SlashSayJava(Buttons buttons) {
+        this.buttons = buttons;
     }
 
     @JDASlashCommand(name = "say_java", description = "Sends a message in a channel")
@@ -35,7 +36,7 @@ public class SlashSayJava extends ApplicationCommand {
                 .flatMap(InteractionHook::deleteOriginal)
                 .queue();
 
-        final Button deleteButton = components.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
+        final Button deleteButton = buttons.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();
