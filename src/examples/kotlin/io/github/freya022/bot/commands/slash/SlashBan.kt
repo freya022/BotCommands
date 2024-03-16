@@ -60,14 +60,14 @@ class SlashBan(private val componentsService: Components, private val banService
             }
         }
 
-        val cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")) {
+        val cancelButton = componentsService.button(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
-        val confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm")) {
+        val confirmButton = componentsService.button(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true
@@ -75,7 +75,7 @@ class SlashBan(private val componentsService: Components, private val banService
             constraints += event.user
         }
 
-        val componentGroup = componentsService.ephemeralGroup(cancelButton, confirmButton) {
+        val componentGroup = componentsService.group(cancelButton, confirmButton).ephemeral {
             timeout(1.minutes)
         }
 

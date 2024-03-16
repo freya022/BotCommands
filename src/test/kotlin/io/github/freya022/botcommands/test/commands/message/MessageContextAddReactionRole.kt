@@ -41,7 +41,7 @@ class MessageContextAddReactionRole(private val componentsService: Components,
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)
     suspend fun onMessageContextAddReactionRole(event: GuildMessageEvent,
                                                 @ContextOption message: Message) {
-        val roleSelectMenu = componentsService.ephemeralEntitySelectMenu(EntitySelectMenu.SelectTarget.ROLE) {
+        val roleSelectMenu = componentsService.entitySelectMenu(EntitySelectMenu.SelectTarget.ROLE).ephemeral {
             timeout(1.minutes)
         }
 

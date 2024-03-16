@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 class SlashDeletedButton(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "deleted_button")
     suspend fun onSlashDeletedButton(event: GuildSlashEvent) {
-        val trap = components.ephemeralButton(ButtonStyle.DANGER, "DO NOT SEND") {}
-        val deleteButton = components.ephemeralButton(ButtonStyle.PRIMARY, "Delete") {
+        val trap = components.button(ButtonStyle.DANGER, "DO NOT SEND").ephemeral {}
+        val deleteButton = components.button(ButtonStyle.PRIMARY, "Delete").ephemeral {
             bindTo {
                 it.deferEdit().queue()
                 it.hook.deleteOriginal().queue()

@@ -53,7 +53,7 @@ class ButtonMenu<E> internal constructor(
         pages[page]!!.entries
             .mapIndexed { i, item ->
                 val styledContent = buttonContentSupplier.apply(item, i)
-                componentsService.ephemeralButton(styledContent)
+                componentsService.button(styledContent).ephemeral()
                     .bindTo { event: ButtonEvent ->
                         if (reusable) {
                             restartTimeout()

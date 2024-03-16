@@ -35,7 +35,7 @@ public class SlashSayJava extends ApplicationCommand {
                 .flatMap(InteractionHook::deleteOriginal)
                 .queue();
 
-        final Button deleteButton = components.ephemeralButton(ButtonStyle.DANGER)
+        final Button deleteButton = components.button(ButtonStyle.DANGER).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

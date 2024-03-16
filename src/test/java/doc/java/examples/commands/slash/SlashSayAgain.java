@@ -29,7 +29,7 @@ public class SlashSayAgain extends ApplicationCommand {
             Components componentsService
     ) {
         // A button that always works, even after a restart
-        final var persistentSaySentenceButton = componentsService.persistentButton(ButtonStyle.SECONDARY, "Say '" + sentence + "'")
+        final var persistentSaySentenceButton = componentsService.button(ButtonStyle.SECONDARY, "Say '" + sentence + "'").persistent()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The method annotated with a JDAButtonListener of the same name will get called,
@@ -39,7 +39,7 @@ public class SlashSayAgain extends ApplicationCommand {
 
         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
         AtomicReference<Button> temporaryButtonRef = new AtomicReference<>();
-        final var temporarySaySentenceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Say '" + sentence + "'")
+        final var temporarySaySentenceButton = componentsService.button(ButtonStyle.PRIMARY, "Say '" + sentence + "'").ephemeral()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The code to run when the button gets clicked

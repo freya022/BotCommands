@@ -30,7 +30,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(components.button(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -52,7 +52,7 @@ class SlashSayDsl(private val components: Components) : GlobalApplicationCommand
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(components.button(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()

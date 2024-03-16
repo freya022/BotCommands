@@ -25,7 +25,7 @@ class SlashTimeUnit(private val componentsService: Components) : ApplicationComm
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
     ) {
-        val button = componentsService.persistentButton(ButtonStyle.PRIMARY, "TimeUnit: ${timeUnit.name}") {
+        val button = componentsService.button(ButtonStyle.PRIMARY, "TimeUnit: ${timeUnit.name}").persistent() {
             oneUse = true
             bindTo(::onTimeUnitClicked, timeUnit)
         }

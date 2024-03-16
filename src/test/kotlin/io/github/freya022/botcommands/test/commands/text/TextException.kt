@@ -20,7 +20,7 @@ class TextException : TextCommand() {
         event.context.dispatchException("test no throwable, with context", null, mapOf("pi" to 3.14159))
 
         event.channel.sendMessageComponents(
-            components.ephemeralButton(ButtonStyle.DANGER, "Trigger modal and exception")
+            components.button(ButtonStyle.DANGER, "Trigger modal and exception").ephemeral()
                 .bindTo {
                     val modal = modals.create("Exception modal") {
                         shortTextInput("input name", "Sample text")

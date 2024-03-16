@@ -34,7 +34,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentSelect = persistentGroupTest(event)
         val ephemeralSelect = ephemeralGroupTest(event)
-        val voiceSelect = components.ephemeralEntitySelectMenu(SelectTarget.CHANNEL) {
+        val voiceSelect = components.entitySelectMenu(SelectTarget.CHANNEL).ephemeral {
             setChannelTypes(ChannelType.VOICE)
             filters += filter<InVoiceChannel>()
             bindTo {
@@ -51,7 +51,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {
-        val firstSelect = components.persistentStringSelectMenu {
+        val firstSelect = components.stringSelectMenu().persistent {
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -64,7 +64,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             addOption("Bar", "Bar")
         }
 
-        val secondSelect = components.persistentStringSelectMenu {
+        val secondSelect = components.stringSelectMenu().persistent {
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -77,14 +77,14 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             addOption("Bar", "Bar")
         }
 
-        components.persistentGroup(firstSelect, secondSelect) {
+        components.group(firstSelect, secondSelect).persistent {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstSelect
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): EntitySelectMenu {
-        val firstSelect = components.ephemeralEntitySelectMenu(SelectTarget.ROLE) {
+        val firstSelect = components.entitySelectMenu(SelectTarget.ROLE).ephemeral {
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -93,7 +93,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
             bindTo { evt -> evt.reply_("Ephemeral select menu clicked", ephemeral = true).queue() }
         }
 
-        components.ephemeralGroup(firstSelect) {
+        components.group(firstSelect).ephemeral {
             timeout(15.seconds) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

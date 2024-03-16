@@ -2,10 +2,14 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
+import io.github.freya022.botcommands.api.components.builder.button.BaseButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
+import io.github.freya022.botcommands.api.components.builder.group.BaseComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.EphemeralComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.PersistentComponentGroupBuilder
+import io.github.freya022.botcommands.api.components.builder.select.BaseEntitySelectMenuBuilder
+import io.github.freya022.botcommands.api.components.builder.select.BaseStringSelectMenuBuilder
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
@@ -25,6 +29,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+import java.util.*
 import javax.annotation.CheckReturnValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -156,7 +161,7 @@ import java.time.Duration as JavaDuration
  * }
  * ```
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 @BService
 @ConditionalService(Components.InstantiationChecker::class)
 class Components internal constructor(private val componentController: ComponentController) {
@@ -164,123 +169,163 @@ class Components internal constructor(private val componentController: Component
 
     // -------------------- Persistent groups --------------------
 
+    @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent()"))
     @CheckReturnValue
     fun persistentGroup(vararg components: IdentifiableComponent): PersistentComponentGroupBuilder =
         PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent { \nblock() }"))
     @JvmSynthetic
     suspend inline fun persistentGroup(vararg components: IdentifiableComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
         persistentGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Ephemeral groups --------------------
 
+    @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral()"))
     @CheckReturnValue
     fun ephemeralGroup(vararg components: IdentifiableComponent): EphemeralComponentGroupBuilder =
         EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralGroup(vararg components: IdentifiableComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
         ephemeralGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Persistent buttons --------------------
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent()"))
     @JvmOverloads
     @CheckReturnValue
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: PersistentButtonBuilder.() -> Unit) =
         persistentButton(style, label, emoji).apply(block).buildSuspend()
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
     fun persistentButton(content: ButtonContent) =
         persistentButton(content.style, content.label, content.emoji)
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentButton(content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
         persistentButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral()"))
     @JvmOverloads
     @CheckReturnValue
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(style, label, emoji).apply(block).buildSuspend()
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
     fun ephemeralButton(content: ButtonContent) =
         ephemeralButton(content.style, content.label, content.emoji)
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralButton( content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
 
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent()"))
     @CheckReturnValue
     fun persistentStringSelectMenu() =
         PersistentStringSelectBuilder(componentController, InstanceRetriever())
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentStringSelectMenu(block: PersistentStringSelectBuilder.() -> Unit) =
         persistentStringSelectMenu().apply(block).buildSuspend()
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent()"))
     @CheckReturnValue
     fun persistentEntitySelectMenu(target: SelectTarget) =
         persistentEntitySelectMenu(enumSetOf(target))
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentEntitySelectMenu(target: SelectTarget, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(enumSetOf(target), block)
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent()"))
     @CheckReturnValue
     fun persistentEntitySelectMenu(targets: Collection<SelectTarget>) =
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(targets).apply(block).buildSuspend()
 
     // -------------------- Ephemeral select menus --------------------
 
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral()"))
     @CheckReturnValue
     fun ephemeralStringSelectMenu() =
         EphemeralStringSelectBuilder(componentController, InstanceRetriever())
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralStringSelectMenu(block: EphemeralStringSelectBuilder.() -> Unit) =
         ephemeralStringSelectMenu().apply(block).buildSuspend()
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral()"))
     @CheckReturnValue
     fun ephemeralEntitySelectMenu(target: SelectTarget) =
         ephemeralEntitySelectMenu(enumSetOf(target))
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(enumSetOf(target), block)
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral()"))
     @CheckReturnValue
     fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>) =
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(targets).apply(block).buildSuspend()
+
+    // -------------------- Groups --------------------
+
+    @CheckReturnValue
+    fun group(vararg components: IdentifiableComponent): BaseComponentGroupBuilder =
+        BaseComponentGroupBuilder(componentController, components)
+
+    // -------------------- Buttons --------------------
+
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @JvmOverloads
+    @CheckReturnValue
+    fun button(style: ButtonStyle, label: String? = null, emoji: Emoji? = null): BaseButtonBuilder =
+        BaseButtonBuilder(componentController, style, label, emoji)
+
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @CheckReturnValue
+    fun button(content: ButtonContent): BaseButtonBuilder =
+        button(content.style, content.label, content.emoji)
+
+    // -------------------- Select menus --------------------
+
+    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @CheckReturnValue
+    fun stringSelectMenu(): BaseStringSelectMenuBuilder = BaseStringSelectMenuBuilder(componentController)
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @CheckReturnValue
+    fun entitySelectMenu(target: SelectTarget, vararg targets: SelectTarget): BaseEntitySelectMenuBuilder =
+        entitySelectMenu(EnumSet.of(target, *targets))
+
+    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @CheckReturnValue
+    fun entitySelectMenu(targets: Collection<SelectTarget>): BaseEntitySelectMenuBuilder =
+        BaseEntitySelectMenuBuilder(componentController, targets)
 
     @JvmName("deleteComponentsById")
     fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
@@ -334,3 +379,5 @@ class Components internal constructor(private val componentController: Component
         }
     }
 }
+
+//typealias Components = Components2
