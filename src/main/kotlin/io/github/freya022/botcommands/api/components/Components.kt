@@ -416,6 +416,123 @@ class Components internal constructor(private val componentController: Component
     fun primaryButton(label: String, emoji: Emoji): ButtonFactory =
         button(ButtonStyle.PRIMARY, label, emoji)
 
+    /**
+     * Creates a secondary button factory with the label provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun secondaryButton(label: String): ButtonFactory =
+        button(ButtonStyle.SECONDARY, label)
+
+    /**
+     * Creates a secondary button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun secondaryButton(emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.SECONDARY, emoji)
+
+    /**
+     * Creates a secondary button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun secondaryButton(label: String, emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.SECONDARY, label, emoji)
+
+    /**
+     * Creates a success button factory with the label provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun successButton(label: String): ButtonFactory =
+        button(ButtonStyle.SUCCESS, label)
+
+    /**
+     * Creates a success button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun successButton(emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.SUCCESS, emoji)
+
+    /**
+     * Creates a success button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun successButton(label: String, emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.SUCCESS, label, emoji)
+
+    /**
+     * Creates a danger button factory with the label provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun dangerButton(label: String): ButtonFactory =
+        button(ButtonStyle.DANGER, label)
+
+    /**
+     * Creates a danger button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun dangerButton(emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.DANGER, emoji)
+
+    /**
+     * Creates a danger button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonFactory.withEmoji
+     */
+    @CheckReturnValue
+    fun dangerButton(label: String, emoji: Emoji): ButtonFactory =
+        button(ButtonStyle.DANGER, label, emoji)
+
     // -------------------- Select menus --------------------
 
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */

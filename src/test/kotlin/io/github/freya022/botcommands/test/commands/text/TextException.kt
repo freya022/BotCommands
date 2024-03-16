@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
 @Command
 class TextException : TextCommand() {
@@ -20,7 +19,7 @@ class TextException : TextCommand() {
         event.context.dispatchException("test no throwable, with context", null, mapOf("pi" to 3.14159))
 
         event.channel.sendMessageComponents(
-            components.button(ButtonStyle.DANGER, "Trigger modal and exception").ephemeral()
+            components.dangerButton("Trigger modal and exception").ephemeral()
                 .bindTo {
                     val modal = modals.create("Exception modal") {
                         shortTextInput("input name", "Sample text")

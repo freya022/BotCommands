@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
@@ -36,7 +35,7 @@ class SlashButton(private val componentsService: Components) : ApplicationComman
             }
         }
 
-        components += componentsService.button(ButtonStyle.SECONDARY, "Click me anytime").persistent {
+        components += componentsService.secondaryButton("Click me anytime").persistent {
             bindTo(buttonListenerName)
 //            bindTo(::onPersistentButtonClick) //Also works
         }

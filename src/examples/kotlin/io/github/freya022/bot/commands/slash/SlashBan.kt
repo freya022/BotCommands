@@ -26,7 +26,6 @@ import io.github.freya022.botcommands.api.localization.context.replyLocalizedEph
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -67,7 +66,7 @@ class SlashBan(private val componentsService: Components, private val banService
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
-        val confirmButton = componentsService.button(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm")).ephemeral {
+        val confirmButton = componentsService.dangerButton(localizationContext.localize("buttons.confirm")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
             oneUse = true

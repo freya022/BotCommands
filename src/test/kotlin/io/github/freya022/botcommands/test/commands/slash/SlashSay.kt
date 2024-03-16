@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.seconds
 
 @Command
@@ -30,7 +29,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.button(ButtonStyle.DANGER, EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
+            .addActionRow(components.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -52,7 +51,7 @@ class SlashSayDsl(private val components: Components) : GlobalApplicationCommand
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.button(ButtonStyle.DANGER, EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
+            .addActionRow(components.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()

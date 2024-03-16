@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,7 +28,7 @@ public class SlashSayAgain extends ApplicationCommand {
             Components componentsService
     ) {
         // A button that always works, even after a restart
-        final var persistentSaySentenceButton = componentsService.button(ButtonStyle.SECONDARY, "Say '" + sentence + "'").persistent()
+        final var persistentSaySentenceButton = componentsService.secondaryButton("Say '" + sentence + "'").persistent()
                 // Make sure only the caller can use the button
                 .addUsers(event.getUser())
                 // The method annotated with a JDAButtonListener of the same name will get called,

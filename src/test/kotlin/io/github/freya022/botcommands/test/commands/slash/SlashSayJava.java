@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.time.Duration;
 
@@ -36,7 +35,7 @@ public class SlashSayJava extends ApplicationCommand {
                 .flatMap(InteractionHook::deleteOriginal)
                 .queue();
 
-        final Button deleteButton = components.button(ButtonStyle.DANGER, EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
+        final Button deleteButton = components.dangerButton(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

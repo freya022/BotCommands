@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.seconds
 
 // -------------------------------------------- USED AS AN EXAMPLE --------------------------------------------
@@ -28,7 +27,7 @@ class SlashSayAgain : ApplicationCommand() {
         componentsService: Components
     ) {
         // A button that always works, even after a restart
-        val persistentSaySentenceButton = componentsService.button(ButtonStyle.SECONDARY, "Say '$sentence'").persistent {
+        val persistentSaySentenceButton = componentsService.secondaryButton("Say '$sentence'").persistent {
             // Make sure only the caller can use the button
             constraints += event.user
 

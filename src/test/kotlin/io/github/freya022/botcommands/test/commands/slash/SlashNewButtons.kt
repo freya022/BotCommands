@@ -27,7 +27,6 @@ import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -62,7 +61,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
     }
 
-    private suspend fun filteredButton() = components.button(ButtonStyle.DANGER, "Leave VC").ephemeral {
+    private suspend fun filteredButton() = components.dangerButton("Leave VC").ephemeral {
         filters += filter<InVoiceChannel>()
         bindTo {
             it.guild!!.kickVoiceMember(it.member!!).await()
@@ -71,7 +70,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     private suspend fun noGroupButton(event: GuildSlashEvent) =
-        components.button(ButtonStyle.DANGER, "Delete").ephemeral {
+        components.dangerButton("Delete").ephemeral {
             oneUse = true
             bindTo { event.hook.deleteOriginal().queue() }
             timeout(5.seconds)
@@ -105,7 +104,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = components.button(ButtonStyle.SECONDARY, "Ephemeral").ephemeral {
+        val firstButton = components.secondaryButton("Ephemeral").ephemeral {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
