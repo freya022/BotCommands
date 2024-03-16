@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.awaitAny
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
@@ -44,7 +43,7 @@ data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
 // --8<-- [end:aggregated_object-kotlin]
 
 @BService
-class SlashBan(private val components: Components, private val buttons: Buttons, private val banService: BanService) {
+class SlashBan(private val buttons: Buttons, private val banService: BanService) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
@@ -75,7 +74,7 @@ class SlashBan(private val components: Components, private val buttons: Buttons,
             constraints += event.user
         }
 
-        val componentGroup = components.group(cancelButton, confirmButton).ephemeral {
+        val componentGroup = buttons.group(cancelButton, confirmButton).ephemeral {
             timeout(1.minutes)
         }
 

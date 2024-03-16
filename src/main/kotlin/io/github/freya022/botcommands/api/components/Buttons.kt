@@ -17,7 +17,7 @@ import javax.annotation.CheckReturnValue
  */
 @BService
 @Dependencies(Components::class)
-class Buttons internal constructor(private val componentController: ComponentController) {
+class Buttons internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     /**
      * Creates a button factory with the style and label provided.
      *

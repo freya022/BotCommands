@@ -33,7 +33,6 @@ import kotlin.time.Duration.Companion.seconds
 @Command
 @Dependencies(Components::class)
 class SlashNewButtons(
-    private val components: Components,
     private val buttons: Buttons
 ) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
@@ -97,7 +96,7 @@ class SlashNewButtons(
             timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
         }
 
-        components.group(firstButton, secondButton).persistent {
+        buttons.group(firstButton, secondButton).persistent {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
         }
         return firstButton
@@ -112,7 +111,7 @@ class SlashNewButtons(
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
         }
 
-        components.group(firstButton).ephemeral {
+        buttons.group(firstButton).ephemeral {
             timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

@@ -15,7 +15,7 @@ import javax.annotation.CheckReturnValue
  */
 @BService
 @Dependencies(Components::class)
-class SelectMenus internal constructor(private val componentController: ComponentController) {
+class SelectMenus internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @CheckReturnValue
     fun stringSelectMenu(): StringSelectMenuFactory = StringSelectMenuFactory(componentController)

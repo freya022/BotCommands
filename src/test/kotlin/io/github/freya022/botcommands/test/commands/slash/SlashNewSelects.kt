@@ -31,7 +31,6 @@ import kotlin.time.Duration.Companion.seconds
 @Command
 @Dependencies(Components::class)
 class SlashNewSelects(
-    private val components: Components,
     private val selectMenus: SelectMenus
 ) : ApplicationCommand() {
     @JDASlashCommand(name = "new_selects")
@@ -83,7 +82,7 @@ class SlashNewSelects(
             addOption("Bar", "Bar")
         }
 
-        components.group(firstSelect, secondSelect).persistent {
+        selectMenus.group(firstSelect, secondSelect).persistent {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstSelect
@@ -100,7 +99,7 @@ class SlashNewSelects(
             bindTo { evt -> evt.reply_("Ephemeral select menu clicked", ephemeral = true).queue() }
         }
 
-        components.group(firstSelect).ephemeral {
+        selectMenus.group(firstSelect).ephemeral {
             timeout(15.seconds) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

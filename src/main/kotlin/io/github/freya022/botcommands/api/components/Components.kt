@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.Components.Companion.defaul
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
-import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupFactory
 import io.github.freya022.botcommands.api.components.builder.group.EphemeralComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.PersistentComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
@@ -21,8 +20,6 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.reference
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
@@ -164,9 +161,7 @@ import java.time.Duration as JavaDuration
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 @BService
 @ConditionalService(Components.InstantiationChecker::class)
-class Components internal constructor(private val componentController: ComponentController) {
-    private val logger = KotlinLogging.logger { }
-
+class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     // -------------------- Persistent groups --------------------
 
     @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent()"))
@@ -314,31 +309,6 @@ class Components internal constructor(private val componentController: Component
     suspend inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(targets).apply(block).buildSuspend()
 
-    // -------------------- Groups --------------------
-
-    @CheckReturnValue
-    fun group(vararg components: IdentifiableComponent): ComponentGroupFactory =
-        ComponentGroupFactory(componentController, components)
-
-    @JvmName("deleteComponentsById")
-    fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
-
-    @JvmSynthetic
-    suspend fun deleteComponentsById(ids: Collection<String>) {
-        val parsedIds = ids
-            .filter {
-                if (ComponentController.isCompatibleComponent(it)) {
-                    true
-                } else {
-                    logger.warn { "Tried to delete an incompatible component ID '$it'" }
-                    false
-                }
-            }
-            .map { ComponentController.parseComponentId(it) }
-
-        componentController.deleteComponentsById(parsedIds, throwTimeouts = false)
-    }
-
     companion object {
         /**
          * The default timeout for components and component groups.
@@ -372,5 +342,3 @@ class Components internal constructor(private val componentController: Component
         }
     }
 }
-
-//typealias Components = Components2
