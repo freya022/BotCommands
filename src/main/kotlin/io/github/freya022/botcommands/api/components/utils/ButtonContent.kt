@@ -11,6 +11,12 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: Emoji?) {
     init {
         require(label != null || emoji != null) { "A label or an emoji needs to be set" }
+
+        if (label != null) {
+            require(label.isNotBlank()) {
+                "The label cannot be blank"
+            }
+        }
     }
 
     companion object {

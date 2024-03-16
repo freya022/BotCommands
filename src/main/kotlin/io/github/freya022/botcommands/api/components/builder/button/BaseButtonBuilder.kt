@@ -13,6 +13,16 @@ class BaseButtonBuilder internal constructor(
     private val label: String?,
     private val emoji: Emoji?
 ) {
+    init {
+        require(label != null || emoji != null) { "A label or an emoji needs to be set" }
+
+        if (label != null) {
+            require(label.isNotBlank()) {
+                "The label cannot be blank"
+            }
+        }
+    }
+
     @CheckReturnValue
     fun ephemeral(): EphemeralButtonBuilder =
         EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
