@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.reference
@@ -300,16 +301,58 @@ class Components internal constructor(private val componentController: Component
 
     // -------------------- Buttons --------------------
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
-    @JvmOverloads
+    /**
+     * Creates a button factory with the style and label provided.
+     *
+     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see BaseButtonBuilder.withEmoji
+     */
     @CheckReturnValue
-    fun button(style: ButtonStyle, label: String? = null, emoji: Emoji? = null): BaseButtonBuilder =
+    fun button(style: ButtonStyle, label: String): BaseButtonBuilder =
+        BaseButtonBuilder(componentController, style, label, null)
+
+    /**
+     * Creates a button factory with the style and emoji provided.
+     *
+     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see BaseButtonBuilder.withEmoji
+     */
+    @CheckReturnValue
+    fun button(style: ButtonStyle, emoji: Emoji): BaseButtonBuilder =
+        BaseButtonBuilder(componentController, style, null, emoji)
+
+    /**
+     * Creates a button factory with the style, label and emoji provided.
+     *
+     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is blank
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see BaseButtonBuilder.withEmoji
+     */
+    @CheckReturnValue
+    fun button(style: ButtonStyle, label: String, emoji: Emoji): BaseButtonBuilder =
         BaseButtonBuilder(componentController, style, label, emoji)
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    /**
+     * Creates a button factory with the style, label and emoji provided by the [ButtonContent].
+     *
+     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the label is null/blank and the emoji isn't set
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     * @see ButtonContent.withEmoji
+     */
     @CheckReturnValue
     fun button(content: ButtonContent): BaseButtonBuilder =
-        button(content.style, content.label, content.emoji)
+        BaseButtonBuilder(componentController, content.style, content.label, content.emoji)
 
     // -------------------- Select menus --------------------
 
