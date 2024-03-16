@@ -37,6 +37,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
+import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 import java.time.Duration as JavaDuration
 
 /**
@@ -329,7 +330,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see ButtonFactory.withEmoji
      */
@@ -354,7 +355,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see EmojiUtils.resolveJDAEmoji
      * @see ButtonFactory.withEmoji
@@ -382,7 +383,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see ButtonFactory.withEmoji
      */
@@ -407,7 +408,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see EmojiUtils.resolveJDAEmoji
      * @see ButtonFactory.withEmoji
@@ -421,7 +422,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see ButtonFactory.withEmoji
      */
@@ -446,7 +447,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see EmojiUtils.resolveJDAEmoji
      * @see ButtonFactory.withEmoji
@@ -460,7 +461,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see ButtonFactory.withEmoji
      */
@@ -485,7 +486,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see EmojiUtils.resolveJDAEmoji
      * @see ButtonFactory.withEmoji
@@ -499,7 +500,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see ButtonFactory.withEmoji
      */
@@ -524,7 +525,7 @@ class Components internal constructor(private val componentController: Component
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is blank
+     * @throws IllegalArgumentException If the label is empty
      *
      * @see EmojiUtils.resolveJDAEmoji
      * @see ButtonFactory.withEmoji

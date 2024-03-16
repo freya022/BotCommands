@@ -14,8 +14,8 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         require(label != null || emoji != null) { "A label or an emoji needs to be set" }
 
         if (label != null) {
-            require(label.isNotBlank()) {
-                "The label cannot be blank"
+            require(label.isNotEmpty()) {
+                "The label cannot be empty"
             }
         }
     }
