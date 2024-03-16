@@ -49,6 +49,7 @@ class ButtonFactory internal constructor(
      * withEmoji("U+1F602")
      * ```
      */
+    @CheckReturnValue
     fun withEmoji(aliasOrUnicode: String?): ButtonFactory {
         val newEmoji = aliasOrUnicode?.let {
             EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)

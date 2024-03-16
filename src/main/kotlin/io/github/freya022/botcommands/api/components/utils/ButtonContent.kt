@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import javax.annotation.CheckReturnValue
 
 /**
  * Represents the visual content of a [Button], this contains at least an [Emoji] or a [String]
@@ -40,6 +41,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
      * withEmoji("U+1F602")
      * ```
      */
+    @CheckReturnValue
     fun withEmoji(aliasOrUnicode: String?): ButtonContent {
         val newEmoji = aliasOrUnicode?.let {
             EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
