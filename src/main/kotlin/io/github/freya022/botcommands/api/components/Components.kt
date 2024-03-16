@@ -534,6 +534,43 @@ class Components internal constructor(private val componentController: Component
     fun dangerButton(label: String, emoji: Emoji): ButtonFactory =
         button(ButtonStyle.DANGER, label, emoji)
 
+    /**
+     * Creates a danger button factory with the label provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the url/label is empty
+     */
+    @CheckReturnValue
+    fun linkButton(url: String, label: String): JDAButton =
+        JDAButton.link(url, label)
+
+    /**
+     * Creates a danger button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the url is empty
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     */
+    @CheckReturnValue
+    fun linkButton(url: String, emoji: Emoji): JDAButton =
+        JDAButton.link(url, emoji)
+
+    /**
+     * Creates a danger button factory with the emoji provided.
+     *
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     *
+     * @throws IllegalArgumentException If the url/label is empty
+     *
+     * @see EmojiUtils.resolveJDAEmoji
+     */
+    @CheckReturnValue
+    fun linkButton(url: String, label: String, emoji: Emoji): JDAButton =
+        JDAButton.link(url, label).withEmoji(emoji)
+
     // -------------------- Select menus --------------------
 
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
