@@ -2,14 +2,14 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
-import io.github.freya022.botcommands.api.components.builder.button.BaseButtonBuilder
+import io.github.freya022.botcommands.api.components.builder.button.ButtonFactory
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
-import io.github.freya022.botcommands.api.components.builder.group.BaseComponentGroupBuilder
+import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupFactory
 import io.github.freya022.botcommands.api.components.builder.group.EphemeralComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.builder.group.PersistentComponentGroupBuilder
-import io.github.freya022.botcommands.api.components.builder.select.BaseEntitySelectMenuBuilder
-import io.github.freya022.botcommands.api.components.builder.select.BaseStringSelectMenuBuilder
+import io.github.freya022.botcommands.api.components.builder.select.EntitySelectMenuFactory
+import io.github.freya022.botcommands.api.components.builder.select.StringSelectMenuFactory
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
@@ -296,54 +296,54 @@ class Components internal constructor(private val componentController: Component
     // -------------------- Groups --------------------
 
     @CheckReturnValue
-    fun group(vararg components: IdentifiableComponent): BaseComponentGroupBuilder =
-        BaseComponentGroupBuilder(componentController, components)
+    fun group(vararg components: IdentifiableComponent): ComponentGroupFactory =
+        ComponentGroupFactory(componentController, components)
 
     // -------------------- Buttons --------------------
 
     /**
      * Creates a button factory with the style and label provided.
      *
-     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
      * @throws IllegalArgumentException If the label is blank
      *
-     * @see BaseButtonBuilder.withEmoji
+     * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, label: String): BaseButtonBuilder =
-        BaseButtonBuilder(componentController, style, label, null)
+    fun button(style: ButtonStyle, label: String): ButtonFactory =
+        ButtonFactory(componentController, style, label, null)
 
     /**
      * Creates a button factory with the style and emoji provided.
      *
-     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
      * @see EmojiUtils.resolveJDAEmoji
-     * @see BaseButtonBuilder.withEmoji
+     * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, emoji: Emoji): BaseButtonBuilder =
-        BaseButtonBuilder(componentController, style, null, emoji)
+    fun button(style: ButtonStyle, emoji: Emoji): ButtonFactory =
+        ButtonFactory(componentController, style, null, emoji)
 
     /**
      * Creates a button factory with the style, label and emoji provided.
      *
-     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
      * @throws IllegalArgumentException If the label is blank
      *
      * @see EmojiUtils.resolveJDAEmoji
-     * @see BaseButtonBuilder.withEmoji
+     * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun button(style: ButtonStyle, label: String, emoji: Emoji): BaseButtonBuilder =
-        BaseButtonBuilder(componentController, style, label, emoji)
+    fun button(style: ButtonStyle, label: String, emoji: Emoji): ButtonFactory =
+        ButtonFactory(componentController, style, label, emoji)
 
     /**
      * Creates a button factory with the style, label and emoji provided by the [ButtonContent].
      *
-     * You can use [BaseButtonBuilder.persistent] or [BaseButtonBuilder.ephemeral] to then start building a button.
+     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
      * @throws IllegalArgumentException If the label is null/blank and the emoji isn't set
      *
@@ -351,24 +351,24 @@ class Components internal constructor(private val componentController: Component
      * @see ButtonContent.withEmoji
      */
     @CheckReturnValue
-    fun button(content: ButtonContent): BaseButtonBuilder =
-        BaseButtonBuilder(componentController, content.style, content.label, content.emoji)
+    fun button(content: ButtonContent): ButtonFactory =
+        ButtonFactory(componentController, content.style, content.label, content.emoji)
 
     // -------------------- Select menus --------------------
 
     /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
     @CheckReturnValue
-    fun stringSelectMenu(): BaseStringSelectMenuBuilder = BaseStringSelectMenuBuilder(componentController)
+    fun stringSelectMenu(): StringSelectMenuFactory = StringSelectMenuFactory(componentController)
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @CheckReturnValue
-    fun entitySelectMenu(target: SelectTarget, vararg targets: SelectTarget): BaseEntitySelectMenuBuilder =
+    fun entitySelectMenu(target: SelectTarget, vararg targets: SelectTarget): EntitySelectMenuFactory =
         entitySelectMenu(EnumSet.of(target, *targets))
 
     /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
     @CheckReturnValue
-    fun entitySelectMenu(targets: Collection<SelectTarget>): BaseEntitySelectMenuBuilder =
-        BaseEntitySelectMenuBuilder(componentController, targets)
+    fun entitySelectMenu(targets: Collection<SelectTarget>): EntitySelectMenuFactory =
+        EntitySelectMenuFactory(componentController, targets)
 
     @JvmName("deleteComponentsById")
     fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }

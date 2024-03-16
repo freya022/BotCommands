@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder.button
 
 import io.github.freya022.botcommands.api.components.Button
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -8,7 +9,10 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import javax.annotation.CheckReturnValue
 
-class BaseButtonBuilder internal constructor(
+/**
+ * [Button] factory provided by [Components].
+ */
+class ButtonFactory internal constructor(
     private val componentController: ComponentController,
     private val style: ButtonStyle,
     private val label: String?,
@@ -45,12 +49,12 @@ class BaseButtonBuilder internal constructor(
      * withEmoji("U+1F602")
      * ```
      */
-    fun withEmoji(aliasOrUnicode: String?): BaseButtonBuilder {
+    fun withEmoji(aliasOrUnicode: String?): ButtonFactory {
         val newEmoji = aliasOrUnicode?.let {
             EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
         }
 
-        return BaseButtonBuilder(componentController, style, label, newEmoji)
+        return ButtonFactory(componentController, style, label, newEmoji)
     }
 
     @CheckReturnValue
