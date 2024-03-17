@@ -35,6 +35,7 @@ You can then configure your build file:
     version = "1.0-SNAPSHOT"
     
     tasks.withType<ShadowJar> {
+        mergeServiceFiles() // Fixes Java's service loading, which is used by Flyway
         archiveFileName.set("ProjectName.jar")        //TODO change here
     }
     

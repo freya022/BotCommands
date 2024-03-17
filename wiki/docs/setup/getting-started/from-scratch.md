@@ -318,6 +318,7 @@ Finally, load it on the first lines of your main program:
     application.mainClass.set("io.github.name.bot.Main")    //TODO change here
 
     tasks.withType<ShadowJar> {
+        mergeServiceFiles() // Fixes Java's service loading, which is used by Flyway
         archiveFileName.set("your-project-name.jar")        //TODO change here
     }
     ```
