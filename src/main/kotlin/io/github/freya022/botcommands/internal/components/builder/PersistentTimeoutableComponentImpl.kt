@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.components.builder
 
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -12,7 +11,7 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponent<T> {
 
-    override var timeout: PersistentTimeout? = Components.defaultTimeout.toTimestampIfFinite()?.let { PersistentTimeout.create(it) }
+    override var timeout: PersistentTimeout? = null
         private set
 
     override fun noTimeout(): T = instance.also {

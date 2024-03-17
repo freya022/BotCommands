@@ -55,7 +55,6 @@ class SlashNewSelects(
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {
         val firstSelect = selectMenus.stringSelectMenu().persistent {
-            noTimeout()
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
@@ -69,7 +68,6 @@ class SlashNewSelects(
         }
 
         val secondSelect = selectMenus.stringSelectMenu().persistent {
-            noTimeout()
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)

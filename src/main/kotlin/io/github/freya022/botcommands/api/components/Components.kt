@@ -36,7 +36,7 @@ import java.time.Duration as JavaDuration
  *
  * Every component can either be persistent or ephemeral, all components can be configured to:
  *  - Be used once
- *  - Have timeouts, [a default timeout][defaultTimeout] is set,
+ *  - Have timeouts, [a default timeout][defaultTimeout] is set **on ephemeral components**,
  *  which can be overridden, or set by the `timeout` methods.
  *  - Have handlers
  *  - Have constraints (checks before the button can be used)

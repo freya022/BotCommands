@@ -77,7 +77,6 @@ class SlashNewButtons(
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton = buttons.primary("Persistent").persistent {
-            noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
@@ -85,7 +84,6 @@ class SlashNewButtons(
         }
 
         val secondButton = buttons.primary("Invisible").persistent {
-            noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
