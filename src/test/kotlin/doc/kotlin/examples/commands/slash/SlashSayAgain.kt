@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.commands.slash
+package doc.kotlin.examples.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import kotlin.time.Duration.Companion.seconds
 
-// -------------------------------------------- USED AS AN EXAMPLE --------------------------------------------
 @Command
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class SlashSayAgain : ApplicationCommand() {
