@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.builder.select.StringSelect
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import java.util.*
 import javax.annotation.CheckReturnValue
 
@@ -16,17 +16,32 @@ import javax.annotation.CheckReturnValue
 @BService
 @Dependencies(Components::class)
 class SelectMenus internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    /**
+     * Creates a [StringSelectMenu] builder factory.
+     *
+     * You can use [StringSelectMenuFactory.persistent] or [StringSelectMenuFactory.ephemeral]
+     * to then start building a string select menu.
+     */
     @CheckReturnValue
     fun stringSelectMenu(): StringSelectMenuFactory = StringSelectMenuFactory(componentController)
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    /**
+     * Creates a [EntitySelectMenu] builder factory.
+     *
+     * You can use [EntitySelectMenuFactory.persistent] or [EntitySelectMenuFactory.ephemeral]
+     * to then start building an entity select menu.
+     */
     @CheckReturnValue
-    fun entitySelectMenu(target: EntitySelectMenu.SelectTarget, vararg targets: EntitySelectMenu.SelectTarget): EntitySelectMenuFactory =
+    fun entitySelectMenu(target: SelectTarget, vararg targets: SelectTarget): EntitySelectMenuFactory =
         entitySelectMenu(EnumSet.of(target, *targets))
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    /**
+     * Creates a [EntitySelectMenu] builder factory.
+     *
+     * You can use [EntitySelectMenuFactory.persistent] or [EntitySelectMenuFactory.ephemeral]
+     * to then start building an entity select menu.
+     */
     @CheckReturnValue
-    fun entitySelectMenu(targets: Collection<EntitySelectMenu.SelectTarget>): EntitySelectMenuFactory =
+    fun entitySelectMenu(targets: Collection<SelectTarget>): EntitySelectMenuFactory =
         EntitySelectMenuFactory(componentController, targets)
 }
