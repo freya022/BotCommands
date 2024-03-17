@@ -119,7 +119,7 @@ Here is how you would create a slash command that sends a message in a specified
 ```kt
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSay(private val components: Components) : ApplicationCommand() {
+class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
         event: GuildSlashEvent,
@@ -130,7 +130,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -148,17 +148,13 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
 ```kt
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSay(private val components: Components) : GlobalApplicationCommandProvider {
-    suspend fun onSlashSay(
-        event: GuildSlashEvent,
-        channel: TextChannel,
-        content: String
-    ) {
+class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider {
+    suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -191,13 +187,13 @@ class SlashSay(private val components: Components) : GlobalApplicationCommandPro
 @Command
 @Dependencies(Components.class) // Disables the command if components are not enabled
 public class SlashSay extends ApplicationCommand {
-    private final Components components;
-
-    public SlashSay(Components components) {
-        this.components = components;
+    private final Buttons buttons;
+  
+    public SlashSay(Buttons buttons) {
+        this.buttons = buttons;
     }
 
-    @JDASlashCommand(name = "say_java", description = "Sends a message in a channel")
+    @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     public void onSlashSay(
             GuildSlashEvent event,
             @SlashOption(description = "Channel to send the message in") TextChannel channel,
@@ -209,7 +205,7 @@ public class SlashSay extends ApplicationCommand {
                 .flatMap(InteractionHook::deleteOriginal)
                 .queue();
 
-        final Button deleteButton = components.ephemeralButton(ButtonStyle.DANGER)
+        final Button deleteButton = buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

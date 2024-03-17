@@ -43,11 +43,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
 class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvider {
-    suspend fun onSlashSay(
-        event: GuildSlashEvent,
-        channel: TextChannel,
-        content: String
-    ) {
+    suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
