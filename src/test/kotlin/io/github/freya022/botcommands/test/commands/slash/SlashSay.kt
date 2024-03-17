@@ -9,17 +9,17 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.seconds
 
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSay(private val components: Components) : ApplicationCommand() {
+class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
         event: GuildSlashEvent,
@@ -30,7 +30,7 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()
@@ -42,17 +42,13 @@ class SlashSay(private val components: Components) : ApplicationCommand() {
 
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
-class SlashSayDsl(private val components: Components) : GlobalApplicationCommandProvider {
-    suspend fun onSlashSay(
-        event: GuildSlashEvent,
-        channel: TextChannel,
-        content: String
-    ) {
+class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvider {
+    suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)
             .deleteDelayed(event.hook, 5.seconds)
             .queue()
         channel.sendMessage(content)
-            .addActionRow(components.ephemeralButton(ButtonStyle.DANGER, emoji = EmojiUtils.resolveJDAEmoji("wastebasket")) {
+            .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.deferEdit().queue()
                     buttonEvent.hook.deleteOriginal().await()

@@ -12,9 +12,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -27,7 +27,7 @@ private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
 @Dependencies(Components::class)
-class SlashRateLimit(private val components: Components) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
+class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(
 //        scope = RateLimitScope.USER,
@@ -36,7 +36,7 @@ class SlashRateLimit(private val components: Components) : ApplicationCommand(),
 //    )
     @RateLimitReference(commandRateLimitGroup)
     suspend fun onSlashRateLimit(event: GuildSlashEvent) {
-        val button = components.ephemeralButton(ButtonStyle.PRIMARY, "Retry (5 clicks in 1 minute)") {
+        val button = buttons.primary("Retry (5 clicks in 1 minute)").ephemeral {
             rateLimitReference(retryRateLimitGroup)
             bindTo { event ->
                 if (Math.random() > 0.5) {

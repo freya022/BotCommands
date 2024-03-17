@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
@@ -34,7 +35,7 @@ private val logger = KotlinLogging.logger { }
 
 @Command
 @Dependencies(Paginators::class, Components::class)
-class SlashPagination(private val paginators: Paginators, private val components: Components) : ApplicationCommand() {
+class SlashPagination(private val paginators: Paginators, private val buttons: Buttons) : ApplicationCommand() {
     private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
 
     init {
@@ -78,7 +79,7 @@ class SlashPagination(private val paginators: Paginators, private val components
 
                 // Certified java callback moment
                 runBlocking {
-                    builder.addActionRow(components.ephemeralButton(ButtonStyle.PRIMARY, "Random page") {
+                    builder.addActionRow(buttons.primary("Random page").ephemeral {
                         constraints(paginator.constraints)
                         bindTo {
                             paginator.page = Random.nextInt(0..<paginator.maxPages)

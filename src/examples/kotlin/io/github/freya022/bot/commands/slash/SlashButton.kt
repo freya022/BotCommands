@@ -10,10 +10,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Button
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
@@ -22,12 +21,12 @@ import kotlin.time.toJavaDuration
 private const val buttonListenerName = "SlashButton: persistentButton" //ClassName: theButtonPurpose
 
 @Command
-class SlashButton(private val componentsService: Components) : ApplicationCommand() {
+class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
     @TopLevelSlashCommandData(scope = CommandScope.GLOBAL)
     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
     suspend fun onSlashButton(event: GlobalSlashEvent) {
         val components: MutableList<Button> = arrayListOf()
-        components += componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds") {
+        components += buttons.primary("Click me under 5 seconds").ephemeral {
             timeout(5.seconds) {
                 event.hook.editOriginalComponents(components.map(Button::asDisabled).row()).queue()
             }
@@ -36,7 +35,7 @@ class SlashButton(private val componentsService: Components) : ApplicationComman
             }
         }
 
-        components += componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime") {
+        components += buttons.secondary("Click me anytime").persistent {
             bindTo(buttonListenerName)
 //            bindTo(::onPersistentButtonClick) //Also works
         }

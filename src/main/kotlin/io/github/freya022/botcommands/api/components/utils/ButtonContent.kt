@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import javax.annotation.CheckReturnValue
 
 /**
  * Represents the visual content of a [Button], this contains at least an [Emoji] or a [String]
@@ -11,6 +12,42 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: Emoji?) {
     init {
         require(label != null || emoji != null) { "A label or an emoji needs to be set" }
+
+        if (label != null) {
+            require(label.isNotEmpty()) {
+                "The label cannot be empty"
+            }
+        }
+    }
+
+    /**
+     * Creates a new button content with the provided emoji alias / emoji unicode.
+     *
+     * ### Example
+     * ```kt
+     * // Emoji alias
+     * withEmoji(":smiley:")
+     * // Unicode emoji
+     * withEmoji("😃")
+     *
+     * // Animated custom emoji
+     * withEmoji("<a:dance:123456789123456789>")
+     * // Not animated custom emoji
+     * withEmoji("<:dog:123456789123456789>")
+     *
+     * // Unicode emoji, escape codes
+     * withEmoji("&#92;uD83D&#92;uDE03")
+     * // Codepoint notation
+     * withEmoji("U+1F602")
+     * ```
+     */
+    @CheckReturnValue
+    fun withEmoji(aliasOrUnicode: String?): ButtonContent {
+        val newEmoji = aliasOrUnicode?.let {
+            EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
+        }
+
+        return ButtonContent(style, label, newEmoji)
     }
 
     companion object {

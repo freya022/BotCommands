@@ -47,7 +47,7 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
     protected open fun createSelectMenu(): StringSelectMenu {
         val options = selectOptions.mapIndexed { i, it -> it.withDefault(i == selectedItemIndex) }
 
-        return componentsService.ephemeralStringSelectMenu()
+        return selectMenus.stringSelectMenu().ephemeral()
             .bindTo(this::onItemSelected)
             .oneUse(true)
             .constraints(constraints)

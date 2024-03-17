@@ -20,11 +20,10 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.reference
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval
 import javax.annotation.CheckReturnValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -62,244 +61,159 @@ import java.time.Duration as JavaDuration
  * **Note:** Component groups cannot contain components with timeouts,
  * you will need to [disable the timeout on the components][ITimeoutableComponent.noTimeout].
  *
- * ### Java example
- * ```java
- * @Command
- * public class SlashSayAgain extends ApplicationCommand {
- *     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgain: saySentenceButton";
- *
- *     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
- *     public void onSlashSayAgain(
- *             GuildSlashEvent event,
- *             @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) String sentence,
- *             Components componentsService
- *     ) {
- *         // A button that always works, even after a restart
- *         final var persistentSaySentenceButton = componentsService.persistentButton(ButtonStyle.SECONDARY, "Say '" + sentence + "'")
- *                 // Make sure only the caller can use the button
- *                 .addUsers(event.getUser())
- *                 // The method annotated with a JDAButtonListener of the same name will get called,
- *                 // with the sentence as the argument
- *                 .bindTo(SAY_SENTENCE_HANDLER_NAME, sentence)
- *                 .build();
- *
- *         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
- *         AtomicReference<Button> temporaryButtonRef = new AtomicReference<>();
- *         final var temporarySaySentenceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Say '" + sentence + "'")
- *                 // Make sure only the caller can use the button
- *                 .addUsers(event.getUser())
- *                 // The code to run when the button gets clicked
- *                 .bindTo(buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).queue())
- *                 // Disables this button after 10 seconds
- *                 .timeout(Duration.ofSeconds(10), () -> {
- *                     final var newRow = ActionRow.of(persistentSaySentenceButton, temporaryButtonRef.get().asDisabled());
- *                     event.getHook().editOriginalComponents(newRow).queue();
- *                 })
- *                 .build();
- *         temporaryButtonRef.set(temporarySaySentenceButton); // We have to do this to get the button in our timeout handler
- *
- *         event.reply("The first button always works, and the second button gets disabled after 10 seconds")
- *                 .addActionRow(persistentSaySentenceButton, temporarySaySentenceButton)
- *                 .queue();
- *     }
- *
- *     @JDAButtonListener(SAY_SENTENCE_HANDLER_NAME)
- *     public void onSaySentenceClick(ButtonEvent event, String sentence) {
- *         event.reply(sentence).setEphemeral(true).queue();
- *     }
- * }
- * ```
- *
- * ### Kotlin example
- * ```kt
- * @Command
- * class SlashSayAgain : ApplicationCommand() {
- *     @JDASlashCommand(name = "say_again", description = "Sends a button to send a message again")
- *     suspend fun onSlashSayAgain(
- *         event: GuildSlashEvent,
- *         @SlashOption @Length(max = Button.LABEL_MAX_LENGTH - 6) sentence: String,
- *         componentsService: Components
- *     ) {
- *         // A button that always works, even after a restart
- *         val persistentSaySentenceButton = componentsService.persistentButton(ButtonStyle.SECONDARY, "Say '$sentence'") {
- *             // Make sure only the caller can use the button
- *             constraints += event.user
- *
- *             // In Kotlin, you can use callable references,
- *             // which enables you to use persistent callbacks in a type-safe manner
- *             bindTo(::onSaySentenceClick, sentence)
- *         }
- *
- *         // A button that gets deleted after restart, here it gets deleted after a timeout of 10 seconds
- *         // We have to use lateinit as the button is used in a callback
- *         lateinit var temporarySaySentenceButton: Button
- *         temporarySaySentenceButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Say '$sentence'") {
- *             // The code to run when the button gets clicked
- *             bindTo { buttonEvent -> buttonEvent.reply(sentence).setEphemeral(true).await() }
- *
- *             // Disables this button after 10 seconds
- *             timeout(10.seconds) {
- *                 val newRow = ActionRow.of(persistentSaySentenceButton, temporarySaySentenceButton.asDisabled())
- *                 event.hook.editOriginalComponents(newRow).await() // Coroutines!
- *             }
- *         }
- *
- *         event.reply("The first button always works, and the second button gets disabled after 10 seconds")
- *             .addActionRow(persistentSaySentenceButton, temporarySaySentenceButton)
- *             .queue()
- *     }
- *
- *     @JDAButtonListener("SlashSayAgain: saySentenceButton")
- *     suspend fun onSaySentenceClick(event: ButtonEvent, sentence: String) {
- *         event.reply(sentence).setEphemeral(true).await()
- *     }
- * }
- * ```
+ * @see Buttons
+ * @see SelectMenus
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 @BService
 @ConditionalService(Components.InstantiationChecker::class)
-class Components internal constructor(private val componentController: ComponentController) {
-    private val logger = KotlinLogging.logger { }
-
+class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     // -------------------- Persistent groups --------------------
 
+    @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentGroup(vararg components: IdentifiableComponent): PersistentComponentGroupBuilder =
         PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent { \nblock() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentGroup(vararg components: IdentifiableComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
         persistentGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Ephemeral groups --------------------
 
+    @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralGroup(vararg components: IdentifiableComponent): EphemeralComponentGroupBuilder =
         EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralGroup(vararg components: IdentifiableComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
         ephemeralGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Persistent buttons --------------------
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent()"))
     @JvmOverloads
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(style, label, emoji).persistent { block() }"))
     @JvmSynthetic
     suspend inline fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: PersistentButtonBuilder.() -> Unit) =
         persistentButton(style, label, emoji).apply(block).buildSuspend()
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentButton(content: ButtonContent) =
         persistentButton(content.style, content.label, content.emoji)
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentButton(content: ButtonContent, block: PersistentButtonBuilder.() -> Unit) =
         persistentButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral()"))
     @JvmOverloads
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null) =
         EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + ephemeral instead", replaceWith = ReplaceWith("button(style, label, emoji).ephemeral { block() }"))
     @JvmSynthetic
     suspend inline fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(style, label, emoji).apply(block).buildSuspend()
 
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralButton(content: ButtonContent) =
         ephemeralButton(content.style, content.label, content.emoji)
-    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
+    @Deprecated("Use button + persistent instead", replaceWith = ReplaceWith("button(content).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralButton( content: ButtonContent, block: EphemeralButtonBuilder.() -> Unit) =
         ephemeralButton(content.style, content.label, content.emoji, block)
 
     // -------------------- Persistent select menus --------------------
 
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentStringSelectMenu() =
         PersistentStringSelectBuilder(componentController, InstanceRetriever())
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + persistent instead", replaceWith = ReplaceWith("stringSelectMenu().persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentStringSelectMenu(block: PersistentStringSelectBuilder.() -> Unit) =
         persistentStringSelectMenu().apply(block).buildSuspend()
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentEntitySelectMenu(target: SelectTarget) =
         persistentEntitySelectMenu(enumSetOf(target))
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(target).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentEntitySelectMenu(target: SelectTarget, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(enumSetOf(target), block)
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun persistentEntitySelectMenu(targets: Collection<SelectTarget>) =
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + persistent instead", replaceWith = ReplaceWith("entitySelectMenu(targets).persistent { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun persistentEntitySelectMenu(targets: Collection<SelectTarget>, block: PersistentEntitySelectBuilder.() -> Unit) =
         persistentEntitySelectMenu(targets).apply(block).buildSuspend()
 
     // -------------------- Ephemeral select menus --------------------
 
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralStringSelectMenu() =
         EphemeralStringSelectBuilder(componentController, InstanceRetriever())
-    /** See [StringSelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.create] */
+    @Deprecated("Use stringSelectMenu + ephemeral instead", replaceWith = ReplaceWith("stringSelectMenu().ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralStringSelectMenu(block: EphemeralStringSelectBuilder.() -> Unit) =
         ephemeralStringSelectMenu().apply(block).buildSuspend()
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralEntitySelectMenu(target: SelectTarget) =
         ephemeralEntitySelectMenu(enumSetOf(target))
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(target).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralEntitySelectMenu(target: SelectTarget, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(enumSetOf(target), block)
 
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral()"))
     @CheckReturnValue
+    @ScheduledForRemoval
     fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>) =
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
-    /** See [EntitySelectMenu.create][net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.create] */
+
+    @Deprecated("Use entitySelectMenu + ephemeral instead", replaceWith = ReplaceWith("entitySelectMenu(targets).ephemeral { block() }"))
     @JvmSynthetic
+    @ScheduledForRemoval
     suspend inline fun ephemeralEntitySelectMenu(targets: Collection<SelectTarget>, block: EphemeralEntitySelectBuilder.() -> Unit) =
         ephemeralEntitySelectMenu(targets).apply(block).buildSuspend()
-
-    @JvmName("deleteComponentsById")
-    fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
-
-    @JvmSynthetic
-    suspend fun deleteComponentsById(ids: Collection<String>) {
-        val parsedIds = ids
-            .filter {
-                if (ComponentController.isCompatibleComponent(it)) {
-                    true
-                } else {
-                    logger.warn { "Tried to delete an incompatible component ID '$it'" }
-                    false
-                }
-            }
-            .map { ComponentController.parseComponentId(it) }
-
-        componentController.deleteComponentsById(parsedIds, throwTimeouts = false)
-    }
 
     companion object {
         /**

@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
@@ -19,24 +20,21 @@ import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Command
 @Dependencies(Components::class)
-class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand() {
-    private val components: Components by serviceContainer.lazy()
-
+class SlashNewButtons(
+    private val buttons: Buttons
+) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton = persistentGroupTest(event)
@@ -62,7 +60,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
         }
     }
 
-    private suspend fun filteredButton() = components.ephemeralButton(ButtonStyle.DANGER, "Leave VC") {
+    private suspend fun filteredButton() = buttons.danger("Leave VC").ephemeral {
         filters += filter<InVoiceChannel>()
         bindTo {
             it.guild!!.kickVoiceMember(it.member!!).await()
@@ -71,14 +69,14 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     private suspend fun noGroupButton(event: GuildSlashEvent) =
-        components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
+        buttons.danger("Delete").ephemeral {
             oneUse = true
             bindTo { event.hook.deleteOriginal().queue() }
             timeout(5.seconds)
         }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = components.persistentButton(ButtonStyle.PRIMARY, "Persistent") {
+        val firstButton = buttons.primary("Persistent").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -86,7 +84,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val secondButton = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
+        val secondButton = buttons.primary("Invisible").persistent {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -94,18 +92,18 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
         }
 
-        val timeoutEdButton = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
+        val timeoutEdButton = buttons.primary("Invisible").persistent {
             timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
         }
 
-        components.persistentGroup(firstButton, secondButton) {
+        buttons.group(firstButton, secondButton).persistent {
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
         }
         return firstButton
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton = components.ephemeralButton(ButtonStyle.SECONDARY, "Ephemeral") {
+        val firstButton = buttons.secondary("Ephemeral").ephemeral {
             noTimeout()
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
@@ -113,7 +111,7 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
         }
 
-        components.ephemeralGroup(firstButton) {
+        buttons.group(firstButton).ephemeral {
             timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

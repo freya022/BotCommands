@@ -7,25 +7,25 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 @Command
 @Dependencies(Components::class)
-class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
+class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
     suspend fun onSlashTimeUnit(
         event: GuildSlashEvent,
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
     ) {
-        val button = componentsService.persistentButton(ButtonStyle.PRIMARY, "TimeUnit: ${timeUnit.name}") {
+        val button = buttons.primary("TimeUnit: ${timeUnit.name}").persistent() {
             oneUse = true
             bindTo(::onTimeUnitClicked, timeUnit)
         }
