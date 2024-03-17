@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.text;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
-import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider;
@@ -44,7 +43,7 @@ public abstract class TextCommand {
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
 	 * @param parameterType The <b>boxed</b> type of the command option
 	 *
-	 * @return A {@link ApplicationGeneratedValueSupplier} to generate the option on command execution
+	 * @return A {@link TextGeneratedValueSupplier} to generate the option on command execution
 	 */
 	@NotNull
 	public TextGeneratedValueSupplier getGeneratedValueSupplier(@NotNull CommandPath commandPath,

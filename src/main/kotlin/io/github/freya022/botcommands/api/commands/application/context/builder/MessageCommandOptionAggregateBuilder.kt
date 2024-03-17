@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.context.builder
 
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
