@@ -6,86 +6,83 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import java.util.*
 
 /**
- * Controls who can use interactions such as components (button, selection menu)
+ * Controls who can use components (buttons, selection menus).
  *
- * This acts like a white list, if a user or a member has **at least one** of the requirements, he can use the interaction
+ * A user can use a component if they fit *at least* one of the allowed elements.
  *
  * You can filter by:
+ * - User ID
+ * - Role ID
+ * - Permissions
  *
- *  * User ID
- *  * Role ID
- *  * Permissions
- *
- * You can create interaction constraints from the static methods or by using the existing instance in the component builders
+ * You can create interaction constraints from the static methods,
+ * or by using the existing instance in the component builders.
  */
-//TODO reimplement using a separate mutable type
-// use a separate implementation class, move isAllowed as an internal extension
 class InteractionConstraints private constructor() {
-    val userList = TLongArrayList()
-    val roleList = TLongArrayList()
-    val permissions = enumSetOf<Permission>()
+    val allowedUsers = TLongArrayList()
+    val allowedRoles = TLongArrayList()
+    val allowingPermissions = enumSetOf<Permission>()
 
     val isEmpty: Boolean
-        get() = userList.isEmpty && roleList.isEmpty && permissions.isEmpty()
+        get() = allowedUsers.isEmpty && allowedRoles.isEmpty && allowingPermissions.isEmpty()
 
-    fun addUserIds(vararg userIds: Long): InteractionConstraints = this.also {
-        userList.addAll(userIds)
+    fun addUserIds(vararg userIds: Long): InteractionConstraints = apply {
+        allowedUsers.addAll(userIds)
     }
 
-    fun addUserIds(userIds: Collection<Long?>?): InteractionConstraints = this.also {
-        userList.addAll(userIds)
+    fun addUserIds(userIds: Collection<Long>): InteractionConstraints = apply {
+        allowedUsers.addAll(userIds)
     }
 
-    fun addUsers(vararg userIds: UserSnowflake): InteractionConstraints = this.also {
+    fun addUsers(vararg userIds: UserSnowflake): InteractionConstraints = apply {
         for (user in userIds) {
-            userList.add(user.idLong)
+            allowedUsers.add(user.idLong)
         }
     }
 
-    fun addUsers(users: Collection<UserSnowflake>): InteractionConstraints = this.also {
+    fun addUsers(users: Collection<UserSnowflake>): InteractionConstraints = apply {
         for (user in users) {
-            userList.add(user.idLong)
+            allowedUsers.add(user.idLong)
         }
     }
 
-    fun addRoleIds(vararg roleIds: Long): InteractionConstraints = this.also {
-        roleList.addAll(roleIds)
+    fun addRoleIds(vararg roleIds: Long): InteractionConstraints = apply {
+        allowedRoles.addAll(roleIds)
     }
 
-    fun addRoleIds(roleIds: Collection<Long?>?): InteractionConstraints = this.also {
-        roleList.addAll(roleIds)
+    fun addRoleIds(roleIds: Collection<Long>): InteractionConstraints = apply {
+        allowedRoles.addAll(roleIds)
     }
 
-    fun addRoles(vararg roles: Role): InteractionConstraints = this.also {
+    fun addRoles(vararg roles: Role): InteractionConstraints = apply {
         for (role in roles) {
-            roleList.add(role.idLong)
+            allowedRoles.add(role.idLong)
         }
     }
 
-    fun addRoles(roles: Collection<Role>): InteractionConstraints = this.also {
+    fun addRoles(roles: Collection<Role>): InteractionConstraints = apply {
         for (role in roles) {
-            roleList.add(role.idLong)
+            allowedRoles.add(role.idLong)
         }
     }
 
-    fun addPermissions(vararg permissions: Permission?): InteractionConstraints = this.also {
-        Collections.addAll(this.permissions, *permissions)
+    fun addPermissions(vararg permissions: Permission): InteractionConstraints = apply {
+        allowingPermissions.addAll(permissions)
     }
 
-    fun addPermissions(permissions: Collection<Permission>?): InteractionConstraints = this.also {
-        this.permissions.addAll(permissions!!)
+    fun addPermissions(permissions: Collection<Permission>): InteractionConstraints = apply {
+        allowingPermissions.addAll(permissions)
     }
 
-    fun setConstraints(otherConstraints: InteractionConstraints): InteractionConstraints = this.also {
-        userList.clear()
-        roleList.clear()
-        permissions.clear()
-        userList.addAll(otherConstraints.userList)
-        roleList.addAll(otherConstraints.roleList)
-        permissions.addAll(otherConstraints.permissions)
+    fun setConstraints(otherConstraints: InteractionConstraints): InteractionConstraints = apply {
+        allowedUsers.clear()
+        allowedRoles.clear()
+        allowingPermissions.clear()
+        allowedUsers.addAll(otherConstraints.allowedUsers)
+        allowedRoles.addAll(otherConstraints.allowedRoles)
+        allowingPermissions.addAll(otherConstraints.allowingPermissions)
     }
 
     @JvmSynthetic
@@ -125,18 +122,18 @@ class InteractionConstraints private constructor() {
     internal fun isAllowed(event: GenericComponentInteractionCreateEvent): Boolean {
         if (isEmpty) return true
 
-        if (event.user.idLong in userList) return true
+        if (event.user.idLong in allowedUsers) return true
 
         val member = event.member
         if (member != null) {
-            if (permissions.isNotEmpty()) {
-                if (member.hasPermission(event.guildChannel, permissions)) {
+            if (allowingPermissions.isNotEmpty()) {
+                if (member.hasPermission(event.guildChannel, allowingPermissions)) {
                     return true
                 }
             }
 
             //If the member has any of these roles
-            if (member.roles.any { it.idLong in roleList }) {
+            if (member.roles.any { it.idLong in allowedRoles }) {
                 return true
             }
         }

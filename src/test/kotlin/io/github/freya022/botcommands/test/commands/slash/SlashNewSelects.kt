@@ -22,6 +22,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
@@ -56,10 +57,8 @@ class SlashNewSelects(
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {
         val firstSelect = selectMenus.stringSelectMenu().persistent {
             oneUse = true //Cancels whole group if used
-            constraints {
-                addUserIds(1234L)
-                permissions += Permission.ADMINISTRATOR
-            }
+            constraints += UserSnowflake.fromId(1234L)
+            constraints += Permission.ADMINISTRATOR
             bindTo(PERSISTENT_SELECT_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
 
             addOption("Test", "Test")
@@ -71,7 +70,7 @@ class SlashNewSelects(
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
-                permissions += Permission.ADMINISTRATOR
+                allowingPermissions += Permission.ADMINISTRATOR
             }
             bindTo(PERSISTENT_SELECT_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
 
@@ -92,7 +91,7 @@ class SlashNewSelects(
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
-                permissions += Permission.ADMINISTRATOR
+                allowingPermissions += Permission.ADMINISTRATOR
             }
             bindTo { evt -> evt.reply_("Ephemeral select menu clicked", ephemeral = true).queue() }
         }

@@ -60,9 +60,9 @@ internal class ComponentRepository(
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
                 executeUpdate(
                     componentId,
-                    builder.constraints.userList.toArray(),
-                    builder.constraints.roleList.toArray(),
-                    Permission.getRaw(builder.constraints.permissions)
+                    builder.constraints.allowedUsers.toArray(),
+                    builder.constraints.allowedRoles.toArray(),
+                    Permission.getRaw(builder.constraints.allowingPermissions)
                 )
             }
 
