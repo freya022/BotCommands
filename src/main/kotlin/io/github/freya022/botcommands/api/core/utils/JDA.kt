@@ -135,14 +135,14 @@ fun MessageEditData.toCreateData(): MessageCreateData =
 /**
  * @see IReplyCallback.reply
  */
-fun MessageCreateData.edit(callback: IReplyCallback): ReplyCallbackAction =
-    callback.reply(this)
+fun MessageCreateData.send(callback: IReplyCallback, ephemeral: Boolean = false): ReplyCallbackAction =
+    callback.reply(this).setEphemeral(ephemeral)
 
 /**
  * @see InteractionHook.sendMessage
  */
-fun MessageCreateData.send(hook: InteractionHook): WebhookMessageCreateAction<Message> =
-    hook.sendMessage(this)
+fun MessageCreateData.send(hook: InteractionHook, ephemeral: Boolean = false): WebhookMessageCreateAction<Message> =
+    hook.sendMessage(this).setEphemeral(ephemeral)
 
 /**
  * @see MessageChannel.sendMessage
