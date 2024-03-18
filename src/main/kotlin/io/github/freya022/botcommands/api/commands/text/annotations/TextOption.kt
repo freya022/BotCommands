@@ -19,9 +19,8 @@ annotation class TextOption(
      * The name of this option displayed on the help content.
      *
      * This is optional if the parameter name is available,
-     * see [the wiki](https://freya022.github.io/BotCommands/using-commands/Inferred-option-names/) for more details.
+     * see [the wiki](https://freya022.github.io/BotCommands/3.X/using-botcommands/parameter-names/) for more details.
      */
-    //TODO keep an eye out for this wiki link
     val name: String = "",
 
     /**
