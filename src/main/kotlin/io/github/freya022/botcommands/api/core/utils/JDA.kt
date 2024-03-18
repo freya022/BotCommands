@@ -8,15 +8,14 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
+import net.dv8tion.jda.api.requests.restaction.*
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.TimeFormat
@@ -146,10 +145,22 @@ fun MessageCreateData.send(hook: InteractionHook): WebhookMessageCreateAction<Me
     hook.sendMessage(this)
 
 /**
+ * @see MessageChannel.sendMessage
+ */
+fun MessageCreateData.send(channel: MessageChannel): MessageCreateAction =
+    channel.sendMessage(this)
+
+/**
  * @see InteractionHook.editOriginal
  */
 fun MessageEditData.edit(hook: InteractionHook): WebhookMessageEditAction<Message> =
     hook.editOriginal(this)
+
+/**
+ * @see MessageChannel.editMessageById
+ */
+fun MessageEditData.edit(channel: MessageChannel, id: Long): MessageEditAction =
+    channel.editMessageById(id, this)
 
 /**
  * @see InteractionHook.editOriginal
