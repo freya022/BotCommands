@@ -68,7 +68,7 @@ internal fun runFiltered(
     // On global manager, do not register any command if forceGuildCommands is enabled,
     // as none of them would be global
     if (manager is GlobalApplicationCommandManager && forceGuildCommands)
-        return skipLogger.skip(path.name, "${BApplicationConfig::forceGuildCommands.reference} is enabled")
+        return
 
     // If guild commands aren't forced, check the scope
     if (!forceGuildCommands && !manager.isValidScope(scope)) return
