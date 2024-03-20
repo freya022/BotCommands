@@ -60,10 +60,7 @@ internal class UserContextCommandAutoBuilder(
                 manager,
                 skipLogger,
                 forceGuildCommands,
-                metadata.path,
-                metadata.instance,
-                metadata.commandId,
-                metadata.func,
+                metadata,
                 metadata.annotation.scope
             ) { processUserCommand(manager, metadata) }
         }

@@ -204,10 +204,7 @@ internal class SlashCommandAutoBuilder(
                     manager,
                     skipLogger,
                     forceGuildCommands,
-                    metadata.path,
-                    metadata.instance,
-                    metadata.commandId,
-                    metadata.func,
+                    metadata,
                     topLevelMetadata.annotation.scope
                 ) {
                     processCommand(manager, topLevelMetadata)

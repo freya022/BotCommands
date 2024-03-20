@@ -60,10 +60,7 @@ internal class MessageContextCommandAutoBuilder(
                 manager,
                 skipLogger,
                 forceGuildCommands,
-                metadata.path,
-                metadata.instance,
-                metadata.commandId,
-                metadata.func,
+                metadata,
                 metadata.annotation.scope
             ) { processMessageCommand(manager, metadata) }
         }

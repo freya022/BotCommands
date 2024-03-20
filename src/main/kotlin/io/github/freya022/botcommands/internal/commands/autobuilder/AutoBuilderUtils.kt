@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.SkipLogger
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.utils.*
@@ -55,13 +56,15 @@ internal fun runFiltered(
     manager: AbstractApplicationCommandManager,
     skipLogger: SkipLogger,
     forceGuildCommands: Boolean,
-    path: CommandPath,
-    instance: ApplicationCommand,
-    commandId: String?,
-    func: KFunction<*>,
+    applicationFunctionMetadata: ApplicationFunctionMetadata<*>,
     scope: CommandScope,
     block: () -> Unit
 ) {
+    val path = applicationFunctionMetadata.path
+    val instance = applicationFunctionMetadata.instance
+    val commandId = applicationFunctionMetadata.commandId
+    val func = applicationFunctionMetadata.func
+
     // On global manager, do not register any command if forceGuildCommands is enabled,
     // as none of them would be global
     if (manager is GlobalApplicationCommandManager && forceGuildCommands)
