@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.TopLevelApplicationCommandBuilderMixin
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
@@ -24,6 +26,9 @@ class MessageCommandBuilder internal constructor(
     override val parentInstance: INamedCommand? = null
 
     /**
+     * Declares an input option, supported types are in [ParameterResolver],
+     * additional types can be added by implementing [MessageContextParameterResolver].
+     *
      * @param declaredName Name of the declared parameter in the [command function][function]
      */
     fun option(declaredName: String) {
