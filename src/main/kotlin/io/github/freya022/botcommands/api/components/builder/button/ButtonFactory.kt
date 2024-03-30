@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder.button
 
 import io.github.freya022.botcommands.api.components.Button
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import javax.annotation.CheckReturnValue
 
 /**
- * [Button] factory provided by [Components].
+ * [Button] factory provided by [Buttons].
  */
 class ButtonFactory internal constructor(
     private val componentController: ComponentController,

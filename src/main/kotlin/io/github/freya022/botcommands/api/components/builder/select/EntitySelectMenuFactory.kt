@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.builder.select
 
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
+import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
 import javax.annotation.CheckReturnValue
 
 /**
- * [EntitySelectMenu] factory provided by [Components].
+ * [EntitySelectMenu] factory provided by [SelectMenus].
  */
 class EntitySelectMenuFactory internal constructor(
     private val componentController: ComponentController,

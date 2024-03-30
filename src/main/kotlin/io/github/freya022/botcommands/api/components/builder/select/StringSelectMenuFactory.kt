@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.components.builder.select
 
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 import javax.annotation.CheckReturnValue
 
 /**
- * [StringSelectMenu] factory provided by [Components].
+ * [StringSelectMenu] factory provided by [SelectMenus].
  */
 class StringSelectMenuFactory internal constructor(
     private val componentController: ComponentController
