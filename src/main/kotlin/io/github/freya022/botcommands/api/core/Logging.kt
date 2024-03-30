@@ -44,21 +44,31 @@ object Logging {
     internal fun Class<*>.toUnwrappedLogger(): KLogger {
         return KotlinLogging.logger(unwrapKotlinClassName())
     }
+}
 
-    private fun Class<*>.unwrapKotlinClassName() = unwrapCompanionClass(this).name.substringBefore('$')
+/**
+ * Returns the [KLogger] for the class of this object.
+ *
+ * This might be useful to get a logger which targets an implementation class instead of a superclass.
+ */
+@JvmSynthetic
+fun Any.objectLogger(): KLogger {
+    return KotlinLogging.logger(javaClass.unwrapKotlinClassName())
+}
 
-    private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
-        val enclosingClass = clazz.enclosingClass ?: return clazz
+private fun Class<*>.unwrapKotlinClassName() = unwrapCompanionClass(this).name.substringBefore('$')
 
-        val hasCompanionField = enclosingClass.declaredFields.any { field ->
-            field.name == clazz.simpleName &&
-                    Modifier.isStatic(field.modifiers) &&
-                    field.type == clazz
-        }
+private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
+    val enclosingClass = clazz.enclosingClass ?: return clazz
 
-        return when {
-            hasCompanionField -> enclosingClass
-            else -> clazz
-        }
+    val hasCompanionField = enclosingClass.declaredFields.any { field ->
+        field.name == clazz.simpleName &&
+                Modifier.isStatic(field.modifiers) &&
+                field.type == clazz
+    }
+
+    return when {
+        hasCompanionField -> enclosingClass
+        else -> clazz
     }
 }
