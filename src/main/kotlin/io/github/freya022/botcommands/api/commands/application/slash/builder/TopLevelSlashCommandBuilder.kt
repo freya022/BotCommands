@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.mix
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
-import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
+import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
@@ -26,8 +26,8 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 
-    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap()
-    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap()
+    internal val subcommands: NamedCommandMap<SlashSubcommandBuilder> = NamedCommandMap()
+    internal val subcommandGroups: NamedCommandMap<SlashSubcommandGroupBuilder> = NamedCommandMap()
 
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()

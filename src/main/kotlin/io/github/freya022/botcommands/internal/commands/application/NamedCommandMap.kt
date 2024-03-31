@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import java.util.*
 
-internal class SimpleCommandMap<T> internal constructor() where T : INamedCommand, T : IDeclarationSiteHolder {
+internal class NamedCommandMap<T> internal constructor() where T : INamedCommand, T : IDeclarationSiteHolder {
     private val mutableMap: MutableMap<String, T> = hashMapOf()
     internal val map: Map<String, T> = Collections.unmodifiableMap(mutableMap)
 

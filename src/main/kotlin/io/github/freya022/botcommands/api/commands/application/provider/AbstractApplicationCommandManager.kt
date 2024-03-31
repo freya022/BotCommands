@@ -20,7 +20,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
+import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -28,7 +28,7 @@ import kotlin.reflect.KFunction
 
 @IgnoreStackFrame
 sealed class AbstractApplicationCommandManager(val context: BContext) {
-    private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap()
+    private val commandMap: NamedCommandMap<ApplicationCommandInfo> = NamedCommandMap()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         get() = commandMap.map
 

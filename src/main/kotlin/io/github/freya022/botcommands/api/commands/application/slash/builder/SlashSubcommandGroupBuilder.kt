@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
-import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
+import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
@@ -30,7 +30,7 @@ class SlashSubcommandGroupBuilder internal constructor(
     override val path: CommandPath by lazy { computePath() }
     override var declarationSite: DeclarationSite? = null
 
-    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap()
+    internal val subcommands: NamedCommandMap<SlashSubcommandBuilder> = NamedCommandMap()
 
     //TODO change docs when Discord eventually decides to not have a mess of a command list
     /**
