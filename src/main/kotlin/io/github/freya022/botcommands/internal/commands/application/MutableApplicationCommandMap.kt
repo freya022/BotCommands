@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
@@ -8,7 +7,6 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
-import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 internal class MutableApplicationCommandMap internal constructor(
@@ -24,14 +22,6 @@ internal class MutableApplicationCommandMap internal constructor(
         override fun <T : ApplicationCommandInfo> getTypeMap(type: Command.Type): CommandMap<T> =
             EmptyCommandMap as CommandMap<T>
     }
-
-    internal fun <T : ApplicationCommandInfo> computeIfAbsent(
-        type: CommandType,
-        path: CommandPath,
-        mappingFunction: Function<CommandPath, T>
-    ): T = getTypeMap<T>(type).computeIfAbsent(path, mappingFunction)
-
-    internal fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ApplicationCommandInfo> getTypeMap(type: CommandType): MutableCommandMap<T> {
