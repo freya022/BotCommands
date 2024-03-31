@@ -145,17 +145,24 @@ internal class ApplicationCommandsBuilder(
     private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
     private inline fun updateCatching(guild: Guild?, block: () -> CommandUpdateResult) {
-        block().also { result ->
-            if (result.updateExceptions.isNotEmpty()) {
-                when {
-                    guild != null -> logger.error { "Errors occurred while registering commands for guild '${guild.name}' (${guild.id})" }
-                    else -> logger.error { "Errors occurred while registering commands:" }
-                }
+        runCatching(block)
+            .onSuccess { result ->
+                if (result.updateExceptions.isNotEmpty()) {
+                    if (guild != null)
+                        logger.error { "Errors occurred while registering commands for guild '${guild.name}' (${guild.id})" }
+                    else
+                        logger.error { "Errors occurred while registering global commands" }
 
-                result.updateExceptions.forEach { updateException ->
-                    logger.error(updateException.throwable) { "Function: ${updateException.function.shortSignature}" }
+                    result.updateExceptions.forEach { updateException ->
+                        logger.error(updateException.throwable) { "Function: ${updateException.function.shortSignature}" }
+                    }
                 }
             }
-        }
+            .onFailure {
+                if (guild != null)
+                    logger.error(it) { "Errors occurred while registering commands for guild '${guild.name}' (${guild.id})" }
+                else
+                    logger.error(it) { "Errors occurred while registering global commands" }
+            }
     }
 }
