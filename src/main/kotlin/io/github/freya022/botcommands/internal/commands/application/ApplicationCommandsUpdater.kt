@@ -24,20 +24,17 @@ import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
+import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Files
+
+private val logger = KotlinLogging.logger { }
 
 internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
-    private val logger = KotlinLogging.logger {  }
-
     private val commandsCache = context.getService<ApplicationCommandsCache>()
     private val onlineCheck = context.applicationConfig.onlineAppCommandCheckEnabled
 
@@ -53,11 +50,9 @@ internal class ApplicationCommandsUpdater private constructor(
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        allCommandData = ApplicationCommandDataMap().also { map ->
-            computeSlashCommands(manager.slashCommands, map)
-            computeContextCommands(manager.userContextCommands, map, Command.Type.USER)
-            computeContextCommands(manager.messageContextCommands, map, Command.Type.MESSAGE)
-        }.allCommandData
+        allCommandData = mapSlashCommands(manager.slashCommands) +
+                mapContextCommands(manager.userContextCommands, Command.Type.USER) +
+                mapContextCommands(manager.messageContextCommands, Command.Type.MESSAGE)
 
         //Apply localization
         val localizationFunction: LocalizationFunction = BCLocalizationFunction(context)
@@ -109,31 +104,22 @@ internal class ApplicationCommandsUpdater private constructor(
         printPushedCommandData(commands, guild)
     }
 
-    private fun computeSlashCommands(guildApplicationCommands: Collection<TopLevelSlashCommandInfo>, map: ApplicationCommandDataMap) {
-        guildApplicationCommands
+    private fun mapSlashCommands(commands: Collection<TopLevelSlashCommandInfo>): List<SlashCommandData> =
+        commands
             .filterCommands()
-            .forEach { info: TopLevelSlashCommandInfo ->
-                try {
-                    val isTopLevel = info.isTopLevelCommandOnly()
-                    val topLevelData = Commands.slash(info.name, info.description).also { commandData ->
-                        if (isTopLevel) {
-                            commandData.addOptions(info.getDiscordOptions(guild))
-                        }
-
-                        commandData.configureTopLevel(info)
-                    }
-
-                    if (!isTopLevel) {
-                        topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
-                        topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
-                    }
-
-                    map[Command.Type.SLASH, info.name] = topLevelData
-                } catch (e: Exception) { //TODO use some sort of exception context for command paths
-                    rethrowUser(info.function, "An exception occurred while processing command '${info.name}'", e)
+            .mapCommands { info: TopLevelSlashCommandInfo ->
+                val topLevelData = Commands.slash(info.name, info.description).configureTopLevel(info)
+                if (info.isTopLevelCommandOnly()) {
+                    topLevelData.addOptions(info.getDiscordOptions(guild))
+                } else {
+                    topLevelData.addSubcommandGroups(
+                        info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData()
+                    )
+                    topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
                 }
+
+                topLevelData
             }
-    }
 
     private fun Collection<SlashSubcommandGroupInfo>.mapToSubcommandGroupData() =
         this.map { subcommandGroupInfo ->
@@ -148,23 +134,26 @@ internal class ApplicationCommandsUpdater private constructor(
                 .addOptions(subcommandInfo.getDiscordOptions(guild))
         }
 
-    private fun <T> computeContextCommands(
-        guildApplicationCommands: Collection<T>,
-        map: ApplicationCommandDataMap,
+    private fun <T> mapContextCommands(
+        commands: Collection<T>,
         type: Command.Type
-    ) where T : ITopLevelApplicationCommandInfo,
-            T : ApplicationCommandInfo {
-        guildApplicationCommands
+    ): List<CommandData> where T : ITopLevelApplicationCommandInfo,
+                               T : ApplicationCommandInfo {
+        return commands
             .filterCommands()
-            .forEach { info: T ->
-                try {
-                    //Standard command
-                    map[type, info.name] = Commands.context(type, info.name).configureTopLevel(info)
-                } catch (e: Exception) {
-                    rethrowUser(info.function, "An exception occurred while processing a ${type.name} command ${info.name}", e)
-                }
+            .mapCommands { info: T ->
+                Commands.context(type, info.name).configureTopLevel(info)
             }
     }
+
+    private inline fun <T : ApplicationCommandInfo, R : CommandData> List<T>.mapCommands(transform: (T) -> R): List<R> =
+        map {
+            try {
+                transform(it)
+            } catch (e: Exception) { //TODO use some sort of exception context for command paths
+                rethrowUser(it.function, "An exception occurred while processing command '${it.path.fullPath}'", e)
+            }
+        }
 
     private fun <T : INamedCommand> Collection<T>.filterCommands() = filter { info ->
         context.settingsProvider?.let { settings ->
@@ -176,7 +165,7 @@ internal class ApplicationCommandsUpdater private constructor(
         return@filter true
     }
 
-    private fun <T> CommandData.configureTopLevel(info: T): CommandData
+    private fun <D : CommandData, T> D.configureTopLevel(info: T): D
             where T : ITopLevelApplicationCommandInfo,
                   T : ApplicationCommandInfo = apply {
         if (info.nsfw) isNSFW = true
