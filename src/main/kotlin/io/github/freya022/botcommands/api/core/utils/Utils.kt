@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @Suppress("UnusedReceiverParameter")
-inline fun <reified T : Any> KotlinLogging.logger(): KLogger =
+inline fun <reified T : Any> KotlinLogging.loggerOf(): KLogger =
     LoggerFactory.getLogger(T::class.java).toKLogger()
 
 private val stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)

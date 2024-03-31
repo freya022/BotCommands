@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.db.withLogger
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.api.core.utils.logger
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 @Command
@@ -32,7 +32,7 @@ class SlashDb(private val database: Database) : ApplicationCommand() {
         }
 
         database.preparedStatement<String>("select version from bc.bc_version") {
-            withLogger(KotlinLogging.logger<BCInfo>())
+            withLogger(KotlinLogging.loggerOf<BCInfo>())
             executeQuery().read()["version"]
         }
 

@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException
 import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.utils.logger
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.internal.utils.Helpers
 
-private val logger = KotlinLogging.logger<CommandEvent>()
+private val logger = KotlinLogging.loggerOf<CommandEvent>()
 
 internal class CommandEventImpl private constructor(
     context: BContext,

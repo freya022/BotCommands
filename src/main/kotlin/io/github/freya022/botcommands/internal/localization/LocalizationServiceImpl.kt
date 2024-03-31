@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.localization
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.logger
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-private val logger = KotlinLogging.logger<LocalizationService>()
+private val logger = KotlinLogging.loggerOf<LocalizationService>()
 
 @BService
 internal class LocalizationServiceImpl internal constructor(
