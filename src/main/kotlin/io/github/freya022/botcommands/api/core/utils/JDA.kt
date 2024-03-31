@@ -186,16 +186,23 @@ fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Messa
  *
  * **Note:** This delays the rest action by the given delay.
  */
-//TODO (maybe?) rename to deleteAfter when DeferrableInteractionCallbackAction is released
 fun <R> RestAction<R>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<R> =
     delay(delay).onSuccess { hook.deleteOriginal() }
+
+/**
+ * Deletes the original message using the hook after the specified delay.
+ *
+ * **Note:** This delays the rest action by the given delay.
+ */
+fun RestAction<InteractionHook>.deleteDelayed(delay: Duration): RestAction<InteractionHook> =
+    delay(delay).onSuccess(InteractionHook::deleteOriginal)
 
 /**
  * Deletes the message after the specified delay.
  *
  * **Note:** This delays the rest action by the given delay.
  */
-//TODO (maybe?) rename to deleteAfter when DeferrableInteractionCallbackAction is released
+@JvmName("deleteDelayedMessage")
 fun RestAction<Message>.deleteDelayed(delay: Duration): RestAction<Message> =
     delay(delay).onSuccess(Message::delete)
 

@@ -86,7 +86,7 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
             componentGroup.awaitAny()
         } catch (e: TimeoutCancellationException) {
             return event.hook.editLocalized(localizationContext, "outputs.timeout")
-                .deleteDelayed(event.hook, 5.seconds)
+                .deleteDelayed(5.seconds)
                 .queue()
         }
 

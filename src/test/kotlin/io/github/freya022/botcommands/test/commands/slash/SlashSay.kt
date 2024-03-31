@@ -27,7 +27,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
         @SlashOption(description = "What to say") content: String
     ) {
         event.reply_("Done!", ephemeral = true)
-            .deleteDelayed(event.hook, 5.seconds)
+            .deleteDelayed(5.seconds)
             .queue()
         channel.sendMessage(content)
             .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
@@ -45,7 +45,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvider {
     suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)
-            .deleteDelayed(event.hook, 5.seconds)
+            .deleteDelayed(5.seconds)
             .queue()
         channel.sendMessage(content)
             .addActionRow(buttons.danger(EmojiUtils.resolveJDAEmoji("wastebasket")).ephemeral {
