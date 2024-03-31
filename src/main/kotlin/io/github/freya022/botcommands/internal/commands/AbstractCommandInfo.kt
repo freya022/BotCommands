@@ -17,7 +17,7 @@ abstract class AbstractCommandInfo internal constructor(
     final override val name: String = builder.name
     final override val path: CommandPath by lazy { computePath() }
 
-    final override val declarationSite: DeclarationSite? = builder.declarationSite
+    final override val declarationSite: DeclarationSite = builder.declarationSite
 
     override val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
 

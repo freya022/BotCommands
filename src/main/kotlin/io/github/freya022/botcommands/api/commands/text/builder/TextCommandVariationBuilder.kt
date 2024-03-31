@@ -27,7 +27,7 @@ class TextCommandVariationBuilder internal constructor(
     val context: BContext,
     function: KFunction<Any>
 ) : IBuilderFunctionHolder<Any>, IDeclarationSiteHolderBuilder {
-    override var declarationSite: DeclarationSite? = null
+    override lateinit var declarationSite: DeclarationSite
     override val function: KFunction<Any> = function.reflectReference()
 
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function) { aggregatorParameter, aggregator ->

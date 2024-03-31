@@ -15,7 +15,7 @@ class SlashSubcommandGroupInfo(
     override val parentInstance = topLevelInstance
     override val name = builder.name
     override val path: CommandPath by lazy { computePath() }
-    override val declarationSite: DeclarationSite? = builder.declarationSite
+    override val declarationSite: DeclarationSite = builder.declarationSite
 
     val description = LocalizationUtils.getCommandDescription(topLevelInstance.context, builder, builder.description)
 

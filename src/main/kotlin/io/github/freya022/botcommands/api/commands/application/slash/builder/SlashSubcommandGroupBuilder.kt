@@ -28,7 +28,7 @@ class SlashSubcommandGroupBuilder internal constructor(
 ) : INamedCommand, IDeclarationSiteHolderBuilder {
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
-    override var declarationSite: DeclarationSite? = null
+    override lateinit var declarationSite: DeclarationSite
 
     internal val subcommands: NamedCommandMap<SlashSubcommandBuilder> = NamedCommandMap()
 

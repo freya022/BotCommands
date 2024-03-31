@@ -31,7 +31,7 @@ class TextCommandVariation internal constructor(
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo, IDeclarationSiteHolder {
-    override val declarationSite: DeclarationSite? = builder.declarationSite
+    override val declarationSite: DeclarationSite = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 

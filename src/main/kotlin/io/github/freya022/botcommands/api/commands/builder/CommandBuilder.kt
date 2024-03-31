@@ -25,7 +25,7 @@ abstract class CommandBuilder internal constructor(
     override val name: String
 ) : INamedCommand, IDeclarationSiteHolderBuilder {
     internal abstract val type: CommandType
-    override var declarationSite: DeclarationSite? = null
+    override lateinit var declarationSite: DeclarationSite
 
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
