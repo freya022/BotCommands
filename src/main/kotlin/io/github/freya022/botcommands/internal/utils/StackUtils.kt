@@ -5,7 +5,12 @@ import java.lang.StackWalker.StackFrame
 
 internal val stackWalker: StackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
-internal fun findCaller(skip: Long = 0): StackFrame {
+// DO NOT use default parameters as it would generate an additional frame
+internal fun findCaller(): StackFrame {
+    return findCaller(1) // Skip this call
+}
+
+internal fun findCaller(skip: Long): StackFrame {
     return stackWalker.walk { stream ->
         // Skip this method + the method calling this
         stream.skip(2 + skip)

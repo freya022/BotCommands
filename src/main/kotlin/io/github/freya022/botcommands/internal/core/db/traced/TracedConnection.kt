@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.db.traced
 
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
-import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
 import io.github.freya022.botcommands.internal.utils.findCaller
@@ -11,7 +10,6 @@ import java.sql.PreparedStatement
 import kotlin.time.Duration
 
 @Suppress("SqlSourceToSinkFlow")
-@IgnoreStackFrame
 internal class TracedConnection internal constructor(
     connection: Connection,
     semaphore: Semaphore,
@@ -45,7 +43,7 @@ internal class TracedConnection internal constructor(
     }
 
     private fun wrapStatement(preparedStatement: PreparedStatement, sql: String): PreparedStatement {
-        val logger = findCaller().declaringClass.toUnwrappedLogger()
+        val logger = findCaller(1).declaringClass.toUnwrappedLogger()
         return if (isQueryThresholdSet || (logQueries && logger.isTraceEnabled())) {
             val tracedQuery = parametrizedQueryFactory.get(preparedStatement, sql)
             TracedPreparedStatement(preparedStatement, logger, tracedQuery, logQueries, isQueryThresholdSet, queryLogThreshold)
