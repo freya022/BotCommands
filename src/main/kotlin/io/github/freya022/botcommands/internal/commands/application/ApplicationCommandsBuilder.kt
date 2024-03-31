@@ -87,7 +87,7 @@ internal class ApplicationCommandsBuilder(
             logger.debug { "Global commands does not have to be updated, ${globalUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
         }
 
-        applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
+        applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.allApplicationCommands.toApplicationCommandMap())
 
         firstGlobalUpdate = false
         return CommandUpdateResult(null, needsUpdate, failedDeclarations)
@@ -130,7 +130,7 @@ internal class ApplicationCommandsBuilder(
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
             }
 
-            applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())
+            applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.allApplicationCommands.toApplicationCommandMap())
 
             firstGuildUpdates.add(guild.idLong)
             return CommandUpdateResult(guild, needsUpdate, failedDeclarations)

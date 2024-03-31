@@ -8,8 +8,6 @@ import io.github.freya022.botcommands.api.commands.application.provider.GuildApp
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
@@ -48,15 +46,18 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
-    internal val applicationCommands: Collection<ApplicationCommandInfo>
+    internal val allApplicationCommands: Collection<ApplicationCommandInfo> = manager.allApplicationCommands
     private val allCommandData: Collection<CommandData>
     internal val filteredCommandsCount: Int get() = allCommandData.size
 
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        applicationCommands = manager.applicationCommands.values
-        allCommandData = computeCommands().allCommandData
+        allCommandData = ApplicationCommandDataMap().also { map ->
+            computeSlashCommands(manager.slashCommands, map)
+            computeContextCommands(manager.userContextCommands, map, Command.Type.USER)
+            computeContextCommands(manager.messageContextCommands, map, Command.Type.MESSAGE)
+        }.allCommandData
 
         //Apply localization
         val localizationFunction: LocalizationFunction = BCLocalizationFunction(context)
@@ -108,15 +109,8 @@ internal class ApplicationCommandsUpdater private constructor(
         printPushedCommandData(commands, guild)
     }
 
-    private fun computeCommands() = ApplicationCommandDataMap().also { map ->
-        computeSlashCommands(applicationCommands, map)
-        computeContextCommands(applicationCommands, map, UserCommandInfo::class.java, Command.Type.USER)
-        computeContextCommands(applicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
-    }
-
-    private fun computeSlashCommands(guildApplicationCommands: Collection<ApplicationCommandInfo>, map: ApplicationCommandDataMap) {
+    private fun computeSlashCommands(guildApplicationCommands: Collection<TopLevelSlashCommandInfo>, map: ApplicationCommandDataMap) {
         guildApplicationCommands
-            .filterIsInstance<TopLevelSlashCommandInfo>()
             .filterCommands()
             .forEach { info: TopLevelSlashCommandInfo ->
                 try {
@@ -155,14 +149,12 @@ internal class ApplicationCommandsUpdater private constructor(
         }
 
     private fun <T> computeContextCommands(
-        guildApplicationCommands: Collection<ApplicationCommandInfo>,
+        guildApplicationCommands: Collection<T>,
         map: ApplicationCommandDataMap,
-        targetClazz: Class<T>,
         type: Command.Type
     ) where T : ITopLevelApplicationCommandInfo,
             T : ApplicationCommandInfo {
         guildApplicationCommands
-            .filterIsInstance(targetClazz)
             .filterCommands()
             .forEach { info: T ->
                 try {

@@ -21,6 +21,9 @@ import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
+import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -28,9 +31,17 @@ import kotlin.reflect.KFunction
 
 @IgnoreStackFrame
 sealed class AbstractApplicationCommandManager(val context: BContext) {
-    private val commandMap: NamedCommandMap<ApplicationCommandInfo> = NamedCommandMap()
-    internal val applicationCommands: Map<String, ApplicationCommandInfo>
-        get() = commandMap.map
+    private val slashCommandMap: NamedCommandMap<TopLevelSlashCommandInfo> = NamedCommandMap()
+    internal val slashCommands: Collection<TopLevelSlashCommandInfo> = slashCommandMap.values
+
+    private val userContextCommandMap: NamedCommandMap<UserCommandInfo> = NamedCommandMap()
+    internal val userContextCommands: Collection<UserCommandInfo> = userContextCommandMap.values
+
+    private val messageContextCommandMap: NamedCommandMap<MessageCommandInfo> = NamedCommandMap()
+    internal val messageContextCommands: Collection<MessageCommandInfo> = messageContextCommandMap.values
+
+    internal val allApplicationCommands: Collection<ApplicationCommandInfo>
+        get() = slashCommands + userContextCommands + messageContextCommands
 
     internal abstract val defaultScope: CommandScope
 
@@ -60,7 +71,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
-            .also(::putNewCommand)
+            .also(slashCommandMap::putNewCommand)
     }
 
     /**
@@ -88,7 +99,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
-            .also(::putNewCommand)
+            .also(userContextCommandMap::putNewCommand)
     }
 
     /**
@@ -115,10 +126,6 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
-            .also(::putNewCommand)
-    }
-
-    private fun putNewCommand(newInfo: ApplicationCommandInfo) {
-        commandMap.putNewCommand(newInfo)
+            .also(messageContextCommandMap::putNewCommand)
     }
 }

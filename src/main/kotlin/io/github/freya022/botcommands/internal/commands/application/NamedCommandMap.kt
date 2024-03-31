@@ -8,6 +8,7 @@ import java.util.*
 internal class NamedCommandMap<T> internal constructor() where T : INamedCommand, T : IDeclarationSiteHolder {
     private val mutableMap: MutableMap<String, T> = hashMapOf()
     internal val map: Map<String, T> = Collections.unmodifiableMap(mutableMap)
+    internal val values: Collection<T> = Collections.unmodifiableCollection(mutableMap.values)
 
     internal fun putNewCommand(newCommand: T) {
         mutableMap.putIfAbsentOrThrow(newCommand.name, newCommand) { oldCommand ->
