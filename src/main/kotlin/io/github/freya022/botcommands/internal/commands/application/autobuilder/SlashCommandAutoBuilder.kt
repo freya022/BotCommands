@@ -92,8 +92,23 @@ internal class SlashCommandAutoBuilder(
                     SlashFunctionMetadata(it, annotation, path, commandId)
                 }
 
-        // Create all top level metadata
         val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
+        // Check that top level names don't appear more than once
+        missingTopLevels.values.forEach { metadataList ->
+            val hasTopLevel = metadataList.any { it.path.nameCount == 1 }
+            val hasSubcommands = metadataList.any { it.path.nameCount > 1 }
+            check(!hasTopLevel || !hasSubcommands) {
+                buildString {
+                    appendLine("Cannot have both top level commands with subcommands:")
+                    appendLine("Top level:")
+                    appendLine(metadataList.filter { it.path.nameCount == 1 }.joinAsList { it.func.shortSignature })
+                    appendLine("Subcommands:")
+                    appendLine(metadataList.filter { it.path.nameCount > 1 }.joinAsList { it.func.shortSignature })
+                }
+            }
+        }
+
+        // Create all top level metadata
         functions.forEach { slashFunctionMetadata ->
             slashFunctionMetadata.func.findAnnotation<TopLevelSlashCommandData>()?.let { annotation ->
                 // Remove all slash commands with the top level name
@@ -106,7 +121,7 @@ internal class SlashCommandAutoBuilder(
                 }
 
                 missingTopLevels.remove(name)
-                topLevelMetadata[name] = TopLevelSlashCommandMetadata(name, annotation, slashFunctionMetadata)
+                topLevelMetadata.putIfAbsentOrThrowInternal(name, TopLevelSlashCommandMetadata(name, annotation, slashFunctionMetadata))
             }
         }
 
