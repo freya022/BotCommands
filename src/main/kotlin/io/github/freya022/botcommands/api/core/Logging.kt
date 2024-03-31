@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
+import io.github.freya022.botcommands.internal.utils.stackWalker
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.internal.utils.JDALogger
@@ -10,8 +11,6 @@ import java.lang.reflect.Modifier
  * Utilities returning loggers.
  */
 object Logging {
-    private val stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
-
     /**
      * Returns the [Logger] for the class which calls this method.
      */

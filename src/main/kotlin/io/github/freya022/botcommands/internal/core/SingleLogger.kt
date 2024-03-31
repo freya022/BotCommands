@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core
 
+import io.github.freya022.botcommands.internal.utils.stackWalker
 import kotlin.reflect.KClass
 
 internal class SingleLogger {
@@ -20,10 +21,9 @@ internal class SingleLogger {
 
     companion object {
         private val map: MutableMap<Class<*>, SingleLogger> = hashMapOf()
-        private val walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
         @JvmStatic
-        fun current() = get(walker.callerClass)
+        fun current() = get(stackWalker.callerClass)
 
         @JvmStatic
         operator fun get(clazz: Class<*>) = map.computeIfAbsent(clazz) { SingleLogger() }

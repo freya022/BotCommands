@@ -1,18 +1,14 @@
-@file:IgnoreStackFrame
-
 package io.github.freya022.botcommands.internal.core.db.traced
 
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
-import io.github.oshai.kotlinlogging.KLogger
+import io.github.freya022.botcommands.internal.utils.findCaller
 import kotlinx.coroutines.sync.Semaphore
 import java.sql.Connection
 import java.sql.PreparedStatement
 import kotlin.time.Duration
-
-private val walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
 @Suppress("SqlSourceToSinkFlow")
 @IgnoreStackFrame
@@ -49,7 +45,7 @@ internal class TracedConnection internal constructor(
     }
 
     private fun wrapStatement(preparedStatement: PreparedStatement, sql: String): PreparedStatement {
-        val logger = loggerFromCallStack()
+        val logger = findCaller().declaringClass.toUnwrappedLogger()
         return if (isQueryThresholdSet || (logQueries && logger.isTraceEnabled())) {
             val tracedQuery = parametrizedQueryFactory.get(preparedStatement, sql)
             TracedPreparedStatement(preparedStatement, logger, tracedQuery, logQueries, isQueryThresholdSet, queryLogThreshold)
@@ -57,13 +53,4 @@ internal class TracedConnection internal constructor(
             preparedStatement
         }
     }
-}
-
-private fun loggerFromCallStack(): KLogger {
-    return walker.walk { stream ->
-        stream.skip(1)
-            .map { it.declaringClass }
-            .dropWhile { it.isAnnotationPresent(IgnoreStackFrame::class.java) }
-            .findAny().get()
-    }.toUnwrappedLogger()
 }

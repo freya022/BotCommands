@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.events.getDefaultScope
+import io.github.freya022.botcommands.internal.utils.stackWalker
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.slf4j.toKLogger
@@ -17,8 +18,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 @Suppress("UnusedReceiverParameter")
 inline fun <reified T : Any> KotlinLogging.loggerOf(): KLogger =
     LoggerFactory.getLogger(T::class.java).toKLogger()
-
-private val stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
 /**
  * Reads a resource relative from the calling class.
