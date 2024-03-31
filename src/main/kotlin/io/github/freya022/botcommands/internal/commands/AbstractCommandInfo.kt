@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.internal.commands
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
@@ -11,9 +13,11 @@ import java.util.*
 
 abstract class AbstractCommandInfo internal constructor(
     builder: CommandBuilder
-) : RateLimited, INamedCommand {
+) : RateLimited, INamedCommand, IDeclarationSiteHolder {
     final override val name: String = builder.name
     final override val path: CommandPath by lazy { computePath() }
+
+    final override val declarationSite: DeclarationSite? = builder.declarationSite
 
     override val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
 

@@ -15,7 +15,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
@@ -24,8 +26,9 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import kotlin.reflect.KFunction
 
+@IgnoreStackFrame
 sealed class AbstractApplicationCommandManager(val context: BContext) {
-    private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
+    private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         get() = commandMap.map
 
@@ -54,6 +57,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
         checkScope(scope)
 
         TopLevelSlashCommandBuilder(context, name, function, scope)
+            .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(::putNewCommand)
@@ -81,6 +85,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
         checkScope(scope)
 
         UserCommandBuilder(context, name, function, scope)
+            .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(::putNewCommand)
@@ -107,6 +112,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
         checkScope(scope)
 
         MessageCommandBuilder(context, name, function, scope)
+            .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(::putNewCommand)

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
@@ -11,12 +12,14 @@ import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
+@IgnoreStackFrame
 abstract class TextCommandBuilder internal constructor(context: BContext, name: String) : CommandBuilder(context, name) {
     override val type: CommandType = CommandType.TEXT
     internal val subcommands: MutableList<TextSubcommandBuilder> = arrayListOf()
@@ -81,7 +84,9 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
     var detailedDescription: Consumer<EmbedBuilder>? = null
 
     fun subcommand(name: String, block: TextCommandBuilder.() -> Unit) {
-        subcommands += TextSubcommandBuilder(context, name, this).apply(block)
+        subcommands += TextSubcommandBuilder(context, name, this)
+            .setCallerAsDeclarationSite()
+            .apply(block)
     }
 
     /**
@@ -101,6 +106,8 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
      * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
      */
     fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {}) {
-        variations += TextCommandVariationBuilder(context, function).apply(block)
+        variations += TextCommandVariationBuilder(context, function)
+            .setCallerAsDeclarationSite()
+            .apply(block)
     }
 }

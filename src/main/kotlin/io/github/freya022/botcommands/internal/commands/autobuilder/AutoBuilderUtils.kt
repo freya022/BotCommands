@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.Abstract
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
@@ -115,7 +116,9 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
     return TestState.NO_ANNOTATION
 }
 
-internal fun CommandBuilder.fillCommandBuilder(functions: Iterable<KFunction<*>>) {
+internal fun CommandBuilder.fillCommandBuilder(functions: List<KFunction<*>>) {
+    declarationSite = functions.firstOrNull()?.let(DeclarationSite::fromFunctionSignature)
+
     val rateLimitSpec = functions.singleValueOfVariants("their rate limit specification") { it.readRateLimit() }
     val rateLimitRef = functions.singleAnnotationOfVariants<RateLimitReference>()
 

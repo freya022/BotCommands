@@ -5,7 +5,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
+import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
@@ -14,6 +16,7 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
+@IgnoreStackFrame
 class TopLevelSlashCommandBuilder internal constructor(
     context: BContext,
     name: String,
@@ -23,8 +26,8 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 
-    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
-    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap(null)
+    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap()
+    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap()
 
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
@@ -44,7 +47,10 @@ class TopLevelSlashCommandBuilder internal constructor(
         if (isFunctionSet()) throwUser("Cannot add subcommands as this already contains a function")
         if (!allowSubcommands) throwUser("Cannot add subcommands as this already contains options")
 
-        SlashSubcommandBuilder(context, name, function, this, this).apply(block).also(subcommands::putNewCommand)
+        SlashSubcommandBuilder(context, name, function, this, this)
+            .setCallerAsDeclarationSite()
+            .apply(block)
+            .also(subcommands::putNewCommand)
     }
 
     /**
@@ -60,7 +66,10 @@ class TopLevelSlashCommandBuilder internal constructor(
         if (isFunctionSet()) throwUser("Cannot add subcommand groups as this already contains a function")
         if (!allowSubcommandGroups) throwUser("Cannot add subcommand groups as this already contains options")
 
-        SlashSubcommandGroupBuilder(context, name, this).apply(block).also(subcommandGroups::putNewCommand)
+        SlashSubcommandGroupBuilder(context, name, this)
+            .setCallerAsDeclarationSite()
+            .apply(block)
+            .also(subcommandGroups::putNewCommand)
     }
 
     internal fun build(): TopLevelSlashCommandInfo {

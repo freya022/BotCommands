@@ -3,7 +3,11 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
+import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
@@ -16,11 +20,17 @@ import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
 @CommandDSL
-class SlashSubcommandGroupBuilder internal constructor(private val context: BContext, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
+@IgnoreStackFrame
+class SlashSubcommandGroupBuilder internal constructor(
+    private val context: BContext,
+    override val name: String,
+    private val topLevelBuilder: TopLevelSlashCommandBuilder
+) : INamedCommand, IDeclarationSiteHolderBuilder {
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
+    override var declarationSite: DeclarationSite? = null
 
-    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
+    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap()
 
     //TODO change docs when Discord eventually decides to not have a mess of a command list
     /**
@@ -56,7 +66,10 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
      * @see JDASlashCommand.subcommand
      */
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
-        SlashSubcommandBuilder(context, name, function, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)
+        SlashSubcommandBuilder(context, name, function, topLevelBuilder, this)
+            .setCallerAsDeclarationSite()
+            .apply(block)
+            .also(subcommands::putNewCommand)
     }
 
     fun build(topLevelInstance: TopLevelSlashCommandInfo): SlashSubcommandGroupInfo {

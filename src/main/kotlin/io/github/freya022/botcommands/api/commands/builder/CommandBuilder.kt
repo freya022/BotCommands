@@ -20,8 +20,12 @@ import java.util.*
 import kotlin.time.Duration
 
 @CommandDSL
-abstract class CommandBuilder internal constructor(val context: BContext, override val name: String) : INamedCommand {
+abstract class CommandBuilder internal constructor(
+    val context: BContext,
+    override val name: String
+) : INamedCommand, IDeclarationSiteHolderBuilder {
     internal abstract val type: CommandType
+    override var declarationSite: DeclarationSite? = null
 
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()

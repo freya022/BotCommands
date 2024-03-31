@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text
 
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
@@ -28,7 +30,8 @@ class TextCommandVariation internal constructor(
     private val context: BContext,
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
-) : IExecutableInteractionInfo {
+) : IExecutableInteractionInfo, IDeclarationSiteHolder {
+    override val declarationSite: DeclarationSite? = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 

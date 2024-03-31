@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
@@ -24,7 +26,8 @@ import kotlin.reflect.full.primaryConstructor
 class TextCommandVariationBuilder internal constructor(
     val context: BContext,
     function: KFunction<Any>
-) : IBuilderFunctionHolder<Any> {
+) : IBuilderFunctionHolder<Any>, IDeclarationSiteHolderBuilder {
+    override var declarationSite: DeclarationSite? = null
     override val function: KFunction<Any> = function.reflectReference()
 
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function) { aggregatorParameter, aggregator ->

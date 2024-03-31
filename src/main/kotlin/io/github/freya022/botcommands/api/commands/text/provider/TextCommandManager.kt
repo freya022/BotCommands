@@ -1,18 +1,20 @@
 package io.github.freya022.botcommands.api.commands.text.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.commands.application.SimpleCommandMap
 import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
 
+@IgnoreStackFrame
 class TextCommandManager internal constructor(private val context: BContext) {
-    @get:JvmSynthetic
-    internal val textCommands: SimpleCommandMap<TopLevelTextCommandInfo> = SimpleCommandMap(null)
+    internal val textCommands: SimpleCommandMap<TopLevelTextCommandInfo> = SimpleCommandMap()
 
     /**
      * Declares the supplied function as a text command.
@@ -38,6 +40,7 @@ class TextCommandManager internal constructor(private val context: BContext) {
      */
     fun textCommand(name: String, builder: TopLevelTextCommandBuilder.() -> Unit) {
         TopLevelTextCommandBuilder(context, name)
+            .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(textCommands::putNewCommand)
