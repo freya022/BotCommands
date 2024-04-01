@@ -1,5 +1,7 @@
 [bc-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=3
 [bc-maven-central-link]: https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest
+[bc-jitpack-shield]: https://img.shields.io/badge/Snapshots-JitPack-blue
+[bc-jitpack-link]: https://jitpack.io/#freya022/BotCommands
 [bc-releases]: #getting-the-library
 [jda-version]: https://img.shields.io/badge/JDA%20Version-5.0.0--beta.20+-important
 [jda-releases]: https://github.com/discord-jda/JDA/releases
@@ -10,13 +12,17 @@
 [wiki-shield]: https://img.shields.io/badge/Wiki-Home-blue
 [wiki-link]: https://freya022.github.io/BotCommands/3.X
 
-<img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
+<img align="right" src="assets/logo.svg" height="150" alt="BotCommands logo">
 
-[ ![BotCommands version][bc-maven-central-shield] ][bc-releases]
-[ ![JDA version][jda-version] ][jda-releases]
-[ ![Discord invite][discord-shield] ][discord-invite]
-[ ![Javadocs overview][javadocs-shield] ][javadocs-link]
-[ ![Wiki home][wiki-shield] ][wiki-link]
+[![BotCommands version][bc-maven-central-shield]][bc-releases]
+[![JDA version][jda-version]][jda-releases]
+[![Snapshots][bc-jitpack-shield]][bc-jitpack-link]
+
+[![Discord invite][discord-shield]][discord-invite]
+[![Wiki home][wiki-shield]][wiki-link]
+
+[//]: # (TODO enable back when KDocs are published)
+[//]: # ([![Javadocs overview][javadocs-shield]][javadocs-link])
 
 # BotCommands
 A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
