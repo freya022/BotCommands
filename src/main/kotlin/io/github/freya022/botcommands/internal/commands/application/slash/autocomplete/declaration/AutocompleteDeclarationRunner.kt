@@ -21,7 +21,8 @@ internal class AutocompleteDeclarationRunner internal constructor(
 
         if (logger.isTraceEnabled()) {
             logger.trace {
-                "Registered ${autocompleteInfoContainer.size} autocomplete handlers:\n${autocompleteInfoContainer.allInfos.joinAsList()}"
+                val declarations = autocompleteInfoContainer.allInfos.joinAsList { it.declarationSite.toString() }
+                "Registered ${autocompleteInfoContainer.size} autocomplete handlers:\n$declarations"
             }
         } else {
             logger.debug { "Registered ${autocompleteInfoContainer.size} autocomplete handlers" }

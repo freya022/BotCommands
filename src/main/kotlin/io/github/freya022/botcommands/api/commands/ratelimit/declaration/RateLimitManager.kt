@@ -1,3 +1,5 @@
+@file:IgnoreStackFrame // Due to extensions
+
 package io.github.freya022.botcommands.api.commands.ratelimit.declaration
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
@@ -9,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import kotlin.time.Duration
 import java.time.Duration as JavaDuration
 
@@ -17,6 +20,7 @@ import java.time.Duration as JavaDuration
  *
  * @see AutocompleteHandlerProvider
  */
+@IgnoreStackFrame // Due to the abstract method
 abstract class RateLimitManager internal constructor() {
     abstract val context: BContext
 

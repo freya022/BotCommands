@@ -128,7 +128,9 @@ internal fun CommandBuilder.fillCommandBuilder(functions: List<KFunction<*>>) {
     }
 
     rateLimitSpec?.let { (bucketFactory, rateLimiterFactory) ->
-        rateLimit(bucketFactory, rateLimiterFactory)
+        rateLimit(bucketFactory, rateLimiterFactory) {
+            declarationSite = this@fillCommandBuilder.declarationSite
+        }
     }
 
     rateLimitRef?.let { rateLimitReference(it.group) }

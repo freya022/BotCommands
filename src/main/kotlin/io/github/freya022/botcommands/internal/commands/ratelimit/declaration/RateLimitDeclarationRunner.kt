@@ -21,7 +21,8 @@ internal class RateLimitDeclarationRunner internal constructor(
 
         if (logger.isTraceEnabled()) {
             logger.trace {
-                "Registered ${rateLimitContainer.size} rate limiters:\n${rateLimitContainer.allInfos.joinAsList()}"
+                val declarations = rateLimitContainer.allInfos.joinAsList { it.declarationSite.toString() }
+                "Registered ${rateLimitContainer.size} rate limiters:\n$declarations"
             }
         } else {
             logger.debug { "Registered ${rateLimitContainer.size} rate limiters" }

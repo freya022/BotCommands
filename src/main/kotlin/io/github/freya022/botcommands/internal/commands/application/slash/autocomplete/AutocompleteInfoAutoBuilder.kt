@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.requiredFilter
@@ -28,6 +29,8 @@ internal class AutocompleteInfoAutoBuilder internal constructor() : Autocomplete
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
                 manager.autocomplete(autocompleteFunction, autocompleteHandlerAnnotation.name) {
+                    declarationSite = DeclarationSite.fromFunctionSignature(autocompleteFunction)
+
                     mode = autocompleteHandlerAnnotation.mode
                     showUserInput = autocompleteHandlerAnnotation.showUserInput
 

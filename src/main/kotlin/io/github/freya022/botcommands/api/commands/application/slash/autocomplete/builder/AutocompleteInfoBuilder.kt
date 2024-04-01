@@ -5,12 +5,20 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import kotlin.reflect.KFunction
 
-class AutocompleteInfoBuilder internal constructor(private val context: BContext, val name: String?, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
+class AutocompleteInfoBuilder internal constructor(
+    private val context: BContext,
+    val name: String?,
+    override val function: KFunction<Collection<Any>>
+) : IBuilderFunctionHolder<Collection<*>>, IDeclarationSiteHolderBuilder {
+    override lateinit var declarationSite: DeclarationSite
+
     /**
      * Sets the [autocomplete mode][AutocompleteMode].
      *

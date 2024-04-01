@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
 
 @BService
@@ -17,11 +16,11 @@ internal class AutocompleteInfoContainer internal constructor() {
     internal operator fun plusAssign(autocompleteInfo: AutocompleteInfoImpl) {
         autocompleteInfo.name?.let { name ->
             infoByName.putIfAbsentOrThrow(name, autocompleteInfo) {
-                "Autocomplete handler '$name' is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${it.function.shortSignatureNoSrc}"
+                "Autocomplete handler '$name' is already registered:\nAt: ${autocompleteInfo.declarationSite}\nAnd: ${it.declarationSite}"
             }
         }
         infoByFunction.putIfAbsentOrThrow(autocompleteInfo.function, autocompleteInfo) {
-            "Autocomplete handler is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${it.function.shortSignatureNoSrc}"
+            "Autocomplete handler is already registered:\nAt: ${autocompleteInfo.declarationSite}\nAnd: ${it.declarationSite}"
         }
     }
 

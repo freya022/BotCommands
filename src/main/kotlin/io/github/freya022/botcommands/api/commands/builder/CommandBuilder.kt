@@ -1,3 +1,5 @@
+@file:IgnoreStackFrame // Due to extensions
+
 package io.github.freya022.botcommands.api.commands.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
@@ -9,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -79,7 +82,10 @@ abstract class CommandBuilder internal constructor(
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         block: RateLimitBuilder.() -> Unit = {}
     ) {
-        rateLimitInfo = RateLimitBuilder("$type: ${path.fullPath}", bucketFactory, limiterFactory).apply(block).build()
+        rateLimitInfo = RateLimitBuilder("$type: ${path.fullPath}", bucketFactory, limiterFactory)
+            .setCallerAsDeclarationSite()
+            .apply(block)
+            .build()
     }
 
     /**
