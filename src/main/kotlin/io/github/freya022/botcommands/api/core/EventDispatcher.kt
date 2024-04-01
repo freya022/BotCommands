@@ -63,16 +63,16 @@ internal class SortedList<T>(private val comparator: Comparator<T>) {
 
 private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFunction>>
 
+private val logger = KotlinLogging.logger { }
+
 @BService
 class EventDispatcher internal constructor(
     private val context: BContextImpl,
+    private val eventManager: CoroutineEventManager,
     private val eventTreeService: EventTreeService,
     private val jdaService: JDAService,
     functionAnnotationsMap: FunctionAnnotationsMap
 ) {
-    private val logger = KotlinLogging.logger { }
-    private val eventManager: CoroutineEventManager = context.eventManager
-
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
 
