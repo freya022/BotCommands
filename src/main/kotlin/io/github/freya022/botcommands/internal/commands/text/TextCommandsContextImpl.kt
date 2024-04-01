@@ -1,8 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.utils.throwUser
 
+@BService
 internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
 

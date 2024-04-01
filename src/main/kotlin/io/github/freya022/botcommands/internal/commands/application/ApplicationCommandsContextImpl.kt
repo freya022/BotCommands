@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
@@ -17,6 +18,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
+@BService
 internal class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
     private val writeLock = ReentrantLock()
     private val liveApplicationCommandInfoMap = TLongObjectHashMap<ApplicationCommandMap>()

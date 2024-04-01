@@ -2,9 +2,7 @@ package io.github.freya022.botcommands.internal.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -58,7 +56,7 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
         config.putConfigInServices(serviceContainer)
     }
 
-    override val eventDispatcher: EventDispatcher by lazy { getService<EventDispatcher>() }
+    override val eventDispatcher: EventDispatcher by serviceContainer.lazy()
 
     override var status: Status = Status.PRE_LOAD
         private set
@@ -68,17 +66,14 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
     override val settingsProvider: SettingsProvider? by serviceContainer.lazyOrNull()
     override val globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.lazyOrNull()
 
-    override val textCommandsContext = TextCommandsContextImpl()
+    override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
     override val defaultEmbedSupplier: DefaultEmbedSupplier by serviceContainer.lazyOrElse { DefaultEmbedSupplier.Default() }
     override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by serviceContainer.lazyOrElse { DefaultEmbedFooterIconSupplier.Default() }
     override val helpBuilderConsumer: HelpBuilderConsumer? by serviceContainer.lazyOrNull()
 
-    override val applicationCommandsContext = ApplicationCommandsContextImpl(this)
+    override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()
 
     init {
-        serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
-        serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
-
         measureNanoTime {
             ReflectionMetadata.runScan(this)
         }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }

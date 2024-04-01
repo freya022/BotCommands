@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandList
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * Helps to get application commands of a specific scope, find application commands with their name and update commands.
  */
-@InjectedService
+@InterfacedService(acceptMultiple = false)
 interface ApplicationCommandsContext {
     /**
      * Returns the [SlashCommandInfo] with the specified path,
