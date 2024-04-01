@@ -1,4 +1,4 @@
-@file:IgnoreStackFrame
+@file:IgnoreStackFrame // Due to TracedConnection
 
 package io.github.freya022.botcommands.api.core.db
 

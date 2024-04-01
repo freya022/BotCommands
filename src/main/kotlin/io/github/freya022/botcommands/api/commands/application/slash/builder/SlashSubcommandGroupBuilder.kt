@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
@@ -20,7 +19,6 @@ import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
 @CommandDSL
-@IgnoreStackFrame
 class SlashSubcommandGroupBuilder internal constructor(
     private val context: BContext,
     override val name: String,

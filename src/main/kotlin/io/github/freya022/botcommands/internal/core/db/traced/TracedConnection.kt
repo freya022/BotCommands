@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.core.db.traced
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
+import io.github.freya022.botcommands.internal.utils.StackSensitive
 import io.github.freya022.botcommands.internal.utils.findCaller
 import kotlinx.coroutines.sync.Semaphore
 import java.sql.Connection
@@ -42,6 +43,7 @@ internal class TracedConnection internal constructor(
         return wrapStatement(connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability), sql)
     }
 
+    @OptIn(StackSensitive::class)
     private fun wrapStatement(preparedStatement: PreparedStatement, sql: String): PreparedStatement {
         val logger = findCaller(1).declaringClass.toUnwrappedLogger()
         return if (isQueryThresholdSet || (logQueries && logger.isTraceEnabled())) {

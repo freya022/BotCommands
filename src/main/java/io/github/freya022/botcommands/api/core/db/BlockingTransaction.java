@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @SuppressWarnings("SqlSourceToSinkFlow")
-@IgnoreStackFrame
+@IgnoreStackFrame // Due to TracedConnection
 public record BlockingTransaction(@NotNull Connection connection) {
     /**
      * Creates a statement from the given SQL statement.

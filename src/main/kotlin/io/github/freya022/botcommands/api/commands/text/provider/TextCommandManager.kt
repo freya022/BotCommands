@@ -8,11 +8,9 @@ import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
 
-@IgnoreStackFrame
 class TextCommandManager internal constructor(private val context: BContext) {
     internal val textCommands: NamedCommandMap<TopLevelTextCommandInfo> = NamedCommandMap()
 

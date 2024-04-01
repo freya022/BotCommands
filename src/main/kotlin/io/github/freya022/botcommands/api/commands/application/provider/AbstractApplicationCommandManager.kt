@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
@@ -29,7 +28,6 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import kotlin.reflect.KFunction
 
-@IgnoreStackFrame
 sealed class AbstractApplicationCommandManager(val context: BContext) {
     private val slashCommandMap: NamedCommandMap<TopLevelSlashCommandInfo> = NamedCommandMap()
     internal val slashCommands: Collection<TopLevelSlashCommandInfo> = slashCommandMap.values

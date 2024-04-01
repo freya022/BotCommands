@@ -60,7 +60,7 @@ import java.sql.SQLException;
 @Lazy
 @BService
 @Dependencies(Database.class)
-@IgnoreStackFrame
+@IgnoreStackFrame // Due to TracedConnection
 public class BlockingDatabase {
     private final Database database;
 
