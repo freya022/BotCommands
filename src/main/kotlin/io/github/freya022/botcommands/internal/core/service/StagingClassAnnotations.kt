@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.classgraph.ClassInfo
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -16,7 +15,7 @@ internal class StagingClassAnnotations internal constructor(private val serviceC
     internal val processor = Processor()
 
     internal inner class Processor internal constructor() : ClassGraphProcessor {
-        override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
             //Fill map with all the @Command, @Resolver, etc... declarations
             if (isService) {
                 classInfo.annotationInfo.directOnly().forEach { annotationInfo ->
