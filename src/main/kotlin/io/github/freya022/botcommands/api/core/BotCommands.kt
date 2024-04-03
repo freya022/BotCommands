@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import dev.minn.jda.ktx.events.getDefaultScope
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -21,7 +20,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDAInfo
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
 import kotlin.time.measureTime
@@ -65,19 +63,30 @@ object BotCommands {
      *
      * @see BotCommands
      */
+    @Deprecated("Event manager is set by a service implementing CoroutineEventManagerSupplier")
     @JvmSynthetic
-    fun create(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
-        return build(manager, BConfigBuilder().apply(configConsumer).build())
+    fun create(manager: CoroutineEventManager, configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
+        return build(BConfigBuilder().apply(configConsumer).build())
     }
 
-    private fun getDefaultManager(): CoroutineEventManager {
-        val scope = getDefaultScope()
-        return CoroutineEventManager(scope, 1.minutes)
+    /**
+     * Creates a new instance of the framework.
+     *
+     * @return The context for the newly created framework instance,
+     * while this is returned, using it *usually* is not a good idea,
+     * your architecture should rely on [dependency injection](https://freya022.github.io/BotCommands/3.X/using-botcommands/dependency-injection/)
+     * and events instead.
+     *
+     * @see BotCommands
+     */
+    @JvmSynthetic
+    fun create(configConsumer: BConfigBuilder.() -> Unit): BContext {
+        return build(BConfigBuilder().apply(configConsumer).build())
     }
 
-    private fun build(manager: CoroutineEventManager, config: BConfig): BContext {
+    private fun build(config: BConfig): BContext {
         val mark = TimeSource.Monotonic.markNow()
-        val context = runBlocking(manager.coroutineContext) {
+        val context = runBlocking {
             logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
             Version.checkVersions()
 
