@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.switches
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 object TestLanguageChecker : CustomConditionChecker<TestLanguage> {
@@ -9,7 +9,7 @@ object TestLanguageChecker : CustomConditionChecker<TestLanguage> {
 
     override val annotationType: Class<TestLanguage> = TestLanguage::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: TestLanguage): String? {
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: TestLanguage): String? {
         val serviceLanguage = annotation.language
         if (serviceLanguage == currentLanguage) {
             return null

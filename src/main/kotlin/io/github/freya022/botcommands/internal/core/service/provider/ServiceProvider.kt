@@ -146,7 +146,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     findAnnotation<ConditionalService>()?.let { conditionalService ->
         conditionalService.checks.forEach {
             val instance = it.createSingleton()
-            instance.checkServiceAvailability(serviceContainer.context, checkedClass.java)
+            instance.checkServiceAvailability(serviceContainer, checkedClass.java)
                 ?.let { errorMessage ->
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,
@@ -164,7 +164,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
         val annotation = customCondition.getCondition(this)
         if (annotation != null) {
             val checker = customCondition.checker
-            checker.checkServiceAvailability(serviceContainer.context, checkedClass.java, annotation)
+            checker.checkServiceAvailability(serviceContainer, checkedClass.java, annotation)
                 ?.let { errorMessage ->
                     val errorType = if (customCondition.conditionMetadata.fail) {
                         ErrorType.FAILED_FATAL_CUSTOM_CONDITION

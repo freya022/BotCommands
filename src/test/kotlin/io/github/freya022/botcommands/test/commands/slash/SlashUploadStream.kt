@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.io.path.Path
@@ -33,6 +33,6 @@ class SlashUploadStream : ApplicationCommand() {
     }
 
     companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>) = "nope"
+        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>) = "nope"
     }
 }

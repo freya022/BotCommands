@@ -8,11 +8,12 @@ import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -37,11 +38,11 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
 internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand, TextCommandProvider {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
+        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
             // Try to get IHelpCommand interfaced services, except ours
             // If empty, then the user didn't provide one, in which case we can allow
             //Won't take HelpCommand into account
-            val helpCommands = context.serviceContainer.getInterfacedServices<IHelpCommand>()
+            val helpCommands = serviceContainer.getInterfacedServices<IHelpCommand>()
             return when {
                 // A user-defined help command was found
                 helpCommands.isNotEmpty() -> {
@@ -50,7 +51,7 @@ internal class HelpCommand internal constructor(private val context: BContextImp
                 }
                 // No user-defined help command, try to use ours
                 else -> when {
-                    context.textConfig.isHelpDisabled -> {
+                    serviceContainer.getService<BTextConfig>().isHelpDisabled -> {
                         logger.debug { "Using no 'help' text command implementation" }
                         "The help command was disabled in ${BTextConfig::isHelpDisabled.reference}"
                     }

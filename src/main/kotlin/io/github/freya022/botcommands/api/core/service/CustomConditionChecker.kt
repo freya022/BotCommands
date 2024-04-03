@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.service
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 /**
@@ -46,12 +45,12 @@ interface CustomConditionChecker<A : Annotation> {
     val annotationType: Class<A>
 
     /**
-     * @param context      The current BContext
-     * @param checkedClass The primary type of the service being created,
-     *                     the class being instantiated for services, or the return type for service factories
-     * @param annotation   The condition annotation which triggered this check
+     * @param serviceContainer The service container for this context
+     * @param checkedClass     The primary type of the service being created,
+     *                         the class being instantiated for services, or the return type for service factories
+     * @param annotation       The condition annotation which triggered this check
      *
      * @return An error string if the service is not instantiable, `null` otherwise
      */
-    fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: A): String?
+    fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: A): String?
 }

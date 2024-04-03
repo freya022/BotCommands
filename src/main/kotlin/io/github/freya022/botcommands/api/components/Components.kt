@@ -11,11 +11,12 @@ import io.github.freya022.botcommands.api.components.builder.select.ephemeral.Ep
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BComponentsConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -239,8 +240,8 @@ class Components internal constructor(componentController: ComponentController) 
     }
 
     internal object InstantiationChecker : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
-            if (context.componentsConfig.useComponents) {
+        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
+            if (serviceContainer.getService<BComponentsConfig>().useComponents) {
                 return null
             }
 

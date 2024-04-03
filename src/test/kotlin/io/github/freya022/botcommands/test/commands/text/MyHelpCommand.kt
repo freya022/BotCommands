@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.test.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ServicePriori
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 
 object HelpCondition : ConditionalServiceChecker {
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
         return "No help handler for you"
     }
 }
