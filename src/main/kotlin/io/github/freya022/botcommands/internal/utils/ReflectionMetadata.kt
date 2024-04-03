@@ -54,8 +54,8 @@ internal object ReflectionMetadata {
         val config = context.config
         val packages = config.packages
         //This is a requirement for ClassGraph to work correctly
-        if (packages.isEmpty()) {
-            throwUser("You must specify at least 1 package to scan classes from")
+        if (packages.isEmpty() && config.classes.isEmpty()) {
+            throwUser("You must specify at least 1 package or class to scan from")
         }
 
         logger.debug { "Scanning packages: ${config.packages.joinToString()}" }
