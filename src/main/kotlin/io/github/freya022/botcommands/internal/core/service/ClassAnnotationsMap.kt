@@ -24,7 +24,7 @@ internal class ClassAnnotationsMap(
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
-            serviceTypes.intersect(instantiableServices.availableServices)
+            serviceTypes.intersect(instantiableServices.allAvailableTypes)
         }
         .also { context.clearStagingAnnotationsMap() }
 

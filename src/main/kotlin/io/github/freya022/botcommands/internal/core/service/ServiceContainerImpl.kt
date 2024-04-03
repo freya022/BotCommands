@@ -61,7 +61,7 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices() {
-        getService<InstantiableServices>()
+        getService<DefaultInstantiableServices>()
             .availableProviders
             .filterNot { it.isLazy }
             // This should never throw as the providers are available and not lazy

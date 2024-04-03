@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -16,10 +16,17 @@ import kotlin.reflect.full.findAnnotation
 
 private val logger = KotlinLogging.logger { }
 
+@InterfacedService(acceptMultiple = false)
+internal interface InstantiableServices {
+    val availablePrimaryTypes: Set<KClass<*>>
+
+    val allAvailableTypes: Set<KClass<*>>
+}
+
 @BService(priority = Int.MAX_VALUE)
-internal class InstantiableServices internal constructor(private val context: BContextImpl) {
-    internal val availableProviders: Set<ServiceProvider> = context.serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
-        val serviceError = context.serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
+internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: ServiceContainerImpl) : InstantiableServices {
+    internal val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
+        val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 
         if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
             if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
@@ -76,7 +83,9 @@ internal class InstantiableServices internal constructor(private val context: BC
         }
     }
 
-    internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
+    override val availablePrimaryTypes: Set<KClass<*>> = availableProviders.mapTo(hashSetOf()) { it.primaryType }
+
+    override val allAvailableTypes: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
     init {
         class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {
