@@ -1,13 +1,11 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import io.github.freya022.botcommands.api.core.service.DynamicSupplier
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
-import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
-import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
@@ -20,14 +18,21 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmName
 
-internal class ClassServiceProvider private constructor(
-    private val clazz: KClass<*>,
-    override var instance: Any?,
+internal class ClassServiceProvider internal constructor(
+    private val clazz: KClass<*>
+) : ServiceProvider {
+    init {
+        require(!clazz.isAbstract) {
+            "Abstract class '${clazz.simpleNestedName}' cannot be constructed"
+        }
+    }
+
+    override var instance: Any? = null
     /**
      * If not the sentinel value, the service was attempted to be created.
      */
-    private var serviceError: ServiceError?
-) : ServiceProvider {
+    private var serviceError: ServiceError? = ServiceProvider.nullServiceError
+
     override val name = clazz.getServiceName()
     override val providerKey = clazz.jvmName
     override val primaryType get() = clazz
@@ -35,10 +40,6 @@ internal class ClassServiceProvider private constructor(
     override val isPrimary = clazz.hasAnnotation<Primary>()
     override val isLazy = clazz.hasAnnotation<Lazy>()
     override val priority = clazz.getAnnotatedServicePriority()
-
-    private constructor(clazz: KClass<*>) : this(clazz, null, ServiceProvider.nullServiceError)
-
-    private constructor(clazz: KClass<*>, instance: Any) : this(clazz, instance, null)
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
@@ -56,17 +57,13 @@ internal class ClassServiceProvider private constructor(
     }
 
     private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
-        require(!clazz.isAbstract) {
-            "Cannot provide a service from an abstract class ${clazz.simpleNestedName}"
-        }
-
         clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
         if (clazz.isObject) return null
 
         //Check if an instance supplier exists
-        if (serviceContainer.context.serviceConfig.instanceSupplierMap[clazz] != null)
+        if (serviceContainer.serviceConfig.instanceSupplierMap[clazz] != null)
             return null
 
         //Check dynamic suppliers
@@ -137,10 +134,10 @@ internal class ClassServiceProvider private constructor(
         //The command object has to be created either by the instance supplier
         // or by the **only** constructor a class has
         // It must resolve all parameter types with the registered parameter suppliers
-        val instanceSupplier = serviceContainer.context.serviceConfig.instanceSupplierMap[clazz]
+        val instanceSupplier = serviceContainer.serviceConfig.instanceSupplierMap[clazz]
         if (instanceSupplier != null) {
             return measureTimedInstantiation {
-                instanceSupplier.supply(serviceContainer.context)
+                instanceSupplier.supply(serviceContainer.getService<BContext>())
                     ?: throw ServiceException(
                         ErrorType.PROVIDER_RETURNED_NULL.toError(
                             errorMessage = "Supplier function in class '${instanceSupplier.javaClass.simpleNestedName}' returned null",
@@ -173,16 +170,7 @@ internal class ClassServiceProvider private constructor(
     override fun getProviderFunction(): KFunction<*> = clazz.constructors.first()
 
     override fun toString() = providerKey
-
-    companion object {
-        fun fromClass(clazz: KClass<*>): ClassServiceProvider {
-            return ClassServiceProvider(clazz)
-        }
-
-        fun fromInstance(type: KClass<*>, instance: Any): ClassServiceProvider {
-            return ClassServiceProvider(type, instance)
-        }
-    }
 }
 
+@PublishedApi
 internal fun KClass<*>.getServiceName() = getAnnotatedServiceName() ?: this.simpleNestedName.replaceFirstChar { it.lowercase() }

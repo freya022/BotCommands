@@ -198,10 +198,15 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             }
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
-        if (!clazz.isInstance(t))
-            throwUser("${t.javaClass.name} is not an instance of ${clazz.jvmName}")
-        context.serviceProviders.putServiceProvider(ClassServiceProvider.fromInstance(clazz, t))
+    override fun <T : Any> putService(
+        t: T,
+        clazz: KClass<out T>,
+        name: String,
+        isPrimary: Boolean,
+        priority: Int,
+        typeAliases: Set<KClass<*>>
+    ) {
+        serviceProviders.putServiceProvider(ProvidedServiceProvider(t, clazz, name, isPrimary, priority, typeAliases))
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
