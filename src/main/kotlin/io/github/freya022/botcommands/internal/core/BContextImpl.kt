@@ -1,61 +1,30 @@
 package io.github.freya022.botcommands.internal.core
 
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.config.putConfigInServices
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.*
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
-import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
-import io.github.freya022.botcommands.internal.core.service.StagingClassAnnotations
-import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
-import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
-import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorHandler
-import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.reflect.KFunction
-import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.minutes
 
-internal class BContextImpl internal constructor(override val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
-    private val logger = KotlinLogging.loggerOf<BContext>()
+private val logger = KotlinLogging.loggerOf<BContext>()
 
-    override val serviceContainer = ServiceContainerImpl(this) //Puts itself
-
-    private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(config.serviceConfig)
-    internal val stagingClassAnnotations: StagingClassAnnotations
-        get() = _stagingClassAnnotations ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
-    internal val serviceProviders = ServiceProviders()
-    internal val customConditionsContainer = CustomConditionsContainer()
-
-    init {
-        serviceContainer.putService(this)
-        serviceContainer.putServiceAs<BContext>(this)
-
-        serviceContainer.putService(serviceContainer)
-        serviceContainer.putServiceAs<ServiceContainer>(serviceContainer)
-
-        serviceContainer.putService(eventManager)
-        serviceContainer.putServiceAs<IEventManager>(eventManager) //Should be used if JDA is constructed as a service
-
-        config.putConfigInServices(serviceContainer)
-    }
-
+@BService
+internal class BContextImpl internal constructor(override val config: BConfig, override val serviceContainer: ServiceContainer) : BContext {
     override val eventDispatcher: EventDispatcher by serviceContainer.lazy()
 
     override var status: Status = Status.PRE_LOAD
@@ -72,12 +41,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
     override val helpBuilderConsumer: HelpBuilderConsumer? by serviceContainer.lazyOrNull()
 
     override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()
-
-    init {
-        measureNanoTime {
-            ReflectionMetadata.runScan(this)
-        }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
-    }
 
     private val bcRegex = Regex("at ${Regex.escape("io.github.freya022.botcommands.")}(?:api|internal)[.a-z]*\\.(.+)")
     private var nextExceptionDispatch: Long = 0
@@ -155,13 +118,9 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
         getService<AutocompleteInfoContainer>()[autocompleteHandler]?.invalidate()
     }
 
-    internal fun clearStagingAnnotationsMap() {
-        _stagingClassAnnotations = null
-    }
-
-    internal fun setStatus(newStatus: Status) {
+    internal suspend fun setStatus(newStatus: Status) {
         val oldStatus = this.status
         this.status = newStatus
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(this@BContextImpl, oldStatus, newStatus)) }
+        eventDispatcher.dispatchEvent(BStatusChangeEvent(this@BContextImpl, oldStatus, newStatus))
     }
 }

@@ -160,7 +160,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
         }
     }
 
-    serviceContainer.context.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
+    serviceContainer.serviceBootstrap.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
         val annotation = customCondition.getCondition(this)
         if (annotation != null) {
             val checker = customCondition.checker

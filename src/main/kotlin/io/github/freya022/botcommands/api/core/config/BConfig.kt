@@ -6,9 +6,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
@@ -222,16 +220,4 @@ class BConfigBuilder internal constructor() : BConfig {
         override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
         override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
     }
-}
-
-@JvmSynthetic
-internal fun BConfig.putConfigInServices(serviceContainer: ServiceContainer) {
-    serviceContainer.putServiceAs(this)
-    serviceContainer.putServiceAs(serviceConfig)
-    serviceContainer.putServiceAs(databaseConfig)
-    serviceContainer.putServiceAs(applicationConfig)
-    serviceContainer.putServiceAs(componentsConfig)
-    serviceContainer.putServiceAs(coroutineScopesConfig)
-    serviceContainer.putServiceAs(debugConfig)
-    serviceContainer.putServiceAs(textConfig)
 }

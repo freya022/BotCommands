@@ -9,9 +9,8 @@ import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
-import io.github.freya022.botcommands.internal.core.service.ConditionalObjectChecker
+import io.github.freya022.botcommands.internal.core.service.ServiceBootstrap
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -50,8 +49,7 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(context: BContextImpl) {
-        val config = context.config
+    internal fun runScan(config: BConfig, serviceBootstrap: ServiceBootstrap) {
         val packages = config.packages
         //This is a requirement for ClassGraph to work correctly
         if (packages.isEmpty() && config.classes.isEmpty()) {
@@ -93,9 +91,8 @@ internal object ReflectionMetadata {
         }
 
         val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-        val classGraphProcessors = context.config.classGraphProcessors +
-                ConditionalObjectChecker +
-                listOf(context.serviceProviders, context.customConditionsContainer, context.stagingClassAnnotations.processor) +
+        val classGraphProcessors = config.classGraphProcessors +
+                serviceBootstrap.classGraphProcessors +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
         return scanned.forEach { (_, classes) ->
             classes
@@ -114,9 +111,9 @@ internal object ReflectionMetadata {
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
                     return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
                 }
-                .processClasses(context, classGraphProcessors)
+                .processClasses(config, classGraphProcessors)
         }.also {
-            classGraphProcessors.forEach { it.postProcess(context) }
+            classGraphProcessors.forEach { it.postProcess() }
             scanned.forEach { (scanResult, _) -> scanResult.close() }
 
             scannedParams = true
@@ -144,7 +141,7 @@ internal object ReflectionMetadata {
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
 
-    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
+    private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
                 val kClass = classInfo.loadClass().kotlin
@@ -164,14 +161,14 @@ internal object ReflectionMetadata {
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-                    val isServiceFactory = methodInfo.isService(context.config)
-                    classGraphProcessors.forEach { it.processMethod(context, methodInfo, method, classInfo, kClass, isServiceFactory) }
+                    val isServiceFactory = methodInfo.isService(config)
+                    classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
-                val isService = classInfo.isService(context.config)
-                classGraphProcessors.forEach { it.processClass(context, classInfo, kClass, isService) }
+                val isService = classInfo.isService(config)
+                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }

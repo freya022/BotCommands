@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
@@ -17,16 +16,16 @@ import kotlin.reflect.KClass
  */
 @BService(priority = Int.MAX_VALUE - 1)
 internal class ClassAnnotationsMap(
-    context: BContextImpl,
+    serviceBootstrap: ServiceBootstrap,
     instantiableServices: InstantiableServices
 ) {
-    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.stagingClassAnnotations
+    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = serviceBootstrap.stagingClassAnnotations
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
             serviceTypes.intersect(instantiableServices.allAvailableTypes)
         }
-        .also { context.clearStagingAnnotationsMap() }
+        .also { serviceBootstrap.clearStagingAnnotationsMap() }
 
     internal inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
 
