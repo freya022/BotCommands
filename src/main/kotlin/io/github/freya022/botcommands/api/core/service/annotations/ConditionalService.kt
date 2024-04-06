@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @HardcodedCondition
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-annotation class ConditionalService(
+annotation class ConditionalService( //TODO take this into account for configuration classes
     /**
      * Classes which implement [ConditionalServiceChecker], all checks must pass for this service to be instantiated.
      */
