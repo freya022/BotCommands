@@ -1,30 +1,33 @@
 package io.github.freya022.botcommands.internal.core.config
 
+import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigConfigurer
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import org.springframework.beans.factory.getBeansWithAnnotation
 import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.ComponentScans
 import org.springframework.context.annotation.Configuration
-
-private val logger = KotlinLogging.logger { }
 
 @Configuration
 internal class DefaultSearchPathConfigurer(private val applicationContext: ApplicationContext) : BConfigConfigurer {
     override fun configure(builder: BConfigBuilder) {
-        // Spring does funny stuff by including inner classes that extends classes outside the classpath
-        // kotlin-reflect doesn't like getting functions when there is such inner class
-        // see org.springframework.context.support.DefaultLifecycleProcessor.CracResourceAdapter
-        val disabledPackages = setOf("org.springframework")
-        val allBeans = applicationContext.beanDefinitionNames.mapNotNullTo(hashSetOf()) { name ->
-            val type = applicationContext.getType(name)
-            if (type == null) {
-                logger.warn { "Could not determine type of service '$name', it will not be searched for annotations" }
-                return@mapNotNullTo null
-            }
-            if (disabledPackages.any { type.packageName.startsWith(it) })
-                return@mapNotNullTo null
-            type
+        val beans = applicationContext.getBeansWithAnnotation<EnableBotCommands>()
+        check(beans.size == 1) {
+            "Cannot have multiple classes with ${annotationRef<EnableBotCommands>()}"
         }
-        allBeans.forEach(builder::addClass)
+
+        val beanName = beans.keys.single()
+        val scans = applicationContext.findAllAnnotationsOnBean(beanName, ComponentScan::class.java, true)
+        val groupScans = applicationContext.findAllAnnotationsOnBean(beanName, ComponentScans::class.java, true).flatMap { it.value.asIterable() }
+
+        (scans + groupScans).forEach { builder.packages += it.packages }
     }
+
+    private val ComponentScan.packages: Set<String>
+        get() = buildSet(basePackages.size + basePackageClasses.size) {
+            this += basePackages
+            basePackageClasses.forEach { this += it.java.packageName }
+        }
 }
