@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
-import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
@@ -29,7 +28,6 @@ internal interface InstantiableServices {
 }
 
 @Service
-@Order(Int.MAX_VALUE)
 internal class SpringInstantiableServices internal constructor(
         config: BConfig,
         applicationContext: ApplicationContext
@@ -39,8 +37,17 @@ internal class SpringInstantiableServices internal constructor(
     final override val allAvailableTypes: Set<KClass<*>>
 
     init {
-        // All spring-managed beans are injected into the config by DefaultSearchPathConfigurer
-        val allBeans = config.classes.mapTo(hashSetOf(), Class<*>::kotlin)
+        val allBeans = applicationContext.beanDefinitionNames
+            .asSequence()
+            .map { applicationContext.getType(it) }
+            .filter { type ->
+                if (config.packages.any { type.packageName.startsWith(it) })
+                    return@filter true
+                if (type in config.classes)
+                    return@filter true
+                return@filter false
+            }
+            .mapTo(hashSetOf()) { it.kotlin }
         availablePrimaryTypes = allBeans
         allAvailableTypes = allBeans + allBeans.flatMapTo(hashSetOf()) { it.allSuperclasses }
     }
