@@ -30,6 +30,8 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (classInfo.isAbstract) return
+
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val isHandler = classInfo.hasAnnotation(Handler::class.java)
         val isHandlerOrCommand = isHandler || isCommand

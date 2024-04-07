@@ -31,6 +31,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     private val errorMessages: MutableList<String> = arrayListOf()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (classInfo.isAbstract) return
+
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory<*>>()
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass

@@ -38,6 +38,8 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (classInfo.isAbstract) return
+
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val hasCommandProviderInterfaces = commandProviderInterfaces.any { classInfo.implementsInterface(it) }
         val commandDeclarations by lazy {
