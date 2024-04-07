@@ -27,8 +27,8 @@ private val logger = KotlinLogging.logger { }
 @BService
 @Dependencies(ConnectionSupplier::class)
 internal class DatabaseImpl internal constructor(
-    override val connectionSupplier: ConnectionSupplier,
-    override val databaseConfig: BDatabaseConfig,
+    final override val connectionSupplier: ConnectionSupplier,
+    final override val databaseConfig: BDatabaseConfig,
     private val tracedQueryFactories: List<ParametrizedQueryFactory<*>>
 ) : Database {
     internal open class ConnectionResource internal constructor(protected val connection: Connection, private val semaphore: Semaphore) : Connection by connection {

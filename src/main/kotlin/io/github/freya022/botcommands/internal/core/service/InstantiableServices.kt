@@ -25,7 +25,7 @@ internal interface InstantiableServices {
 
 @BService(priority = Int.MAX_VALUE)
 internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: ServiceContainerImpl) : InstantiableServices {
-    internal val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
+    internal final val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
         val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 
         if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
