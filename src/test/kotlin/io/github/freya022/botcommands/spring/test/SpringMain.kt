@@ -6,6 +6,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import java.lang.management.ManagementFactory
+import kotlin.system.exitProcess
 
 @EnableBotCommands
 @SpringBootApplication(
@@ -32,5 +33,10 @@ fun main(args: Array<String>) {
         DecoroutinatorRuntime.load()
     }
 
-    runApplication<SpringMain>(*args)
+    try {
+        runApplication<SpringMain>(*args)
+    } catch (e: Exception) {
+        logger.catching(e)
+        exitProcess(1)
+    }
 }
