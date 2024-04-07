@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -36,6 +37,7 @@ private val spacePattern = Regex("\\s+")
 
 @Command
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
+@ConditionalOnMissingBean(IHelpCommand::class)
 internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand, TextCommandProvider {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {

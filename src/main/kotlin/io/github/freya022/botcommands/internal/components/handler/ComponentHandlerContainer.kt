@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -19,6 +20,7 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 @Dependencies(Components::class)
+@RequiresComponents
 internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     private val buttonMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()

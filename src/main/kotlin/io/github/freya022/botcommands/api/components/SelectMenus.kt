@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.components
 import io.github.freya022.botcommands.api.components.builder.select.EntitySelectMenuFactory
 import io.github.freya022.botcommands.api.components.builder.select.StringSelectMenuFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import java.util.*
@@ -157,7 +157,8 @@ import javax.annotation.CheckReturnValue
  * @see Buttons
  */
 @BService
-@Dependencies(Components::class)
+@ConditionalService(Components.InstantiationChecker::class)
+@RequiresComponents
 class SelectMenus internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     /**
      * Creates a [StringSelectMenu] builder factory.

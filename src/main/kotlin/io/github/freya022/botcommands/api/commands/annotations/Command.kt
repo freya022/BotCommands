@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import org.springframework.stereotype.Component
 
 /**
  * Enables this class to be scanned for one or more commands.<br>
@@ -28,5 +29,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
  * @see JDATextCommandVariation @JDATextCommandVariation
  */
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.BINARY) //Read by ClassGraph
-annotation class Command  
+@Retention(AnnotationRetention.RUNTIME)
+@Component
+annotation class Command

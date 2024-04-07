@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import org.springframework.stereotype.Component
 
 /**
  * Marks this class as a service, or this function as a service factory.
@@ -113,6 +114,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
  *
  * @see DynamicSupplier
  */
+@Component
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class BService(

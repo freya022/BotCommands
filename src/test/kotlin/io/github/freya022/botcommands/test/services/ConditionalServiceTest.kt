@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.services
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -10,6 +11,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 @BService
 @Dependencies(Components::class)
 @ConditionalService(ConditionalServiceTest.Companion::class)
+@RequiresComponents
 class ConditionalServiceTest {
     @BService
     class ConditionalServiceTester(serviceContainer: ServiceContainer) {

@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
  * For example, you cannot retrieve services annotated with [@Command][Command],
  * unless the class itself has the annotation
  */
+//TODO make a spring variant, see ApplicationContext#getBeanNamesForAnnotation
 @BService(priority = Int.MAX_VALUE - 1)
 internal class ClassAnnotationsMap(
     serviceBootstrap: ServiceBootstrap,

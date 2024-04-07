@@ -9,16 +9,25 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.service.annotations.ServicePriority
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
+import org.springframework.context.annotation.Condition
+import org.springframework.context.annotation.ConditionContext
+import org.springframework.context.annotation.Conditional
+import org.springframework.core.type.AnnotatedTypeMetadata
 
-object HelpCondition : ConditionalServiceChecker {
+object HelpCondition : ConditionalServiceChecker, Condition {
     override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
         return "No help handler for you"
+    }
+
+    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+        return false
     }
 }
 
 @ServiceName("helpCommand") // Just to make sure there is no name collision with the built-in help
 @BService(priority = -1)
 @ConditionalService(HelpCondition::class)
+@Conditional(HelpCondition::class)
 class MyHelpCommand : IHelpCommand {
     //Only triggered when an existing command is misused
     override suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
@@ -29,6 +38,7 @@ class MyHelpCommand : IHelpCommand {
 @BService
 @ServicePriority(Int.MAX_VALUE)
 @ConditionalService(HelpCondition::class)
+@Conditional(HelpCondition::class)
 class MyHelpCommand2 : IHelpCommand {
     //Only triggered when an existing command is misused
     override suspend fun onInvalidCommandSuspend(event: BaseCommandEvent, commandInfo: TextCommandInfo) {

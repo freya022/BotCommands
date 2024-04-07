@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.db.query.GenericParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.query.NonParametrizedQueryFactory
@@ -26,6 +27,8 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 @Dependencies(ConnectionSupplier::class)
+@Primary
+@RequiresDatabase
 internal class DatabaseImpl internal constructor(
     final override val connectionSupplier: ConnectionSupplier,
     final override val databaseConfig: BDatabaseConfig,

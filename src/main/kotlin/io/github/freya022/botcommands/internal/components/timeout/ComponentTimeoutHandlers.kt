@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -14,6 +15,7 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 @Dependencies(Components::class)
+@RequiresComponents
 internal class ComponentTimeoutHandlers(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) : TimeoutHandlerContainer {
     private val map: Map<String, TimeoutDescriptor<ComponentTimeoutData>> =
         functionAnnotationsMap.get<ComponentTimeoutHandler>()

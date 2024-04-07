@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 @Command
 @Dependencies(Components::class)
+@RequiresComponents
 class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
     suspend fun onSlashTimeUnit(

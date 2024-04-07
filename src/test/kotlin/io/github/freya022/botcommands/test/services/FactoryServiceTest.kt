@@ -4,10 +4,12 @@ import io.github.freya022.botcommands.api.core.service.annotations.BConfiguratio
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.internal.core.service.RequiresDefaultInjection
 
 //Can test failure if FactoryServiceTest is not instantiable, by commenting @Dependencies
 @BService
 @Dependencies(FactoryServiceTest::class)
+@RequiresDefaultInjection
 class FactoryServiceTestUser(service: FactoryServiceTest)
 
 class FactoryServiceTest private constructor() {

@@ -9,9 +9,11 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 
 @BService
 @ConditionalService(DefaultCoroutineEventManagerSupplier.ExistingSupplierChecker::class)
+@ConditionalOnMissingBean(ICoroutineEventManagerSupplier::class)
 internal class DefaultCoroutineEventManagerSupplier : ICoroutineEventManagerSupplier {
     override fun get(): CoroutineEventManager {
         return CoroutineEventManager(namedDefaultScope("Bot coroutine", 4))

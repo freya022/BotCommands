@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.utils.EmojiUtils
@@ -19,6 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
+@RequiresComponents
 class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
@@ -42,6 +44,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 
 @Command
 @Dependencies(Components::class) // Disables the command if components are not enabled
+@RequiresComponents
 class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvider {
     suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)

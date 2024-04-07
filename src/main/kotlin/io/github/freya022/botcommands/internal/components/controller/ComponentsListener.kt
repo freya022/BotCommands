@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -29,7 +30,6 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentHandl
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.isRequired
@@ -47,7 +47,8 @@ import kotlin.reflect.full.callSuspendBy
 private val logger = KotlinLogging.logger { }
 
 @BService
-@Dependencies(Components::class, InternalDatabase::class)
+@Dependencies(Components::class)
+@RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,
     filters: List<ComponentInteractionFilter<Any>>,

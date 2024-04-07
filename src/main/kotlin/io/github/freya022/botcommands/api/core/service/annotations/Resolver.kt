@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import org.springframework.stereotype.Component
 
 /**
  * Marks this class as a [parameter resolver][ParameterResolver].<br>
@@ -16,5 +17,6 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
  * @see ClassParameterResolver
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-@Retention(AnnotationRetention.BINARY) //Read by ClassGraph
+@Retention(AnnotationRetention.RUNTIME)
+@Component
 annotation class Resolver

@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.test.config
 import com.google.gson.Gson
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
@@ -18,6 +20,12 @@ data class Config(val token: String,
                   val testGuildIds: List<Long>,
                   val databaseConfig: DatabaseConfig
 ) {
+    @Configuration
+    class ConfigProvider {
+        @Bean
+        fun config(): Config = instance
+    }
+
     companion object {
         private val logger = KotlinLogging.logger { }
 

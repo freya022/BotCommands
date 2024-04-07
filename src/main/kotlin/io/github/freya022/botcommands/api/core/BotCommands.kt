@@ -103,7 +103,7 @@ object BotCommands {
 
             measureTime {
                 ReflectionMetadata.runScan(config, serviceBootstrap)
-            }.also { logger.trace { "Classes reflection took ${it.toString(DurationUnit.MILLISECONDS, 2)}" } }
+            }.also { logger.trace { "Reflection metadata took ${it.toString(DurationUnit.MILLISECONDS, 2)}" } }
 
             serviceBootstrap.serviceContainer.loadServices()
             serviceBootstrap.serviceContainer.getService<BContextImpl>().apply {

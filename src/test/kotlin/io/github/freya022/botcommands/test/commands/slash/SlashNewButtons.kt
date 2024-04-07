@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -32,6 +33,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Command
 @Dependencies(Components::class)
+@RequiresComponents
 class SlashNewButtons(
     private val buttons: Buttons
 ) : ApplicationCommand() {

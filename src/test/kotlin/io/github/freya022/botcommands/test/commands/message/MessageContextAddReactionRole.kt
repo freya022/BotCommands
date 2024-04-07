@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
@@ -37,6 +38,7 @@ class ReactionRoleService {
 
 @Command
 @Dependencies(Components::class)
+@RequiresComponents
 class MessageContextAddReactionRole(private val selectMenus: SelectMenus,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)

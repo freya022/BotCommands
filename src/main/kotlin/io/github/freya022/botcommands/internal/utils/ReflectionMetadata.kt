@@ -94,8 +94,11 @@ internal object ReflectionMetadata {
         val classGraphProcessors = config.classGraphProcessors +
                 serviceBootstrap.classGraphProcessors +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
-        return scanned.forEach { (_, classes) ->
-            classes
+        //TODO refactor this so we don't need to do two scans using spring
+
+        // Deduplicate classes from the two scans
+        // They are duplicated due to how we detect spring-scanned classes
+        scanned.flatMapTo(hashSetOf()) { (_, classes) -> classes }
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
                         //Only keep classes, not others such as file facades
@@ -112,12 +115,12 @@ internal object ReflectionMetadata {
                     return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
                 }
                 .processClasses(config, classGraphProcessors)
-        }.also {
-            classGraphProcessors.forEach { it.postProcess() }
-            scanned.forEach { (scanResult, _) -> scanResult.close() }
+                .also {
+                    classGraphProcessors.forEach { it.postProcess() }
+                    scanned.forEach { (scanResult, _) -> scanResult.close() }
 
-            scannedParams = true
-        }
+                    scannedParams = true
+                }
     }
 
     private fun ClassInfo.checkFacadeFactories(config: BConfig) {

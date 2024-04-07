@@ -52,6 +52,9 @@ interface ServiceContainer {
     fun <T : Any> getInterfacedServices(clazz: Class<T>): List<T> =
         getInterfacedServices(clazz.kotlin)
 
+    //TODO this should be part of (Default)ServiceContainer(Impl)
+    // As those properties are only for the default impl
+    // Keep the simple putService(T, name)
     fun <T : Any> putService(
         t: T,
         clazz: KClass<out T>,

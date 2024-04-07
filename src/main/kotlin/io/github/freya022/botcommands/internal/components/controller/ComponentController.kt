@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLim
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.IdentifiableComponent
+import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -31,6 +32,7 @@ private const val PREFIX_LENGTH = PREFIX.length
 
 @BService
 @Dependencies(ComponentRepository::class)
+@RequiresComponents
 internal class ComponentController(
     final val context: BContext,
     private val componentRepository: ComponentRepository,

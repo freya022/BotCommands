@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import org.springframework.stereotype.Component
 
 /**
  * Enables this class to be scanned for one or more handler.<br>
@@ -21,5 +22,6 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
  * @see ModalHandler @ModalHandler
  */
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.BINARY) //Read by ClassGraph
+@Retention(AnnotationRetention.RUNTIME)
+@Component
 annotation class Handler

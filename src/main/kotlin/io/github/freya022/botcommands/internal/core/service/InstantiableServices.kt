@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -11,7 +12,11 @@ import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationContext
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
 
 private val logger = KotlinLogging.logger { }
@@ -23,8 +28,28 @@ internal interface InstantiableServices {
     val allAvailableTypes: Set<KClass<*>>
 }
 
+@Service
+@Order(Int.MAX_VALUE)
+internal class SpringInstantiableServices internal constructor(
+        config: BConfig,
+        applicationContext: ApplicationContext
+) : InstantiableServices {
+    final override val availablePrimaryTypes: Set<KClass<*>>
+
+    final override val allAvailableTypes: Set<KClass<*>>
+
+    init {
+        // All spring-managed beans are injected into the config by DefaultSearchPathConfigurer
+        val allBeans = config.classes.mapTo(hashSetOf(), Class<*>::kotlin)
+        availablePrimaryTypes = allBeans
+        allAvailableTypes = allBeans + allBeans.flatMapTo(hashSetOf()) { it.allSuperclasses }
+    }
+}
+
 @BService(priority = Int.MAX_VALUE)
+@RequiresDefaultInjection
 internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: ServiceContainerImpl) : InstantiableServices {
+    // TODO put in init block
     internal final val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
         val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 

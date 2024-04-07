@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.IgnoreService
 
 @BService
 @Dependencies(Database::class)
+@RequiresDatabase
 @IgnoreServiceTypes(Database::class)
 internal class InternalDatabase internal constructor(private val database: Database) : Database by database {
     override suspend fun fetchConnection(readOnly: Boolean) = database.fetchConnection().also {

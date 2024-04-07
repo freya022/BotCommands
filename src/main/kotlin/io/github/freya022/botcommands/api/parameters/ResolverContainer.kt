@@ -85,7 +85,7 @@ class ResolverContainer internal constructor(
     }
 
     @JvmSynthetic
-    internal inline fun <reified T : Any> hasResolverOfType(parameter: ParameterWrapper): Boolean {
+    internal final inline fun <reified T : Any> hasResolverOfType(parameter: ParameterWrapper): Boolean {
         val resolverFactory = getResolverFactoryOrNull(parameter) ?: return false
         return resolverFactory.resolverType.isSubclassOf<T>()
     }
