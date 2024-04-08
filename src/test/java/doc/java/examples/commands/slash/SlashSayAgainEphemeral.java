@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.components.Buttons;
+import io.github.freya022.botcommands.api.components.RequiresComponents;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -16,6 +17,7 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Command
+@RequiresComponents
 @TestLanguage(TestLanguage.Language.JAVA)
 public class SlashSayAgainEphemeral extends ApplicationCommand {
     @JDASlashCommand(name = "say_again", subcommand = "ephemeral", description = "Sends a button to send a message again")

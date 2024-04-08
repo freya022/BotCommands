@@ -8,12 +8,14 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import io.github.freya022.botcommands.api.components.Buttons;
+import io.github.freya022.botcommands.api.components.RequiresComponents;
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 @Command
+@RequiresComponents
 @TestLanguage(TestLanguage.Language.JAVA)
 public class SlashSayAgainPersistent extends ApplicationCommand {
     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgainPersistent: saySentenceButton";

@@ -12,10 +12,12 @@ import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.db.withLogger
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.loggerOf
+import io.github.freya022.botcommands.internal.core.db.RequiresDatabase
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 @Command
 @Dependencies(Database::class)
+@RequiresDatabase
 class SlashDb(private val database: Database) : ApplicationCommand() {
     @JDASlashCommand(name = "db")
     suspend fun onSlashDb(event: GuildSlashEvent) {
