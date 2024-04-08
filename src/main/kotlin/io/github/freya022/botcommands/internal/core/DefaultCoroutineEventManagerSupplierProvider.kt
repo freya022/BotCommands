@@ -9,14 +9,20 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.utils.classRef
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @BService
-@ConditionalService(DefaultCoroutineEventManagerSupplier.ExistingSupplierChecker::class)
-@ConditionalOnMissingBean(ICoroutineEventManagerSupplier::class)
-internal class DefaultCoroutineEventManagerSupplier : ICoroutineEventManagerSupplier {
-    override fun get(): CoroutineEventManager {
-        return CoroutineEventManager(namedDefaultScope("Bot coroutine", 4))
+@Configuration
+internal class DefaultCoroutineEventManagerSupplierProvider {
+    @BService
+    @ConditionalService(ExistingSupplierChecker::class)
+    @Bean
+    @ConditionalOnMissingBean(ICoroutineEventManagerSupplier::class)
+    internal fun defaultCoroutineEventManagerSupplier() = ICoroutineEventManagerSupplier {
+        CoroutineEventManager(namedDefaultScope("Bot coroutine", 4))
     }
 
     internal object ExistingSupplierChecker : ConditionalServiceChecker {
@@ -26,7 +32,7 @@ internal class DefaultCoroutineEventManagerSupplier : ICoroutineEventManagerSupp
             //Won't take DefaultCoroutineEventManagerSupplier into account
             val suppliers = serviceContainer.getInterfacedServices<ICoroutineEventManagerSupplier>()
             if (suppliers.isNotEmpty())
-                return "An user supplied CoroutineEventManagerSupplier is already active (${suppliers.first().javaClass.simpleNestedName})"
+                return "An user supplied ${classRef<ICoroutineEventManagerSupplier>()} is already active (${suppliers.first().javaClass.simpleNestedName})"
 
             return null
         }
