@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.typeOfAtOrNullOnStar
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
@@ -18,6 +19,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
+import kotlin.reflect.jvm.kotlinFunction
 
 private val logger = KotlinLogging.logger { }
 
@@ -34,6 +36,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isResolverFactorySubclass
 
+        // Do not care about resolvers returned by factories given by service factories
         if (isResolverFactorySubclass) {
             val factoryType = kClass.allSupertypes.first { it.jvmErasure == ParameterResolverFactory::class }
             val factoryOutputType = factoryType.arguments[0].type!!.jvmErasure
@@ -84,11 +87,17 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isReturnTypeResolverFactory && isServiceFactory
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isReturnTypeResolverFactory
 
-        if (isServiceFactory && isReturnTypeResolverFactory) {
-            val factoryType = method.returnType.kotlin.allSupertypes.first { it.jvmErasure == ParameterResolverFactory::class }
-            val factoryOutputType = factoryType.arguments[0].type!!.jvmErasure
-            logger.trace { "Skipping checks of ${factoryOutputType.jvmName} as it is referenced by ${methodInfo.shortSignature}" }
-            ignoredClasses += factoryOutputType.java
+        // Do not care about resolvers returned by factories given by service factories
+        if (isReturnTypeResolverFactory) {
+            // Ignore if the factory has no return type (i.e., generic is a star projection)
+            // example: ResolverContainer#getResolverFactoryOrNull
+            method.kotlinFunction!!.returnType
+                .typeOfAtOrNullOnStar(0, ParameterResolverFactory::class)
+                ?.jvmErasure
+                ?.let { factoryOutputType ->
+                    logger.trace { "Skipping checks of ${factoryOutputType.jvmName} as it is referenced by ${methodInfo.shortSignature}" }
+                    ignoredClasses += factoryOutputType.java
+                }
         }
 
         val isResolverAnnotated = methodInfo.hasAnnotation(Resolver::class.java)

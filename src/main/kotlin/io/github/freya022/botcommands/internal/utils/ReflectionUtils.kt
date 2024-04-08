@@ -193,3 +193,11 @@ internal fun KType.findErasureOfAt(index: Int, targetType: KClass<*>): KType {
 
     return this.jvmErasure.superErasureAt(index, targetType)
 }
+
+internal fun KType.typeOfAtOrNullOnStar(index: Int, targetType: KClass<*>): KType? {
+    if (this.jvmErasure == targetType) {
+        return this.arguments[index].type
+    }
+
+    return this.jvmErasure.superErasureAt(index, targetType)
+}
