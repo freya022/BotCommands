@@ -31,8 +31,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory<*>>()
-        val missingResolverFactoryAnnotation = isResolverFactoryAnnotated && !isResolverFactorySubclass
-        val missingResolverFactorySuperClass = !isResolverFactoryAnnotated && isResolverFactorySubclass
+        val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass
+        val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isResolverFactorySubclass
 
         if (isResolverFactorySubclass) {
             val factoryType = kClass.allSupertypes.first { it.jvmErasure == ParameterResolverFactory::class }
