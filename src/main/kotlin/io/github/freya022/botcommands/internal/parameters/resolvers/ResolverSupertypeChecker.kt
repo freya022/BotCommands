@@ -34,6 +34,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory<*>>()
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass
+                // Only check for annotation if the class is already a service
+                && isService
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isResolverFactorySubclass
 
         // Do not care about resolvers returned by factories given by service factories
@@ -47,6 +49,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
         val isResolverSubclass = kClass.isSubclassOf<ParameterResolver<*, *>>()
         val missingResolverAnnotation = !isResolverAnnotated && isResolverSubclass
+                // Only check for annotation if the class is already a service
+                && isService
         val missingResolverSuperClass = isResolverAnnotated && !isResolverSubclass
 
         tasks += task@{
@@ -56,18 +60,12 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 if (kClass.java.allSuperclasses.any { it in ignoredClasses }) return@task
 
                 errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<Resolver>()}"
-                return@task
             } else if (missingResolverSuperClass) {
                 errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolver<*, *>>()}"
-                return@task
-            }
-
-            if (missingResolverFactoryAnnotation) {
+            } else if (missingResolverFactoryAnnotation) {
                 errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<ResolverFactory>()}"
-                return@task
             } else if (missingResolverFactorySuperClass) {
                 errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
-                return@task
             }
         }
     }
@@ -84,7 +82,9 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         val isResolverFactoryAnnotated = methodInfo.hasAnnotation(ResolverFactory::class.java)
         val isReturnTypeResolverFactory = ParameterResolverFactory::class.isAssignableFrom(method.returnType)
-        val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isReturnTypeResolverFactory && isServiceFactory
+        val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isReturnTypeResolverFactory
+                // Only check for annotation if the class is already a service
+                && isServiceFactory
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isReturnTypeResolverFactory
 
         // Do not care about resolvers returned by factories given by service factories
@@ -102,7 +102,9 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         val isResolverAnnotated = methodInfo.hasAnnotation(Resolver::class.java)
         val isResolverReturnType = ParameterResolver::class.isAssignableFrom(method.returnType)
-        val missingResolverAnnotation = !isResolverAnnotated && isResolverReturnType && isServiceFactory
+        val missingResolverAnnotation = !isResolverAnnotated && isResolverReturnType
+                // Only check for annotation if the class is already a service
+                && isServiceFactory
         val missingResolverSuperClass = isResolverAnnotated && !isResolverReturnType
 
         tasks += task@{
@@ -112,18 +114,12 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 if (method.returnType.allSuperclasses.any { it in ignoredClasses }) return@task
 
                 errorMessages += "Resolver ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<Resolver>()}"
-                return@task
             } else if (missingResolverSuperClass) {
                 errorMessages += "Resolver ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolver<*, *>>()}"
-                return@task
-            }
-
-            if (missingResolverFactoryAnnotation) {
+            } else if (missingResolverFactoryAnnotation) {
                 errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<ResolverFactory>()}"
-                return@task
             } else if (missingResolverFactorySuperClass) {
                 errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*>>()}"
-                return@task
             }
         }
     }
