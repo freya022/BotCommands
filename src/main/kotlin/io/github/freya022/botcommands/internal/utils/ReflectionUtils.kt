@@ -176,7 +176,7 @@ internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KTyp
 @PublishedApi
 internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType {
     val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == targetType }
-        ?: throwInternal("Unable to find the supertype of ${this.simpleNestedName} extending ${targetType.simpleNestedName}")
+        ?: throwInternal("Unable to find the supertype '${targetType.simpleNestedName}' in '${this.simpleNestedName}'")
     return interfaceType.arguments[index].type
         ?: throwUser("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
 }
