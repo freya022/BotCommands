@@ -6,7 +6,10 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import org.springframework.beans.factory.BeanCurrentlyInCreationException
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.annotation.AnnotationBeanNameGenerator
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
@@ -77,14 +80,22 @@ internal class SpringServiceContainer internal constructor(private val applicati
         return applicationContext.getBeanProvider(clazz.java).toList()
     }
 
-    override fun <T : Any> putService(
-        t: T,
-        clazz: KClass<out T>,
-        name: String,
-        isPrimary: Boolean,
-        priority: Int,
-        typeAliases: Set<KClass<*>>
-    ) {
+    override fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putService(t)
+
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = putService(t)
+
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String) = putService(t, name)
+
+    override fun putService(t: Any, name: String) {
         applicationContext.beanFactory.registerSingleton(name, t)
+    }
+
+    override fun putService(t: Any) {
+        val generatedBeanName = AnnotationBeanNameGenerator.INSTANCE
+            .generateBeanName(
+                AnnotatedGenericBeanDefinition(t.javaClass),
+                applicationContext.beanFactory as BeanDefinitionRegistry
+            )
+        applicationContext.beanFactory.registerSingleton(generatedBeanName, t)
     }
 }

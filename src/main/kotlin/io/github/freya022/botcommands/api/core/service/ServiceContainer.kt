@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.core.service
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.internal.core.service.provider.getServiceName
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -52,21 +51,11 @@ interface ServiceContainer {
     fun <T : Any> getInterfacedServices(clazz: Class<T>): List<T> =
         getInterfacedServices(clazz.kotlin)
 
-    //TODO this should be part of (Default)ServiceContainer(Impl)
-    // As those properties are only for the default impl
-    // Keep the simple putService(T, name)
-    fun <T : Any> putService(
-        t: T,
-        clazz: KClass<out T>,
-        name: String = clazz.getServiceName(),
-        isPrimary: Boolean = false,
-        priority: Int = 0,
-        typeAliases: Set<KClass<*>> = emptySet()
-    )
-    fun <T : Any> putService(t: T, clazz: Class<out T>, name: String) = putService(t, clazz.kotlin)
-    fun <T : Any> putService(t: T, clazz: Class<out T>) = putService(t, clazz.kotlin)
-    fun putService(t: Any, name: String): Unit = putService(t, t::class, name)
-    fun putService(t: Any): Unit = putService(t, t::class)
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String)
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>)
+    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>)
+    fun putService(t: Any, name: String)
+    fun putService(t: Any)
 }
 
 fun <T : Any> BContext.tryGetService(kClass: KClass<T>): ServiceResult<T> = serviceContainer.tryGetService(kClass)
@@ -85,37 +74,8 @@ fun <T : Any> BContext.getServiceOrNull(kClass: KClass<T>): T? = serviceContaine
 inline fun <reified T : Any> BContext.getServiceOrNull(): T? = serviceContainer.getServiceOrNull<T>()
 inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServiceOrNull(T::class)
 
-fun <T : Any> BContext.putService(
-    t: T,
-    kClass: KClass<T>,
-    name: String = kClass.getServiceName(),
-    isPrimary: Boolean = false,
-    priority: Int = 0,
-    typeAliases: Set<KClass<*>> = emptySet()
-) = serviceContainer.putService(t, kClass, name, isPrimary, priority, typeAliases)
-
-inline fun <reified T : Any> BContext.putServiceAs(
-    t: T,
-    name: String = T::class.getServiceName(),
-    isPrimary: Boolean = false,
-    priority: Int = 0,
-    typeAliases: Set<KClass<*>> = emptySet()
-) = serviceContainer.putService(t, T::class, name, isPrimary, priority, typeAliases)
-
-inline fun <reified T : Any> ServiceContainer.putServiceAs(
-    t: T,
-    name: String = T::class.getServiceName(),
-    isPrimary: Boolean = false,
-    priority: Int = 0,
-    typeAliases: Set<KClass<*>> = emptySet()
-) = putService(t, T::class, name, isPrimary, priority, typeAliases)
-
-inline fun <reified A : Any> ServiceContainer.putServiceWithTypeAlias(
-    t: Any,
-    name: String = t::class.getServiceName(),
-    isPrimary: Boolean = false,
-    priority: Int = 0
-) = putService(t, t::class, name, isPrimary, priority, setOf(A::class))
+inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T, name: String) = putServiceAs(t, T::class, name)
+inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
 
 /**
  * Filters out interfaced services of that type if they are already being inspected.

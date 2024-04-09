@@ -57,7 +57,7 @@ internal class ServiceCreationStack {
 
 private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
-internal class DefaultServiceContainerImpl internal constructor(internal val serviceBootstrap: DefaultServiceBootstrap) : ServiceContainer {
+internal class DefaultServiceContainerImpl internal constructor(internal val serviceBootstrap: DefaultServiceBootstrap) : DefaultServiceContainer {
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()

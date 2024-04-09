@@ -51,9 +51,6 @@ interface BContext {
 
     //TODO docs
     fun <T : Any> getService(clazz: Class<T>): T = serviceContainer.getService(clazz)
-
-    //TODO docs
-    fun putService(service: Any): Unit = serviceContainer.putService(service)
     //endregion
 
     //TODO docs
