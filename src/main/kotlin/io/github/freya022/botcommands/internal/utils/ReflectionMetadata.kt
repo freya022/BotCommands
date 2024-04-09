@@ -147,7 +147,19 @@ internal object ReflectionMetadata {
     private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
-                val kClass = classInfo.loadClass().kotlin
+                // Ignore unknown classes
+                val kClass = runCatching {
+                    classInfo.loadClass().kotlin
+                }.onFailure {
+                    // ClassGraph wraps Class#forName exceptions in an IAE
+                    if (it is IllegalArgumentException) {
+                        val cause = it.cause
+                        if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
+                            logger.debug { "Ignoring ${classInfo.name} due to unsatisfied dependency ${cause.message}" }
+                            return@onEach
+                        }
+                    }
+                }.getOrThrow()
 
                 for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
                     //Don't inspect methods with generics
@@ -156,9 +168,18 @@ internal object ReflectionMetadata {
                             .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
                     ) continue
 
-                    val method = when {
-                        methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
-                        else -> methodInfo.loadClassAndGetMethod()
+                    // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
+                    val method: Executable = try {
+                        when {
+                            methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
+                            else -> methodInfo.loadClassAndGetMethod()
+                        }
+                    } catch (e: NoClassDefFoundError) {
+                        if (logger.isTraceEnabled())
+                            logger.trace(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
+                        else
+                            logger.debug { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+                        continue
                     }
                     val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
