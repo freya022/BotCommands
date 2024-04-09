@@ -55,7 +55,7 @@ internal class SpringInstantiableServices internal constructor(
 
 @BService(priority = Int.MAX_VALUE)
 @RequiresDefaultInjection
-internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: ServiceContainerImpl) : InstantiableServices {
+internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: DefaultServiceContainerImpl) : InstantiableServices {
     // TODO put in init block
     internal final val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
         val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider

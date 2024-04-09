@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -41,7 +41,7 @@ internal class ClassServiceProvider internal constructor(
     override val isLazy = clazz.hasAnnotation<Lazy>()
     override val priority = clazz.getAnnotatedServicePriority()
 
-    override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+    override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
         if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
@@ -56,7 +56,7 @@ internal class ClassServiceProvider internal constructor(
         return serviceError
     }
 
-    private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+    private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
@@ -91,7 +91,7 @@ internal class ClassServiceProvider internal constructor(
         return null
     }
 
-    override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
         if (instance != null)
             throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
 
@@ -111,7 +111,7 @@ internal class ClassServiceProvider internal constructor(
         return timedInstantiation
     }
 
-    private fun createInstanceNonCached(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
         measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
             return timedInstantiation
         }

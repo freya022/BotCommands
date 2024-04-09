@@ -17,7 +17,7 @@ internal class DefaultServiceBootstrap internal constructor(config: BConfig) : S
     override val stagingClassAnnotations: StagingClassAnnotations
         get() = _stagingClassAnnotations ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
     internal val serviceProviders = ServiceProviders()
-    override val serviceContainer = ServiceContainerImpl(this)
+    override val serviceContainer = DefaultServiceContainerImpl(this)
     internal val customConditionsContainer = CustomConditionsContainer()
     override val classGraphProcessors: Set<ClassGraphProcessor> =
         setOf(ConditionalObjectChecker, serviceProviders, customConditionsContainer, stagingClassAnnotations.processor)

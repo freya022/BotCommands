@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
@@ -40,11 +40,11 @@ internal class ProvidedServiceProvider internal constructor(
 
     override fun getProviderFunction(): KFunction<*> = clazz.constructors.firstOrNull() ?: throwInternal("uh oh")
 
-    override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+    override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         return null
     }
 
-    override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
         throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
     }
 }
