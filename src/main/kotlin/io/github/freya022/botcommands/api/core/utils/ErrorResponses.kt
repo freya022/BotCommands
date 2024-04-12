@@ -102,6 +102,8 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
  * Runs the specified function [block] and returns `null` on [error responses][ErrorResponse]
  * that corresponds to an ignored response.
  *
+ * Any other exception is still thrown.
+ *
  * @see ignore
  * @see runIgnoringResponse
  */
