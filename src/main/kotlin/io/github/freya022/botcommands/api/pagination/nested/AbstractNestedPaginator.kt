@@ -3,13 +3,13 @@ package io.github.freya022.botcommands.api.pagination.nested
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.internal.utils.Checks
-import okhttp3.internal.toImmutableList
 
 /**
  * @param T Type of the implementor
