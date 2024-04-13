@@ -2,7 +2,9 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -193,3 +195,68 @@ internal inline fun <reified E : Enum<E>> defaultEnumValuesSupplier(valueCollect
  * This takes the enum value's name and capitalizes it, while replacing underscores with spaces.
  */
 fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
+
+/**
+ * Creates a [parameter resolver factory][ParameterResolverFactory] from the provided resolver [producer].
+ *
+ * The [producer] is called for each function parameter with the exact [R] type.
+ *
+ * This should be returned in a service factory, using [@ResolverFactory][ResolverFactory].
+ *
+ * Example using a custom localization service:
+ * ```kt
+ * @BConfiguration
+ * object MyCustomLocalizationResolverProvider {
+ *     // The parameter resolver, which will be created once per parameter
+ *     class MyCustomLocalizationResolver(
+ *         private val localizationService: LocalizationService,
+ *         private val guildSettingsService: GuildSettingsService,
+ *         private val bundleName: String,
+ *         private val prefix: String?
+ *     ) : ClassParameterResolver<MyCustomLocalizationResolver, MyCustomLocalization>(MyCustomLocalization::class),
+ *         ICustomResolver<MyCustomLocalizationResolver, MyCustomLocalization> {
+ *
+ *         // Called when a command is used
+ *         override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): MyCustomLocalization {
+ *             return if (event is Interaction) {
+ *                 val guild = event.guild
+ *                     ?: throw IllegalStateException("Cannot get localization outside of guilds")
+ *                 // The root localization file not existing isn't an issue on production
+ *                 val localization = localizationService.getInstance(bundleName, guildSettingsService.getGuildLocale(guild.idLong))
+ *                     ?: throw IllegalArgumentException("No root bundle exists for '$bundleName'")
+ *
+ *                 // Return resolved object
+ *                 MyCustomLocalization(localization, prefix)
+ *             } else {
+ *                 throw UnsupportedOperationException("Unsupported event: ${event.javaClass.simpleNestedName}")
+ *             }
+ *         }
+ *     }
+ *
+ *     // Service factory returning a resolver factory
+ *     // The returned factory is used on each command/handler parameter of type "MyCustomLocalization",
+ *     // which is the same type as what MyCustomLocalizationResolver returns
+ *     @ResolverFactory
+ *     fun myCustomLocalizationResolverProvider(localizationService: LocalizationService, guildSettingsService: GuildSettingsService) = resolverFactory { parameter ->
+ *         // Find @LocalizationBundle on the parameter
+ *         val bundle = parameter.parameter.findAnnotation<LocalizationBundle>()
+ *             ?: throw IllegalArgumentException("Parameter ${parameter.parameter} must be annotated with LocalizationBundle")
+ *
+ *         // Return our resolver for that parameter
+ *         MyCustomLocalizationResolver(localizationService, guildSettingsService, bundle.value, bundle.prefix.nullIfBlank())
+ *     }
+ * }
+ * ```
+ *
+ * @param producer Function providing a [resolver][ParameterResolver] for the provided function parameter
+ * @param T Type of the produced parameter resolver
+ * @param R Type of the object returned by the resolver
+ *
+ * @see ParameterResolverFactory
+ * @see ParameterResolver
+ */
+inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(crossinline producer: (parameter: ParameterWrapper) -> T): ParameterResolverFactory<T> {
+    return object : TypedParameterResolverFactory<T>(T::class, R::class) {
+        override fun get(parameter: ParameterWrapper): T = producer(parameter)
+    }
+}

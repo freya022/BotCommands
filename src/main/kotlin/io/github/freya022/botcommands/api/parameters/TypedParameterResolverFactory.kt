@@ -13,7 +13,10 @@ import kotlin.reflect.full.withNullability
  *
  * Your implementation needs to be annotated with [@ResolverFactory][ResolverFactory].
  *
+ * You can also create a service factory using [resolverFactory].
+ *
  * @see ParameterResolverFactory
+ * @see resolverFactory
  *
  * @param resolverType Class of the returned parameter resolver
  * @param type         Type of the objects returned by the parameter resolver
