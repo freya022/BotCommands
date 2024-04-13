@@ -63,7 +63,7 @@ object BotCommands {
      *
      * @see BotCommands
      */
-    @Deprecated("Event manager is set by a service implementing CoroutineEventManagerSupplier")
+    @Deprecated("Event manager is set by a service implementing ICoroutineEventManagerSupplier")
     @JvmSynthetic
     fun create(manager: CoroutineEventManager, configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
         return build(BConfigBuilder().apply(configConsumer).build())
