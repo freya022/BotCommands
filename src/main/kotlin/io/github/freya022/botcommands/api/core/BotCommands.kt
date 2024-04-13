@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
@@ -29,6 +30,10 @@ import kotlin.time.measureTime
  *
  * The only requirement for a basic bot is a service extending [JDAService],
  * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/from-scratch/#creating-a-jdaservice).
+ *
+ * ### Spring support
+ *
+ * Spring users must use [@EnableBotCommands][EnableBotCommands] instead.
  *
  * @see BService @BService
  * @see InterfacedService @InterfacedService
