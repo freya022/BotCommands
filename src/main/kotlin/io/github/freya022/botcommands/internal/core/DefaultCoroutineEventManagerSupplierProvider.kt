@@ -16,12 +16,12 @@ import org.springframework.context.annotation.Configuration
 
 @BService
 @Configuration
-internal class DefaultCoroutineEventManagerSupplierProvider {
+internal open class DefaultCoroutineEventManagerSupplierProvider {
     @BService
     @ConditionalService(ExistingSupplierChecker::class)
     @Bean
     @ConditionalOnMissingBean(ICoroutineEventManagerSupplier::class)
-    internal fun defaultCoroutineEventManagerSupplier() = ICoroutineEventManagerSupplier {
+    internal open fun defaultCoroutineEventManagerSupplier() = ICoroutineEventManagerSupplier {
         CoroutineEventManager(namedDefaultScope("Bot coroutine", 4))
     }
 

@@ -34,7 +34,7 @@ private const val PREFIX_LENGTH = PREFIX.length
 @Dependencies(ComponentRepository::class)
 @RequiresComponents
 internal class ComponentController(
-    final val context: BContext,
+    val context: BContext,
     private val componentRepository: ComponentRepository,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,
     private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
@@ -50,7 +50,7 @@ internal class ComponentController(
         runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
     }
 
-    internal final suspend inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {
+    internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {
         val internalId = createComponent(builder)
         return block(internalId, getComponentId(internalId))
     }

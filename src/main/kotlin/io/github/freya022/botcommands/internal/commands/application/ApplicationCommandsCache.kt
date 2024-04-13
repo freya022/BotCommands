@@ -16,7 +16,7 @@ import kotlin.io.path.createDirectories
 @Lazy // The service is requested when JDA is available
 @BService
 internal class ApplicationCommandsCache(jda: JDA) {
-    private final val cachePath: Path
+    private val cachePath: Path
 
     init {
         val appDataDirectory = when {

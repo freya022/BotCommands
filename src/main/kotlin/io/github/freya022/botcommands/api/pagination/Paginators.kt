@@ -91,7 +91,7 @@ class Paginators(private val context: BContext) {
      * when clicked, the [callback][ButtonMenuBuilder.callback] is run.
      */
     @JvmName("buttonMenu")
-    final fun <E> buttonMenuJava(entries: List<E>, buttonContentSupplier: ButtonMenu.ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
+    fun <E> buttonMenuJava(entries: List<E>, buttonContentSupplier: ButtonMenu.ButtonContentSupplier<E>, callback: BlockingChoiceCallback<E>): ButtonMenuBuilder<E> =
         ButtonMenuBuilder(context, entries, buttonContentSupplier, callback::accept)
 
     /**

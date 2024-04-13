@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScans
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-internal class DefaultSearchPathConfigurer(private val applicationContext: ApplicationContext) : BConfigConfigurer {
+internal open class DefaultSearchPathConfigurer(private val applicationContext: ApplicationContext) : BConfigConfigurer {
     override fun configure(builder: BConfigBuilder) {
         val beans = applicationContext.getBeansWithAnnotation<EnableBotCommands>()
         check(beans.size == 1) {

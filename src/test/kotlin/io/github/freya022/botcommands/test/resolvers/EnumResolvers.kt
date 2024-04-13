@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit
 
 @BService // Cannot be a BConfiguration as the function below needs an instance
 @Configuration
-class EnumResolvers {
+open class EnumResolvers {
     @Resolver
     @Bean
-    fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
+    open fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
 
     @Resolver
     @Bean
-    fun chronoUnitResolver() = enumResolver<ChronoUnit>(ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES)
+    open fun chronoUnitResolver() = enumResolver<ChronoUnit>(ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES)
 }

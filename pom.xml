@@ -265,9 +265,6 @@
                         <arg>-Xcontext-receivers</arg>
                         <arg>-Xlambdas=indy</arg>
                     </args>
-                    <compilerPlugins>
-                        <plugin>spring</plugin>
-                    </compilerPlugins>
                 </configuration>
                 <executions>
                     <execution>

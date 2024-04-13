@@ -21,10 +21,10 @@ internal class SpringServiceBootstrap internal constructor(
         override val serviceContainer: SpringServiceContainer
 ) : ServiceBootstrap, InitializingBean {
     private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(serviceConfig)
-    final override val stagingClassAnnotations: StagingClassAnnotations
+    override val stagingClassAnnotations: StagingClassAnnotations
         get() = _stagingClassAnnotations
                 ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
-    final override val classGraphProcessors: Set<ClassGraphProcessor> = setOf(stagingClassAnnotations.processor)
+    override val classGraphProcessors: Set<ClassGraphProcessor> = setOf(stagingClassAnnotations.processor)
 
     override fun afterPropertiesSet() {
         measureTime {
@@ -32,7 +32,7 @@ internal class SpringServiceBootstrap internal constructor(
         }.also { logger.debug { "Reflection metadata took ${it.toString(DurationUnit.MILLISECONDS, 2)}" } }
     }
 
-    final override fun clearStagingAnnotationsMap() {
+    override fun clearStagingAnnotationsMap() {
         _stagingClassAnnotations = null
     }
 }

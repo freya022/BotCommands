@@ -21,9 +21,9 @@ data class Config(val token: String,
                   val databaseConfig: DatabaseConfig
 ) {
     @Configuration
-    class ConfigProvider {
+    open class ConfigProvider {
         @Bean
-        fun config(): Config = instance
+        open fun config(): Config = instance
     }
 
     companion object {

@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @BService // Cannot be a BConfiguration as the function below needs an instance
-class CoroutineEventManagerProvider {
+internal open class CoroutineEventManagerProvider {
     @BService
     @Bean
     @ServiceType(IEventManager::class)
-    fun coroutineEventManager(supplier: ICoroutineEventManagerSupplier): CoroutineEventManager =
+    internal open fun coroutineEventManager(supplier: ICoroutineEventManagerSupplier): CoroutineEventManager =
         supplier.get()
 }

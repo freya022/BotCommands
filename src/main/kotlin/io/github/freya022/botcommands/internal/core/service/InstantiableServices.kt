@@ -32,9 +32,9 @@ internal class SpringInstantiableServices internal constructor(
         config: BConfig,
         applicationContext: ApplicationContext
 ) : InstantiableServices {
-    final override val availablePrimaryTypes: Set<KClass<*>>
+    override val availablePrimaryTypes: Set<KClass<*>>
 
-    final override val allAvailableTypes: Set<KClass<*>>
+    override val allAvailableTypes: Set<KClass<*>>
 
     init {
         val allBeans = applicationContext.beanDefinitionNames
@@ -56,7 +56,7 @@ internal class SpringInstantiableServices internal constructor(
 @BService(priority = Int.MAX_VALUE)
 @RequiresDefaultInjection
 internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: DefaultServiceContainerImpl) : InstantiableServices {
-    internal final val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
+    internal val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
         val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 
         if (serviceError.errorType == UNAVAILABLE_PARAMETER) {

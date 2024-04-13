@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
             "doc"
         ]
 )
-class SpringMain
+open class SpringMain
 
 private val logger = KotlinLogging.logger { }
 

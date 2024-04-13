@@ -28,13 +28,13 @@ internal class ClassAnnotationsMap(
         }
         .also { serviceBootstrap.clearStagingAnnotationsMap() }
 
-    internal final inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
+    internal inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
 
-    internal final inline fun <reified A : Annotation> get(): Set<KClass<*>> =
+    internal inline fun <reified A : Annotation> get(): Set<KClass<*>> =
         getOrNull<A>() ?: emptySet()
 
     @Suppress("UNCHECKED_CAST")
-    internal final inline fun <reified A : Annotation, reified T : Any> getWithType(): Set<KClass<T>> =
+    internal inline fun <reified A : Annotation, reified T : Any> getWithType(): Set<KClass<T>> =
         get<A>().onEach {
             if (!it.isSubclassOf<T>()) {
                 throwUser("Class ${it.simpleNestedName} registered as a ${annotationRef<A>()} must extend ${T::class.simpleNestedName}")

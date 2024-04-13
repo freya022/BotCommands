@@ -24,10 +24,10 @@ import kotlin.time.Duration.Companion.minutes
 private val logger = KotlinLogging.loggerOf<BContext>()
 
 @BService
-internal class BContextImpl internal constructor(override val config: BConfig, final override val serviceContainer: ServiceContainer) : BContext {
+internal class BContextImpl internal constructor(override val config: BConfig, override val serviceContainer: ServiceContainer) : BContext {
     override val eventDispatcher: EventDispatcher by serviceContainer.lazy()
 
-    final override var status: Status = Status.PRE_LOAD
+    override var status: Status = Status.PRE_LOAD
         private set
 
     override val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.lazyOrElse { DefaultDefaultMessagesSupplier(this) }

@@ -125,7 +125,7 @@ class EventDispatcher internal constructor(
     }
 
     @JvmName("dispatchEvent")
-    final fun dispatchEventJava(event: Any) = runBlocking { dispatchEvent(event) }
+    fun dispatchEventJava(event: Any) = runBlocking { dispatchEvent(event) }
 
     fun dispatchEventAsync(event: Any): List<Deferred<Unit>> {
         // Try not to switch context on non-handled events
