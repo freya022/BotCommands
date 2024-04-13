@@ -134,12 +134,16 @@ internal class BContextImpl internal constructor(override val config: BConfig, v
 
             jda.retrieveApplicationInfo()
                 .map { applicationInfo -> applicationInfo.owner }
-                .flatMap { user -> user.openPrivateChannel() }
-                .flatMap { channel -> channel.sendMessage(content) }
-                .queue(
-                    null,
-                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn { "Could not send exception DM to owner" } }
-                )
+                .queue { appOwner ->
+                    appOwner.openPrivateChannel()
+                        .flatMap { channel -> channel.sendMessage(content) }
+                        .queue(
+                            null,
+                            ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) {
+                                logger.warn { "Could not send exception DM to owner '${appOwner.effectiveName}' (${appOwner.id})" }
+                            }
+                        )
+                }
         }
     }
 
