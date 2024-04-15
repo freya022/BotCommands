@@ -10,12 +10,15 @@ import io.github.freya022.botcommands.internal.core.service.provider.ServiceProv
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
-internal class DefaultServiceBootstrap internal constructor(config: BConfig) : ServiceBootstrap {
-    internal val serviceConfig: BServiceConfig = config.serviceConfig
+internal class DefaultBotCommandsBootstrap internal constructor(
+    config: BConfig
+) : AbstractBotCommandsBootstrap(config) {
+    internal val serviceConfig: BServiceConfig get() = config.serviceConfig
 
     private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(serviceConfig)
     override val stagingClassAnnotations: StagingClassAnnotations
-        get() = _stagingClassAnnotations ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
+        get() = _stagingClassAnnotations
+            ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
     internal val serviceProviders = ServiceProviders()
     override val serviceContainer = DefaultServiceContainerImpl(this)
     internal val customConditionsContainer = CustomConditionsContainer()
@@ -23,9 +26,12 @@ internal class DefaultServiceBootstrap internal constructor(config: BConfig) : S
         setOf(ConditionalObjectChecker, serviceProviders, customConditionsContainer, stagingClassAnnotations.processor)
 
     init {
+        init()
+    }
+
+    override suspend fun injectServices() {
         serviceContainer.putServiceWithTypeAlias<ServiceBootstrap>(this)
 
-        // In the spring bootstrapper, it would be replaced a service loaded by spring
         serviceContainer.putServiceWithTypeAlias<ServiceContainer>(serviceContainer)
         serviceContainer.putService(serviceProviders)
 
@@ -37,6 +43,8 @@ internal class DefaultServiceBootstrap internal constructor(config: BConfig) : S
         serviceContainer.putServiceAs<BCoroutineScopesConfig>(config.coroutineScopesConfig)
         serviceContainer.putServiceAs<BDebugConfig>(config.debugConfig)
         serviceContainer.putServiceAs<BTextConfig>(config.textConfig)
+
+        serviceContainer.loadServices()
     }
 
     override fun clearStagingAnnotationsMap() {
