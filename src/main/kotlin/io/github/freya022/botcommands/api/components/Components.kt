@@ -12,16 +12,10 @@ import io.github.freya022.botcommands.api.components.builder.select.ephemeral.Ep
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
-import io.github.freya022.botcommands.api.core.config.BComponentsConfig
-import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import io.github.freya022.botcommands.internal.utils.reference
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
@@ -68,7 +62,6 @@ import java.time.Duration as JavaDuration
  */
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 @BService
-@ConditionalService(Components.InstantiationChecker::class)
 @RequiresComponents
 class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     // -------------------- Persistent groups --------------------
@@ -238,16 +231,6 @@ class Components internal constructor(componentController: ComponentController) 
         @JvmStatic
         fun setDefaultTimeout(defaultTimeout: JavaDuration) {
             this.defaultTimeout = defaultTimeout.toKotlinDuration()
-        }
-    }
-
-    internal object InstantiationChecker : ConditionalServiceChecker {
-        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
-            if (serviceContainer.getService<BComponentsConfig>().useComponents) {
-                return null
-            }
-
-            return "Components needs to be enabled, see ${BComponentsConfig::useComponents.reference}"
         }
     }
 }

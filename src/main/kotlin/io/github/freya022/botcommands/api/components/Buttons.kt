@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.components.builder.button.ButtonFactory
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -151,7 +150,6 @@ import javax.annotation.CheckReturnValue
  * @see SelectMenus
  */
 @BService
-@ConditionalService(Components.InstantiationChecker::class)
 @RequiresComponents
 class Buttons internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     /**
