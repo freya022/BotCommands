@@ -3,9 +3,7 @@ package io.github.freya022.botcommands.api.core.annotations
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
-import io.github.freya022.botcommands.internal.core.BotCommandsInitializer
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 /**
@@ -45,7 +43,6 @@ import org.springframework.stereotype.Component
  * If you have a better solution, please suggest it.
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
-@Import(BotCommandsInitializer::class)
 @Retention(AnnotationRetention.RUNTIME)
 @ComponentScan(
     basePackages = [
