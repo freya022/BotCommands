@@ -9,9 +9,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata
  * Makes a service disabled when using Spring
  */
 @Conditional(DefaultInjectionCondition::class)
-annotation class RequiresDefaultInjection
+internal annotation class RequiresDefaultInjection
 
-class DefaultInjectionCondition : Condition {
+internal class DefaultInjectionCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         return false
     }
