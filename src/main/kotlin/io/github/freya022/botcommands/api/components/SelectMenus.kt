@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.components
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.select.EntitySelectMenuFactory
 import io.github.freya022.botcommands.api.components.builder.select.StringSelectMenuFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService

@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.api.core.db;
 
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame;
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig;
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy;
-import io.github.freya022.botcommands.internal.core.db.RequiresDatabase;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

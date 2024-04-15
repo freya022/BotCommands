@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button;
 import io.github.freya022.botcommands.api.components.Buttons;
 import io.github.freya022.botcommands.api.components.Components;
-import io.github.freya022.botcommands.api.components.RequiresComponents;
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;

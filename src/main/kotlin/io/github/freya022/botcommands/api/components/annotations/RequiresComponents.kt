@@ -1,6 +1,6 @@
-package io.github.freya022.botcommands.api.components
+package io.github.freya022.botcommands.api.components.annotations
 
-import io.github.freya022.botcommands.internal.core.db.RequiresDatabase
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 
 //TODO when BC supports reading inherited annotations,

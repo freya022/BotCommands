@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core.db
+package io.github.freya022.botcommands.api.core.db.annotations
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 

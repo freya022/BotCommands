@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder

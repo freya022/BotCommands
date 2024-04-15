@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase;
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
-import io.github.freya022.botcommands.internal.core.db.RequiresDatabase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.components.repositories
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder

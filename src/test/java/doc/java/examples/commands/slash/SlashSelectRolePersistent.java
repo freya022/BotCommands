@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import io.github.freya022.botcommands.api.components.EntitySelectMenu;
-import io.github.freya022.botcommands.api.components.RequiresComponents;
 import io.github.freya022.botcommands.api.components.SelectMenus;
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener;
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.entities.Role;

@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent

@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLim
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes

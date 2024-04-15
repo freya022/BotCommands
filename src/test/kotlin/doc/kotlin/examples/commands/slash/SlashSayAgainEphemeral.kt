@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.utils.after
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import net.dv8tion.jda.api.interactions.components.buttons.Button

@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 
 @Command
 @RequiresComponents
