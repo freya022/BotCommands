@@ -21,16 +21,30 @@ interface BConfig {
     /**
      * User IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
      * and having [hidden commands][Hidden] shown.
+     *
+     * Spring property: `botcommands.core.ownerIds`
      */
     val ownerIds: Set<Long>
 
+    /**
+     * The packages the framework will scan through for services, commands, handlers...
+     *
+     * Spring property: `botcommands.core.packages`
+     */
     val packages: Set<String>
+    /**
+     * Additional classes the framework will scan through for services, commands, handlers...
+     *
+     * Spring property: `botcommands.core.classes`
+     */
     val classes: Set<Class<*>>
 
     /**
      * Disables sending exceptions to the bot owners
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.core.disableExceptionsInDMs`
      */
     val disableExceptionsInDMs: Boolean
     /**
@@ -39,11 +53,15 @@ interface BConfig {
      * This could be useful when testing methods that use autocomplete caching while using hotswap.
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.core.disableAutocompleteCache`
      */
     val disableAutocompleteCache: Boolean
 
     /**
      * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
+     *
+     * Spring property: `botcommands.core.ignoredIntents`
      *
      * @see BEventListener.ignoreIntents
      */
@@ -52,7 +70,9 @@ interface BConfig {
     /**
      * Events for which the [event waiter][EventWaiter] must ignore intent requirements.
      *
-     * Either way, the event would still be being listened to, but a warning would have been logged.
+     * If not ignored, the event would still be being listened to, but a warning would have been logged.
+     *
+     * Spring property: `botcommands.core.ignoredEventIntents`
      */
     val ignoredEventIntents: Set<Class<out Event>>
 

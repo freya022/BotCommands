@@ -17,6 +17,8 @@ interface BComponentsConfig {
      *
      * Default: `false`
      *
+     * Spring property: `botcommands.components.enable`
+     *
      * @see ConnectionSupplier
      */
     val useComponents: Boolean

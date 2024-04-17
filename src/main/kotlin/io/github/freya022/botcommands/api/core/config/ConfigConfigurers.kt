@@ -4,19 +4,42 @@ sealed interface BConfigurer<T : Any> {
     fun configure(builder: T)
 }
 
-//TODO default implementations to read from application.properties
+/**
+ * Configurer for [BConfig].
+ */
 interface BConfigConfigurer : BConfigurer<BConfigBuilder>
 
+/**
+ * Configurer for [BConfig].
+ */
 interface BDebugConfigConfigurer : BConfigurer<BDebugConfigBuilder>
 
+/**
+ * Configurer for [BServiceConfig].
+ */
 interface BServiceConfigConfigurer : BConfigurer<BServiceConfigBuilder>
 
+/**
+ * Configurer for [BDatabaseConfig].
+ */
 interface BDatabaseConfigConfigurer : BConfigurer<BDatabaseConfigBuilder>
 
+/**
+ * Configurer for [BTextConfig].
+ */
 interface BTextConfigConfigurer : BConfigurer<BTextConfigBuilder>
 
+/**
+ * Configurer for [BApplicationConfig].
+ */
 interface BApplicationConfigConfigurer : BConfigurer<BApplicationConfigBuilder>
 
+/**
+ * Configurer for [BComponentsConfig].
+ */
 interface BComponentsConfigConfigurer : BConfigurer<BComponentsConfigBuilder>
 
+/**
+ * Configurer for [BCoroutineScopesConfig].
+ */
 interface BCoroutineScopesConfigConfigurer : BConfigurer<BCoroutineScopesConfigBuilder>

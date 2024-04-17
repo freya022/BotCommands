@@ -2,7 +2,10 @@ package io.github.freya022.botcommands.api.core.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.JDAService
+import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 
@@ -41,6 +44,20 @@ import org.springframework.stereotype.Component
  * ```
  *
  * If you have a better solution, please suggest it.
+ *
+ * ### Configuration
+ * Most of it can be done using Spring properties, you can see the property names on each configuration.
+ *
+ * If you want to do it using code, or need to configure something not available using properties,
+ * you can use the configurer interfaces:
+ * - [BConfigConfigurer] ([BConfig])
+ * - [BDebugConfigConfigurer] ([BDebugConfig])
+ * - [BServiceConfigConfigurer] ([BServiceConfig])
+ * - [BDatabaseConfigConfigurer] ([BDatabaseConfig])
+ * - [BTextConfigConfigurer] ([BTextConfig])
+ * - [BApplicationConfigConfigurer] ([BApplicationConfig])
+ * - [BComponentsConfigConfigurer] ([BComponentsConfig])
+ * - [BCoroutineScopesConfigConfigurer] ([BCoroutineScopesConfigConfigurer])
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -50,4 +67,6 @@ import org.springframework.stereotype.Component
         "io.github.freya022.botcommands.internal",
     ]
 )
+@ConfigurationPropertiesScan(basePackages = ["io.github.freya022.botcommands.internal.core.config"])
+@EnableAutoConfiguration
 annotation class EnableBotCommands

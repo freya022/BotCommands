@@ -11,8 +11,16 @@ interface BTextConfig {
      * Whether the bot should look for commands when it is mentioned.
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.text.usePingAsPrefix`
      */
     val usePingAsPrefix: Boolean
+
+    /**
+     * Prefixes the bot should listen to.
+     *
+     * Spring property: `botcommands.text.prefixes`
+     */
     val prefixes: List<String>
 
     /**
@@ -21,6 +29,8 @@ interface BTextConfig {
      * This still lets you define your own help command with [IHelpCommand].
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.text.isHelpDisabled`
      */
     val isHelpDisabled: Boolean
 
@@ -28,6 +38,8 @@ interface BTextConfig {
      * Whether command suggestions will be shown when a user tries to use an invalid command.
      *
      * Default: `true`
+     *
+     * Spring property: `botcommands.text.showSuggestions`
      */
     val showSuggestions: Boolean
 }

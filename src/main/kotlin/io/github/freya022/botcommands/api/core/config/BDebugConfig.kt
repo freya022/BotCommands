@@ -9,6 +9,8 @@ interface BDebugConfig {
      * Whether the differences between old and new application commands data should be logged
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.debug.enableApplicationDiffsLogs`
      */
     val enableApplicationDiffsLogs: Boolean
 
@@ -16,6 +18,8 @@ interface BDebugConfig {
      * Whether the missing localization strings when creation the command objects should be logged
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.debug.enabledMissingLocalizationLogs`
      */
     val enabledMissingLocalizationLogs: Boolean
 }
