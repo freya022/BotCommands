@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
@@ -20,8 +21,8 @@ import kotlin.reflect.full.findAnnotation
 
 private val logger = KotlinLogging.logger { }
 
-@InterfacedService(acceptMultiple = false)
-internal interface InstantiableServices {
+// Don't use InterfacedService, having it sealed + ServiceType is enough, saves unnecessary checks and logs
+internal sealed interface InstantiableServices {
     val availablePrimaryTypes: Set<KClass<*>>
 
     val allAvailableTypes: Set<KClass<*>>
@@ -54,6 +55,7 @@ internal class SpringInstantiableServices internal constructor(
 }
 
 @BService(priority = Int.MAX_VALUE)
+@ServiceType(InstantiableServices::class)
 @RequiresDefaultInjection
 internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: DefaultServiceContainerImpl) : InstantiableServices {
     internal val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
