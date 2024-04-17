@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.JDAInfo
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
-internal abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : ServiceBootstrap {
+internal abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : BotCommandsBootstrap {
     protected val logger = objectLogger()
 
     internal fun init() {

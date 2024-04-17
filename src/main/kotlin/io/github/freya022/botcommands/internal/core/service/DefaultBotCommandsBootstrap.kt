@@ -30,7 +30,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
     }
 
     override suspend fun injectServices() {
-        serviceContainer.putServiceWithTypeAlias<ServiceBootstrap>(this)
+        serviceContainer.putServiceWithTypeAlias<BotCommandsBootstrap>(this)
 
         serviceContainer.putServiceWithTypeAlias<ServiceContainer>(serviceContainer)
         serviceContainer.putService(serviceProviders)

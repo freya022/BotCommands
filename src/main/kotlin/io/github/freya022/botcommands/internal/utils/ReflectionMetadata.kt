@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
-import io.github.freya022.botcommands.internal.core.service.ServiceBootstrap
+import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -49,7 +49,7 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(config: BConfig, serviceBootstrap: ServiceBootstrap) {
+    internal fun runScan(config: BConfig, bootstrap: BotCommandsBootstrap) {
         val packages = config.packages
         val classes = config.classes
         require(packages.isNotEmpty() || classes.isNotEmpty()) {
@@ -62,7 +62,7 @@ internal object ReflectionMetadata {
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
         val classGraphProcessors = config.classGraphProcessors +
-                serviceBootstrap.classGraphProcessors +
+                bootstrap.classGraphProcessors +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
 
         ClassGraph()
