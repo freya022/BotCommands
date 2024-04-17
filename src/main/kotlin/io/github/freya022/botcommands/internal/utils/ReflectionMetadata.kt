@@ -51,76 +51,82 @@ internal object ReflectionMetadata {
 
     internal fun runScan(config: BConfig, serviceBootstrap: ServiceBootstrap) {
         val packages = config.packages
-        //This is a requirement for ClassGraph to work correctly
-        if (packages.isEmpty() && config.classes.isEmpty()) {
+        val classes = config.classes
+        require(packages.isNotEmpty() || classes.isNotEmpty()) {
             throwUser("You must specify at least 1 package or class to scan from")
         }
 
-        logger.debug { "Scanning packages: ${config.packages.joinToString()}" }
-        if (config.classes.isNotEmpty()) {
-            logger.debug { "Scanning additional classes: ${config.classes.joinToString { it.simpleNestedName }}" }
-        }
+        if (packages.isNotEmpty())
+            logger.debug { "Scanning packages: ${packages.joinToString()}" }
+        if (classes.isNotEmpty())
+            logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
-        val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
-            ClassGraph()
-                .acceptPackages("io.github.freya022.botcommands.api", "io.github.freya022.botcommands.internal")
-                .enableMethodInfo()
-                .enableAnnotationInfo()
-                .disableModuleScanning()
-                .disableNestedJarScanning()
-                .scan()
-                .also { scanResult -> // Don't keep test classes
-                    add(scanResult to scanResult.allClasses.filter {
-                        return@filter it.isServiceOrHasFactories(config)
-                                || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
-                                || it.hasAnnotation(Condition::class.java)
-                    })
-                }
-
-            ClassGraph()
-                .acceptPackages(*config.packages.toTypedArray())
-                .acceptClasses(*config.classes.map { it.name }.toTypedArray())
-                .enableMethodInfo()
-                .enableAnnotationInfo()
-                .disableModuleScanning()
-                .disableNestedJarScanning()
-                .scan()
-                .also { scanResult -> //No filtering is done as to allow checkers to log warnings/throw in case a service annotation is missing
-                    add(scanResult to scanResult.allClasses)
-                }
-        }
-
-        val lowercaseInnerClassRegex = Regex("\\$[a-z]")
         val classGraphProcessors = config.classGraphProcessors +
                 serviceBootstrap.classGraphProcessors +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
-        //TODO refactor this so we don't need to do two scans using spring
 
-        // Deduplicate classes from the two scans
-        // They are duplicated due to how we detect spring-scanned classes
-        scanned.flatMapTo(hashSetOf()) { (_, classes) -> classes }
-                .filter {
-                    it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
-                        //Only keep classes, not others such as file facades
-                        val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
-                        if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                            it.checkFacadeFactories(config)
-                            return@filter false
-                        } else if (kind != KotlinClassHeader.Kind.CLASS) {
-                            return@filter false
+        ClassGraph()
+            .acceptPackages(
+                "io.github.freya022.botcommands.api",
+                "io.github.freya022.botcommands.internal",
+                *packages.toTypedArray()
+            )
+            .acceptClasses(*classes.map { it.name }.toTypedArray())
+            .enableClassInfo()
+            .enableMethodInfo()
+            .enableAnnotationInfo()
+            .disableModuleScanning()
+            .disableNestedJarScanning()
+            .scan()
+            .use { scan ->
+                scan.allClasses
+                    .filterLibraryClasses(config)
+                    .filterClasses(config)
+                    .also { classes ->
+                        val userClasses = classes.filterNot { it.isFromLib() }
+                        if (logger.isTraceEnabled()) {
+                            logger.trace { "Found ${userClasses.size} user classes: ${userClasses.joinToString { it.simpleNestedName }}" }
+                        } else {
+                            logger.debug { "Found ${userClasses.size} user classes" }
                         }
                     }
+                    .processClasses(config, classGraphProcessors)
 
-                    if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
-                }
-                .processClasses(config, classGraphProcessors)
-                .also {
-                    classGraphProcessors.forEach { it.postProcess() }
-                    scanned.forEach { (scanResult, _) -> scanResult.close() }
+                classGraphProcessors.forEach(ClassGraphProcessor::postProcess)
+            }
 
-                    scannedParams = true
-                }
+        scannedParams = true
+    }
+
+    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> = filter {
+        // Only keep api/internal classes which are services, or contain service factories,
+        // or their outer class contains one,
+        // or they have a Condition
+        if (it.isFromLib())
+            return@filter it.isServiceOrHasFactories(config)
+                    || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
+                    || it.hasAnnotation(Condition::class.java)
+        return@filter true
+    }
+
+    private fun ClassInfo.isFromLib() =
+        packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
+
+    private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
+    private fun List<ClassInfo>.filterClasses(config: BConfig): List<ClassInfo> = filter {
+        it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
+            //Only keep classes, not others such as file facades
+            val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
+            if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
+                it.checkFacadeFactories(config)
+                return@filter false
+            } else if (kind != KotlinClassHeader.Kind.CLASS) {
+                return@filter false
+            }
+        }
+
+        if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
+        return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
     }
 
     private fun ClassInfo.checkFacadeFactories(config: BConfig) {
