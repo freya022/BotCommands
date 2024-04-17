@@ -18,7 +18,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
     private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(serviceConfig)
     override val stagingClassAnnotations: StagingClassAnnotations
         get() = _stagingClassAnnotations
-            ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been clearer")
+            ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been cleared")
     internal val serviceProviders = ServiceProviders()
     override val serviceContainer = DefaultServiceContainerImpl(this)
     internal val customConditionsContainer = CustomConditionsContainer()
