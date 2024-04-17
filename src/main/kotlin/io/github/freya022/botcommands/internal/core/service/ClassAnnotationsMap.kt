@@ -26,16 +26,16 @@ internal inline fun <reified A : Annotation> ClassAnnotationsMap.get(): Set<KCla
 @ServiceType(ClassAnnotationsMap::class)
 @RequiresDefaultInjection
 internal class DefaultClassAnnotationsMap(
-    serviceBootstrap: ServiceBootstrap,
+    bootstrap: DefaultBotCommandsBootstrap,
     instantiableServices: InstantiableServices
 ) : ClassAnnotationsMap {
-    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = serviceBootstrap.stagingClassAnnotations
+    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = bootstrap.stagingClassAnnotations
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
             serviceTypes.intersect(instantiableServices.allAvailableTypes)
         }
-        .also { serviceBootstrap.clearStagingAnnotationsMap() }
+        .also { bootstrap.clearStagingAnnotationsMap() }
 
     override fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>? = instantiableAnnotatedClasses[clazz]
 }

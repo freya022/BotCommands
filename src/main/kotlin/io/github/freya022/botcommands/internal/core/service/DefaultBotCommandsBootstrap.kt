@@ -16,7 +16,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
     internal val serviceConfig: BServiceConfig get() = config.serviceConfig
 
     private var _stagingClassAnnotations: StagingClassAnnotations? = StagingClassAnnotations(serviceConfig)
-    override val stagingClassAnnotations: StagingClassAnnotations
+    internal val stagingClassAnnotations: StagingClassAnnotations
         get() = _stagingClassAnnotations
             ?: throwInternal("Cannot use ${classRef<StagingClassAnnotations>()} after it has been cleared")
     internal val serviceProviders = ServiceProviders()
@@ -47,7 +47,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         serviceContainer.loadServices()
     }
 
-    override fun clearStagingAnnotationsMap() {
+    internal fun clearStagingAnnotationsMap() {
         _stagingClassAnnotations = null
     }
 }
