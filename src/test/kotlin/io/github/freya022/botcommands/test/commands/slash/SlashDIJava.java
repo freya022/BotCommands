@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase;
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.internal.core.ReadyListener;
-import io.github.freya022.botcommands.internal.core.service.RequiresDefaultInjection;
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection;
 import io.github.freya022.botcommands.test.services.INamedService;
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService;
 import kotlin.Lazy;

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
