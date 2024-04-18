@@ -31,6 +31,8 @@ You then simply put a parameter in your constructor/method to receive the reques
 
 `@BService`, `@Command` and `@Resolver` are the annotations you will need the most.
 
+Spring IoC is also supported.
+
 ### Services and factories
 `@BService` can be used to declare classes as services, or, when used on a method, serves as a factory for the return type.<br>
 As always, if they are on your search path, then they will be instantiated when building the framework, 
