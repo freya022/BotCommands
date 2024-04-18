@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.internal.utils.typeOfAtOrNullOnStar
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSupertypes
 import kotlin.reflect.jvm.jvmErasure
@@ -55,9 +56,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         tasks += task@{
             if (missingResolverAnnotation) {
-                // Skip if a factory references the resolver
-                if (kClass.java in ignoredClasses) return@task
-                if (kClass.java.allSuperclasses.any { it in ignoredClasses }) return@task
+                // Skip if a factory references the resolver or one of its subtypes
+                if (ignoredClasses.any { it.isAssignableFrom(kClass.java) }) return@task
 
                 errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<Resolver>()}"
             } else if (missingResolverSuperClass) {
@@ -89,15 +89,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         // Do not care about resolvers returned by factories given by service factories
         if (isReturnTypeResolverFactory) {
-            // Ignore if the factory has no return type (i.e., generic is a star projection)
-            // example: ResolverContainer#getResolverFactoryOrNull
-            method.kotlinFunction!!.returnType
-                .typeOfAtOrNullOnStar(0, ParameterResolverFactory::class)
-                ?.jvmErasure
-                ?.let { factoryOutputType ->
-                    logger.trace { "Skipping checks of ${factoryOutputType.jvmName} as it is referenced by ${methodInfo.shortSignature}" }
-                    ignoredClasses += factoryOutputType.java
-                }
+            addFactoryReturnTypeAsIgnored(method, methodInfo)
         }
 
         val isResolverAnnotated = methodInfo.hasAnnotation(Resolver::class.java)
@@ -109,9 +101,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
 
         tasks += task@{
             if (missingResolverAnnotation) {
-                // Skip if a factory references the resolver
-                if (method.returnType in ignoredClasses) return@task
-                if (method.returnType.allSuperclasses.any { it in ignoredClasses }) return@task
+                // Skip if a factory references the resolver or one of its subtypes
+                if (ignoredClasses.any { it.isAssignableFrom(method.returnType) }) return@task
 
                 errorMessages += "Resolver ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<Resolver>()}"
             } else if (missingResolverSuperClass) {
@@ -122,6 +113,33 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*>>()}"
             }
         }
+    }
+
+    private fun addFactoryReturnTypeAsIgnored(method: Method, methodInfo: MethodInfo) {
+        // Fast path if the return type is ParameterResolverFactory,
+        // though it could have a wildcard instead.
+        if (method.returnType == ParameterResolverFactory::class.java) {
+            (method.genericReturnType as? ParameterizedType)?.let { returnType ->
+                val factoryOutputType = returnType.actualTypeArguments[0]
+                if (factoryOutputType is Class<*>) {
+                    logger.trace { "Skipping checks of ${factoryOutputType.name} as it is referenced by ${methodInfo.shortSignature}" }
+                    ignoredClasses += factoryOutputType
+                }
+            }
+            // The return is here as the factory output type could be a wildcard
+            return
+        }
+
+        // Slow path for subclasses
+        method.kotlinFunction!!.returnType
+            // Ignore if the factory has no return type (i.e., generic is a star projection)
+            // example: ResolverContainer#getResolverFactoryOrNull
+            .typeOfAtOrNullOnStar(0, ParameterResolverFactory::class)
+            ?.jvmErasure
+            ?.let { factoryOutputType ->
+                logger.trace { "Skipping checks of ${factoryOutputType.jvmName} as it is referenced by ${methodInfo.shortSignature}" }
+                ignoredClasses += factoryOutputType.java
+            }
     }
 
     override fun postProcess(context: BContext) {
