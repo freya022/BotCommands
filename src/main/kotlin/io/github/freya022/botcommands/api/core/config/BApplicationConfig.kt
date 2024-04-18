@@ -72,10 +72,11 @@ interface BApplicationConfig {
      * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
      * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
      *
+     * Spring property: `botcommands.application.localizations` ;
+     * Make sure to use quotes on the locales, uses DiscordLocale.
+     *
      * @see DefaultLocalizationMapProvider
      * @see DefaultJsonLocalizationMapReader
-     *
-     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      */
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
