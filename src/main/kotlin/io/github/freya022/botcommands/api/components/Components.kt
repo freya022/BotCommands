@@ -57,6 +57,7 @@ import java.time.Duration as JavaDuration
  * **Note:** Component groups cannot contain components with timeouts,
  * you will need to [disable the timeout on the components][ITimeoutableComponent.noTimeout].
  *
+ * @see RequiresComponents @RequiresComponents
  * @see Buttons
  * @see SelectMenus
  */

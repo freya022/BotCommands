@@ -54,6 +54,7 @@ import java.sql.SQLException;
  * you must specify the column indexes/names when creating your statement,
  * and read them back from {@link SuspendingPreparedStatement#getGeneratedKeys()}.
  *
+ * @see RequiresDatabase @RequiresDatabase
  * @see Database
  * @see ParametrizedQueryFactory
  */
