@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-@ConfigurationProperties(prefix = "botcommands.core")
+@ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
 internal class BotCommandsCoreConfiguration(
     override val ownerIds: Set<Long> = emptySet(),
     override val packages: Set<String> = emptySet(),
@@ -46,7 +46,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     ignoredEventIntents += configuration.ignoredEventIntents
 }
 
-@ConfigurationProperties(prefix = "botcommands.debug")
+@ConfigurationProperties(prefix = "botcommands.debug", ignoreUnknownFields = false)
 internal class BotCommandsDebugConfiguration(
     override val enableApplicationDiffsLogs: Boolean = false,
     override val enabledMissingLocalizationLogs: Boolean = false
@@ -57,7 +57,7 @@ internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConf
     enabledMissingLocalizationLogs = configuration.enabledMissingLocalizationLogs
 }
 
-@ConfigurationProperties(prefix = "botcommands.service")
+@ConfigurationProperties(prefix = "botcommands.service", ignoreUnknownFields = false)
 internal class BotCommandsServiceConfiguration : BServiceConfig {
     override val serviceAnnotations: Set<KClass<out Annotation>> get() = unusable()
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> get() = unusable()
@@ -67,7 +67,7 @@ internal fun BServiceConfigBuilder.applyConfig(configuration: BotCommandsService
 
 }
 
-@ConfigurationProperties(prefix = "botcommands.database")
+@ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
 internal class BotCommandsDatabaseConfiguration(
     val enable: Boolean = false,
     override val dumpLongTransactions: Boolean = false,
@@ -86,7 +86,7 @@ internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDataba
     queryLogThreshold = configuration.queryLogThreshold
 }
 
-@ConfigurationProperties(prefix = "botcommands.text")
+@ConfigurationProperties(prefix = "botcommands.text", ignoreUnknownFields = false)
 internal class BotCommandsTextConfiguration(
     override val usePingAsPrefix: Boolean = false,
     override val prefixes: List<String> = emptyList(),
@@ -102,7 +102,7 @@ internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfig
     showSuggestions = configuration.showSuggestions
 }
 
-@ConfigurationProperties(prefix = "botcommands.application")
+@ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = false)
 internal class BotCommandsApplicationConfiguration(
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
@@ -125,7 +125,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     configuration.baseNameToDiscordLocalesMap.forEach(::addLocalizations)
 }
 
-@ConfigurationProperties(prefix = "botcommands.components")
+@ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
 internal class BotCommandsComponentsConfiguration(
     val enable: Boolean = false
 ) : BComponentsConfig {
