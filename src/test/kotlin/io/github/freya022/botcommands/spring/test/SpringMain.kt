@@ -2,10 +2,12 @@ package io.github.freya022.botcommands.spring.test
 
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands
+import io.github.freya022.botcommands.test.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import java.lang.management.ManagementFactory
+import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
 
 @EnableBotCommands
@@ -32,6 +34,10 @@ fun main(args: Array<String>) {
     } else {
         DecoroutinatorRuntime.load()
     }
+
+    // Set the configuration file to use, avoids having to put the file in project root
+    // https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-external-config.html#boot-features-external-config-profile-specific-properties
+    System.setProperty("spring.config.location", Environment.folder.resolve("application-test.properties").absolutePathString())
 
     try {
         runApplication<SpringMain>(*args)
