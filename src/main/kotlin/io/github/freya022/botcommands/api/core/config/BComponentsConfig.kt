@@ -17,7 +17,7 @@ interface BComponentsConfig {
      *
      * Default: `false`
      *
-     * Spring property: `botcommands.components.enable`
+     * Spring property: `botcommands.components.enable` ; Spring property takes over this config property.
      *
      * @see ConnectionSupplier
      */
