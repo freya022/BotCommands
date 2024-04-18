@@ -52,7 +52,6 @@ internal class SpringServiceContainer internal constructor(private val applicati
     }
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? {
-        //TODO check this only contain initialized beans, containsBean*Definition* seems to be for it
         if (applicationContext.containsBeanDefinition(name)) {
             return try {
                 applicationContext.getBeanProvider(requiredType.java, false).ifAvailable
