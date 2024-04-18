@@ -5,16 +5,13 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import kotlinx.coroutines.delay
 import kotlin.system.measureTimeMillis
 
 @Command
-@Dependencies(Components::class)
 @RequiresComponents
 class TextDelay : TextCommand() {
     @JDATextCommandVariation(path = ["delay"])

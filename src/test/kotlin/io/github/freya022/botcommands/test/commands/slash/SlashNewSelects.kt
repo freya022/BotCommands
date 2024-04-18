@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.StringSelectMenu
@@ -20,7 +19,6 @@ import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.UserSnowflake
@@ -31,7 +29,6 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
 @Command
-@Dependencies(Components::class)
 @RequiresComponents
 class SlashNewSelects(
     private val selectMenus: SelectMenus

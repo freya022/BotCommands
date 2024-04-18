@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQuery;
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies;
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +59,6 @@ import java.sql.SQLException;
  */
 @Lazy
 @BService
-@Dependencies(Database.class)
 @RequiresDatabase
 @IgnoreStackFrame // Due to TracedConnection
 public class BlockingDatabase {

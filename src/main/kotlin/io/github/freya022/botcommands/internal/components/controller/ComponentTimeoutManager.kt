@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
@@ -35,7 +34,6 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 @BService
-@Dependencies(ComponentRepository::class)
 @RequiresComponents
 internal class ComponentTimeoutManager(
     private val context: BContext,

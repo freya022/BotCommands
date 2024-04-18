@@ -9,12 +9,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
@@ -36,7 +34,6 @@ private val logger = KotlinLogging.logger { }
 
 @Command
 @RequiresComponents
-@Dependencies(Paginators::class, Components::class)
 class SlashPagination(private val paginators: Paginators, private val buttons: Buttons) : ApplicationCommand() {
     private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
 

@@ -124,7 +124,7 @@ Here is how you would create a slash command that sends a message in a specified
 
 ```kt
 @Command
-@Dependencies(Components::class) // Disables the command if components are not enabled
+@RequiresComponents // Disables the command if components are not enabled
 class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
@@ -153,7 +153,7 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 
 ```kt
 @Command
-@Dependencies(Components::class) // Disables the command if components are not enabled
+@RequiresComponents // Disables the command if components are not enabled
 class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider {
     suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
         event.reply_("Done!", ephemeral = true)
@@ -191,7 +191,7 @@ class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider 
 
 ```java
 @Command
-@Dependencies(Components.class) // Disables the command if components are not enabled
+@RequiresComponents // Disables the command if components are not enabled
 public class SlashSay extends ApplicationCommand {
     private final Buttons buttons;
   

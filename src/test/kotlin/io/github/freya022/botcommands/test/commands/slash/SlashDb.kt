@@ -11,12 +11,10 @@ import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.db.withLogger
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 @Command
-@Dependencies(Database::class)
 @RequiresDatabase
 class SlashDb(private val database: Database) : ApplicationCommand() {
     @JDASlashCommand(name = "db")

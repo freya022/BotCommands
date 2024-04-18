@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -47,7 +46,6 @@ import kotlin.reflect.full.callSuspendBy
 private val logger = KotlinLogging.logger { }
 
 @BService
-@Dependencies(Components::class)
 @RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,

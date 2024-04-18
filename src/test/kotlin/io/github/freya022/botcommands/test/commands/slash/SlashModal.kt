@@ -10,10 +10,8 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -28,7 +26,6 @@ private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @Command
-@Dependencies(Components::class)
 @RequiresComponents
 class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "modal_annotated")

@@ -8,17 +8,14 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 @Command
-@Dependencies(Components::class)
 @RequiresComponents
 class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
