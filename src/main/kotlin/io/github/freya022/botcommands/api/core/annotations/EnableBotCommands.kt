@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.internal.core.config.BotCommandsCoreConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.ComponentScan
@@ -67,6 +68,6 @@ import org.springframework.stereotype.Component
         "io.github.freya022.botcommands.internal",
     ]
 )
-@ConfigurationPropertiesScan(basePackages = ["io.github.freya022.botcommands.internal.core.config"])
+@ConfigurationPropertiesScan(basePackageClasses = [JDAConfiguration::class, BotCommandsCoreConfiguration::class])
 @EnableAutoConfiguration
 annotation class EnableBotCommands

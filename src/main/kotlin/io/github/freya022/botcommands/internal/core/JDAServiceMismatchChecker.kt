@@ -2,15 +2,11 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.config.JDAConfiguration
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.api.utils.cache.CacheFlag
-import org.springframework.core.env.Environment
-import org.springframework.core.env.getProperty
 import org.springframework.stereotype.Component
 
 private val logger = KotlinLogging.logger { }
@@ -51,11 +47,8 @@ internal object JDAServiceMismatchChecker {
 @Component
 internal class SpringJDAServiceMismatchChecker {
     @BEventListener
-    internal fun onJDA(event: InjectedJDAEvent, environment: Environment, jdaService: JDAService) {
-        val environmentIntents = environment
-            .getProperty<List<String>>("jda.intents")
-            ?.mapTo(enumSetOf<GatewayIntent>(), GatewayIntent::valueOf)
-            ?: JDAService.defaultIntents
+    internal fun onJDA(event: InjectedJDAEvent, jdaConfiguration: JDAConfiguration, jdaService: JDAService) {
+        val environmentIntents = jdaConfiguration.intents
         val jdaServiceIntents = jdaService.intents
         if (environmentIntents != jdaServiceIntents) {
             logger.warn {
@@ -68,10 +61,7 @@ internal class SpringJDAServiceMismatchChecker {
             }
         }
 
-        val environmentCacheFlags = environment
-            .getProperty<List<String>>("jda.cacheFlags")
-            ?.mapTo(enumSetOf(), CacheFlag::valueOf)
-            ?: enumSetOf()
+        val environmentCacheFlags = jdaConfiguration.cacheFlags
         val jdaServiceCacheFlags = jdaService.cacheFlags
         if (environmentCacheFlags != jdaServiceCacheFlags) {
             logger.warn {

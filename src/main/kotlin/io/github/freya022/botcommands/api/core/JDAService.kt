@@ -25,7 +25,8 @@ import java.util.*
  * cache flags, and member cache
  * - Starting JDA when every other service is ready
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
+ * ### Usage
+ * Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * Example:
@@ -45,6 +46,10 @@ import java.util.*
  *     }
  * }
  * ```
+ *
+ * #### Spring support
+ * Spring users must set their gateway intents and cache flags using properties,
+ * named `jda.intents` and `jda.cacheFlags` respectively.
  *
  * @see createJDA
  * @see InterfacedService @InterfacedService
