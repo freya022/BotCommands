@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.service.DefaultBotCommandsBootstrap
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
 
@@ -82,7 +81,7 @@ object BotCommands {
     private fun build(config: BConfig): BContext {
         val (context, duration) = measureTimedValue {
             val bootstrap = DefaultBotCommandsBootstrap(config)
-            runBlocking { bootstrap.runBootstrap() }
+            bootstrap.runBootstrap()
             bootstrap.serviceContainer.getService<BContext>()
         }
         logger.info { "Loaded BotCommands in ${duration.toString(DurationUnit.SECONDS, 3)}" }

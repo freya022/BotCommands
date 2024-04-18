@@ -15,5 +15,5 @@ internal class SpringBotCommandsBootstrap internal constructor(
         init()
     }
 
-    override suspend fun injectServices() {}
+    override fun injectServices() {}
 }

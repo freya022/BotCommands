@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.Version
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDAInfo
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
@@ -37,7 +38,7 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         }
     }
 
-    internal suspend fun runBootstrap() {
+    internal fun runBootstrap() = runBlocking {
         measure("Created services") {
             injectServices()
         }
@@ -59,7 +60,7 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         }
     }
 
-    protected abstract suspend fun injectServices()
+    protected abstract fun injectServices()
 
     private inline fun measure(desc: String, block: () -> Unit) {
         measureTime(block).also {
