@@ -94,7 +94,6 @@ internal class BotCommandsTextConfiguration(
     override val showSuggestions: Boolean = true
 ) : BTextConfig
 
-@JvmSynthetic
 internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
     usePingAsPrefix = configuration.usePingAsPrefix
     prefixes += configuration.prefixes

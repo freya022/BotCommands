@@ -14,10 +14,11 @@ private val spelParser = SpelExpressionParser()
 
 @Configuration
 internal open class ConfigurationConverters {
-    @Suppress("ObjectLiteralToLambda") // Breaks spring
     @Bean
     @ConfigurationPropertiesBinding
-    internal open fun mapToLocalizationMap() = object : Converter<RawLocalizationMap, ResolvedLocalizationMap> {
+    internal open fun localizationMapConverter() = LocalizationMapConverter
+
+    internal data object LocalizationMapConverter : Converter<RawLocalizationMap, ResolvedLocalizationMap> {
         override fun convert(it: RawLocalizationMap): ResolvedLocalizationMap {
             @Suppress("UNCHECKED_CAST")
             val map = spelParser.parseRaw(it).getValue(Map::class.java) as Map<String, List<String>>

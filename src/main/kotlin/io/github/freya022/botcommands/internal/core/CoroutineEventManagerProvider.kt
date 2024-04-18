@@ -8,11 +8,11 @@ import net.dv8tion.jda.api.hooks.IEventManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration
 @BService // Cannot be a BConfiguration as the function below needs an instance
+@Configuration
 internal open class CoroutineEventManagerProvider {
-    @BService
     @Bean
+    @BService
     @ServiceType(IEventManager::class)
     internal open fun coroutineEventManager(supplier: ICoroutineEventManagerSupplier): CoroutineEventManager =
         supplier.get()
