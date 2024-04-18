@@ -75,7 +75,7 @@ interface BApplicationConfig {
      * @see DefaultLocalizationMapProvider
      * @see DefaultJsonLocalizationMapReader
      *
-     * Spring property: `botcommands.application.baseNameToLocalesMap`
+     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      */
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
@@ -109,7 +109,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      *
      * See [DefaultLocalizationMapProvider] and [DefaultJsonLocalizationMapReader] for default implementation details
      *
-     * Spring property: `botcommands.application.baseNameToLocalesMap`
+     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      *
      * @param bundleName The name of the localization bundle
      * @param locales    The locales the localization bundle supports
@@ -136,7 +136,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      *
      * See [DefaultLocalizationMapProvider] and [DefaultJsonLocalizationMapReader] for default implementation details
      *
-     * Spring property: `botcommands.application.baseNameToLocalesMap`
+     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      *
      * @param bundleName The name of the localization bundle
      * @param locales    The locales the localization bundle supports

@@ -108,12 +108,12 @@ internal class BotCommandsApplicationConfiguration(
     override val testGuildIds: List<Long> = emptyList(),
     override val onlineAppCommandCheckEnabled: Boolean = false,
     override val forceGuildCommands: Boolean = false,
-    baseNameToLocalesMap: Map<String, List<DiscordLocale>> = emptyMap()
+    localizations: Map<String, List<DiscordLocale>> = emptyMap()
 ) : BApplicationConfig {
-    internal val baseNameToDiscordLocalesMap = baseNameToLocalesMap
+    internal val baseNameToDiscordLocalesMap = localizations
 
     override val baseNameToLocalesMap: Map<String, List<Locale>> =
-        baseNameToLocalesMap.mapValues { (_, locales) -> locales.map { it.toLocale() } }
+        localizations.mapValues { (_, locales) -> locales.map { it.toLocale() } }
 }
 
 @OptIn(DevConfig::class)
