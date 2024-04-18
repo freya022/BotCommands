@@ -67,6 +67,11 @@ while also easily being able to use services provided by the framework.
 ### Localization
 * Entirely localizable, from the command declaration to the bot responses
 
+### Dependency injection
+* Loads everything and passes objects automatically
+* Can create custom conditions to disable services/commands at startup
+* Can be replaced with Spring IoC
+
 ### Utilities
   * A PostgreSQL (and H2) database abstraction, with logged queries
   * An event waiter with (multiple) preconditions, timeouts and consumers for every completion state
