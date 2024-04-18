@@ -54,7 +54,7 @@ interface BDatabaseConfig {
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThreshold`
+     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
      */
     fun getQueryLogThreshold(): JavaDuration = queryLogThreshold.toJavaDuration()
 }
@@ -74,7 +74,7 @@ class BDatabaseConfigBuilder internal constructor() : BDatabaseConfig {
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThreshold`
+     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
      */
     fun setQueryLogThreshold(duration: JavaDuration) {
         this.queryLogThreshold = duration.toKotlinDuration()
