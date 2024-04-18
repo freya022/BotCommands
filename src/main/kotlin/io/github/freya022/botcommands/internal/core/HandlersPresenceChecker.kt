@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -30,7 +29,9 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (classInfo.isAbstract) return
+
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val isHandler = classInfo.hasAnnotation(Handler::class.java)
         val isHandlerOrCommand = isHandler || isCommand
@@ -49,7 +50,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess(context: BContext) {
+    override fun postProcess() {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
                 val refs = noDeclarationClasses.joinAsList()

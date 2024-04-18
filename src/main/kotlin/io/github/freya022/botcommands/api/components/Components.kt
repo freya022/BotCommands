@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
@@ -11,15 +12,10 @@ import io.github.freya022.botcommands.api.components.builder.select.ephemeral.Ep
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.config.BComponentsConfig
-import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import io.github.freya022.botcommands.internal.utils.reference
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
@@ -61,12 +57,13 @@ import java.time.Duration as JavaDuration
  * **Note:** Component groups cannot contain components with timeouts,
  * you will need to [disable the timeout on the components][ITimeoutableComponent.noTimeout].
  *
+ * @see RequiresComponents @RequiresComponents
  * @see Buttons
  * @see SelectMenus
  */
 @Suppress("MemberVisibilityCanBePrivate", "DEPRECATION")
 @BService
-@ConditionalService(Components.InstantiationChecker::class)
+@RequiresComponents
 class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     // -------------------- Persistent groups --------------------
 
@@ -235,16 +232,6 @@ class Components internal constructor(componentController: ComponentController) 
         @JvmStatic
         fun setDefaultTimeout(defaultTimeout: JavaDuration) {
             this.defaultTimeout = defaultTimeout.toKotlinDuration()
-        }
-    }
-
-    internal object InstantiationChecker : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
-            if (context.componentsConfig.useComponents) {
-                return null
-            }
-
-            return "Components needs to be enabled, see ${BComponentsConfig::useComponents.reference}"
         }
     }
 }

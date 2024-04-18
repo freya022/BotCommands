@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionRejecti
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
@@ -16,7 +17,6 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -29,7 +29,6 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentHandl
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.isRequired
@@ -47,7 +46,7 @@ import kotlin.reflect.full.callSuspendBy
 private val logger = KotlinLogging.logger { }
 
 @BService
-@Dependencies(Components::class, InternalDatabase::class)
+@RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,
     filters: List<ComponentInteractionFilter<Any>>,

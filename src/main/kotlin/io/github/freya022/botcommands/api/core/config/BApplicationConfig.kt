@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InjectedServi
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
+import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -16,11 +17,15 @@ interface BApplicationConfig {
      * If not empty, only these guilds will have their application commands updated.
      *
      * Existing commands won't be removed in other guilds, global commands will still be updated.
+     *
+     * Spring property: `botcommands.application.slashGuildIds`
      */
     val slashGuildIds: List<Long>
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
+     *
+     * Spring property: `botcommands.application.testGuildIds`
      *
      * @see Test @Test
      */
@@ -42,6 +47,8 @@ interface BApplicationConfig {
      * **Note**: This does not enable you to run two instances simultaneously.
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.application.onlineAppCommandCheckEnabled`
      */
     val onlineAppCommandCheckEnabled: Boolean
 
@@ -54,9 +61,23 @@ interface BApplicationConfig {
      * as you can return when manually declaring with the DSL
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.application.forceGuildCommands`
      */
     val forceGuildCommands: Boolean
 
+    /**
+     * Mappings between the base bundle name and the locales it supports.
+     *
+     * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
+     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     *
+     * Spring property: `botcommands.application.localizations` ;
+     * Make sure to use quotes on the locales, uses DiscordLocale.
+     *
+     * @see DefaultLocalizationMapProvider
+     * @see DefaultJsonLocalizationMapReader
+     */
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
 
@@ -82,14 +103,20 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * All the locales will be considered as pointing to a valid localization bundle,
      * logging a warning if it can't be found
      *
+     * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
+     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     *
      * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
-     * See [DefaultLocalizationMapProvider] for default implementation details
+     * See [DefaultLocalizationMapProvider] and [DefaultJsonLocalizationMapReader] for default implementation details
+     *
+     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      *
      * @param bundleName The name of the localization bundle
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
+     * @see DefaultJsonLocalizationMapReader
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
@@ -103,14 +130,20 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * All the locales will be considered as pointing to a valid localization bundle,
      * logging a warning if it can't be found
      *
+     * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
+     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     *
      * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
-     * See [DefaultLocalizationMapProvider] for default implementation details
+     * See [DefaultLocalizationMapProvider] and [DefaultJsonLocalizationMapReader] for default implementation details
+     *
+     * Spring property: `botcommands.application.localizations` ; Make sure to use quotes on the locales
      *
      * @param bundleName The name of the localization bundle
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
+     * @see DefaultJsonLocalizationMapReader
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, vararg locales: DiscordLocale) {

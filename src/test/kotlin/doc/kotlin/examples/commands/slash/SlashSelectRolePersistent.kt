@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.test.switches.TestLanguage
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
 import kotlin.random.Random
 
 @Command
+@RequiresComponents
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class SlashSelectRolePersistent : ApplicationCommand() {
     @TopLevelSlashCommandData

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -32,14 +31,13 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (isService) {
-            putServiceProvider(ClassServiceProvider.fromClass(kClass))
+            putServiceProvider(ClassServiceProvider(kClass))
         }
     }
 
     override fun processMethod(
-        context: BContext,
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,

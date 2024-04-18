@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.services
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.test.services.annotations.RequireProfile
 
 object ProfileChecker : CustomConditionChecker<RequireProfile> {
@@ -11,7 +11,7 @@ object ProfileChecker : CustomConditionChecker<RequireProfile> {
     override val annotationType = RequireProfile::class.java
 
     override fun checkServiceAvailability(
-        context: BContext,
+        serviceContainer: ServiceContainer,
         checkedClass: Class<*>,
         annotation: RequireProfile
     ): String? {

@@ -1,25 +1,66 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
 
 private val logger = KotlinLogging.logger { }
 
+// Don't use InterfacedService, having it sealed + ServiceType is enough, saves unnecessary checks and logs
+internal sealed interface InstantiableServices {
+    val availablePrimaryTypes: Set<KClass<*>>
+
+    val allAvailableTypes: Set<KClass<*>>
+}
+
+@Service
+internal class SpringInstantiableServices internal constructor(
+        config: BConfig,
+        applicationContext: ApplicationContext
+) : InstantiableServices {
+    override val availablePrimaryTypes: Set<KClass<*>>
+
+    override val allAvailableTypes: Set<KClass<*>>
+
+    init {
+        val allBeans = applicationContext.beanDefinitionNames
+            .asSequence()
+            .map { applicationContext.getType(it) }
+            .filter { type ->
+                if (config.packages.any { type.packageName.startsWith(it) })
+                    return@filter true
+                if (type in config.classes)
+                    return@filter true
+                return@filter false
+            }
+            .mapTo(hashSetOf()) { it.kotlin }
+        availablePrimaryTypes = allBeans
+        allAvailableTypes = allBeans + allBeans.flatMapTo(hashSetOf()) { it.allSuperclasses }
+    }
+}
+
 @BService(priority = Int.MAX_VALUE)
-internal class InstantiableServices internal constructor(private val context: BContextImpl) {
-    internal val availableProviders: Set<ServiceProvider> = context.serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
-        val serviceError = context.serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
+@ServiceType(InstantiableServices::class)
+@RequiresDefaultInjection
+internal class DefaultInstantiableServices internal constructor(serviceProviders: ServiceProviders, serviceContainer: DefaultServiceContainerImpl) : InstantiableServices {
+    internal val availableProviders: Set<ServiceProvider> = serviceProviders.allProviders.mapNotNullTo(sortedSetOf()) { provider ->
+        val serviceError = serviceContainer.canCreateService(provider) ?: return@mapNotNullTo provider
 
         if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
             if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
@@ -76,7 +117,9 @@ internal class InstantiableServices internal constructor(private val context: BC
         }
     }
 
-    internal val availableServices: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
+    override val availablePrimaryTypes: Set<KClass<*>> = availableProviders.mapTo(hashSetOf()) { it.primaryType }
+
+    override val allAvailableTypes: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
 
     init {
         class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {

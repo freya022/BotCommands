@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.components.repositories
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.Components
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
@@ -32,7 +31,7 @@ import net.dv8tion.jda.api.Permission
 import java.sql.Timestamp
 
 @BService
-@Dependencies(Components::class)
+@RequiresComponents
 internal class ComponentRepository(
     private val database: InternalDatabase,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,

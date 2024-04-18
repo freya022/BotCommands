@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceResult
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.JDA
@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KFunction
 
-@InjectedService
+@InterfacedService(acceptMultiple = false)
 interface BContext {
     enum class Status {
         PRE_LOAD,
@@ -51,9 +51,6 @@ interface BContext {
 
     //TODO docs
     fun <T : Any> getService(clazz: Class<T>): T = serviceContainer.getService(clazz)
-
-    //TODO docs
-    fun putService(service: Any): Unit = serviceContainer.putService(service)
     //endregion
 
     //TODO docs

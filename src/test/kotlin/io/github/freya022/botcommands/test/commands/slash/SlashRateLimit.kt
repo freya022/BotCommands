@@ -13,8 +13,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactor
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -26,7 +25,7 @@ private const val commandRateLimitGroup = "SlashRateLimit: my_rate_limit"
 private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
-@Dependencies(Components::class)
+@RequiresComponents
 class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(

@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.putServiceAs
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.StatusChangeEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.sharding.ShardManager
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -27,8 +28,8 @@ internal class ReadyListener {
                 connected = true
             }
 
-            context.putServiceAs(event.jda)
-            event.jda.shardManager?.let { context.putServiceAs(it) }
+            context.serviceContainer.putServiceAs<JDA>(event.jda)
+            event.jda.shardManager?.let { context.serviceContainer.putServiceAs<ShardManager>(it) }
 
             context.eventDispatcher.dispatchEvent(InjectedJDAEvent(context, event.jda))
         }

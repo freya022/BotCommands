@@ -1,11 +1,9 @@
 package io.github.freya022.botcommands.test
 
 import ch.qos.logback.classic.ClassicConstants
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
-import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.test.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -13,7 +11,8 @@ import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
+
+const val botName = "BC Test"
 
 object Main {
     private val logger by lazy { KotlinLogging.logger { } }
@@ -37,11 +36,7 @@ object Main {
                 DecoroutinatorRuntime.load()
             }
 
-            // Create a scope for our event manager
-            val scope = namedDefaultScope("BC Test Coroutine", 4)
-            val manager = CoroutineEventManager(scope, 1.minutes)
-
-            BotCommands.create(manager) {
+            BotCommands.create {
                 disableExceptionsInDMs = true
 
                 addSearchPath("io.github.freya022.botcommands.test")

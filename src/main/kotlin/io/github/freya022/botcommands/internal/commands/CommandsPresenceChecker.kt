@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.commands.application.provider.GuildApp
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
@@ -38,7 +37,9 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (classInfo.isAbstract) return
+
         val isCommand = classInfo.hasAnnotation(Command::class.java)
         val hasCommandProviderInterfaces = commandProviderInterfaces.any { classInfo.implementsInterface(it) }
         val commandDeclarations by lazy {
@@ -57,7 +58,7 @@ class CommandsPresenceChecker : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess(context: BContext) {
+    override fun postProcess() {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
                 val refs = noDeclarationClasses.joinAsList()

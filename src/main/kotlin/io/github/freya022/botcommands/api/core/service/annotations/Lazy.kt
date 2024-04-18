@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
+import org.springframework.context.annotation.Lazy as SpringLazy
+
 /**
  * Defines a service provider as being lazy.
  *
@@ -9,4 +11,5 @@ package io.github.freya022.botcommands.api.core.service.annotations
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@SpringLazy
 annotation class Lazy

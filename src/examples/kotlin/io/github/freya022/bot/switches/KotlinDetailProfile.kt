@@ -1,7 +1,7 @@
 package io.github.freya022.bot.switches
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 /**
@@ -12,7 +12,7 @@ object KotlinDetailProfileChecker : CustomConditionChecker<KotlinDetailProfile> 
 
     override val annotationType: Class<KotlinDetailProfile> = KotlinDetailProfile::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: KotlinDetailProfile): String? {
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: KotlinDetailProfile): String? {
         val serviceProfile = annotation.profile
         if (serviceProfile == currentProfile) {
             return null

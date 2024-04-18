@@ -7,11 +7,13 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 
 @Command
+@RequiresComponents
 class TextException : TextCommand() {
     @JDATextCommandVariation(path = ["exception"])
     suspend fun onTextException(event: BaseCommandEvent, buttons: Buttons, modals: Modals) {

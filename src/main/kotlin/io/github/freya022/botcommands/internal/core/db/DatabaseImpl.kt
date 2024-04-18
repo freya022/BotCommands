@@ -3,10 +3,11 @@ package io.github.freya022.botcommands.internal.core.db
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.Database
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.db.query.GenericParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.query.NonParametrizedQueryFactory
@@ -25,7 +26,8 @@ private const val latestVersion = "3.0.0-alpha.8" // Change in the latest migrat
 private val logger = KotlinLogging.logger { }
 
 @BService
-@Dependencies(ConnectionSupplier::class)
+@Primary
+@RequiresDatabase
 internal class DatabaseImpl internal constructor(
     override val connectionSupplier: ConnectionSupplier,
     override val databaseConfig: BDatabaseConfig,

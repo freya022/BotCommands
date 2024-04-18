@@ -1,15 +1,16 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
+import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.service.provider.ClassServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
 import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -56,12 +57,14 @@ internal class ServiceCreationStack {
 
 private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
-internal class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
+internal class DefaultServiceContainerImpl internal constructor(internal val serviceBootstrap: DefaultBotCommandsBootstrap) : DefaultServiceContainer {
+    internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
+    internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()
     private val serviceCreationStack = ServiceCreationStack()
 
     internal fun loadServices() {
-        getService<InstantiableServices>()
+        getService<DefaultInstantiableServices>()
             .availableProviders
             .filterNot { it.isLazy }
             // This should never throw as the providers are available and not lazy
@@ -69,11 +72,11 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
-        peekServiceOrNull(clazz, null, context.serviceProviders.findAllForType(clazz))
+        peekServiceOrNull(clazz, null, serviceProviders.findAllForType(clazz))
     }
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
-        peekServiceOrNull(requiredType, name, context.serviceProviders.findAllForName(name))
+        peekServiceOrNull(requiredType, name, serviceProviders.findAllForName(name))
     }
 
     private fun <T : Any> peekServiceOrNull(clazz: KClass<T>, name: String?, providers: Collection<ServiceProvider>): T? {
@@ -105,11 +108,11 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
     }
 
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
-        tryGetService(requiredType, name, context.serviceProviders.findAllForName(name))
+        tryGetService(requiredType, name, serviceProviders.findAllForName(name))
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        tryGetService(clazz, null, context.serviceProviders.findAllForType(clazz))
+        tryGetService(clazz, null, serviceProviders.findAllForType(clazz))
     }
 
     private fun <T : Any> tryGetService(clazz: KClass<T>, name: String?, providers: Collection<ServiceProvider>): ServiceResult<T> {
@@ -164,12 +167,12 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
-        return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
+        return serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
     }
 
     private val failedInterfacedServices: MutableSet<KClass<*>> = ConcurrentHashMap.newKeySet()
     override fun <T : Any> getInterfacedServices(clazz: KClass<T>): List<T> {
-        return context.serviceProviders
+        return serviceProviders
             .findAllForType(clazz)
             // Avoid circular dependency, we can't supply ourselves
             .filterNot { it in serviceCreationStack }
@@ -198,18 +201,23 @@ internal class ServiceContainerImpl internal constructor(internal val context: B
             }
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
-        if (!clazz.isInstance(t))
-            throwUser("${t.javaClass.name} is not an instance of ${clazz.jvmName}")
-        context.serviceProviders.putServiceProvider(ClassServiceProvider.fromInstance(clazz, t))
+    override fun <T : Any> putService(
+        t: T,
+        clazz: KClass<out T>,
+        name: String,
+        isPrimary: Boolean,
+        priority: Int,
+        typeAliases: Set<KClass<*>>
+    ) {
+        serviceProviders.putServiceProvider(ProvidedServiceProvider(t, clazz, name, isPrimary, priority, typeAliases))
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
-        return canCreateService(requiredType, name, context.serviceProviders.findAllForName(name))
+        return canCreateService(requiredType, name, serviceProviders.findAllForName(name))
     }
 
     override fun canCreateService(clazz: KClass<*>): ServiceError? {
-        return canCreateService(clazz, null, context.serviceProviders.findAllForType(clazz))
+        return canCreateService(clazz, null, serviceProviders.findAllForType(clazz))
     }
 
     private fun canCreateService(clazz: KClass<*>, name: String?, providers: Collection<ServiceProvider>): ServiceError? {

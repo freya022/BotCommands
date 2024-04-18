@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.condition
 
 import io.github.classgraph.ClassInfo
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
@@ -23,7 +22,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     private val _customConditionCheckers: MutableList<CustomConditionInfo> = arrayListOf()
     internal val customConditionCheckers: List<CustomConditionInfo> get() = _customConditionCheckers
 
-    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         // kClass is the condition, i.e., the meta-annotated class
 
         if (classInfo.annotationInfo.directOnly().containsName(Condition::class.jvmName)) {
@@ -48,7 +47,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess(context: BContext) {
+    override fun postProcess() {
         if (customConditionCheckers.isNotEmpty()) {
             logger.trace {
                 val checkersList = customConditionCheckers.joinAsList {

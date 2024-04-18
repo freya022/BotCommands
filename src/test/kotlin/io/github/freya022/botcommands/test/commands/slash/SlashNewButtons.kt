@@ -11,16 +11,15 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
@@ -31,7 +30,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Command
-@Dependencies(Components::class)
+@RequiresComponents
 class SlashNewButtons(
     private val buttons: Buttons
 ) : ApplicationCommand() {

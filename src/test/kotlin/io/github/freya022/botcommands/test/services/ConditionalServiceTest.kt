@@ -1,16 +1,14 @@
 package io.github.freya022.botcommands.test.services
 
-import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
-import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 
 @BService
-@Dependencies(Components::class)
 @ConditionalService(ConditionalServiceTest.Companion::class)
+@RequiresComponents
 class ConditionalServiceTest {
     @BService
     class ConditionalServiceTester(serviceContainer: ServiceContainer) {
@@ -31,6 +29,6 @@ class ConditionalServiceTest {
             else -> "Bad luck"
         }
 
-        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? = serviceErrorMessage
+        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? = serviceErrorMessage
     }
 }

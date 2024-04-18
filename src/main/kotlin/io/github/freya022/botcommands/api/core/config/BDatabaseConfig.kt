@@ -19,6 +19,8 @@ interface BDatabaseConfig {
      *
      * Default: `false`
      *
+     * Spring property: `botcommands.database.dumpLongTransactions`
+     *
      * @see ConnectionSupplier.maxTransactionDuration
      * @see DebugProbes
      * @see DebugProbes.enableCreationStackTraces
@@ -30,21 +32,29 @@ interface BDatabaseConfig {
      * The `TRACE` log level is required on the class that created the prepared statement.
      *
      * Default: `false`
+     *
+     * Spring property: `botcommands.database.logQueries`
      */
     val logQueries: Boolean
     /**
      * Determines if the SQL query logger will replace query parameters by their value.
      *
      * Default: `true`
+     *
+     * Spring property: `botcommands.database.logQueryParameters`
      */
     val logQueryParameters: Boolean
     /**
      * The duration a query has to run for it to be logged on `WARN`.
+     *
+     * Spring property: `botcommands.database.queryLogThresholdMillis`, **in milliseconds**
      */
     val queryLogThreshold: Duration
 
     /**
      * The duration a query has to run for it to be logged on `WARN`.
+     *
+     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
      */
     fun getQueryLogThreshold(): JavaDuration = queryLogThreshold.toJavaDuration()
 }
@@ -63,6 +73,8 @@ class BDatabaseConfigBuilder internal constructor() : BDatabaseConfig {
 
     /**
      * The duration a query has to run for it to be logged on `WARN`.
+     *
+     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
      */
     fun setQueryLogThreshold(duration: JavaDuration) {
         this.queryLogThreshold = duration.toKotlinDuration()

@@ -9,9 +9,8 @@ import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
-import io.github.freya022.botcommands.internal.core.service.ConditionalObjectChecker
+import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -50,77 +49,84 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(context: BContextImpl) {
-        val config = context.config
+    internal fun runScan(config: BConfig, bootstrap: BotCommandsBootstrap) {
         val packages = config.packages
-        //This is a requirement for ClassGraph to work correctly
-        if (packages.isEmpty() && config.classes.isEmpty()) {
+        val classes = config.classes
+        require(packages.isNotEmpty() || classes.isNotEmpty()) {
             throwUser("You must specify at least 1 package or class to scan from")
         }
 
-        logger.debug { "Scanning packages: ${config.packages.joinToString()}" }
-        if (config.classes.isNotEmpty()) {
-            logger.debug { "Scanning additional classes: ${config.classes.joinToString { it.simpleNestedName }}" }
-        }
+        if (packages.isNotEmpty())
+            logger.debug { "Scanning packages: ${packages.joinToString()}" }
+        if (classes.isNotEmpty())
+            logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
-        val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
-            ClassGraph()
-                .acceptPackages("io.github.freya022.botcommands.api", "io.github.freya022.botcommands.internal")
-                .enableMethodInfo()
-                .enableAnnotationInfo()
-                .disableModuleScanning()
-                .disableNestedJarScanning()
-                .scan()
-                .also { scanResult -> // Don't keep test classes
-                    add(scanResult to scanResult.allClasses.filter {
-                        return@filter it.isServiceOrHasFactories(config)
-                                || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
-                                || it.hasAnnotation(Condition::class.java)
-                    })
-                }
-
-            ClassGraph()
-                .acceptPackages(*config.packages.toTypedArray())
-                .acceptClasses(*config.classes.map { it.name }.toTypedArray())
-                .enableMethodInfo()
-                .enableAnnotationInfo()
-                .disableModuleScanning()
-                .disableNestedJarScanning()
-                .scan()
-                .also { scanResult -> //No filtering is done as to allow checkers to log warnings/throw in case a service annotation is missing
-                    add(scanResult to scanResult.allClasses)
-                }
-        }
-
-        val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-        val classGraphProcessors = context.config.classGraphProcessors +
-                ConditionalObjectChecker +
-                listOf(context.serviceProviders, context.customConditionsContainer, context.stagingClassAnnotations.processor) +
+        val classGraphProcessors = config.classGraphProcessors +
+                bootstrap.classGraphProcessors +
                 listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
-        return scanned.forEach { (_, classes) ->
-            classes
-                .filter {
-                    it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
-                        //Only keep classes, not others such as file facades
-                        val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
-                        if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                            it.checkFacadeFactories(config)
-                            return@filter false
-                        } else if (kind != KotlinClassHeader.Kind.CLASS) {
-                            return@filter false
+
+        ClassGraph()
+            .acceptPackages(
+                "io.github.freya022.botcommands.api",
+                "io.github.freya022.botcommands.internal",
+                *packages.toTypedArray()
+            )
+            .acceptClasses(*classes.map { it.name }.toTypedArray())
+            .enableClassInfo()
+            .enableMethodInfo()
+            .enableAnnotationInfo()
+            .disableModuleScanning()
+            .disableNestedJarScanning()
+            .scan()
+            .use { scan ->
+                scan.allClasses
+                    .filterLibraryClasses(config)
+                    .filterClasses(config)
+                    .also { classes ->
+                        val userClasses = classes.filterNot { it.isFromLib() }
+                        if (logger.isTraceEnabled()) {
+                            logger.trace { "Found ${userClasses.size} user classes: ${userClasses.joinToString { it.simpleNestedName }}" }
+                        } else {
+                            logger.debug { "Found ${userClasses.size} user classes" }
                         }
                     }
+                    .processClasses(config, classGraphProcessors)
 
-                    if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
-                }
-                .processClasses(context, classGraphProcessors)
-        }.also {
-            classGraphProcessors.forEach { it.postProcess(context) }
-            scanned.forEach { (scanResult, _) -> scanResult.close() }
+                classGraphProcessors.forEach(ClassGraphProcessor::postProcess)
+            }
 
-            scannedParams = true
+        scannedParams = true
+    }
+
+    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> = filter {
+        // Only keep api/internal classes which are services, or contain service factories,
+        // or their outer class contains one,
+        // or they have a Condition
+        if (it.isFromLib())
+            return@filter it.isServiceOrHasFactories(config)
+                    || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
+                    || it.hasAnnotation(Condition::class.java)
+        return@filter true
+    }
+
+    private fun ClassInfo.isFromLib() =
+        packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
+
+    private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
+    private fun List<ClassInfo>.filterClasses(config: BConfig): List<ClassInfo> = filter {
+        it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
+            //Only keep classes, not others such as file facades
+            val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
+            if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
+                it.checkFacadeFactories(config)
+                return@filter false
+            } else if (kind != KotlinClassHeader.Kind.CLASS) {
+                return@filter false
+            }
         }
+
+        if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
+        return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
     }
 
     private fun ClassInfo.checkFacadeFactories(config: BConfig) {
@@ -144,10 +150,22 @@ internal object ReflectionMetadata {
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
 
-    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
+    private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
-                val kClass = classInfo.loadClass().kotlin
+                // Ignore unknown classes
+                val kClass = runCatching {
+                    classInfo.loadClass().kotlin
+                }.onFailure {
+                    // ClassGraph wraps Class#forName exceptions in an IAE
+                    if (it is IllegalArgumentException) {
+                        val cause = it.cause
+                        if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
+                            logger.debug { "Ignoring ${classInfo.name} due to unsatisfied dependency ${cause.message}" }
+                            return@onEach
+                        }
+                    }
+                }.getOrThrow()
 
                 for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
                     //Don't inspect methods with generics
@@ -156,22 +174,31 @@ internal object ReflectionMetadata {
                             .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
                     ) continue
 
-                    val method = when {
-                        methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
-                        else -> methodInfo.loadClassAndGetMethod()
+                    // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
+                    val method: Executable = try {
+                        when {
+                            methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
+                            else -> methodInfo.loadClassAndGetMethod()
+                        }
+                    } catch (e: NoClassDefFoundError) {
+                        if (logger.isTraceEnabled())
+                            logger.trace(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
+                        else
+                            logger.debug { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+                        continue
                     }
                     val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-                    val isServiceFactory = methodInfo.isService(context.config)
-                    classGraphProcessors.forEach { it.processMethod(context, methodInfo, method, classInfo, kClass, isServiceFactory) }
+                    val isServiceFactory = methodInfo.isService(config)
+                    classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
-                val isService = classInfo.isService(context.config)
-                classGraphProcessors.forEach { it.processClass(context, classInfo, kClass, isService) }
+                val isService = classInfo.isService(config)
+                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }

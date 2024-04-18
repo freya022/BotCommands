@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
+import org.springframework.context.annotation.Primary as SpringPrimary
+
 /**
  * Defines a *primary* service provider.
  *
@@ -12,4 +14,5 @@ package io.github.freya022.botcommands.api.core.service.annotations
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@SpringPrimary
 annotation class Primary

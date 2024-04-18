@@ -2,12 +2,20 @@ package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.DependsOn
+import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
+
+internal sealed interface ClassAnnotationsMap {
+    fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>?
+}
+
+internal inline fun <reified A : Annotation> ClassAnnotationsMap.getOrNull(): Set<KClass<*>>? = getOrNull(A::class)
+
+internal inline fun <reified A : Annotation> ClassAnnotationsMap.get(): Set<KClass<*>> = getOrNull<A>() ?: emptySet()
 
 /**
  * NOTE: As this only contains annotated classes,
@@ -16,28 +24,32 @@ import kotlin.reflect.KClass
  * unless the class itself has the annotation
  */
 @BService(priority = Int.MAX_VALUE - 1)
-internal class ClassAnnotationsMap(
-    context: BContextImpl,
+@ServiceType(ClassAnnotationsMap::class)
+@RequiresDefaultInjection
+internal class DefaultClassAnnotationsMap(
+    bootstrap: DefaultBotCommandsBootstrap,
     instantiableServices: InstantiableServices
-) {
-    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = context.stagingClassAnnotations
+) : ClassAnnotationsMap {
+    private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = bootstrap.stagingClassAnnotations
         .annotatedClasses
         //Filter out non-instantiable classes
         .mapValues { (_, serviceTypes) ->
-            serviceTypes.intersect(instantiableServices.availableServices)
+            serviceTypes.intersect(instantiableServices.allAvailableTypes)
         }
-        .also { context.clearStagingAnnotationsMap() }
+        .also { bootstrap.clearStagingAnnotationsMap() }
 
-    internal inline fun <reified A : Annotation> getOrNull(): Set<KClass<*>>? = instantiableAnnotatedClasses[A::class]
+    override fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>? = instantiableAnnotatedClasses[clazz]
+}
 
-    internal inline fun <reified A : Annotation> get(): Set<KClass<*>> =
-        getOrNull<A>() ?: emptySet()
+@Service
+@DependsOn("springBotCommandsBootstrap") // Forces reflection metadata to be scanned first
+internal class SpringClassAnnotationsMap(
+    private val context: ApplicationContext
+) : ClassAnnotationsMap {
+    override fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>? {
+        val beansWithAnnotation = context.getBeansWithAnnotation(clazz.java)
+        if (beansWithAnnotation.isEmpty()) return null
 
-    @Suppress("UNCHECKED_CAST")
-    internal inline fun <reified A : Annotation, reified T : Any> getWithType(): Set<KClass<T>> =
-        get<A>().onEach {
-            if (!it.isSubclassOf<T>()) {
-                throwUser("Class ${it.simpleNestedName} registered as a ${annotationRef<A>()} must extend ${T::class.simpleNestedName}")
-            }
-        } as Set<KClass<T>>
+        return beansWithAnnotation.keys.mapTo(hashSetOf()) { context.getType(it).kotlin }
+    }
 }

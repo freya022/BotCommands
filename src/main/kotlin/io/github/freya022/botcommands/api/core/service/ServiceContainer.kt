@@ -51,10 +51,11 @@ interface ServiceContainer {
     fun <T : Any> getInterfacedServices(clazz: Class<T>): List<T> =
         getInterfacedServices(clazz.kotlin)
 
-    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String? = null)
-    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
-    fun putService(t: Any, name: String?): Unit = putServiceAs(t, t::class, name)
-    fun putService(t: Any): Unit = putServiceAs(t, t::class)
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String)
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>)
+    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>)
+    fun putService(t: Any, name: String)
+    fun putService(t: Any)
 }
 
 fun <T : Any> BContext.tryGetService(kClass: KClass<T>): ServiceResult<T> = serviceContainer.tryGetService(kClass)
@@ -73,8 +74,7 @@ fun <T : Any> BContext.getServiceOrNull(kClass: KClass<T>): T? = serviceContaine
 inline fun <reified T : Any> BContext.getServiceOrNull(): T? = serviceContainer.getServiceOrNull<T>()
 inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServiceOrNull(T::class)
 
-fun <T : Any> BContext.putServiceAs(t: T, kClass: KClass<T>) = serviceContainer.putServiceAs(t, kClass)
-inline fun <reified T : Any> BContext.putServiceAs(t: T) = serviceContainer.putServiceAs<T>(t)
+inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T, name: String) = putServiceAs(t, T::class, name)
 inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
 
 /**

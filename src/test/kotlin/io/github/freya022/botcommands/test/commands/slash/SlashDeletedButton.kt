@@ -6,8 +6,10 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 
 @Command
+@RequiresComponents
 class SlashDeletedButton(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "deleted_button")
     suspend fun onSlashDeletedButton(event: GuildSlashEvent) {

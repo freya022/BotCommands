@@ -10,11 +10,13 @@ import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.internal.core.ReadyListener
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import io.github.freya022.botcommands.test.services.INamedService
 import io.github.freya022.botcommands.test.services.NamedService1
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService
 
 @Command
+@RequiresDefaultInjection
 class SlashDI internal constructor(
     @ServiceName("modifiedNamedService") namedService: INamedService?,
     @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default(),

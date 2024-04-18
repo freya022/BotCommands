@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import org.springframework.stereotype.Component
 
 /**
  * Marks this class as a [parameter resolver factory][ParameterResolverFactory].<br>
@@ -15,5 +16,6 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
  * @see ParameterResolverFactory
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-@Retention(AnnotationRetention.BINARY) //Read by ClassGraph
-annotation class ResolverFactory  
+@Retention(AnnotationRetention.RUNTIME)
+@Component
+annotation class ResolverFactory

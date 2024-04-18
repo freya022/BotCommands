@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.service.ServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -32,7 +32,7 @@ internal class FunctionServiceProvider(
      */
     private var serviceError: ServiceError? = ServiceProvider.nullServiceError
 
-    override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+    override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
         if (serviceError !== ServiceProvider.nullServiceError) return serviceError
 
@@ -47,7 +47,7 @@ internal class FunctionServiceProvider(
         return serviceError
     }
 
-    private fun checkInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+    private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         function.commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
@@ -70,7 +70,7 @@ internal class FunctionServiceProvider(
         return null
     }
 
-    override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
         if (instance != null)
             throwInternal("Tried to create an instance using ${function.shortSignatureNoSrc} when one already exists, instance should be retrieved manually beforehand")
 

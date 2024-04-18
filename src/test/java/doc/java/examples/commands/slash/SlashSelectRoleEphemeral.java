@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.components.EntitySelectMenu;
 import io.github.freya022.botcommands.api.components.SelectMenus;
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -17,6 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Command
+@RequiresComponents
 @TestLanguage(TestLanguage.Language.JAVA)
 public class SlashSelectRoleEphemeral extends ApplicationCommand {
     @JDASlashCommand(name = "select_role", subcommand = "ephemeral", description = "Sends a menu to choose a role from")
