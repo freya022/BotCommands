@@ -47,7 +47,7 @@ class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.userCommand("User info", CommandScope.GLOBAL, ::onUserContextInfo) {
+        manager.userCommand("User info", ::onUserContextInfo) {
             option("user")
 
             generatedOption("userTag") {
