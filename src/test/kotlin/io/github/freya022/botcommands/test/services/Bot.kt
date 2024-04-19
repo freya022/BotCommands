@@ -36,8 +36,10 @@ class Bot(private val config: Config, environment: ConfigurableEnvironment?) : J
             setMemberCachePolicy(MemberCachePolicy.VOICE)
             setActivityProvider { Activity.playing("coroutines go brrr #$it") }
             setEventManagerProvider { eventManager }
-            setShardsTotal(2)
-            setShards(0, 1)
+            if (config.testMode) {
+                setShardsTotal(2)
+                setShards(0, 1)
+            }
         }.build()
     }
 }

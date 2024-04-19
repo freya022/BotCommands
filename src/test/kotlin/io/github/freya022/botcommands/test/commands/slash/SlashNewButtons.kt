@@ -20,8 +20,8 @@ import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.test.config.Config
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
-import io.github.freya022.botcommands.test.switches.TestServiceChecker
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
@@ -42,7 +42,7 @@ class SlashNewButtons(
             this += persistentButton
             this += ephemeralButton
             this += noGroupButton(event)
-            if (TestServiceChecker.useTestServices) {
+            if (Config.instance.testMode) {
                 this += filteredButton()
             }
         }.into()

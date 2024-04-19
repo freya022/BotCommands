@@ -18,6 +18,7 @@ data class Config(val token: String,
                   val ownerIds: List<Long>,
                   val prefixes: List<String>,
                   val testGuildIds: List<Long>,
+                  val testMode: Boolean,
                   val databaseConfig: DatabaseConfig
 ) {
     @Configuration

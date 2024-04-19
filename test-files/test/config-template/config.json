@@ -8,6 +8,7 @@
     "!"
   ],
   "testGuildIds": [],
+  "testMode": false,
   "databaseConfig": {
     "serverName": "localhost",
     "port": 5432,

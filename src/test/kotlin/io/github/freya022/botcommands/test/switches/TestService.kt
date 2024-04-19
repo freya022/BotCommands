@@ -3,13 +3,14 @@ package io.github.freya022.botcommands.test.switches
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.test.config.Config
 import org.springframework.context.annotation.ConditionContext
 import org.springframework.context.annotation.Conditional
 import org.springframework.core.type.AnnotatedTypeMetadata
 import org.springframework.context.annotation.Condition as SpringCondition
 
 object TestServiceChecker : CustomConditionChecker<TestService>, SpringCondition {
-    const val useTestServices = true
+    private val useTestServices get() = Config.instance.testMode
 
     override val annotationType: Class<TestService> = TestService::class.java
 
