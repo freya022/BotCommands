@@ -107,4 +107,4 @@ nav:
         - Creating slash commands: using-commands/application-commands/writing-slash-commands.md
 #  - Using components: foo
 #  - Using modals: foo
-#  - Docs: docs #TODO enable with KDocs once published
+  - Docs: https://freya022.github.io/BotCommands/docs
