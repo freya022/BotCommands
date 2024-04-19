@@ -35,7 +35,7 @@ jobs:
       - name: Set release version
         run: mvn -B BotCommandsBuild:set-ci-version
       - name: Generate KDocs
-        run: mvn -B -P docs dokka:dokka
+        run: mvn -B -P docs generate-sources dokka:dokka
       # The docs are uploaded to a directory in the staging repository
       - name: Upload to staging repository
         uses: JamesIves/github-pages-deploy-action@v4.5.0
