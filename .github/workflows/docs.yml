@@ -5,11 +5,11 @@
 # So the goal here is to create the outputs, write them to the remote repo,
 # then grab the entire staging repo and publish it, since it will contain all the merged content.
 
-name: Deploy Javadocs to Pages
+name: Deploy KDocs to Pages
 
 on:
   push:
-    branches: ["2.X"]
+    branches: ["3.X"]
     paths:       
       - 'pom.xml'
       - 'src/main/**.java'
@@ -34,8 +34,8 @@ jobs:
           cache: 'maven'
       - name: Set release version
         run: mvn -B BotCommandsBuild:set-ci-version
-      - name: Generate Javadocs
-        run: mvn -B -P check-docs javadoc:javadoc
+      - name: Generate KDocs
+        run: mvn -B -P docs dokka:dokka
       # The docs are uploaded to a directory in the staging repository
       - name: Upload to staging repository
         uses: JamesIves/github-pages-deploy-action@v4.5.0
@@ -45,7 +45,7 @@ jobs:
           ssh-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
           repository-name: freya022/BotCommands-Pages-Staging
           branch: staging
-          folder: ./target/site/apidocs
+          folder: ./target/dokka
           target-folder: docs
 
   # Same as in wiki.yml
