@@ -13,36 +13,37 @@ private val logger = KotlinLogging.logger { }
 
 internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
     private val localizationService: LocalizationService = context.getService<LocalizationService>()
-    private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
+    private val baseNameToLocalesMap: Map<String, List<DiscordLocale>> = context.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {
         val map: MutableMap<DiscordLocale, String> = EnumMap(DiscordLocale::class.java)
 
-        baseNameToLocalesMap.forEach { (baseName, locales) ->
-            for (locale in locales) {
-                val instance = localizationService.getInstance(baseName, locale)
+        baseNameToLocalesMap.forEach { (baseName, discordLocales) ->
+            for (discordLocale in discordLocales) {
+                val javaLocale = discordLocale.toLocale()
+                val instance = localizationService.getInstance(baseName, javaLocale)
                 if (instance != null) {
-                    if (instance.effectiveLocale !== locale) {
-                        SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), instance.effectiveLocale.toLanguageTag()) {
+                    if (instance.effectiveLocale !== javaLocale) {
+                        SingleLogger.current().tryLog(baseName, discordLocale, instance.effectiveLocale.toLanguageTag()) {
                             logger.warn {
-                                "Localization bundle '${baseName}' with locale '${locale}' was specified to be valid but was not found, falling back to '${instance.effectiveLocale}'"
+                                "Localization bundle '${baseName}' with Discord locale '${discordLocale}' was specified to be valid but was not found, falling back to '${instance.effectiveLocale}'"
                             }
                         }
                     }
 
                     val template = instance[localizationKey]
                     if (template != null) {
-                        map[locale.toDiscordLocale()] = template.localize()
+                        map[discordLocale] = template.localize()
                     } else if (context.debugConfig.enabledMissingLocalizationLogs) {
-                        SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), localizationKey) {
+                        SingleLogger.current().tryLog(baseName, discordLocale, localizationKey) {
                             logger.warn {
-                                "Localization template '${localizationKey}' could not be found in bundle '${baseName}' with locale '${locale}' or below"
+                                "Localization template '${localizationKey}' could not be found in bundle '${baseName}' with locale '${discordLocale}' or below"
                             }
                         }
                     }
                 } else {
-                    SingleLogger.current().tryLog(baseName, locale.toLanguageTag()) {
-                        logger.warn { "Localization bundle '${baseName}' with locale '${locale}' was specified to be valid but was not found." }
+                    SingleLogger.current().tryLog(baseName, discordLocale) {
+                        logger.warn { "Localization bundle '${baseName}' with locale '${discordLocale}' was specified to be valid but was not found." }
                     }
                 }
             }

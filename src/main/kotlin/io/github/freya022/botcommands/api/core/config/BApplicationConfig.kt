@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocali
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
-import java.util.*
 
 @InjectedService
 interface BApplicationConfig {
@@ -78,7 +77,7 @@ interface BApplicationConfig {
      * @see DefaultLocalizationMapProvider
      * @see DefaultJsonLocalizationMapReader
      */
-    val baseNameToLocalesMap: Map<String, List<Locale>>
+    val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
 }
 
 @ConfigDSL
@@ -92,8 +91,8 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
 
-    private val _baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
-    override val baseNameToLocalesMap: Map<String, List<Locale>>
+    private val _baseNameToLocalesMap: MutableMap<String, MutableList<DiscordLocale>> = hashMapOf()
+    override val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
         get() = _baseNameToLocalesMap.toImmutableMap()
 
     /**
@@ -120,7 +119,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
-        _baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales.map(DiscordLocale::toLocale)
+        _baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales
     }
 
     /**

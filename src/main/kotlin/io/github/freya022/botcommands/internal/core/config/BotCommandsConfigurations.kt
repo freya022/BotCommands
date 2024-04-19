@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.util.*
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -109,10 +108,7 @@ internal class BotCommandsApplicationConfiguration(
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap()
 ) : BApplicationConfig {
-    internal val baseNameToDiscordLocalesMap = localizations
-
-    override val baseNameToLocalesMap: Map<String, List<Locale>> =
-        localizations.mapValues { (_, locales) -> locales.map { it.toLocale() } }
+    override val baseNameToLocalesMap = localizations
 }
 
 @OptIn(DevConfig::class)
@@ -121,7 +117,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     testGuildIds += configuration.testGuildIds
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
     forceGuildCommands = configuration.forceGuildCommands
-    configuration.baseNameToDiscordLocalesMap.forEach(::addLocalizations)
+    configuration.baseNameToLocalesMap.forEach(::addLocalizations)
 }
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)

@@ -53,9 +53,8 @@ internal object LocalizationUtils {
     }
 
     private fun getRootLocalization(context: BContext, path: String): String? {
-        val localesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
         val localizationService = context.getService<LocalizationService>()
-        for (baseName in localesMap.keys) {
+        for (baseName in context.applicationConfig.baseNameToLocalesMap.keys) {
             val localization = localizationService.getInstance(baseName, Locale.ROOT)
             if (localization != null) {
                 val template = localization[path]
