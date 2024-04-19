@@ -23,6 +23,8 @@ fun interface RowPrefixSupplier {
          */
         @JvmStatic
         fun getPadding(entryNum: Int, maxEntry: Int): Int {
+            require(entryNum > 0)
+
             val entryDigits = floor(log10(entryNum.toDouble()) + 1)
             val maxEntryDigits = floor(log10(maxEntry.toDouble()) + 1)
             return (maxEntryDigits - entryDigits).toInt()
