@@ -1,20 +1,22 @@
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.coroutines.await
+import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.internal.utils.deferredRestAction
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.Route
 import net.dv8tion.jda.api.requests.restaction.*
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
@@ -23,7 +25,10 @@ import net.dv8tion.jda.api.utils.Timestamp
 import net.dv8tion.jda.api.utils.concurrent.Task
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import net.dv8tion.jda.internal.JDAImpl
+import net.dv8tion.jda.internal.entities.GuildImpl
 import net.dv8tion.jda.internal.entities.ReceivedMessage
+import net.dv8tion.jda.internal.requests.RestActionImpl
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
@@ -66,38 +71,50 @@ fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: 
     EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
 
 /**
- * Retrieves a thread by ID in this channel.
+ * Retrieves a thread by ID.
  *
- * The cached threads are checked first, and then requests are made to search in archived public threads,
- * and archived (but joined) private threads.
+ * The cached threads are checked first, and then a request is made.
  *
- * @throws InsufficientPermissionException If the bot does not have the [Permission.MESSAGE_HISTORY] permission in this channel
+ * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
  *
- * @see Guild.getThreadChannelById
- * @see IThreadContainer.retrieveArchivedPublicThreadChannels
- * @see IThreadContainer.retrieveArchivedPrivateJoinedThreadChannels
+ * @see retrieveThreadChannelOrNull
  */
-suspend fun IThreadContainer.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
-    // Non-archived threads
-    guild.getThreadChannelById(id)?.let { return it }
+fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
+    return jda.deferredRestAction(
+        valueSupplier = { getThreadChannelById(id) },
+        actionSupplier = {
+            RestActionImpl(jda, Route.Channels.GET_CHANNEL.compile(id.toString())) { res, _ ->
+                val dataObject = res.`object`
+                val channelType = dataObject.getInt("type").let(ChannelType::fromId)
+                if (!channelType.isThread)
+                    throw InvalidChannelTypeException("Invalid channel type, expected a thread, got $channelType")
 
-    // Archived public threads of the current channel
-    retrieveArchivedPublicThreadChannels()
-        .skipTo(id - 1)
-        .limit(2) //Min limit is 2
-        .await()
-        .firstOrNull { it.idLong == id }
-        ?.let { return it }
+                (jda as JDAImpl).entityBuilder.createThreadChannel(this as GuildImpl, dataObject, this.idLong, false)
+            }
+        }
+    )
+}
 
-    // Archived, joined, private threads of the current channel
-    retrieveArchivedPrivateJoinedThreadChannels()
-        .skipTo(id - 1)
-        .limit(2) //Min limit is 2
-        .await()
-        .firstOrNull { it.idLong == id }
-        ?.let { return it }
-
-    return null
+/**
+ * Retrieves a thread by ID.
+ *
+ * The cached threads are checked first, and then a request is made.
+ *
+ * The returned thread may be null if:
+ * - It doesn't exist
+ * - The bot doesn't have access to it
+ * - The channel isn't a thread
+ *
+ * @see retrieveThreadChannelById
+ */
+suspend fun Guild.retrieveThreadChannelOrNull(id: Long): ThreadChannel? {
+    return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_CHANNEL, ErrorResponse.MISSING_ACCESS) {
+        try {
+            retrieveThreadChannelById(id).await()
+        } catch (e: InvalidChannelTypeException) {
+            return null
+        }
+    }
 }
 
 /**
