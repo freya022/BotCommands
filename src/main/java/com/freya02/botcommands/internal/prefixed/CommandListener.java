@@ -230,7 +230,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		if (isNotOwner) {
+		if (isNotOwner && candidate.getCooldownMillis() > 0) {
 			final long cooldown = candidate.getCooldown(event);
 			if (cooldown > 0) {
 				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());

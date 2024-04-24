@@ -206,8 +206,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			}
 		}
 
-		if (isNotOwner) {
-			final long cooldown = applicationCommand.getCooldown(event, event::getName);
+		if (isNotOwner && applicationCommand.getCooldownMillis() > 0) {
+			final long cooldown = applicationCommand.getCooldown(event, event::getFullCommandName);
 			if (cooldown > 0) {
 				final DefaultMessages messages = this.context.getDefaultMessages(event);
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
