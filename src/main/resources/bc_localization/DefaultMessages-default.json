@@ -13,6 +13,7 @@
     "command.not.found.message": "Unknown command, maybe you meant: {suggestions}",
 
     "resolver.channel.not_found.message": "The target channel does not exist anymore",
+    "resolver.channel.missing_access.message": "The bot cannot access {channel_mention}",
     "resolver.user.not_found.message": "The target user does not exist anymore",
 
     "closed.dm.error.message": "Unable to send you a DM, please open your DMs from this server",
