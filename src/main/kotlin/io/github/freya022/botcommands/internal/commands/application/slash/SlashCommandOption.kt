@@ -4,14 +4,11 @@ import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import java.util.*
 
 class SlashCommandOption(
     slashCommandInfo: SlashCommandInfo,
@@ -32,9 +29,6 @@ class SlashCommandOption(
     val choices: List<Command.Choice>? = optionBuilder.choices
     val range: ValueRange? = optionBuilder.valueRange
     val length: LengthRange? = optionBuilder.lengthRange
-
-    @Deprecated("Replaced with @ChannelTypes")
-    val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
 
     init {
         description = LocalizationUtils.getOptionDescription(slashCommandInfo.context, optionBuilder)
