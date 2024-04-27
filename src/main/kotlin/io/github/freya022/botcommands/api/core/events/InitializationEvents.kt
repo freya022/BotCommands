@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.core.events
 
 import io.github.freya022.botcommands.api.core.BContext
 
-internal interface InitializationEvent
+internal sealed interface InitializationEvent : BGenericEvent
 
 /**
  * Indicates the framework status changed to [BContext.Status.PRE_LOAD].

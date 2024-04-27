@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.classgraph.ClassGraph
-import io.github.freya022.botcommands.api.core.events.BEvent
+import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.GenericEvent
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
@@ -14,13 +14,13 @@ private val logger = KotlinLogging.logger { }
 @BService
 internal class EventTreeService internal constructor() {
     private val map: Map<KClass<*>, List<KClass<*>>> = ClassGraph()
-        .acceptPackages(Event::class.java.packageName, BEvent::class.java.packageName)
+        .acceptPackages(GenericEvent::class.java.packageName, BGenericEvent::class.java.packageName)
         .disableRuntimeInvisibleAnnotations()
         .disableModuleScanning()
         .disableNestedJarScanning()
         .enableClassInfo()
         .scan().use { scanResult ->
-            scanResult.allClasses.filter { it.isStandardClass || it.isInterface }.associate { info ->
+            (scanResult.getClassesImplementing(GenericEvent::class.java) + scanResult.getClassesImplementing(BGenericEvent::class.java)).associate { info ->
                 info.loadClass().kotlin to Collections.unmodifiableList(info.subclasses.map { subclassInfo -> subclassInfo.loadClass().kotlin })
             }
         }
