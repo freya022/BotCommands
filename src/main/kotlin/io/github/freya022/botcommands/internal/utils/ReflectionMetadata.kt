@@ -4,6 +4,8 @@ import io.github.classgraph.*
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
@@ -106,11 +108,14 @@ internal object ReflectionMetadata {
             return@filter it.isServiceOrHasFactories(config)
                     || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
                     || it.hasAnnotation(Condition::class.java)
+                    || it.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)
         return@filter true
     }
 
     private fun ClassInfo.isFromLib() =
         packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
+
+    private fun ClassInfoList.containsAny(vararg classes: Class<*>): Boolean = classes.any { containsName(it.name) }
 
     private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
     private fun List<ClassInfo>.filterClasses(config: BConfig): List<ClassInfo> = filter {
