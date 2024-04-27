@@ -109,6 +109,27 @@ val Class<*>.allSuperclasses: List<Class<*>>
         }
     }
 
+val Class<*>.allSuperclassesAndInterfaces: List<Class<*>>
+    get() = buildList {
+        val visited = hashSetOf<Class<*>>()
+        val queue = ArrayDeque<Class<*>>()
+
+        visited += this@allSuperclassesAndInterfaces
+        queue += this@allSuperclassesAndInterfaces
+
+        while (queue.isNotEmpty()) {
+            val c = queue.removeFirst()
+            this += c // Add to list
+
+            // Get next elements
+            (c.interfaces + c.superclass).filterNotNull().forEach {
+                if (visited.add(it)) {
+                    queue += it
+                }
+            }
+        }
+    }
+
 fun KFunction<*>.getSignature(
     parameterNames: List<String> = listOf(),
     qualifiedClass: Boolean = false,

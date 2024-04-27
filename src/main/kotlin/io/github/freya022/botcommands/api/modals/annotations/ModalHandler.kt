@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  *
  * ### Option types
  * - Input options: Uses [@ModalInput][ModalInput], the annotation's value must match the name given in [Modals.createTextInput],
- * supported types are in [ParameterResolver],
+ * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ModalParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].

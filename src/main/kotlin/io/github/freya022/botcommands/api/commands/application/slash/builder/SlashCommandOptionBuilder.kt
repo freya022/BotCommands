@@ -4,8 +4,10 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.DoubleRange
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
@@ -17,12 +19,9 @@ import io.github.freya022.botcommands.internal.commands.application.slash.autoco
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
-import java.util.*
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionBuilder internal constructor(
@@ -93,16 +92,6 @@ class SlashCommandOptionBuilder internal constructor(
      * @see Length
      */
     var lengthRange: LengthRange? = null
-
-    /**
-     * Sets the desired channel types for this option.
-     *
-     * You can alternatively use a specific channel type,
-     * such as [TextChannel] to automatically restrict the channel type.
-     *
-     * @see ChannelTypes
-     */
-    var channelTypes: EnumSet<ChannelType>? = null
 
     internal var autocompleteInfo: AutocompleteInfoImpl? = null
         private set

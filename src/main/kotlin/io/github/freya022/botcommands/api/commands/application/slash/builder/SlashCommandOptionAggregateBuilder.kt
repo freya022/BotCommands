@@ -19,7 +19,7 @@ class SlashCommandOptionAggregateBuilder internal constructor(
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     /**
-     * Declares an input option, supported types are in [ParameterResolver],
+     * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [SlashParameterResolver].
      *
      * @param declaredName Name of the declared parameter in the aggregator

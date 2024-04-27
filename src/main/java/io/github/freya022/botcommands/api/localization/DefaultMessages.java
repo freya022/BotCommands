@@ -159,6 +159,13 @@ public final class DefaultMessages {
 	}
 
 	/**
+	 * @return Message to display when a channel parameter could not be resolved
+	 */
+	public String getResolverChannelMissingAccessMsg(String channelMention) {
+		return getLocalizationTemplate("resolver.channel.missing_access.message").localize(entry("channel_mention", channelMention));
+	}
+
+	/**
 	 * @return Message to display when a user parameter could not be resolved
 	 */
 	public String getResolverUserNotFoundMsg() {

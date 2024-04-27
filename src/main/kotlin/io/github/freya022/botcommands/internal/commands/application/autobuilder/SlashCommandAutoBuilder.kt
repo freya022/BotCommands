@@ -19,7 +19,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
@@ -33,7 +32,6 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -332,12 +330,6 @@ internal class SlashCommandAutoBuilder(
         kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
         kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
         kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
-
-        kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
-            channelTypes = enumSetOf<ChannelType>().also { types ->
-                types += channelTypesAnnotation.value
-            }
-        }
 
         processAutocomplete(optionAnnotation)
 

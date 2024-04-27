@@ -26,7 +26,7 @@ class UserCommandBuilder internal constructor(
     override val parentInstance: INamedCommand? = null
 
     /**
-     * Declares an input option, supported types are in [ParameterResolver],
+     * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [UserContextParameterResolver].
      *
      * @param declaredName Name of the declared parameter in the [command function][function]

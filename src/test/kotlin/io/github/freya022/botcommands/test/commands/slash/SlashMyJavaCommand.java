@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.*;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
@@ -16,6 +17,7 @@ import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +73,7 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 	                @SlashOption(name = "string_annotated", description = "Option description") String stringOption,
 	                @SlashOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) int intOption,
 	                @SlashOption(name = "user_annotated", description = "An user") User userOption,
-	                @SlashOption(name = "channel_annotated") GuildChannel channelOption,
+	                @SlashOption(name = "channel_annotated") @ChannelTypes(ChannelType.TEXT) GuildChannel channelOption,
 	                @SlashOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = SlashMyCommand.autocompleteHandlerName) String autocompleteStr,
 	                @SlashOption(name = "double_annotated", description = "A double") @Optional double doubleOption,
 	                BContext custom,
