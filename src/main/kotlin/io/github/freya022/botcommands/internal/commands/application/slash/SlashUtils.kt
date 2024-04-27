@@ -1,15 +1,18 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
 import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -19,6 +22,8 @@ import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal object SlashUtils {
+    private val logger = KotlinLogging.logger { }
+
     internal val fakeSlashFunction = SlashUtils::fakeFunction.reflectReference()
 
     @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
@@ -75,10 +80,10 @@ internal object SlashUtils {
             JDAOptionType.CHANNEL -> {
                 //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
                 // Otherwise set the channel types of the option, if available
-                if (option.channelTypes.isEmpty() && resolver is IChannelResolver) {
+                if (resolver is IChannelResolver) {
                     data.setChannelTypes(resolver.channelTypes)
-                } else if (option.channelTypes.isEmpty()) {
-                    data.setChannelTypes(option.channelTypes)
+                } else {
+                    logger.warn { "Encountered a CHANNEL slash command option, but the resolver (${resolver.javaClass.shortQualifiedName}) does not implement ${classRef<IChannelResolver>()}" }
                 }
             }
 

@@ -102,6 +102,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see ChannelTypes
      */
+    @Deprecated("Replaced with @ChannelTypes")
     var channelTypes: EnumSet<ChannelType>? = null
 
     internal var autocompleteInfo: AutocompleteInfoImpl? = null

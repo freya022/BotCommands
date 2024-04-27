@@ -8,13 +8,10 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.*
-
-private val logger = KotlinLogging.logger { }
 
 class SlashCommandOption(
     slashCommandInfo: SlashCommandInfo,
@@ -36,6 +33,7 @@ class SlashCommandOption(
     val range: ValueRange? = optionBuilder.valueRange
     val length: LengthRange? = optionBuilder.lengthRange
 
+    @Deprecated("Replaced with @ChannelTypes")
     val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
 
     init {

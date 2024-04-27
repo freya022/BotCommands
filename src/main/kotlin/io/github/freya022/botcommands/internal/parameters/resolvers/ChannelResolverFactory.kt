@@ -2,10 +2,13 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
+import io.github.freya022.botcommands.api.core.reflect.findAnnotation
+import io.github.freya022.botcommands.api.core.reflect.function
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -169,16 +172,44 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         if (!erasure.isSubclassOf<GuildChannel>()) return false
         erasure as KClass<out GuildChannel>
 
+        val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
+            null -> channelTypesFrom(erasure.java)
+            else -> enumSetOf(*annotation.value)
+        }
+
+        channelTypes.forEach { channelType ->
+            require(erasure.isAssignableFrom(channelType.`interface`)) {
+                val paramName = parameter.name
+                val signature = parameter.function.getSignature(parameterNames = listOf(paramName))
+                if (channelTypes.size == 1) {
+                    val requireType = channelType.`interface`.simpleName
+                    "Channel type was $channelType, meaning that the parameter '$paramName' must use a type that is itself or extends superclasses of $requireType: $signature"
+                } else {
+                    val compatibleTypes = channelTypes.map { it.`interface` }
+                        .mapTo(linkedSetOf()) { it.allSuperclassesAndInterfaces.filterTo(linkedSetOf()) { GuildChannel::class.java.isAssignableFrom(it) } }
+                        .reduce { acc, interfaces ->
+                            acc.retainAll(interfaces)
+                            acc
+                        }
+                        .map { it.simpleName }
+                    "Channel types were $channelTypes, meaning that the parameter '$paramName' must use a common type such as $compatibleTypes: $signature"
+                }
+            }
+        }
+
         //TODO future versions of JDA may have a way to disable channel caches (types would be configurable)
 
         // Only empty if the type is a GuildChannel but is not a concrete interface
-        return erasure == GuildChannel::class || channelTypesFrom(erasure.java).isNotEmpty()
+        return erasure == GuildChannel::class || channelTypes.isNotEmpty()
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun get(parameter: ParameterWrapper): ChannelResolver {
         val erasure = parameter.erasure as KClass<out GuildChannel>
-        val channelTypes = channelTypesFrom(erasure.java)
+        val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
+            null -> channelTypesFrom(erasure.java)
+            else -> enumSetOf(*annotation.value)
+        }
         return ChannelResolver(context, erasure.java, channelTypes)
     }
 }

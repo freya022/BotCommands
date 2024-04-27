@@ -60,6 +60,11 @@ class ParameterWrapper private constructor(
     }
 }
 
+internal val ParameterWrapper.function get() = parameter.function
+
+inline fun <reified A : Annotation> ParameterWrapper.hasAnnotation(): Boolean = hasAnnotation(A::class.java)
+inline fun <reified A : Annotation> ParameterWrapper.findAnnotation(): A? = getAnnotation(A::class.java)
+
 @OptIn(ExperimentalContracts::class)
 @JvmSynthetic
 internal inline fun ParameterWrapper.requireUser(value: Boolean, lazyMessage: () -> Any?) {
