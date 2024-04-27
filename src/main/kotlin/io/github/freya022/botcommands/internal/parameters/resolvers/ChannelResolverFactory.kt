@@ -24,9 +24,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.ChannelType.UNKNOWN
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -186,7 +184,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
                     "Channel type was $channelType, meaning that the parameter '$paramName' must use a type that is itself or extends superclasses of $requireType: $signature"
                 } else {
                     val compatibleTypes = channelTypes.map { it.`interface` }
-                        .mapTo(linkedSetOf()) { it.allSuperclassesAndInterfaces.filterTo(linkedSetOf()) { GuildChannel::class.java.isAssignableFrom(it) } }
+                        .map { it.allSuperclassesAndInterfaces.filterTo(linkedSetOf(), GuildChannel::class.java::isAssignableFrom) }
                         .reduce { acc, interfaces ->
                             acc.retainAll(interfaces)
                             acc
@@ -212,8 +210,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         }
         return ChannelResolver(context, erasure.java, channelTypes)
     }
-}
 
-private fun channelTypesFrom(clazz: Class<out Channel>): EnumSet<ChannelType> {
-    return ChannelType.entries.filterTo(enumSetOf<ChannelType>()) { type -> type.getInterface() == clazz && type != UNKNOWN }
+    private fun channelTypesFrom(clazz: Class<out GuildChannel>): EnumSet<ChannelType> {
+        return ChannelType.entries.filterTo(enumSetOf<ChannelType>()) { type -> clazz.isAssignableFrom(type.getInterface()) }
+    }
 }
