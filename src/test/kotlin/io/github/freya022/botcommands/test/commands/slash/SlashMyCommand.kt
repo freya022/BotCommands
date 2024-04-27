@@ -9,16 +9,13 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange.Compan
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -61,7 +58,7 @@ class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, A
         @SlashOption(name = "string_annotated", description = "Option description") stringOption: String,
         @SlashOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
         @SlashOption(name = "user_annotated", description = "An user") userOption: User,
-        @SlashOption(name = "channel_annotated") channelOption: GuildChannel,
+        @SlashOption(name = "channel_annotated") @ChannelTypes(ChannelType.TEXT) channelOption: GuildChannel,
         @SlashOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
         @SlashOption(name = "double_annotated", description = "A double") doubleOption: Double?,
         custom: BContext,
@@ -120,9 +117,7 @@ class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, A
                         description = "An user"
                     }
 
-                    option("channelOption") {
-                        channelTypes = enumSetOf(ChannelType.TEXT)
-                    }
+                    option("channelOption")
 
                     customOption("custom")
 
