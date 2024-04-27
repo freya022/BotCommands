@@ -1,26 +1,20 @@
 package io.github.freya022.wiki
 
 import ch.qos.logback.classic.ClassicConstants
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
-import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.wiki.config.Config
 import io.github.freya022.wiki.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.cancel
-import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
-import kotlin.time.Duration.Companion.minutes
 
 private val logger by lazy { KotlinLogging.logger {} } // Must not load before system property is set
 
 private const val mainPackageName = "io.github.freya022.wiki"
-private const val botName = "ExampleBot"
 
 object Main {
     @JvmStatic
@@ -42,16 +36,9 @@ object Main {
                 DecoroutinatorRuntime.load()
             }
 
-            // Create a scope for our event manager
-            val scope = namedDefaultScope("$botName Coroutine", 4)
-            val manager = CoroutineEventManager(scope, 1.minutes)
-            manager.listener<ShutdownEvent> {
-                scope.cancel()
-            }
-
             val config = Config.instance
 
-            BotCommands.create(manager) {
+            BotCommands.create {
                 if (Environment.isDev) {
                     disableExceptionsInDMs = true
                     @OptIn(DevConfig::class)

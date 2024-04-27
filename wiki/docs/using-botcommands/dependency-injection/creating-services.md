@@ -83,6 +83,11 @@ they must be annotated with `#!java @BService`, be in a service, or in an `#!kot
     unless the declaring class itself must be a service.
 
 ### Conditional services
+
+!!! warning
+
+    This section only applies to the built-in dependency injection
+
 Some services may not always be instantiable, 
 some may require soft dependencies (prevents instantiation if a service is unavailable, without failing),
 while some run a set of conditions to determine if a service can be instantiated.
@@ -94,6 +99,14 @@ will be unavailable for injection and do not figure in the list of interfaced se
 
     All the following annotations must be used alongside a service-declaring annotation, 
     such as `#!java @BService` or `#!java @Command`.
+
+!!! tip
+
+    There is a few built-in conditional annotations, such as:
+
+    - `#!java @RequiredIntents`: Enables a service if the `JDAService` has the specified intents enabled.
+    - `#!java @RequiresDatabase`: Enables a service if a `(Blocking)Database` instance is available.
+    - `#!java @RequiresComponents`: Enables a service if components are enabled.
 
 #### Dependencies
 The `#!java @Dependencies` annotation lets you define soft dependencies,
@@ -159,6 +172,11 @@ The implementation must have a no-arg constructor, or be an `#!kotlin object`
         ```
 
 ### Interfaced services
+
+!!! warning
+
+    This section only applies to the built-in dependency injection
+
 Interfaced services are interfaces, or abstract class, marked by `#!java @InterfacedService`,
 they must be implemented by a service.
 
@@ -169,10 +187,15 @@ Some interfaced services may only be implemented once, some may allow multiple i
 if an interfaced service only accepts one implementation, multiple implementations can exist,
 but only one must be instantiable.
 
-!!! tip
+!!! tip "Creating multiple interfaced services in one"
 
     You can implement multiple interfaced services at once, 
     which may be useful for text, application and component filters.
+
+!!! tip "Creating interfaced services without registering the interface type"
+
+    You can also implement an interfaced service, without it being accessible as such, 
+    by using `#!java @IgnoreServiceTypes`.
 
 ??? info "2.X Migration"
 
@@ -206,6 +229,11 @@ but only one must be instantiable.
     - `ExtensionsBuilder#registerParameterResolver`: Needs to implement `ClassParameterResolver` and the resolver interface of your choices
 
 ### Service properties
+
+!!! warning
+
+    This section only applies to the built-in dependency injection
+
 Service providers can have names, additional registered types, and an instantiation priority.
 
 #### Service names

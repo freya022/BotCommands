@@ -1,7 +1,7 @@
 package io.github.freya022.wiki.switches.wiki
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 object WikiDetailProfileChecker : CustomConditionChecker<WikiDetailProfile> {
@@ -11,7 +11,7 @@ object WikiDetailProfileChecker : CustomConditionChecker<WikiDetailProfile> {
 
     override val annotationType: Class<WikiDetailProfile> = WikiDetailProfile::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: WikiDetailProfile): String? {
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: WikiDetailProfile): String? {
         val serviceProfile = annotation.profile
         if (serviceProfile == currentProfile) {
             return null

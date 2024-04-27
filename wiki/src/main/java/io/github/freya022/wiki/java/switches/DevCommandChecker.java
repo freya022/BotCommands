@@ -1,8 +1,8 @@
 package io.github.freya022.wiki.java.switches;
 
-import io.github.freya022.wiki.config.Config;
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker;
+import io.github.freya022.botcommands.api.core.service.ServiceContainer;
+import io.github.freya022.wiki.config.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +17,8 @@ public class DevCommandChecker implements CustomConditionChecker<DevCommand> {
 
     @Nullable
     @Override
-    public String checkServiceAvailability(@NotNull BContext context, @NotNull Class<?> checkedClass, @NotNull DevCommand annotation) {
-        final var config = context.getService(Config.class); // Suppose this is your configuration
+    public String checkServiceAvailability(@NotNull ServiceContainer serviceContainer, @NotNull Class<?> checkedClass, @NotNull DevCommand annotation) {
+        final var config = serviceContainer.getService(Config.class); // Suppose this is your configuration
         if (!config.isDevModeEnabled()) {
             return "Dev mode is disable in the configuration"; // Do not allow the dev commands!
         }

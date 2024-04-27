@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
-import io.github.freya022.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;

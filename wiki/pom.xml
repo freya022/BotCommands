@@ -14,9 +14,11 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <kotlin.version>1.9.22</kotlin.version>
+        <kotlin.version>2.0.0-RC1</kotlin.version>
         <kotlin.coroutine.version>1.8.0</kotlin.coroutine.version>
 
+        <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
+        <kotlin.compiler.apiVersion>2.0</kotlin.compiler.apiVersion>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 
@@ -123,7 +125,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.20</version>
+            <version>5.0.0-beta.23</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -134,7 +136,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>3.0.0-alpha.12</version>
+            <version>3.0.0-alpha.13</version>
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->

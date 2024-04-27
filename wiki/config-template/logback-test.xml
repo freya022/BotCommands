@@ -18,8 +18,6 @@
     <!-- BotCommands -->
     <logger name="io.github.freya022.botcommands" level="debug"/>
 
-<!--    <logger name="net.dv8tion.jda.internal.requests.Requester" level="trace"/>-->
-
     <!-- Other logs -->
     <root level="info">
         <appender-ref ref="STDOUT"/>

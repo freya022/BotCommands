@@ -110,63 +110,73 @@ this will be useful when running your bot.
 As we've used a singleton pattern for your `Config` class, we can get the same instance anywhere, 
 and still be able to get it as a service.
 
-All you need to do to start the framework is `BotCommands#create`:
+=== "Built-in DI"
 
-=== "Kotlin"
-
-    ```kotlin title="Main.kt - Main function"
-    val config = Config.instance
-
-    BotCommands.create {
-        addOwners(config.ownerIds)
-
-        // Add the base package of the application
-        // All services and commands inside will be loaded
-        addSearchPath("io.github.name.bot")
-
-        textCommands {
-            usePingAsPrefix = true // The bot will respond to his mention/ping
-        }
-    }    
-    ```
-
-    ??? tip "Using a custom `CoroutineEventManager`"
-
-        I recommend passing a custom `CoroutineEventManager` to `BotCommands#create`,
-        that way you can configure anything such as the amount of threads, their names or their uncaught exception handlers.
-
-        You can use `namedDefaultScope` for this:
-        ```kotlin
-        // Create a scope for our event manager
-        val scope = namedDefaultScope("MyBot Coroutine", 4)
-        val manager = CoroutineEventManager(scope, 1.minutes)
-        manager.listener<ShutdownEvent> {
-            scope.cancel()
-        }
+    All you need to do to start the framework is `BotCommands#create`:
+    
+    === "Kotlin"
+    
+        ```kotlin title="Main.kt - Main function"
+        val config = Config.instance
+    
+        BotCommands.create {
+            addOwners(config.ownerIds)
+    
+            // Add the base package of the application
+            // All services and commands inside will be loaded
+            addSearchPath("io.github.name.bot")
+    
+            textCommands {
+                usePingAsPrefix = true // The bot will respond to his mention/ping
+            }
+        }    
+        ```
+    
+        ??? tip "Using a custom `CoroutineEventManager`"
+    
+            I recommend creating a custom `CoroutineEventManager`,
+            that way you can configure the amount of threads or their names,
+            which may be convenient in logs.
+    
+            You can do so by implementing a `ICoroutineEventManagerSupplier` service, 
+            with the help of `namedDefaultScope`:
+            ```kotlin
+            --8<-- "wiki/CoroutineEventManagerSupplier.kt:coroutine_event_manager_supplier-kotlin"
+            ```
+    
+    === "Java"
+    
+        ```java title="Main.java - Main method"
+        final var config = Config.getInstance();
+    
+        BotCommands.create(builder -> {
+            builder.addOwners(config.getOwnerIds());
+    
+            // Add the base package of the application
+            // All services and commands inside will be loaded
+            builder.addSearchPath("io.github.name.bot");
+    
+            builder.textCommands(textCommands -> {
+                textCommands.usePingAsPrefix(true);
+            });
+        });
         ```
 
-=== "Java"
+=== "Spring IoC"
+    
+    The framework also supports Spring IoC, 
+    in which case you need to add `#!java @EnableBotCommands` on your main application class.
 
-    ```java title="Main.java - Main method"
-    final var config = Config.getInstance();
+    Configuration of the framework is then done either by using application properties,
+    or by implementing configurers, which are explained in the annotation docs.
 
-    BotCommands.create(builder -> {
-        builder.addOwners(config.getOwnerIds());
-
-        // Add the base package of the application
-        // All services and commands inside will be loaded
-        builder.addSearchPath("io.github.name.bot");
-
-        builder.textCommands(textCommands -> {
-            textCommands.usePingAsPrefix(true);
-        });
-    });
-    ```
+    Of course, you will need to add component scans to your own classes so it sees commands and other handlers.
 
 !!! warning
 
     JDA must be created **after** the framework is built,
-    as the framework listens to JDA events and must not skip any of these.
+    as the framework listens to JDA events and must not skip any of these,
+    you will need to make a service extending `JDAService`.
 
 ## Creating a `JDAService`
 

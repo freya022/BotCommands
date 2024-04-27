@@ -12,6 +12,8 @@ Here are the logback configs used in the bot templates:
     !!! danger
         Just like any sensitive data, make sure to add the folder to your .gitignore, 
         as it will contain much more than just the logback config.
+        
+        However, you can provide a template for contributors/other users.
 
     === "Kotlin"
 
@@ -26,7 +28,7 @@ Here are the logback configs used in the bot templates:
         ```
 
     ```xml title="logback-test.xml"
-    --8<-- "https://github.com/freya022/BotCommands-Template-Kotlin/raw/3.X/config-template/logback-test.xml"
+    --8<-- "config-template/logback-test.xml"
     ```
 
 === "Prod config"
@@ -46,5 +48,5 @@ Here are the logback configs used in the bot templates:
         ```
 
     ```xml title="logback.xml"
-    --8<-- "https://github.com/freya022/BotCommands-Template-Kotlin/raw/3.X/config-template/logback.xml"
+    --8<-- "config-template/logback.xml"
     ```

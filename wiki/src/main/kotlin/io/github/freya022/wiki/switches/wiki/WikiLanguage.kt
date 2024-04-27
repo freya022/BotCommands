@@ -1,7 +1,7 @@
 package io.github.freya022.wiki.switches.wiki
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 
 // Singleton which checks if a service annotated with @WikiLanguage can be instantiated
@@ -12,7 +12,7 @@ object WikiLanguageChecker : CustomConditionChecker<WikiLanguage> {
 
     override val annotationType: Class<WikiLanguage> = WikiLanguage::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: WikiLanguage): String? {
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: WikiLanguage): String? {
         val serviceLanguage = annotation.language
         if (serviceLanguage == currentLanguage) {
             return null

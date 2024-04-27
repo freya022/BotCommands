@@ -1,10 +1,10 @@
 package io.github.freya022.wiki.switches
 
-import io.github.freya022.wiki.config.Config
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.wiki.config.Config
 
 // --8<-- [start:dev_command_annotated_condition-annotation-kotlin]
 // Same targets as service annotations
@@ -19,8 +19,8 @@ annotation class DevCommand
 object DevCommandChecker : CustomConditionChecker<DevCommand> {
     override val annotationType: Class<DevCommand> = DevCommand::class.java
 
-    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>, annotation: DevCommand): String? {
-        val config = context.getService<Config>() // Suppose this is your configuration
+    override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: DevCommand): String? {
+        val config = serviceContainer.getService<Config>() // Suppose this is your configuration
         if (!config.enableDevMode) {
             return "Dev mode is disable in the configuration" // Do not allow the dev commands!
         }
