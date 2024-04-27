@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * [GuildUserEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
  *
  * ### Option types
- * - Input options: Uses [@ContextOption][ContextOption], supported types are in [ParameterResolver],
+ * - Input options: Uses [@ContextOption][ContextOption], supported types and modifiers are in [ParameterResolver],
  * but only the targeted [User][GlobalUserEvent.getTarget]/[Member][GlobalUserEvent.getTargetMember] and [InputUser] are supported by default,
  * additional types can be added by implementing [UserContextParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].

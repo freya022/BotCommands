@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * e.g., if you have `/tag create` and `/tag edit`, you can annotate at most one of them.
  *
  * ### Option types
- * - Input options: Uses [@SlashOption][SlashOption], supported types are in [ParameterResolver],
+ * - Input options: Uses [@SlashOption][SlashOption], supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [SlashParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].

@@ -55,7 +55,7 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     /**
-     * Declares an input option, supported types are in [ParameterResolver],
+     * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [SlashParameterResolver].
      *
      * @param declaredName Name of the declared parameter in the [command function][function]
@@ -92,7 +92,7 @@ abstract class SlashCommandBuilder internal constructor(
     /**
      * Declares an input option encapsulated in an inline class.
      *
-     * Supported types are in [ParameterResolver],
+     * Supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [SlashParameterResolver].
      *
      * @param declaredName Name of the declared parameter in the [command function][function]

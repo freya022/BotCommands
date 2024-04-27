@@ -26,7 +26,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  *
  * ### Option types
  * - User data: No annotation, the order must match the data passed when creating the select menu,
- * supported types are in [ParameterResolver],
+ * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ComponentParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
