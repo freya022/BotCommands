@@ -41,7 +41,7 @@ internal class SpringInstantiableServices internal constructor(
     init {
         val allBeans = applicationContext.beanDefinitionNames
             .asSequence()
-            .mapNotNull { applicationContext.getType(it) }
+            .map { applicationContext.getType(it) ?: applicationContext.getBean(it).javaClass }
             .filter { type ->
                 if (config.packages.any { type.packageName.startsWith(it) })
                     return@filter true
