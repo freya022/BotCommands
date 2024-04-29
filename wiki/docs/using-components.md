@@ -101,3 +101,8 @@ The timeout works similarly to components, except the annotated handler is a [`#
     ```kotlin
     --8<-- "wiki/commands/slash/SlashClickGroup.kt:click_group-kotlin"
     ```
+
+=== "Java"
+    ```java
+    --8<-- "wiki/java/commands/slash/SlashClickGroup.java:click_group-java"
+    ```

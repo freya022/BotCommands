@@ -11,8 +11,10 @@ import io.github.freya022.botcommands.api.components.awaitAnyOrNull
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.utils.awaitUnit
 import io.github.freya022.botcommands.api.core.utils.replaceWith
+import io.github.freya022.wiki.switches.wiki.WikiLanguage
 import kotlin.time.Duration.Companion.minutes
 
+@WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:click_group-kotlin]
 @Command
 class SlashClickGroup(private val buttons: Buttons) : ApplicationCommand() {
@@ -38,6 +40,7 @@ class SlashClickGroup(private val buttons: Buttons) : ApplicationCommand() {
             // Only allow the caller to use the button
             constraints += event.user
         }
+        // Construct our group, make it expire after 1 minute
         val group = buttons.group(firstButton, secondButton).ephemeral {
             timeout(1.minutes)
         }
@@ -50,7 +53,7 @@ class SlashClickGroup(private val buttons: Buttons) : ApplicationCommand() {
                 .awaitUnit()
 
         // Disable the other button
-        buttonEvent.editButton(buttonEvent.component.asDisabled()).await()
+        buttonEvent.editButton(buttonEvent.button.asDisabled()).await()
         buttonEvent.hook.editOriginal("Try clicking the other button, you can't :^)").await()
     }
 }
