@@ -4,6 +4,7 @@
 
 Components provided by the framework are your usual Discord components with additional features,
 they can be configured to:
+
 - Be usable once
 - Have timeouts
 - Have method handlers or callbacks
