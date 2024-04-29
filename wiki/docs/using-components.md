@@ -24,8 +24,8 @@ as well as [`Components`](https://freya022.github.io/BotCommands/docs/-bot-comma
 
 ## Persistent components
 They are components that still work after a restart,
-their handlers are methods identified by their handler name, set in [`#!java @JDAButtonListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-button-listener/index.html)) / [`#!java @JDASelectMenuListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-select-menu-listener/index.html),
-when clicked, the button will run that method.
+their handlers are methods identified by their handler name,
+set in [`#!java @JDAButtonListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-button-listener/index.html)) / [`#!java @JDASelectMenuListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-select-menu-listener/index.html).
 
 [//]: # (TODO add awaitOrNull KDocs link)
 
@@ -88,7 +88,7 @@ Component groups can be created in any component factory, and allow you to confi
 Also, when one of them gets invalidated (after being used with `oneUse = true`),
 the entire group gets invalidated.
 
-For example, this can be useful when the user needs to choose a single button, once.
+For example, this can be useful when the user needs to use a single component, once.
 
 !!! warning "Ephemeral components in groups"
 
