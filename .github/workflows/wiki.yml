@@ -24,7 +24,7 @@ on:
       is_latest:
         description: 'Is this version the latest stable release?'
         required: true
-        default: false
+        default: true
         type: boolean
 
 # Allow one concurrent deployment
