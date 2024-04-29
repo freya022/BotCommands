@@ -106,3 +106,30 @@ The timeout works similarly to components, except the annotated handler is a [`#
     ```java
     --8<-- "wiki/java/commands/slash/SlashClickGroup.java:click_group-java"
     ```
+
+## Filtering
+Components also support filtering, you can use `addFilter` with either the filter type, or the filter instance directly.
+
+!!! failure "Passing custom filter instances"
+
+    You cannot pass filters that cannot be obtained via dependency injection,
+    this includes composite filters (using `and` / `or`), 
+    see [`ComponentInteractionFilter`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components/-component-interaction-filter/index.html) for more details
+
+### Example
+=== "Kotlin"
+    ```kotlin
+    buttons.primary("Can't click me").ephemeral {
+        filters += filter<AlwaysForbiddenFilter>()
+    }
+    ```
+
+=== "Java"
+    ```java
+    buttons.primary("Can't click me")
+        .ephemeral()
+        .addFilter(AlwaysForbiddenFilter.class)
+        .build()
+    ```
+
+## Rate limiting
