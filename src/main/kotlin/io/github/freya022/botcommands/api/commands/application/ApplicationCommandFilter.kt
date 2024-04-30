@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.components.and
-import io.github.freya022.botcommands.api.components.or
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
