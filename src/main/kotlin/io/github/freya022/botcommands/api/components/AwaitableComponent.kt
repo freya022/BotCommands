@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.components
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 
-sealed interface AwaitableComponent<T : ComponentInteraction> {
+interface AwaitableComponent<T : ComponentInteraction> : IdentifiableComponent {
     /**
      * Suspends until the component is used and all checks passed, and returns the event.
      *
