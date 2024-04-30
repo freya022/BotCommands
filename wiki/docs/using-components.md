@@ -110,6 +110,8 @@ The timeout works similarly to components, except the annotated handler is a [`#
 ## Filtering
 Components also support filtering, you can use `addFilter` with either the filter type, or the filter instance directly.
 
+[//]: # (Add ", see [link to filtering]")
+
 !!! failure "Passing custom filter instances"
 
     You cannot pass filters that cannot be obtained via dependency injection,
@@ -133,3 +135,23 @@ Components also support filtering, you can use `addFilter` with either the filte
     ```
 
 ## Rate limiting
+Rate limiting / cooldowns can be applied to components by using [`rateLimitReference()`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.builder/-i-actionable-component/rate-limit-reference.html),
+then referencing an existing rate limiter.
+
+[//]: # (Add ", see [link to rate limiting]")
+
+### Example
+=== "Kotlin"
+    ```kotlin
+    buttons.primary("Can't click me too fast").ephemeral {
+        rateLimitReference("name of the rate limiter")
+    }
+    ```
+
+=== "Java"
+    ```java
+    buttons.primary("Can't click me too fast")
+        .ephemeral()
+        .rateLimitReference("name of the rate limiter")
+        .build()
+    ```
