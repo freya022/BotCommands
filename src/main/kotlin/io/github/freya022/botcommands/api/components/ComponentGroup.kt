@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 class ComponentGroup internal constructor(
     private val componentController: ComponentController,
     override val internalId: Int
-) : IdentifiableComponent {
+) : IdentifiableComponent, AwaitableComponent<GenericComponentInteractionCreateEvent> {
     @JvmSynthetic
     override suspend fun await(): GenericComponentInteractionCreateEvent = componentController.awaitComponent(this)
 }

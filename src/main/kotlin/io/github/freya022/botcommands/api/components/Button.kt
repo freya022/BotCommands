@@ -12,7 +12,10 @@ class Button internal constructor(
     private val componentController: ComponentController,
     override val internalId: Int,
     private val button: JDAButton
-) : JDAButton by button, IdentifiableComponent {
+) : JDAButton by button,
+    IdentifiableComponent,
+    AwaitableComponent<ButtonEvent> {
+
     override fun asDisabled(): Button = withDisabled(true)
 
     override fun asEnabled(): Button = withDisabled(false)
@@ -42,6 +45,8 @@ class Button internal constructor(
     override fun getUrl(): String? = null
 
     /**
+     * Suspends until the component is used and all checks passed, and returns the event.
+     *
      * **Awaiting on a component that is part of a group is undefined behavior**
      *
      * @throws TimeoutCancellationException If the timeout set in the component builder has been reached

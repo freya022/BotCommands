@@ -9,7 +9,10 @@ class EntitySelectMenu internal constructor(
     private val componentController: ComponentController,
     override val internalId: Int,
     private val selectMenu: JDAEntitySelectMenu
-) : JDAEntitySelectMenu by selectMenu, IdentifiableComponent {
+) : JDAEntitySelectMenu by selectMenu,
+    IdentifiableComponent,
+    AwaitableComponent<EntitySelectEvent> {
+
     override fun asEnabled(): JDAEntitySelectMenu = withDisabled(false)
 
     override fun asDisabled(): JDAEntitySelectMenu = withDisabled(true)

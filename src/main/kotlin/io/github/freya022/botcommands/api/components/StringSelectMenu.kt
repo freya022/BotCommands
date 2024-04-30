@@ -9,7 +9,10 @@ class StringSelectMenu internal constructor(
     private val componentController: ComponentController,
     override val internalId: Int,
     private val selectMenu: JDAStringSelectMenu
-) : JDAStringSelectMenu by selectMenu, IdentifiableComponent {
+) : JDAStringSelectMenu by selectMenu,
+    IdentifiableComponent,
+    AwaitableComponent<StringSelectEvent> {
+
     override fun asEnabled(): StringSelectMenu = withDisabled(false)
 
     override fun asDisabled(): StringSelectMenu = withDisabled(true)
