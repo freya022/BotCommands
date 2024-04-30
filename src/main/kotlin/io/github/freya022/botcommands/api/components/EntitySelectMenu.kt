@@ -1,15 +1,19 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
+import io.github.freya022.botcommands.internal.components.AbstractAwaitableComponent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 class EntitySelectMenu internal constructor(
-    private val componentController: ComponentController,
+    componentController: ComponentController,
     override val internalId: Int,
     private val selectMenu: JDAEntitySelectMenu
-) : JDAEntitySelectMenu by selectMenu, IdentifiableComponent {
+) : AbstractAwaitableComponent<EntitySelectEvent>(componentController),
+    JDAEntitySelectMenu by selectMenu,
+    IdentifiableComponent {
+
     override fun asEnabled(): JDAEntitySelectMenu = withDisabled(false)
 
     override fun asDisabled(): JDAEntitySelectMenu = withDisabled(true)
@@ -19,9 +23,6 @@ class EntitySelectMenu internal constructor(
     }
 
     override fun getId(): String = selectMenu.id ?: throwInternal("BC components cannot have null IDs")
-
-    @JvmSynthetic
-    override suspend fun await(): EntitySelectEvent = componentController.awaitComponent(this)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,18 +1,21 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.internal.components.AbstractAwaitableComponent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
 class Button internal constructor(
-    private val componentController: ComponentController,
+    componentController: ComponentController,
     override val internalId: Int,
     private val button: JDAButton
-) : JDAButton by button, IdentifiableComponent {
+) : AbstractAwaitableComponent<ButtonEvent>(componentController),
+    JDAButton by button,
+    IdentifiableComponent {
+
     override fun asDisabled(): Button = withDisabled(true)
 
     override fun asEnabled(): Button = withDisabled(false)
@@ -40,14 +43,6 @@ class Button internal constructor(
     override fun getId(): String = button.id ?: throwInternal("BC components cannot have null IDs")
 
     override fun getUrl(): String? = null
-
-    /**
-     * **Awaiting on a component that is part of a group is undefined behavior**
-     *
-     * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
-     */
-    @JvmSynthetic
-    override suspend fun await(): ButtonEvent = componentController.awaitComponent(this)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
