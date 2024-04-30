@@ -9,10 +9,11 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 /**
  * Processes component interaction rejections returned by [component interaction filters][ComponentInteractionFilter].
  *
- * ### Usage
+ * ### Requirements
  * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
+ * - Acknowledge the interaction when it is rejected.
  *
  * ### Example - Replying the error string returned by the [ComponentInteractionFilter] example
  * ```kt

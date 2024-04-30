@@ -10,10 +10,11 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 /**
  * Processes application command rejections returned by [application command filters][ApplicationCommandFilter].
  *
- * ### Usage
+ * ### Requirements
  * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
+ * - Acknowledge the interaction when it is rejected.
  *
  * ### Example - Replying the error string returned by the [ApplicationCommandFilter] example
  * ```kt

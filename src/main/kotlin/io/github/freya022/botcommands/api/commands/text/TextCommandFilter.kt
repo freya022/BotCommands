@@ -15,13 +15,14 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Filters run when a [command variation][TextCommandBuilder.variation] is about to be executed,
  * i.e., after the permissions/rate limits... were checked.
  *
- * With more complex filters such as [`and`][and]/[`or`][or] filters,
- * a filter returning an error object does not mean a command is rejected.
+ * When the final filter returns an error object of type [T],
+ * it will then be passed to the [TextCommandRejectionHandler].
  *
- * Instead, the cause of the error will be passed down to the command executor,
- * and then given back to the [TextCommandRejectionHandler].
+ * ### Combining filters
  *
- * ### Usage
+ * Filters can be combined with [`and`][and]/[`or`][or] (static methods for Java users).
+ *
+ * ### Requirements
  * - Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * This is not required if you pass the instance directly to the command builder.
@@ -29,7 +30,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
- * **Note:** The execution order of global filters is determined by the priority of the service,
+ * ### Execution order
+ * The execution order of global filters is determined by the priority of the service,
  * while command-specific filters use the insertion order.
  *
  * ### Example - Accepting commands only in a single channel

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
-import io.github.freya022.botcommands.api.components.builder.IActionableComponent
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -16,37 +15,38 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * Filters run when a component is about to be executed,
  * i.e., after the constraints/rate limits... were checked.
  *
- * With more complex filters such as [`and`][and]/[`or`][or] filters (static methods for Java users),
- * a filter returning an error object does not mean a component is rejected.
+ * When the final filter returns an error object of type [T],
+ * it will then be passed to the [ComponentInteractionRejectionHandler].
  *
- * Instead, the cause of the error will be passed down to the component executor,
- * and then given back to the [ComponentInteractionRejectionHandler].
+ * ### Combining filters
  *
- * **Note:** Composite filters using [`and`][and]/[`or`][or]
- * **cannot** be passed to [IActionableComponent.filters] / [IActionableComponent.addFilter],
- * in which case you must make a filter service that will receive other filters via constructor injection.
- * After combining those filters, you can delegate the calls to it.
+ * Filters can be combined with [`and`][and]/[`or`][or] (static methods for Java users).
  *
- * ### Usage
+ * **Note:** Filters that are not accessible via dependency injection cannot be used.
+ * For example, if you wish to combine filters using [`and`][and]/[`or`][or],
+ * you should make a service factory that combines both filters and exposes the new one as a service:
+ *
+ * ```kt
+ * @BConfiguration
+ * class AdminAndInVoiceChannelFilterProvider {
+ *     @BService
+ *     fun adminAndInVoiceChannelFilter(
+ *         adminFilter: AdminFilter,
+ *         inVoiceChannelFilter: InVoiceChannelFilter
+ *     ): ComponentInteractionFilter<String> = adminFilter and inVoiceChannelFilter
+ * }
+ * ```
+ *
+ * ### Requirements
  * - Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations]
- * (this is required as the service is retrieved when the component is used).
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - Have exactly one instance of [ComponentInteractionRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a component-specific filter by disabling [global].
  *
- * **Note:** The execution order of global filters is determined by the priority of the service,
- * while command-specific filters use the insertion order.
- *
- * Filters component interactions (such as buttons and select menus),
- * any filter that returns `false` prevents the interaction from executing.
- *
- * Filters are tested right before the component gets executed (i.e., after the constraints/rate limits were checked).
- *
- * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
- *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * ### Execution order
+ * The execution order of global filters is determined by the priority of the service,
+ * while component-specific filters use the insertion order.
  *
  * ### Example - Rejecting component interactions from non-owners
  * ```kt

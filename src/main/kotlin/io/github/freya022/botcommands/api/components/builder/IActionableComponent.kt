@@ -36,6 +36,15 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
 
     val handler: ComponentHandler?
 
+    /**
+     * List of filters applied to this component.
+     *
+     * ### Requirements
+     * - The filter must not be [ComponentInteractionFilter.global].
+     * - The filter must be available via dependency injection.
+     *
+     * @see ComponentInteractionFilter
+     */
     val filters: MutableList<ComponentInteractionFilter<*>>
 
     val rateLimitGroup: String?
@@ -50,15 +59,38 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
     @CheckReturnValue
     fun rateLimitReference(group: String): T
 
+    /**
+     * Applies a filter to this component.
+     *
+     * ### Requirements
+     * - The filter must not be [ComponentInteractionFilter.global].
+     * - The filter must be available via dependency injection.
+     *
+     * @see ComponentInteractionFilter
+     */
     @CheckReturnValue
     fun addFilter(filter: ComponentInteractionFilter<*>): T = instance.also {
         filters += filter
     }
 
+    /**
+     * Applies a filter to this component.
+     *
+     * ### Requirements
+     * - The filter must not be [ComponentInteractionFilter.global].
+     * - The filter must be available via dependency injection.
+     *
+     * @see ComponentInteractionFilter
+     */
     @CheckReturnValue
     fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T = addFilter(context.getService(filterType))
 }
 
+/**
+ * Retrieves an existing component filter from the context.
+ *
+ * This is equivalent to `context.getService<T>()`.
+ */
 inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent<*>.filter(): T {
     return context.getService<T>()
 }
