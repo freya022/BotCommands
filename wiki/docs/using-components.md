@@ -110,19 +110,69 @@ The timeout works similarly to components, except the annotated handler is a [`#
 ## Filtering
 Components also support filtering, you can use `addFilter` with either the filter type, or the filter instance directly.
 
-[//]: # (Add ", see [link to filtering]")
-
 !!! failure "Passing custom filter instances"
 
     You cannot pass filters that cannot be obtained via dependency injection,
     this includes composite filters (using `and` / `or`), 
     see [`ComponentInteractionFilter`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components/-component-interaction-filter/index.html) for more details
 
-### Example
+### Creating a filter
+
+Creating a filter can be done
+by implementing [`ComponentInteractionFilter`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components/-component-interaction-filter/index.html)
+and registering it as a service, 
+they run when a component is about to be executed.
+
+Lets create a filter that allows the component to be usable in a predefined one channel:
+
+!!! note
+
+    Your filter needs to *not* be global in order to be used on specific components.
+
+=== "Kotlin"
+    ```kotlin title="GeneralChannelFilter.kt"
+    --8<-- "wiki/filters/GeneralChannelFilter.kt:component_filter-kotlin"
+    ```
+
+    1. This is the return type of the filter, this will be passed as `userData` in your rejection handler.
+
+=== "Java"
+    ```java title="GeneralChannelFilter.java"
+    --8<-- "wiki/java/filters/GeneralChannelFilter.java:component_filter-java"
+    ```
+
+    1. This is the return type of the filter, this will be passed as `userData` in your rejection handler.
+
+### Creating a rejection handler
+
+You must then create **a single** [rejection handler](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components/-component-interaction-rejection-handler/index.html) for **all your filters**, 
+it runs when one of your filters fails.
+
+!!! note
+
+    All of your filters must have the same return type as the rejection handler (the generic you set on the interface).
+
+=== "Kotlin"
+    ```kotlin title="ComponentRejectionHandler.kt"
+    --8<-- "wiki/filters/ComponentRejectionHandler.kt:component_rejection_handler-kotlin"
+    ```
+
+    1. This is what was returned by one of your filters, this will be passed as `userData`.
+
+=== "Java"
+    ```java title="ComponentRejectionHandler.java"
+    --8<-- "wiki/java/filters/ComponentRejectionHandler.java:component_rejection_handler-java"
+    ```
+
+    1. This is what was returned by one of your filters, this will be passed as `userData`.
+
+### Using an existing filter
+Now that your filter has been created, you can reference it in your component.
+
 === "Kotlin"
     ```kotlin
     buttons.primary("Can't click me").ephemeral {
-        filters += filter<AlwaysForbiddenFilter>()
+        filters += filter<GeneralChannelFilter>()
     }
     ```
 
@@ -130,7 +180,7 @@ Components also support filtering, you can use `addFilter` with either the filte
     ```java
     buttons.primary("Can't click me")
         .ephemeral()
-        .addFilter(AlwaysForbiddenFilter.class)
+        .addFilter(GeneralChannelFilter.class)
         .build()
     ```
 
@@ -140,7 +190,7 @@ then referencing an existing rate limiter.
 
 [//]: # (Add ", see [link to rate limiting]")
 
-### Example
+### Using an existing rate limiter
 === "Kotlin"
     ```kotlin
     buttons.primary("Can't click me too fast").ephemeral {
