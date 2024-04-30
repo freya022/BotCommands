@@ -104,6 +104,10 @@
                                     <url>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</url>
                                     <packageListUrl>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/element-list</packageListUrl>
                                 </link>
+                                <link>
+                                    <url>https://docs.spring.io/spring-framework/docs/current/javadoc-api</url>
+                                    <packageListUrl>https://docs.spring.io/spring-framework/docs/current/javadoc-api/element-list</packageListUrl>
+                                </link>
                             </externalDocumentationLinks>
                             <perPackageOptions>
                                 <packageOptions>
