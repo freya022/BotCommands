@@ -98,13 +98,15 @@ nav:
       - Java parameter names: using-botcommands/parameter-names.md
   - Using commands:
       - Common details: using-commands/common-command-details.md
-#      - Interaction filters: foo
-#      - Cooldowns: foo
 #      - Text commands:
 #        - Creating text commands: foo
 #        - Built-in help command: foo
-      - Slash commands:
+      - Application commands:
         - Creating slash commands: using-commands/application-commands/writing-slash-commands.md
+#        - Rate limiting / cooldowns: foo
+        # TODO move to Using BotCommands, make a global overview and then a bunch of sections for each resolver type
+        - Adding option resolvers: using-commands/application-commands/option-resolvers.md
+      - Advanced options: using-commands/advanced-options.md
   - Using components: using-components.md
 #  - Using modals: foo
   - Docs: https://freya022.github.io/BotCommands/docs

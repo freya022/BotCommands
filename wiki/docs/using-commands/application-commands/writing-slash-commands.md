@@ -43,7 +43,7 @@ while the declaring class must extend `ApplicationCommand`.
 
 Options can be added with a parameter annotated with `#!java @SlashOption`.
 
-All supported types are documented under `ParameterResolver`, and [other types can be added](#adding-option-resolvers).
+All supported types are documented under `ParameterResolver`, and [other types can be added](option-resolvers.md).
 
 !!! example
     === "Kotlin"
@@ -128,7 +128,7 @@ and then configure your command.
 Options can be added with a parameter and declaring it using `option` in your command builder,
 where the `declaredName` is the name of your parameter, the block will let you change the description, choices, etc.
 
-All supported types are documented under `ParameterResolver`, and [other types can be added](#adding-option-resolvers).
+All supported types are documented under `ParameterResolver`, and [other types can be added](option-resolvers.md).
 
 !!! example
     ```kotlin
@@ -207,7 +207,7 @@ that is, the resolver will return the choices used for every option of their typ
 All you now need to do is enable `usePredefinedChoices` on your option.
 
 !!! example
-    Here, the resolver for `TimeUnit` is already defined and will be explained in [Adding option resolvers](#adding-option-resolvers).
+    Here, the resolver for `TimeUnit` is already defined and will be explained in [Adding option resolvers](option-resolvers.md).
 
     === "Kotlin"
         ```kotlin
@@ -223,122 +223,6 @@ All you now need to do is enable `usePredefinedChoices` on your option.
         ```java
         --8<-- "wiki/java/commands/slash/SlashConvertSimplified.java:convert_simplified-java"
         ```
-
-## Adding option resolvers
-
-Option resolvers help you support other types for your command options, such as `TimeUnit`, or any object of your own.
-
-Slash command option resolvers specify which option type will be used on Discord, 
-and will handle the conversion from the Discord value to the corresponding object.
-
-The class implementing the resolver, or the function returning a resolver, must be annotated with `#!java @Resolver`.
-
-!!! note
-    `#!java @Resolver` is one of the annotations that are considered as a service annotation.
-    This means that it behaves exactly the same as if you had used `@BService`, 
-    except here the annotation is more meaningful.
-
-[//]: # (TODO Add link to DI section in note)
-
-### Implementation
-
-For that, you need a class annotated with `#!java @Resolver` extending `ClassParameterResolver`, 
-and implementing `SlashParameterResolver`.
-
-The first type parameter is the type of your resolver implementation, and the second type is what the resolver returns.
-
-!!! example "A `TimeUnit` resolver"
-    === "Kotlin"
-        ```kotlin
-        --8<-- "wiki/resolvers/TimeUnitResolver.kt:time_unit_resolver-detailed-kotlin"
-        ```
-
-    === "Java"
-        ```java
-        --8<-- "wiki/java/resolvers/TimeUnitResolver.java:time_unit_resolver-detailed-java"
-        ```
-    
-    As you can see, this defines the slash command's option to be a string, 
-    and provides predefined choices, letting you easily use them in your commands.
-
-### Built-in resolver generators
-
-The framework also provides functions in `Resolvers` to do most of the work for some types,
-all you need to do is declare a service factory with `#!java @Resolver` and use the provided methods.
-
-!!! note
-    Currently there is only a factory for enum resolvers, but others might be added in the future.
-
-!!! example "How to easily make a resolver for an enum type"
-    === "Kotlin"
-        ```kotlin
-        object TimeUnitResolverSimplified {
-        --8<-- "wiki/resolvers/TimeUnitResolver.kt:time_unit_resolver-simplified-kotlin"
-        ```
-        As this functions as a service factory, the method needs to be in an `object` or have a no-arg constructor.
-
-    === "Java"
-        ```java
-        public class TimeUnitResolverSimplifiedJava {
-        --8<-- "wiki/java/resolvers/TimeUnitResolverSimplified.java:time_unit_resolver-simplified-java"
-        ```
-        As this functions as a service factory, the method needs to be static.
-
-## Advanced usage
-
-The Kotlin DSL also lets you do more, for example, using loops to generate commands, or even options. 
-It also allows you to create more complex options, such as having multiple options in one parameter.
-
-!!! info "Distinction between parameters and options"
-    Method parameters are what you expect, a simple value in your method,
-    but for the framework, parameters might be a complex object (composed of multiple options),
-    or a single option, whether it's an injected service, a Discord option or a generated value.
-
-    i.e., A parameter might be a single or multiple options, but an option is always a single value.
-
-### Composite parameters
-
-These are parameters composed of multiple options, of any type,
-which gets merged into one parameter by using an aggregator.
-
-!!! tip
-    This is how varargs are implemented, they are a loop that generates N options, where X options are optional.
-
-!!! example "Creating an aggregated parameter"
-    Here is how you can use aggregated parameters to create a message delete timeframe, out of a `Long` and a `TimeUnit`.
-
-    ```kotlin title="The aggregated object"
-    --8<-- "wiki/commands/slash/SlashBan.kt:aggregated_object-kotlin"
-    ```
-
-    ```kotlin title="The aggregated parameter declaration"
-    @Command
-    class SlashBan {
-        @AppDeclaration
-        fun onDeclare(manager: GlobalApplicationCommandManager) {
-            manager.slashCommand("ban", function = SlashBan::onSlashBan) {
-                ...
-
-    --8<-- "wiki/commands/slash/SlashBan.kt:declare_aggregate-kotlin_dsl"
-            }
-        }
-    }
-    ```
-
-    The aggregating function can be a reference to the object's constructor,
-    or a function taking the options and returning an object of the corresponding type. 
-
-### Kotlin's inline classes
-
-Input options as well as varargs can be encapsulated in an [inline class](https://kotlinlang.org/docs/inline-classes.html),
-allowing you to define simple computable properties and functions for types where defining an extension makes no sense.
-(Like adding an extension, that's specific to only one command, on a `String`)
-
-!!! example "Using inline classes"
-
-    ```kotlin
-    --8<-- "wiki/commands/slash/SlashInlineWords.kt:inline_sentence-kotlin"
-    ```
 
 ## Examples
 
