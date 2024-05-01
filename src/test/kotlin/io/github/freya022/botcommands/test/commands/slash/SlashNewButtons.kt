@@ -17,6 +17,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.builder.filter
+import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -92,11 +93,11 @@ class SlashNewButtons(
         }
 
         val timeoutEdButton = buttons.primary("Invisible").persistent {
-            timeout(5.seconds, PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME, null)
+            timeout(5.seconds, ::onTimeoutEdButtonTimeout, null)
         }
 
         buttons.group(firstButton, secondButton).persistent {
-            timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME, null)
+            timeout(10.seconds, ::onFirstGroupTimeout, null)
         }
         return firstButton
     }
@@ -125,19 +126,14 @@ class SlashNewButtons(
         event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}, null: $nullValue", ephemeral = true).queue()
     }
 
-    @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)
+    @ComponentTimeoutHandler("SlashNewButtons: persistentButtonTimeout")
     fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, nullObj: String?) {
         println("onTimeoutEdButtonTimeout: $data ; $nullObj")
     }
 
-    @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
+    @GroupTimeoutHandler("SlashNewButtons: persistentGroupTimeout")
     fun onFirstGroupTimeout(data: GroupTimeoutData, nullObj: String?) {
         println("onFirstGroupTimeout: $data ; $nullObj")
     }
 
-    companion object {
-        private const val PERSISTENT_BUTTON_LISTENER_NAME = "SlashNewButtons: persistentButton"
-        private const val PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentButtonTimeout"
-        private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentGroupTimeout"
-    }
 }

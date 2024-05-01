@@ -11,13 +11,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.StringSelectMenu
-import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.builder.filter
-import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
+import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
@@ -26,7 +25,6 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
-import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
 @Command
@@ -80,7 +78,7 @@ class SlashNewSelects(
         }
 
         selectMenus.group(firstSelect, secondSelect).persistent {
-            timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
+            timeout(10.seconds, ::onFirstGroupTimeout)
         }
         return firstSelect
     }
@@ -111,19 +109,8 @@ class SlashNewSelects(
         event.reply_("Persistent select menu clicked", ephemeral = true).queue()
     }
 
-    @ComponentTimeoutHandler(name = PERSISTENT_SELECT_TIMEOUT_LISTENER_NAME)
-    fun onFirstSelectTimeout(data: ComponentTimeoutData) {
-        println(data)
-    }
-
-    @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
+    @GroupTimeoutHandler("SlashNewSelects: persistentGroupTimeout")
     fun onFirstGroupTimeout(data: GroupTimeoutData) {
         println(data)
-    }
-
-    companion object {
-        private const val PERSISTENT_SELECT_LISTENER_NAME = "SlashNewSelects: persistentSelect"
-        private const val PERSISTENT_SELECT_TIMEOUT_LISTENER_NAME = "SlashNewSelects: persistentSelectTimeout"
-        private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewSelects: persistentGroupTimeout"
     }
 }
