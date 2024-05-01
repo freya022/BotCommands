@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -91,11 +92,11 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         val builder = generateGlobalHelp(event.member, event.guildChannel)
         val embed = builder.build()
 
-        runCatching {
-            event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).await()
-        }.handle(ErrorResponse.CANNOT_SEND_TO_USER) {
-            event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
-        }.getOrThrow()
+        event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message"))
+            .awaitCatching()
+            .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
+                event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
+            }.getOrThrow()
 
         event.reactSuccess().queue()
     }

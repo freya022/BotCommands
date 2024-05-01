@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
@@ -137,7 +136,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             channelId: Long,
             onMissingAccess: () -> Unit
         ): ThreadChannel? {
-            return runCatching { guild.retrieveThreadChannelById(channelId).await() }
+            return guild.retrieveThreadChannelById(channelId).awaitCatching()
                 .onErrorResponse(ErrorResponse.UNKNOWN_CHANNEL) {
                     logger.trace { "Could not find thread channel $channelId" }
                     return null

@@ -6,6 +6,7 @@ import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.api.localization.DefaultMessages
@@ -67,7 +68,7 @@ class DefaultRateLimitHandler(
                 val channelRef by channel.ref()
                 deleteScope.launch {
                     delay(probe.nanosToWaitForRefill.nanoseconds)
-                    runCatching { channelRef.deleteMessageById(messageId).await() }
+                    channelRef.deleteMessageById(messageId).awaitCatching()
                 }
             }
         }
@@ -99,7 +100,7 @@ class DefaultRateLimitHandler(
         if (deleteOnRefill && probe.nanosToWaitForRefill <= 10.minutes.inWholeNanoseconds) {
             deleteScope.launch {
                 delay(probe.nanosToWaitForRefill.nanoseconds)
-                runCatching { hook.deleteOriginal().await() }
+                hook.deleteOriginal().awaitCatching()
             }
         }
     }
