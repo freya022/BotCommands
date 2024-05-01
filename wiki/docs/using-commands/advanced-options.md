@@ -1,3 +1,56 @@
+Text and application command options can benefit from more complex option types, 
+by combining multiple options into one parameter, 
+such as varargs, mention strings and custom data structures.
+
+## Varargs
+Varargs lets you generate options (up to 25 options per command) and put the values in a `List`,
+the number of required options is also configurable.
+
+### Annotation-declared commands
+Use [`#!java @VarArgs`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.annotations/-var-args/index.html) on the parameter.
+
+The drawback is that each option will be configured the same, name, description, etc...
+
+### Code-declared commands
+Using `optionVararg` or `inlineClassOptionVararg` on your command builder lets you solve the above issues.
+
+!!! example
+    ```kotlin
+    fun onSlashCommand(event: GuildSlashEvent, names: List<String>) {
+        // ...    
+    }
+    ```
+
+    ```kotlin
+    manager.slashCommand("command", ::onSlashCommand) {
+        optionVararg(
+            declaredName = "names", // Name of the method parameter
+            amount = 5, //How many options to generate
+            requiredAmount = 1, //How many of them are required
+            optionNameSupplier = { num -> "name_$num" } // Generate the name of each option
+        ) { num ->
+            // This runs for each option
+            description = "Name N°$num" 
+        }
+    }
+    ```
+
+## Mention strings
+!!! info "You can use this annotation on both code-declared and annotation-declared commands"
+
+[`#!java @MentionsString`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.annotations/-mentions-string/index.html) is an annotation
+that lets you retrieve as many mentions as a [string option lets you type](https://docs.jda.wiki/net/dv8tion/jda/api/interactions/commands/build/OptionData.html#MAX_STRING_OPTION_LENGTH),
+you must use it on a `List` parameter with an element type supported by the annotation.
+
+You can also use a `List<IMentionable>`, where you can set the requested mention types.
+
+!!! note
+
+    This won't restrict what the user can type on Discord,
+    this only enables parsing mentions inside the string.
+
+## Advanced code-declared options
+
 The Kotlin DSL also lets you do more, for example, using loops to generate commands, or even options.
 It also allows you to create more complex options, such as having multiple options in one parameter.
 
