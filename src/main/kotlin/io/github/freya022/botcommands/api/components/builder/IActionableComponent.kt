@@ -7,24 +7,17 @@ import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLim
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
-import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
-import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
@@ -214,8 +207,8 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent> T.bindTo(noinline func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent> T.bindTo(func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, emptyList(), block)
 }
 
 /**
@@ -227,8 +220,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent> T.bindTo(noinline func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, emptyList(), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent> T.bindTo(func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, emptyList(), block)
 }
 
 /**
@@ -240,8 +233,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1> T.bindTo(noinline func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1> T.bindTo(func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf<Any?>(arg1), block)
 }
 
 /**
@@ -253,8 +246,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1> T.bindTo(noinline func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1> T.bindTo(func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf<Any?>(arg1), block)
 }
 
 /**
@@ -266,8 +259,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(noinline func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2), block)
 }
 
 /**
@@ -279,8 +272,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(noinline func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2), block)
 }
 
 /**
@@ -292,8 +285,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(noinline func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3), block)
 }
 
 /**
@@ -305,8 +298,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(noinline func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3), block)
 }
 
 /**
@@ -318,8 +311,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4), block)
 }
 
 /**
@@ -331,8 +324,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(noinline func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4), block)
 }
 
 /**
@@ -344,8 +337,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
 /**
@@ -357,8 +350,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
 
 /**
@@ -370,8 +363,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
 /**
@@ -383,8 +376,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
 
 /**
@@ -396,8 +389,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
 /**
@@ -409,8 +402,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
 
 /**
@@ -422,8 +415,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
 /**
@@ -435,8 +428,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
 
 /**
@@ -448,8 +441,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
 /**
@@ -461,8 +454,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
 
 /**
@@ -474,8 +467,8 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
 
 /**
@@ -487,34 +480,27 @@ inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentI
  *
  * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
  */
-inline fun <T : IPersistentActionableComponent<T>, reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
-    return bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
+fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
+    return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
 
-@PublishedApi
-internal fun <T : IPersistentActionableComponent<T>> T.bindToCallable(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>, data: List<Any?>, block: ReceiverConsumer<PersistentHandlerBuilder>): T {
-    val name = findHandlerName(func, eventType)
-        ?: throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
-    return this.bindTo(handlerName = name) {
+private fun <T : IPersistentActionableComponent<T>> T.bindToCallable(func: KFunction<*>, data: List<Any?>, block: ReceiverConsumer<PersistentHandlerBuilder>): T {
+    return this.bindTo(findHandlerName(func)) {
         apply(block)
         passData(data)
     }
 }
 
-private fun findHandlerName(func: KFunction<*>, eventType: KClass<out GenericComponentInteractionCreateEvent>): String? {
-    func.findAnnotation<JDAButtonListener>()?.let {
-        requireUser(eventType.isSubclassOf<ButtonEvent>(), func) {
-            "Function must have a subclass of ButtonEvent as the first argument"
-        }
-        return it.name
-    }
+private fun findHandlerName(func: KFunction<*>): String {
+    val buttonName = func.findAnnotation<JDAButtonListener>()?.name
+    val selectMenuName = func.findAnnotation<JDASelectMenuListener>()?.name
 
-    func.findAnnotation<JDASelectMenuListener>()?.let {
-        requireUser(eventType.isSubclassOfAny(StringSelectEvent::class, EntitySelectEvent::class), func) {
-            "Function must have a subclass of StringSelectEvent/EntitySelectEvent as the first argument"
-        }
-        return it.name
-    }
+    if (buttonName != null && selectMenuName != null)
+        throwUser(func, "Cannot have the same function with the two annotation")
+    else if (buttonName != null)
+        return buttonName
+    else if (selectMenuName != null)
+        return selectMenuName
 
-    return null
+    throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
 }

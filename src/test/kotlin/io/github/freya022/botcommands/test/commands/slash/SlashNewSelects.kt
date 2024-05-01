@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
@@ -58,7 +59,7 @@ class SlashNewSelects(
             oneUse = true //Cancels whole group if used
             constraints += UserSnowflake.fromId(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(PERSISTENT_SELECT_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            bindTo(::onFirstSelectClicked)
 
             addOption("Test", "Test")
             addOption("Foo", "Foo")
@@ -71,7 +72,7 @@ class SlashNewSelects(
                 addUserIds(1234L)
                 allowingPermissions += Permission.ADMINISTRATOR
             }
-            bindTo(PERSISTENT_SELECT_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            bindTo(::onFirstSelectClicked)
 
             addOption("Test", "Test")
             addOption("Foo", "Foo")
@@ -105,7 +106,7 @@ class SlashNewSelects(
         return firstSelect
     }
 
-    @JDASelectMenuListener(name = PERSISTENT_SELECT_LISTENER_NAME)
+    @JDASelectMenuListener("SlashNewSelects: persistentSelect")
     fun onFirstSelectClicked(event: StringSelectEvent) {
         event.reply_("Persistent select menu clicked", ephemeral = true).queue()
     }

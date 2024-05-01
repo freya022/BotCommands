@@ -15,11 +15,13 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.api.core.entities.asInputUser
 import io.github.freya022.botcommands.test.config.Config
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import kotlinx.coroutines.TimeoutCancellationException
@@ -79,14 +81,14 @@ class SlashNewButtons(
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
+            bindTo(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
         }
 
         val secondButton = buttons.primary("Invisible").persistent {
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member, null)
+            bindTo(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
         }
 
         val timeoutEdButton = buttons.primary("Invisible").persistent {
@@ -118,7 +120,7 @@ class SlashNewButtons(
         return firstButton
     }
 
-    @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
+    @JDAButtonListener("SlashNewButtons: persistentButton")
     fun onFirstButtonClicked(event: ButtonEvent, double: Double, inputUser: InputUser, nullValue: Member?) {
         event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}, null: $nullValue", ephemeral = true).queue()
     }

@@ -12,13 +12,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
-
-private const val buttonListenerName = "SlashButton: persistentButton" //ClassName: theButtonPurpose
 
 @Command
 class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
@@ -36,8 +35,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
         }
 
         components += buttons.secondary("Click me anytime").persistent {
-            bindTo(buttonListenerName)
-//            bindTo(::onPersistentButtonClick) //Also works
+            bindTo(::onPersistentButtonClick)
         }
 
         event.replyComponents(components.into())
@@ -46,7 +44,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
             .queue()
     }
 
-    @JDAButtonListener(name = buttonListenerName)
+    @JDAButtonListener("SlashButton: persistentButton") //ClassName: theButtonPurpose
     suspend fun onPersistentButtonClick(event: ButtonEvent) {
         event.editButton(event.button.asDisabled()).await()
     }
