@@ -106,6 +106,7 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
  *
  * @see ignore
  * @see runIgnoringResponse
+ * @see awaitOrNullOn
  */
 inline fun <R> runIgnoringResponseOrNull(vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
     return try {

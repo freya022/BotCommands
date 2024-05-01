@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -117,6 +118,7 @@ suspend fun Guild.retrieveThreadChannelOrNull(id: Long): ThreadChannel? {
     }
 }
 
+//region RestAction extensions
 /**
  * Awaits the completion of this RestAction.
  */
@@ -131,6 +133,39 @@ suspend fun <R> RestAction<*>.awaitNull(): R? {
     submit().await()
     return null
 }
+
+/**
+ * Queues this REST action while ignoring the provided error responses.
+ *
+ * Any other error will be handled using the [default failure consumer][RestAction.setDefaultFailure].
+ *
+ * @see ErrorHandler
+ */
+fun RestAction<*>.queueIgnoring(vararg errorResponses: ErrorResponse) {
+    queue(null, ErrorHandler().ignore(errorResponses.asList()))
+}
+
+/**
+ * Awaits the completion of this RestAction,
+ * returns `null` if one of the provided error responses was thrown.
+ *
+ * Any other exception or error response occurs will be thrown.
+ *
+ * @see runIgnoringResponseOrNull
+ */
+suspend fun <R> RestAction<R>.awaitOrNullOn(vararg errorResponses: ErrorResponse): R? {
+    return runIgnoringResponseOrNull(*errorResponses) {
+        submit().await()
+    }
+}
+
+/**
+ * Awaits the completion of this RestAction and wraps it in a Result.
+ */
+suspend fun <R> RestAction<R>.awaitCatching(): Result<R> {
+    return runCatching { submit().await() }
+}
+//endregion
 
 //region Send / Edit / Replace extensions
 /**
