@@ -105,6 +105,6 @@ nav:
 #        - Built-in help command: foo
       - Slash commands:
         - Creating slash commands: using-commands/application-commands/writing-slash-commands.md
-#  - Using components: foo
+  - Using components: using-components.md
 #  - Using modals: foo
   - Docs: https://freya022.github.io/BotCommands/docs
