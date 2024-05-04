@@ -75,7 +75,7 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
                 );
             } else {
                 if (!(entry.getValue() instanceof String))
-                    throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String".formatted(key, baseName, effectiveLocale));
+                    throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String or a Map (JSON Object), found: %s".formatted(key, baseName, effectiveLocale, entry.getValue().getClass().getSimpleName()));
 
                 final LocalizationTemplate value = new DefaultLocalizationTemplate(context, (String) entry.getValue(), effectiveLocale);
 
