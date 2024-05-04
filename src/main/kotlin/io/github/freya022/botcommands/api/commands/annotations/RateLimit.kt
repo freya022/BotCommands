@@ -17,7 +17,18 @@ import java.time.temporal.ChronoUnit
  * @see io.github.bucket4j.Refill Bucket4J Refill
  */
 enum class RefillType {
+    /**
+     * Refill which will try to add the tokens to the bucket as soon as possible.
+     *
+     * For example, "10 tokens per 1 second" will add 1 token per each 100 milliseconds,
+     * in other words, it will not wait 1 second to regenerate 10 tokens.
+     */
     GREEDY,
+
+    /**
+     * Refill on every interval of time,
+     * "10 tokens per 1 second" will exactly regenerate 10 tokens every second.
+     */
     INTERVAL
 }
 

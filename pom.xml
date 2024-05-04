@@ -34,6 +34,7 @@
         <kotlin.compiler.apiVersion>2.0</kotlin.compiler.apiVersion>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <bucket4j.version>8.4.0</bucket4j.version>
     </properties>
 
     <licenses>
@@ -107,6 +108,10 @@
                                 <link>
                                     <url>https://docs.spring.io/spring-framework/docs/current/javadoc-api</url>
                                     <packageListUrl>https://docs.spring.io/spring-framework/docs/current/javadoc-api/element-list</packageListUrl>
+                                </link>
+                                <link>
+                                    <url>https://javadoc.io/doc/com.bucket4j/bucket4j-core/${bucket4j.version}</url>
+                                    <packageListUrl>https://javadoc.io/doc/com.bucket4j/bucket4j-core/${bucket4j.version}/element-list</packageListUrl>
                                 </link>
                             </externalDocumentationLinks>
                             <perPackageOptions>
@@ -535,7 +540,7 @@
         <dependency>
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
-            <version>8.4.0</version>
+            <version>${bucket4j.version}</version>
         </dependency>
         <dependency>
             <groupId>dev.reformator.stacktracedecoroutinator</groupId>
