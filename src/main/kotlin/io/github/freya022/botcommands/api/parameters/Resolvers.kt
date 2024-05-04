@@ -171,7 +171,9 @@ object Resolvers {
     @JvmStatic
     @JvmOverloads
     fun toHumanName(value: Enum<*>, locale: Locale = Locale.ROOT): String {
-        return value.name.lowercase(locale).replaceFirstChar { it.uppercaseChar() }
+        return value.name.lowercase(locale)
+            .replace('_', ' ')
+            .replaceFirstChar { it.uppercaseChar() }
     }
 }
 
