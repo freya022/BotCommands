@@ -1,25 +1,28 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandOption
-import io.github.freya022.botcommands.internal.utils.classRef
-import net.dv8tion.jda.api.entities.IMentionable
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.jvm.jvmErasure
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.requireUser
+import net.dv8tion.jda.api.interactions.commands.OptionType
+
+private val unsupportedTypes = enumSetOf(
+    OptionType.ATTACHMENT,
+    OptionType.ROLE,
+    OptionType.USER,
+    OptionType.CHANNEL,
+    OptionType.MENTIONABLE,
+)
 
 class AutocompleteCommandOption(
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {
     init {
-        val kType = optionBuilder.parameter.type
-        if (kType.jvmErasure.isSubclassOf<IMentionable>()) {
-            throw IllegalArgumentException("Autocomplete parameters cannot have entities extending ${classRef<IMentionable>()}")
-        } else if (optionBuilder.parameter.hasAnnotation<MentionsString>()) {
-            throw IllegalArgumentException("Autocomplete parameters cannot have strings of mentions")
+        requireUser(resolver.optionType !in unsupportedTypes, optionBuilder.parameter.function) {
+            "Autocomplete parameters does not support option type ${resolver.optionType} as Discord does not send them"
         }
     }
 }
