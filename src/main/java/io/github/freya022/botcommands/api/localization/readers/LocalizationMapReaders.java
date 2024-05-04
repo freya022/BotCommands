@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public final class LocalizationMapReaders {
     }
 
     @NotNull
-    @UnmodifiableView
+    @Unmodifiable
     public Collection<LocalizationMapReader> getReaders() {
         if (readers == null)
             readers = serviceContainer.getInterfacedServices(LocalizationMapReader.class);

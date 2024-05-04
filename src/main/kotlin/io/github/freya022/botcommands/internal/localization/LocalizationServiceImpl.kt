@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.core.SingleLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
@@ -86,9 +85,9 @@ internal class LocalizationServiceImpl internal constructor(
         localizationMap[baseName]?.remove(locale)
     }
 
-    override fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider> = localizationMapProviders.providers
+    override fun getMappingProviders(): Collection<LocalizationMapProvider> = localizationMapProviders.providers
 
-    override fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader> = localizationMapReader.readers
+    override fun getMappingReaders(): Collection<LocalizationMapReader> = localizationMapReader.readers
 
     override fun getFormattableArgumentFactories(): Collection<FormattableArgumentFactory> = formattableArgumentFactories
 }

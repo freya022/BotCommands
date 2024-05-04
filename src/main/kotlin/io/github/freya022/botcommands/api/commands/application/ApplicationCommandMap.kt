@@ -7,11 +7,12 @@ import io.github.freya022.botcommands.internal.commands.application.context.mess
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.Command
+import org.jetbrains.annotations.Unmodifiable
 import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 
 abstract class ApplicationCommandMap {
-    val allApplicationCommands: @UnmodifiableView List<ApplicationCommandInfo>
+    val allApplicationCommands: @Unmodifiable List<ApplicationCommandInfo>
         get() = Collections.unmodifiableList(Command.Type.entries.flatMap { getTypeMap<ApplicationCommandInfo>(it).values })
 
     operator fun get(type: Command.Type, path: CommandPath): ApplicationCommandInfo? {

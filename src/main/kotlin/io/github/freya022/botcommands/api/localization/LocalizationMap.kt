@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
-import org.jetbrains.annotations.UnmodifiableView
+import org.jetbrains.annotations.Unmodifiable
 import java.util.*
 
 /**
@@ -19,7 +19,7 @@ interface LocalizationMap {
      * Returns an unmodifiable set of keys this localization map contains,
      * or `null` if unsupported.
      */
-    val keys: @UnmodifiableView Set<String>?
+    val keys: @Unmodifiable Set<String>?
 
     /**
      * Returns the [LocalizationTemplate] with the corresponding path,

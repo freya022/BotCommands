@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
-import org.jetbrains.annotations.UnmodifiableView
+import org.jetbrains.annotations.Unmodifiable
 import java.util.*
 
 /**
@@ -43,16 +43,16 @@ interface LocalizationService {
     /**
      * Returns an unmodifiable view of [LocalizationMap providers][LocalizationMapProvider].
      */
-    fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider>
+    fun getMappingProviders(): @Unmodifiable Collection<LocalizationMapProvider>
 
     /**
      * Returns an unmodifiable view of [LocalizationMap readers][LocalizationMapReader].
      */
-    fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader>
+    fun getMappingReaders(): @Unmodifiable Collection<LocalizationMapReader>
 
     /**
      * Returns an unmodifiable view of [FormattableArgument factories][FormattableArgumentFactory].
      */
-    fun getFormattableArgumentFactories(): @UnmodifiableView Collection<FormattableArgumentFactory>
+    fun getFormattableArgumentFactories(): @Unmodifiable Collection<FormattableArgumentFactory>
 }
 
