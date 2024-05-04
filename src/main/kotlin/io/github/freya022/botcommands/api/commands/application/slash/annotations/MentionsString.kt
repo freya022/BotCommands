@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 
 /**
- * Marks the [@SlashOption][SlashOption] as a list of [mentionable][IMentionable] retrieved from a string.
+ * Marks the slash command option as a list of [mentionable][IMentionable] retrieved from a string.
+ *
+ * This works for both code-declared and annotated slash commands.
  *
  * The target parameter must be of type [List], where the element type is either:
  * - [User]
