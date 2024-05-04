@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import kotlin.coroutines.resume
 
 private val logger = KotlinLogging.logger { }
@@ -57,6 +58,10 @@ internal class ModalListener(private val context: BContextImpl, private val moda
             event.message?.let { put("Message", it.jumpUrl) }
             put("Modal values", event.values.associate { it.id to it.asString })
         })
-        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+        if (e is InsufficientPermissionException) {
+            event.replyExceptionMessage(context.getDefaultMessages(event).getBotPermErrorMsg(setOf(e.permission)))
+        } else {
+            event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+        }
     }
 }

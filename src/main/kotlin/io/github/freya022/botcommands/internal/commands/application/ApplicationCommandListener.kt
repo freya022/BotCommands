@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 
 private val logger = KotlinLogging.logger {  }
 
@@ -162,7 +163,12 @@ internal class ApplicationCommandListener internal constructor(
 
     private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
         exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap())
-        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+
+        if (e is InsufficientPermissionException) {
+            event.replyExceptionMessage(context.getDefaultMessages(event).getBotPermErrorMsg(setOf(e.permission)))
+        } else {
+            event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+        }
     }
 
     private suspend fun canRun(

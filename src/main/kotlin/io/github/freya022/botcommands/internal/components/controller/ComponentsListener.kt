@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
@@ -213,7 +214,11 @@ internal class ComponentsListener(
             "Message" to event.message.jumpUrl,
             "Component" to event.component
         ))
-        event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+        if (e is InsufficientPermissionException) {
+            event.replyExceptionMessage(context.getDefaultMessages(event).getBotPermErrorMsg(setOf(e.permission)))
+        } else {
+            event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+        }
     }
 
     private suspend fun tryInsertOption(

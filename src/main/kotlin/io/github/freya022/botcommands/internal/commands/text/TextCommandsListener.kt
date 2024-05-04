@@ -20,6 +20,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
 
@@ -128,7 +129,11 @@ internal class TextCommandsListener internal constructor(
 
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
-        replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
+        if (e is InsufficientPermissionException) {
+            replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(setOf(e.permission)))
+        } else {
+            replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
+        }
     }
 
     private fun findCommandWithArgs(content: String, isNotOwner: Boolean): CommandWithArgs? {
