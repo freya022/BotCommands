@@ -4,9 +4,11 @@ import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
+import io.github.freya022.botcommands.internal.utils.classRef
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
@@ -31,6 +33,12 @@ class SlashCommandOption(
     val length: LengthRange? = optionBuilder.lengthRange
 
     init {
+        choices?.forEach {
+            check(it.nameLocalizations.toMap().isEmpty()) {
+                "Choice '${it.name}' cannot be manually localized, use ${classRef<BApplicationConfigBuilder>()}#addLocalizations instead"
+            }
+        }
+
         description = LocalizationUtils.getOptionDescription(slashCommandInfo.context, optionBuilder)
 
         if (range != null) {
