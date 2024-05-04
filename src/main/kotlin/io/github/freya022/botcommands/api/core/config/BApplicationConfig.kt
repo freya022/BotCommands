@@ -97,13 +97,14 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
 
     /**
      * Adds the specified bundle names with its locales;
-     * those bundles will be used for command localization (name, description, options, choices...)
+     * those bundles will be used for command localization (name, description, options, choices...).
      *
      * All the locales will be considered as pointing to a valid localization bundle,
-     * logging a warning if it can't be found
+     * logging a warning if it can't be found.
      *
      * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
-     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     * will, by default, find bundles `/bc_localization/MyCommands_de_DE.json`
+     * and `/bc_localization/MyCommands_fr_FR.json`.
      *
      * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
@@ -124,13 +125,14 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
 
     /**
      * Adds the specified bundle names with its locales;
-     * those bundles will be used for command localization (name, description, options, choices...)
+     * those bundles will be used for command localization (name, description, options, choices...).
      *
      * All the locales will be considered as pointing to a valid localization bundle,
-     * logging a warning if it can't be found
+     * logging a warning if it can't be found.
      *
      * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
-     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     * will, by default, find bundles `/bc_localization/MyCommands_de_DE.json`
+     * and `/bc_localization/MyCommands_fr_FR.json`.
      *
      * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
