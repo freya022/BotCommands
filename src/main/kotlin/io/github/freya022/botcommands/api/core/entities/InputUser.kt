@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core.entities
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.utils.ImageProxy
 
 /**
  * Extension of [User] containing a nullable [Member], obtainable on text command and all interactions.
@@ -16,6 +17,20 @@ interface InputUser : User {
      * or `null` if the user is not in the guild.
      */
     val member: Member?
+
+    override fun getEffectiveName(): String {
+        return member?.effectiveName ?: super.getEffectiveName()
+    }
+
+    override fun getEffectiveAvatar(): ImageProxy {
+        return member?.effectiveAvatar ?: super.getEffectiveAvatar()
+    }
+
+    override fun getEffectiveAvatarUrl(): String {
+        return member?.effectiveAvatarUrl ?: super.getEffectiveAvatarUrl()
+    }
+
+    //TODO effective decoration
 }
 
 /**
