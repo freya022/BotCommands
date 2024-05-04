@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
@@ -114,6 +116,7 @@ object Resolvers {
      * or by using a service factory with [Resolver] as such:
      *
      * ```java
+     * @BConfiguration
      * public class EnumResolvers {
      *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers#toHumanName'
      *     @Resolver
@@ -126,6 +129,21 @@ object Resolvers {
      * ```
      *
      * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+     *
+     * ### Localization
+     *
+     * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
+     * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
+     * as required by [LocalizationFunction].
+     *
+     * The choice name is produced by [nameFunction],
+     * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
+     *
+     * For example, using the [default name function][toHumanName]:
+     *
+     * 1. `MY_ENUM_VALUE` (Raw enum name)
+     * 2. `My enum value` (Choice name displayed on Discord)
+     * 3. `my_enum_value` (Choice name in your localization file)
      *
      * @param values              The accepted enumeration values
      * @param guildValuesSupplier The function retrieving the enum values depending on the [Guild]
@@ -144,6 +162,12 @@ object Resolvers {
         return EnumResolver(e, values, guildValuesSupplier, nameFunction)
     }
 
+    /**
+     * Convert an enum to a more human-friendly name.
+     *
+     * This takes the enum value's name and capitalizes it, while replacing underscores with spaces, for example,
+     * `MY_ENUM_VALUE` -> `Enum value name`.
+     */
     @JvmStatic
     @JvmOverloads
     fun toHumanName(value: Enum<*>, locale: Locale = Locale.ROOT): String {
@@ -161,6 +185,7 @@ object Resolvers {
  * or by using a service factory with [Resolver] as such:
  *
  * ```kt
+ * @BConfiguration
  * object EnumResolvers {
  *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers.Enum#toHumanName'
  *     @Resolver
@@ -171,6 +196,21 @@ object Resolvers {
  * ```
  *
  * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+ *
+ * ### Localization
+ *
+ * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
+ * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
+ * as required by [LocalizationFunction].
+ *
+ * The choice name is produced by [nameFunction],
+ * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
+ *
+ * For example, using the [default name function][toHumanName]:
+ *
+ * 1. `MY_ENUM_VALUE` (Raw enum name)
+ * 2. `My enum value` (Choice name displayed on Discord)
+ * 3. `my_enum_value` (Choice name in your localization file)
  *
  * @param values              The accepted enumeration values
  * @param guildValuesSupplier The function retrieving the enum values depending on the [Guild]
@@ -192,7 +232,8 @@ internal inline fun <reified E : Enum<E>> defaultEnumValuesSupplier(valueCollect
 /**
  * Convert an enum to a more human-friendly name.
  *
- * This takes the enum value's name and capitalizes it, while replacing underscores with spaces.
+ * This takes the enum value's name and capitalizes it, while replacing underscores with spaces, for example,
+ * `MY_ENUM_VALUE` -> `Enum value name`.
  */
 fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
 
