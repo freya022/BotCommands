@@ -2,7 +2,10 @@ package io.github.freya022.botcommands.api.core.entities
 
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.utils.ImageProxy
 
 /**
@@ -41,3 +44,16 @@ fun User.asInputUser(): InputUser = InputUserImpl(this)
  * Wraps this member as an [InputUser].
  */
 fun Member.asInputUser(): InputUser = InputUserImpl(this)
+
+/**
+ * Gets the interaction user as an [InputUser].
+ */
+val Interaction.inputUser: InputUser get() = InputUserImpl(user, member)
+/**
+ * Gets the message's author as an [InputUser].
+ */
+val Message.inputUser: InputUser get() = InputUserImpl(author, member)
+/**
+ * Gets the message's author as an [InputUser].
+ */
+val MessageReceivedEvent.inputUser: InputUser get() = InputUserImpl(author, member)
