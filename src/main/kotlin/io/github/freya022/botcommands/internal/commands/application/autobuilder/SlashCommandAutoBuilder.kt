@@ -90,6 +90,15 @@ internal class SlashCommandAutoBuilder(
                     SlashFunctionMetadata(it, annotation, path, commandId)
                 }
 
+        val duplicatePaths = functions.groupBy { it.path.fullPath }.filterValues { it.size >= 2 }
+        check(duplicatePaths.isEmpty()) {
+            val sharedPaths = duplicatePaths.entries.joinAsList { (path, metadataList) ->
+                val signatures = metadataList.joinAsList { it.func.shortSignature }
+                "$path:\n${signatures.prependIndent()}"
+            }
+            "Multiple annotated commands share the same path:\n$sharedPaths"
+        }
+
         val missingTopLevels = functions.groupByTo(hashMapOf()) { it.path.name }
         // Check that top level names don't appear more than once
         missingTopLevels.values.forEach { metadataList ->
