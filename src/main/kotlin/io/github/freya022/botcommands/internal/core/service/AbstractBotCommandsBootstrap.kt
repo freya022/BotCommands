@@ -38,11 +38,7 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         }
     }
 
-    internal fun runBootstrap() = runBlocking {
-        measure("Created services") {
-            injectServices()
-        }
-
+    internal fun loadContext() = runBlocking {
         measure("Completed BotCommands loading events") {
             serviceContainer.getService<BContextImpl>().apply {
                 setStatus(BContext.Status.PRE_LOAD)
@@ -60,9 +56,7 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         }
     }
 
-    protected abstract fun injectServices()
-
-    private inline fun measure(desc: String, block: () -> Unit) {
+    protected inline fun measure(desc: String, block: () -> Unit) {
         measureTime(block).also {
             logger.trace { "$desc in ${it.toString(DurationUnit.MILLISECONDS, 2)}" }
         }

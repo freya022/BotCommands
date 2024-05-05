@@ -81,7 +81,8 @@ object BotCommands {
     private fun build(config: BConfig): BContext {
         val (context, duration) = measureTimedValue {
             val bootstrap = DefaultBotCommandsBootstrap(config)
-            bootstrap.runBootstrap()
+            bootstrap.injectAndLoadServices()
+            bootstrap.loadContext()
             bootstrap.serviceContainer.getService<BContext>()
         }
         logger.info { "Loaded BotCommands in ${duration.toString(DurationUnit.SECONDS, 3)}" }
