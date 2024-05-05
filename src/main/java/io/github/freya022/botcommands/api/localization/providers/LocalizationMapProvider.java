@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
+import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +12,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Supplies {@link LocalizationMap}s for the requested bundle name and locale.
+ * Supplies a {@link LocalizationMap} for the requested bundle name and locale.
+ * <br>This is an intermediary step, often using existing {@link LocalizationMapReader}s.
  *
  * <p>
  * <b>Usage</b>: Register your instance as a service with {@link BService}

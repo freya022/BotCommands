@@ -14,7 +14,10 @@ import java.util.Locale;
 /**
  * Default implementation for {@link LocalizationMap} providers.
  *
- * <p>This provider simply takes care of the loading order and merging of the localization templates.
+ * <p>Loading is done by running all {@link LocalizationMap LocalizationMap readers}
+ * until one returns a valid {@link LocalizationMap}.
+ * <br>Then, repeats with a broader locale while merging the new strings,
+ * until the root locale is reached.
  * <br>The templates are loaded with the best (most specific or closest) locale available,
  * followed by the templates of broader locales.
  *

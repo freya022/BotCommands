@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * Reads localization mappings
+ * Reads a {@link LocalizationMap} from the provided bundle coordinates.
+ * <br>This is the final step in reading a localization resource.
  *
  * <p>
  * <b>Usage</b>: Register your instance as a service with {@link BService}
