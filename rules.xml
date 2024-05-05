@@ -9,7 +9,7 @@
         </rule>
         <rule groupId="org.jetbrains.kotlinx" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.+-RC.*</ignoreVersion>
+                <ignoreVersion type="regex">.+-(?:RC|Beta).*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.slf4j" comparisonMethod="maven">

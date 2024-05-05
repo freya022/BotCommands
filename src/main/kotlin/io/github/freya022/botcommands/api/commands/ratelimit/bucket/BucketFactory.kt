@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.bucket
 
 import io.github.bucket4j.Bandwidth
+import io.github.bucket4j.BandwidthBuilder.BandwidthBuilderRefillStage
 import io.github.bucket4j.Bucket
-import io.github.bucket4j.Refill
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import java.time.Duration as JavaDuration
@@ -29,7 +29,7 @@ fun interface BucketFactory {
 
         /**
          * Creates a [BucketFactory] with a simple [Bandwidth] of the specified capacity,
-         * and a [greedy][Refill.greedy] refill.
+         * and a [greedy refill][BandwidthBuilderRefillStage.refillGreedy].
          *
          * In other words, the tokens of the bucket will be progressively refilled over the duration,
          * such as the entire bucket would have had been refilled when the duration has elapsed.
@@ -37,14 +37,14 @@ fun interface BucketFactory {
          * ### Example
          * For a bucket with 10 tokens and a duration of 10 seconds, 1 token will be added every second.
          *
-         * @see Refill.greedy
+         * @see BandwidthBuilderRefillStage.refillGreedy
          */
         fun default(capacity: Long, duration: Duration): BucketFactory =
             default(capacity, duration.toJavaDuration())
 
         /**
          * Creates a [BucketFactory] with a [Bandwidth] of the specified capacity,
-         * and a [greedy][Refill.greedy] refill.
+         * and a [greedy refill][BandwidthBuilderRefillStage.refillGreedy].
          *
          * In other words, the tokens of the bucket will be progressively refilled over the duration,
          * such as the entire bucket would have been refilled when the duration has elapsed.
@@ -52,21 +52,25 @@ fun interface BucketFactory {
          * ### Example
          * For a bucket with 10 tokens and a duration of 10 seconds, 1 token will be added every second.
          *
-         * @see Refill.greedy
+         * @see BandwidthBuilderRefillStage.refillGreedy
          */
         @JvmStatic
         fun default(capacity: Long, duration: JavaDuration): BucketFactory = BucketFactory {
             Bucket.builder()
-                .addLimit(Bandwidth.simple(capacity, duration))
+                .addLimit(Bandwidth.builder()
+                    .capacity(capacity)
+                    .refillGreedy(capacity, duration)
+                    .build()
+                )
                 .build()
         }
 
         /**
          * Creates a [BucketFactory] with:
          * - a [Bandwidth] of the specified [capacity],
-         *   and a [greedy][Refill.greedy] refill of the specified [duration].
+         *   and a [greedy refill][BandwidthBuilderRefillStage.refillGreedy] of the specified [duration].
          * - a [Bandwidth] of the specified [spike capacity][spikeCapacity],
-         *   and an ["intervally"][Refill.intervally] refill of the specified [spike duration][spikeDuration].
+         *   and an ["intervally" refill][BandwidthBuilderRefillStage.refillIntervally] of the specified [spike duration][spikeDuration].
          *
          * When a token is used, both bandwidths need to have a token available.
          *
@@ -90,8 +94,8 @@ fun interface BucketFactory {
          *
          * @throws IllegalArgumentException If [capacity] > [spikeCapacity]
          *
-         * @see Refill.greedy
-         * @see Refill.intervally
+         * @see BandwidthBuilderRefillStage.refillGreedy
+         * @see BandwidthBuilderRefillStage.refillIntervally
          */
         fun spikeProtected(capacity: Long, duration: Duration, spikeCapacity: Long, spikeDuration: Duration): BucketFactory =
             spikeProtected(capacity, duration.toJavaDuration(), spikeCapacity, spikeDuration.toJavaDuration())
@@ -99,9 +103,9 @@ fun interface BucketFactory {
         /**
          * Creates a [BucketFactory] with:
          * - a [Bandwidth] of the specified [capacity],
-         *   and a [greedy][Refill.greedy] refill of the specified [duration].
+         *   and a [greedy refill][BandwidthBuilderRefillStage.refillGreedy] of the specified [duration].
          * - a [Bandwidth] of the specified [spike capacity][spikeCapacity],
-         *   and an ["intervally"][Refill.intervally] refill of the specified [spike duration][spikeDuration].
+         *   and an ["intervally" refill][BandwidthBuilderRefillStage.refillIntervally] of the specified [spike duration][spikeDuration].
          *
          * When a token is used, both bandwidths need to have a token available.
          *
@@ -125,8 +129,8 @@ fun interface BucketFactory {
          *
          * @throws IllegalArgumentException If [capacity] > [spikeCapacity]
          *
-         * @see Refill.greedy
-         * @see Refill.intervally
+         * @see BandwidthBuilderRefillStage.refillGreedy
+         * @see BandwidthBuilderRefillStage.refillIntervally
          */
         @JvmStatic
         fun spikeProtected(capacity: Long, duration: JavaDuration, spikeCapacity: Long, spikeDuration: JavaDuration): BucketFactory {
@@ -134,8 +138,16 @@ fun interface BucketFactory {
 
             return BucketFactory {
                 Bucket.builder()
-                    .addLimit(Bandwidth.simple(capacity, duration))
-                    .addLimit(Bandwidth.classic(spikeCapacity, Refill.intervally(spikeCapacity, spikeDuration)))
+                    .addLimit(Bandwidth.builder()
+                        .capacity(capacity)
+                        .refillGreedy(capacity, duration)
+                        .build()
+                    )
+                    .addLimit(Bandwidth.builder()
+                        .capacity(spikeCapacity)
+                        .refillIntervally(spikeCapacity, spikeDuration)
+                        .build()
+                    )
                     .build()
             }
         }

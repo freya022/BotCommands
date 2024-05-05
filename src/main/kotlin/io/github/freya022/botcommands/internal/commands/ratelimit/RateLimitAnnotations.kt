@@ -11,21 +11,20 @@ import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import io.github.bucket4j.Bandwidth as BucketBandwidth
-import io.github.bucket4j.Refill as BucketRefill
 
-fun Refill.toRealRefill(): BucketRefill {
-    val duration = Duration.of(period, periodUnit)
-    return when (type) {
-        RefillType.GREEDY -> BucketRefill.greedy(tokens, duration)
-        RefillType.INTERVAL -> BucketRefill.intervally(tokens, duration)
-    }
-}
+private fun Bandwidth.toRealBandwidth(): BucketBandwidth =
+    BucketBandwidth.builder()
+        .capacity(capacity)
+        .let {
+            val duration = Duration.of(refill.period, refill.periodUnit)
+            when (refill.type) {
+                RefillType.GREEDY -> it.refillGreedy(refill.tokens, duration)
+                RefillType.INTERVAL -> it.refillIntervally(refill.tokens, duration)
+            }
+        }
+        .build()
 
-fun Bandwidth.toRealBandwidth(): BucketBandwidth {
-    return BucketBandwidth.classic(capacity, refill.toRealRefill())
-}
-
-fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
+internal fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
     val rateLimitAnnotation = findAnnotation<RateLimit>() ?: this.declaringClass.findAnnotation<RateLimit>()
     val cooldownAnnotation = findAnnotation<Cooldown>() ?: this.declaringClass.findAnnotation<Cooldown>()
     requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
