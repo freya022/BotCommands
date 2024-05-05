@@ -37,7 +37,30 @@ while the declaring class must extend `ApplicationCommand`.
         --8<-- "wiki/java/commands/slash/SlashPing.java:ping-java"
         ```
 
-[//]: # (TODO add subcommands)
+### Subcommands
+
+To make a subcommand, set the `name` and `subcommand` on the annotation.
+
+You will also need to add a [`#!java @TopLevelSlashCommandData`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.annotations/-top-level-slash-command-data/index.html),
+it must only be used **once per top-level** command, this allows you to set top-level attributes.
+
+!!! example
+
+    === "Kotlin"
+        ```kotlin
+        --8<-- "wiki/commands/slash/SlashTag.kt:slash_subcommands-kotlin"
+        ```
+
+    === "Java"
+        ```java
+        --8<-- "wiki/java/commands/slash/SlashTag.java:slash_subcommands-java"
+        ```
+
+!!! note
+
+    You cannot have both subcommands and top-level commands (i.e., an annotation with only `name` set).
+
+    However, you can have both subcommand groups and subcommands groups containing subcommands.
 
 ### Adding options
 
@@ -119,7 +142,20 @@ and then configure your command.
     --8<-- "wiki/commands/slash/SlashPing.kt:ping-kotlin_dsl"
     ```
 
-[//]: # (TODO add subcommands)
+### Subcommands
+
+As top-level commands cannot be made alongside subcommands, the top-level `function` must be `null`.
+
+You can then add a subcommand by using `subcommand`, where each subcommand is its own function.
+
+!!! example
+    ```kotlin
+    --8<-- "wiki/commands/slash/SlashTag.kt:slash_subcommands-kotlin_dsl"
+    ```
+
+!!! info
+    
+    You can still create both subcommands, and subcommand groups containg subcommands.
 
 ### Adding options
 
