@@ -9,14 +9,14 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.transactional
-import io.github.freya022.wiki.switches.wiki.WikiLanguage
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
 
 private val logger = KotlinLogging.logger { }
 
-@WikiLanguage(WikiLanguage.Language.KOTLIN)
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 @Command
 class SlashDb(private val database: Database) : ApplicationCommand() {
     @JDASlashCommand(name = "db")

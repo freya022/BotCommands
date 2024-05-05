@@ -6,14 +6,14 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.components.Button;
 import io.github.freya022.botcommands.api.components.Buttons;
-import io.github.freya022.wiki.switches.wiki.WikiLanguage;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 
 import java.time.Duration;
 
 @SuppressWarnings("CodeBlock2Expr")
-@WikiLanguage(WikiLanguage.Language.JAVA)
+@WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:ephemeral-clicker-java]
 @Command
 public class SlashClickerEphemeral extends ApplicationCommand {

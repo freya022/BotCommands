@@ -5,11 +5,11 @@ import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer;
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService;
 import io.github.freya022.wiki.config.Config;
-import io.github.freya022.wiki.switches.wiki.WikiLanguage;
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@WikiLanguage(WikiLanguage.Language.JAVA)
+@WikiCommandProfile(WikiCommandProfile.Profile.JAVA)
 // --8<-- [start:tag_interfaced_condition-java]
 @Command
 @ConditionalService(TagCommand.FeatureCheck.class) // Only create the command if this passes

@@ -7,7 +7,9 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
+import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
 
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
 // --8<-- [start:slash_subcommands-kotlin]
 @Command
 class SlashTag : ApplicationCommand() {
@@ -27,6 +29,7 @@ class SlashTag : ApplicationCommand() {
 }
 // --8<-- [end:slash_subcommands-kotlin]
 
+@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:slash_subcommands-kotlin_dsl]
 @Command
 class SlashTagDsl : GlobalApplicationCommandProvider {
