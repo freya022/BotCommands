@@ -160,16 +160,19 @@ class ResolverContainer internal constructor(
         return resolver::class.isSubclassOfAny(compatibleInterfaces)
     }
 
-    private object NullServiceCustomResolverFactory : TypedParameterResolverFactory<NullServiceCustomResolverFactory.NullServiceCustomResolver>(NullServiceCustomResolver::class, Any::class) {
-        private object NullServiceCustomResolver : ClassParameterResolver<NullServiceCustomResolver, Any>(Any::class), ICustomResolver<NullServiceCustomResolver, Any> {
+    private data object NullServiceCustomResolverFactory : TypedParameterResolverFactory<NullServiceCustomResolverFactory.NullServiceCustomResolver>(NullServiceCustomResolver::class, Any::class) {
+        private data object NullServiceCustomResolver : ClassParameterResolver<NullServiceCustomResolver, Any>(Any::class), ICustomResolver<NullServiceCustomResolver, Any> {
             override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): Any? = null
         }
 
         override fun get(request: ResolverRequest): NullServiceCustomResolver = NullServiceCustomResolver
     }
 
-    private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class),
-        ICustomResolver<ServiceCustomResolver, Any> {
+    private class ServiceCustomResolver<T : Any>(
+        private val o: T
+    ) : ClassParameterResolver<ServiceCustomResolver<T>, T>(o::class),
+        ICustomResolver<ServiceCustomResolver<T>, T> {
+
         override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event) = o
     }
 
