@@ -1,5 +1,6 @@
 package doc.kotlin.examples.parameters
 
+import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
@@ -16,7 +17,6 @@ import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
-import kotlin.reflect.full.findAnnotation
 
 @InterfacedService(acceptMultiple = false)
 interface GuildSettingsService {

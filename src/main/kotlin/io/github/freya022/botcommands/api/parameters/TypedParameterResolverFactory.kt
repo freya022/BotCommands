@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
@@ -38,7 +37,8 @@ abstract class TypedParameterResolverFactory<T : IParameterResolver<T>>(
         }
     }
 
-    override fun isResolvable(parameter: ParameterWrapper): Boolean {
-        return this.type == parameter.type || this.type == parameter.type.withNullability(false)
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        val requestedType = request.parameter.type
+        return this.type == requestedType || this.type == requestedType.withNullability(false)
     }
 }

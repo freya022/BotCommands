@@ -49,18 +49,18 @@ abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverT
     abstract val supportedTypesStr: List<String>
 
     /**
-     * Determines if a given parameter is supported.
+     * Determines if a given parameter is supported, only one factory must return `true`.
      *
-     * Only one factory must return `true`.
+     * This only gets called if the requested resolver is compatible with [resolverType].
      */
-    abstract fun isResolvable(parameter: ParameterWrapper): Boolean
+    abstract fun isResolvable(request: ResolverRequest): Boolean
 
     /**
      * Returns a [ParameterResolver] for the given parameter.
      *
      * This is only called if [isResolvable] returned `true`.
      */
-    abstract fun get(parameter: ParameterWrapper): T
+    abstract fun get(request: ResolverRequest): T
 
     override fun toString(): String {
         return "ParameterResolverFactory(resolverType=${resolverType.shortQualifiedName})"

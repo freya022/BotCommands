@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
@@ -27,11 +27,11 @@ object MapResolverFactory : ParameterResolverFactory<MapResolver<*>>(MapResolver
 
     override val supportedTypesStr: List<String> = resolvers.map { it.type.simpleNestedName }
 
-    override fun isResolvable(parameter: ParameterWrapper): Boolean {
-        return resolvers.any { it.type == parameter.type }
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        return resolvers.any { it.type == request.parameter.type }
     }
 
-    override fun get(parameter: ParameterWrapper): MapResolver<*> {
-        return resolvers.first { it.type == parameter.type }
+    override fun get(request: ResolverRequest): MapResolver<*> {
+        return resolvers.first { it.type == request.parameter.type }
     }
 }

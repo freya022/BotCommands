@@ -10,13 +10,16 @@ import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
+import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
-import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
+import kotlin.reflect.KClass
 
 @BService
 class ResolverContainer internal constructor(
@@ -26,8 +29,9 @@ class ResolverContainer internal constructor(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    private val factories: MutableList<ParameterResolverFactory<*>> = Collections.synchronizedList(arrayOfSize(50))
-    private val cache: MutableMap<ParameterWrapper, ParameterResolverFactory<*>> = Collections.synchronizedMap(hashMapOf())
+    private val lock = ReentrantLock()
+    private val factories: MutableList<ParameterResolverFactory<*>> = arrayOfSize(50)
+    private val cache: MutableMap<ResolverRequest, ParameterResolverFactory<*>?> = hashMapOf()
 
     init {
         resolvers.forEach(::addResolver)
@@ -45,14 +49,14 @@ class ResolverContainer internal constructor(
         }
     }
 
-    fun addResolverFactory(resolver: ParameterResolverFactory<*>) {
+    fun addResolverFactory(resolver: ParameterResolverFactory<*>) = lock.withLock {
         factories += resolver
         cache.clear()
     }
 
     @JvmSynthetic
     @BEventListener
-    internal fun onLoad(event: LoadEvent) {
+    internal fun onLoad(event: LoadEvent) = lock.withLock {
         if (factories.isEmpty()) {
             throwInternal("No resolvers/factories were found") //Never happens
         } else {
@@ -73,42 +77,83 @@ class ResolverContainer internal constructor(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     @JvmSynthetic
-    internal fun getResolverFactoryOrNull(parameter: ParameterWrapper): ParameterResolverFactory<*>? {
-        val resolvableFactories = factories.filter { it.isResolvable(parameter) }
+    internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? = lock.withLock {
+        cache[request]?.let { return@withLock it as ParameterResolverFactory<T>? }
+
+        val resolvableFactories = factories
+            .filter { it.resolverType.isSubclassOf(resolverType) }
+            .map { it as ParameterResolverFactory<T> }
+            .filter { it.isResolvable(request) }
         require(resolvableFactories.size <= 1) {
             val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
-            "Found multiple compatible resolvers for parameter of type ${parameter.type.simpleNestedName}\n$factoryNameList"
+            "Found multiple compatible resolvers for the provided request\n$factoryNameList"
         }
 
-        return resolvableFactories.firstOrNull()
+        val factory = getFactoryOrServiceFactory(resolverType, resolvableFactories, request) as ParameterResolverFactory<T>?
+        cache[request] = factory
+        factory
     }
 
-    @JvmSynthetic
-    internal inline fun <reified T : Any> hasResolverOfType(parameter: ParameterWrapper): Boolean {
-        val resolverFactory = getResolverFactoryOrNull(parameter) ?: return false
-        return resolverFactory.resolverType.isSubclassOf<T>()
-    }
-
-    @JvmSynthetic
-    internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
-        return cache.computeIfAbsent(parameter) { wrapper ->
-            getResolverFactoryOrNull(wrapper) ?: run {
-                val serviceResult = serviceContainer.tryGetWrappedService(wrapper.parameter)
-
-                serviceResult.serviceError?.let { serviceError ->
-                    //If a service isn't required then that's fine
-                    if (wrapper.parameter.isNullable || wrapper.parameter.isOptional) {
-                        logger.trace { "Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}" }
-                        return@run NullServiceCustomResolverFactory
-                    }
-
-                    wrapper.throwUser("Parameter #${wrapper.index} of type '${wrapper.type.simpleNestedName}' and name '${wrapper.name}' does not have any compatible resolver and service loading failed:\n${serviceError.toSimpleString()}")
-                }
-
-                ServiceCustomResolver(serviceResult.getOrThrow()).toResolverFactory()
+    private fun <T : IParameterResolver<T>> getFactoryOrServiceFactory(
+        resolverType: KClass<out IParameterResolver<*>>,
+        resolvableFactories: List<ParameterResolverFactory<T>>,
+        request: ResolverRequest
+    ): ParameterResolverFactory<*>? {
+        if (resolvableFactories.isNotEmpty()) {
+            return resolvableFactories.first()
+        } else if (resolverType.isSubclassOf(ICustomResolver::class)) {
+            val wrapper = request.parameter
+            val serviceResult = serviceContainer.tryGetWrappedService(wrapper.parameter)
+            val serviceError = serviceResult.serviceError
+            if (serviceError == null) {
+                return serviceResult.getOrThrow().let(::ServiceCustomResolver).toResolverFactory()
+            } else if (wrapper.parameter.isNullable || wrapper.parameter.isOptional) {
+                // If the parameter is nullable/optional, give a resolver that returns null
+                logger.trace { "No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}' and service loading failed:\n${serviceError.toDetailedString()}" }
+                return NullServiceCustomResolverFactory
             }
-        }.get(parameter)
+        }
+
+        return null
+    }
+
+    @JvmSynthetic
+    internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
+        return hasResolverOfType<T>(ResolverRequest(parameter))
+    }
+
+    @JvmSynthetic
+    internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(request: ResolverRequest): Boolean {
+        return getResolverFactoryOrNull(T::class, request) != null
+    }
+
+    @JvmSynthetic
+    internal inline fun <reified T : IParameterResolver<T>> getResolverOfType(parameter: ParameterWrapper): T {
+        return getResolver(T::class, ResolverRequest(parameter))
+    }
+
+    //TODO refactor this and getResolverFactoryOrNull
+    // They need to run a common function to get the factory alongside the (possible) error message
+    // Factory would just do nothing with it, but it will be useful for getResolver
+    // and will deduplicate code
+    @JvmSynthetic
+    internal fun <T : IParameterResolver<T>> getResolver(resolverType: KClass<T>, request: ResolverRequest): T {
+        val factory = getResolverFactoryOrNull(resolverType, request)
+        if (factory == null) {
+            val wrapper = request.parameter
+            // Custom resolvers are often used for services
+            // if not one, make a simple error
+            if (!resolverType.isSubclassOf(ICustomResolver::class))
+                wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}'.")
+
+            // If a service factory, add the error
+            val serviceError = serviceContainer.tryGetWrappedService(wrapper.parameter).serviceError ?: throwInternal("Service became available after failing")
+            wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}' and service loading failed:\n${serviceError.toDetailedString()}")
+        }
+
+        return factory.get(request)
     }
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
@@ -120,7 +165,7 @@ class ResolverContainer internal constructor(
             override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): Any? = null
         }
 
-        override fun get(parameter: ParameterWrapper): NullServiceCustomResolver = NullServiceCustomResolver
+        override fun get(request: ResolverRequest): NullServiceCustomResolver = NullServiceCustomResolver
     }
 
     private class ServiceCustomResolver(private val o: Any) : ClassParameterResolver<ServiceCustomResolver, Any>(Any::class),
@@ -137,6 +182,7 @@ class ResolverContainer internal constructor(
             UserContextParameterResolver::class,
             MessageContextParameterResolver::class,
             ModalParameterResolver::class,
+            TimeoutParameterResolver::class,
             ICustomResolver::class
         )
     }

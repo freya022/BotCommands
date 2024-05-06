@@ -43,7 +43,8 @@ internal object CommandOptions {
                 is T -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    when (val resolver = resolverContainer.getResolver(parameter)) {
+                    // TODO replace with getResolverOrNull<R>(parameter) ?: throwUser
+                    when (val resolver = resolverContainer.getResolverOfType<R>(parameter)) {
                         is R -> config.transformOption(optionBuilder, resolver)
                         else -> throwUser(
                             optionBuilder.owner,
@@ -55,7 +56,8 @@ internal object CommandOptions {
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    when (val resolver = resolverContainer.getResolver(parameter)) {
+                    // TODO replace with getResolverOrNull<R>(parameter) ?: throwUser
+                    when (val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(parameter)) {
                         is ICustomResolver<*, *> -> CustomMethodOption(optionBuilder.optionParameter, resolver)
                         else -> throwUser(
                             optionBuilder.owner,

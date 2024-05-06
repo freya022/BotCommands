@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -187,8 +186,8 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
 
 internal fun ResolverContainer.requireCustomOption(func: KFunction<*>, kParameter: KParameter, optionAnnotation: KClass<out Annotation>) {
     val parameterWrapper = kParameter.wrap()
-    if (getResolver(parameterWrapper) !is ICustomResolver<*, *>) {
-        throwUser(func, "Custom option '${parameterWrapper.name}' (${parameterWrapper.type.simpleNestedName}) does not have a compatible ICustomResolver, " +
-                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}")
+    requireUser(hasResolverOfType<ICustomResolver<*, *>>(parameterWrapper), func) {
+        "Custom option '${parameterWrapper.name}' (${parameterWrapper.type.simpleNestedName}) does not have a compatible ICustomResolver, " +
+                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}"
     }
 }
