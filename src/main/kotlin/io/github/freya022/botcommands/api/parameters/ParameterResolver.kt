@@ -61,4 +61,4 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * @see ICustomResolver
  */
 @InterfacedService(acceptMultiple = true)
-sealed class ParameterResolver<T : ParameterResolver<T, R>, R : Any>
+sealed class ParameterResolver<T : ParameterResolver<T, R>, R : Any> : IParameterResolver<T>

@@ -18,8 +18,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface TextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                                  T : TextParameterResolver<T, R> {
+interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : TextParameterResolver<T, R> {
     /**
      * Returns a resolved object from this text command.
      *

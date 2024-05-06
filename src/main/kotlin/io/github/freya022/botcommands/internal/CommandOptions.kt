@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
@@ -22,7 +23,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 
 internal object CommandOptions {
-    internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
+    internal inline fun <reified T : OptionBuilder, reified R : IParameterResolver<R>> transform(
         context: BContext,
         aggregateBuilder: OptionAggregateBuilder<*>,
         config: Configuration<T, R>

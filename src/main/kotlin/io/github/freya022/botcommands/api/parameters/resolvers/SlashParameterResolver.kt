@@ -26,8 +26,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface SlashParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                                   T : SlashParameterResolver<T, R> {
+interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : SlashParameterResolver<T, R> {
     /**
      * Returns the corresponding [OptionType] for this slash command parameter.
      */

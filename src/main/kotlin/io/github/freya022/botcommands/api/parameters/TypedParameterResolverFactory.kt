@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
@@ -22,7 +23,7 @@ import kotlin.reflect.full.withNullability
  * @param type         Type of the objects returned by the parameter resolver
  * @param T            Type of the returned parameter resolver
  */
-abstract class TypedParameterResolverFactory<T : ParameterResolver<T, *>>(
+abstract class TypedParameterResolverFactory<T : IParameterResolver<T>>(
     resolverType: KClass<out T>,
     val type: KType
 ) : ParameterResolverFactory<T>(resolverType) {

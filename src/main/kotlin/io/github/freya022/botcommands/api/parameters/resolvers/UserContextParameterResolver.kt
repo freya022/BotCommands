@@ -15,8 +15,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface UserContextParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                                         T : UserContextParameterResolver<T, R> {
+interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : UserContextParameterResolver<T, R> {
     /**
      * Returns a resolved object from this user context interaction.
      *

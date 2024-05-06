@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -35,7 +36,7 @@ import kotlin.reflect.KType
  * @see ParameterResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolverFactory<T : ParameterResolver<out T, *>>(val resolverType: KClass<out T>) {
+abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverType: KClass<out T>) {
     constructor(resolverType: Class<out T>) : this(resolverType.kotlin)
 
     /**
