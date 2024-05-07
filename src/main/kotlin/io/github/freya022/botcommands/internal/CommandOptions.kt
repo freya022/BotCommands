@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
@@ -17,10 +16,8 @@ import io.github.freya022.botcommands.internal.core.options.builder.InternalAggr
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 
 internal object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : IParameterResolver<R>> transform(
@@ -43,27 +40,15 @@ internal object CommandOptions {
                 is T -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    // TODO replace with getResolverOrNull<R>(parameter) ?: throwUser
-                    when (val resolver = resolverContainer.getResolverOfType<R>(parameter)) {
-                        is R -> config.transformOption(optionBuilder, resolver)
-                        else -> throwUser(
-                            optionBuilder.owner,
-                            "Expected a resolver of type ${R::class.simpleNestedName} but ${resolver.javaClass.simpleNestedName} does not support it"
-                        )
-                    }
+                    val resolver = resolverContainer.getResolverOfType<R>(parameter)
+                    config.transformOption(optionBuilder, resolver)
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    // TODO replace with getResolverOrNull<R>(parameter) ?: throwUser
-                    when (val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(parameter)) {
-                        is ICustomResolver<*, *> -> CustomMethodOption(optionBuilder.optionParameter, resolver)
-                        else -> throwUser(
-                            optionBuilder.owner,
-                            "Expected a resolver of type ${classRef<ICustomResolver<*, *>>()} but ${resolver.javaClass.simpleNestedName} does not support it"
-                        )
-                    }
+                    val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(parameter)
+                    CustomMethodOption(optionBuilder.optionParameter, resolver)
                 }
                 else -> throwInternal("Unsupported option builder: $optionBuilder")
             }
