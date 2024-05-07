@@ -130,8 +130,8 @@ class ResolverContainer internal constructor(
     }
 
     @JvmSynthetic
-    internal inline fun <reified T : IParameterResolver<T>> getResolverOfType(parameter: ParameterWrapper): T {
-        return getResolver(T::class, ResolverRequest(parameter))
+    internal inline fun <reified T : IParameterResolver<T>> getResolverOfType(request: ResolverRequest): T {
+        return getResolver(T::class, request)
     }
 
     //TODO refactor this and getResolverFactoryOrNull

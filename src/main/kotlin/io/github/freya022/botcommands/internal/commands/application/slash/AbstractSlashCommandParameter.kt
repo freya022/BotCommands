@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandParameter
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandResolverData
 
 abstract class AbstractSlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
@@ -13,6 +14,7 @@ abstract class AbstractSlashCommandParameter(
 ) : ApplicationCommandParameter(slashCommandInfo.context, optionAggregateBuilder) {
     final override val options = CommandOptions.transform(
         slashCommandInfo.context,
+        ApplicationCommandResolverData(slashCommandInfo),
         optionAggregateBuilder,
         object : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
             override fun transformOption(

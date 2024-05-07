@@ -9,6 +9,8 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.api.parameters.ResolverData
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -22,6 +24,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 internal object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : IParameterResolver<R>> transform(
         context: BContext,
+        resolverData: ResolverData?,
         aggregateBuilder: OptionAggregateBuilder<*>,
         config: Configuration<T, R>
     ): List<Option> {
@@ -40,14 +43,14 @@ internal object CommandOptions {
                 is T -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    val resolver = resolverContainer.getResolverOfType<R>(parameter)
+                    val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
                     config.transformOption(optionBuilder, resolver)
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(parameter)
+                    val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(ResolverRequest(parameter, resolverData))
                     CustomMethodOption(optionBuilder.optionParameter, resolver)
                 }
                 else -> throwInternal("Unsupported option builder: $optionBuilder")

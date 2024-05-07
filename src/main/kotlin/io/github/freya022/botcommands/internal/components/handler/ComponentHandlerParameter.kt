@@ -21,6 +21,7 @@ class ComponentHandlerParameter internal constructor(
 
     override val options = CommandOptions.transform(
         context,
+        null,
         aggregateBuilder,
         object : CommandOptions.Configuration<ComponentHandlerOptionBuilder, ComponentParameterResolver<*, *>> {
             override fun transformOption(

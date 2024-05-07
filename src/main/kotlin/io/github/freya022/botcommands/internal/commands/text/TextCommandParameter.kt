@@ -19,6 +19,7 @@ class TextCommandParameter(
 
     override val options = CommandOptions.transform(
         context,
+        null,
         optionAggregateBuilder,
         object : CommandOptions.Configuration<TextCommandOptionBuilder, TextParameterResolver<*, *>> {
             override fun transformOption(
