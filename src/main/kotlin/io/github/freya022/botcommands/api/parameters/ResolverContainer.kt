@@ -140,10 +140,6 @@ class ResolverContainer internal constructor(
         return getResolver(T::class, request)
     }
 
-    //TODO refactor this and getResolverFactoryOrNull
-    // They need to run a common function to get the factory alongside the (possible) error message
-    // Factory would just do nothing with it, but it will be useful for getResolver
-    // and will deduplicate code
     @JvmSynthetic
     internal fun <T : IParameterResolver<T>> getResolver(resolverType: KClass<T>, request: ResolverRequest): T {
         val factory = getResolverFactoryOrNull(resolverType, request)

@@ -37,7 +37,7 @@ class MessageCommandInfo internal constructor(
         eventFunction.checkEventScope<GuildMessageEvent>(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            MessageContextCommandParameter(context, this@MessageCommandInfo, it)
+            MessageContextCommandParameter(context, this, it)
         }
     }
 
