@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
 /**
@@ -30,5 +31,6 @@ import org.springframework.stereotype.Component
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Bean
 @Component
 annotation class Command

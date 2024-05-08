@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
 /**
@@ -17,5 +18,6 @@ import org.springframework.stereotype.Component
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 @Retention(AnnotationRetention.RUNTIME)
+@Bean
 @Component
 annotation class ResolverFactory

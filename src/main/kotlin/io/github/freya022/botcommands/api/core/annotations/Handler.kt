@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
 /**
@@ -23,5 +24,6 @@ import org.springframework.stereotype.Component
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
+@Bean
 @Component
 annotation class Handler
