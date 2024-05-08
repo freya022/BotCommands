@@ -6,11 +6,11 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -32,7 +32,7 @@ public class EmojiResolver
 		implements TextParameterResolver<EmojiResolver, Emoji>,
 		           SlashParameterResolver<EmojiResolver, Emoji>,
 		           ComponentParameterResolver<EmojiResolver, Emoji>,
-		           TimeoutParameterResolver<EmojiResolver, Emoji> {
+                   TimeoutParameterResolver<EmojiResolver, Emoji> {
 
 	public EmojiResolver() {
 		super(Emoji.class);
@@ -82,7 +82,7 @@ public class EmojiResolver
 
     @Nullable
     @Override
-    public Emoji resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
+    public Emoji resolve(@NotNull String arg) {
         return getEmoji(arg);
     }
 

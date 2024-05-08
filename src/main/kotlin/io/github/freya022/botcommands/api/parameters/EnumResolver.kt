@@ -4,11 +4,10 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
-import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -78,7 +77,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     //endregion
 
     //region Timeout
-    override suspend fun resolveSuspend(descriptor: TimeoutDescriptor<*>, arg: String): E = getEnumValue(arg)
+    override suspend fun resolveSuspend(arg: String): E = getEnumValue(arg)
     //endregion
 
     override fun toString(): String {

@@ -58,6 +58,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * @see SlashParameterResolver
  * @see MessageContextParameterResolver
  * @see UserContextParameterResolver
+ * @see TimeoutParameterResolver
  * @see ICustomResolver
  *
  * @see Resolvers

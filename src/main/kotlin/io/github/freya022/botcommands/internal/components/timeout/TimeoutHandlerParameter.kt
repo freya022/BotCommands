@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
 import io.github.freya022.botcommands.internal.parameters.MethodParameterImpl
-import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.transform
 import kotlin.reflect.KClass
 

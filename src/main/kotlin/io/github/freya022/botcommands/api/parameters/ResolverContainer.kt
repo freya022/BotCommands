@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
-import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.throwInternal

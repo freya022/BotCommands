@@ -6,10 +6,10 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -27,7 +27,7 @@ public class LongResolver
 		implements TextParameterResolver<LongResolver, Long>,
 		           SlashParameterResolver<LongResolver, Long>,
 		           ComponentParameterResolver<LongResolver, Long>,
-		           TimeoutParameterResolver<LongResolver, Long> {
+                   TimeoutParameterResolver<LongResolver, Long> {
 
 	public LongResolver() {
 		super(Long.class);
@@ -85,7 +85,7 @@ public class LongResolver
 
 	@Nullable
 	@Override
-	public Long resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
+	public Long resolve(@NotNull String arg) {
 		return Long.valueOf(arg);
 	}
 }

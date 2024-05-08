@@ -110,7 +110,7 @@ internal class ComponentTimeoutManager(
     ): Boolean {
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
-                if (tryInsertOption(descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
+                if (tryInsertOption(option, this, userDataIterator) == InsertOptionResult.ABORT)
                     return false
             }
 
@@ -120,7 +120,6 @@ internal class ComponentTimeoutManager(
     }
 
     private suspend fun tryInsertOption(
-        descriptor: TimeoutDescriptor<*>,
         option: Option,
         optionMap: MutableMap<Option, Any?>,
         userDataIterator: Iterator<String?>
@@ -129,7 +128,7 @@ internal class ComponentTimeoutManager(
             OptionType.OPTION -> {
                 option as TimeoutHandlerOption
 
-                userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, it) }
+                userDataIterator.next()?.let { option.resolver.resolveSuspend(it) }
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption

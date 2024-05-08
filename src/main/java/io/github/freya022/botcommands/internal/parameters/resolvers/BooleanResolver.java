@@ -6,10 +6,10 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -27,7 +27,7 @@ public class BooleanResolver
 		implements TextParameterResolver<BooleanResolver, Boolean>,
 		           SlashParameterResolver<BooleanResolver, Boolean>,
 		           ComponentParameterResolver<BooleanResolver, Boolean>,
-				   TimeoutParameterResolver<BooleanResolver, Boolean> {
+                   TimeoutParameterResolver<BooleanResolver, Boolean> {
 
 	public BooleanResolver() {
 		super(Boolean.class);
@@ -77,7 +77,7 @@ public class BooleanResolver
 
 	@Nullable
 	@Override
-	public Boolean resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
+	public Boolean resolve(@NotNull String arg) {
 		return parseBoolean(arg);
 	}
 

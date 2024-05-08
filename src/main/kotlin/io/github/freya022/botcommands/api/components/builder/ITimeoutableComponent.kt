@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ITimeoutData
-import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlinx.coroutines.runBlocking

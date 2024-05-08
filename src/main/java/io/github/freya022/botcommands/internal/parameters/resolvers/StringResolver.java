@@ -3,14 +3,10 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
+import io.github.freya022.botcommands.api.parameters.resolvers.*;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -32,7 +28,7 @@ public class StringResolver
 		           SlashParameterResolver<StringResolver, String>,
 		           ComponentParameterResolver<StringResolver, String>,
 		           ModalParameterResolver<StringResolver, String>,
-		           TimeoutParameterResolver<StringResolver, String> {
+                   TimeoutParameterResolver<StringResolver, String> {
 
 	public StringResolver() {
 		super(String.class);
@@ -94,7 +90,7 @@ public class StringResolver
 
 	@NotNull
 	@Override
-	public String resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
+	public String resolve(@NotNull String arg) {
 		return arg;
 	}
 }
