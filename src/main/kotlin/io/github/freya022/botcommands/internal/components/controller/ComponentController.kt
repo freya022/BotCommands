@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.internal.components.repositories.Component
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -28,6 +29,8 @@ import kotlin.concurrent.withLock
 
 private const val PREFIX = "BotCommands-Components-"
 private const val PREFIX_LENGTH = PREFIX.length
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 @RequiresComponents
@@ -45,7 +48,23 @@ internal class ComponentController(
     private val lock = ReentrantLock()
 
     init {
-        runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
+        runBlocking {
+            removeEphemeralComponents()
+            scheduleExistingTimeouts()
+        }
+    }
+
+    private suspend fun removeEphemeralComponents() {
+        val removedComponents = componentRepository.removeEphemeralComponents()
+        logger.debug { "Removed $removedComponents ephemeral components" }
+    }
+
+    private suspend fun scheduleExistingTimeouts() {
+        componentRepository
+            .getPersistentComponentTimeouts()
+            .forEach {
+                timeoutManager.scheduleTimeout(it.componentId, it.instant)
+            }
     }
 
     internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {

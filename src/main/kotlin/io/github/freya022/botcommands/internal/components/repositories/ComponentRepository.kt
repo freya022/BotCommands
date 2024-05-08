@@ -8,6 +8,8 @@ import io.github.freya022.botcommands.api.components.builder.group.ComponentGrou
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.db.Transaction
+import io.github.freya022.botcommands.api.core.db.getKotlinInstant
+import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.transactional
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -23,12 +25,13 @@ import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import net.dv8tion.jda.api.Permission
 import java.sql.Timestamp
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 @RequiresComponents
@@ -44,10 +47,37 @@ internal class ComponentRepository(
         operator fun component3() = ephemeralTimeoutHandlerId
     }
 
-    private val logger = KotlinLogging.logger { }
+    internal class PersistentComponentTimeout(
+        val componentId: Int,
+        val instant: Instant
+    )
 
-    init {
-        cleanupEphemeral()
+    suspend fun getPersistentComponentTimeouts(): List<PersistentComponentTimeout> {
+        return database.preparedStatement(
+            "select component_id, expiration_timestamp from bc_persistent_timeout",
+            readOnly = true
+        ) {
+            executeQuery().map {
+                PersistentComponentTimeout(
+                    it.getInt("component_id"),
+                    it.getKotlinInstant("expiration_timestamp")
+                )
+            }
+        }
+    }
+
+    suspend fun removeEphemeralComponents(): Int = database.transactional {
+        preparedStatement("truncate table bc_ephemeral_timeout") {
+            executeUpdate()
+        }
+
+        preparedStatement("truncate table bc_ephemeral_handler") {
+            executeUpdate()
+        }
+
+        preparedStatement("delete from bc_component where lifetime_type = ?") {
+            executeUpdate(LifetimeType.EPHEMERAL.key)
+        }
     }
 
     suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
@@ -409,26 +439,6 @@ internal class ComponentRepository(
         }
 
         return null
-    }
-
-    @Suppress("SqlWithoutWhere")
-    private fun cleanupEphemeral() = runBlocking {
-        database.transactional {
-            preparedStatement("truncate table bc_ephemeral_timeout") {
-                val deletedRows = executeUpdate()
-                logger.trace { "Deleted $deletedRows ephemeral timeout handlers" }
-            }
-
-            preparedStatement("truncate table bc_ephemeral_handler") {
-                val deletedRows = executeUpdate()
-                logger.trace { "Deleted $deletedRows ephemeral handlers" }
-            }
-
-            preparedStatement("delete from bc_component where lifetime_type = ?") {
-                val deletedRows = executeUpdate(LifetimeType.EPHEMERAL.key)
-                logger.trace { "Deleted $deletedRows ephemeral components" }
-            }
-        }
     }
 
     private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())
