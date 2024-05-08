@@ -20,9 +20,9 @@ class PersistentStringSelectBuilder internal constructor(
     IPersistentActionableComponent<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
     IPersistentTimeoutableComponent<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
-    override val componentType: ComponentType = ComponentType.SELECT_MENU
-    override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    override val instance: PersistentStringSelectBuilder = this
+    override val componentType: ComponentType get() = ComponentType.SELECT_MENU
+    override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
+    override val instance: PersistentStringSelectBuilder get() = this
 
     private var built = false
 

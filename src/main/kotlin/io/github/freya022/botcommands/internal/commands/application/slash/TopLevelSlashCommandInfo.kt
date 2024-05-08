@@ -11,8 +11,8 @@ class TopLevelSlashCommandInfo internal constructor(
 ) : SlashCommandInfo(context, builder),
     ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(builder) {
 
-    override val topLevelInstance: TopLevelSlashCommandInfo = this
-    override val parentInstance = null
+    override val topLevelInstance: TopLevelSlashCommandInfo get() = this
+    override val parentInstance get() = null
 
     val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.map.mapValues { it.value.build(this, this) }
     val subcommandGroups: Map<String, SlashSubcommandGroupInfo> = builder.subcommandGroups.map.mapValues { it.value.build(this) }

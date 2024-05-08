@@ -14,8 +14,8 @@ class EphemeralComponentGroupBuilder internal constructor(
 ) : ComponentGroupBuilder<EphemeralComponentGroupBuilder>(componentController, components),
     IEphemeralTimeoutableComponent<EphemeralComponentGroupBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
-    override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
-    override val instance: EphemeralComponentGroupBuilder = this
+    override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
+    override val instance: EphemeralComponentGroupBuilder get() = this
 
     init {
         instanceRetriever.instance = this

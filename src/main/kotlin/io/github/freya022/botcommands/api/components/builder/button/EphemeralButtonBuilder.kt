@@ -21,8 +21,8 @@ class EphemeralButtonBuilder internal constructor(
     IEphemeralActionableComponent<EphemeralButtonBuilder, ButtonEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
     IEphemeralTimeoutableComponent<EphemeralButtonBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
-    override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
-    override val instance: EphemeralButtonBuilder = this
+    override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
+    override val instance: EphemeralButtonBuilder get() = this
 
     init {
         instanceRetriever.instance = this

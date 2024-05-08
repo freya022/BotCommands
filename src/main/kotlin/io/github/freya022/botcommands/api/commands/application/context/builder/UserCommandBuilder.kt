@@ -22,8 +22,8 @@ class UserCommandBuilder internal constructor(
     ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
 
     override val type: CommandType = CommandType.USER_CONTEXT
-    override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
-    override val parentInstance: INamedCommand? = null
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder get() = this
+    override val parentInstance: INamedCommand? get() = null
 
     /**
      * Declares an input option, supported types and modifiers are in [ParameterResolver],

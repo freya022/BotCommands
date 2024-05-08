@@ -29,8 +29,8 @@ class UserCommandInfo internal constructor(
 
     override val eventFunction = builder.toMemberParamFunction<GlobalUserEvent, _>(context)
 
-    override val topLevelInstance: ITopLevelApplicationCommandInfo = this
-    override val parentInstance = null
+    override val topLevelInstance: ITopLevelApplicationCommandInfo get() = this
+    override val parentInstance get() = null
     override val parameters: List<UserContextCommandParameter>
 
     init {

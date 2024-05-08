@@ -21,8 +21,8 @@ class TopLevelSlashCommandBuilder internal constructor(
     function: KFunction<Any>?,
     scope: CommandScope
 ) : SlashCommandBuilder(context, name, function), ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
-    override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
-    override val parentInstance: INamedCommand? = null
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder get() = this
+    override val parentInstance: INamedCommand? get() = null
 
     internal val subcommands: NamedCommandMap<SlashSubcommandBuilder> = NamedCommandMap()
     internal val subcommandGroups: NamedCommandMap<SlashSubcommandGroupBuilder> = NamedCommandMap()

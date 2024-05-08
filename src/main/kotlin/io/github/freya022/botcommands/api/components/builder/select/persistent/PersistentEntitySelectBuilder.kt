@@ -21,9 +21,9 @@ class PersistentEntitySelectBuilder internal constructor(
     IPersistentActionableComponent<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
     IPersistentTimeoutableComponent<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
-    override val componentType: ComponentType = ComponentType.SELECT_MENU
-    override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    override val instance: PersistentEntitySelectBuilder = this
+    override val componentType: ComponentType get() = ComponentType.SELECT_MENU
+    override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
+    override val instance: PersistentEntitySelectBuilder get() = this
 
     private var built = false
 

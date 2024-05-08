@@ -14,8 +14,8 @@ class PersistentComponentGroupBuilder internal constructor(
 ) : ComponentGroupBuilder<PersistentComponentGroupBuilder>(componentController, components),
     IPersistentTimeoutableComponent<PersistentComponentGroupBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
-    override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    override val instance: PersistentComponentGroupBuilder = this
+    override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
+    override val instance: PersistentComponentGroupBuilder get() = this
 
     init {
         instanceRetriever.instance = this

@@ -21,9 +21,9 @@ class EphemeralStringSelectBuilder internal constructor(
     IEphemeralActionableComponent<EphemeralStringSelectBuilder, StringSelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
     IEphemeralTimeoutableComponent<EphemeralStringSelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
-    override val componentType: ComponentType = ComponentType.SELECT_MENU
-    override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
-    override val instance: EphemeralStringSelectBuilder = this
+    override val componentType: ComponentType get() = ComponentType.SELECT_MENU
+    override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
+    override val instance: EphemeralStringSelectBuilder get() = this
 
     private var built = false
 
