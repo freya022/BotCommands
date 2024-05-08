@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.api.core.db
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.toBoxed
 import io.github.freya022.botcommands.internal.utils.findErasureOfAt
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.*
@@ -97,3 +99,6 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         else -> resultFunction(this)
     }
 }
+
+fun DBResult.getKotlinInstant(columnName: String): Instant =
+    getTimestamp(columnName).toInstant().toKotlinInstant()
