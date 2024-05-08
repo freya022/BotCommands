@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
@@ -169,6 +170,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         val erasure = parameter.erasure
         if (!erasure.isSubclassOf<GuildChannel>()) return false
         erasure as KClass<out GuildChannel>
+
+        request.checkGuildOnly(erasure)
 
         val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
             null -> channelTypesFrom(erasure.java)

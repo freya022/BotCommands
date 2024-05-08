@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import io.github.freya022.botcommands.internal.utils.*
@@ -108,6 +109,7 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
                 }
             }
         } else if (elementErasure == Member::class) {
+            request.checkGuildOnly(Member::class)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.USER)
         } else if (elementErasure == InputUser::class) {
             MentionsStringResolver.ofEntity(MentionType.USER) {
@@ -118,8 +120,10 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
                 }
             }
         } else if (elementErasure.isSubclassOf<GuildChannel>()) {
+            request.checkGuildOnly(elementErasure)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.CHANNEL)
         } else if (elementErasure == Role::class) {
+            request.checkGuildOnly(Role::class)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.ROLE)
         } else if (elementErasure == CustomEmoji::class) {
             MentionsStringResolver.ofEntity(elementErasure, MentionType.EMOJI)
