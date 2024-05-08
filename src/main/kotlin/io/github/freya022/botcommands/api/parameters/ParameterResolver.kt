@@ -18,14 +18,14 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  *
  * ### Default parameter resolvers
  *
- * |                                                               | Text              | Slash           | Message context    | User context    | Components | Modals |
- * |---------------------------------------------------------------|-------------------|-----------------|--------------------|-----------------|------------|--------|
- * | [String]                                                      | ✓ (can be quoted) | ✓               |                    |                 | ✓          | ✓      |
- * | [Boolean]                                                     | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Int]                                                         | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Long]                                                        | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Double]                                                      | ✓                 | ✓               |                    |                 | ✓          |        |
- * | [Emoji]                                                       | ✓                 | ✓               |                    |                 | ✓          |        |
+ * |                                                               | Text              | Slash           | Message context    | User context    | Components | Modals | Component timeout |
+ * |---------------------------------------------------------------|-------------------|-----------------|--------------------|-----------------|------------|--------|-------------------|
+ * | [String]                                                      | ✓ (can be quoted) | ✓               |                    |                 | ✓          | ✓      | ✓
+ * | [Boolean]                                                     | ✓                 | ✓               |                    |                 | ✓          |        | ✓
+ * | [Int]                                                         | ✓                 | ✓               |                    |                 | ✓          |        | ✓
+ * | [Long]                                                        | ✓                 | ✓               |                    |                 | ✓          |        | ✓
+ * | [Double]                                                      | ✓                 | ✓               |                    |                 | ✓          |        | ✓
+ * | [Emoji]                                                       | ✓                 | ✓               |                    |                 | ✓          |        | ✓
  * | [IMentionable]                                                | ✓ (only mentions) | ✓               |                    |                 |            |        |
  * | [List] of mentionable (see [@MentionsString][MentionsString]) |                   | ✓               |                    |                 |            |        |
  * | [Role]                                                        | ✓                 | ✓               |                    |                 | ✓          |        |
@@ -59,6 +59,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * @see MessageContextParameterResolver
  * @see UserContextParameterResolver
  * @see ICustomResolver
+ *
+ * @see Resolvers
  */
 @InterfacedService(acceptMultiple = true)
 sealed class ParameterResolver<T : ParameterResolver<T, R>, R : Any> : IParameterResolver<T>

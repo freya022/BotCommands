@@ -29,10 +29,10 @@ import java.util.regex.Pattern;
 public class StringResolver
 		extends ClassParameterResolver<StringResolver, String>
 		implements QuotableTextParameterResolver<StringResolver, String>,
-        SlashParameterResolver<StringResolver, String>,
-        ComponentParameterResolver<StringResolver, String>,
-        ModalParameterResolver<StringResolver, String>,
-        TimeoutParameterResolver<StringResolver, String> {
+		           SlashParameterResolver<StringResolver, String>,
+		           ComponentParameterResolver<StringResolver, String>,
+		           ModalParameterResolver<StringResolver, String>,
+		           TimeoutParameterResolver<StringResolver, String> {
 
 	public StringResolver() {
 		super(String.class);

@@ -129,7 +129,7 @@ internal class ComponentTimeoutManager(
             OptionType.OPTION -> {
                 option as TimeoutHandlerOption
 
-                userDataIterator.next()?.let { option.resolver.resolve(descriptor, it) }
+                userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, it) }
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption

@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.utils.EmojiUtils;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -30,7 +31,8 @@ public class EmojiResolver
 		extends ClassParameterResolver<EmojiResolver, Emoji>
 		implements TextParameterResolver<EmojiResolver, Emoji>,
 		           SlashParameterResolver<EmojiResolver, Emoji>,
-		           ComponentParameterResolver<EmojiResolver, Emoji> {
+		           ComponentParameterResolver<EmojiResolver, Emoji>,
+		           TimeoutParameterResolver<EmojiResolver, Emoji> {
 
 	public EmojiResolver() {
 		super(Emoji.class);
@@ -78,7 +80,13 @@ public class EmojiResolver
 		return getEmoji(arg);
 	}
 
-	@Nullable
+    @Nullable
+    @Override
+    public Emoji resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
+        return getEmoji(arg);
+    }
+
+    @Nullable
 	private Emoji getEmoji(String arg) {
 		final Matcher emoteMatcher = Message.MentionType.EMOJI.getPattern().matcher(arg);
 		if (emoteMatcher.find()) {

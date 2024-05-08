@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -25,7 +26,8 @@ public class LongResolver
 		extends ClassParameterResolver<LongResolver, Long>
 		implements TextParameterResolver<LongResolver, Long>,
 		           SlashParameterResolver<LongResolver, Long>,
-		           ComponentParameterResolver<LongResolver, Long> {
+		           ComponentParameterResolver<LongResolver, Long>,
+		           TimeoutParameterResolver<LongResolver, Long> {
 
 	public LongResolver() {
 		super(Long.class);
@@ -78,6 +80,12 @@ public class LongResolver
 	@Override
 	@Nullable
 	public Long resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+		return Long.valueOf(arg);
+	}
+
+	@Nullable
+	@Override
+	public Long resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
 		return Long.valueOf(arg);
 	}
 }

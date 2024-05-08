@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -25,7 +26,8 @@ public class DoubleResolver
 		extends ClassParameterResolver<DoubleResolver, Double>
 		implements TextParameterResolver<DoubleResolver, Double>,
 		           SlashParameterResolver<DoubleResolver, Double>,
-		           ComponentParameterResolver<DoubleResolver, Double> {
+		           ComponentParameterResolver<DoubleResolver, Double>,
+				   TimeoutParameterResolver<DoubleResolver, Double> {
 
 	public DoubleResolver() {
 		super(Double.class);
@@ -78,6 +80,12 @@ public class DoubleResolver
 	@Override
 	@Nullable
 	public Double resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+		return Double.valueOf(arg);
+	}
+
+	@Nullable
+	@Override
+	public Double resolve(@NotNull TimeoutDescriptor<?> descriptor, @NotNull String arg) {
 		return Double.valueOf(arg);
 	}
 }

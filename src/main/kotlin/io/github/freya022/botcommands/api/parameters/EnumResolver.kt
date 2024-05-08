@@ -7,6 +7,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
+import io.github.freya022.botcommands.internal.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -23,11 +25,11 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     private val values: Collection<E>,
     private val guildValuesSupplier: EnumValuesSupplier<E>,
     private val nameFunction: EnumNameFunction<E>
-) :
-    ClassParameterResolver<EnumResolver<E>, E>(e),
+) : ClassParameterResolver<EnumResolver<E>, E>(e),
     TextParameterResolver<EnumResolver<E>, E>,
     SlashParameterResolver<EnumResolver<E>, E>,
-    ComponentParameterResolver<EnumResolver<E>, E> {
+    ComponentParameterResolver<EnumResolver<E>, E>,
+    TimeoutParameterResolver<EnumResolver<E>, E> {
 
     // Key is both the enum name and the human name
     private val enumMap: Map<String, E> = buildMap {
@@ -73,6 +75,10 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
         event: GenericComponentInteractionCreateEvent,
         arg: String
     ): E? = getEnumValueOrNull(arg)
+    //endregion
+
+    //region Timeout
+    override suspend fun resolveSuspend(descriptor: TimeoutDescriptor<*>, arg: String): E = getEnumValue(arg)
     //endregion
 
     override fun toString(): String {

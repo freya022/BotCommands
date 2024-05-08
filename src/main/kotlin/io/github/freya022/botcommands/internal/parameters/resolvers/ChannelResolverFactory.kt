@@ -53,6 +53,10 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         TextParameterResolver<ChannelResolver, GuildChannel>,
         SlashParameterResolver<ChannelResolver, GuildChannel>,
         ComponentParameterResolver<ChannelResolver, GuildChannel>,
+        // Cannot implement TimeoutParameterResolver
+        // as retrieving a channel requires a JDA instance.
+        // When a component expired while the bot was offline,
+        // the required JDA instance isn't there yet.
         IChannelResolver {
 
         //region Text
