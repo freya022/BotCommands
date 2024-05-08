@@ -27,11 +27,16 @@ class ResolverContainer internal constructor(
     resolverFactories: List<ParameterResolverFactory<*>>,
     private val serviceContainer: ServiceContainer
 ) {
+    private data class CacheKey(
+        private val requestedType: KClass<out IParameterResolver<*>>,
+        private val resolverRequest: ResolverRequest
+    )
+
     private val logger = KotlinLogging.logger { }
 
     private val lock = ReentrantLock()
     private val factories: MutableList<ParameterResolverFactory<*>> = arrayOfSize(50)
-    private val cache: MutableMap<ResolverRequest, ParameterResolverFactory<*>?> = hashMapOf()
+    private val cache: MutableMap<CacheKey, ParameterResolverFactory<*>?> = hashMapOf()
 
     init {
         resolvers.forEach(::addResolver)
@@ -80,7 +85,8 @@ class ResolverContainer internal constructor(
     @Suppress("UNCHECKED_CAST")
     @JvmSynthetic
     internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? = lock.withLock {
-        cache[request]?.let { return@withLock it as ParameterResolverFactory<T>? }
+        val key = CacheKey(resolverType, request)
+        cache[key]?.let { return@withLock it as ParameterResolverFactory<T>? }
 
         val resolvableFactories = factories
             .filter { it.resolverType.isSubclassOf(resolverType) }
@@ -92,7 +98,7 @@ class ResolverContainer internal constructor(
         }
 
         val factory = getFactoryOrServiceFactory(resolverType, resolvableFactories, request) as ParameterResolverFactory<T>?
-        cache[request] = factory
+        cache[key] = factory
         factory
     }
 
