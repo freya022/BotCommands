@@ -57,7 +57,9 @@ fun Result<Unit>.ignore(vararg responses: ErrorResponse): Result<Unit> = recover
  * Maps the encapsulated [error response][ErrorResponse] using the given function [block]
  * if it corresponds to an ignored response.
  *
- * Any thrown exception will be encapsulated in the returned [Result].
+ * Exceptions other than [responses] will be rethrown in a new [Result].
+ *
+ * Any thrown exception will be encapsulated in a new [Result].
  *
  * @see ignore
  */
