@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters
 
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 
 private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<out T, *>>(
@@ -11,8 +11,8 @@ private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<ou
 ): ParameterResolverFactory<T>(resolver::class) {
     override val supportedTypesStr: List<String> = listOf(resolver.jvmErasure.simpleNestedName)
 
-    override fun isResolvable(parameter: ParameterWrapper): Boolean = resolver.jvmErasure == parameter.erasure
-    override fun get(parameter: ParameterWrapper): T = resolver
+    override fun isResolvable(request: ResolverRequest): Boolean = resolver.jvmErasure == request.parameter.erasure
+    override fun get(request: ResolverRequest): T = resolver
     override fun toString(): String = "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
 }
 
@@ -25,8 +25,8 @@ private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<ou
 ): ParameterResolverFactory<T>(resolver::class) {
     override val supportedTypesStr: List<String> = listOf(resolver.type.simpleNestedName)
 
-    override fun isResolvable(parameter: ParameterWrapper): Boolean = resolver.type == parameter.type
-    override fun get(parameter: ParameterWrapper): T = resolver
+    override fun isResolvable(request: ResolverRequest): Boolean = resolver.type == request.parameter.type
+    override fun get(request: ResolverRequest): T = resolver
     override fun toString(): String = "TypedParameterResolverFactoryAdapter(resolver=$resolver)"
 }
 

@@ -14,8 +14,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ICustomResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                            T : ICustomResolver<T, R> {
+interface ICustomResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : ICustomResolver<T, R> {
 
     /**
      * Returns an object.

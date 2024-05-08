@@ -16,8 +16,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ModalParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                                   T : ModalParameterResolver<T, R> {
+interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : ModalParameterResolver<T, R> {
     /**
      * Returns a resolved object for this [ModalMapping].
      *

@@ -18,8 +18,9 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ComponentParameterResolver<T, R : Any> where T : ParameterResolver<T, R>,
-                                                       T : ComponentParameterResolver<T, R> {
+interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
+        where T : ParameterResolver<T, R>,
+              T : ComponentParameterResolver<T, R> {
     /**
      * Returns a resolved object from this component interaction.
      *

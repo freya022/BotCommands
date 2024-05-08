@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.reflect
 
 import io.github.freya022.botcommands.api.core.utils.bestName
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -20,6 +21,7 @@ class ParameterWrapper private constructor(
     val erasure: KClass<*> = type.jvmErasure
     val javaErasure: Class<*> get() = erasure.java
     val annotations: List<Annotation> get() = parameter.annotations
+    val isRequired get() = !parameter.isNullable && !parameter.isOptional
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 

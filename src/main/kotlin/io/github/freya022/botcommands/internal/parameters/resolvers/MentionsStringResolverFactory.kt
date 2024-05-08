@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
+import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.reflect.requireUser
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
@@ -10,8 +10,10 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import io.github.freya022.botcommands.internal.utils.*
@@ -27,7 +29,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.safeCast
 import kotlin.reflect.typeOf
@@ -65,8 +66,9 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
 
     override val supportedTypesStr: List<String> = listOf(IMentionable::class.shortQualifiedName)
 
-    override fun isResolvable(parameter: ParameterWrapper): Boolean {
-        val annotation = parameter.parameter.findAnnotation<MentionsString>() ?: return false
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        val parameter = request.parameter
+        val annotation = parameter.findAnnotation<MentionsString>() ?: return false
         // Must be a List
         parameter.requireUser(parameter.erasure.isSubclassOf<List<*>>()) {
             "Parameter '${parameter.name}' annotated with ${annotationRef<MentionsString>()} must be a ${classRef<List<*>>()} subtype"
@@ -90,8 +92,9 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun get(parameter: ParameterWrapper): MentionsStringResolver {
-        val annotation = parameter.parameter.findAnnotation<MentionsString>()
+    override fun get(request: ResolverRequest): MentionsStringResolver {
+        val parameter = request.parameter
+        val annotation = parameter.findAnnotation<MentionsString>()
             ?: throwInternal("Missing ${annotationRef<MentionsString>()}")
 
         val elementErasure = parameter.type.findErasureOfAt<List<*>>(0).jvmErasure as KClass<out IMentionable>
@@ -106,6 +109,7 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
                 }
             }
         } else if (elementErasure == Member::class) {
+            request.checkGuildOnly(Member::class)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.USER)
         } else if (elementErasure == InputUser::class) {
             MentionsStringResolver.ofEntity(MentionType.USER) {
@@ -116,8 +120,10 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
                 }
             }
         } else if (elementErasure.isSubclassOf<GuildChannel>()) {
+            request.checkGuildOnly(elementErasure)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.CHANNEL)
         } else if (elementErasure == Role::class) {
+            request.checkGuildOnly(Role::class)
             MentionsStringResolver.ofEntity(elementErasure, MentionType.ROLE)
         } else if (elementErasure == CustomEmoji::class) {
             MentionsStringResolver.ofEntity(elementErasure, MentionType.EMOJI)

@@ -23,6 +23,7 @@ internal class TimeoutHandlerParameter internal constructor(
 
     override val options = CommandOptions.transform(
         context,
+        null,
         aggregateBuilder,
         object : CommandOptions.Configuration<TimeoutHandlerOptionBuilder, TimeoutParameterResolver<*, *>> {
             override fun transformOption(

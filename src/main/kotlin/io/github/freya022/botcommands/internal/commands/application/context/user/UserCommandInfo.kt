@@ -37,7 +37,7 @@ class UserCommandInfo internal constructor(
         eventFunction.checkEventScope<GuildUserEvent>(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            UserContextCommandParameter(context, it)
+            UserContextCommandParameter(context, this, it)
         }
     }
 

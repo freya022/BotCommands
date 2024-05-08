@@ -20,9 +20,9 @@ import kotlin.reflect.KClass
  */
 @InterfacedService(acceptMultiple = true)
 abstract class ClassParameterResolver<T : ClassParameterResolver<T, R>, R : Any>(
-    val jvmErasure: KClass<R>
+    val jvmErasure: KClass<out R>
 ) : ParameterResolver<T, R>() {
-    constructor(clazz: Class<R>) : this(clazz.kotlin)
+    constructor(clazz: Class<out R>) : this(clazz.kotlin)
 
     override fun toString(): String {
         return "ClassParameterResolver(jvmErasure=$jvmErasure)"

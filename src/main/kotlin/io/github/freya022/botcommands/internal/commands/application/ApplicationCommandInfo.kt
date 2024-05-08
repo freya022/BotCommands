@@ -10,7 +10,9 @@ import io.github.freya022.botcommands.internal.commands.application.mixins.ITopL
 import io.github.freya022.botcommands.internal.utils.reference
 
 abstract class ApplicationCommandInfo internal constructor(
-    builder: ApplicationCommandBuilder<*>
+    // Unfortunately needs to be kept due to ApplicationCommandResolverDataKt.checkGuildOnly;
+    // without it, we would try to access being-initialized objects and cause NPEs
+    internal val builder: ApplicationCommandBuilder<*>
 ) : AbstractCommandInfo(builder), IExecutableInteractionInfo {
     abstract val topLevelInstance: ITopLevelApplicationCommandInfo
 

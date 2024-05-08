@@ -5,16 +5,17 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.reflect.function
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
@@ -164,10 +165,13 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     override val supportedTypesStr: List<String> = listOf("<out GuildChannel>")
 
     @Suppress("UNCHECKED_CAST")
-    override fun isResolvable(parameter: ParameterWrapper): Boolean {
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        val parameter = request.parameter
         val erasure = parameter.erasure
         if (!erasure.isSubclassOf<GuildChannel>()) return false
         erasure as KClass<out GuildChannel>
+
+        request.checkGuildOnly(erasure)
 
         val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
             null -> channelTypesFrom(erasure.java)
@@ -201,7 +205,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun get(parameter: ParameterWrapper): ChannelResolver {
+    override fun get(request: ResolverRequest): ChannelResolver {
+        val parameter = request.parameter
         val erasure = parameter.erasure as KClass<out GuildChannel>
         val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
             null -> channelTypesFrom(erasure.java)

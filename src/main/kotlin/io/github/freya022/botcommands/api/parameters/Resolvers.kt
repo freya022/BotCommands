@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -298,8 +297,8 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  * @see ParameterResolverFactory
  * @see ParameterResolver
  */
-inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(crossinline producer: (parameter: ParameterWrapper) -> T): ParameterResolverFactory<T> {
+inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory<T> {
     return object : TypedParameterResolverFactory<T>(T::class, R::class) {
-        override fun get(parameter: ParameterWrapper): T = producer(parameter)
+        override fun get(request: ResolverRequest): T = producer(request)
     }
 }

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -26,5 +26,5 @@ object ListResolver :
 
 @ResolverFactory
 object ListResolverFactory : TypedParameterResolverFactory<ListResolver>(ListResolver::class, typeOf<List<Double>>()) {
-    override fun get(parameter: ParameterWrapper): ListResolver = ListResolver
+    override fun get(request: ResolverRequest): ListResolver = ListResolver
 }

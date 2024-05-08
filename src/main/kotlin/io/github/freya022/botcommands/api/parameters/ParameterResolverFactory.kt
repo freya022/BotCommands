@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -35,7 +36,7 @@ import kotlin.reflect.KType
  * @see ParameterResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolverFactory<T : ParameterResolver<out T, *>>(val resolverType: KClass<out T>) {
+abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverType: KClass<out T>) {
     constructor(resolverType: Class<out T>) : this(resolverType.kotlin)
 
     /**
@@ -48,18 +49,18 @@ abstract class ParameterResolverFactory<T : ParameterResolver<out T, *>>(val res
     abstract val supportedTypesStr: List<String>
 
     /**
-     * Determines if a given parameter is supported.
+     * Determines if a given parameter is supported, only one factory must return `true`.
      *
-     * Only one factory must return `true`.
+     * This only gets called if the requested resolver is compatible with [resolverType].
      */
-    abstract fun isResolvable(parameter: ParameterWrapper): Boolean
+    abstract fun isResolvable(request: ResolverRequest): Boolean
 
     /**
      * Returns a [ParameterResolver] for the given parameter.
      *
      * This is only called if [isResolvable] returned `true`.
      */
-    abstract fun get(parameter: ParameterWrapper): T
+    abstract fun get(request: ResolverRequest): T
 
     override fun toString(): String {
         return "ParameterResolverFactory(resolverType=${resolverType.shortQualifiedName})"
