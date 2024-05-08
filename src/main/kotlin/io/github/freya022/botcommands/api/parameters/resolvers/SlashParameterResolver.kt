@@ -52,9 +52,9 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * Returns a resolved object for this [OptionMapping].
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the command aborts.
+     * or [optional][KParameter.isOptional], then the interaction is ignored,
+     * and you should reply if this is a [SlashCommandInteractionEvent].
      *
-     * The resolver should reply to the interaction in case the value is not resolvable.
      * If the interaction is not replied to,
      * the handler sends an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
      *
@@ -69,11 +69,11 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * Returns a resolved object for this [OptionMapping].
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], and the resolver hasn't replied to this interaction,
-     * then the slash command aborts with an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
+     * or [optional][KParameter.isOptional], then the interaction is ignored,
+     * and you should reply if this is a [SlashCommandInteractionEvent].
      *
-     * Meaning that if the value is not resolvable,
-     * the bot should reply with its own message to avoid the generic error message.
+     * If the interaction is not replied to,
+     * the handler sends an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
      *
      * @param info          The data of the command being executed
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]

@@ -25,12 +25,10 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * Returns a resolved object from this component interaction.
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler aborts.
+     * or [optional][KParameter.isOptional], the handler is ignored,
+     * but the interaction **must** be acknowledged.
      *
-     * The resolver should reply to the interaction in case the value is not resolvable.
-     * If the interaction is not replied to, the handler throws.
-     *
-     * @param descriptor The descriptor of the component handler being executed
+     * @param descriptor The descriptor of the component being executed
      * @param event      The corresponding event
      * @param arg        One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
@@ -41,10 +39,8 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * Returns a resolved object from this component interaction.
      *
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler aborts.
-     *
-     * The resolver should reply to the interaction in case the value is not resolvable.
-     * If the interaction is not replied to, the handler throws.
+     * or [optional][KParameter.isOptional], the handler is ignored,
+     * but the interaction **must** be acknowledged.
      *
      * @param descriptor The descriptor of the component being executed
      * @param event      The corresponding event
