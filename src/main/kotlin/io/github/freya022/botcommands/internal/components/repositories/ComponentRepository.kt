@@ -287,37 +287,29 @@ internal class ComponentRepository(
         rateLimitGroup: String?,
         constraints: InteractionConstraints,
         groupId: Int?
-    ): PersistentComponentData = preparedStatement(
-        """
-           select ph.handler_name         as handler_handler_name,
-                  ph.user_data            as handler_user_data,
-                  pt.handler_name         as timeout_handler_name,
-                  pt.user_data            as timeout_user_data
-           from bc_component component
-                    left join bc_persistent_handler ph on component.component_id = ph.component_id
-                    left join bc_persistent_timeout pt on component.component_id = pt.component_id
-           where component.component_id = ?;
-        """.trimIndent()
-    ) {
-        // There is no rows if neither a handler nor a timeout has been set
-        val dbResult = executeQuery(id).readOrNull()
-            ?: return PersistentComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
+    ): PersistentComponentData {
+        val handler = preparedStatement("SELECT handler_name, user_data FROM bc_persistent_handler WHERE component_id = ?;") {
+            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
-        val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
             PersistentHandler.fromData(
-                handlerName,
-                dbResult["handler_user_data"]
+                dbResult["handler_name"],
+                dbResult["user_data"]
             )
         }
 
-        val timeout = dbResult.getOrNull<String>("timeout_handler_name")?.let { handlerName ->
-            PersistentTimeout.fromData(
-                handlerName,
-                dbResult["timeout_user_data"]
-            )
+        // Avoid request if no timeout is set
+        val timeout = expiresAt?.let {
+            preparedStatement("SELECT handler_name, user_data FROM bc_persistent_timeout WHERE component_id = ?;") {
+                val dbResult = executeQuery(id).readOrNull() ?: return@let null
+
+                PersistentTimeout.fromData(
+                    dbResult["handler_name"],
+                    dbResult["user_data"]
+                )
+            }
         }
 
-        PersistentComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
+        return PersistentComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
@@ -331,33 +323,31 @@ internal class ComponentRepository(
         rateLimitGroup: String?,
         constraints: InteractionConstraints,
         groupId: Int?
-    ): EphemeralComponentData = preparedStatement(
-        """
-            select eh.handler_id           as handler_handler_id,
-                   et.handler_id           as timeout_handler_id
-            from bc_component component
-                     left join bc_ephemeral_handler eh on component.component_id = eh.component_id
-                     left join bc_ephemeral_timeout et on component.component_id = et.component_id
-            where component.component_id = ?;
-        """.trimIndent()
-    ) {
-        // There is no rows if neither a handler nor a timeout has been set
-        val dbResult = executeQuery(id).readOrNull()
-            ?: return EphemeralComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
+    ): EphemeralComponentData {
+        val handler = preparedStatement("SELECT handler_id FROM bc_ephemeral_handler WHERE component_id = ?") {
+            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
-        val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
-            ephemeralComponentHandlers[handlerId]
-                ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
-        }
-
-        val timeout = dbResult.getOrNull<Int>("timeout_handler_id")
-            ?.let { handlerId ->
-                ephemeralTimeoutHandlers[handlerId]
+            dbResult.getInt("handler_id").let { handlerId ->
+                ephemeralComponentHandlers[handlerId]
                     ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
             }
-            ?.let(::EphemeralTimeout)
+        }
 
-        EphemeralComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
+        // Avoid request if no timeout is set
+        val timeout = expiresAt?.let {
+            preparedStatement("SELECT handler_id FROM bc_ephemeral_timeout WHERE component_id = ?") {
+                val dbResult = executeQuery(id).readOrNull() ?: return@let null
+
+                dbResult.getInt("handler_id")
+                    .let { handlerId ->
+                        ephemeralTimeoutHandlers[handlerId]
+                            ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
+                    }
+                    .let(::EphemeralTimeout)
+            }
+        }
+
+        return EphemeralComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
