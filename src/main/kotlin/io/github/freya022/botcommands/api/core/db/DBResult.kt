@@ -102,3 +102,6 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
 
 fun DBResult.getKotlinInstant(columnName: String): Instant =
     getTimestamp(columnName).toInstant().toKotlinInstant()
+
+fun DBResult.getKotlinInstantOrNull(columnName: String): Instant? =
+    getTimestamp(columnName)?.toInstant()?.toKotlinInstant()

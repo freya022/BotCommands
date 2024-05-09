@@ -94,8 +94,8 @@ internal class ComponentController(
 
         return componentRepository.createComponent(builder)
             .also { id ->
-                val timeout = builder.timeout ?: return@also
-                timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
+                val timeout = builder.expiresAt ?: return@also
+                timeoutManager.scheduleTimeout(id, timeout)
             }
     }
 
@@ -105,8 +105,8 @@ internal class ComponentController(
     suspend fun createGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
         return componentRepository.insertGroup(group)
             .also { id ->
-                val timeout = group.timeout ?: return@also
-                timeoutManager.scheduleTimeout(id, timeout.expirationTimestamp)
+                val timeout = group.expiresAt ?: return@also
+                timeoutManager.scheduleTimeout(id, timeout)
             }
             .let { id -> ComponentGroup(this, id) }
     }

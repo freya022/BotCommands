@@ -5,27 +5,30 @@ import io.github.freya022.botcommands.api.components.builder.IEphemeralTimeoutab
 import io.github.freya022.botcommands.internal.components.data.EphemeralTimeout
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.freya022.botcommands.internal.utils.toTimestampIfFinite
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
 internal class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableComponent<T>> internal constructor(
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),
     IEphemeralTimeoutableComponent<T> {
-    override var timeout: EphemeralTimeout? = Components.defaultTimeout.toTimestampIfFinite()?.let { EphemeralTimeout(it, null) }
+    override var expiresAt: Instant? = Components.defaultTimeout.toTimestampIfFinite()
+    override var timeout: EphemeralTimeout? = null
         private set
 
     override fun noTimeout(): T = instance.also {
-        timeout = null
+        this.expiresAt = null
+        this.timeout = null
     }
 
     override fun timeout(timeout: Duration): T = instance.also {
-        val expirationTimestamp = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
-        this.timeout = EphemeralTimeout(expirationTimestamp, null)
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
+        this.timeout = null
     }
 
     @JvmSynthetic
     override fun timeout(timeout: Duration, handler: suspend () -> Unit): T = instance.also {
-        val expirationTimestamp = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
-        this.timeout = EphemeralTimeout(expirationTimestamp, handler)
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
+        this.timeout = EphemeralTimeout(handler)
     }
 }
