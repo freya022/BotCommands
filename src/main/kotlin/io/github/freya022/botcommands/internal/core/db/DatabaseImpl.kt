@@ -21,7 +21,7 @@ import java.sql.Connection
 import kotlin.time.toKotlinDuration
 
 // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
-private const val latestVersion = "3.0.0-alpha.8" // Change in the latest migration script too
+private const val latestVersion = "3.0.0-alpha.14" // Change in the latest migration script too
 
 private val logger = KotlinLogging.logger { }
 

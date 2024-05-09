@@ -4,27 +4,30 @@ import io.github.freya022.botcommands.api.components.builder.IPersistentTimeouta
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.freya022.botcommands.internal.utils.toTimestampIfFinite
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
 internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponent<T> {
-
+    override var expiresAt: Instant? = null
+        private set
     override var timeout: PersistentTimeout? = null
         private set
 
     override fun noTimeout(): T = instance.also {
-        timeout = null
+        this.expiresAt = null
+        this.timeout = null
     }
 
     override fun timeout(timeout: Duration): T = instance.also {
-        val expirationTimestamp = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
-        this.timeout = PersistentTimeout.create(expirationTimestamp)
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
+        this.timeout = null
     }
 
     override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
-        val expirationTimestamp = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
-        this.timeout = PersistentTimeout.create(expirationTimestamp, handlerName, data.toList())
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
+        this.timeout = PersistentTimeout.create(handlerName, data.toList())
     }
 }

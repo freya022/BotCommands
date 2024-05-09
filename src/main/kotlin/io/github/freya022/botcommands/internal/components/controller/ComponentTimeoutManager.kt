@@ -71,7 +71,7 @@ internal class ComponentTimeoutManager(
 
         when (val componentTimeout = component.timeout) {
             is PersistentTimeout -> {
-                val handlerName = componentTimeout.handlerName ?: return
+                val handlerName = componentTimeout.handlerName
                 val descriptor = when (component.componentType) {
                     ComponentType.GROUP ->
                         groupTimeoutHandlers[handlerName]
@@ -99,7 +99,7 @@ internal class ComponentTimeoutManager(
 
                 handlePersistentTimeout(descriptor, firstParameter, userData.iterator())
             }
-            is EphemeralTimeout -> componentTimeout.handler?.invoke()
+            is EphemeralTimeout -> componentTimeout.handler()
         }
     }
 

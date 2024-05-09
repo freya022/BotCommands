@@ -6,11 +6,13 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
+import kotlinx.datetime.Instant
 
 internal sealed class ComponentData(
     val internalId: Int,
     val componentType: ComponentType,
     val lifetimeType: LifetimeType,
+    val expiresAt: Instant?,
     val filters: List<ComponentInteractionFilter<*>>,
     val oneUse: Boolean,
     val rateLimitGroup: String?,
