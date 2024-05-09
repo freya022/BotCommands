@@ -70,9 +70,13 @@ internal class ComponentRepository(
             executeUpdate()
         }
 
-        preparedStatement("delete from bc_component where lifetime_type = ?") {
-            executeUpdate(LifetimeType.EPHEMERAL.key)
+        val ids: List<Int> = preparedStatement("select component_id from bc_component where lifetime_type = ?") {
+            executeQuery(LifetimeType.EPHEMERAL.key).map { it.getInt("component_id") }
         }
+
+        if (ids.isNotEmpty())
+            deleteComponentsById(ids)
+        ids.size
     }
 
     suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
