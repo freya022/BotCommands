@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.internal.components.repositories
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
+import io.github.freya022.botcommands.api.components.builder.IComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
-import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.db.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -13,12 +13,9 @@ import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
 import io.github.freya022.botcommands.internal.components.data.*
-import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
-import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Instant
@@ -32,8 +29,8 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentRepository(
     private val database: InternalDatabase,
-    private val ephemeralComponentHandlers: EphemeralComponentHandlers,
-    private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
+    private val componentTimeoutRepository: ComponentTimeoutRepository,
+    private val componentHandlerRepository: ComponentHandlerRepository,
     private val componentFilters: ComponentFilters
 ) {
     internal class DeletedComponent(val componentId: Int, val ephemeralComponentHandlerId: Int?, val ephemeralTimeoutHandlerId: Int?) {
@@ -82,7 +79,7 @@ internal class ComponentRepository(
     suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
         return database.transactional {
             // Create base component
-            val componentId: Int = insertBaseComponent(builder.componentType, builder.lifetimeType, builder.expiresAt, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
+            val componentId: Int = insertBaseComponent(builder, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
 
             // Add constraints
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
@@ -97,13 +94,9 @@ internal class ComponentRepository(
             // Add handler
             val handler = builder.handler
             if (handler is EphemeralHandler<*>) {
-                preparedStatement("insert into bc_ephemeral_handler (component_id, handler_id) VALUES (?, ?)") {
-                    executeUpdate(componentId, ephemeralComponentHandlers.put(handler))
-                }
+                componentHandlerRepository.insertEphemeralHandler(componentId, handler)
             } else if (handler is PersistentHandler) {
-                preparedStatement("insert into bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-                    executeUpdate(componentId, handler.handlerName, handler.userData.toTypedArray())
-                }
+                componentHandlerRepository.insertPersistentHandler(componentId, handler)
             }
 
             // Add timeout
@@ -134,7 +127,7 @@ internal class ComponentRepository(
             val oneUse: Boolean = dbResult["one_use"]
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, oneUse, expiresAt)
+                return@preparedStatement getGroup(id, lifetimeType, oneUse, expiresAt)
             }
 
             val filters = componentFilters.getFilters(dbResult["filters"])
@@ -147,34 +140,69 @@ internal class ComponentRepository(
             )
 
             when (lifetimeType) {
-                LifetimeType.PERSISTENT -> getPersistentComponent(
-                    id,
-                    componentType,
-                    lifetimeType,
-                    expiresAt,
-                    filters,
-                    oneUse,
-                    rateLimitGroup,
-                    constraints,
-                    dbResult["group_id"]
-                )
-                LifetimeType.EPHEMERAL -> getEphemeralComponent(
-                    id,
-                    componentType,
-                    lifetimeType,
-                    expiresAt,
-                    filters,
-                    oneUse,
-                    rateLimitGroup,
-                    constraints,
-                    dbResult["group_id"]
-                )
+                LifetimeType.PERSISTENT -> {
+                    val handler = componentHandlerRepository.getPersistentHandler(id)
+                    // Avoid request if no timeout is set
+                    val timeout = expiresAt?.let {
+                        componentTimeoutRepository.getPersistentTimeout(id)
+                    }
+
+                    PersistentComponentData(
+                        id, componentType, lifetimeType,
+                        expiresAt,
+                        filters,
+                        oneUse,
+                        rateLimitGroup,
+                        handler, timeout,
+                        constraints,
+                        dbResult["group_id"]
+                    )
+                }
+
+                LifetimeType.EPHEMERAL -> {
+                    val handler = componentHandlerRepository.getEphemeralHandler(id)
+                    // Avoid request if no timeout is set
+                    val timeout = expiresAt?.let {
+                        componentTimeoutRepository.getEphemeralTimeout(id)
+                    }
+
+                    EphemeralComponentData(
+                        id, componentType, lifetimeType,
+                        expiresAt,
+                        filters,
+                        oneUse,
+                        rateLimitGroup,
+                        handler, timeout,
+                        constraints,
+                        dbResult["group_id"]
+                    )
+                }
             }
         }
     }
 
+    context(Transaction)
+    private suspend fun getGroup(id: Int, lifetimeType: LifetimeType, oneUse: Boolean, expiresAt: Instant?): ComponentGroupData {
+        val timeout = when (lifetimeType) {
+            LifetimeType.PERSISTENT -> componentTimeoutRepository.getPersistentTimeout(id)
+            LifetimeType.EPHEMERAL -> componentTimeoutRepository.getEphemeralTimeout(id)
+        }
+
+        val componentIds: List<Int> = preparedStatement(
+            """
+                select component_id
+                from bc_component_component_group
+                where group_id = ?
+            """.trimIndent()
+        ) {
+            executeQuery(id).map { it["component_id"] }
+        }
+
+        return ComponentGroupData(id, oneUse, expiresAt, timeout, componentIds)
+    }
+
     suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
-        val groupId: Int = insertBaseComponent(ComponentType.GROUP, builder.lifetimeType, builder.expiresAt, false, null, emptyArray())
+        val groupId: Int = insertBaseComponent(builder, false, null, emptyArray())
 
         // Add timeout
         insertTimeoutData(builder, groupId)
@@ -207,40 +235,30 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun insertBaseComponent(
-        componentType: ComponentType,
-        lifetimeType: LifetimeType,
-        expiresAt: Instant?,
+    private suspend fun <T> insertBaseComponent(
+        builder: T,
         oneUse: Boolean,
         rateLimitGroup: String?,
         filterNames: Array<out String>
-    ): Int = preparedStatement(
-        "insert into bc_component (component_type, lifetime_type, expires_at, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?)",
-        columnNames = arrayOf("component_id")
-    ) {
-        executeReturningUpdate(componentType.key, lifetimeType.key, expiresAt?.toSqlTimestamp(), oneUse, rateLimitGroup, filterNames)
-            .read()
-            .getInt("component_id")
+    ): Int where T : IComponentBuilder,
+                 T : ITimeoutableComponent<*> {
+        return preparedStatement(
+            "insert into bc_component (component_type, lifetime_type, expires_at, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?)",
+            columnNames = arrayOf("component_id")
+        ) {
+            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.expiresAt?.toSqlTimestamp(), oneUse, rateLimitGroup, filterNames)
+                .read()
+                .getInt("component_id")
+        }
     }
 
     context(Transaction)
-    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent<*>, groupId: Int) {
+    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent<*>, componentId: Int) {
         val timeout = timeoutableComponentBuilder.timeout
         if (timeout is EphemeralTimeout) {
-            preparedStatement("insert into bc_ephemeral_timeout (component_id, handler_id) VALUES (?, ?)") {
-                executeUpdate(
-                    groupId,
-                    timeout.handler.let(ephemeralTimeoutHandlers::put)
-                )
-            }
+            componentTimeoutRepository.insertEphemeralTimeout(componentId, timeout)
         } else if (timeout is PersistentTimeout) {
-            preparedStatement("insert into bc_persistent_timeout (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-                executeUpdate(
-                    groupId,
-                    timeout.handlerName,
-                    timeout.userData.toTypedArray()
-                )
-            }
+            componentTimeoutRepository.insertPersistentTimeout(componentId, timeout)
         }
     }
 
@@ -278,135 +296,6 @@ internal class ComponentRepository(
         logger.trace { "Deleted components: ${deletedComponentIds.joinToString()}" }
 
         return@transactional deletedComponents
-    }
-
-    context(Transaction)
-    private suspend fun getPersistentComponent(
-        id: Int,
-        componentType: ComponentType,
-        lifetimeType: LifetimeType,
-        expiresAt: Instant?,
-        filters: List<ComponentInteractionFilter<*>>,
-        oneUse: Boolean,
-        rateLimitGroup: String?,
-        constraints: InteractionConstraints,
-        groupId: Int?
-    ): PersistentComponentData {
-        val handler = preparedStatement("SELECT handler_name, user_data FROM bc_persistent_handler WHERE component_id = ?;") {
-            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
-
-            PersistentHandler.fromData(
-                dbResult["handler_name"],
-                dbResult["user_data"]
-            )
-        }
-
-        // Avoid request if no timeout is set
-        val timeout = expiresAt?.let {
-            preparedStatement("SELECT handler_name, user_data FROM bc_persistent_timeout WHERE component_id = ?;") {
-                val dbResult = executeQuery(id).readOrNull() ?: return@let null
-
-                PersistentTimeout.fromData(
-                    dbResult["handler_name"],
-                    dbResult["user_data"]
-                )
-            }
-        }
-
-        return PersistentComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
-    }
-
-    context(Transaction)
-    private suspend fun getEphemeralComponent(
-        id: Int,
-        componentType: ComponentType,
-        lifetimeType: LifetimeType,
-        expiresAt: Instant?,
-        filters: List<ComponentInteractionFilter<*>>,
-        oneUse: Boolean,
-        rateLimitGroup: String?,
-        constraints: InteractionConstraints,
-        groupId: Int?
-    ): EphemeralComponentData {
-        val handler = preparedStatement("SELECT handler_id FROM bc_ephemeral_handler WHERE component_id = ?") {
-            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
-
-            dbResult.getInt("handler_id").let { handlerId ->
-                ephemeralComponentHandlers[handlerId]
-                    ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
-            }
-        }
-
-        // Avoid request if no timeout is set
-        val timeout = expiresAt?.let {
-            preparedStatement("SELECT handler_id FROM bc_ephemeral_timeout WHERE component_id = ?") {
-                val dbResult = executeQuery(id).readOrNull() ?: return@let null
-
-                dbResult.getInt("handler_id")
-                    .let { handlerId ->
-                        ephemeralTimeoutHandlers[handlerId]
-                            ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
-                    }
-                    .let(::EphemeralTimeout)
-            }
-        }
-
-        return EphemeralComponentData(id, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
-    }
-
-    context(Transaction)
-    private suspend fun getGroup(id: Int, oneUse: Boolean, expiresAt: Instant?): ComponentGroupData {
-        val timeout = getGroupTimeout(id)
-
-        val componentIds: List<Int> = preparedStatement(
-            """
-                select component_id
-                from bc_component_component_group
-                where group_id = ?
-            """.trimIndent()
-        ) {
-            executeQuery(id).map { it["component_id"] }
-        }
-
-        return ComponentGroupData(id, oneUse, expiresAt, timeout, componentIds)
-    }
-
-    context(Transaction)
-    private suspend fun getGroupTimeout(id: Int): ComponentTimeout? {
-        preparedStatement(
-            """
-               select pt.handler_name as timeout_handler_name,
-                      pt.user_data    as timeout_user_data
-               from bc_persistent_timeout pt
-               where component_id = ?;
-            """.trimIndent()
-        ) {
-            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
-
-            return PersistentTimeout.fromData(
-                dbResult["timeout_handler_name"],
-                dbResult["timeout_user_data"]
-            )
-        }
-
-        //In case there's no persistent timeout handler
-        preparedStatement(
-            """
-               select pt.handler_id as timeout_handler_id
-               from bc_ephemeral_timeout pt
-               where component_id = ?;
-            """.trimIndent()
-        ) {
-            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
-
-            val handlerId: Int = dbResult["timeout_handler_id"]
-            return EphemeralTimeout(
-                ephemeralTimeoutHandlers[handlerId]
-                    ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
-            )
-        }
-
-        return null
     }
 
     private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())
