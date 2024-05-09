@@ -1,4 +1,5 @@
 @file:IgnoreStackFrame // Due to TracedConnection
+@file:OptIn(ExperimentalContracts::class)
 
 package io.github.freya022.botcommands.api.core.db
 
@@ -276,6 +277,10 @@ internal fun createDumps(): String = buildString {
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, generatedKeys: Boolean = false, block: SuspendingPreparedStatement.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     return fetchConnection(readOnly).use {
         SuspendingPreparedStatement(it.prepareStatement(
             sql,
@@ -304,6 +309,10 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, columnIndexes: IntArray, block: SuspendingPreparedStatement.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     return fetchConnection(readOnly).use {
         SuspendingPreparedStatement(it.prepareStatement(sql, columnIndexes)).use(block)
     }
@@ -329,6 +338,10 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
 @Throws(SQLException::class)
 @Suppress("SqlSourceToSinkFlow")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, columnNames: Array<out String>, block: SuspendingPreparedStatement.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     return fetchConnection(readOnly).use {
         SuspendingPreparedStatement(it.prepareStatement(sql, columnNames)).use(block)
     }

@@ -1,8 +1,13 @@
+@file:OptIn(ExperimentalContracts::class)
+
 package io.github.freya022.botcommands.api.core.db
 
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 import java.sql.Statement
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 class Transaction @PublishedApi internal constructor(val connection: Connection) {
     /**
@@ -17,6 +22,10 @@ class Transaction @PublishedApi internal constructor(val connection: Connection)
      */
     @Suppress("SqlSourceToSinkFlow")
     inline fun <R> preparedStatement(@Language("PostgreSQL") sql: String, generatedKeys: Boolean = false, block: SuspendingPreparedStatement.() -> R): R {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
+
         return SuspendingPreparedStatement(connection.prepareStatement(
             sql,
             if (generatedKeys) Statement.RETURN_GENERATED_KEYS else Statement.NO_GENERATED_KEYS
@@ -35,6 +44,10 @@ class Transaction @PublishedApi internal constructor(val connection: Connection)
      */
     @Suppress("SqlSourceToSinkFlow")
     inline fun <R> preparedStatement(@Language("PostgreSQL") sql: String, columnIndexes: IntArray, block: SuspendingPreparedStatement.() -> R): R {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
+
         return SuspendingPreparedStatement(connection.prepareStatement(sql, columnIndexes)).use(block)
     }
 
@@ -50,6 +63,9 @@ class Transaction @PublishedApi internal constructor(val connection: Connection)
      */
     @Suppress("SqlSourceToSinkFlow")
     inline fun <R> preparedStatement(@Language("PostgreSQL") sql: String, columnNames: Array<out String>, block: SuspendingPreparedStatement.() -> R): R {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
         return SuspendingPreparedStatement(connection.prepareStatement(sql, columnNames)).use(block)
     }
 }
