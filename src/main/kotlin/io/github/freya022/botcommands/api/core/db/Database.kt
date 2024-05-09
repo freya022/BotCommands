@@ -3,7 +3,7 @@
 
 package io.github.freya022.botcommands.api.core.db
 
-import io.github.freya022.botcommands.api.core.Logging
+import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
@@ -12,7 +12,9 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.db.DatabaseImpl
+import io.github.freya022.botcommands.internal.utils.StackSensitive
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.findCaller
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
@@ -28,6 +30,8 @@ import java.sql.Statement
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
@@ -137,6 +141,20 @@ internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = fal
 @PublishedApi
 internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
 
+@PublishedApi
+internal class TransactionContextElement(
+    val transaction: Transaction
+) : AbstractCoroutineContextElement(Key),
+    ThreadContextElement<Transaction> {
+
+    @PublishedApi
+    internal companion object Key : CoroutineContext.Key<TransactionContextElement>
+
+    override fun updateThreadContext(context: CoroutineContext): Transaction = transaction
+
+    override fun restoreThreadContext(context: CoroutineContext, oldState: Transaction) { }
+}
+
 /**
  * Acquires a database connection, runs the [block], commits the changes and closes the connection.
  *
@@ -155,50 +173,74 @@ internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
  * @see BDatabaseConfig.dumpLongTransactions
  * @see ConnectionSupplier.maxTransactionDuration
  */
-@OptIn(ExperimentalContracts::class)
 @Throws(SQLException::class)
-suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
+suspend inline fun <R> Database.transactional(readOnly: Boolean = false, crossinline block: suspend Transaction.() -> R): R {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    val connection = fetchConnection(readOnly)
+    currentCoroutineContext()[TransactionContextElement.Key]
+        ?.transaction
+        ?.let { return block(it) }
 
-    // The leak test code doesn't use idiomatic Kotlin on purpose
-    val maxTransactionDuration = when {
-        databaseConfig.dumpLongTransactions -> connectionSupplier.maxTransactionDuration.toKotlinDuration()
-        else -> null
-    }
-    val logger = maxTransactionDuration?.let { Logging.getLogger() }
-    val leakJob: Job? = maxTransactionDuration?.let {
-        dbLeakScope.launch {
-            delay(maxTransactionDuration)
-            logger!!.warn(formatExceededTransactionDuration("Transaction", connection, maxTransactionDuration))
-        }
-    }
-
-    try {
-        connection.autoCommit = false
-        return block(Transaction(connection))
-    } catch (e: Throwable) {
-        connection.rollback()
-        throw e
-    } finally {
-        if (maxTransactionDuration != null) {
-            leakJob!!.cancel()
-
-            val duration = measureTime { releaseConnection(connection) }
-            if (duration > maxTransactionDuration) {
-                logger!!.warn(formatExceededTransactionDuration("Commit & close", connection, maxTransactionDuration))
+    return withNewTransaction(readOnly) { connection, transaction ->
+        measureTransactionDurationAndRelease(connection) {
+            try {
+                connection.autoCommit = false
+                block(transaction)
+            } catch (e: Throwable) {
+                connection.rollback()
+                throw e
             }
-        } else {
-            releaseConnection(connection)
         }
     }
 }
 
 @PublishedApi
-internal fun formatExceededTransactionDuration(actionDescription: String, connection: Connection, maxTransactionDuration: Duration): String {
+internal suspend fun <R> Database.withNewTransaction(
+    readOnly: Boolean,
+    block: suspend (connection: Connection, transaction: Transaction) -> R
+): R {
+    val connection = fetchConnection(readOnly)
+    val transaction = Transaction(connection)
+    return withContext(TransactionContextElement(transaction)) {
+        block(connection, transaction)
+    }
+}
+
+@OptIn(StackSensitive::class)
+@PublishedApi
+internal suspend fun <R> Database.measureTransactionDurationAndRelease(connection: Connection, block: suspend () -> R): R {
+    if (!databaseConfig.dumpLongTransactions) {
+        try {
+            return block()
+        } finally {
+            releaseConnection(connection)
+        }
+    }
+
+    val callerFrame = findCaller(skip = 1)
+    fun getLogger() = callerFrame.declaringClass.toUnwrappedLogger()
+
+    val maxTransactionDuration = connectionSupplier.maxTransactionDuration.toKotlinDuration()
+    val leakJob = dbLeakScope.launch {
+        delay(maxTransactionDuration)
+        getLogger().warn { formatExceededTransactionDuration("Transaction", connection, maxTransactionDuration) }
+    }
+
+    try {
+        return block()
+    } finally {
+        leakJob.cancel()
+
+        val duration = measureTime { releaseConnection(connection) }
+        if (duration > maxTransactionDuration) {
+            getLogger().warn { formatExceededTransactionDuration("Commit & close", connection, maxTransactionDuration) }
+        }
+    }
+}
+
+private fun formatExceededTransactionDuration(actionDescription: String, connection: Connection, maxTransactionDuration: Duration): String {
     if (!connection.isWrapperFor(DatabaseImpl.ConnectionResource::class.java))
         throwInternal("Transaction connection should have been a ${classRef<DatabaseImpl.ConnectionResource>()}")
     val resource = connection.unwrap(DatabaseImpl.ConnectionResource::class.java)
@@ -207,8 +249,7 @@ internal fun formatExceededTransactionDuration(actionDescription: String, connec
     return "$actionDescription took longer than ${maxTransactionDuration.toString(DurationUnit.SECONDS, 2)} (available permits: $availablePermits):\n${createDumps()}"
 }
 
-@PublishedApi
-internal fun releaseConnection(connection: Connection) {
+private fun releaseConnection(connection: Connection) {
     // Always commit, if the connection was rolled back, this is a no-op
     // Using a "finally" block is mandatory,
     // as code after the "block" function can be skipped if the user does a non-local return
