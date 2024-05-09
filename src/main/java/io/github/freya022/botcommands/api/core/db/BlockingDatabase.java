@@ -20,6 +20,30 @@ import java.sql.SQLException;
  *
  * <p>Use {@link Database} if you use Kotlin.
  *
+ * <h3>Nested transaction</h3>
+ * Nested transactions are transactions that use an existing connection,
+ * enabling you to, for example, have a [transactional] inside another.
+ *
+ * <p>They are supported on methods that use callbacks.
+ *
+ * <h4>Nested transaction block</h4>
+ * Queries executed in a nested transaction are not committed when exiting the block,
+ * only top-level transactions do.
+ *
+ * <h4>Read-only status</h4>
+ * A nested transaction cannot be created
+ * if the existing connection is read-only and the nested transaction is read-write.
+ *
+ * <ul>
+ *     <li>✓ Read-write -> Read-only</li>
+ *     <li>✓ Read-only -> Read-only</li>
+ *     <li>✗ Read-only -> Read-write</li>
+ * </ul>
+ *
+ * Keep in mind that a read-only transaction will not prevent write operation,
+ * as they mostly {@link Connection#setReadOnly(boolean) enable optimizations},
+ * and only a few databases reject modifying queries.
+ *
  * <h3>Tracing</h3>
  * The connection could be wrapped depending on the configuration, for example,
  * to log the queries (in which case a {@link ParametrizedQuery} is used), as well as timing them.
@@ -52,7 +76,7 @@ import java.sql.SQLException;
  *
  * <p><b>Note:</b> To read returned columns (like an {@code INSERT INTO ... RETURNING {column}} in PostgreSQL),
  * you must specify the column indexes/names when creating your statement,
- * and read them back from {@link SuspendingPreparedStatement#getGeneratedKeys()}.
+ * and read them back from {@link BlockingPreparedStatement#getGeneratedKeys()}.
  *
  * @see RequiresDatabase @RequiresDatabase
  * @see Database
@@ -100,6 +124,7 @@ public class BlockingDatabase {
      * <p>The returned connection <b>must</b> be closed, with a try-with-resource, for example.
      *
      * @param readOnly {@code true} if the database only is read from, can allow some optimizations
+     *                 but does <b>not</b> prevent writing
      *
      * @see #withTransaction(boolean, TransactionFunction)
      * @see #withStatement(String, boolean, StatementFunction)
@@ -118,6 +143,9 @@ public class BlockingDatabase {
      * <p>If {@link BDatabaseConfig#getDumpLongTransactions()} is enabled,
      * a coroutine dump ({@link BDatabaseConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
+     *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
      *
      * @param transactionFunction The function to run with the connection
      *
@@ -142,7 +170,11 @@ public class BlockingDatabase {
      * a coroutine dump ({@link BDatabaseConfig#getDumpLongTransactions() if available}) and a thread dump will be done
      * if the transaction is longer than {@link ConnectionSupplier#getMaxTransactionDuration() the threshold}.
      *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
+     *
      * @param readOnly            {@code true} if the database only is read from, can allow some optimizations
+     *                            but does <b>not</b> prevent writing
      * @param transactionFunction The function to run with the connection
      *
      * @see #fetchConnection(boolean)
@@ -169,6 +201,9 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(TransactionFunction)} otherwise.
      *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
+     *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param statementFunction The function to run with the prepared statement
      *
@@ -191,8 +226,12 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
      *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
+     *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     *                          but does <b>not</b> prevent writing
      * @param statementFunction The function to run with the prepared statement
      *
      * @see #fetchConnection(boolean)
@@ -216,6 +255,9 @@ public class BlockingDatabase {
      *
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(TransactionFunction)} otherwise.
+     *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
      *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param columnIndexes     An array of column index indicating the columns that should be returned from the inserted row or rows
@@ -243,8 +285,12 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
      *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
+     *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     *                          but does <b>not</b> prevent writing
      * @param columnIndexes     An array of column index indicating the columns that should be returned from the inserted row or rows
      * @param statementFunction The function to run with the prepared statement
      *
@@ -270,6 +316,9 @@ public class BlockingDatabase {
      *
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(TransactionFunction)} otherwise.
+     *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
      *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param columnNames       An array of column names indicating the columns that should be returned from the inserted row or rows
@@ -297,8 +346,12 @@ public class BlockingDatabase {
      * <p>The function should always be short-lived,
      * consider using {@link #withTransaction(boolean, TransactionFunction)} otherwise.
      *
+     * <p>Supports nesting, but it is not recommended doing so,
+     * avoid nesting by returning the data as soon as possible.
+     *
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param readOnly          {@code true} if the database only is read from, can allow some optimizations
+     *                          but does <b>not</b> prevent writing
      * @param columnNames       An array of column names indicating the columns that should be returned from the inserted row or rows
      * @param statementFunction The function to run with the prepared statement
      *

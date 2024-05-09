@@ -30,8 +30,6 @@ import java.sql.Statement
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.coroutines.AbstractCoroutineContextElement
-import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
@@ -43,6 +41,28 @@ private val logger = KotlinLogging.logger { }
  * Utility class to use connections given by the [ConnectionSupplier], in a suspending style.
  *
  * Use [BlockingDatabase] if you don't use Kotlin.
+ *
+ * ### Nested transaction
+ * Nested transactions are transactions that use an existing connection,
+ * enabling you to, for example, have a [transactional] inside another.
+ *
+ * They are supported on methods that use callbacks and work with coroutines.
+ *
+ * #### Nested transaction block
+ * Queries executed in a nested transaction are not committed when exiting the block,
+ * only top-level transactions do.
+ *
+ * #### Read-only status
+ * A nested transaction cannot be created
+ * if the existing connection is read-only and the nested transaction is read-write.
+ *
+ * - ✓ Read-write -> Read-only
+ * - ✓ Read-only -> Read-only
+ * - ✗ Read-only -> Read-write
+ *
+ * Keep in mind that a read-only transaction will not prevent write operation,
+ * as they mostly [enable optimizations][Connection.setReadOnly],
+ * and only a few databases reject modifying queries.
  *
  * ### Tracing
  * The connection could be wrapped depending on the configuration, for example,
@@ -95,6 +115,7 @@ interface Database {
      * The returned connection **must** be closed with an [use] closure.
      *
      * @param readOnly `true` if the database only is read from, can allow some optimizations
+     *                 but does **not** prevent writing
      *
      * @see transactional
      * @see preparedStatement
@@ -118,42 +139,36 @@ internal fun <R> Database.withTransactionJava(readOnly: Boolean = false, block: 
 @JvmOverloads
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, block: StatementFunction<R, *>): R =
-    runBlocking { fetchConnection(readOnly) }.use { connection ->
-        BlockingPreparedStatement(connection.prepareStatement(sql)).use { block.apply(it) }
+    runBlocking {
+        withReusedConnection(readOnly) { connection ->
+            BlockingPreparedStatement(connection.prepareStatement(sql)).use { block.apply(it) }
+        }
     }
 
 @Suppress("SqlSourceToSinkFlow")
 @JvmOverloads
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, columnIndexes: IntArray, block: StatementFunction<R, *>): R =
-    runBlocking { fetchConnection(readOnly) }.use { connection ->
-        BlockingPreparedStatement(connection.prepareStatement(sql, columnIndexes)).use { block.apply(it) }
+    runBlocking {
+        withReusedConnection(readOnly) { connection ->
+            BlockingPreparedStatement(connection.prepareStatement(sql, columnIndexes)).use { block.apply(it) }
+        }
     }
 
 @Suppress("SqlSourceToSinkFlow")
 @JvmOverloads
 @Throws(SQLException::class)
 internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = false, columnNames: Array<out String>, block: StatementFunction<R, *>): R =
-    runBlocking { fetchConnection(readOnly) }.use { connection ->
-        BlockingPreparedStatement(connection.prepareStatement(sql, columnNames)).use { block.apply(it) }
+    runBlocking {
+        withReusedConnection(readOnly) { connection ->
+            BlockingPreparedStatement(connection.prepareStatement(sql, columnNames)).use { block.apply(it) }
+        }
     }
 
 @PublishedApi
 internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
 
-@PublishedApi
-internal class TransactionContextElement(
-    val transaction: Transaction
-) : AbstractCoroutineContextElement(Key),
-    ThreadContextElement<Transaction> {
-
-    @PublishedApi
-    internal companion object Key : CoroutineContext.Key<TransactionContextElement>
-
-    override fun updateThreadContext(context: CoroutineContext): Transaction = transaction
-
-    override fun restoreThreadContext(context: CoroutineContext, oldState: Transaction) { }
-}
+private val currentTransaction = ThreadLocal<Transaction>()
 
 /**
  * Acquires a database connection, runs the [block], commits the changes and closes the connection.
@@ -165,7 +180,11 @@ internal class TransactionContextElement(
  * a coroutine dump ([if available][BDatabaseConfig.dumpLongTransactions]) and a thread dump will be done
  * if the transaction is longer than [the threshold][ConnectionSupplier.maxTransactionDuration].
  *
+ * Supports nesting, but it is not recommended doing so,
+ * avoid nesting by returning the data as soon as possible.
+ *
  * @param readOnly `true` if the database only is read from, can allow some optimizations
+ *                 but does **not** prevent writing
  *
  * @see Database.fetchConnection
  * @see Database.preparedStatement
@@ -179,9 +198,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, crossin
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    currentCoroutineContext()[TransactionContextElement.Key]
-        ?.transaction
-        ?.let { return block(it) }
+    currentTransactionIfExists(readOnly)?.let { return block(it) }
 
     return withNewTransaction(readOnly) { connection, transaction ->
         measureTransactionDurationAndRelease(connection) {
@@ -197,13 +214,27 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, crossin
 }
 
 @PublishedApi
+internal fun currentTransactionIfExists(readOnly: Boolean) =
+    currentTransaction.get()?.also {
+        val isCurrentlyReadOnly = it.connection.isReadOnly
+        // Allow if connection is RW, or R-O is requested
+        check(!isCurrentlyReadOnly || readOnly) {
+            "Cannot reuse a read-only transaction as a read-write transaction"
+        }
+    }
+
+@PublishedApi
 internal suspend fun <R> Database.withNewTransaction(
     readOnly: Boolean,
     block: suspend (connection: Connection, transaction: Transaction) -> R
 ): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     val connection = fetchConnection(readOnly)
     val transaction = Transaction(connection)
-    return withContext(TransactionContextElement(transaction)) {
+    return withContext(currentTransaction.asContextElement(value = transaction)) {
         block(connection, transaction)
     }
 }
@@ -211,6 +242,10 @@ internal suspend fun <R> Database.withNewTransaction(
 @OptIn(StackSensitive::class)
 @PublishedApi
 internal suspend fun <R> Database.measureTransactionDurationAndRelease(connection: Connection, block: suspend () -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
     if (!databaseConfig.dumpLongTransactions) {
         try {
             return block()
@@ -308,8 +343,12 @@ internal fun createDumps(): String = buildString {
  *
  * The [block] should always be short-lived, consider using [transactional] otherwise.
  *
+ * Supports nesting, but it is not recommended doing so,
+ * avoid nesting by returning the data as soon as possible.
+ *
  * @param sql           An SQL statement that may contain one or more '?' IN parameter placeholders
  * @param readOnly      `true` if the database only is read from, can allow some optimizations
+ *                      but does **not** prevent writing
  * @param generatedKeys `true` to return the generated keys
  *
  * @see Database.fetchConnection
@@ -322,7 +361,7 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    return fetchConnection(readOnly).use {
+    return withReusedConnection(readOnly) {
         SuspendingPreparedStatement(it.prepareStatement(
             sql,
             if (generatedKeys) Statement.RETURN_GENERATED_KEYS else Statement.NO_GENERATED_KEYS
@@ -340,8 +379,12 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
  *
  * The [block] should always be short-lived, consider using [transactional] otherwise.
  *
+ * Supports nesting, but it is not recommended doing so,
+ * avoid nesting by returning the data as soon as possible.
+ *
  * @param sql           An SQL statement that may contain one or more '?' IN parameter placeholders
  * @param readOnly      `true` if the database only is read from, can allow some optimizations
+ *                      but does **not** prevent writing
  * @param columnIndexes An array of column indexes indicating the columns that should be returned from the inserted row or rows
  *
  * @see Database.fetchConnection
@@ -354,7 +397,7 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    return fetchConnection(readOnly).use {
+    return withReusedConnection(readOnly) {
         SuspendingPreparedStatement(it.prepareStatement(sql, columnIndexes)).use(block)
     }
 }
@@ -369,8 +412,12 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
  *
  * The [block] should always be short-lived, consider using [transactional] otherwise.
  *
+ * Supports nesting, but it is not recommended doing so,
+ * avoid nesting by returning the data as soon as possible.
+ *
  * @param sql          An SQL statement that may contain one or more '?' IN parameter placeholders
  * @param readOnly     `true` if the database only is read from, can allow some optimizations
+ *                     but does **not** prevent writing
  * @param columnNames  An array of column names indicating the columns that should be returned from the inserted row or rows
  *
  * @see Database.fetchConnection
@@ -383,7 +430,19 @@ suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: S
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    return fetchConnection(readOnly).use {
+    return withReusedConnection(readOnly) {
         SuspendingPreparedStatement(it.prepareStatement(sql, columnNames)).use(block)
     }
+}
+
+@PublishedApi
+internal suspend inline fun <R> Database.withReusedConnection(readOnly: Boolean, block: (connection: Connection) -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+
+    val connection = currentTransactionIfExists(readOnly)?.connection
+    if (connection != null)
+        return block(connection)
+    return fetchConnection(readOnly).use(block)
 }
