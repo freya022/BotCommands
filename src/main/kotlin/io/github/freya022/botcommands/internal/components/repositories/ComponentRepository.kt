@@ -283,14 +283,6 @@ internal class ComponentRepository(
         return@transactional deletedComponents
     }
 
-    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional(readOnly = true) {
-        preparedStatement("select component_id, expiration_timestamp from bc_persistent_timeout") {
-            executeQuery().forEach { dbResult ->
-                timeoutManager.scheduleTimeout(dbResult["component_id"], dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant())
-            }
-        }
-    }
-
     context(Transaction)
     private suspend fun getPersistentComponent(
         id: Int,
