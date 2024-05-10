@@ -85,8 +85,8 @@ internal class ComponentController(
                 "Global filter ${filterClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
             }
 
-            require(!filterClass.isAnonymousClass && !filterClass.isLocalClass) {
-                "Component filters must be a class accessible via reflection, " +
+            requireNotNull(context.serviceContainer.getServiceOrNull(filterClass)) {
+                "Component filters must be accessible via dependency injection, " +
                         "filters such as composite filters created with 'and' / 'or' cannot be passed. " +
                         "See ${classRef<ComponentInteractionFilter<*>>()} for more details."
             }
