@@ -10,7 +10,7 @@ class SuspendingPreparedStatement @PublishedApi internal constructor(
     preparedStatement: PreparedStatement
 ): AbstractPreparedStatement(preparedStatement) {
     @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun execute(): Boolean = throw UnsupportedOperationException()
+    override fun execute(): Boolean = preparedStatement.execute()
 
     /**
      * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
@@ -27,7 +27,7 @@ class SuspendingPreparedStatement @PublishedApi internal constructor(
     }
 
     @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun executeUpdate(): Int = throw UnsupportedOperationException()
+    override fun executeUpdate(): Int = preparedStatement.executeUpdate()
 
     /**
      * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
@@ -60,7 +60,7 @@ class SuspendingPreparedStatement @PublishedApi internal constructor(
     }
 
     @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
-    override fun executeQuery(): ResultSet = throw UnsupportedOperationException()
+    override fun executeQuery(): ResultSet = preparedStatement.executeQuery()
 
     /**
      * Executes the SQL statement in this PreparedStatement object with the supplied parameters.
