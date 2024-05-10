@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
+@Suppress("FunctionName")
 class SuspendingPreparedStatement @PublishedApi internal constructor(
     preparedStatement: PreparedStatement
 ): AbstractPreparedStatement(preparedStatement) {
@@ -73,5 +74,37 @@ class SuspendingPreparedStatement @PublishedApi internal constructor(
     suspend fun executeQuery(vararg params: Any?): DBResult = withContext(Dispatchers.IO) {
         setParameters(params)
         DBResult(preparedStatement.executeQuery())
+    }
+
+    @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
+    override fun executeBatch(): IntArray = preparedStatement.executeBatch()
+
+    /**
+     * Submits a batch of commands to the database for execution and
+     * if all commands execute successfully, returns an array of update counts.
+     * The `Int` elements of the array that is returned are ordered
+     * to correspond to the commands in the batch, which are ordered
+     * according to the order in which they were added to the batch.
+     *
+     * @see PreparedStatement.executeBatch
+     */
+    suspend fun executeBatch_(): IntArray = withContext(Dispatchers.IO) {
+        preparedStatement.executeBatch()
+    }
+
+    @Deprecated("Use suspending version", level = DeprecationLevel.HIDDEN)
+    override fun executeLargeBatch(): LongArray = preparedStatement.executeLargeBatch()
+
+    /**
+     * Submits a batch of commands to the database for execution and
+     * if all commands execute successfully, returns an array of update counts.
+     * The `Long` elements of the array that is returned are ordered
+     * to correspond to the commands in the batch, which are ordered
+     * according to the order in which they were added to the batch.
+     *
+     * @see PreparedStatement.executeLargeBatch
+     */
+    suspend fun executeLargeBatch_(): LongArray = withContext(Dispatchers.IO) {
+        preparedStatement.executeLargeBatch()
     }
 }
