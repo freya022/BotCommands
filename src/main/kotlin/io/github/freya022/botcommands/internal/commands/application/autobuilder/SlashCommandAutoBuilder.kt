@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
@@ -28,6 +29,7 @@ import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -44,6 +46,7 @@ private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
+    private val serviceContainer: ServiceContainer,
     applicationConfig: BApplicationConfig,
     private val resolverContainer: ResolverContainer,
     functionAnnotationsMap: FunctionAnnotationsMap
@@ -292,8 +295,12 @@ internal class SlashCommandAutoBuilder(
             when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> {
-                        resolverContainer.requireCustomOption(func, kParameter, SlashOption::class)
-                        customOption(declaredName)
+                        if (serviceContainer.canCreateWrappedService(kParameter) == null) {
+                            serviceOption(declaredName)
+                        } else {
+                            resolverContainer.requireCustomOption(func, kParameter, SlashOption::class)
+                            customOption(declaredName)
+                        }
                     }
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(

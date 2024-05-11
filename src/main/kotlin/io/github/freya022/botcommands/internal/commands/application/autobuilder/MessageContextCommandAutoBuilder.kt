@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.Abstract
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.commands.SkipLogger
@@ -30,8 +31,9 @@ private val logger = KotlinLogging.logger { }
 internal class MessageContextCommandAutoBuilder(
     applicationConfig: BApplicationConfig,
     resolverContainer: ResolverContainer,
-    functionAnnotationsMap: FunctionAnnotationsMap
-) : ContextCommandAutoBuilder(applicationConfig, resolverContainer) {
+    functionAnnotationsMap: FunctionAnnotationsMap,
+    serviceContainer: ServiceContainer
+) : ContextCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer) {
     private val messageFunctions: List<MessageContextFunctionMetadata>
 
     init {

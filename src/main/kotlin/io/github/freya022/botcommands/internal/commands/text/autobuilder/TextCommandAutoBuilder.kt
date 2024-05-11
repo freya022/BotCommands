@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVaria
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
@@ -25,6 +26,7 @@ import io.github.freya022.botcommands.internal.commands.text.TextUtils.component
 import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -40,7 +42,8 @@ private val defaultExtraData = TextCommandData()
 @BService
 internal class TextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer,
-    functionAnnotationsMap: FunctionAnnotationsMap
+    functionAnnotationsMap: FunctionAnnotationsMap,
+    private val serviceContainer: ServiceContainer
 ) : TextCommandProvider {
     private class TextCommandContainer(val name: String) {
         var extraData: TextCommandData = defaultExtraData
@@ -214,8 +217,12 @@ internal class TextCommandAutoBuilder(
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> {
-                        resolverContainer.requireCustomOption(func, kParameter, TextOption::class)
-                        customOption(declaredName)
+                        if (serviceContainer.canCreateWrappedService(kParameter) == null) {
+                            serviceOption(declaredName)
+                        } else {
+                            resolverContainer.requireCustomOption(func, kParameter, TextOption::class)
+                            customOption(declaredName)
+                        }
                     }
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
