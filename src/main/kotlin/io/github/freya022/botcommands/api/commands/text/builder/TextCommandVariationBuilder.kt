@@ -8,6 +8,9 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -31,7 +34,7 @@ class TextCommandVariationBuilder internal constructor(
     override val function: KFunction<Any> = function.reflectReference()
 
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function) { aggregatorParameter, aggregator ->
-        TextCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
+        TextCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
     }
 
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
@@ -125,6 +128,23 @@ class TextCommandVariationBuilder internal constructor(
                     isOptional = i >= requiredAmount
                 }
             }
+        }
+    }
+
+    /**
+     * Declares a service option, allowing injection of services, which must be available.
+     *
+     * If the service is not available, then either don't declare this command,
+     * or make the declaring class disabled by using one of:
+     * - [@Condition][Condition]
+     * - [@ConditionalService][ConditionalService]
+     * - [@Dependencies][Dependencies]
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     */
+    fun serviceOption(declaredName: String) {
+        selfAggregate(declaredName) {
+            serviceOption(declaredName)
         }
     }
 

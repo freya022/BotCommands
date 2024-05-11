@@ -3,6 +3,9 @@ package io.github.freya022.botcommands.api.commands.builder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
+import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
@@ -19,6 +22,23 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
 
     internal val optionAggregateBuilders: Map<String, T>
         get() = _optionAggregateBuilders.optionAggregateBuilders
+
+    /**
+     * Declares a service option, allowing injection of services, which must be available.
+     *
+     * If the service is not available, then either don't declare this command,
+     * or make the declaring class disabled by using one of:
+     * - [@Condition][Condition]
+     * - [@ConditionalService][ConditionalService]
+     * - [@Dependencies][Dependencies]
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     */
+    fun serviceOption(declaredName: String) {
+        selfAggregate(declaredName) {
+            serviceOption(declaredName)
+        }
+    }
 
     /**
      * Declares multiple options aggregated in a single parameter.

@@ -1,6 +1,10 @@
 package io.github.freya022.botcommands.api.core.options.builder
 
+import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
+import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
@@ -30,6 +34,21 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
         requireUser(aggregator.isSpecialAggregator() || aggregator.returnType == aggregatorParameter.typeCheckingParameter.type, aggregator) {
             "Aggregator should have the same return type as the parameter (required: ${aggregatorParameter.typeCheckingParameter.type}, found: ${aggregator.returnType})"
         }
+    }
+
+    /**
+     * Declares a service option, allowing injection of services, which must be available.
+     *
+     * If the service is not available, then either don't declare this command,
+     * or make the declaring class disabled by using one of:
+     * - [@Condition][Condition]
+     * - [@ConditionalService][ConditionalService]
+     * - [@Dependencies][Dependencies]
+     *
+     * @param declaredName Name of the declared parameter in the aggregator
+     */
+    fun serviceOption(declaredName: String) {
+        this += ServiceOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
     /**

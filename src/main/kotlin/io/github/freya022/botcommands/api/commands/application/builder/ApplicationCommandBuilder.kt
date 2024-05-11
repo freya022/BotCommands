@@ -22,8 +22,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
 
     /**
-     * Declares a custom option, such as an [AppLocalizationContext] (with [@LocalizationBundle][LocalizationBundle])
-     * or a service.
+     * Declares a custom option, such as an [AppLocalizationContext] (with [@LocalizationBundle][LocalizationBundle]).
      *
      * Additional types can be added by implementing [ICustomResolver].
      *
