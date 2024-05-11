@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal
 
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.commands.builder.GeneratedOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
@@ -17,6 +18,7 @@ import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -47,6 +49,7 @@ internal object CommandOptions {
                     config.transformOption(optionBuilder, resolver)
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
+                is ServiceOptionBuilder -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
