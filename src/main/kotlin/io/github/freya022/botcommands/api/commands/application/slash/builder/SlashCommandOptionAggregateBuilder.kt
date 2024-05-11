@@ -4,24 +4,24 @@ import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.objectLogger
-import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder internal constructor(
-    private val context: BContext,
+    override val context: BContext,
     private val commandBuilder: SlashCommandBuilder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
+
+    override val declarationSiteHolder: IDeclarationSiteHolder
+        get() = commandBuilder
+
     /**
      * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [SlashParameterResolver].
@@ -32,14 +32,6 @@ class SlashCommandOptionAggregateBuilder internal constructor(
      */
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         this += SlashCommandOptionBuilder(context, commandBuilder, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
-    }
-
-    override fun customOption(declaredName: String) {
-        if (context.serviceContainer.canCreateWrappedService(aggregatorParameter.typeCheckingParameter) == null) {
-            objectLogger().warn { "Using ${this::customOption.resolveBestReference().getSignature(source = false)} **for services** has been deprecated, please use ${this::serviceOption.resolveBestReference().getSignature(source = false)} instead, parameter '$declaredName' of ${commandBuilder.declarationSite}" }
-            return serviceOption(declaredName)
-        }
-        this += CustomOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {

@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal
 
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
@@ -10,6 +12,7 @@ import io.github.freya022.botcommands.internal.parameters.MethodParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -21,6 +24,12 @@ internal class BasicOptionAggregateBuilder(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : OptionAggregateBuilder<BasicOptionAggregateBuilder>(aggregatorParameter, aggregator) {
+    override val context: BContext
+        get() = throwInternal("Internal aggregate builder should not be used outside of the += operator")
+
+    override val declarationSiteHolder: IDeclarationSiteHolder
+        get() = throwInternal("Internal aggregate builder should not be used outside of the += operator")
+
     override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
         BasicOptionAggregateBuilder(aggregatorParameter, aggregator)
 }
