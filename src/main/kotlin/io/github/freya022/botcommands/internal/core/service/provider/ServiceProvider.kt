@@ -29,6 +29,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
+import kotlin.Lazy as KotlinLazy
 
 private val logger = KotlinLogging.logger { }
 
@@ -226,7 +227,7 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultSer
  */
 internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
     val type = parameter.type
-    if (type.jvmErasure == Lazy::class) {
+    if (type.jvmErasure == KotlinLazy::class) {
         return null //Lazy exception
     } else if (type.jvmErasure == List::class) {
         return null //Might be empty if no service were available, which is ok
