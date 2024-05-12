@@ -113,7 +113,7 @@ class ServiceError private constructor(
     }
 }
 
-class ServiceResult<T : Any> private constructor(val service: T?, val serviceError: ServiceError?) {
+class ServiceResult<out T : Any> private constructor(val service: T?, val serviceError: ServiceError?) {
     fun getOrNull(): T? = when {
         service != null -> service
         serviceError != null -> null
