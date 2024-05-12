@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandler
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
@@ -29,7 +29,6 @@ import kotlinx.coroutines.Job
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
 
@@ -130,14 +129,8 @@ internal class ComponentTimeoutManager(
 
                 userDataIterator.next()?.let { option.resolver.resolveSuspend(it) }
             }
-            OptionType.CUSTOM -> {
-                option as CustomMethodOption
-
-                //TODO add CONSTANT option type, make services use it
-                serviceContainer.getService(option.type.jvmErasure)
-//                option.resolver.resolveSuspend(descriptor, event)
-            }
-            else -> throwInternal("${option.optionType} has not been implemented")
+            OptionType.SERVICE -> (option as ServiceMethodOption).lazyService.value
+            OptionType.CUSTOM, OptionType.CONSTANT, OptionType.GENERATED -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

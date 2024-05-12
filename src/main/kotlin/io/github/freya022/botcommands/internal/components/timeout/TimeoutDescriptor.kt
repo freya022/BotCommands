@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.internal.components.timeout
 
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.transformParameters
 import kotlin.reflect.KClass
-import kotlin.reflect.jvm.jvmErasure
 
 internal class TimeoutDescriptor<T : Any> internal constructor(
     context: BContextImpl,
@@ -20,9 +20,9 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
     init {
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
-                when (context.serviceContainer.canCreateService(parameter.type.jvmErasure)) {
+                when (context.serviceContainer.canCreateWrappedService(parameter)) {
                     //No error => is a service
-                    null -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    null -> ServiceOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                     else -> TimeoutHandlerOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
             },

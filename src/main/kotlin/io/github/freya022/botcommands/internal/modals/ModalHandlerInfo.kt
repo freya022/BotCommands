@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.modals
 import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
@@ -11,8 +12,10 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
@@ -44,6 +47,7 @@ class ModalHandlerInfo internal constructor(
                 when {
                     parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                     parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    context.serviceContainer.canCreateWrappedService(parameter) == null -> ServiceOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                     else -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
             },
@@ -133,7 +137,9 @@ class ModalHandlerInfo internal constructor(
                 option.resolver.resolveSuspend(this, event)
             }
 
-            else -> throwInternal("${option.optionType} has not been implemented")
+            OptionType.SERVICE -> (option as ServiceMethodOption).lazyService.value
+
+            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

@@ -33,6 +33,7 @@ import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Clock
@@ -245,7 +246,8 @@ internal class ComponentsListener(
 
                 option.resolver.resolveSuspend(descriptor, event)
             }
-            else -> throwInternal("${option.optionType} has not been implemented")
+            OptionType.SERVICE -> (option as ServiceMethodOption).lazyService.value
+            OptionType.GENERATED, OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)
