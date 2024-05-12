@@ -21,7 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -358,44 +361,57 @@ internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KCl
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
 internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): ServiceResult<*> {
+    fun getExplicitNamedLazyService(name: String?): ServiceResult<Lazy<*>> {
+        val (elementErasure, isNullable) = getLazyElementErasure(parameter)
+        return ServiceResult.pass(if (isNullable) lazyOrNull(elementErasure, name) else lazy(elementErasure, name))
+    }
+
+    fun getImplicitNamedOrTypedLazyService(): ServiceResult<Lazy<*>> = ServiceResult.pass(lazy {
+        val (elementErasure, isNullable) = getLazyElementErasure(parameter)
+        val result = tryGetService(elementErasure, parameter.name).orElse { tryGetService(elementErasure) }
+        if (isNullable) result.getOrNull() else result.getOrThrow()
+    })
+
     val type = parameter.type
     val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
-        if (type.jvmErasure == List::class) {
-            logger.warn { "Using ${annotationRef<ServiceName>()} on a list of interfaced services is ineffective on '${parameter.bestName}' of ${parameter.function.shortSignature}" }
-        }
-        tryGetWrappedNamedService(type, parameter, requestedMandatoryName)
-    } else {
-        parameter.name?.let { parameterName ->
-            // Return the service retrieved via the parameter name if it exists
-            tryGetWrappedNamedService(type, parameter, parameterName).onService { return this }
+        require(type.jvmErasure != List::class) {
+            "Cannot use ${annotationRef<ServiceName>()} on a list of interfaced services, on '${parameter.bestName}' of ${parameter.function.shortSignature}"
         }
 
-        // If no service by parameter name was found, try by type
         when (type.jvmErasure) {
-            Lazy::class -> {
-                val (elementErasure, isNullable) = getLazyElementErasure(parameter)
-                ServiceResult.pass(if (isNullable) lazyOrNull(elementErasure) else lazy(elementErasure))
-            }
+            Lazy::class -> getExplicitNamedLazyService(requestedMandatoryName)
+            else -> tryGetService(requestedMandatoryName, type.jvmErasure)
+        }
+    } else {
+        // We need to try with the implicit name, and type-only
+        when (type.jvmErasure) {
             List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
-            else -> tryGetService(type.jvmErasure)
+            // Implicit name then type-only
+            Lazy::class -> getImplicitNamedOrTypedLazyService()
+            else -> tryGetService(type.jvmErasure, parameter.name).orElse { tryGetService(type.jvmErasure) }
         }
     }
 }
 
-private fun ServiceContainer.tryGetWrappedNamedService(
-    type: KType,
-    parameter: KParameter,
-    name: String
-) = when (type.jvmErasure) {
-    Lazy::class -> {
-        val (elementErasure, isNullable) = getLazyElementErasure(parameter)
-        ServiceResult.pass(if (isNullable) lazyOrNull(name, elementErasure) else lazy(name, elementErasure))
-    }
+private inline fun <T : Any> ServiceResult<T>.orElse(crossinline block: () -> ServiceResult<T>): ServiceResult<T> = when {
+    service != null -> this
+    else -> block()
+}
 
-    List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
+private fun <T : Any> ServiceContainer.lazy(type: KClass<T>, name: String?): Lazy<T> = when (name) {
+    null -> lazy(type)
+    else -> lazy(name, type)
+}
 
-    else -> tryGetService(name, type.jvmErasure)
+private fun <T : Any> ServiceContainer.lazyOrNull(type: KClass<T>, name: String?): Lazy<T?> = when (name) {
+    null -> lazyOrNull(type)
+    else -> lazyOrNull(name, type)
+}
+
+private fun <T : Any> ServiceContainer.tryGetService(type: KClass<T>, name: String?): ServiceResult<T> = when (name) {
+    null -> tryGetService(type)
+    else -> tryGetService(name, type)
 }
 
 private fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
