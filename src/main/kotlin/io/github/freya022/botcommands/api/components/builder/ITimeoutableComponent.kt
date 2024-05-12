@@ -304,7 +304,7 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
  *
  * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
  */
-fun <T : IPersistentTimeoutableComponent<T>> T.timeout(duration: Duration, func: suspend (event: ITimeoutData) -> Unit): T {
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duration: Duration, func: suspend (event: E) -> Unit): T {
     return bindToCallable(duration, func as KFunction<*>, emptyList())
 }
 
