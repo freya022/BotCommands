@@ -35,6 +35,7 @@ import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -79,6 +80,7 @@ internal class ComponentsListener(
                 ComponentController.parseComponentId(id)
             }
             val component = componentRepository.getComponent(componentId)
+                ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
             if (component !is AbstractComponentData)
