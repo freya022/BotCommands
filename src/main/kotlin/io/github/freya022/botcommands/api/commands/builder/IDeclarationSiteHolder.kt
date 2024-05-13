@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.builder
 
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.StackSensitive
 import io.github.freya022.botcommands.internal.utils.findCaller
+import io.github.freya022.botcommands.internal.utils.toSignature
 
 interface IDeclarationSiteHolder {
     /**
@@ -17,14 +17,9 @@ interface IDeclarationSiteHolderBuilder : IDeclarationSiteHolder {
     override var declarationSite: DeclarationSite
 }
 
-private val StackWalker.StackFrame.sourceFile: String
-    get() = fileName ?: "${declaringClass.canonicalName.split('.').first { it.any(Char::isUpperCase) }}.java"
-
 @OptIn(StackSensitive::class)
 internal fun <T : IDeclarationSiteHolderBuilder> T.setCallerAsDeclarationSite(): T {
-    declarationSite = DeclarationSite.fromRaw(findCaller(1).let { frame ->
-        "${frame.declaringClass.simpleNestedName}.${frame.methodName.substringBefore('$')} (${frame.sourceFile}:${frame.lineNumber})"
-    })
+    declarationSite = DeclarationSite.fromRaw(findCaller(1).toSignature())
 
     return this
 }
