@@ -144,12 +144,6 @@ class ResolverContainer internal constructor(
         val factory = getResolverFactoryOrNull(resolverType, request)
         if (factory == null) {
             val wrapper = request.parameter
-            // Custom resolvers are often used for services
-            // if not one, make a simple error
-            if (!resolverType.isSubclassOf(ICustomResolver::class))
-                wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}'.")
-
-            // If a service factory, add the error
             val serviceError = serviceContainer.tryGetWrappedService(wrapper.parameter).serviceError ?: throwInternal("Service became available after failing")
             wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}' and service loading failed:\n${serviceError.toDetailedString()}")
         }
