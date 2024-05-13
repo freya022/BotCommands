@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
@@ -9,13 +10,12 @@ import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
+import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
-import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.createSingleton
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.collections.set
 import kotlin.reflect.KAnnotatedElement
@@ -221,13 +221,33 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultSer
     return null
 }
 
+private val warnedLazy = hashSetOf<KParameter>()
+
 /**
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
 internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
     val type = parameter.type
+    //TODO remove
     if (type.jvmErasure == KotlinLazy::class) {
+        if (warnedLazy.add(parameter)) {
+            logger.warn {
+                buildString {
+                    val (_, isNullable) = getLazyElementErasure(parameter)
+                    if (isNullable) {
+                        appendLine("Injection of nullable kotlin.Lazy will be removed in a future release, consider replacing your Lazy#value/Lazy#getValue call with ServiceContainer#getServiceOrNull")
+                    } else {
+                        appendLine("Injection of kotlin.Lazy will be removed in a future release and has been replaced with ${classRef<LazyService<*>>()}")
+                    }
+                    appendLine("Parameter: ${parameter.bestName} (#${parameter.index})")
+                    appendLine("Function: ${parameter.function.shortSignature}")
+                }
+            }
+        }
+    }
+
+    if (type.jvmErasure == KotlinLazy::class || type.jvmErasure == LazyService::class) {
         return null //Lazy exception
     } else if (type.jvmErasure == List::class) {
         return null //Might be empty if no service were available, which is ok

@@ -356,23 +356,35 @@ internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KCl
     }
 }
 
+//TODO remove Lazy support
 /**
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
 internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): ServiceResult<*> {
-    fun getExplicitNamedLazyService(name: String?): ServiceResult<Lazy<*>> {
+    val type = parameter.type
+
+    fun getExplicitNamedKotlinLazyService(name: String?): ServiceResult<Lazy<*>> {
         val (elementErasure, isNullable) = getLazyElementErasure(parameter)
         return ServiceResult.pass(if (isNullable) lazyOrNull(elementErasure, name) else lazy(elementErasure, name))
     }
 
-    fun getImplicitNamedOrTypedLazyService(): ServiceResult<Lazy<*>> = ServiceResult.pass(lazy {
+    fun getImplicitNamedKotlinLazyService(): ServiceResult<Lazy<*>> = ServiceResult.pass(lazy {
         val (elementErasure, isNullable) = getLazyElementErasure(parameter)
         val result = tryGetService(elementErasure, parameter.name).orElse { tryGetService(elementErasure) }
         if (isNullable) result.getOrNull() else result.getOrThrow()
     })
 
-    val type = parameter.type
+    fun getExplicitNamedLazyService(name: String): ServiceResult<LazyService<*>> {
+        val elementErasure = type.findErasureOfAt<LazyService<*>>(0).jvmErasure
+        return ServiceResult.pass(lazyService(elementErasure, name))
+    }
+
+    fun getImplicitNamedLazyService(): ServiceResult<LazyService<*>> {
+        val elementErasure = type.findErasureOfAt<LazyService<*>>(0).jvmErasure
+        return ServiceResult.pass(ImplicitNamedLazyServiceImpl(this, elementErasure, parameter.name))
+    }
+
     val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
         require(type.jvmErasure != List::class) {
@@ -380,7 +392,8 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         }
 
         when (type.jvmErasure) {
-            Lazy::class -> getExplicitNamedLazyService(requestedMandatoryName)
+            Lazy::class -> getExplicitNamedKotlinLazyService(requestedMandatoryName)
+            LazyService::class -> getExplicitNamedLazyService(requestedMandatoryName)
             else -> tryGetService(requestedMandatoryName, type.jvmErasure)
         }
     } else {
@@ -388,7 +401,8 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         when (type.jvmErasure) {
             List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
             // Implicit name then type-only
-            Lazy::class -> getImplicitNamedOrTypedLazyService()
+            Lazy::class -> getImplicitNamedKotlinLazyService()
+            LazyService::class -> getImplicitNamedLazyService()
             else -> tryGetService(type.jvmErasure, parameter.name).orElse { tryGetService(type.jvmErasure) }
         }
     }
@@ -404,6 +418,7 @@ private fun <T : Any> ServiceContainer.lazy(type: KClass<T>, name: String?): Laz
     else -> lazy(name, type)
 }
 
+@Suppress("DEPRECATION")
 private fun <T : Any> ServiceContainer.lazyOrNull(type: KClass<T>, name: String?): Lazy<T?> = when (name) {
     null -> lazyOrNull(type)
     else -> lazyOrNull(name, type)
@@ -414,7 +429,7 @@ private fun <T : Any> ServiceContainer.tryGetService(type: KClass<T>, name: Stri
     else -> tryGetService(name, type)
 }
 
-private fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
+internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
     // TODO Simplify then https://youtrack.jetbrains.com/issue/KT-63929 is fixed
 
     // Due to https://youtrack.jetbrains.com/issue/KT-63929

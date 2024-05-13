@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
+import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import org.springframework.stereotype.Component
 
@@ -66,8 +67,8 @@ import org.springframework.stereotype.Component
  * In Kotlin, you can request a [ServiceContainer] and use a delegated property,
  * such as `private val helpCommand: IHelpCommand by serviceContainer.lazy()`.
  *
- * Java users can request a [kotlin.Lazy] with the type being the requested service,
- * and get the value with [Lazy.getValue()][kotlin.Lazy.value].
+ * In both Kotlin and Java, you can request a [LazyService] with the requested service type
+ * and get the value with [LazyService.getValue()][LazyService.value].
  *
  * **Note:** Lazy services cannot hold a list of interfaced services, nor can a list of lazy services be requested.
  *
