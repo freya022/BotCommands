@@ -129,7 +129,7 @@ internal class ComponentTimeoutManager(
 
                 userDataIterator.next()?.let { option.resolver.resolveSuspend(it) }
             }
-            OptionType.SERVICE -> (option as ServiceMethodOption).lazyService.value
+            OptionType.SERVICE -> (option as ServiceMethodOption).getService()
             OptionType.CUSTOM, OptionType.CONSTANT, OptionType.GENERATED -> throwInternal("${option.optionType} has not been implemented")
         }
 

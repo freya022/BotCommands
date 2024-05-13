@@ -5,12 +5,35 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 
-class ServiceMethodOption private constructor(
+class ServiceMethodOption internal constructor(
     optionParameter: OptionParameter,
-    val lazyService: Lazy<*>
+    private val serviceContainer: ServiceContainer,
 ) : OptionImpl(optionParameter, OptionType.SERVICE) {
-    internal constructor(
-        optionParameter: OptionParameter,
-        serviceContainer: ServiceContainer
-    ) : this(optionParameter, lazy { serviceContainer.tryGetWrappedService(optionParameter.typeCheckingParameter).getOrThrow() })
+    private lateinit var cachedService: Any
+
+    // Caches the service if:
+    // 1. Is non-null
+    // 2. Is not Lazy/List
+    internal fun getService(): Any? {
+        if (::cachedService.isInitialized) return cachedService
+
+        val result = serviceContainer.tryGetWrappedService(kParameter)
+        val service = if (isOptionalOrNullable) {
+            result.getOrNull() ?: return null
+        } else {
+            result.getOrThrow()
+        }
+
+        // Always retry getting lazy services and lists as they may be updated later
+        if (service is List<*>)
+            return service
+        if (service is Lazy<*>) {
+            if (service.isInitialized() && service.value != null)
+                cachedService = service
+            return service
+        } else {
+            cachedService = service
+            return service
+        }
+    }
 }

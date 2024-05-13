@@ -137,7 +137,7 @@ class ModalHandlerInfo internal constructor(
                 option.resolver.resolveSuspend(this, event)
             }
 
-            OptionType.SERVICE -> (option as ServiceMethodOption).lazyService.value
+            OptionType.SERVICE -> (option as ServiceMethodOption).getService()
 
             OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
