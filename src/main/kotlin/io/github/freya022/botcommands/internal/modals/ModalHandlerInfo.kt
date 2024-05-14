@@ -4,15 +4,18 @@ import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
+import io.github.freya022.botcommands.api.core.reflect.wrap
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
@@ -42,13 +45,18 @@ class ModalHandlerInfo internal constructor(
         val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
+        val resolverContainer = context.getService<ResolverContainer>()
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
-                when {
-                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
-                    context.serviceContainer.canCreateWrappedService(parameter) == null -> ServiceOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
-                    else -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
+                if (parameter.hasAnnotation<ModalInput>()) {
+                    ModalHandlerInputOptionBuilder(optionParameter)
+                } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
+                    ModalHandlerDataOptionBuilder(optionParameter)
+                } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.wrap())) {
+                    CustomOptionBuilder(optionParameter)
+                } else {
+                    ServiceOptionBuilder(optionParameter)
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }
