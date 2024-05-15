@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.LazyService
@@ -49,7 +50,7 @@ class SlashServiceOption : ApplicationCommand() {
     @ComponentTimeoutHandler("SlashServiceOption: button")
     fun onButtonTimeout(
         data: ComponentTimeoutData,
-        randomNumber: Double,
+        @TimeoutData randomNumber: Double,
         jda: LazyService<JDA>,
     ) {
         if (jda.canCreateService()) {

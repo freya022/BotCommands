@@ -124,12 +124,12 @@ class SlashNewButtons(
     }
 
     @ComponentTimeoutHandler("SlashNewButtons: persistentButtonTimeout")
-    fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, nullObj: String?) {
+    fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, @TimeoutData nullObj: String?) {
         println("onTimeoutEdButtonTimeout: $data ; $nullObj")
     }
 
     @GroupTimeoutHandler("SlashNewButtons: persistentGroupTimeout")
-    fun onFirstGroupTimeout(data: GroupTimeoutData, nullObj: String?) {
+    fun onFirstGroupTimeout(data: GroupTimeoutData, @TimeoutData nullObj: String?) {
         println("onFirstGroupTimeout: $data ; $nullObj")
     }
 
