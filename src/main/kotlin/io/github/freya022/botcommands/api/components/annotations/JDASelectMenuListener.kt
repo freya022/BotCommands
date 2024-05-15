@@ -29,7 +29,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ComponentParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * @see Components
  * @see Aggregate @Aggregate

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
+import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.*
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
 
 @BService
 class ResolverContainer internal constructor(
@@ -185,3 +187,6 @@ class ResolverContainer internal constructor(
         )
     }
 }
+
+internal fun ResolverContainer.hasCustomResolver(parameter: KParameter) =
+    hasResolverOfType<ICustomResolver<*, *>>(parameter.wrap())

@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
@@ -61,8 +62,8 @@ class SlashServiceOption : ApplicationCommand() {
     @JDAButtonListener("SlashServiceOption: button")
     suspend fun onButtonClick(
         event: ButtonEvent,
-        slashInput: String,
-        randomNum: Double,
+        @ComponentData slashInput: String,
+        @ComponentData randomNum: Double,
         modals: Modals,
         // Not supported yet
 //        @LocalizationBundle("MyCommands") localizationContext: AppLocalizationContext,
