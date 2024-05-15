@@ -21,10 +21,9 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindTo].
  * - First parameter must be [ButtonEvent].
- * - Have all your consecutive user data, passed when creating the button.
  *
  * ### Option types
- * - User data: No annotation, the order must match the data passed when creating the button,
+ * - User data: Uses [@ComponentData][ComponentData], the order must match the data passed when creating the button,
  * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ComponentParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
