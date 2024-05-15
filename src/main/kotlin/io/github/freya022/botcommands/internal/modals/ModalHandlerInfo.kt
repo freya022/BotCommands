@@ -2,15 +2,9 @@ package io.github.freya022.botcommands.internal.modals
 
 import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
-import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
-import io.github.freya022.botcommands.api.core.reflect.wrap
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -19,6 +13,7 @@ import io.github.freya022.botcommands.internal.core.reflection.MemberParamFuncti
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
+import io.github.freya022.botcommands.internal.parameters.toServiceOrCustomOptionBuilder
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
@@ -45,7 +40,6 @@ class ModalHandlerInfo internal constructor(
         val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
-        val resolverContainer = context.getService<ResolverContainer>()
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
@@ -53,10 +47,8 @@ class ModalHandlerInfo internal constructor(
                     ModalHandlerInputOptionBuilder(optionParameter)
                 } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
                     ModalHandlerDataOptionBuilder(optionParameter)
-                } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.wrap())) {
-                    CustomOptionBuilder(optionParameter)
                 } else {
-                    ServiceOptionBuilder(optionParameter)
+                    optionParameter.toServiceOrCustomOptionBuilder(context.serviceContainer)
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }

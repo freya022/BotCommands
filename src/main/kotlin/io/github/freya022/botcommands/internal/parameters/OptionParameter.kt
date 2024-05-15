@@ -1,5 +1,10 @@
 package io.github.freya022.botcommands.internal.parameters
 
+import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
+import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -25,5 +30,16 @@ class OptionParameter(
     companion object {
         fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
             SingleAggregatorParameter(commandFunction, parameterName).toOptionParameter(commandFunction, parameterName)
+    }
+}
+
+internal fun OptionParameter.toServiceOrCustomOptionBuilder(serviceContainer: ServiceContainer): OptionBuilder {
+    return if (serviceContainer.canCreateWrappedService(typeCheckingParameter) == null) {
+        ServiceOptionBuilder(this)
+    } else {
+        // Custom options being the fallback are important,
+        // as if the parameter has no compatible resolver,
+        // it will print both the required resolver AND the service error
+        CustomOptionBuilder(this)
     }
 }
