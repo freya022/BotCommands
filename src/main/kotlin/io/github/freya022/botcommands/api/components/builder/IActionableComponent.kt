@@ -98,11 +98,18 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
     /**
      * Binds the given handler name with its arguments to this component.
      *
+     * ### Handler data
+     * The data passed is transformed with [toString][Object.toString],
+     * except [snowflakes][ISnowflake] which get their IDs stored.
+     *
+     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
+     * @param data The data to pass to the component handler
      */
     @CheckReturnValue
-    fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T
+    fun bindTo(handlerName: String, vararg data: Any?): T = bindTo(handlerName, data.asList())
 
     /**
      * Binds the given handler name with its arguments to this component.
@@ -123,18 +130,11 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
     /**
      * Binds the given handler name with its arguments to this component.
      *
-     * ### Handler data
-     * The data passed is transformed with [toString][Object.toString],
-     * except [snowflakes][ISnowflake] which get their IDs stored.
-     *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
-     *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
-     * @param data The data to pass to the component handler
      */
     @CheckReturnValue
-    fun bindTo(handlerName: String, vararg data: Any?): T = bindTo(handlerName, data.asList())
+    fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T
 }
 
 /**
