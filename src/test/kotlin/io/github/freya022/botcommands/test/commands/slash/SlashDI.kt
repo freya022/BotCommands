@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.db.BlockingDatabase
+import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.internal.core.ReadyListener
 import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
@@ -34,16 +35,14 @@ class SlashDI internal constructor(
     internal fun onSlashDi(
         event: GuildSlashEvent,
         filters: List<ApplicationCommandFilter<*>>,
-        databaseLazy: Lazy<BlockingDatabase>,
-        unusableLazy: Lazy<UnusedInterfacedService?>,
-        @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener,
+        databaseLazy: LazyService<BlockingDatabase>,
+        @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener?,
         @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default()
     ) {
         event.reply_(
             """
                 Filters: $filters
                 DB: ${databaseLazy.value}
-                unusable: ${unusableLazy.value}
                 inexistant listener: $inexistantListener
                 embed supplier: $defaultService
             """.trimIndent(),
