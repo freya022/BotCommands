@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.parameters.toServiceOrCustomOptionBuilder
+import io.github.freya022.botcommands.internal.parameters.toFallbackOptionBuilder
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -45,7 +45,7 @@ class ComponentDescriptor internal constructor(
                         ComponentHandlerOptionBuilder(optionParameter)
                     }
                 } else {
-                    optionParameter.toServiceOrCustomOptionBuilder(context.serviceContainer)
+                    optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
             aggregateBlock = { ComponentHandlerParameter(context, it) }

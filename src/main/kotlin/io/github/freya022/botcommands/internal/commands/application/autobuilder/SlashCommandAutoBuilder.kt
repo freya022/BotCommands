@@ -18,22 +18,24 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
+import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -46,11 +48,11 @@ private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
 internal class SlashCommandAutoBuilder(
-    private val serviceContainer: ServiceContainer,
+    override val serviceContainer: ServiceContainer,
     applicationConfig: BApplicationConfig,
     private val resolverContainer: ResolverContainer,
     functionAnnotationsMap: FunctionAnnotationsMap
-) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
+) : CommandAutoBuilder, GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
     private class TopLevelSlashCommandMetadata(
         val name: String,
         val annotation: TopLevelSlashCommandData,
@@ -69,6 +71,8 @@ internal class SlashCommandAutoBuilder(
 
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
     }
+
+    override val optionAnnotation: KClass<out Annotation> = SlashOption::class
 
     private val forceGuildCommands = applicationConfig.forceGuildCommands
 
@@ -295,11 +299,11 @@ internal class SlashCommandAutoBuilder(
             when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> {
-                        if (serviceContainer.canCreateWrappedService(kParameter) == null) {
-                            serviceOption(declaredName)
-                        } else {
-                            resolverContainer.requireCustomOption(func, kParameter, SlashOption::class)
+                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
+                        } else {
+                            requireServiceOptionOrOptional(func, kParameter)
+                            serviceOption(declaredName)
                         }
                     }
                     else -> generatedOption(

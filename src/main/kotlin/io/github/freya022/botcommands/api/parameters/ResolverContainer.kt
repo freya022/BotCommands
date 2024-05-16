@@ -4,11 +4,9 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
-import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -21,7 +19,6 @@ import kotlin.reflect.KClass
 class ResolverContainer internal constructor(
     resolvers: List<ParameterResolver<*, *>>,
     resolverFactories: List<ParameterResolverFactory<*>>,
-    private val serviceContainer: ServiceContainer
 ) {
     private data class CacheKey(
         private val requestedType: KClass<out IParameterResolver<*>>,
@@ -118,8 +115,7 @@ class ResolverContainer internal constructor(
         val factory = getResolverFactoryOrNull(resolverType, request)
         if (factory == null) {
             val wrapper = request.parameter
-            val serviceError = serviceContainer.tryGetWrappedService(wrapper.parameter).serviceError ?: throwInternal("Service became available after failing")
-            wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}' and service loading failed:\n${serviceError.toDetailedString()}")
+            wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.simpleNestedName}'")
         }
 
         return factory.get(request)

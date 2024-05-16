@@ -11,23 +11,29 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
+import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.commands.autobuilder.requireCustomOption
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
+import io.github.freya022.botcommands.internal.commands.autobuilder.requireServiceOptionOrOptional
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.findOptionName
 import net.dv8tion.jda.api.entities.Guild
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 internal sealed class ContextCommandAutoBuilder(
-    private val serviceContainer: ServiceContainer,
+    override val serviceContainer: ServiceContainer,
     applicationConfig: BApplicationConfig,
     private val resolverContainer: ResolverContainer
-) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
+) : CommandAutoBuilder, GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
+
+    override val optionAnnotation: KClass<out Annotation> = ContextOption::class
+
     protected val forceGuildCommands = applicationConfig.forceGuildCommands
 
     protected fun ApplicationCommandBuilder<*>.processOptions(
@@ -46,11 +52,11 @@ internal sealed class ContextCommandAutoBuilder(
             } else {
                 when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> {
-                        if (serviceContainer.canCreateWrappedService(kParameter) == null) {
-                            serviceOption(declaredName)
-                        } else {
-                            resolverContainer.requireCustomOption(func, kParameter, ContextOption::class)
+                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
+                        } else {
+                            requireServiceOptionOrOptional(func, kParameter)
+                            serviceOption(declaredName)
                         }
                     }
                     else -> generatedOption(

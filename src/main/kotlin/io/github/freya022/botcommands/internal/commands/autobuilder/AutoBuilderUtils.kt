@@ -14,17 +14,16 @@ import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.reflect.wrap
+import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.ResolverContainer
-import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
+import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
-import kotlin.reflect.KClass
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -184,10 +183,9 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
     }
 }
 
-internal fun ResolverContainer.requireCustomOption(func: KFunction<*>, kParameter: KParameter, optionAnnotation: KClass<out Annotation>) {
-    val parameterWrapper = kParameter.wrap()
-    requireUser(hasResolverOfType<ICustomResolver<*, *>>(parameterWrapper), func) {
-        "Custom option '${parameterWrapper.name}' (${parameterWrapper.type.simpleNestedName}) does not have a compatible ICustomResolver, " +
-                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}"
+internal fun CommandAutoBuilder.requireServiceOptionOrOptional(func: KFunction<*>, kParameter: KParameter) {
+    val isOptional = kParameter.isNullable || kParameter.isOptional
+    requireUser(isOptional || serviceContainer.canCreateWrappedService(kParameter) == null, func) {
+        "Cannot determine usage of option '${kParameter.bestName}' (${kParameter.type.simpleNestedName}), if this is a Discord option, use @${optionAnnotation.simpleNestedName}, check the handler docs for more details"
     }
 }

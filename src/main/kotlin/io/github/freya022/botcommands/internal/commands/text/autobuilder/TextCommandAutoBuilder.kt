@@ -15,21 +15,23 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVaria
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
+import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.components
 import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -43,8 +45,8 @@ private val defaultExtraData = TextCommandData()
 internal class TextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer,
     functionAnnotationsMap: FunctionAnnotationsMap,
-    private val serviceContainer: ServiceContainer
-) : TextCommandProvider {
+    override val serviceContainer: ServiceContainer
+) : CommandAutoBuilder, TextCommandProvider {
     private class TextCommandContainer(val name: String) {
         var extraData: TextCommandData = defaultExtraData
         val hasExtraData get() = extraData !== defaultExtraData
@@ -55,6 +57,8 @@ internal class TextCommandAutoBuilder(
 
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
     }
+
+    override val optionAnnotation: KClass<out Annotation> = TextOption::class
 
     private val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
@@ -217,11 +221,11 @@ internal class TextCommandAutoBuilder(
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> {
-                        if (serviceContainer.canCreateWrappedService(kParameter) == null) {
-                            serviceOption(declaredName)
-                        } else {
-                            resolverContainer.requireCustomOption(func, kParameter, TextOption::class)
+                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
+                        } else {
+                            requireServiceOptionOrOptional(func, kParameter)
+                            serviceOption(declaredName)
                         }
                     }
                     else -> generatedOption(
