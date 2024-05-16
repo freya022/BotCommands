@@ -84,7 +84,7 @@ internal class UserContextCommandAutoBuilder(
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, JDAUserCommand::class, instance, commandId)
         }
     }
 }

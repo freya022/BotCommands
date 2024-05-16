@@ -224,7 +224,7 @@ internal class TextCommandAutoBuilder(
                         if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
                         } else {
-                            requireServiceOptionOrOptional(func, kParameter)
+                            requireServiceOptionOrOptional(func, kParameter, JDATextCommandVariation::class)
                             serviceOption(declaredName)
                         }
                     }

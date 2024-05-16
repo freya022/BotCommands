@@ -302,7 +302,7 @@ internal class SlashCommandAutoBuilder(
                         if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
                         } else {
-                            requireServiceOptionOrOptional(func, kParameter)
+                            requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
                             serviceOption(declaredName)
                         }
                     }

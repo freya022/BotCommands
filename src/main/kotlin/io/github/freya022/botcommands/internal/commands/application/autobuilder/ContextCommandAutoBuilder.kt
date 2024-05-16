@@ -39,6 +39,7 @@ internal sealed class ContextCommandAutoBuilder(
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
+        commandAnnotation: KClass<out Annotation>,
         instance: ApplicationCommand,
         commandId: String?
     ) {
@@ -55,7 +56,7 @@ internal sealed class ContextCommandAutoBuilder(
                         if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
                             customOption(declaredName)
                         } else {
-                            requireServiceOptionOrOptional(func, kParameter)
+                            requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
                             serviceOption(declaredName)
                         }
                     }

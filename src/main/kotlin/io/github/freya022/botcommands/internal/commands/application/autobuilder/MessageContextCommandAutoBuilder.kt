@@ -84,7 +84,7 @@ internal class MessageContextCommandAutoBuilder(
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, JDAMessageCommand::class, instance, commandId)
         }
     }
 }
