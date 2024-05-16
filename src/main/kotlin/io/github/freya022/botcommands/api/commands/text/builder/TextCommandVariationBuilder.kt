@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.text.builder
 
+import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
@@ -13,6 +14,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
@@ -149,7 +153,11 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * Declares a custom option, such as an [TextLocalizationContext] (with [@LocalizationBundle][LocalizationBundle]).
+     *
+     * Additional types can be added by implementing [ICustomResolver].
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
      */
     fun customOption(declaredName: String) {
         selfAggregate(declaredName) {
@@ -158,7 +166,11 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * Declares a generated option, the supplier gets called on each command execution.
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     *
+     * @see GeneratedOption @GeneratedOption
      */
     fun generatedOption(declaredName: String, generatedValueSupplier: TextGeneratedValueSupplier) {
         selfAggregate(declaredName) {
