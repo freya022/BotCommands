@@ -42,9 +42,12 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.jvm.jvmErasure
+import kotlin.time.measureTime
 
 private val logger = KotlinLogging.logger { }
 
@@ -201,6 +204,8 @@ internal class ComponentsListener(
         event: GenericComponentInteractionCreateEvent, // already a BC event
         userDataIterator: Iterator<String?>
     ): Boolean {
+        checkEventType(event, descriptor)
+
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
                 if (tryInsertOption(event, descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
@@ -210,6 +215,23 @@ internal class ComponentsListener(
             function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
         }
         return true
+    }
+
+    private fun checkEventType(event: GenericComponentInteractionCreateEvent, descriptor: ComponentDescriptor) {
+        if (event !is SelectMenuInteraction<*, *>) return
+
+        measureTime {
+            val expectedEventType = when (event) {
+                is EntitySelectInteractionEvent -> EntitySelectEvent::class
+                is StringSelectInteractionEvent -> StringSelectEvent::class
+                else -> throwInternal("Unchecked select menu event type: ${event.javaClass.simpleNestedName}")
+            }
+
+            val eventType = descriptor.eventFunction.firstParameter.type
+            requireUser(eventType.jvmErasure.isInstance(event), descriptor.function) {
+                "Received an ${expectedEventType.simpleNestedName} but handler only accepts a ${eventType.simpleNestedName}"
+            }
+        }.also { println("Check event param took $it") }
     }
 
     private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
