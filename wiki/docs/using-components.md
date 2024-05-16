@@ -27,8 +27,6 @@ They are components that still work after a restart,
 their handlers are methods identified by their handler name,
 set in [`#!java @JDAButtonListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-button-listener/index.html)) / [`#!java @JDASelectMenuListener`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components.annotations/-j-d-a-select-menu-listener/index.html).
 
-[//]: # (TODO add awaitOrNull KDocs link)
-
 ??? tip "Type-safe component methods and optional handlers in Kotlin"
 
     You can bind a method to your component, enabling you to pass arguments in a type-safe way with `bindTo` extensions.
@@ -39,7 +37,7 @@ set in [`#!java @JDAButtonListener`](https://freya022.github.io/BotCommands/docs
     --8<-- "wiki/commands/slash/SlashClickWaiter.kt:click_waiter-kotlin"
     ```
 
-    1. `awaitOrNull` returns `null` when the component expired, useful when combined with an elvis operator,
+    1. [`awaitOrNull`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.components/await-or-null.html) returns `null` when the component expired, useful when combined with an elvis operator,
     this is the equivalent of a `#!java try catch` on `TimeoutCancellationException`.
 
     2. [`awaitUnit`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.core.utils/await-unit.html) is an extension to await and then return `Unit`, 
