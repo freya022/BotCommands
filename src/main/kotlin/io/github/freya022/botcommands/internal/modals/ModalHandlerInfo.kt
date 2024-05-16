@@ -2,10 +2,11 @@ package io.github.freya022.botcommands.internal.modals
 
 import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -13,6 +14,8 @@ import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
+import io.github.freya022.botcommands.internal.parameters.toFallbackOptionBuilder
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
@@ -39,12 +42,16 @@ class ModalHandlerInfo internal constructor(
         val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
+        val resolverContainer = context.serviceContainer.getService<ResolverContainer>()
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
-                when {
-                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
-                    else -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
+                if (parameter.hasAnnotation<ModalInput>()) {
+                    ModalHandlerInputOptionBuilder(optionParameter)
+                } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
+                    ModalHandlerDataOptionBuilder(optionParameter)
+                } else {
+                    optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }
@@ -133,7 +140,9 @@ class ModalHandlerInfo internal constructor(
                 option.resolver.resolveSuspend(this, event)
             }
 
-            else -> throwInternal("${option.optionType} has not been implemented")
+            OptionType.SERVICE -> (option as ServiceMethodOption).getService()
+
+            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

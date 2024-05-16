@@ -17,6 +17,7 @@ import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
+import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
@@ -134,9 +135,8 @@ abstract class SlashCommandInfo internal constructor(
 
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
-            else -> {
-                throwInternal("${option.optionType} has not been implemented")
-            }
+            OptionType.SERVICE -> (option as ServiceMethodOption).getService()
+            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

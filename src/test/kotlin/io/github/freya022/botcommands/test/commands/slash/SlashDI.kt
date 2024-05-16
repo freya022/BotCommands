@@ -36,7 +36,7 @@ class SlashDI internal constructor(
         filters: List<ApplicationCommandFilter<*>>,
         databaseLazy: Lazy<BlockingDatabase>,
         unusableLazy: Lazy<UnusedInterfacedService?>,
-        @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener?,
+        @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener,
         @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default()
     ) {
         event.reply_(

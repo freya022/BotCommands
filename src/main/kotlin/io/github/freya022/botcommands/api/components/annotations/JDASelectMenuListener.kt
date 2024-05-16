@@ -22,14 +22,14 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  * - The annotation value to have same name as the one given to [IPersistentActionableComponent.bindTo].
  * - First parameter must be [StringSelectEvent]/[EntitySelectEvent].
- * - Have all your consecutive user data, passed when creating the select menu.
  *
  * ### Option types
- * - User data: No annotation, the order must match the data passed when creating the select menu,
+ * - User data: Uses [@ComponentData][ComponentData], the order must match the data passed when creating the select menu,
  * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ComponentParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * @see Components
  * @see Aggregate @Aggregate

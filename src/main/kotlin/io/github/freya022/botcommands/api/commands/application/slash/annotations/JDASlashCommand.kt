@@ -42,7 +42,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - Input options: Uses [@SlashOption][SlashOption], supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [SlashParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * @see Command @Command
  * @see TopLevelSlashCommandData @TopLevelSlashCommandData

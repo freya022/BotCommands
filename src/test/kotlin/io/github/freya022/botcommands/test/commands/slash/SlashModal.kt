@@ -82,7 +82,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("modal", function = ::onSlashModal) {
-            customOption("modals")
+            serviceOption("modals")
         }
     }
 }

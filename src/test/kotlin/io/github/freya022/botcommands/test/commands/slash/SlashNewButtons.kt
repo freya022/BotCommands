@@ -11,10 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
-import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
-import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
-import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.*
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.builder.timeout
@@ -122,17 +119,17 @@ class SlashNewButtons(
     }
 
     @JDAButtonListener("SlashNewButtons: persistentButton")
-    fun onFirstButtonClicked(event: ButtonEvent, double: Double, inputUser: InputUser, nullValue: Member?) {
+    fun onFirstButtonClicked(event: ButtonEvent, @ComponentData double: Double, @ComponentData inputUser: InputUser, @ComponentData nullValue: Member?) {
         event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}, null: $nullValue", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler("SlashNewButtons: persistentButtonTimeout")
-    fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, nullObj: String?) {
+    fun onTimeoutEdButtonTimeout(data: ComponentTimeoutData, @TimeoutData nullObj: String?) {
         println("onTimeoutEdButtonTimeout: $data ; $nullObj")
     }
 
     @GroupTimeoutHandler("SlashNewButtons: persistentGroupTimeout")
-    fun onFirstGroupTimeout(data: GroupTimeoutData, nullObj: String?) {
+    fun onFirstGroupTimeout(data: GroupTimeoutData, @TimeoutData nullObj: String?) {
         println("onFirstGroupTimeout: $data ; $nullObj")
     }
 

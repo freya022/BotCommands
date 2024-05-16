@@ -86,7 +86,7 @@ class TextTest : TextCommand(), TextCommandProvider {
 
                 option("text")
 
-                customOption("context")
+                serviceOption("context")
 
                 generatedOption("userName") {
                     it.author.name
@@ -96,7 +96,7 @@ class TextTest : TextCommand(), TextCommandProvider {
             variation(::onTextTestFallback) {
                 description = "Fallback variation description"
 
-                customOption("context")
+                serviceOption("context")
 
                 generatedOption("userName") {
                     it.author.name

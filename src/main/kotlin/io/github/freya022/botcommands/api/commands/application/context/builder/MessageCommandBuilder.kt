@@ -38,7 +38,7 @@ class MessageCommandBuilder internal constructor(
     }
 
     override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
-        MessageCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
+        MessageCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
 
     internal fun build(): MessageCommandInfo {
         return MessageCommandInfo(context, this)

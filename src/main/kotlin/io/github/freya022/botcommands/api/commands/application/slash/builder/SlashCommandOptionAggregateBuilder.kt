@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -13,11 +13,15 @@ import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder internal constructor(
-    private val context: BContext,
+    override val context: BContext,
     private val commandBuilder: SlashCommandBuilder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
+
+    override val declarationSiteHolder: IDeclarationSiteHolder
+        get() = commandBuilder
+
     /**
      * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [SlashParameterResolver].
@@ -28,10 +32,6 @@ class SlashCommandOptionAggregateBuilder internal constructor(
      */
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         this += SlashCommandOptionBuilder(context, commandBuilder, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
-    }
-
-    override fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {

@@ -17,6 +17,7 @@ enum class OptionType {
     OPTION,
     CUSTOM,
     CONSTANT, //TODO
+    SERVICE,
     GENERATED;
 
     override fun toString(): String {

@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
@@ -32,7 +33,7 @@ class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     }
 
     @JDAButtonListener("SlashTimeUnit: timeUnit")
-    fun onTimeUnitClicked(event: ButtonEvent, unit: TimeUnit) {
+    fun onTimeUnitClicked(event: ButtonEvent, @ComponentData unit: TimeUnit) {
         event.reply_("Time unit is ${unit.name}!", ephemeral = true).queue()
     }
 }

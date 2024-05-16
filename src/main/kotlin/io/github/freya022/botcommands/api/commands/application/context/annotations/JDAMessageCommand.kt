@@ -32,7 +32,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * but only the targeted [Message][GlobalMessageEvent.getTarget] is supported by default,
  * additional types can be added by implementing [MessageContextParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
- * - Custom options and services: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
+ * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * @see GlobalMessageEvent.getTarget
  *

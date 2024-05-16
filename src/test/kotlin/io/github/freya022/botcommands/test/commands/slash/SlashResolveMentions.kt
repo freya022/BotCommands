@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
@@ -44,10 +45,10 @@ class SlashResolveMentions(private val buttons: Buttons) : ApplicationCommand() 
     @JDAButtonListener("SlashResolveMentions: ResolveChannelsButton")
     suspend fun onResolveChannelsClick(
         event: ButtonEvent,
-        postContainer: IPostContainer,
-        forumChannel: ForumChannel,
-        threadChannel: ThreadChannel,
-        archivedThreadChannel: ThreadChannel
+        @ComponentData postContainer: IPostContainer,
+        @ComponentData forumChannel: ForumChannel,
+        @ComponentData threadChannel: ThreadChannel,
+        @ComponentData archivedThreadChannel: ThreadChannel
     ) {
         event.reply_(
             """

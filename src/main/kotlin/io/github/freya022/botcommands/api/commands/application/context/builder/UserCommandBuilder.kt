@@ -38,7 +38,7 @@ class UserCommandBuilder internal constructor(
     }
 
     override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
-        UserCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
+        UserCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
 
     internal fun build(): UserCommandInfo {
         return UserCommandInfo(context, this)

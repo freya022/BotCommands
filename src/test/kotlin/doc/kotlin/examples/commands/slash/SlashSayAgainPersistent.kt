@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
@@ -44,7 +45,7 @@ class SlashSayAgainPersistent : ApplicationCommand() {
     }
 
     @JDAButtonListener("SlashSayAgainPersistent: saySentenceButton")
-    suspend fun onSaySentenceClick(event: ButtonEvent, sentence: String) {
+    suspend fun onSaySentenceClick(event: ButtonEvent, @ComponentData sentence: String) {
         event.reply_(sentence, ephemeral = true).await()
     }
 }

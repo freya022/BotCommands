@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.options.annotations
 
+import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
+import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -14,8 +16,12 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
  *
  * **Note:** The first parameter can be the event or a subtype of it, but is optional.
  *
- * Can be used on parameters of [@ModalHandler][ModalHandler], [@JDASelectMenuListener][JDASelectMenuListener]
- * or [@JDAButtonListener][JDAButtonListener] functions.
+ * Can be used on parameters of:
+ * - [@ModalHandler][ModalHandler]
+ * - [@JDASelectMenuListener][JDASelectMenuListener]
+ * - [@JDAButtonListener][JDAButtonListener]
+ * - [@ComponentTimeoutHandler][ComponentTimeoutHandler]
+ * - [@GroupTimeoutHandler][GroupTimeoutHandler]
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

@@ -119,7 +119,7 @@ class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, A
 
                     option("channelOption")
 
-                    customOption("custom")
+                    serviceOption("custom")
 
                     option("autocompleteStr") {
                         description = "Autocomplete !"

@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.SelectMenus
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
@@ -39,7 +40,7 @@ class SlashSelectRolePersistent : ApplicationCommand() {
     }
 
     @JDASelectMenuListener("SlashSelectRolePersistent: roleMenu")
-    suspend fun onRoleMenuSelect(event: EntitySelectEvent, randomNumber: Long) {
+    suspend fun onRoleMenuSelect(event: EntitySelectEvent, @ComponentData randomNumber: Long) {
         val role = event.values[0] as Role
         event.reply("You have been given " + role.asMention + ", and the random number is " + randomNumber)
             .setEphemeral(true)
