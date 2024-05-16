@@ -7,8 +7,8 @@
 [jda-releases]: https://github.com/discord-jda/JDA/releases
 [discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
 [discord-invite]: https://discord.gg/frpCcQfvTz
-[javadocs-shield]: https://img.shields.io/badge/Javadocs-Overview-blue
-[javadocs-link]: https://freya022.github.io/BotCommands/docs/allclasses-index.html
+[kdoc-shield]: https://img.shields.io/badge/API_reference-KDoc-blue
+[kdoc-link]: https://freya022.github.io/BotCommands/docs
 [wiki-shield]: https://img.shields.io/badge/Wiki-Home-blue
 [wiki-link]: https://freya022.github.io/BotCommands/3.X
 
@@ -20,8 +20,7 @@
 
 [![Discord invite][discord-shield]][discord-invite]
 [![Wiki home][wiki-shield]][wiki-link]
-
-[![Javadocs overview][javadocs-shield]][javadocs-link]
+[![Documentation][kdoc-shield]][kdoc-link]
 
 # BotCommands
 A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
