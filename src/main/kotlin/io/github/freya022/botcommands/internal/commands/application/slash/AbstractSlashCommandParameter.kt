@@ -12,15 +12,12 @@ abstract class AbstractSlashCommandParameter(
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
 ) : ApplicationCommandParameter(slashCommandInfo.context, optionAggregateBuilder) {
-    final override val options = CommandOptions.transform(
+    final override val options = CommandOptions.transform<SlashCommandOptionBuilder, SlashParameterResolver<*, *>>(
         slashCommandInfo.context,
         ApplicationCommandResolverData(slashCommandInfo),
         optionAggregateBuilder,
-        object : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
-            override fun transformOption(
-                optionBuilder: SlashCommandOptionBuilder,
-                resolver: SlashParameterResolver<*, *>
-            ) = constructOption(slashCommandInfo, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
+        optionFinalizer = { optionBuilder, resolver ->
+            constructOption(slashCommandInfo, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
         }
     )
 

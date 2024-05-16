@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toEventAggregatorFunction
@@ -23,11 +22,6 @@ class ModalHandlerParameter internal constructor(
         context,
         null,
         aggregateBuilder,
-        object : CommandOptions.Configuration<ModalHandlerInputOptionBuilder, ModalParameterResolver<*, *>> {
-            override fun transformOption(
-                optionBuilder: ModalHandlerInputOptionBuilder,
-                resolver: ModalParameterResolver<*, *>
-            ) = ModalHandlerInputOption(optionBuilder, resolver)
-        }
+        optionFinalizer = ::ModalHandlerInputOption
     )
 }

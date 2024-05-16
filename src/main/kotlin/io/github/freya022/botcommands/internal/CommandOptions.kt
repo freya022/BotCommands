@@ -28,7 +28,7 @@ internal object CommandOptions {
         context: BContext,
         resolverData: ResolverData?,
         aggregateBuilder: OptionAggregateBuilder<*>,
-        config: Configuration<T, R>
+        optionFinalizer: (optionBuilder: T, resolver: R) -> Option
     ): List<Option> {
         val aggregator = aggregateBuilder.aggregator
         val options = aggregateBuilder.optionBuilders
@@ -46,7 +46,7 @@ internal object CommandOptions {
                     val parameter = optionBuilder.innerWrappedParameter
 
                     val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
-                    config.transformOption(optionBuilder, resolver)
+                    optionFinalizer(optionBuilder, resolver)
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
                 is ServiceOptionBuilder -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
@@ -59,11 +59,6 @@ internal object CommandOptions {
                 else -> throwInternal("Unsupported option builder: $optionBuilder")
             }
         }
-    }
-
-    interface Configuration<T, R> {
-        fun transformOption(optionBuilder: T, resolver: R): Option =
-            throwInternal("This should have not been called")
     }
 
     private val OptionBuilder.innerWrappedParameter: ParameterWrapper
