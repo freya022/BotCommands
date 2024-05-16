@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
@@ -64,7 +63,7 @@ internal class AutocompleteHandler(
             ?: throwUser("Unable to determine return type, it should inherit Collection")
 
         choiceSupplier = when {
-            collectionElementType.isSubclassOfAny(String::class, Long::class, Double::class) ->
+            collectionElementType in listOf(String::class, Long::class, Double::class) ->
                 generateSupplierFromStrings(autocompleteInfo.mode)
             collectionElementType.isSubclassOf<Command.Choice>() -> ChoiceSupplierChoices(maxChoices)
             else -> {

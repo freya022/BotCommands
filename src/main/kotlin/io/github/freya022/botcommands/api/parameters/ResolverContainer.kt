@@ -5,7 +5,10 @@ import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.core.utils.arrayOfSize
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -122,7 +125,7 @@ class ResolverContainer internal constructor(
     }
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
-        return resolver::class.isSubclassOfAny(compatibleInterfaces)
+        return compatibleInterfaces.any { it.isInstance(resolver) }
     }
 
     internal companion object {
