@@ -21,8 +21,7 @@
 [![Discord invite][discord-shield]][discord-invite]
 [![Wiki home][wiki-shield]][wiki-link]
 
-[//]: # (TODO enable back when KDocs are published)
-[//]: # ([![Javadocs overview][javadocs-shield]][javadocs-link])
+[![Javadocs overview][javadocs-shield]][javadocs-link]
 
 # BotCommands
 A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
