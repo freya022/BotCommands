@@ -470,7 +470,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.22</version>
+            <version>5.0.0-beta.24</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -479,8 +479,8 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
-        <!-- Upgrade over JDA's version, -->
-        <!-- not sure why it isn't transitively included once emoji-java was removed in #132 -->
+        <!-- Include it again as JDA has it on the "runtime" scope -->
+        <!-- Match JDA's version to avoid the bot exploding with NoSuchClass/MethodError -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
