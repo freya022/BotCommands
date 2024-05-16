@@ -110,14 +110,11 @@ inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInter
 
 //region Lazy service retrieval
 
-@PublishedApi
-internal val logger = KotlinLogging.loggerOf<ServiceContainer>()
-
 // The U type parameter is used so the type produced by the block would not override the requested service's type.
 inline fun <reified R : Any> ServiceContainer.lazy(): LazyService<R> = lazyService(R::class)
 @Deprecated("Replace your Lazy#value call with ServiceContainer#getServiceOrNull")
 inline fun <reified R : Any> ServiceContainer.lazyOrNull(): Lazy<R?> {
-    logger.warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
+    KotlinLogging.loggerOf<ServiceContainer>().warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
     return lazy { this.getServiceOrNull(R::class) }
 }
 
@@ -126,7 +123,7 @@ inline fun <reified R : Any, U : R> ServiceContainer.lazyOrElse(crossinline bloc
 fun <R : Any> ServiceContainer.lazy(clazz: KClass<R>): LazyService<R> = lazyService(clazz)
 @Deprecated("Replace your Lazy#value call with ServiceContainer#getServiceOrNull")
 fun <R : Any> ServiceContainer.lazyOrNull(clazz: KClass<R>): Lazy<R?> {
-    logger.warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
+    KotlinLogging.loggerOf<ServiceContainer>().warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
     return lazy { this.getServiceOrNull(clazz) }
 }
 fun <R : Any, U : R> ServiceContainer.lazyOrElse(clazz: KClass<R>, block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(clazz) ?: block() }
@@ -134,7 +131,7 @@ fun <R : Any, U : R> ServiceContainer.lazyOrElse(clazz: KClass<R>, block: () -> 
 fun <R : Any> ServiceContainer.lazy(name: String, requiredType: KClass<R>): LazyService<R> = lazyService(requiredType, name)
 @Deprecated("Replace your Lazy#value call with ServiceContainer#getServiceOrNull")
 fun <R : Any> ServiceContainer.lazyOrNull(name: String, requiredType: KClass<R>): Lazy<R?> {
-    logger.warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
+    KotlinLogging.loggerOf<ServiceContainer>().warn { "lazyOrNull has been deprecated and will be removed in a future version: ${currentFrame().toSignature()}" }
     return lazy { this.getServiceOrNull(name, requiredType) }
 }
 fun <R : Any, U : R> ServiceContainer.lazyOrElse(name: String, requiredType: KClass<R>, block: () -> U): Lazy<R> = lazy { this.getServiceOrNull(name, requiredType) ?: block() }
