@@ -6,9 +6,10 @@ import dev.minn.jda.ktx.messages.into
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.SelectMenus
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.modals.Modals
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -35,27 +36,27 @@ class SlashEntity(private val buttons: Buttons, private val modals: Modals, priv
 //        val mediaChannel: MediaChannel
     )
 
-    suspend fun onSlashEntityNothing(event: GlobalSlashEvent) {
+    suspend fun onSlashEntityNothing(event: GuildSlashEvent) {
         reply(event, null)
     }
 
-    suspend fun onSlashEntityMember(event: GlobalSlashEvent, member: Member) {
+    suspend fun onSlashEntityMember(event: GuildSlashEvent, member: Member) {
         reply(event, member)
     }
 
-    suspend fun onSlashEntityRole(event: GlobalSlashEvent, role: Role) {
+    suspend fun onSlashEntityRole(event: GuildSlashEvent, role: Role) {
         reply(event, role)
     }
 
-    suspend fun onSlashEntityTextChannel(event: GlobalSlashEvent, textChannel: TextChannel) {
+    suspend fun onSlashEntityTextChannel(event: GuildSlashEvent, textChannel: TextChannel) {
         reply(event, textChannel)
     }
 
-    suspend fun onSlashEntityAll(event: GlobalSlashEvent, allEntities: AllEntities) {
+    suspend fun onSlashEntityAll(event: GuildSlashEvent, allEntities: AllEntities) {
         reply(event, allEntities)
     }
 
-    private suspend fun reply(event: GlobalSlashEvent, arg: Any?) {
+    private suspend fun reply(event: GuildSlashEvent, arg: Any?) {
         event.deferReply(false).await()
 
         println(arg)
@@ -98,7 +99,7 @@ class SlashEntity(private val buttons: Buttons, private val modals: Modals, priv
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("entities", function = null) {
-            contexts = InteractionContextType.ALL
+            contexts = enumSetOf(InteractionContextType.GUILD)
             integrationTypes = IntegrationType.ALL
 
             subcommand("nothing", ::onSlashEntityNothing)
