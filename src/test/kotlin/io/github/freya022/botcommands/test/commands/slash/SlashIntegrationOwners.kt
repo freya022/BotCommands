@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -15,7 +16,23 @@ import net.dv8tion.jda.api.interactions.InteractionContextType
 
 @Command
 class SlashIntegrationOwners(private val buttons: Buttons) : GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
-    suspend fun run(event: GlobalSlashEvent) {
+    suspend fun onSlashGlobalOwners(event: GlobalSlashEvent) {
+        run(event)
+    }
+
+    suspend fun onSlashGlobalOwnersOnlyUser(event: GlobalSlashEvent) {
+        run(event)
+    }
+
+    suspend fun onSlashGlobalOwnersOnlyGuild(event: GlobalSlashEvent) {
+        run(event)
+    }
+
+    suspend fun onSlashGuildOwners(event: GuildSlashEvent) {
+        run(event)
+    }
+
+    private suspend fun run(event: GlobalSlashEvent) {
         val button = buttons.primary("click me").ephemeral {
             bindTo { it.deferEdit().await() }
         }
@@ -23,24 +40,24 @@ class SlashIntegrationOwners(private val buttons: Buttons) : GlobalApplicationCo
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("global_owners", ::run) {
+        manager.slashCommand("global_owners", ::onSlashGlobalOwners) {
             integrationTypes = IntegrationType.ALL
             contexts = InteractionContextType.ALL
         }
 
-        manager.slashCommand("global_owners_only_user", ::run) {
+        manager.slashCommand("global_owners_only_user", ::onSlashGlobalOwnersOnlyUser) {
             integrationTypes = enumSetOf(IntegrationType.USER_INSTALL)
             contexts = InteractionContextType.ALL
         }
 
-        manager.slashCommand("global_owners_only_guild", ::run) {
+        manager.slashCommand("global_owners_only_guild", ::onSlashGlobalOwnersOnlyGuild) {
             integrationTypes = enumSetOf(IntegrationType.GUILD_INSTALL)
             contexts = InteractionContextType.ALL
         }
     }
 
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) {
-        manager.slashCommand("guild_owners", ::run) {
+        manager.slashCommand("guild_owners", ::onSlashGuildOwners) {
 
         }
     }
