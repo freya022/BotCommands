@@ -4,11 +4,11 @@ import gnu.trove.map.TLongObjectMap
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.modals.Modal
 import io.github.freya022.botcommands.api.modals.ModalBuilder
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
@@ -22,7 +22,7 @@ internal class ModalBuilderImpl internal constructor(
         handlerData = PersistentModalHandlerData(handlerName, userData)
     }
 
-    override fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilderImpl = this.also {
+    override fun bindTo(handler: suspend (ModalEvent) -> Unit): ModalBuilderImpl = this.also {
         handlerData = EphemeralModalHandlerData(handler)
     }
 

@@ -4,6 +4,7 @@ import gnu.trove.map.TLongObjectMap
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
@@ -12,7 +13,6 @@ import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -83,12 +83,12 @@ internal class ModalMaps(context: BContext) {
         }
     }
 
-    fun insertContinuation(modalId: Long, continuation: CancellableContinuation<ModalInteractionEvent>) {
+    fun insertContinuation(modalId: Long, continuation: CancellableContinuation<ModalEvent>) {
         val data = modalMap[modalId] ?: throwInternal("Unable to find a modal with id '$modalId'")
         data.continuations.add(continuation)
     }
 
-    fun removeContinuation(modalId: Long, continuation: CancellableContinuation<ModalInteractionEvent>) {
+    fun removeContinuation(modalId: Long, continuation: CancellableContinuation<ModalEvent>) {
         val data = modalMap[modalId]
         data?.continuations?.remove(continuation)
     }

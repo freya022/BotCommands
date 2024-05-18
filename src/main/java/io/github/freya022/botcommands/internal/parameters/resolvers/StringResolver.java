@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
+import io.github.freya022.botcommands.api.modals.ModalEvent;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.*;
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
@@ -9,7 +10,6 @@ import io.github.freya022.botcommands.internal.commands.text.TextCommandVariatio
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo;
 import kotlin.reflect.KParameter;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -84,7 +84,7 @@ public class StringResolver
 
 	@Override
 	@Nullable
-	public String resolve(@NotNull ModalHandlerInfo info, @NotNull ModalInteractionEvent event, @NotNull ModalMapping modalMapping) {
+	public String resolve(@NotNull ModalHandlerInfo info, @NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
 		return modalMapping.getAsString();
 	}
 

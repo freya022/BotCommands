@@ -4,7 +4,6 @@ package io.github.freya022.botcommands.api.modals
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
@@ -81,7 +80,5 @@ context(Modals)
 fun ModalBuilder.paragraphTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput =
     textInput(inputName, label, TextInputStyle.PARAGRAPH, block)
 
-fun TextInput.getValue(modalEvent: ModalInteractionEvent): ModalMapping = getValue(modalEvent, id)
-
-private fun getValue(modalEvent: ModalInteractionEvent, id: String): ModalMapping =
-    modalEvent.getValue(id) ?: throwUser("Could not find value for ID '$id', available IDs: ${modalEvent.values.joinToString { it.id }}")
+@Deprecated("Replaced with ModalEvent#getValue", replaceWith = ReplaceWith("modalEvent.get(this)"))
+fun TextInput.getValue(modalEvent: ModalInteractionEvent): ModalMapping = (modalEvent as ModalEvent)[this]

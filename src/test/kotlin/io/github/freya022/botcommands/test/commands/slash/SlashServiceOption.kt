@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -26,7 +27,6 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -80,7 +80,7 @@ class SlashServiceOption : ApplicationCommand() {
 
     @ModalHandler("SlashServiceOption: modal")
     suspend fun onModalSubmit(
-        event: ModalInteractionEvent,
+        event: ModalEvent,
         @ModalData slashInput: String,
         @ModalData buttonRandomNum: Double,
         @ModalData randomNum: Double,

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.modals
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -21,21 +22,22 @@ internal class ModalListener(private val context: BContextImpl, private val moda
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
-    suspend fun onModalEvent(event: ModalInteractionEvent) {
-        logger.trace { "Received modal interaction '${event.modalId}' with ${event.values.associate { it.id to it.asString }}" }
+    suspend fun onModalEvent(jdaEvent: ModalInteractionEvent) {
+        logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.values.associate { it.id to it.asString }}" }
 
-        scope.launchCatching({ handleException(it, event) }) launch@{
-            if (!ModalMaps.isCompatibleModal(event.modalId)) {
-                return@launch logger.error { "Received an interaction for an external modal format: '${event.modalId}', " +
+        scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
+            if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
+                return@launch logger.error { "Received an interaction for an external modal format: '${jdaEvent.modalId}', " +
                         "please use ${classRef<Modals>()} to make modals" }
             }
 
-            val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(event.modalId))
+            val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))
             if (modalData == null) { //Probably the modal expired
-                event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()
+                jdaEvent.reply_(context.getDefaultMessages(jdaEvent).modalExpiredErrorMsg, ephemeral = true).queue()
                 return@launch
             }
 
+            val event = ModalEvent(context, jdaEvent)
             for (continuation in modalData.continuations) {
                 continuation.resume(event)
             }

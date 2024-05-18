@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.modals.ModalDSL
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
@@ -49,7 +48,7 @@ abstract class ModalBuilder protected constructor(
      * @return This builder for chaining convenience
      */
     @CheckReturnValue
-    fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilder {
+    fun bindTo(handler: Consumer<ModalEvent>): ModalBuilder {
         return bindTo { handler.accept(it) }
     }
 
@@ -61,7 +60,7 @@ abstract class ModalBuilder protected constructor(
      * @return This builder for chaining convenience
      */
     @JvmSynthetic
-    abstract fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilder
+    abstract fun bindTo(handler: suspend (ModalEvent) -> Unit): ModalBuilder
 
     /**
      * Sets the timeout for this modal, invalidating the modal after expiration,

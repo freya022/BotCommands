@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -9,7 +10,6 @@ import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsM
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwUser
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
 internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
@@ -18,7 +18,7 @@ internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsM
     init {
         functionAnnotationsMap.get<ModalHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(ModalInteractionEvent::class))
+            .requiredFilter(FunctionFilter.firstArg(ModalEvent::class))
             .forEach {
                 val handlerInfo = ModalHandlerInfo(context, it.toMemberParamFunction())
                 val oldHandler = handlers.put(handlerInfo.handlerName, handlerInfo)

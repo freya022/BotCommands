@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -19,7 +20,6 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.time.Duration.Companion.seconds
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
@@ -51,7 +51,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
 
     @ModalHandler(name = SLASH_MODAL_MODAL_HANDLER)
     suspend fun onModalSubmitted(
-        event: ModalInteractionEvent,
+        event: ModalEvent,
         @ModalData dataStr: String,
         @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
         @ModalData dataInt: Int,

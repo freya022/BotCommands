@@ -6,11 +6,11 @@ import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.modals.ModalBuilder
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 /**
  * Declares this function as a modal handler for the specified modal name.
@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  * ### Requirements
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  * - The annotation value to have same name as the one given to [ModalBuilder.bindTo].
- * - First parameter must be [ModalInteractionEvent].
+ * - First parameter must be [ModalEvent].
  * - Optionally: Have all your consecutive [@ModalData][ModalData], specified in [ModalBuilder.bindTo].
  *
  * ### Option types

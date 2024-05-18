@@ -4,6 +4,7 @@ import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.parameters.ResolverContainer
@@ -20,7 +21,6 @@ import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.*
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -29,7 +29,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalD
 
 class ModalHandlerInfo internal constructor(
     context: BContextImpl,
-    override val eventFunction: MemberParamFunction<ModalInteractionEvent, *>
+    override val eventFunction: MemberParamFunction<ModalEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
@@ -62,7 +62,7 @@ class ModalHandlerInfo internal constructor(
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
 
-    internal suspend fun execute(modalData: ModalData, event: ModalInteractionEvent): Boolean {
+    internal suspend fun execute(modalData: ModalData, event: ModalEvent): Boolean {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap
@@ -94,7 +94,7 @@ class ModalHandlerInfo internal constructor(
     }
 
     private suspend fun tryInsertOption(
-        event: ModalInteractionEvent,
+        event: ModalEvent,
         option: Option,
         inputNameToInputIdMap: TObjectLongMap<String>,
         userDataIterator: Iterator<Any?>,
