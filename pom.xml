@@ -110,8 +110,8 @@
                                     <packageListUrl>https://docs.spring.io/spring-framework/docs/current/javadoc-api/element-list</packageListUrl>
                                 </link>
                                 <link>
-                                    <url>https://javadoc.io/doc/com.bucket4j/bucket4j-core/${bucket4j.version}</url>
-                                    <packageListUrl>https://javadoc.io/doc/com.bucket4j/bucket4j-core/${bucket4j.version}/element-list</packageListUrl>
+                                    <url>https://javadoc.io/doc/com.bucket4j/bucket4j_jdk17-core/${bucket4j.version}</url>
+                                    <packageListUrl>https://javadoc.io/doc/com.bucket4j/bucket4j_jdk17-core/${bucket4j.version}/element-list</packageListUrl>
                                 </link>
                             </externalDocumentationLinks>
                             <perPackageOptions>
