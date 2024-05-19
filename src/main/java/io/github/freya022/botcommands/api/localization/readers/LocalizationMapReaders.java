@@ -60,7 +60,7 @@ public final class LocalizationMapReaders {
                     return localizationMap;
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Unable to read bundle '%s' with locale '%s' using '%s'".formatted(baseName, locale, reader.getClass().getName()), e);
+                LOGGER.error("An error occurred while reading a bundle '{}' with locale '{}' with reader '{}'", baseName, locale, reader.getClass().getName(), e);
             }
         }
 
