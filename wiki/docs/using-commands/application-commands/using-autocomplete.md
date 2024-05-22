@@ -1,6 +1,6 @@
 Autocomplete lets you have options where you can give suggestions to the user while they type,
 the framework allows you to return a collection of choices, 
-or even other types such as `String`, `Long` and `Double`, or even custom types,
+choice-compatible types such as `String`, `Long` and `Double`, or even custom types,
 all of which can be cached.
 
 !!! note
