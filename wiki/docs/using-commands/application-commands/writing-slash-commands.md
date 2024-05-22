@@ -100,9 +100,30 @@ be careful to check against the command path as well as the option's display nam
         --8<-- "wiki/java/commands/slash/SlashConvert.java:convert-java"
         ```
 
-As you can see, despite the short choice list, 
-the method is quite lengthy and causes duplications with multiple commands.
-This issue is solved with [predefined choices](#using-predefined-choices).
+    As you can see, despite the short choice list, 
+    the method is quite lengthy and causes duplications with multiple commands.
+    This issue is solved with [predefined choices](#using-predefined-choices).
+
+#### Using autocomplete
+
+!!! info "Learn how to create an autocomplete handler [here](using-autocomplete.md)"
+
+Enabling autocompletion for an option is done by referencing an existing handler,
+in the [`autocomplete`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.annotations/-slash-option/autocomplete.html) property of your `#!java @SlashOption`.
+
+!!! example
+
+    Using the autocomplete handler we made ["Creating autocomplete handlers"](using-autocomplete.md):
+
+    === "Kotlin"
+        ```kotlin
+        --8<-- "wiki/commands/slash/SlashWord.kt:word_command-kotlin"
+        ```
+
+    === "Java"
+        ```java
+        --8<-- "wiki/java/commands/slash/SlashWord.java:word_command-java"
+        ```
 
 ### Generated values
 
@@ -186,8 +207,28 @@ Adding choices is very straight forward, you only have to give a list of choices
     --8<-- "wiki/commands/slash/SlashConvert.kt:convert-kotlin_dsl"
     ```
 
-As you can see, despite the short choice list, this causes duplications with multiple commands.
-This issue is solved with [predefined choices](#using-predefined-choices).
+    As you can see, despite the short choice list, this causes duplications with multiple commands.
+    This issue is solved with [predefined choices](#using-predefined-choices).
+
+#### Using autocomplete
+
+!!! info "Learn how to create an autocomplete handler [here](using-autocomplete.md)"
+
+Enabling autocompletion for an option is done by referencing an existing handler,
+either using [autocompleteByFunction](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.builder/-slash-command-option-builder/autocomplete-by-function.html) or [autocompleteByName](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.builder/-slash-command-option-builder/autocomplete-by-name.html).
+
+!!! tip
+
+    I recommend using [autocompleteByFunction](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.builder/-slash-command-option-builder/autocomplete-by-function.html) 
+    as it avoids typing the name twice.
+
+!!! example
+
+    Using the autocomplete handler we made ["Creating autocomplete handlers"](using-autocomplete.md#__tabbed_1_1):
+
+    ```kotlin
+    --8<-- "wiki/commands/slash/SlashWord.kt:word_command-kotlin_dsl"
+    ```
 
 ### Generated values
 
