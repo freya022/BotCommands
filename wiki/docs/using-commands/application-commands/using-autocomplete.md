@@ -43,6 +43,11 @@ all of which can be cached.
         --8<-- "wiki/java/commands/slash/SlashWordAutocomplete.java:word_autocomplete-java"
         ```
 
+You may also configure other properties:
+
+- `showUserInput`: Makes the first choice be the user's own input
+- `mode`: Lets you configure out the automatic choice sorter (for `String`/`Long`/`Double` only)
+
 !!! tip "Sorting autocomplete results of `Choice` and custom types"
 
     Sorting results by relevancy is a tricky task, while it can be as simple as `myItemName.startsWith(input)`
