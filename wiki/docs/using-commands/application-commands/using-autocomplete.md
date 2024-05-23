@@ -86,8 +86,8 @@ When the results are stable, you can enable autocomplete caching, saving time wh
 
 !!! note
     
-    If the outputs for a same input are stable but may rarely change (think, a list that changes daily), you can [invalidate autocomplete caches](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.core/-b-context/invalidate-autocomplete-cache.html)
-    when it does eventually change.
+    If the outputs for the same input are stable but may rarely change (think, a list that updates daily), you can [invalidate autocomplete caches](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.core/-b-context/invalidate-autocomplete-cache.html)
+    when it eventually does.
 
 ## Transforming elements into choices
 
