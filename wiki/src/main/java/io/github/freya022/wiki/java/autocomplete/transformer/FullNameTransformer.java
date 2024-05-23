@@ -10,8 +10,9 @@ import org.jetbrains.annotations.NotNull;
 // --8<-- [start:autocomplete_transformer-java]
 @BService
 public class FullNameTransformer implements AutocompleteTransformer<FullName> {
+    @NotNull
     @Override
-    public @NotNull Class<FullName> getElementType() {
+    public Class<FullName> getElementType() {
         return FullName.class;
     }
 
