@@ -127,8 +127,9 @@ in the [`autocomplete`](https://freya022.github.io/BotCommands/docs/-bot-command
 
 ### Generated values
 
-Generated values are a command parameter which gets their values computed by a lambda everytime a command is run, 
-given by `ApplicationCommand#getGeneratedValueSupplier`, which you must override, 
+Generated values are parameters that get their values from a lambda everytime a command is run.
+
+You must give one by overriding [`ApplicationCommand#getGeneratedValueSupplier`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application/-application-command/get-generated-value-supplier.html), 
 similarly to adding choices.
 
 As always, make sure to check against the command path as well as the option's display name.
