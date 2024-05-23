@@ -18,10 +18,9 @@ all of which can be cached.
     You can optionally put a name on the handler, if you plan on using [`autocompleteByName`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.builder/-slash-command-option-builder/autocomplete-by-name.html), 
     however, that's not necessary when using [`autocompleteByFunction`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.builder/-slash-command-option-builder/autocomplete-by-function.html).
 
-    === "Kotlin"
-        ```kotlin
-        --8<-- "wiki/commands/slash/SlashWord.kt:word_autocomplete-kotlin_dsl"
-        ```
+    ```kotlin
+    --8<-- "wiki/commands/slash/SlashWord.kt:word_autocomplete-kotlin_dsl"
+    ```
 
 === "Annotated"
 
