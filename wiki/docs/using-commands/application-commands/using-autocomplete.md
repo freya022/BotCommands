@@ -89,6 +89,11 @@ When the results are stable, you can enable autocomplete caching, saving time wh
     If the outputs for the same input are stable but may rarely change (think, a list that updates daily), you can [invalidate autocomplete caches](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.core/-b-context/invalidate-autocomplete-cache.html)
     when it eventually does.
 
+!!! tip
+
+    You can also disable the autocomplete cache while developing your bot with the [disableAutocompleteCache](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.core.config/-b-config-builder/disable-autocomplete-cache.html)
+    property, this should help you test your handler live, using hotswap.
+
 ## Transforming elements into choices
 
 If you wish to return collections of anything but the default supported types,
