@@ -43,11 +43,12 @@ all of which can be cached.
         --8<-- "wiki/java/commands/slash/SlashWordAutocomplete.java:word_autocomplete-java"
         ```
 
-!!! tip "Sorting autocomplete results"
+!!! tip "Sorting autocomplete results of `Choice` and custom types"
 
     Sorting results by relevancy is a tricky task, while it can be as simple as `myItemName.startsWith(input)`
     you can try to use [`AutocompleteAlgorithms`](https://freya022.github.io/BotCommands/docs/-bot-commands/io.github.freya022.botcommands.api.commands.application.slash.autocomplete/-autocomplete-algorithms/index.html)
-    to easily sort the results, but your mileage may vary.
+    to easily sort the results. 
+    This is what gets applied on primitive types, but the results won't always be the best.
 
     It may sometimes makes more sense to use one "similarity" algorithm over another, 
     depending on what user input you expect, and what the source items are,
