@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.annotations.Handler
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
@@ -81,7 +82,7 @@ class SlashWordDsl : GlobalApplicationCommandProvider {
 
 @WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN_DSL)
 // --8<-- [start:word_autocomplete-kotlin_dsl]
-@Handler // As we only declare autocomplete handlers
+@BService
 class SlashWordAutocompleteDsl : AutocompleteHandlerProvider {
     // https://en.wikipedia.org/wiki/Dolch_word_list#Dolch_list:_Nouns
     // but 30 words

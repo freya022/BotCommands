@@ -29,7 +29,8 @@ set in [`#!java @JDAButtonListener`](https://freya022.github.io/BotCommands/docs
 
 ??? tip "Type-safe component methods and optional handlers in Kotlin"
 
-    You can bind a method to your component, enabling you to pass arguments in a type-safe way with `bindTo` extensions.
+    You can bind a method to your component, enabling you to pass arguments in a type-safe way with `bindTo` extensions,
+    a similarly used `timeout` function also exists.
 
     You can also not use `bindTo` and instead use `await()` on the built component.
 

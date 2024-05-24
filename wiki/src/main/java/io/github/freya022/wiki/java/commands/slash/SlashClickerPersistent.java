@@ -6,8 +6,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.components.Button;
 import io.github.freya022.botcommands.api.components.Buttons;
+import io.github.freya022.botcommands.api.components.annotations.ComponentData;
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler;
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener;
+import io.github.freya022.botcommands.api.components.annotations.TimeoutData;
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
 import io.github.freya022.wiki.switches.wiki.WikiCommandProfile;
@@ -41,14 +43,14 @@ public class SlashClickerPersistent extends ApplicationCommand {
     // I recommend naming the handler "[ClassName]: [purpose]"
     // And the name would be "on[purpose]Click"
     @JDAButtonListener(COOKIE_BUTTON_NAME)
-    public void onCookieClick(ButtonEvent event, int count) {
+    public void onCookieClick(ButtonEvent event, @ComponentData int count) {
         final Button newButton = createButton(event, count + 1);
         event.editComponents(ActionRow.of(newButton)).queue();
     }
 
     // Same thing here, names don't collide with other types of listener
     @ComponentTimeoutHandler(COOKIE_BUTTON_NAME)
-    public void onCookieTimeout(ComponentTimeoutData timeout, String count) {
+    public void onCookieTimeout(ComponentTimeoutData timeout, @TimeoutData String count) {
         System.out.println("User finished clicking " + count + " cookies");
     }
 

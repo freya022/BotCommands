@@ -10,9 +10,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.wiki.switches.wiki.WikiLanguage
@@ -43,18 +46,18 @@ class SlashPersistentClicker(private val buttons: Buttons) : ApplicationCommand(
     // I recommend naming the handler "[ClassName]: [purpose]"
     // And the name would be "on[purpose]Click"
     @JDAButtonListener("SlashPersistentClicker: cookie")
-    suspend fun onCookieClick(event: ButtonEvent, count: Int) {
+    suspend fun onCookieClick(event: ButtonEvent, @ComponentData count: Int) {
         val button = createButton(event, count + 1)
         event.editComponents(row(button)).await()
     }
 
     // Same thing here, names don't collide with other types of listener
     @ComponentTimeoutHandler("SlashPersistentClicker: cookie")
-    fun onCookieTimeout(timeout: ComponentTimeoutData, count: String) {
+    fun onCookieTimeout(timeout: ComponentTimeoutData, @TimeoutData count: Int) {
         println("User finished clicking $count cookies")
     }
 
-    private suspend fun createButton(event: Interaction, count: Int): Button {
+    private suspend fun createButton(event: Interaction, @ComponentData count: Int): Button {
         // Create a primary-styled button
         return buttons.primary("$count cookies")
             // Sets the emoji on the button,
@@ -73,7 +76,7 @@ class SlashPersistentClicker(private val buttons: Buttons) : ApplicationCommand(
 
                 // Timeout and call the method after the button hasn't been used for a day
                 // The timeout gets cancelled if the button is invalidated
-                timeout(1.days, handlerName = "SlashPersistentClicker: cookie", count)
+                timeout(1.days, ::onCookieTimeout, count)
 
                 // When clicked, run the onCookieClick method with the count
                 // Extension for type-safe binding, no need to type the name
