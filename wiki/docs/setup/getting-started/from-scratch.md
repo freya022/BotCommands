@@ -132,18 +132,6 @@ and still be able to get it as a service.
         }    
         ```
     
-        ??? tip "Using a custom `CoroutineEventManager`"
-    
-            I recommend creating a custom `CoroutineEventManager`,
-            that way you can configure the amount of threads or their names,
-            which may be convenient in logs.
-    
-            You can do so by implementing a `ICoroutineEventManagerSupplier` service, 
-            with the help of `namedDefaultScope`:
-            ```kotlin
-            --8<-- "wiki/CoroutineEventManagerSupplier.kt:coroutine_event_manager_supplier-kotlin"
-            ```
-    
     === "Java"
     
         ```java title="Main.java - Main method"
@@ -171,6 +159,18 @@ and still be able to get it as a service.
     or by implementing configurers, which are explained in the annotation docs.
 
     Of course, you will need to add component scans to your own classes so it sees commands and other handlers.
+
+??? tip "Kotlin - Using a custom `CoroutineEventManager`"
+
+    I recommend creating a custom `CoroutineEventManager`,
+    that way you can configure the amount of threads or their names,
+    which may be convenient in logs.
+
+    You can do so by implementing a `ICoroutineEventManagerSupplier` service, 
+    with the help of `namedDefaultScope`:
+    ```kotlin
+    --8<-- "wiki/CoroutineEventManagerSupplier.kt:coroutine_event_manager_supplier-kotlin"
+    ```
 
 !!! warning
 
