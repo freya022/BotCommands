@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.wiki.config.Config
-import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
+import io.github.freya022.wiki.switches.wiki.WikiLanguage
 
-@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
+@WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:tag_interfaced_condition-kotlin]
 @Command
 @ConditionalService(TagCommand.FeatureCheck::class) // Only create the command if this passes

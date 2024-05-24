@@ -11,10 +11,10 @@ import io.github.freya022.botcommands.api.components.awaitAnyOrNull
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.utils.awaitUnit
 import io.github.freya022.botcommands.api.core.utils.replaceWith
-import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
+import io.github.freya022.wiki.switches.wiki.WikiLanguage
 import kotlin.time.Duration.Companion.minutes
 
-@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
+@WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:click_group-kotlin]
 @Command
 class SlashClickGroup(private val buttons: Buttons) : ApplicationCommand() {

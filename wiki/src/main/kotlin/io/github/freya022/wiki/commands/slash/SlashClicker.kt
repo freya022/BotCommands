@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
-import io.github.freya022.wiki.switches.wiki.WikiCommandProfile
+import io.github.freya022.wiki.switches.wiki.WikiLanguage
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.time.Duration.Companion.days
 
@@ -29,7 +29,7 @@ class SlashDummyClicker : ApplicationCommand() {
     }
 }
 
-@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
+@WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:persistent-clicker-kotlin]
 @Command
 class SlashPersistentClicker(private val buttons: Buttons) : ApplicationCommand() {
@@ -83,7 +83,7 @@ class SlashPersistentClicker(private val buttons: Buttons) : ApplicationCommand(
 }
 // --8<-- [end:persistent-clicker-kotlin]
 
-@WikiCommandProfile(WikiCommandProfile.Profile.KOTLIN)
+@WikiLanguage(WikiLanguage.Language.KOTLIN)
 // --8<-- [start:ephemeral-clicker-kotlin]
 @Command
 class SlashEphemeralClicker(private val buttons: Buttons) : ApplicationCommand() {
