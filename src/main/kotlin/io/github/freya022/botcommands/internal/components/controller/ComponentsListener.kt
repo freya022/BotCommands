@@ -47,7 +47,6 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.time.measureTime
 
 private val logger = KotlinLogging.logger { }
 
@@ -220,18 +219,16 @@ internal class ComponentsListener(
     private fun checkEventType(event: GenericComponentInteractionCreateEvent, descriptor: ComponentDescriptor) {
         if (event !is SelectMenuInteraction<*, *>) return
 
-        measureTime {
-            val expectedEventType = when (event) {
-                is EntitySelectInteractionEvent -> EntitySelectEvent::class
-                is StringSelectInteractionEvent -> StringSelectEvent::class
-                else -> throwInternal("Unchecked select menu event type: ${event.javaClass.simpleNestedName}")
-            }
+        val expectedEventType = when (event) {
+            is EntitySelectInteractionEvent -> EntitySelectEvent::class
+            is StringSelectInteractionEvent -> StringSelectEvent::class
+            else -> throwInternal("Unchecked select menu event type: ${event.javaClass.simpleNestedName}")
+        }
 
-            val eventType = descriptor.eventFunction.firstParameter.type
-            requireUser(eventType.jvmErasure.isInstance(event), descriptor.function) {
-                "Received an ${expectedEventType.simpleNestedName} but handler only accepts a ${eventType.simpleNestedName}"
-            }
-        }.also { println("Check event param took $it") }
+        val eventType = descriptor.eventFunction.firstParameter.type
+        requireUser(eventType.jvmErasure.isInstance(event), descriptor.function) {
+            "Received an ${expectedEventType.simpleNestedName} but handler only accepts a ${eventType.simpleNestedName}"
+        }
     }
 
     private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
