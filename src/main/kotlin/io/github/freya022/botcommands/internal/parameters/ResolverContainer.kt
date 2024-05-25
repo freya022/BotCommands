@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters
 
-import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.events.LoadEvent
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -12,7 +10,6 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.utils.requireUser
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -48,28 +45,20 @@ internal class ResolverContainer internal constructor(
 
         resolvers.forEach(::addResolver)
         factories += resolverFactories
-    }
 
-    @JvmSynthetic
-    @BEventListener
-    internal fun onLoad(event: LoadEvent) = lock.withLock {
-        if (factories.isEmpty()) {
-            throwInternal("No resolvers/factories were found") //Never happens
-        } else {
-            logger.trace {
-                val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
-                    buildString {
-                        val factories = factories
-                            .filter { factory -> factory.resolverType.isSubclassOf(interfaceClass) }
-                            .sortedBy { it.resolverType.simpleNestedName }
+        logger.trace {
+            val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
+                buildString {
+                    val factories = factories
+                        .filter { factory -> factory.resolverType.isSubclassOf(interfaceClass) }
+                        .sortedBy { it.resolverType.simpleNestedName }
 
-                        appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
-                        append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} (${it.supportedTypesStr.joinToString()})" })
-                    }
+                    appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
+                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} (${it.supportedTypesStr.joinToString()})" })
                 }
-
-                "Found resolvers:\n$resolversStr"
             }
+
+            "Found resolvers:\n$resolversStr"
         }
     }
 
