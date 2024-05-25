@@ -7,16 +7,12 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
-import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
-import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
-import io.github.freya022.botcommands.internal.parameters.toFallbackOptionBuilder
+import io.github.freya022.botcommands.internal.parameters.*
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transformParameters

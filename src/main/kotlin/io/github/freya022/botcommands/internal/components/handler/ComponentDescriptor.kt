@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.parameters.ResolverContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -13,6 +12,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
+import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.parameters.toFallbackOptionBuilder
 import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
