@@ -1,7 +1,45 @@
-In case you are **not** using the bot template, you can add a logger with the following dependencies:
+[slf4j-maven-central-shield]: https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Forg%2Fslf4j%2Fslf4j-api%2Fmaven-metadata.xml&query=%2Fmetadata%2Fversioning%2Fversions%2Fversion%5Bnot(contains(text()%2C%20%22-%22))%5D%5Blast()%5D&logo=apachemaven&label=slf4j-api
+[logback-maven-central-shield]: https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fch%2Fqos%2Flogback%2Flogback-classic%2Fmaven-metadata.xml&query=%2Fmetadata%2Fversioning%2Fversions%2Fversion%5Bnot(contains(text()%2C%20%22-%22))%5D%5Blast()%5D&logo=apachemaven&label=logback-classic
 
-- [slf4j-api](https://mvnrepository.com/artifact/org.slf4j/slf4j-api/latest)
-- [logback-classic](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic/latest)
+Add a logger with the following dependencies:
+
+![SLF4J version][slf4j-maven-central-shield]
+![Logback classic version][logback-maven-central-shield]
+
+=== "Maven"
+
+    ```xml
+    <dependencies>
+        ...
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>SLF4J_VERSION</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>LOGBACK_VERSION</version>
+        </dependency>
+    </dependencies>
+    ```
+
+=== "Kotlin Gradle"
+
+    ```kotlin
+    repositories {
+        ...
+        mavenCentral()
+    }
+    
+    dependencies {
+        ...
+
+        implementation("org.slf4j:slf4j-api:SLF4J_VERSION")
+        implementation("ch.qos.logback:logback-classic:LOGBACK_VERSION")
+    }
+    ```
 
 Here are the logback configs I recommend using:
 
