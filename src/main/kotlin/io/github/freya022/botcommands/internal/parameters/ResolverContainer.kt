@@ -41,7 +41,11 @@ internal class ResolverContainer internal constructor(
 
     init {
         fun addResolver(resolver: ParameterResolver<*, *>) {
-            requireUser(hasCompatibleInterface(resolver)) {
+            fun ParameterResolver<*, *>.hasCompatibleInterface(): Boolean {
+                return compatibleInterfaces.any { it.isInstance(this) }
+            }
+
+            requireUser(resolver.hasCompatibleInterface()) {
                 "The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}"
             }
 
@@ -109,9 +113,5 @@ internal class ResolverContainer internal constructor(
         }
 
         return factory.get(request)
-    }
-
-    private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
-        return compatibleInterfaces.any { it.isInstance(resolver) }
     }
 }
