@@ -25,7 +25,7 @@ class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() 
         event.replyComponents(button.into()).await()
     }
 
-    @JDAButtonListener("SlashTypeSafeButtons: testButton")
+    @JDAButtonListener
     suspend fun onTestClick(event: ButtonEvent, @ComponentData argument: String) {
         event.reply_("The argument was: $argument", ephemeral = true).await()
     }

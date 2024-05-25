@@ -104,12 +104,12 @@ class SlashNewSelects(
         return firstSelect
     }
 
-    @JDASelectMenuListener("SlashNewSelects: persistentSelect")
+    @JDASelectMenuListener
     fun onFirstSelectClicked(event: StringSelectEvent) {
         event.reply_("Persistent select menu clicked", ephemeral = true).queue()
     }
 
-    @GroupTimeoutHandler("SlashNewSelects: persistentGroupTimeout")
+    @GroupTimeoutHandler
     fun onFirstGroupTimeout(data: GroupTimeoutData) {
         println(data)
     }

@@ -44,7 +44,7 @@ class SlashSayAgainPersistent : ApplicationCommand() {
             .await()
     }
 
-    @JDAButtonListener("SlashSayAgainPersistent: saySentenceButton")
+    @JDAButtonListener
     suspend fun onSaySentenceClick(event: ButtonEvent, @ComponentData sentence: String) {
         event.reply_(sentence, ephemeral = true).await()
     }

@@ -26,7 +26,7 @@ class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : Applicati
         event.replyComponents(selectMenu.into()).await()
     }
 
-    @JDASelectMenuListener("SlashTypeSafeSelectMenus: testSelectMenu")
+    @JDASelectMenuListener
     suspend fun onTestSelect(event: EntitySelectEvent, @ComponentData argument: String) {
         event.reply_("The argument was: $argument", ephemeral = true).await()
     }
