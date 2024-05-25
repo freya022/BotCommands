@@ -11,12 +11,14 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 internal class ResolverContainer internal constructor(
@@ -28,31 +30,24 @@ internal class ResolverContainer internal constructor(
         private val resolverRequest: ResolverRequest
     )
 
-    private val logger = KotlinLogging.logger { }
-
     private val lock = ReentrantLock()
     private val factories: MutableList<ParameterResolverFactory<*>> = arrayOfSize(50)
     private val cache: MutableMap<CacheKey, ParameterResolverFactory<*>?> = hashMapOf()
 
     init {
+        fun addResolver(resolver: ParameterResolver<*, *>) {
+            requireUser(hasCompatibleInterface(resolver)) {
+                "The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}"
+            }
+
+            factories += when (resolver) {
+                is ClassParameterResolver -> resolver.toResolverFactory()
+                is TypedParameterResolver -> resolver.toResolverFactory()
+            }
+        }
+
         resolvers.forEach(::addResolver)
-        resolverFactories.forEach(::addResolverFactory)
-    }
-
-    fun addResolver(resolver: ParameterResolver<*, *>) {
-        if (!hasCompatibleInterface(resolver)) {
-            throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
-        }
-
-        when (resolver) {
-            is ClassParameterResolver -> addResolverFactory(resolver.toResolverFactory())
-            is TypedParameterResolver -> addResolverFactory(resolver.toResolverFactory())
-        }
-    }
-
-    fun addResolverFactory(resolver: ParameterResolverFactory<*>) = lock.withLock {
-        factories += resolver
-        cache.clear()
+        factories += resolverFactories
     }
 
     @JvmSynthetic
