@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -17,6 +18,9 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  *
  * The name must be unique; I recommend naming them similarly to:
  * `YourClassSimpleName: AutocompletedField` (for example, `SlashTag: tagName`).
+ *
+ * If a name is unset, the handler is anonymous and can only be referenced on code-declared commands,
+ * using [SlashCommandOptionBuilder.autocompleteByFunction].
  *
  * Requirements:
  *  - The declaring class must be annotated with [@Handler][Handler] or be an existing [@Command][Command] class.
@@ -60,8 +64,11 @@ annotation class AutocompleteHandler(
      * Sets the name of the autocomplete handler, **it must be the same as what you set in [SlashOption.autocomplete]**.
      *
      * The name must be unique, another handler cannot share it.
+     *
+     * If this is omitted, the handler is anonymous and can only be referenced on code-declared commands,
+     * using [SlashCommandOptionBuilder.autocompleteByFunction].
      */
-    @get:JvmName("value") val name: String,
+    @get:JvmName("value") val name: String = "",
 
     /**
      * Sets the [autocomplete mode][AutocompleteMode].
