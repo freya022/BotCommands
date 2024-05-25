@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.parameters
+package io.github.freya022.botcommands.internal.parameters
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.LoadEvent
@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
-import io.github.freya022.botcommands.internal.parameters.toResolverFactory
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -19,7 +19,7 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 @BService
-class ResolverContainer internal constructor(
+internal class ResolverContainer internal constructor(
     resolvers: List<ParameterResolver<*, *>>,
     resolverFactories: List<ParameterResolverFactory<*>>,
 ) {

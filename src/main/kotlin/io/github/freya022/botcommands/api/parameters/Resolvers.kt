@@ -23,8 +23,8 @@ object Resolvers {
      *
      * Text command options are case-insensitive.
      *
-     * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
-     * or by using a service factory with [Resolver] as such:
+     * The created resolver needs to be registered either by using a service factory with [@Resolver][Resolver],
+     * such as:
      *
      * ```java
      * @BConfiguration
@@ -94,8 +94,8 @@ object Resolvers {
  *
  * Text command options are case-insensitive.
  *
- * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
- * or by using a service factory with [Resolver] as such:
+ * The created resolver needs to be registered either by using a service factory with [@Resolver][Resolver],
+ * such as:
  *
  * ```kt
  * @BConfiguration
