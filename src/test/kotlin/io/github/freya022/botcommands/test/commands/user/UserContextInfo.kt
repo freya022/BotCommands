@@ -30,7 +30,7 @@ class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
             return ApplicationGeneratedValueSupplier {
                 it as UserContextInteractionEvent
 
-                it.target.asTag
+                it.target.name
             }
         }
 
@@ -53,7 +53,7 @@ class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
             generatedOption("userTag") {
                 it as UserContextInteractionEvent
 
-                it.target.asTag
+                it.target.name
             }
         }
     }

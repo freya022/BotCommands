@@ -120,7 +120,7 @@ class SlashNewButtons(
 
     @JDAButtonListener("SlashNewButtons: persistentButton")
     fun onFirstButtonClicked(event: ButtonEvent, @ComponentData double: Double, @ComponentData inputUser: InputUser, @ComponentData nullValue: Member?) {
-        event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asTag}, null: $nullValue", ephemeral = true).queue()
+        event.reply_("Persistent button clicked, double: $double, member: ${inputUser.asMention}, null: $nullValue", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler("SlashNewButtons: persistentButtonTimeout")

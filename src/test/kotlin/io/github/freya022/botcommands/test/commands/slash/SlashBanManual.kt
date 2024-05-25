@@ -22,7 +22,7 @@ class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @SlashOption target: InputUser,
-        @SlashOption reason: String = "Banned by ${event.user.asTag}"
+        @SlashOption reason: String = "Banned by ${event.user.name}"
     ) {
         event.reply_(
             """

@@ -21,6 +21,7 @@ import kotlin.time.Duration.Companion.minutes
  * @see InterfacedService @InterfacedService
  * @see Command @Command
  */
+@Suppress("DEPRECATION")
 @Deprecated("Replaced with the BotCommands entry point")
 class BBuilder private constructor() {
     /**
