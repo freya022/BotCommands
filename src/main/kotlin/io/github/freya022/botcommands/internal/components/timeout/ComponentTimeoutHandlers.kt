@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -19,7 +20,9 @@ internal class ComponentTimeoutHandlers(context: BContextImpl, functionAnnotatio
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ComponentTimeoutData::class))
             .associate {
-                it.function.findAnnotation<ComponentTimeoutHandler>()!!.name to TimeoutDescriptor(context, it.toMemberParamFunction(), ComponentTimeoutData::class)
+                val function = it.function
+                val annotation = function.findAnnotation<ComponentTimeoutHandler>()!!
+                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction(), ComponentTimeoutData::class)
             }
 
     override operator fun get(handlerName: String) = map[handlerName]
