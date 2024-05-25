@@ -3,7 +3,7 @@ In case you are **not** using the bot template, you can add a logger with the fo
 - [slf4j-api](https://mvnrepository.com/artifact/org.slf4j/slf4j-api/latest)
 - [logback-classic](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic/latest)
 
-Here are the logback configs used in the bot templates:
+Here are the logback configs I recommend using:
 
 === "Dev config"
 

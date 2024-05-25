@@ -1,13 +1,11 @@
 # Starting from scratch
 
-If you wish to create your bot differently than what's provided by the bot templates, this is for you, 
-you can start by creating a project either using Maven or Gradle.
+Start by creating a project either using Maven or Gradle, it must run on Java 17+,
+I recommend using [Java 21](https://adoptium.net/temurin/releases/?package=jdk&version=21).
 
-!!! warning
+!!! warning "Creating a new Maven project"
 
-    1. When creating a Maven project in IntelliJ, do not choose `Maven Archetype` in `Generators`, you must use `New Project`.
-
-    2. The target Java version must be 17+, I recommend using 21.
+    When creating a Maven project in IntelliJ, do not choose `Maven Archetype` in `Generators`, you must use `New Project`.
 
 ## Adding the dependencies
 
@@ -57,7 +55,7 @@ The only strictly necessary dependencies are the framework and JDA:
 
 ## Adding logging
 
-Any SLF4J compatible logger should work; I recommend logback, which you can learn more [here](../logging.md).
+Any SLF4J compatible logger should work; I recommend logback, which you can learn more [here](logging.md).
 
 ## Creating a config service
 
@@ -347,3 +345,17 @@ you can create a JAR with all the dependencies by pressing ++ctrl++ twice in Int
     ```
     gradle shadowJar
     ```
+
+## Other resources
+
+Take a look at other wiki pages, such as [Dependency injection](../using-botcommands/dependency-injection/index.md), 
+[Creating slash command](../using-commands/application-commands/writing-slash-commands.md)
+and [Using components](../using-components.md).
+
+### Examples
+
+You can find examples covering parts of the framework [here](https://github.com/freya022/BotCommands/tree/3.X/examples).
+
+### Getting help
+
+Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!

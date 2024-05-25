@@ -88,10 +88,8 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 * (Recommended, only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands/3.X/using-commands/Inferred-option-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
 * (Recommended) Use [stacktrace-decoroutinator](https://github.com/Anamorphosee/stacktrace-decoroutinator), to get clearer stack traces in suspending code
-  * Each bot template has it enabled in their main class
 
-You can then head over to [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/) 
-to get started either using a bot template, or from a new project.
+Head over to [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/) to get started.
 
 ## Getting the library
 [![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]

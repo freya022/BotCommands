@@ -1,5 +1,8 @@
 ## Running the examples
 
+> [!NOTE]
+> This bot is for documentation purposes
+
 ### Additional requirements
 
 * A PostgreSQL database
@@ -10,10 +13,6 @@ Go to `/test-files/examples` from the project root, duplicate the `config-templa
 and edit the `config.json`, with your bot token, prefixes, owner ID and the database details.
 
 You can then run the `Main` class.
-
-### Starting your own bot
-If you are seeking for a bot you can set up yourself, 
-you can look at the bot templates on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/bot-template/).
 
 ## Examples
 
