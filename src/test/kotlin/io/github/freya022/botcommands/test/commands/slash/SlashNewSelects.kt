@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.test.config.Config
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.UserSnowflake
@@ -33,12 +34,14 @@ class SlashNewSelects(
     private val selectMenus: SelectMenus
 ) : ApplicationCommand() {
     @JDASlashCommand(name = "new_selects")
-    suspend fun onSlashNewButtons(event: GuildSlashEvent) {
+    suspend fun onSlashNewSelects(event: GuildSlashEvent) {
         val persistentSelect = persistentGroupTest(event)
         val ephemeralSelect = ephemeralGroupTest(event)
         val voiceSelect = selectMenus.entitySelectMenu(SelectTarget.CHANNEL).ephemeral {
             setChannelTypes(ChannelType.VOICE)
-            filters += filter<InVoiceChannel>()
+            if (Config.instance.testMode) {
+                filters += filter<InVoiceChannel>()
+            }
             bindTo {
                 it.guild!!.moveVoiceMember(it.member!!, it.values.first() as AudioChannel).await()
                 it.deferEdit().await()
