@@ -16,6 +16,17 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger { }
+private val compatibleInterfaces = listOf(
+    TextParameterResolver::class,
+    QuotableTextParameterResolver::class,
+    SlashParameterResolver::class,
+    ComponentParameterResolver::class,
+    UserContextParameterResolver::class,
+    MessageContextParameterResolver::class,
+    ModalParameterResolver::class,
+    TimeoutParameterResolver::class,
+    ICustomResolver::class
+)
 
 @BService
 internal class ResolverContainer internal constructor(
@@ -63,7 +74,6 @@ internal class ResolverContainer internal constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    @JvmSynthetic
     internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? = lock.withLock {
         val key = CacheKey(resolverType, request)
         cache[key]?.let { return@withLock it as ParameterResolverFactory<T>? }
@@ -82,22 +92,18 @@ internal class ResolverContainer internal constructor(
         factory
     }
 
-    @JvmSynthetic
     internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
         return hasResolverOfType<T>(ResolverRequest(parameter))
     }
 
-    @JvmSynthetic
     internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(request: ResolverRequest): Boolean {
         return getResolverFactoryOrNull(T::class, request) != null
     }
 
-    @JvmSynthetic
     internal inline fun <reified T : IParameterResolver<T>> getResolverOfType(request: ResolverRequest): T {
         return getResolver(T::class, request)
     }
 
-    @JvmSynthetic
     internal fun <T : IParameterResolver<T>> getResolver(resolverType: KClass<T>, request: ResolverRequest): T {
         val factory = getResolverFactoryOrNull(resolverType, request)
         if (factory == null) {
@@ -110,19 +116,5 @@ internal class ResolverContainer internal constructor(
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
         return compatibleInterfaces.any { it.isInstance(resolver) }
-    }
-
-    internal companion object {
-        private val compatibleInterfaces = listOf(
-            TextParameterResolver::class,
-            QuotableTextParameterResolver::class,
-            SlashParameterResolver::class,
-            ComponentParameterResolver::class,
-            UserContextParameterResolver::class,
-            MessageContextParameterResolver::class,
-            ModalParameterResolver::class,
-            TimeoutParameterResolver::class,
-            ICustomResolver::class
-        )
     }
 }
