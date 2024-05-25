@@ -11,8 +11,6 @@ import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger { }
@@ -38,7 +36,6 @@ internal class ResolverContainer internal constructor(
         private val resolverRequest: ResolverRequest
     )
 
-    private val lock = ReentrantLock()
     private val factories: MutableList<ParameterResolverFactory<*>> = arrayOfSize(50)
     private val cache: MutableMap<CacheKey, ParameterResolverFactory<*>?> = hashMapOf()
 
@@ -74,9 +71,9 @@ internal class ResolverContainer internal constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? = lock.withLock {
+    internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? {
         val key = CacheKey(resolverType, request)
-        cache[key]?.let { return@withLock it as ParameterResolverFactory<T>? }
+        cache[key]?.let { return it as ParameterResolverFactory<T>? }
 
         val resolvableFactories = factories
             .filter { it.resolverType.isSubclassOf(resolverType) }
@@ -89,7 +86,7 @@ internal class ResolverContainer internal constructor(
 
         val factory = resolvableFactories.firstOrNull()
         cache[key] = factory
-        factory
+        return factory
     }
 
     internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
