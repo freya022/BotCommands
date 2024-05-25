@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -541,15 +542,15 @@ private fun <T : IPersistentActionableComponent<T>> T.bindToCallable(func: KFunc
 }
 
 private fun findHandlerName(func: KFunction<*>): String {
-    val buttonName = func.findAnnotation<JDAButtonListener>()?.name
-    val selectMenuName = func.findAnnotation<JDASelectMenuListener>()?.name
+    val buttonAnnotation = func.findAnnotation<JDAButtonListener>()
+    val selectMenuAnnotation = func.findAnnotation<JDASelectMenuListener>()
 
-    if (buttonName != null && selectMenuName != null)
+    if (buttonAnnotation != null && selectMenuAnnotation != null)
         throwUser(func, "Cannot have the same function with the two annotation")
-    else if (buttonName != null)
-        return buttonName
-    else if (selectMenuName != null)
-        return selectMenuName
+    else if (buttonAnnotation != null)
+        return buttonAnnotation.getEffectiveName(func)
+    else if (selectMenuAnnotation != null)
+        return selectMenuAnnotation.getEffectiveName(func)
 
     throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
 }

@@ -40,7 +40,7 @@ import javax.annotation.CheckReturnValue
  *             .await()
  *     }
  *
- *     @JDAButtonListener("SlashSayAgainPersistent: saySentenceButton")
+ *     @JDAButtonListener // No need for a name if you use the type-safe bindTo extensions
  *     suspend fun onSaySentenceClick(event: ButtonEvent, sentence: String) {
  *         event.reply_(sentence, ephemeral = true).await()
  *     }
