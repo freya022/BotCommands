@@ -186,8 +186,13 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
 
 internal fun CommandAutoBuilder.requireServiceOptionOrOptional(func: KFunction<*>, kParameter: KParameter, commandAnnotation: KClass<out Annotation>) {
     val isOptional = kParameter.isNullable || kParameter.isOptional
-    requireUser(isOptional || serviceContainer.canCreateWrappedService(kParameter) == null, func) {
-        "Cannot determine usage of option '${kParameter.bestName}' (${kParameter.type.simpleNestedName}), " +
-                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}, check @${commandAnnotation.simpleNestedName} for more details"
-    }
+    if (isOptional) return
+
+    val serviceError = serviceContainer.canCreateWrappedService(kParameter) ?: return
+    throwUser(
+        func,
+        "Cannot determine usage of option '${kParameter.bestName}' (${kParameter.type.simpleNestedName}) and service loading failed, " +
+                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}, check @${commandAnnotation.simpleNestedName} for more details\n" +
+                serviceError.toDetailedString()
+    )
 }
