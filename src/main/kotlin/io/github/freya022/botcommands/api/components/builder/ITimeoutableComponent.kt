@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
+import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ITimeoutData
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
@@ -847,15 +848,15 @@ private fun <T : IPersistentTimeoutableComponent<T>> T.bindToCallable(duration: 
 }
 
 private fun findHandlerName(func: KFunction<*>): String {
-    val componentTimeoutName = func.findAnnotation<ComponentTimeoutHandler>()?.name
-    val groupTimeoutName = func.findAnnotation<GroupTimeoutHandler>()?.name
+    val componentTimeoutAnnotation = func.findAnnotation<ComponentTimeoutHandler>()
+    val groupTimeoutAnnotation = func.findAnnotation<GroupTimeoutHandler>()
 
-    if (componentTimeoutName != null && groupTimeoutName != null)
+    if (componentTimeoutAnnotation != null && groupTimeoutAnnotation != null)
         throwUser(func, "Cannot have the same function with the two annotation")
-    else if (componentTimeoutName != null)
-        return componentTimeoutName
-    else if (groupTimeoutName != null)
-        return groupTimeoutName
+    else if (componentTimeoutAnnotation != null)
+        return componentTimeoutAnnotation.getEffectiveName(func)
+    else if (groupTimeoutAnnotation != null)
+        return groupTimeoutAnnotation.getEffectiveName(func)
 
     throwUser(func, "Could not find ${annotationRef<ComponentTimeoutHandler>()} or ${annotationRef<GroupTimeoutHandler>()}")
 }

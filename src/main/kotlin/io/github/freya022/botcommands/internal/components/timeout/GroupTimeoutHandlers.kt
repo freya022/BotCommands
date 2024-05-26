@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -19,7 +20,9 @@ internal class GroupTimeoutHandlers(context: BContextImpl, functionAnnotationsMa
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GroupTimeoutData::class))
             .associate {
-                it.function.findAnnotation<GroupTimeoutHandler>()!!.name to TimeoutDescriptor(context, it.toMemberParamFunction(), GroupTimeoutData::class)
+                val function = it.function
+                val annotation = function.findAnnotation<GroupTimeoutHandler>()!!
+                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction(), GroupTimeoutData::class)
             }
 
     override operator fun get(handlerName: String) = map[handlerName]

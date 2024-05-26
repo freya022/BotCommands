@@ -60,7 +60,7 @@ class SlashGenerateComponents(private val buttons: Buttons) : ApplicationCommand
         event.hook.sendMessage("Done in $duration").queue()
     }
 
-    @ComponentTimeoutHandler("SlashGenerateComponents: persistent")
+    @ComponentTimeoutHandler
     fun onPersistentTimeout(data: ComponentTimeoutData) {
         println("Persistent timeout")
     }

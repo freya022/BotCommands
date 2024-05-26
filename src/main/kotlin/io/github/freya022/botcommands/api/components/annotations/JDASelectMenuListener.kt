@@ -15,13 +15,16 @@ import io.github.freya022.botcommands.api.localization.context.AppLocalizationCo
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
+import kotlin.reflect.KFunction
 
 /**
  * Declares this function as a select menu listener with the given name.
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
- * - The annotation value to have same name as the one given to [IPersistentActionableComponent.bindTo].
+ * - The annotation value to have same name as the one given to [IPersistentActionableComponent.bindTo], however,
+ * it can be omitted if you use the type-safe [bindTo] extensions.
  * - First parameter must be [StringSelectEvent]/[EntitySelectEvent].
  *
  * ### Option types
@@ -33,7 +36,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * ### Type-safe bindings in Kotlin
- * You can use the [bindTo] extensions to safely pass data:
+ * You can use the [bindTo] extensions to safely pass data,
+ * in this case you don't need to set the listener name:
  * ```kt
  * @Command
  * class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : ApplicationCommand() {
@@ -46,7 +50,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  *         event.replyComponents(selectMenu.into()).await()
  *     }
  *
- *     @JDASelectMenuListener("SlashTypeSafeSelectMenus: testSelectMenu")
+ *     @JDASelectMenuListener // No need for a name if you use the type-safe bindTo extensions
  *     suspend fun onTestSelect(event: EntitySelectEvent, @ComponentData argument: String) {
  *         event.reply_("The argument was: $argument", ephemeral = true).await()
  *     }
@@ -63,8 +67,15 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDASelectMenuListener(
     /**
-     * Name of the select menu listener.<br>
-     * This is used to find back the handler method after a select menu has been clicked
+     * Name of the select menu listener, referenced by [IPersistentActionableComponent.bindTo].
+     *
+     * This can be omitted if you use the type-safe [bindTo] extensions.
+     *
+     * Defaults to `FullyQualifiedClassName.methodName`.
      */
-    @get:JvmName("value") val name: String
-) 
+    @get:JvmName("value") val name: String = ""
+)
+
+internal fun JDASelectMenuListener.getEffectiveName(func: KFunction<*>): String {
+    return name.ifBlank { "${func.declaringClass.qualifiedName}.${func.name}" }
+}

@@ -39,7 +39,7 @@ class SlashSelectRolePersistent : ApplicationCommand() {
             .await()
     }
 
-    @JDASelectMenuListener("SlashSelectRolePersistent: roleMenu")
+    @JDASelectMenuListener
     suspend fun onRoleMenuSelect(event: EntitySelectEvent, @ComponentData randomNumber: Long) {
         val role = event.values[0] as Role
         event.reply("You have been given " + role.asMention + ", and the random number is " + randomNumber)

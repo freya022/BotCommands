@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
@@ -28,7 +29,7 @@ internal class AutocompleteInfoAutoBuilder internal constructor() : Autocomplete
                 val autocompleteFunction = it.function as KFunction<Collection<Any>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
-                manager.autocomplete(autocompleteFunction, autocompleteHandlerAnnotation.name) {
+                manager.autocomplete(autocompleteFunction, autocompleteHandlerAnnotation.name.nullIfBlank()) {
                     declarationSite = DeclarationSite.fromFunctionSignature(autocompleteFunction)
 
                     mode = autocompleteHandlerAnnotation.mode

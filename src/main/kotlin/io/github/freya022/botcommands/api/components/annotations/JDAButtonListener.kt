@@ -14,13 +14,16 @@ import io.github.freya022.botcommands.api.localization.context.AppLocalizationCo
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
+import kotlin.reflect.KFunction
 
 /**
  * Declares this function as a button listener with the given name.
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
- * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindTo].
+ * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindTo], however,
+ * it can be omitted if you use the type-safe [bindTo] extensions.
  * - First parameter must be [ButtonEvent].
  *
  * ### Option types
@@ -32,7 +35,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * ### Type-safe bindings in Kotlin
- * You can use the [bindTo] extensions to safely pass data:
+ * You can use the [bindTo] extensions to safely pass data,
+ * in this case you don't need to set the listener name:
  * ```kt
  * @Command
  * class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() {
@@ -45,7 +49,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  *         event.replyComponents(button.into()).await()
  *     }
  *
- *     @JDAButtonListener("SlashTypeSafeButtons: testButton")
+ *     @JDAButtonListener // No need for a name if you use the type-safe bindTo extensions
  *     suspend fun onTestClick(event: ButtonEvent, @ComponentData argument: String) {
  *         event.reply_("The argument was: $argument", ephemeral = true).await()
  *     }
@@ -62,8 +66,15 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDAButtonListener(
     /**
-     * Name of the button listener.<br>
-     * This is used to find back the handler method after a button has been clicked.
+     * Name of the button listener, referenced by [PersistentButtonBuilder.bindTo].
+     *
+     * This can be omitted if you use the type-safe [bindTo] extensions.
+     *
+     * Defaults to `FullyQualifiedClassName.methodName`.
      */
-    @get:JvmName("value") val name: String
-) 
+    @get:JvmName("value") val name: String = ""
+)
+
+internal fun JDAButtonListener.getEffectiveName(func: KFunction<*>): String {
+    return name.ifBlank { "${func.declaringClass.qualifiedName}.${func.name}" }
+}

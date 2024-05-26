@@ -34,7 +34,7 @@ import javax.annotation.CheckReturnValue
  *             .await()
  *     }
  *
- *     @JDASelectMenuListener("SlashSelectRolePersistent: roleMenu")
+ *     @JDASelectMenuListener // No need for a name if you use the type-safe bindTo extensions
  *     suspend fun onRoleMenuSelect(event: EntitySelectEvent, randomNumber: Long) {
  *         val role = event.values[0] as Role
  *         event.reply("You have been given " + role.asMention + ", and the random number is " + randomNumber)

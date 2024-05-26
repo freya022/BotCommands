@@ -99,7 +99,7 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name].
      *
-     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
+     * Must match an autocomplete handler created from a named [@AutocompleteHandler][AutocompleteHandler]
      * or [AutocompleteManager.autocomplete].
      *
      * @see AutocompleteHandler @AutocompleteHandler
@@ -111,7 +111,8 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Uses an existing autocomplete handler with the specified function.
      *
-     * Must match an autocomplete handler created from [AutocompleteManager.autocomplete].
+     * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
+     * or [AutocompleteManager.autocomplete].
      */
     fun autocompleteByFunction(function: KFunction<*>) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[function]

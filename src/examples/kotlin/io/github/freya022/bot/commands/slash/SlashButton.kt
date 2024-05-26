@@ -44,7 +44,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
             .queue()
     }
 
-    @JDAButtonListener("SlashButton: persistentButton") //ClassName: theButtonPurpose
+    @JDAButtonListener
     suspend fun onPersistentButtonClick(event: ButtonEvent) {
         event.editButton(event.button.asDisabled()).await()
     }
