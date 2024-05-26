@@ -11,10 +11,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 
 @Command
+@RequiresComponents
 class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "type_safe_buttons", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeButtons(event: GuildSlashEvent, @SlashOption argument: String) {

@@ -9,10 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.components.annotations.ComponentData
-import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
-import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
-import io.github.freya022.botcommands.api.components.annotations.TimeoutData
+import io.github.freya022.botcommands.api.components.annotations.*
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.service.LazyService
@@ -31,6 +28,7 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 @Command
+@RequiresComponents
 class SlashServiceOption : ApplicationCommand() {
     @JDASlashCommand(name = "service_option")
     suspend fun onSlashServiceOption(

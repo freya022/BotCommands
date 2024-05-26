@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import kotlin.time.Duration.Companion.days
@@ -15,6 +16,7 @@ import kotlin.time.measureTime
 private const val amount = 5000
 
 @Command
+@RequiresComponents
 class SlashGenerateComponents(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "generate_components")
     suspend fun onSlashGenerateComponents(event: GuildSlashEvent) {

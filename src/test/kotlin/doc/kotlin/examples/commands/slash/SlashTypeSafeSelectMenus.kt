@@ -11,11 +11,13 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
 @Command
+@RequiresComponents
 class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : ApplicationCommand() {
     @JDASlashCommand(name = "type_safe_select_menus", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeSelectMenus(event: GuildSlashEvent, @SlashOption argument: String) {
