@@ -71,8 +71,18 @@ internal class DatabaseImpl internal constructor(
 
         runBlocking {
             preparedStatement("select version from bc.bc_version", readOnly = true) {
-                val rs = executeQuery().readOrNull()
-                    ?: throw IllegalStateException("No version found, please create the BotCommands tables with the migration scripts in 'bc_database_scripts', in the resources folder (you can also use Flyway for example)")
+                val rs = try {
+                    executeQuery().read()
+                } catch (e: Exception) {
+                    throw RuntimeException(
+                        """
+                            Could not check BC schema version, did you either:
+                            - Set up migration? See https://freya022.github.io/BotCommands/3.X/using-botcommands/database/#using-migration
+                            - Or, run the SQL scripts (in 'bc_database_scripts')
+                        """.trimIndent(),
+                        e
+                    )
+                }
 
                 val version = rs.getString("version")
 
