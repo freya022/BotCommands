@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
@@ -56,12 +55,7 @@ abstract class SlashCommandInfo internal constructor(
             .forEach(SlashCommandOption::buildAutocomplete)
     }
 
-    internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cancellableRateLimit: CancellableRateLimit): Boolean {
-        val event = when {
-            topLevelInstance.isGuildOnly -> GuildSlashEvent(context, jdaEvent, cancellableRateLimit)
-            else -> GlobalSlashEvent(context, jdaEvent, cancellableRateLimit)
-        }
-
+    internal suspend fun execute(event: GlobalSlashEvent): Boolean {
         val objects = getSlashOptions(event, parameters) ?: return false
         function.callSuspendBy(objects)
 

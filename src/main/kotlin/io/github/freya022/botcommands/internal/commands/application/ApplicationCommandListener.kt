@@ -4,6 +4,8 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
@@ -14,6 +16,7 @@ import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizationInteractionFactory
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
@@ -30,6 +33,7 @@ private val logger = KotlinLogging.logger {  }
 @BService
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
+    private val localizationInteractionFactory: LocalizationInteractionFactory,
     filters: List<ApplicationCommandFilter<Any>>,
     rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 ) {
@@ -59,7 +63,12 @@ internal class ApplicationCommandListener internal constructor(
                 if (!canRun(event, slashCommand, isNotOwner)) {
                     false
                 } else {
-                    slashCommand.execute(event, cancellableRateLimit)
+                    val localizableInteraction = localizationInteractionFactory.create(event)
+                    val bcEvent = when {
+                        slashCommand.topLevelInstance.isGuildOnly -> GuildSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
+                        else -> GlobalSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    }
+                    slashCommand.execute(bcEvent)
                 }
             }
         }
