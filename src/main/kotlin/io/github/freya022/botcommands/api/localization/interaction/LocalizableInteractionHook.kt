@@ -21,25 +21,18 @@ import java.util.*
  * @see InteractionHook
  */
 interface LocalizableInteractionHook : InteractionHook {
-    val userLocale: DiscordLocale
-    val guildLocale: DiscordLocale
+    fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message>
 
-    fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        sendLocalized(userLocale, localizationPath, *entries)
-
-    fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        sendLocalized(guildLocale, localizationPath, *entries)
+    fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message>
 
     fun sendLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
         sendLocalized(locale.toLocale(), localizationPath, *entries)
 
     fun sendLocalized(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message>
 
-    fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        editLocalized(userLocale, localizationPath, *entries)
+    fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message>
 
-    fun editGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        editLocalized(guildLocale, localizationPath, *entries)
+    fun editGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message>
 
     fun editLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
         editLocalized(locale.toLocale(), localizationPath, *entries)

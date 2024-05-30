@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.localization.interaction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteractionHook
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableReplyCallback
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import java.util.*
@@ -16,13 +15,11 @@ internal class LocalizableReplyCallbackImpl internal constructor(
         return interaction.getHook()
     }
 
-    override fun getUserLocale(): DiscordLocale {
-        return interaction.getUserLocale()
-    }
+    override fun replyUser(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
+        replyLocalized(interaction.userLocale, localizationPath, *entries)
 
-    override fun getGuildLocale(): DiscordLocale {
-        return interaction.getGuildLocale()
-    }
+    override fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
+        replyLocalized(interaction.guildLocale, localizationPath, *entries)
 
     override fun replyLocalized(
         locale: Locale,

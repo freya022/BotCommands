@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.localization.interaction.LocalizableRe
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.DiscordLocale
 
 open class GlobalSlashEvent internal constructor(
     val context: BContext,
@@ -22,14 +21,6 @@ open class GlobalSlashEvent internal constructor(
 
     override fun getHook(): LocalizableInteractionHook {
         return localizableInteraction.getHook()
-    }
-
-    override fun getUserLocale(): DiscordLocale {
-        return localizableInteraction.getUserLocale()
-    }
-
-    override fun getGuildLocale(): DiscordLocale {
-        return localizableInteraction.getGuildLocale()
     }
 
     override fun getRawData() = event.rawData

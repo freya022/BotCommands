@@ -19,14 +19,9 @@ import java.util.*
 interface LocalizableReplyCallback {
     fun getHook(): LocalizableInteractionHook
 
-    fun getUserLocale(): DiscordLocale
-    fun getGuildLocale(): DiscordLocale
+    fun replyUser(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction
 
-    fun replyUser(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
-        replyLocalized(getUserLocale(), localizationPath, *entries)
-
-    fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
-        replyLocalized(getGuildLocale(), localizationPath, *entries)
+    fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction
 
     fun replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
         replyLocalized(locale.toLocale(), localizationPath, *entries)

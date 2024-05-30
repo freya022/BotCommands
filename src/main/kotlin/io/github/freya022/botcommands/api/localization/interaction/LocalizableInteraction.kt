@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
-import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
-import net.dv8tion.jda.api.interactions.DiscordLocale
 
 /**
  * Allows you to configure the localization settings of this interaction event,
@@ -40,12 +38,4 @@ interface LocalizableInteraction {
     var localizationPrefix: String?
 
     fun getHook(): LocalizableInteractionHook
-
-    fun getUserLocale(): DiscordLocale
-    fun getGuildLocale(): DiscordLocale
-
-    fun getLocalizationContext(bundleName: String): AppLocalizationContext =
-        getLocalizationContext(bundleName, localizationPrefix = null)
-
-    fun getLocalizationContext(bundleName: String, localizationPrefix: String?): AppLocalizationContext
 }

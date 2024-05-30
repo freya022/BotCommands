@@ -8,15 +8,15 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.internal.utils.classRef
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import java.util.*
 
 @BService
 @ConditionalService(DefaultGuildLocaleProvider.ExistingSupplierChecker::class)
 @ConditionalOnMissingBean(GuildLocaleProvider::class)
 internal class DefaultGuildLocaleProvider internal constructor() : GuildLocaleProvider {
-    override fun getLocale(interaction: Interaction): DiscordLocale = interaction.guildLocale
+    override fun getLocale(interaction: Interaction): Locale = interaction.guildLocale.toLocale()
 
     internal object ExistingSupplierChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {

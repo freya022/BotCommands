@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.api.localization.interaction
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
+import java.util.*
 
 /**
  * Provides the locale of a user in a Discord interaction,
@@ -18,5 +18,5 @@ import net.dv8tion.jda.api.interactions.Interaction
  */
 @InterfacedService(acceptMultiple = false)
 fun interface UserLocaleProvider {
-    fun getLocale(interaction: Interaction): DiscordLocale
+    fun getLocale(interaction: Interaction): Locale
 }

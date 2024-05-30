@@ -19,14 +19,9 @@ import java.util.*
 interface LocalizableEditCallback {
     fun getHook(): LocalizableInteractionHook
 
-    fun getUserLocale(): DiscordLocale
-    fun getGuildLocale(): DiscordLocale
+    fun editUser(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction
 
-    fun editUser(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction =
-        editLocalized(getUserLocale(), localizationPath, *entries)
-
-    fun editGuild(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction =
-        editLocalized(getGuildLocale(), localizationPath, *entries)
+    fun editGuild(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction
 
     fun editLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction =
         editLocalized(locale.toLocale(), localizationPath, *entries)

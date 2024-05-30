@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.localization.interaction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteractionHook
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
@@ -15,8 +14,11 @@ internal class LocalizableInteractionHookImpl internal constructor(
 ) : LocalizableInteractionHook,
     InteractionHook by interactionHook {
 
-    override val userLocale: DiscordLocale get() = localizableInteraction.getUserLocale()
-    override val guildLocale: DiscordLocale get() = localizableInteraction.getGuildLocale()
+    override fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
+        sendLocalized(localizableInteraction.userLocale, localizationPath, *entries)
+
+    override fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
+        sendLocalized(localizableInteraction.guildLocale, localizationPath, *entries)
 
     override fun sendLocalized(
         locale: Locale,
@@ -25,6 +27,12 @@ internal class LocalizableInteractionHookImpl internal constructor(
     ): WebhookMessageCreateAction<Message> {
         return interactionHook.sendMessage(localizableInteraction.getLocalizedTemplate(locale, localizationPath, *entries))
     }
+
+    override fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
+        editLocalized(localizableInteraction.userLocale, localizationPath, *entries)
+
+    override fun editGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
+        editLocalized(localizableInteraction.guildLocale, localizationPath, *entries)
 
     override fun editLocalized(
         locale: Locale,
