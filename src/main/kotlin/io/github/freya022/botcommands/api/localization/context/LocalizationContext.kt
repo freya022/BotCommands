@@ -163,6 +163,24 @@ interface LocalizationContext {
                 userLocale
             )
         }
+
+        @JvmStatic
+        @JvmOverloads
+        fun create(
+            localizationService: LocalizationService,
+            localizationBundle: String,
+            localizationPrefix: String? = null,
+            guildLocale: DiscordLocale? = null,
+            userLocale: DiscordLocale? = null
+        ): AppLocalizationContext {
+            return LocalizationContextImpl(
+                localizationService,
+                localizationBundle,
+                localizationPrefix,
+                guildLocale,
+                userLocale
+            )
+        }
     }
 }
 
