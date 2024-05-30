@@ -28,6 +28,7 @@ internal class BotCommandsCoreConfiguration(
     override val debugConfig: BDebugConfig get() = unusable()
     override val serviceConfig: BServiceConfig get() = unusable()
     override val databaseConfig: BDatabaseConfig get() = unusable()
+    override val localizationConfig: BLocalizationConfig get() = unusable()
     override val textConfig: BTextConfig get() = unusable()
     override val applicationConfig: BApplicationConfig get() = unusable()
     override val componentsConfig: BComponentsConfig get() = unusable()
@@ -98,6 +99,15 @@ internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfig
     prefixes += configuration.prefixes
     isHelpDisabled = configuration.isHelpDisabled
     showSuggestions = configuration.showSuggestions
+}
+
+@ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)
+internal class BotCommandsLocalizationConfiguration(
+    override val responseBundles: Set<String> = emptySet(),
+) : BLocalizationConfig
+
+internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLocalizationConfiguration) = apply {
+    responseBundles += configuration.responseBundles
 }
 
 @ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = false)

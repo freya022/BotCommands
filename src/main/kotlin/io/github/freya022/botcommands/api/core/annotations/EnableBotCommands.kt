@@ -55,6 +55,7 @@ import org.springframework.stereotype.Component
  * - [BDebugConfigConfigurer] ([BDebugConfig])
  * - [BServiceConfigConfigurer] ([BServiceConfig])
  * - [BDatabaseConfigConfigurer] ([BDatabaseConfig])
+ * - [BLocalizationConfigConfigurer] ([BLocalizationConfig])
  * - [BTextConfigConfigurer] ([BTextConfig])
  * - [BApplicationConfigConfigurer] ([BApplicationConfig])
  * - [BComponentsConfigConfigurer] ([BComponentsConfig])

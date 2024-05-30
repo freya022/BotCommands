@@ -28,6 +28,8 @@ interface BContext {
 
     //region Configs
     val config: BConfig
+    val localizationConfig: BLocalizationConfig
+        get() = config.localizationConfig
     val applicationConfig: BApplicationConfig
         get() = config.applicationConfig
     val componentsConfig: BComponentsConfig

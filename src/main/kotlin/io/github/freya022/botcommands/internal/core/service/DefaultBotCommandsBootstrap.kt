@@ -38,6 +38,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         serviceContainer.putServiceAs<BConfig>(config)
         serviceContainer.putServiceAs<BServiceConfig>(config.serviceConfig)
         serviceContainer.putServiceAs<BDatabaseConfig>(config.databaseConfig)
+        serviceContainer.putServiceAs<BLocalizationConfig>(config.localizationConfig)
         serviceContainer.putServiceAs<BApplicationConfig>(config.applicationConfig)
         serviceContainer.putServiceAs<BComponentsConfig>(config.componentsConfig)
         serviceContainer.putServiceAs<BCoroutineScopesConfig>(config.coroutineScopesConfig)
