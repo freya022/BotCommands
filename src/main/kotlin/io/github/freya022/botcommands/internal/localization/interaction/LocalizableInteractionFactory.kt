@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 
 @BService
-internal class LocalizationInteractionFactory internal constructor(
+internal class LocalizableInteractionFactory internal constructor(
     private val localizationService: LocalizationService,
     private val localizationConfig: BLocalizationConfig,
     private val userLocaleProvider: UserLocaleProvider,

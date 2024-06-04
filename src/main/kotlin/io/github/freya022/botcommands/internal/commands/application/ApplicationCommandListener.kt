@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.localization.interaction.LocalizationInteractionFactory
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
@@ -33,7 +33,7 @@ private val logger = KotlinLogging.logger {  }
 @BService
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
-    private val localizationInteractionFactory: LocalizationInteractionFactory,
+    private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ApplicationCommandFilter<Any>>,
     rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 ) {
@@ -63,7 +63,7 @@ internal class ApplicationCommandListener internal constructor(
                 if (!canRun(event, slashCommand, isNotOwner)) {
                     false
                 } else {
-                    val localizableInteraction = localizationInteractionFactory.create(event)
+                    val localizableInteraction = localizableInteractionFactory.create(event)
                     val bcEvent = when {
                         slashCommand.topLevelInstance.isGuildOnly -> GuildSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
                         else -> GlobalSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
