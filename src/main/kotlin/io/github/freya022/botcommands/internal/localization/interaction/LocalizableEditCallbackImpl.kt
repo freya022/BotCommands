@@ -26,6 +26,6 @@ internal class LocalizableEditCallbackImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry,
     ): MessageEditCallbackAction {
-        return editCallback.editMessage(interaction.getLocalizedTemplate(locale, localizationPath, *entries))
+        return editCallback.editMessage(interaction.getLocalizedMessage(locale, localizationPath, *entries))
     }
 }

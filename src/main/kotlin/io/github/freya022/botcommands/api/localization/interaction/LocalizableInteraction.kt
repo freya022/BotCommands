@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.localization.LocalizableAction
 
 /**
  * Allows you to configure the localization settings of this interaction event,
@@ -21,21 +21,6 @@ import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
  * @see LocalizableEditCallback
  * @see LocalizableInteractionHook
  */
-interface LocalizableInteraction {
-    /**
-     * If set, forces the specified localization bundle to be used.
-     *
-     * If unset, all bundles registered in [BLocalizationConfig.responseBundles] are used.
-     */
-    var localizationBundle: String?
-    /**
-     * If set, adds the specified prefix to the path of every localization call,
-     * useful to avoid using very long strings in every reply/edit.
-     *
-     * For example, if you set this to `commands.ban.responses`, and try to localize with the path `missing_permissions`,
-     * the final path will be `commands.ban.responses.missing_permissions`.
-     */
-    var localizationPrefix: String?
-
+interface LocalizableInteraction : LocalizableAction {
     fun getHook(): LocalizableInteractionHook
 }

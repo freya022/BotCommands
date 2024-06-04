@@ -25,7 +25,7 @@ internal class LocalizableInteractionHookImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry,
     ): WebhookMessageCreateAction<Message> {
-        return interactionHook.sendMessage(localizableInteraction.getLocalizedTemplate(locale, localizationPath, *entries))
+        return interactionHook.sendMessage(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries))
     }
 
     override fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
@@ -39,6 +39,6 @@ internal class LocalizableInteractionHookImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): WebhookMessageEditAction<Message> {
-        return interactionHook.editOriginal(localizableInteraction.getLocalizedTemplate(locale, localizationPath, *entries))
+        return interactionHook.editOriginal(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries))
     }
 }

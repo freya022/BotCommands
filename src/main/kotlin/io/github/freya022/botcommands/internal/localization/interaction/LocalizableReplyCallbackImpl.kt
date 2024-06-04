@@ -26,6 +26,6 @@ internal class LocalizableReplyCallbackImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry,
     ): ReplyCallbackAction {
-        return replyCallback.reply(interaction.getLocalizedTemplate(locale, localizationPath, *entries))
+        return replyCallback.reply(interaction.getLocalizedMessage(locale, localizationPath, *entries))
     }
 }
