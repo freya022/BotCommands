@@ -4,6 +4,10 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
+import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
+import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.core.BContext
@@ -89,7 +93,12 @@ internal class ApplicationCommandListener internal constructor(
                 if (!canRun(event, userCommand, isNotOwner)) {
                     false
                 } else {
-                    userCommand.execute(event, cancellableRateLimit)
+                    val localizableInteraction = localizableInteractionFactory.create(event)
+                    val bcEvent = when {
+                        userCommand.isGuildOnly -> GuildUserEvent(context, event, cancellableRateLimit, localizableInteraction)
+                        else -> GlobalUserEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    }
+                    userCommand.execute(bcEvent)
                 }
             }
         }
@@ -110,7 +119,12 @@ internal class ApplicationCommandListener internal constructor(
                 if (!canRun(event, messageCommand, isNotOwner)) {
                     false
                 } else {
-                    messageCommand.execute(event, cancellableRateLimit)
+                    val localizableInteraction = localizableInteractionFactory.create(event)
+                    val bcEvent = when {
+                        messageCommand.isGuildOnly -> GuildMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
+                        else -> GlobalMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    }
+                    messageCommand.execute(bcEvent)
                 }
             }
         }
