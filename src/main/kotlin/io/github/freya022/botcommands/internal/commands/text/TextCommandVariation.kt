@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -67,9 +68,9 @@ class TextCommandVariation internal constructor(
         }
     }
 
-    internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String, cancellableRateLimit: CancellableRateLimit): BaseCommandEvent = when {
-        useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args, cancellableRateLimit)
-        else -> BaseCommandEventImpl(context, jdaEvent, args, cancellableRateLimit)
+    internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String, cancellableRateLimit: CancellableRateLimit, localizableTextCommand: LocalizableTextCommand): BaseCommandEvent = when {
+        useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args, cancellableRateLimit, localizableTextCommand)
+        else -> BaseCommandEventImpl(context, jdaEvent, args, cancellableRateLimit, localizableTextCommand)
     }
 
     internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<Option, Any?>? {

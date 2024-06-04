@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -30,6 +31,7 @@ private val spacePattern = Regex("\\s+")
 @BService
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
+    private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     filters: List<TextCommandFilter<Any>>,
     rejectionHandler: TextCommandRejectionHandler<Any>?,
     private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
@@ -97,8 +99,9 @@ internal class TextCommandsListener internal constructor(
         args: String,
         cancellableRateLimit: CancellableRateLimit
     ): Boolean {
+        val localizableTextCommand = localizableTextCommandFactory.create(event)
         commandInfo.variations.forEach {
-            val bcEvent = it.createEvent(event, args, cancellableRateLimit)
+            val bcEvent = it.createEvent(event, args, cancellableRateLimit, localizableTextCommand)
 
             // null on a fallback command
             val pattern = it.completePattern
@@ -123,7 +126,7 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        helpCommand?.onInvalidCommandSuspend(BaseCommandEventImpl(context, event, "", cancellableRateLimit), commandInfo)
+        helpCommand?.onInvalidCommandSuspend(BaseCommandEventImpl(context, event, "", cancellableRateLimit, localizableTextCommand), commandInfo)
         return false
     }
 

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier;
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier;
+import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -32,7 +33,10 @@ import java.util.function.Consumer;
  *     <li>Adding a reaction to indicate command success/failure</li>
  * </ul>
  */
-public abstract class BaseCommandEvent extends MessageReceivedEvent implements CancellableRateLimit {
+public abstract class BaseCommandEvent
+		extends MessageReceivedEvent
+		implements CancellableRateLimit, LocalizableTextCommand {
+
 	private final BContext context;
 
 	public BaseCommandEvent(@NotNull BContext context, @NotNull JDA api, long responseNumber, @NotNull Message message) {
