@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
 import io.github.freya022.botcommands.api.localization.LocalizableAction
+import io.github.freya022.botcommands.api.localization.Localization
+import io.github.freya022.botcommands.api.localization.context.PairEntry
+import io.github.freya022.botcommands.api.localization.context.mapToEntries
 
 /**
  * Allows you to configure the localization settings of this interaction event,
@@ -23,4 +26,14 @@ import io.github.freya022.botcommands.api.localization.LocalizableAction
  */
 interface LocalizableInteraction : LocalizableAction {
     fun getHook(): LocalizableInteractionHook
+
+    fun getUserMessage(localizationPath: String, vararg entries: Localization.Entry): String
+
+    fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String
 }
+
+fun LocalizableInteraction.getUserMessage(localizationPath: String, vararg entries: PairEntry): String =
+    getUserMessage(localizationPath, *entries.mapToEntries())
+
+fun LocalizableInteraction.getGuildMessage(localizationPath: String, vararg entries: PairEntry): String =
+    getGuildMessage(localizationPath, *entries.mapToEntries())

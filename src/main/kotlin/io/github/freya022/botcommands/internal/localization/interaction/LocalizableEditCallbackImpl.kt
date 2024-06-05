@@ -16,10 +16,10 @@ internal class LocalizableEditCallbackImpl internal constructor(
     }
 
     override fun editUser(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction =
-        editLocalized(interaction.userLocale, localizationPath, *entries)
+        editCallback.editMessage(interaction.getUserMessage(localizationPath, *entries))
 
     override fun editGuild(localizationPath: String, vararg entries: Localization.Entry): MessageEditCallbackAction =
-        editLocalized(interaction.guildLocale, localizationPath, *entries)
+        editCallback.editMessage(interaction.getGuildMessage(localizationPath, *entries))
 
     override fun editLocalized(
         locale: Locale,

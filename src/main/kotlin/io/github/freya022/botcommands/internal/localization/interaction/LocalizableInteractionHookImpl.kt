@@ -15,10 +15,10 @@ internal class LocalizableInteractionHookImpl internal constructor(
     InteractionHook by interactionHook {
 
     override fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        sendLocalized(localizableInteraction.userLocale, localizationPath, *entries)
+        interactionHook.sendMessage(localizableInteraction.getUserMessage(localizationPath, *entries))
 
     override fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        sendLocalized(localizableInteraction.guildLocale, localizationPath, *entries)
+        interactionHook.sendMessage(localizableInteraction.getGuildMessage(localizationPath, *entries))
 
     override fun sendLocalized(
         locale: Locale,
@@ -29,10 +29,10 @@ internal class LocalizableInteractionHookImpl internal constructor(
     }
 
     override fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        editLocalized(localizableInteraction.userLocale, localizationPath, *entries)
+        interactionHook.editOriginal(localizableInteraction.getUserMessage(localizationPath, *entries))
 
     override fun editGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        editLocalized(localizableInteraction.guildLocale, localizationPath, *entries)
+        interactionHook.editOriginal(localizableInteraction.getGuildMessage(localizationPath, *entries))
 
     override fun editLocalized(
         locale: Locale,

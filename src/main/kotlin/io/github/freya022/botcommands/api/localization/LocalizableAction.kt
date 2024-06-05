@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.localization
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 /**
@@ -30,7 +31,13 @@ interface LocalizableAction {
     var localizationPrefix: String?
 
     fun getLocalizedMessage(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String
+
+    fun getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String =
+        getLocalizedMessage(locale.toLocale(), localizationPath, *entries)
 }
 
 fun LocalizableAction.getLocalizedMessage(locale: Locale, localizationPath: String, vararg entries: PairEntry): String =
+    getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())
+
+fun LocalizableAction.getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
     getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())
