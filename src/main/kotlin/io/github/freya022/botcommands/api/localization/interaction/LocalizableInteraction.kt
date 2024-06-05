@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
 
 /**
  * Allows you to configure the localization settings of this interaction event,
@@ -24,8 +25,8 @@ import io.github.freya022.botcommands.api.localization.context.mapToEntries
  * @see LocalizableEditCallback
  * @see LocalizableInteractionHook
  */
-interface LocalizableInteraction : LocalizableAction {
-    fun getHook(): LocalizableInteractionHook
+interface LocalizableInteraction : LocalizableAction, IDeferrableCallback {
+    override fun getHook(): LocalizableInteractionHook
 
     fun getUserMessage(localizationPath: String, vararg entries: Localization.Entry): String
 
