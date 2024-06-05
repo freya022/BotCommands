@@ -21,6 +21,8 @@ import java.util.*
  * @see InteractionHook
  */
 interface LocalizableInteractionHook : InteractionHook {
+    val localizableInteraction: LocalizableInteraction
+
     fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message>
 
     fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message>

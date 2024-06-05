@@ -10,7 +10,7 @@ import java.util.*
 
 internal class LocalizableInteractionHookImpl internal constructor(
     private val interactionHook: InteractionHook,
-    private val localizableInteraction: LocalizableInteractionImpl,
+    override val localizableInteraction: LocalizableInteractionImpl,
 ) : LocalizableInteractionHook,
     InteractionHook by interactionHook {
 
