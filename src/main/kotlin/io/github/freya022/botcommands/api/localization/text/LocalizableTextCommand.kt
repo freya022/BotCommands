@@ -23,6 +23,8 @@ import java.util.*
  * but you can get them in other ways by implementing [UserLocaleProvider] and/or [GuildLocaleProvider].
  */
 interface LocalizableTextCommand : LocalizableAction {
+    fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String
+
     fun respondGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction
 
     fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction
@@ -37,6 +39,9 @@ interface LocalizableTextCommand : LocalizableAction {
 
     fun replyLocalized(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction
 }
+
+fun LocalizableTextCommand.getGuildMessage(localizationPath: String, vararg entries: PairEntry): String =
+    getGuildMessage(localizationPath, *entries.mapToEntries())
 
 fun LocalizableTextCommand.respondGuild(localizationPath: String, vararg entries: PairEntry) =
     respondGuild(localizationPath, *entries.mapToEntries())

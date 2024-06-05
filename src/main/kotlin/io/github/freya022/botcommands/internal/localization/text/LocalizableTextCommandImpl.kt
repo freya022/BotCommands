@@ -18,12 +18,16 @@ internal class LocalizableTextCommandImpl internal constructor(
 ) : AbstractLocalizableAction(localizationConfig, localizationService), LocalizableTextCommand {
     private val locale: Locale by lazy { localeProvider.getLocale(event) }
 
+    override fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String {
+        return getLocalizedMessage(locale, localizationPath, *entries)
+    }
+
     override fun respondGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.channel.sendMessage(getLocalizedMessage(locale, localizationPath, *entries))
+        return event.channel.sendMessage(getGuildMessage(localizationPath, *entries))
     }
 
     override fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.message.reply(getLocalizedMessage(locale, localizationPath, *entries))
+        return event.message.reply(getGuildMessage(localizationPath, *entries))
     }
 
     override fun respondLocalized(
