@@ -25,13 +25,13 @@ internal abstract class AbstractLocalizableAction(
     private inline fun iterateBundles(locale: Locale, localizationPath: String, block: (localization: Localization, effectivePath: String) -> Unit): Nothing {
         val effectivePath = getEffectivePath(localizationPath)
         localizationBundle?.let { localizationBundle ->
-            val localization = localizationService.getInstance(localizationBundle, locale)
-            if (localization != null) {
-                // Can do a non-local return, skipping the exception below
-                block(localization, effectivePath)
-            }
+            val localization = localizationService.getInstance(localizationBundle, locale) ?:
+                throw IllegalArgumentException("Could not find a bundle named '$localizationBundle'")
 
-            throw IllegalArgumentException("Could not find a bundle named '$localizationBundle' with locale '$locale', registered bundles: $responseBundles")
+            // Can do a non-local return, skipping the exception below
+            block(localization, effectivePath)
+
+            throw IllegalArgumentException("Could not find a localization template at path '$effectivePath' in bundle '$localizationBundle'")
         }
 
         responseBundles.forEach { bundleName ->
