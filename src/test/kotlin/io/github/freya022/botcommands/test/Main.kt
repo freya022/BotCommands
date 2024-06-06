@@ -49,6 +49,10 @@ object Main {
                     dumpLongTransactions = true
                 }
 
+                localization {
+                    responseBundles += "Test"
+                }
+
                 components {
                     useComponents = true
                 }
