@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.localization.text
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.localization.AbstractLocalizableAction
@@ -17,6 +18,10 @@ internal class LocalizableTextCommandImpl internal constructor(
     localeProvider: TextCommandLocaleProvider,
 ) : AbstractLocalizableAction(localizationConfig, localizationService), LocalizableTextCommand {
     private val locale: Locale by lazy { localeProvider.getLocale(event) }
+
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String): TextLocalizationContext {
+        TODO()
+    }
 
     override fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String {
         return getLocalizedMessage(locale, localizationPath, *entries)

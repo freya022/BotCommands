@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.localization.interaction
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteraction
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteractionHook
@@ -22,6 +23,13 @@ internal class LocalizableInteractionImpl internal constructor(
 
     private val userLocale: Locale by lazy { userLocaleProvider.getLocale(deferrableCallback) }
     private val guildLocale: Locale by lazy { guildLocaleProvider.getLocale(deferrableCallback) }
+
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String): AppLocalizationContext {
+        // Use the same provider used by the parameter resolver
+        // which gets the desired DiscordLocale for injected localization contexts
+        TODO()
+//        return LocalizationContextImpl(localizationService, bundleName, localizationPrefix, guildLocale, userLocale)
+    }
 
     override fun getUserMessage(localizationPath: String, vararg entries: Localization.Entry): String {
         return getLocalizedMessage(userLocale, localizationPath, *entries)

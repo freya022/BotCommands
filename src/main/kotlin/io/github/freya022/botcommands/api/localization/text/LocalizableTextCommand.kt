@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
@@ -27,6 +28,8 @@ import javax.annotation.CheckReturnValue
  * @see Localization
  */
 interface LocalizableTextCommand : LocalizableAction {
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String): TextLocalizationContext
+
     /**
      * Returns the localized message at the following [path][localizationPath],
      * using the guild's locale and provided parameters.

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.localization.interaction
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
 
@@ -29,6 +30,8 @@ import io.github.freya022.botcommands.api.localization.context.mapToEntries
  */
 interface LocalizableInteraction : LocalizableAction {
     fun getHook(): LocalizableInteractionHook
+
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String): AppLocalizationContext
 
     /**
      * Returns the localized message at the following [path][localizationPath],

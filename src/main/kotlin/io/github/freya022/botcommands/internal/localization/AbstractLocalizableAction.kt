@@ -8,7 +8,7 @@ import java.util.*
 
 internal abstract class AbstractLocalizableAction(
     localizationConfig: BLocalizationConfig,
-    private val localizationService: LocalizationService,
+    protected val localizationService: LocalizationService,
 ) : LocalizableAction {
     private val responseBundles = localizationConfig.responseBundles
 

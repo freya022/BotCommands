@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -31,6 +32,9 @@ interface LocalizableAction {
      * the final path will be `commands.ban.responses.missing_permissions`.
      */
     var localizationPrefix: String?
+
+    //TODO docs when implemented
+    fun getLocalizationContext(bundleName: String, pathPrefix: String): LocalizationContext
 
     /**
      * Returns the localized message at the following [path][localizationPath],
