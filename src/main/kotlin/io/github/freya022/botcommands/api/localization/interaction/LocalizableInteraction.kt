@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
 
 /**
  * Allows you to configure the localization settings of this interaction event,
@@ -28,8 +27,8 @@ import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
  *
  * @see Localization
  */
-interface LocalizableInteraction : LocalizableAction, IDeferrableCallback {
-    override fun getHook(): LocalizableInteractionHook
+interface LocalizableInteraction : LocalizableAction {
+    fun getHook(): LocalizableInteractionHook
 
     /**
      * Returns the localized message at the following [path][localizationPath],
@@ -43,7 +42,8 @@ interface LocalizableInteraction : LocalizableAction, IDeferrableCallback {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -65,7 +65,8 @@ interface LocalizableInteraction : LocalizableAction, IDeferrableCallback {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:

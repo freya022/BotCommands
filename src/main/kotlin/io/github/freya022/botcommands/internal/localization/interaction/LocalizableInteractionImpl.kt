@@ -18,8 +18,7 @@ internal class LocalizableInteractionImpl internal constructor(
     userLocaleProvider: UserLocaleProvider,
     guildLocaleProvider: GuildLocaleProvider,
 ) : AbstractLocalizableAction(localizationConfig, localizationService),
-    LocalizableInteraction,
-    IDeferrableCallback by deferrableCallback {
+    LocalizableInteraction {
 
     private val userLocale: Locale by lazy { userLocaleProvider.getLocale(deferrableCallback) }
     private val guildLocale: Locale by lazy { guildLocaleProvider.getLocale(deferrableCallback) }

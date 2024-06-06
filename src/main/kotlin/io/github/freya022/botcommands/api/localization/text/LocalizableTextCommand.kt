@@ -39,11 +39,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -61,11 +62,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -84,11 +86,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -107,11 +110,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -131,11 +135,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -155,11 +160,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
@@ -178,11 +184,12 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
+     * - [localizationBundle][LocalizableAction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */

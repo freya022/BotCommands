@@ -45,7 +45,8 @@ interface LocalizableAction {
      * and otherwise, the root bundle (without any suffix) will be used.
      *
      * @param locale           The locale to translate the message to
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -68,7 +69,8 @@ interface LocalizableAction {
      * and otherwise, the root bundle (without any suffix) will be used.
      *
      * @param locale           The locale to translate the message to
-     * @param localizationPath The path of the message to translate, will be prefixed with [localizationPrefix]
+     * @param localizationPath The path of the message to translate,
+     * will be prefixed with [localizationPrefix][localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
