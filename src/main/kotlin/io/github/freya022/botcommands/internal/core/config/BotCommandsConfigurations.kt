@@ -3,14 +3,11 @@
 package io.github.freya022.botcommands.internal.core.config
 
 import io.github.freya022.botcommands.api.core.config.*
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.InstanceSupplier
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
-import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -24,15 +21,15 @@ internal class BotCommandsCoreConfiguration(
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
 ) : BConfig {
-    override val classGraphProcessors: List<ClassGraphProcessor> get() = unusable()
-    override val debugConfig: BDebugConfig get() = unusable()
-    override val serviceConfig: BServiceConfig get() = unusable()
-    override val databaseConfig: BDatabaseConfig get() = unusable()
-    override val localizationConfig: BLocalizationConfig get() = unusable()
-    override val textConfig: BTextConfig get() = unusable()
-    override val applicationConfig: BApplicationConfig get() = unusable()
-    override val componentsConfig: BComponentsConfig get() = unusable()
-    override val coroutineScopesConfig: BCoroutineScopesConfig get() = unusable()
+    override val classGraphProcessors: Nothing get() = unusable()
+    override val debugConfig: Nothing get() = unusable()
+    override val serviceConfig: Nothing get() = unusable()
+    override val databaseConfig: Nothing get() = unusable()
+    override val localizationConfig: Nothing get() = unusable()
+    override val textConfig: Nothing get() = unusable()
+    override val applicationConfig: Nothing get() = unusable()
+    override val componentsConfig: Nothing get() = unusable()
+    override val coroutineScopesConfig: Nothing get() = unusable()
 }
 
 @OptIn(DevConfig::class)
@@ -59,8 +56,8 @@ internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConf
 
 @ConfigurationProperties(prefix = "botcommands.service", ignoreUnknownFields = false)
 internal class BotCommandsServiceConfiguration : BServiceConfig {
-    override val serviceAnnotations: Set<KClass<out Annotation>> get() = unusable()
-    override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> get() = unusable()
+    override val serviceAnnotations: Nothing get() = unusable()
+    override val instanceSupplierMap: Nothing get() = unusable()
 }
 
 internal fun BServiceConfigBuilder.applyConfig(configuration: BotCommandsServiceConfiguration) = apply {
