@@ -86,7 +86,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
 
     private fun getValueByArgumentName(args: Array<out Localization.Entry>, argumentName: String): Any {
         return args.find { it.argumentName == argumentName }?.value
-            ?: throw IllegalArgumentException("Could not find argument '$argumentName' in ${args.contentToString()}, in template: '$template'")
+            ?: throw IllegalArgumentException("Could not find argument '$argumentName' from passed arguments ${args.contentToString()}, in template: '$template'")
     }
 
     override fun toString(): String {
