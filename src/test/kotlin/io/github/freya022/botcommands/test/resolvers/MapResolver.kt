@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -22,7 +23,8 @@ object StringDoubleMapResolver : MapResolver<Map<String, Double>>(typeOf<Map<Str
 }
 
 @ResolverFactory
-object MapResolverFactory : ParameterResolverFactory<MapResolver<*>>(MapResolver::class) {
+@RequiresDefaultInjection
+class MapResolverFactory : ParameterResolverFactory<MapResolver<*>>(MapResolver::class) {
     private val resolvers = listOf(StringDoubleMapResolver)
 
     override val supportedTypesStr: List<String> = resolvers.map { it.type.simpleNestedName }

@@ -7,8 +7,13 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 
 @Command
+// As the framework checks if a custom option isn't in reality a service option,
+// it tries to get the Map<String, Double> from the DI container,
+// causing a NoUniqueBeanDefinitionException, which isn't (and mustn't be) caught
+@RequiresDefaultInjection
 class SlashDynamicTypedResolver : ApplicationCommand() {
     @JDASlashCommand(name = "dynamic_typed_resolver")
     suspend fun onSlashDynamicTypedResolver(
