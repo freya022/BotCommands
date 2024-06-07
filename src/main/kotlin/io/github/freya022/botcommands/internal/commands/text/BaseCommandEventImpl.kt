@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.loggerOf
+import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -25,9 +26,11 @@ internal open class BaseCommandEventImpl(
     context: BContext,
     private val event: MessageReceivedEvent,
     arguments: String,
-    cancellableRateLimit: CancellableRateLimit
+    cancellableRateLimit: CancellableRateLimit,
+    localizableTextCommand: LocalizableTextCommand,
 ) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message),
-    CancellableRateLimit by cancellableRateLimit {
+    CancellableRateLimit by cancellableRateLimit,
+    LocalizableTextCommand by localizableTextCommand {
 
     private val argumentsStr: String = arguments
 

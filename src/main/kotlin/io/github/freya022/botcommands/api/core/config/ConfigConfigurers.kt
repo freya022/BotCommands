@@ -25,6 +25,11 @@ interface BServiceConfigConfigurer : BConfigurer<BServiceConfigBuilder>
 interface BDatabaseConfigConfigurer : BConfigurer<BDatabaseConfigBuilder>
 
 /**
+ * Configurer for [BLocalizationConfig].
+ */
+interface BLocalizationConfigConfigurer : BConfigurer<BLocalizationConfigBuilder>
+
+/**
  * Configurer for [BTextConfig].
  */
 interface BTextConfigConfigurer : BConfigurer<BTextConfigBuilder>

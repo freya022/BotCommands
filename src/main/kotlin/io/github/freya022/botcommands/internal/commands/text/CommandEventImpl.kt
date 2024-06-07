@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdExceptio
 import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.loggerOf
+import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
@@ -29,8 +30,9 @@ internal class CommandEventImpl private constructor(
     private val event: MessageReceivedEvent,
     argumentsStr: String?,
     private val arguments: MutableList<Any>,
-    cancellableRateLimit: CancellableRateLimit
-) : CommandEvent(context, event, argumentsStr, cancellableRateLimit) {
+    cancellableRateLimit: CancellableRateLimit,
+    localizableTextCommand: LocalizableTextCommand
+) : CommandEvent(context, event, argumentsStr, cancellableRateLimit, localizableTextCommand) {
     override fun getArguments(): List<Any> = arguments
 
     override fun <T> hasNext(clazz: Class<T>): Boolean {
@@ -128,7 +130,8 @@ internal class CommandEventImpl private constructor(
             context: BContext,
             event: MessageReceivedEvent,
             argumentsStr: String,
-            cancellableRateLimit: CancellableRateLimit
+            cancellableRateLimit: CancellableRateLimit,
+            localizableTextCommand: LocalizableTextCommand
         ): CommandEventImpl {
             val arguments: MutableList<Any> = arrayListOf()
             RichTextFinder(argumentsStr, true, false, true, false)
@@ -138,7 +141,7 @@ internal class CommandEventImpl private constructor(
                     processText(arguments, event.guild, substring, type)
                 }
 
-            return CommandEventImpl(context, event, argumentsStr, arguments, cancellableRateLimit)
+            return CommandEventImpl(context, event, argumentsStr, arguments, cancellableRateLimit, localizableTextCommand)
         }
 
         private suspend fun processText(arguments: MutableList<Any>, guild: Guild, substring: String, type: RichTextType) {

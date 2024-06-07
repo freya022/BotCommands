@@ -50,6 +50,14 @@ internal open class ConfigProvider {
 
     @Bean
     @Primary
+    internal open fun bLocalizationConfig(configuration: BotCommandsLocalizationConfiguration, configurers: List<BLocalizationConfigConfigurer>): BLocalizationConfig =
+        BLocalizationConfigBuilder()
+            .applyConfig(configuration)
+            .configure(configurers)
+            .build()
+
+    @Bean
+    @Primary
     internal open fun bApplicationConfig(configuration: BotCommandsApplicationConfiguration, configurers: List<BApplicationConfigConfigurer>): BApplicationConfig =
         BApplicationConfigBuilder()
             .applyConfig(configuration)

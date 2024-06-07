@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.application.context.mes
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
@@ -19,7 +18,6 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import kotlin.reflect.full.callSuspendBy
 
 class MessageCommandInfo internal constructor(
@@ -42,12 +40,7 @@ class MessageCommandInfo internal constructor(
         }
     }
 
-    internal suspend fun execute(jdaEvent: MessageContextInteractionEvent, cancellableRateLimit: CancellableRateLimit): Boolean {
-        val event = when {
-            isGuildOnly -> GuildMessageEvent(context, jdaEvent, cancellableRateLimit)
-            else -> GlobalMessageEvent(context, jdaEvent, cancellableRateLimit)
-        }
-
+    internal suspend fun execute(event: GlobalMessageEvent): Boolean {
         val optionValues = parameters.mapOptions { option ->
             if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
                 return false

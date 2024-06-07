@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.context.user
 
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
@@ -10,8 +11,9 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 class GuildUserEvent internal constructor(
     context: BContext,
     event: UserContextInteractionEvent,
-    cancellableRateLimit: CancellableRateLimit
-) : GlobalUserEvent(context, event, cancellableRateLimit) {
+    cancellableRateLimit: CancellableRateLimit,
+    localizableInteraction: LocalizableInteractionImpl
+) : GlobalUserEvent(context, event, cancellableRateLimit, localizableInteraction) {
     init {
         if (!event.isFromGuild)
             throwInternal("Event is not from a Guild")

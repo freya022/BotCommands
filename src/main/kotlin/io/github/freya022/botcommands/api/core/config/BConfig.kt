@@ -81,6 +81,7 @@ interface BConfig {
     val debugConfig: BDebugConfig
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
+    val localizationConfig: BLocalizationConfig
     val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
     val componentsConfig: BComponentsConfig
@@ -111,6 +112,7 @@ class BConfigBuilder internal constructor() : BConfig {
     override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
     override val databaseConfig = BDatabaseConfigBuilder()
+    override val localizationConfig = BLocalizationConfigBuilder()
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder()
     override val componentsConfig = BComponentsConfigBuilder()
@@ -210,6 +212,10 @@ class BConfigBuilder internal constructor() : BConfig {
         debugConfig.apply(block)
     }
 
+    fun localization(block: ReceiverConsumer<BLocalizationConfigBuilder>) {
+        localizationConfig.apply(block)
+    }
+
     fun textCommands(block: ReceiverConsumer<BTextConfigBuilder>) {
         textConfig.apply(block)
     }
@@ -235,6 +241,7 @@ class BConfigBuilder internal constructor() : BConfig {
         override val debugConfig = this@BConfigBuilder.debugConfig.build()
         override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
         override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
+        override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
         override val textConfig = this@BConfigBuilder.textConfig.build()
         override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
         override val componentsConfig = this@BConfigBuilder.componentsConfig.build()

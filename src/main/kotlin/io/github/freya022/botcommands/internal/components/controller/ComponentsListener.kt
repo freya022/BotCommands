@@ -32,6 +32,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.isRequired
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
@@ -54,6 +55,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,
+    private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ComponentInteractionFilter<Any>>,
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
     private val componentRepository: ComponentRepository,
@@ -191,11 +193,14 @@ internal class ComponentsListener(
     private fun transformEvent(
         event: GenericComponentInteractionCreateEvent,
         cancellableRateLimit: CancellableRateLimit
-    ): GenericComponentInteractionCreateEvent = when (event) {
-        is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit)
-        is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit)
-        is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit)
-        else -> throwInternal("Unhandled component event: ${event::class.simpleName}")
+    ): GenericComponentInteractionCreateEvent {
+        val localizableInteraction = localizableInteractionFactory.create(event)
+        return when (event) {
+            is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit, localizableInteraction)
+            is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit, localizableInteraction)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit, localizableInteraction)
+            else -> throwInternal("Unhandled component event: ${event::class.simpleName}")
+        }
     }
 
     private suspend fun handlePersistentComponent(

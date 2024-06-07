@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -17,7 +18,12 @@ import kotlin.coroutines.resume
 private val logger = KotlinLogging.logger { }
 
 @BService
-internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer, private val modalMaps: ModalMaps) {
+internal class ModalListener(
+    private val context: BContextImpl,
+    private val localizableInteractionFactory: LocalizableInteractionFactory,
+    private val modalHandlerContainer: ModalHandlerContainer,
+    private val modalMaps: ModalMaps,
+) {
     private val scope = context.coroutineScopesConfig.modalScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
@@ -37,7 +43,8 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                 return@launch
             }
 
-            val event = ModalEvent(context, jdaEvent)
+            val localizableInteraction = localizableInteractionFactory.create(jdaEvent)
+            val event = ModalEvent(context, jdaEvent, localizableInteraction)
             for (continuation in modalData.continuations) {
                 continuation.resume(event)
             }
