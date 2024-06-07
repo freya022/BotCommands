@@ -37,18 +37,12 @@ public abstract class BaseCommandEvent
 		extends MessageReceivedEvent
 		implements CancellableRateLimit, LocalizableTextCommand {
 
-	private final BContext context;
-
-	public BaseCommandEvent(@NotNull BContext context, @NotNull JDA api, long responseNumber, @NotNull Message message) {
+	public BaseCommandEvent(@NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
-
-		this.context = context;
 	}
 
 	@NotNull
-	public BContext getContext() {
-		return context;
-	}
+	public abstract BContext getContext();
 
 	/**
 	 * Returns the <b>unresolved</b> arguments of the command event

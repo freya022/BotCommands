@@ -23,16 +23,18 @@ import javax.annotation.CheckReturnValue
 private val logger = KotlinLogging.loggerOf<BaseCommandEvent>()
 
 internal open class BaseCommandEventImpl(
-    context: BContext,
+    private val context: BContext,
     private val event: MessageReceivedEvent,
     arguments: String,
     cancellableRateLimit: CancellableRateLimit,
     localizableTextCommand: LocalizableTextCommand,
-) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message),
+) : BaseCommandEvent(event.jda, event.responseNumber, event.message),
     CancellableRateLimit by cancellableRateLimit,
     LocalizableTextCommand by localizableTextCommand {
 
     private val argumentsStr: String = arguments
+
+    override fun getContext(): BContext = context
 
     override fun getRawData() = event.rawData
 
