@@ -67,18 +67,24 @@ class SlashLocalization : ApplicationCommand() {
 
             val userLocaleButton = buttons.primary("User locale").ephemeral {
                 bindTo { buttonEvent ->
-                    buttonEvent.replyUser("commands.localization.response", *userData).queue()
+                    buttonEvent.replyUser("commands.localization.response", *userData)
+                        .setEphemeral(true)
+                        .queue()
                 }
             }
             val guildLocaleButton = buttons.primary("Guild locale").ephemeral {
                 bindTo { buttonEvent ->
                     buttonEvent.localizationPrefix = "commands.localization"
-                    buttonEvent.replyGuild("commands.localization.response", *guildData).queue()
+                    buttonEvent.replyGuild("response", *guildData)
+                        .setEphemeral(true)
+                        .queue()
                 }
             }
             val customLocaleButton = buttons.primary("Custom locale").ephemeral {
                 bindTo { buttonEvent ->
-                    buttonEvent.replyLocalized(DiscordLocale.GERMAN, "commands.localization.response", *customData).queue()
+                    buttonEvent.replyLocalized(DiscordLocale.GERMAN, "commands.localization.response", *customData)
+                        .setEphemeral(true)
+                        .queue()
                 }
             }
 
@@ -93,7 +99,7 @@ class SlashLocalization : ApplicationCommand() {
                     val modalEvent = modal.await()
                     modalEvent.localizationPrefix = "commands.localization"
 
-                    modalEvent.replyUser("Response").queue()
+                    modalEvent.replyUser("response", *userData).setEphemeral(true).queue()
                     modalEvent.hook.editUser("response", *userData).queue()
                     modalEvent.hook.editGuild("response", *guildData).queue()
                     modalEvent.hook.editLocalized(DiscordLocale.GERMAN, "response", *customData).queue()
@@ -108,7 +114,7 @@ class SlashLocalization : ApplicationCommand() {
                         "guild" -> selectEvent.replyGuild("response", *guildData)
                         "custom" -> selectEvent.replyLocalized(DiscordLocale.GERMAN, "response", *customData)
                         else -> throw AssertionError()
-                    }.queue()
+                    }.setEphemeral(true).queue()
                 }
 
                 options += SelectOption("User", "user")
