@@ -28,7 +28,7 @@ private val logger = KotlinLogging.loggerOf<CommandEvent>()
 internal class CommandEventImpl private constructor(
     context: BContext,
     private val event: MessageReceivedEvent,
-    argumentsStr: String?,
+    argumentsStr: String,
     private val arguments: MutableList<Any>,
     cancellableRateLimit: CancellableRateLimit,
     localizableTextCommand: LocalizableTextCommand
