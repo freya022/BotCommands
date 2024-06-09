@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
@@ -27,7 +27,7 @@ class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
     ) {
         val button = buttons.primary("TimeUnit: ${timeUnit.name}").persistent() {
             oneUse = true
-            bindTo(::onTimeUnitClicked, timeUnit)
+            bindWith(::onTimeUnitClicked, timeUnit)
         }
         event.reply_("${timeUnit.name} / ${chronoUnit.name}", components = button.into(), ephemeral = true).queue()
     }

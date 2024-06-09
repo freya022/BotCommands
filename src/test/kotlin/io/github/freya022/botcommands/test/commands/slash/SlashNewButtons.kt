@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.*
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
@@ -79,14 +79,14 @@ class SlashNewButtons(
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
+            bindWith(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
         }
 
         val secondButton = buttons.primary("Invisible").persistent {
             oneUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
+            bindWith(SlashNewButtons::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
         }
 
         val timeoutEdButton = buttons.primary("Invisible").persistent {

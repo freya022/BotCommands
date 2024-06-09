@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 
 @Command
@@ -21,7 +21,7 @@ class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() 
     @JDASlashCommand(name = "type_safe_buttons", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeButtons(event: GuildSlashEvent, @SlashOption argument: String) {
         val button = buttons.primary("Click me").persistent {
-            bindTo(::onTestClick, argument)
+            bindWith(::onTestClick, argument)
         }
 
         event.replyComponents(button.into()).await()

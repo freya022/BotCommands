@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -36,7 +36,7 @@ class SlashSayAgainPersistent : ApplicationCommand() {
 
             // In Kotlin, you can use callable references,
             // which enables you to use persistent callbacks in a type-safe manner
-            bindTo(::onSaySentenceClick, sentence)
+            bindWith(::onSaySentenceClick, sentence)
         }
 
         event.reply("This button always works")

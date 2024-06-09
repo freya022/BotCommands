@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
@@ -35,7 +35,7 @@ class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
         }
 
         components += buttons.secondary("Click me anytime").persistent {
-            bindTo(::onPersistentButtonClick)
+            bindWith(::onPersistentButtonClick)
         }
 
         event.replyComponents(components.into())

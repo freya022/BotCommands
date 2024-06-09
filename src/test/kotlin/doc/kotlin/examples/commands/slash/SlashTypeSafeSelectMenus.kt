@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
@@ -22,7 +22,7 @@ class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : Applicati
     @JDASlashCommand(name = "type_safe_select_menus", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeSelectMenus(event: GuildSlashEvent, @SlashOption argument: String) {
         val selectMenu = selectMenus.entitySelectMenu(EntitySelectMenu.SelectTarget.ROLE).persistent {
-            bindTo(::onTestSelect, argument)
+            bindWith(::onTestSelect, argument)
         }
 
         event.replyComponents(selectMenu.into()).await()

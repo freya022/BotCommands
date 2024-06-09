@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.components.builder.timeout
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
@@ -60,7 +60,7 @@ class SlashNewSelects(
             oneUse = true //Cancels whole group if used
             constraints += UserSnowflake.fromId(1234L)
             constraints += Permission.ADMINISTRATOR
-            bindTo(::onFirstSelectClicked)
+            bindWith(::onFirstSelectClicked)
 
             addOption("Test", "Test")
             addOption("Foo", "Foo")
@@ -73,7 +73,7 @@ class SlashNewSelects(
                 addUserIds(1234L)
                 allowingPermissions += Permission.ADMINISTRATOR
             }
-            bindTo(::onFirstSelectClicked)
+            bindWith(::onFirstSelectClicked)
 
             addOption("Test", "Test")
             addOption("Foo", "Foo")

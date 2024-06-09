@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
@@ -30,10 +30,10 @@ class SlashResolveMentions(private val buttons: Buttons) : ApplicationCommand() 
         @SlashOption archivedThreadChannel: ThreadChannel
     ) {
         val button1 = buttons.primary("Resolve given channels").persistent {
-            bindTo(::onResolveChannelsClick, postContainer, forumChannel, threadChannel, archivedThreadChannel)
+            bindWith(::onResolveChannelsClick, postContainer, forumChannel, threadChannel, archivedThreadChannel)
         }
         val button2 = buttons.primary("Resolve mentioned channels").persistent {
-            bindTo(::onResolveChannelsClick, postContainer, forumChannel, threadChannel, archivedThreadChannel)
+            bindWith(::onResolveChannelsClick, postContainer, forumChannel, threadChannel, archivedThreadChannel)
         }
         event.reply_(
             "${forumChannel.asMention} ${threadChannel.asMention} ${archivedThreadChannel.asMention}",

@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import net.dv8tion.jda.api.entities.Role
@@ -31,7 +31,7 @@ class SlashSelectRolePersistent : ApplicationCommand() {
 
             // In Kotlin, you can use callable references,
             // which enables you to use persistent callbacks in a type-safe manner
-            bindTo(::onRoleMenuSelect, randomNumber)
+            bindWith(::onRoleMenuSelect, randomNumber)
         }
 
         event.reply("This select menu always works")

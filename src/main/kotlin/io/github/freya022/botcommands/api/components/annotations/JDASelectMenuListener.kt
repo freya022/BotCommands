@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Cooldown
 import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.annotations.Handler
@@ -24,7 +24,7 @@ import kotlin.reflect.KFunction
  * ### Requirements
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
  * - The annotation value to have same name as the one given to [IPersistentActionableComponent.bindTo], however,
- * it can be omitted if you use the type-safe [bindTo] extensions.
+ * it can be omitted if you use the type-safe [bindWith] extensions.
  * - First parameter must be [StringSelectEvent]/[EntitySelectEvent].
  *
  * ### Option types
@@ -36,7 +36,7 @@ import kotlin.reflect.KFunction
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * ### Type-safe bindings in Kotlin
- * You can use the [bindTo] extensions to safely pass data,
+ * You can use the [bindWith] extensions to safely pass data,
  * in this case you don't need to set the listener name:
  * ```kt
  * @Command
@@ -69,7 +69,7 @@ annotation class JDASelectMenuListener(
     /**
      * Name of the select menu listener, referenced by [IPersistentActionableComponent.bindTo].
      *
-     * This can be omitted if you use the type-safe [bindTo] extensions.
+     * This can be omitted if you use the type-safe [bindWith] extensions.
      *
      * Defaults to `FullyQualifiedClassName.methodName`.
      */

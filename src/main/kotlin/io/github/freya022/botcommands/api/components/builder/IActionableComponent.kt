@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -22,6 +23,9 @@ import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Allows components to have handlers bound to them.
@@ -542,6 +546,724 @@ private fun <T : IPersistentActionableComponent<T>> T.bindToCallable(func: KFunc
         apply(block)
         passData(data)
     }
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: suspend (E) -> Unit): C {
+    return bindWithBoundCallable(func as KFunction<*>, emptyList())
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: (E) -> Unit): C {
+    return bindWithBoundCallable(func as KFunction<*>, emptyList())
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: suspend (E, T1) -> Unit, arg1: T1): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: (E, T1) -> Unit, arg1: T1): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: suspend (E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: (E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: suspend (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: suspend (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return bindWithBoundCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+private fun <C : IPersistentActionableComponent<C>> C.bindWithBoundCallable(func: KFunction<*>, data: List<Any?>): C {
+    return this.bindTo(findHandlerName(func), data)
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: suspend (T, E) -> Unit): C {
+    return bindWithClassCallable(func as KFunction<*>, emptyList())
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: (T, E) -> Unit): C {
+    return bindWithClassCallable(func as KFunction<*>, emptyList())
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: suspend (T, E, T1) -> Unit, arg1: T1): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: (T, E, T1) -> Unit, arg1: T1): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: suspend (T, E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: (T, E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: suspend (T, E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: (T, E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: suspend (T, E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: (T, E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: (T, E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: (T, E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: (T, E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+/**
+ * Binds the given handler to this component.
+ *
+ * ### Handler data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return bindWithClassCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+private fun <C : IPersistentActionableComponent<C>> C.bindWithClassCallable(func: KFunction<*>, data: List<Any?>): C {
+    requireNotNull(func.instanceParameter) {
+        "The provided function does not have an instance parameter"
+    }
+    require(func.valueParameters[0].type.jvmErasure.isSubclassOf<GenericComponentInteractionCreateEvent>()) {
+        "The provided function must have a component event as its first parameter"
+    }
+    return this.bindTo(findHandlerName(func), data)
 }
 
 private fun findHandlerName(func: KFunction<*>): String {
