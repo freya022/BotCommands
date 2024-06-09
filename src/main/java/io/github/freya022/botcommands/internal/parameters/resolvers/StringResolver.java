@@ -43,13 +43,13 @@ public class StringResolver
 	@Override
 	@NotNull
 	public Pattern getPattern() {
-		return Pattern.compile("(\\X+)");
+		return Pattern.compile("(.+)");
 	}
 
 	@Override
 	@NotNull
 	public Pattern getQuotedPattern() {
-		return Pattern.compile("\"(\\X+)\"");
+		return Pattern.compile("\"(.+)\"");
 	}
 
 	@Override

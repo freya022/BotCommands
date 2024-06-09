@@ -6,7 +6,12 @@ import io.github.freya022.botcommands.internal.commands.text.TextUtils.hasMultip
 import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.regex.Pattern
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.staticProperties
+
+private val logger = KotlinLogging.logger { }
 
 internal object CommandPattern {
     fun of(variation: TextCommandVariation): Regex {
@@ -44,26 +49,78 @@ internal object CommandPattern {
             else -> resolver.pattern
         }
 
+        private val flagExpressions: String?
+
         init {
             requireUser(pattern.matcher("").groupCount() > 0) {
                 // Signature is not available here as resolver might be framework-provided (and so metadata not read)
                 "Regex patterns of ${resolver.javaClass.simpleNestedName} must have at least 1 capturing group"
             }
+
+            val flags: List<String> = buildList(7) {
+                var appliedFlags = 0
+                fun tryAddFlag(flag: Int, flagExpression: String) {
+                    if (pattern.flags() and flag == flag) {
+                        appliedFlags = appliedFlags or flag
+                        add(flagExpression)
+                    }
+                }
+
+                tryAddFlag(Pattern.UNIX_LINES, "d")
+                tryAddFlag(Pattern.CASE_INSENSITIVE, "i")
+                tryAddFlag(Pattern.COMMENTS, "x")
+                tryAddFlag(Pattern.MULTILINE, "m")
+                tryAddFlag(Pattern.DOTALL, "s")
+
+                if (pattern.flags() and Pattern.UNICODE_CHARACTER_CLASS == Pattern.UNICODE_CHARACTER_CLASS) {
+                    appliedFlags = appliedFlags or Pattern.UNICODE_CHARACTER_CLASS
+                    logger.warn { "Ignoring Pattern.UNICODE_CHARACTER_CLASS from ${resolver.javaClass.simpleNestedName} as it is already applied on the whole command pattern" }
+                } else if (pattern.flags() and Pattern.UNICODE_CASE == Pattern.UNICODE_CASE) {
+                    appliedFlags = appliedFlags or Pattern.UNICODE_CASE
+                    logger.warn { "Ignoring Pattern.UNICODE_CASE from ${resolver.javaClass.simpleNestedName} as it is already applied on the whole command pattern" }
+                }
+
+                require(appliedFlags == pattern.flags()) {
+                    // Pattern flags:         00001100
+                    // Applied (known) flags: 00001000
+                    // Unknown flags:         00000100
+
+                    // Invert applied flags:  11110111
+                    // And pattern flags:     00000100
+                    val rawUnknownFlags = pattern.flags() and appliedFlags.inv()
+                    val unknownFlags = buildList {
+                        for (offset in 0..<Int.SIZE_BITS) {
+                            val flag = 1 shl offset
+                            if (rawUnknownFlags and flag == flag) {
+                                val field = Pattern::class.staticProperties.find { it.visibility == KVisibility.PUBLIC && it.get() == flag }
+                                add(field?.name ?: flag.toString())
+                            }
+                        }
+                    }
+                    "Unsupported Pattern flags in ${resolver.javaClass.simpleNestedName}: ${unknownFlags.joinToString()}"
+                }
+            }
+
+            flagExpressions = when {
+                flags.isEmpty() -> null
+                else -> flags.joinToString("")
+            }
         }
 
         fun toString(position: SpacePosition?): String {
-            return if (optional) {
-                when (position) {
-                    SpacePosition.LEFT -> "(?:\\s+$pattern)?"
-                    SpacePosition.RIGHT -> "(?:$pattern\\s+)?"
-                    else -> "(?:$pattern)?"
-                }
-            } else {
-                when (position) {
-                    SpacePosition.LEFT -> "\\s+$pattern"
-                    SpacePosition.RIGHT -> "$pattern\\s+"
-                    else -> pattern.toString()
-                }
+            val paddedPattern = when (position) {
+                SpacePosition.LEFT -> "\\s+$pattern"
+                SpacePosition.RIGHT -> "$pattern\\s+"
+                else -> pattern.toString()
+            }
+            val paddedPatternWithFlags = when {
+                flagExpressions == null -> paddedPattern
+                else -> "(?$flagExpressions)$paddedPattern(?-$flagExpressions)"
+            }
+
+            return when {
+                optional -> "(?:$paddedPatternWithFlags)?"
+                else -> paddedPatternWithFlags
             }
         }
     }
@@ -95,6 +152,6 @@ internal object CommandPattern {
                 val position = positions[i]
                 append(pattern.toString(position))
             }
-        }.toRegex()
+        }.toPattern(Pattern.UNICODE_CHARACTER_CLASS).toRegex()
     }
 }

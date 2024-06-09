@@ -61,19 +61,17 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
     val requiredGroups: Int get() = preferredPattern.matcher("").groupCount()
 
     /**
-     * Returns the pattern required to recognize this parameter
+     * Returns the pattern required to recognize this parameter,
+     * used in a larger pattern representing the entire command.
      *
-     * This is used to compose a larger pattern which will represent an entire command syntax
+     * ### Pattern flags
      *
-     * If you wish to apply flags to this pattern, please enable them inside the regular expression instead of on the pattern,
-     * as the pattern aggregator will not take any flags into account.
+     * Flags added on this pattern will not affect other options,
+     * however, make sure to close "embedded flag expressions" if you do use them.
      *
-     * You can enable regex flags using the `(?[flags])` notation,
-     * such as `(?i)` to enable case-insensitive matching, and `(?-i)` to disable it.
+     * Using flags without embedded flag expressions is not allowed.
      *
-     * Make sure to disable your modifiers when you are done using them, as they could affect other patterns.
-     *
-     * You can find more information about regex modifiers [here](https://www.regular-expressions.info/modifiers.html)
+     * [Pattern.UNICODE_CASE] and [Pattern.UNICODE_CHARACTER_CLASS] are enabled by default.
      *
      * @return The [Pattern] for this parameter
      */
