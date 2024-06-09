@@ -222,6 +222,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent> T.bindTo(func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, emptyList(), block)
 }
@@ -237,6 +238,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent> T.bindTo(func: (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, emptyList(), block)
 }
@@ -252,6 +254,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1> T.bindTo(func: suspend (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf<Any?>(arg1), block)
 }
@@ -267,6 +270,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1> T.bindTo(func: (event: E, T1) -> Unit, arg1: T1, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf<Any?>(arg1), block)
 }
@@ -282,6 +286,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2), block)
 }
@@ -297,6 +302,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2> T.bindTo(func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2), block)
 }
@@ -312,6 +318,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3), block)
 }
@@ -327,6 +334,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> T.bindTo(func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3), block)
 }
@@ -342,6 +350,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4), block)
 }
@@ -357,6 +366,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> T.bindTo(func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4), block)
 }
@@ -372,6 +382,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
@@ -387,6 +398,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> T.bindTo(func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5), block)
 }
@@ -402,6 +414,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
@@ -417,6 +430,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6), block)
 }
@@ -432,6 +446,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
@@ -447,6 +462,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7), block)
 }
@@ -462,6 +478,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
@@ -477,6 +494,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), block)
 }
@@ -492,6 +510,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
@@ -507,6 +526,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), block)
 }
@@ -522,6 +542,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
@@ -537,6 +558,7 @@ fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreat
  * 
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
+@Deprecated("Replaced with bindWith", ReplaceWith("bindWith(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)"))
 fun <T : IPersistentActionableComponent<T>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.bindTo(func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()): T {
     return bindToCallable(func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), block)
 }
