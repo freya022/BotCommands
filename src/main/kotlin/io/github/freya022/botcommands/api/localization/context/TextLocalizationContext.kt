@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.localization.context
 
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -12,8 +13,12 @@ import javax.annotation.CheckReturnValue
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes, and context-aware localization.
  *
- * This interface also includes the guild's locale by default if the guild is a community.
+ * ### Guild locale
+ * The guild locale is set by [GuildLocaleProvider] (by default [Guild.getLocale]).
  *
+ * You can implement your own locale provider to change the locale used by this localization context.
+ *
+ * ### Manual usage
  * While instances of this interface are primarily injected with [@LocalizationBundle][LocalizationBundle],
  * you can also construct instances of this interface with [LocalizationContext.create].
  *
@@ -40,10 +45,7 @@ interface TextLocalizationContext : LocalizationContext {
     /**
      * Returns the [DiscordLocale] of the guild.
      *
-     * The locale can either come from the Guild or from a [withGuildLocale].
-     *
-     * **Note:** If the context does not provide a guild locale (such as text commands) but the event comes from a [Guild] and is a community,
-     * then the community's locale will be returned, or [DiscordLocale.ENGLISH_US] by default.
+     * The locale can either come from the [GuildLocaleProvider] or from a [withGuildLocale].
      *
      * @return the [DiscordLocale] of the guild
      *

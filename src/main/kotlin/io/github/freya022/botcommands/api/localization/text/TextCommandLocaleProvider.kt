@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 /**
@@ -20,6 +21,9 @@ import java.util.*
  * @see LocalizableTextCommand
  */
 @InterfacedService(acceptMultiple = false)
-fun interface TextCommandLocaleProvider {
-    fun getLocale(event: MessageReceivedEvent): Locale
+interface TextCommandLocaleProvider {
+    fun getDiscordLocale(event: MessageReceivedEvent): DiscordLocale
+
+    fun getLocale(event: MessageReceivedEvent): Locale =
+        getDiscordLocale(event).toLocale()
 }

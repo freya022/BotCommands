@@ -3,6 +3,9 @@ package io.github.freya022.botcommands.api.localization.interaction
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
@@ -17,8 +20,13 @@ import java.util.*
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see LocalizableInteraction
+ * @see AppLocalizationContext
+ * @see TextLocalizationContext
  */
 @InterfacedService(acceptMultiple = false)
-fun interface GuildLocaleProvider {
-    fun getLocale(interaction: Interaction): Locale
+interface GuildLocaleProvider {
+    fun getDiscordLocale(interaction: Interaction): DiscordLocale
+
+    fun getLocale(interaction: Interaction): Locale =
+        getDiscordLocale(interaction).toLocale()
 }

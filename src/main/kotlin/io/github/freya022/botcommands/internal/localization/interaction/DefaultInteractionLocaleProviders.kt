@@ -9,11 +9,11 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.internal.utils.classRef
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.*
 
 // spring moment
 // need to make a (totally useless) factory for a simple object,
@@ -22,7 +22,7 @@ import java.util.*
 @Configuration
 internal open class DefaultUserLocaleProviderProvider internal constructor() {
     private object DefaultUserLocaleProvider : UserLocaleProvider {
-        override fun getLocale(interaction: Interaction): Locale = interaction.userLocale.toLocale()
+        override fun getDiscordLocale(interaction: Interaction): DiscordLocale = interaction.userLocale
 
         object ExistingSupplierChecker : ConditionalServiceChecker {
             override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
@@ -39,7 +39,7 @@ internal open class DefaultUserLocaleProviderProvider internal constructor() {
     }
 
     private object DefaultGuildLocaleProvider : GuildLocaleProvider {
-        override fun getLocale(interaction: Interaction): Locale = interaction.guildLocale.toLocale()
+        override fun getDiscordLocale(interaction: Interaction): DiscordLocale = interaction.guildLocale
 
         object ExistingSupplierChecker : ConditionalServiceChecker {
             override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {

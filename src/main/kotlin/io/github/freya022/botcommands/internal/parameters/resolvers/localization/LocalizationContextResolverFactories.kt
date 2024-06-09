@@ -7,6 +7,9 @@ import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
+import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
@@ -26,22 +29,32 @@ import kotlin.reflect.typeOf
 
 @ResolverFactory
 internal class AppLocalizationContextResolverFactory(
-    private val localizationService: LocalizationService
+    private val localizationService: LocalizationService,
+    private val userLocaleProvider: UserLocaleProvider,
+    private val guildLocaleProvider: GuildLocaleProvider,
 ) : TypedParameterResolverFactory<AppLocalizationContextResolver>(AppLocalizationContextResolver::class, typeOf<AppLocalizationContext>()) {
     override fun get(request: ResolverRequest) =
-        AppLocalizationContextResolver(getBaseLocalizationContext(
-            localizationService, request.parameter.parameter, Interaction::class
-        ))
+        AppLocalizationContextResolver(
+            userLocaleProvider,
+            guildLocaleProvider,
+            getBaseLocalizationContext(localizationService, request.parameter.parameter, Interaction::class)
+        )
 }
 
 @ResolverFactory
 internal class TextLocalizationContextResolverFactory(
-    private val localizationService: LocalizationService
+    private val localizationService: LocalizationService,
+    private val userLocaleProvider: UserLocaleProvider,
+    private val guildLocaleProvider: GuildLocaleProvider,
+    private val textCommandLocaleProvider: TextCommandLocaleProvider,
 ) : TypedParameterResolverFactory<TextLocalizationContextResolver>(TextLocalizationContextResolver::class, typeOf<TextLocalizationContext>()) {
     override fun get(request: ResolverRequest) =
-        TextLocalizationContextResolver(getBaseLocalizationContext(
-            localizationService, request.parameter.parameter, Interaction::class, MessageReceivedEvent::class
-        ))
+        TextLocalizationContextResolver(
+            userLocaleProvider,
+            guildLocaleProvider,
+            textCommandLocaleProvider,
+            getBaseLocalizationContext(localizationService, request.parameter.parameter, Interaction::class, MessageReceivedEvent::class)
+        )
 }
 
 internal object LocalizationContextResolverFactories {

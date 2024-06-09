@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.localization.context
 
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
+import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import javax.annotation.CheckReturnValue
@@ -10,12 +12,18 @@ import javax.annotation.CheckReturnValue
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes, and context-aware localization.
  *
- * This interface also includes the user's and the guild's locale by default.
+ * ### User and guild locales
+ * The user and guild locales are set by
+ * [UserLocaleProvider] (by default [Interaction.getUserLocale]),
+ * and [GuildLocaleProvider] (by default [Interaction.getGuildLocale]) respectively.
  *
+ * You can implement your own locale provider to change the locales used by this localization context.
+ *
+ * ### Manual usage
  * While instances of this interface are primarily injected with [@LocalizationBundle][LocalizationBundle],
  * you can also construct instances of this interface with [LocalizationContext.create].
  *
- * Instances are only injectable if the event is a subclass of either [Interaction].
+ * Instances are only injectable if the event is a subclass of [Interaction].
  *
  * @see userLocale
  * @see guildLocale
@@ -25,7 +33,7 @@ interface AppLocalizationContext : TextLocalizationContext {
     /**
      * Returns the Locale of the user.
      *
-     * The locale can either come from the [Interaction] or from [LocalizationContext.withGuildLocale].
+     * The locale can either come from the [UserLocaleProvider] or from [LocalizationContext.withGuildLocale].
      *
      * @return The Locale of the user
      *
