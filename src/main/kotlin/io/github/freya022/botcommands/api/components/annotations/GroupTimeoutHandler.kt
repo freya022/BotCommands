@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.annotations
 
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
-import io.github.freya022.botcommands.api.components.builder.timeout
+import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
@@ -18,7 +18,7 @@ import kotlin.reflect.KFunction
  * - The declaring class must be annotated with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  * - The annotation value to have same name as the one given to [ComponentGroupBuilder.timeout], however,
- * it can be omitted if you use the type-safe [timeout] extensions.
+ * it can be omitted if you use the type-safe [timeoutWith] extensions.
  * - First parameter must be [GroupTimeoutData].
  *
  * ### Option types
