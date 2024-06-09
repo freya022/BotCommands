@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ITimeoutData
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -18,6 +19,9 @@ import java.util.concurrent.TimeUnit
 import javax.annotation.CheckReturnValue
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.*
 import java.time.Duration as JavaDuration
 
@@ -314,8 +318,9 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duration: Duration, func: suspend (event: E) -> Unit): T {
-    return bindToCallable(duration, func as KFunction<*>, emptyList())
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duration: Duration, func: suspend (E) -> Unit): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, emptyList())
 }
 
 /**
@@ -339,8 +344,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duratio
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duration: Duration, func: (event: E) -> Unit): T {
-    return bindToCallable(duration, func as KFunction<*>, emptyList())
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duration: Duration, func: (E) -> Unit): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, emptyList())
 }
 
 /**
@@ -364,8 +370,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duratio
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(duration: Duration, func: suspend (event: E, T1) -> Unit, arg1: T1): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(duration: Duration, func: suspend (E, T1) -> Unit, arg1: T1): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
 }
 
 /**
@@ -389,8 +396,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(dur
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(duration: Duration, func: (event: E, T1) -> Unit, arg1: T1): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(duration: Duration, func: (E, T1) -> Unit, arg1: T1): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
 }
 
 /**
@@ -414,8 +422,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(dur
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout(duration: Duration, func: suspend (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout(duration: Duration, func: suspend (E, T1, T2) -> Unit, arg1: T1, arg2: T2): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
 }
 
 /**
@@ -439,8 +448,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout(duration: Duration, func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout(duration: Duration, func: (E, T1, T2) -> Unit, arg1: T1, arg2: T2): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
 }
 
 /**
@@ -464,8 +474,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
 }
 
 /**
@@ -489,8 +500,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.tim
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.timeout(duration: Duration, func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.timeout(duration: Duration, func: (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
 }
 
 /**
@@ -514,8 +526,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.tim
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
 }
 
 /**
@@ -539,8 +552,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
 }
 
 /**
@@ -564,8 +578,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
 }
 
 /**
@@ -589,8 +604,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
 }
 
 /**
@@ -614,8 +630,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
 }
 
 /**
@@ -639,8 +656,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
 }
 
 /**
@@ -664,8 +682,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
 }
 
 /**
@@ -689,8 +708,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
 }
 
 /**
@@ -714,8 +734,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
 }
 
 /**
@@ -739,8 +760,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
 }
 
 /**
@@ -764,8 +786,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
 }
 
 /**
@@ -789,8 +812,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
 }
 
 /**
@@ -814,8 +838,9 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.timeout(duration: Duration, func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.timeout(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
 }
 
 /**
@@ -839,12 +864,1167 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
  */
-fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.timeout(duration: Duration, func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): T {
-    return bindToCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+@Deprecated("Replaced with timeoutWith", ReplaceWith("timeoutWith(duration, func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)"))
+fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> T.timeout(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): T {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
 }
 
-private fun <T : IPersistentTimeoutableComponent<T>> T.bindToCallable(duration: Duration, func: KFunction<*>, data: List<Any?>): T {
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: suspend (E) -> Unit): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, emptyList())
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: (E) -> Unit): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, emptyList())
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: suspend (E, T1) -> Unit, arg1: T1): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: (E, T1) -> Unit, arg1: T1): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: (E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: suspend (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithBoundCallable")
+fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: (E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return timeoutWithBoundCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithBoundCallable(duration: Duration, func: KFunction<*>, data: List<Any?>): C {
     return timeout(duration, findHandlerName(func), *data.toTypedArray())
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: suspend (T, E) -> Unit): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, emptyList())
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: (T, E) -> Unit): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, emptyList())
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: suspend (T, E, T1) -> Unit, arg1: T1): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: (T, E, T1) -> Unit, arg1: T1): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf<Any?>(arg1))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: (T, E, T1, T2) -> Unit, arg1: T1, arg2: T2): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: suspend (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+/**
+ * Sets the timeout on this component, invalidating the component on expiration,
+ * and running the timeout handler with the given name and its arguments.
+ *
+ * **Note:** Components inside groups cannot have timeouts.
+ *
+ * ### Timeout cancellation
+ * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ *
+ * ### Component deletion
+ * - If the component is a group, then all of its owned components will also be deleted.
+ * - If the component is inside a group, then all the group's components will also be deleted.
+ *
+ * ### Timeout data
+ * The data passed is transformed with [toString][Object.toString],
+ * except [snowflakes][ISnowflake] which get their IDs stored.
+ *
+ * The data can only be reconstructed if a [TimeoutParameterResolver] exists for the handler's parameter type.
+ *
+ * Remember the parameters need to be annotated with [@TimeoutData][TimeoutData].
+ */
+@JvmName("bindWithClassCallable")
+fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: (T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
+    return timeoutWithClassCallable(duration, func as KFunction<*>, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithClassCallable(duration: Duration, func: KFunction<*>, data: List<Any?>): C {
+    requireNotNull(func.instanceParameter) {
+        "The provided function does not have an instance parameter"
+    }
+    require(func.valueParameters[0].type.jvmErasure.isSubclassOf<ITimeoutData>()) {
+        "The provided function must have a timeout data as its first parameter"
+    }
+    return timeout(duration, findHandlerName(func), data)
 }
 
 private fun findHandlerName(func: KFunction<*>): String {

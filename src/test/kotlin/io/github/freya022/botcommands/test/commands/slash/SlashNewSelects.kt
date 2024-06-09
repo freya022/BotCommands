@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.builder.filter
-import io.github.freya022.botcommands.api.components.builder.timeout
+import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.test.config.Config
@@ -81,7 +81,7 @@ class SlashNewSelects(
         }
 
         selectMenus.group(firstSelect, secondSelect).persistent {
-            timeout(10.seconds, ::onFirstGroupTimeout)
+            timeoutWith(10.seconds, ::onFirstGroupTimeout)
         }
         return firstSelect
     }

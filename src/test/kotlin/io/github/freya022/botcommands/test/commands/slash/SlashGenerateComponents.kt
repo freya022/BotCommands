@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.timeout
+import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import kotlin.time.Duration.Companion.days
 import kotlin.time.measureTime
@@ -25,7 +25,7 @@ class SlashGenerateComponents(private val buttons: Buttons) : ApplicationCommand
         val duration = measureTime {
             repeat(amount / 3) {
                 buttons.primary("persistent").persistent {
-                    timeout(1.days, ::onPersistentTimeout)
+                    timeoutWith(1.days, ::onPersistentTimeout)
                 }
             }
 

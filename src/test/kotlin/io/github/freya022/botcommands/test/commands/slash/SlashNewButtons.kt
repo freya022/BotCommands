@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.*
 import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.builder.filter
-import io.github.freya022.botcommands.api.components.builder.timeout
+import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -90,11 +90,11 @@ class SlashNewButtons(
         }
 
         val timeoutEdButton = buttons.primary("Invisible").persistent {
-            timeout(5.seconds, ::onTimeoutEdButtonTimeout, null)
+            timeoutWith(5.seconds, SlashNewButtons::onTimeoutEdButtonTimeout, null)
         }
 
         buttons.group(firstButton, secondButton).persistent {
-            timeout(10.seconds, ::onFirstGroupTimeout, null)
+            timeoutWith(10.seconds, ::onFirstGroupTimeout, null)
         }
         return firstButton
     }
