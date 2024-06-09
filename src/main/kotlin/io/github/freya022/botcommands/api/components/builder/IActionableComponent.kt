@@ -139,6 +139,7 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
      */
+    @Deprecated("Nothing else to be configured than the data, will be removed, pass your data to bindTo directly")
     @CheckReturnValue
     fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T
 }
@@ -170,6 +171,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      *
      * @param handler The handler to run when the button is clicked
      */
+    @Deprecated("Nothing to be configured, will be removed", ReplaceWith("bindTo(handler)"))
     @CheckReturnValue
     fun bindTo(handler: Consumer<E>, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = bindTo(handler = { handler.accept(it) }, block)
 
@@ -200,6 +202,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      *
      * @param handler The handler to run when the button is clicked
      */
+    @Deprecated("Nothing to be configured, will be removed", ReplaceWith("bindTo(handler)"))
     @JvmSynthetic
     fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T
 }

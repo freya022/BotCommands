@@ -15,6 +15,8 @@ internal class PersistentActionableComponentImpl<T : IPersistentActionableCompon
     override var handler: PersistentHandler? = null
         private set
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("Nothing else to be configured than the data, will be removed, pass your data to bindTo directly")
     override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): T = instance.also {
         this.handler = PersistentHandlerBuilder(handlerName).apply(block).build()
     }

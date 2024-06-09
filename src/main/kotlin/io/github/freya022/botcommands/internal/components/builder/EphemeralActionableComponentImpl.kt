@@ -16,6 +16,7 @@ internal class EphemeralActionableComponentImpl<T : IEphemeralActionableComponen
     override var handler: EphemeralHandler<*>? = null
         private set
 
+    @Deprecated("Nothing to be configured, will be removed", replaceWith = ReplaceWith("bindTo(handler)"))
     override fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = instance.also {
         this.handler = EphemeralHandlerBuilder(handler).apply(block).build()
     }

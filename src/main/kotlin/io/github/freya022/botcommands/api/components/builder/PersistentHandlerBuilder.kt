@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.internal.components.ComponentDSL
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import net.dv8tion.jda.api.entities.ISnowflake
 
+@Deprecated("Nothing to be configured, will be removed, pass your data to bindTo directly")
 @ComponentDSL
 class PersistentHandlerBuilder internal constructor(val handlerName: String) {
     private var data: List<Any?> = emptyList()
