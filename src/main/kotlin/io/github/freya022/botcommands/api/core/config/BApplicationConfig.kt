@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
-import io.github.freya022.botcommands.api.core.utils.toImmutableMap
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
@@ -92,8 +92,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     override var forceGuildCommands: Boolean = false
 
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<DiscordLocale>> = hashMapOf()
-    override val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
-        get() = _baseNameToLocalesMap.toImmutableMap()
+    override val baseNameToLocalesMap: Map<String, List<DiscordLocale>> = _baseNameToLocalesMap.unmodifiableView()
 
     /**
      * Adds the specified bundle names with its locales;
@@ -159,6 +158,6 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
         override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
         override val baseNameToLocalesMap =
             this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
-                .toImmutableMap()
+                .unmodifiableView()
     }
 }

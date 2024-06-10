@@ -13,12 +13,24 @@ fun <T> List<T>.toImmutableList(): List<T> {
     return Collections.unmodifiableList(toMutableList())
 }
 
+fun <T> List<T>.unmodifiableView(): List<T> {
+    return Collections.unmodifiableList(this)
+}
+
 fun <T> Set<T>.toImmutableSet(): Set<T> {
     return Collections.unmodifiableSet(toMutableSet())
 }
 
+fun <T> Set<T>.unmodifiableView(): Set<T> {
+    return Collections.unmodifiableSet(this)
+}
+
 fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
     return Collections.unmodifiableMap(LinkedHashMap(this))
+}
+
+fun <K, V> Map<K, V>.unmodifiableView(): Map<K, V> {
+    return Collections.unmodifiableMap(this)
 }
 
 fun <T> Iterable<T>.containsAny(vararg elements: T): Boolean = elements.any { it in this }
