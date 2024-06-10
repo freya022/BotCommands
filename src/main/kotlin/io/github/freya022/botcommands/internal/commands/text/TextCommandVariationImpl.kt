@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
@@ -28,11 +28,13 @@ import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
 
-class TextCommandVariation internal constructor(
+internal class TextCommandVariationImpl internal constructor(
     private val context: BContext,
-    val info: TextCommandInfo,
+    internal val info: TextCommandInfoImpl,
     builder: TextCommandVariationBuilder
-) : IExecutableInteractionInfo, IDeclarationSiteHolder {
+) : TextCommandVariation,
+    IExecutableInteractionInfo {
+
     override val declarationSite: DeclarationSite = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
@@ -43,11 +45,11 @@ class TextCommandVariation internal constructor(
         }
     }
 
-    val description: String? = builder.description
-    val usage: String? = builder.usage
-    val example: String? = builder.example
+    override val description: String? = builder.description
+    override val usage: String? = builder.usage
+    override val example: String? = builder.example
 
-    val completePattern: Regex?
+    override val completePattern: Regex?
 
     private val useTokenizedEvent: Boolean
 

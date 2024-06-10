@@ -18,8 +18,8 @@ import io.github.freya022.botcommands.api.localization.annotations.LocalizationB
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.CommandDSL
-import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.text.TextCommandVariationImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -189,8 +189,8 @@ class TextCommandVariationBuilder internal constructor(
         _optionAggregateBuilders.selfAggregate(declaredName, block)
     }
 
-    internal fun build(info: TextCommandInfo): TextCommandVariation {
-        return TextCommandVariation(context, info, this)
+    internal fun build(info: TextCommandInfoImpl): TextCommandVariationImpl {
+        return TextCommandVariationImpl(context, info, this)
     }
 }
 

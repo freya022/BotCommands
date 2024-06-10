@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
+import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
@@ -9,8 +10,7 @@ import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclaratio
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
+import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
@@ -70,8 +70,8 @@ class TopLevelSlashCommandBuilder internal constructor(
             .also(subcommandGroups::putNewCommand)
     }
 
-    internal fun build(): TopLevelSlashCommandInfo {
-        return TopLevelSlashCommandInfo(context, this)
+    internal fun build(): TopLevelSlashCommandInfoImpl {
+        return TopLevelSlashCommandInfoImpl(context, this)
     }
 
     private fun isFunctionSet() = !function.isFakeSlashFunction()

@@ -1,6 +1,5 @@
-package io.github.freya022.botcommands.internal.commands.mixins
+package io.github.freya022.botcommands.api.commands
 
-import io.github.freya022.botcommands.api.commands.CommandPath
 import java.util.*
 
 interface INamedCommand {

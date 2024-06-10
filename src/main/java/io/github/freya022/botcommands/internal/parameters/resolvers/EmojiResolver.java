@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -8,8 +10,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
@@ -38,8 +38,8 @@ public class EmojiResolver
 		super(Emoji.class);
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public Emoji resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return getEmoji(args[0]);
 	}
@@ -68,9 +68,9 @@ public class EmojiResolver
 		return OptionType.STRING;
 	}
 
-	@Override
 	@Nullable
-	public Emoji resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    @Override
+    public Emoji resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return getEmoji(optionMapping.getAsString());
 	}
 

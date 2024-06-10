@@ -31,13 +31,14 @@ private val spacePattern = Regex("\\s+")
 @BService
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
+    private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     filters: List<TextCommandFilter<Any>>,
     rejectionHandler: TextCommandRejectionHandler<Any>?,
     private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
-    private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
+    private data class CommandWithArgs(val command: TextCommandInfoImpl, val args: String)
 
     private val scope = context.coroutineScopesConfig.textCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
@@ -73,7 +74,7 @@ internal class TextCommandsListener internal constructor(
         scope.launchCatching({ handleException(event, it, msg) }) launch@{
             val isNotOwner = !context.config.isOwner(member.idLong)
 
-            val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
+            val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
                 // At this point no top level command was found,
                 // if a subcommand wasn't matched, it would simply appear in the args
                 onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
@@ -94,7 +95,7 @@ internal class TextCommandsListener internal constructor(
 
     private suspend fun tryVariations(
         event: MessageReceivedEvent,
-        commandInfo: TextCommandInfo,
+        commandInfo: TextCommandInfoImpl,
         content: String,
         args: String,
         cancellableRateLimit: CancellableRateLimit
@@ -140,10 +141,10 @@ internal class TextCommandsListener internal constructor(
     }
 
     private fun findCommandWithArgs(content: String, isNotOwner: Boolean): CommandWithArgs? {
-        var commandInfo: TextCommandInfo? = null
+        var commandInfo: TextCommandInfoImpl? = null
         val words: List<String> = spacePattern.split(content)
         for (index in words.indices) {
-            when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
+            when (val info = textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
                 null -> break
                 else -> {
                     if (info.hidden && isNotOwner) {
@@ -212,7 +213,7 @@ internal class TextCommandsListener internal constructor(
         event: BaseCommandEvent,
         content: String,
         args: String,
-        variation: TextCommandVariation,
+        variation: TextCommandVariationImpl,
         matchResult: MatchResult?
     ): ExecutionResult {
         val optionValues = variation.tryParseOptionValues(event, args, matchResult)

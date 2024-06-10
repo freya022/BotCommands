@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.INamedCommand
+import io.github.freya022.botcommands.api.commands.INamedCommand.Companion.computePath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
@@ -10,10 +12,8 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
@@ -70,7 +70,7 @@ class SlashSubcommandGroupBuilder internal constructor(
             .also(subcommands::putNewCommand)
     }
 
-    fun build(topLevelInstance: TopLevelSlashCommandInfo): SlashSubcommandGroupInfo {
-        return SlashSubcommandGroupInfo(topLevelInstance, this)
+    internal fun build(topLevelInstance: TopLevelSlashCommandInfoImpl): SlashSubcommandGroupInfoImpl {
+        return SlashSubcommandGroupInfoImpl(topLevelInstance, this)
     }
 }

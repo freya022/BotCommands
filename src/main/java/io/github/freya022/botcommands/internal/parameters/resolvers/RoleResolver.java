@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Role;
@@ -36,8 +36,8 @@ public class RoleResolver
 		super(Role.class);
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
 
@@ -71,9 +71,9 @@ public class RoleResolver
 		return OptionType.ROLE;
 	}
 
-	@Override
 	@Nullable
-	public Role resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    @Override
+    public Role resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsRole();
 	}
 

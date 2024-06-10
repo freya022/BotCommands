@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -26,8 +26,8 @@ public class AttachmentResolver
 		return OptionType.ATTACHMENT;
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public Attachment resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsAttachment();
 	}

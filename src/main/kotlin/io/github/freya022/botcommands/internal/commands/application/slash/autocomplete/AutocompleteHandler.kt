@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.throwUser
@@ -37,7 +37,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
  * Due to the Many-to-One associations, the handler cannot store any state, and must be stored in [AutocompleteInfo].
  */
 internal class AutocompleteHandler(
-    private val slashCommandInfo: SlashCommandInfo,
+    private val slashCommandInfo: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     private val autocompleteInfo: AutocompleteInfoImpl
 ) : IExecutableInteractionInfo {

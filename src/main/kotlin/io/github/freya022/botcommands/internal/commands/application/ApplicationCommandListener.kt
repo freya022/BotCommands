@@ -17,7 +17,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
@@ -60,7 +62,7 @@ internal class ApplicationCommandListener internal constructor(
             val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
                 context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                     ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
-            }
+            } as SlashCommandInfoImpl
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -86,7 +88,7 @@ internal class ApplicationCommandListener internal constructor(
             val userCommand = event.name.let {
                 context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
                     ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
-            }
+            } as UserCommandInfoImpl
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -112,7 +114,7 @@ internal class ApplicationCommandListener internal constructor(
             val messageCommand = event.name.let {
                 context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
                     ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
-            }
+            } as MessageCommandInfoImpl
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -153,7 +155,7 @@ internal class ApplicationCommandListener internal constructor(
             val availableCommands = commandsMap.allApplicationCommands
                 .map { commandInfo ->
                     when (commandInfo) {
-                        is SlashCommandInfo -> "/" + commandInfo.path.getFullPath(' ')
+                        is SlashCommandInfoImpl -> "/" + commandInfo.path.getFullPath(' ')
                         else -> commandInfo.path.fullPath
                     }
                 }
@@ -196,7 +198,7 @@ internal class ApplicationCommandListener internal constructor(
 
     private suspend fun canRun(
         event: GenericCommandInteractionEvent,
-        applicationCommand: ApplicationCommandInfo,
+        applicationCommand: ApplicationCommandInfoImpl,
         isNotOwner: Boolean
     ): Boolean {
         val usability = Usability.of(event, applicationCommand, isNotOwner)

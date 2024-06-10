@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.internal.commands.text
 import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder

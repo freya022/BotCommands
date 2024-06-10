@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.text.TextCommandInfoImpl
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -18,7 +18,7 @@ internal interface RateLimited {
     val rateLimitInfo: RateLimitInfo?
 }
 
-internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
+internal suspend fun TextCommandInfoImpl.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
@@ -33,7 +33,7 @@ internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: Mes
     }
 }
 
-internal suspend fun ApplicationCommandInfo.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
+internal suspend fun ApplicationCommandInfoImpl.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)

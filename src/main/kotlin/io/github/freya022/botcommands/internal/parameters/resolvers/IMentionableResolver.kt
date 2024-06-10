@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.MentionType

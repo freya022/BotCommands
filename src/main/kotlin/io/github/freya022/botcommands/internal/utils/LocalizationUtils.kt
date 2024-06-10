@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.utils
 
+import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.LocalizationService
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 

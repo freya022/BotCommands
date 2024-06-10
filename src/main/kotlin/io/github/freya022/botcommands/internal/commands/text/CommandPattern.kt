@@ -14,7 +14,7 @@ import kotlin.reflect.full.staticProperties
 private val logger = KotlinLogging.logger { }
 
 internal object CommandPattern {
-    fun of(variation: TextCommandVariation): Regex {
+    fun of(variation: TextCommandVariationImpl): Regex {
         val optionParameters: List<TextCommandOption> = variation.parameters
             .flatMap { it.allOptions }
             .filterIsInstance<TextCommandOption>()

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.context.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
+import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
@@ -8,8 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.mix
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
@@ -40,7 +40,7 @@ class UserCommandBuilder internal constructor(
     override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
         UserCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
 
-    internal fun build(): UserCommandInfo {
-        return UserCommandInfo(context, this)
+    internal fun build(): UserCommandInfoImpl {
+        return UserCommandInfoImpl(context, this)
     }
 }

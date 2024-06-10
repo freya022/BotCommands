@@ -18,27 +18,27 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import kotlin.reflect.KFunction
 
 sealed class AbstractApplicationCommandManager(val context: BContext) {
-    private val slashCommandMap: NamedCommandMap<TopLevelSlashCommandInfo> = NamedCommandMap()
-    internal val slashCommands: Collection<TopLevelSlashCommandInfo> = slashCommandMap.values
+    private val slashCommandMap: NamedCommandMap<TopLevelSlashCommandInfoImpl> = NamedCommandMap()
+    internal val slashCommands: Collection<TopLevelSlashCommandInfoImpl> = slashCommandMap.values
 
-    private val userContextCommandMap: NamedCommandMap<UserCommandInfo> = NamedCommandMap()
-    internal val userContextCommands: Collection<UserCommandInfo> = userContextCommandMap.values
+    private val userContextCommandMap: NamedCommandMap<UserCommandInfoImpl> = NamedCommandMap()
+    internal val userContextCommands: Collection<UserCommandInfoImpl> = userContextCommandMap.values
 
-    private val messageContextCommandMap: NamedCommandMap<MessageCommandInfo> = NamedCommandMap()
-    internal val messageContextCommands: Collection<MessageCommandInfo> = messageContextCommandMap.values
+    private val messageContextCommandMap: NamedCommandMap<MessageCommandInfoImpl> = NamedCommandMap()
+    internal val messageContextCommands: Collection<MessageCommandInfoImpl> = messageContextCommandMap.values
 
-    internal val allApplicationCommands: Collection<ApplicationCommandInfo>
+    internal val allApplicationCommands: Collection<ApplicationCommandInfoImpl>
         get() = slashCommands + userContextCommands + messageContextCommands
 
     internal abstract val defaultScope: CommandScope

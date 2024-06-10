@@ -5,11 +5,11 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture

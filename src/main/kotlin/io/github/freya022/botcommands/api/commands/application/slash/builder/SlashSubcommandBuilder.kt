@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder
 
+import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import kotlin.reflect.KFunction
 
 class SlashSubcommandBuilder internal constructor(
@@ -18,7 +18,7 @@ class SlashSubcommandBuilder internal constructor(
     override val allowSubcommands: Boolean = false
     override val allowSubcommandGroups: Boolean = false
 
-    internal fun build(topLevelInstance: TopLevelSlashCommandInfo, parentInstance: INamedCommand): SlashSubcommandInfo {
-        return SlashSubcommandInfo(context, topLevelInstance, parentInstance, this)
+    internal fun build(topLevelInstance: TopLevelSlashCommandInfoImpl, parentInstance: INamedCommand): SlashSubcommandInfoImpl {
+        return SlashSubcommandInfoImpl(context, topLevelInstance, parentInstance, this)
     }
 }

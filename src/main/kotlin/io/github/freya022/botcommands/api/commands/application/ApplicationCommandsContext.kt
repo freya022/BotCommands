@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandList
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.future.asDeferred
 import net.dv8tion.jda.api.entities.Guild

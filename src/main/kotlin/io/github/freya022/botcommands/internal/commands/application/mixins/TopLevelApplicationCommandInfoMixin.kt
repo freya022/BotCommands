@@ -1,18 +1,19 @@
 package io.github.freya022.botcommands.internal.commands.application.mixins
 
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.internal.utils.downcast
 import io.github.freya022.botcommands.internal.utils.throwUser
 
-open class TopLevelApplicationCommandInfoMixin(
+internal class TopLevelApplicationCommandInfoMixin internal constructor(
     builder: ITopLevelApplicationCommandBuilder
-) : ITopLevelApplicationCommandInfo {
-    final override val scope: CommandScope = builder.scope
-    final override val isDefaultLocked: Boolean = builder.isDefaultLocked
-    final override val isGuildOnly: Boolean = scope.isGuildOnly
-    final override val nsfw: Boolean = builder.nsfw
+) : TopLevelApplicationCommandInfo {
+    override val scope: CommandScope = builder.scope
+    override val isDefaultLocked: Boolean = builder.isDefaultLocked
+    override val isGuildOnly: Boolean = scope.isGuildOnly
+    override val nsfw: Boolean = builder.nsfw
 
     init {
         downcast<ApplicationCommandBuilder<*>>(builder)

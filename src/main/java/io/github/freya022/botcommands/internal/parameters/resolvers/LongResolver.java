@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -33,8 +33,8 @@ public class LongResolver
 		super(Long.class);
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public Long resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		try {
 			return Long.valueOf(args[0]);
@@ -67,9 +67,9 @@ public class LongResolver
 		return OptionType.INTEGER;
 	}
 
-	@Override
 	@Nullable
-	public Long resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    @Override
+    public Long resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
 			return optionMapping.getAsLong();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao

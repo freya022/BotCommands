@@ -2,16 +2,16 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal

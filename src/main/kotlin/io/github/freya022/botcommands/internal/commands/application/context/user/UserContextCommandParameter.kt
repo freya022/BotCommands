@@ -7,9 +7,9 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import io.github.freya022.botcommands.internal.commands.application.context.ContextCommandParameter
 import io.github.freya022.botcommands.internal.transform
 
-class UserContextCommandParameter(
+class UserContextCommandParameter internal constructor(
     context: BContext,
-    userCommandInfo: UserCommandInfo,
+    userCommandInfo: UserCommandInfoImpl,
     optionAggregateBuilder: UserCommandOptionAggregateBuilder
 ) : ContextCommandParameter(context, optionAggregateBuilder) {
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {

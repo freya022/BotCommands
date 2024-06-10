@@ -3,12 +3,12 @@ package doc.kotlin.examples.filters
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import io.github.freya022.botcommands.test.switches.TestService
 import net.dv8tion.jda.api.entities.channel.Channel

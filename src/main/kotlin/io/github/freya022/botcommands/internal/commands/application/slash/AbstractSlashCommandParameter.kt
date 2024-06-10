@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandResolverData
 
-abstract class AbstractSlashCommandParameter(
-    slashCommandInfo: SlashCommandInfo,
+abstract class AbstractSlashCommandParameter internal constructor(
+    slashCommandInfo: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
 ) : ApplicationCommandParameter(slashCommandInfo.context, optionAggregateBuilder) {
@@ -21,8 +21,8 @@ abstract class AbstractSlashCommandParameter(
         }
     )
 
-    protected abstract fun constructOption(
-        slashCommandInfo: SlashCommandInfo,
+    internal abstract fun constructOption(
+        slashCommandInfo: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>

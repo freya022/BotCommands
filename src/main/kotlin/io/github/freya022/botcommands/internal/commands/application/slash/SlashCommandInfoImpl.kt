@@ -3,11 +3,12 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -29,13 +30,13 @@ import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
 
-abstract class SlashCommandInfo internal constructor(
+internal sealed class SlashCommandInfoImpl(
     val context: BContext,
     builder: SlashCommandBuilder
-) : ApplicationCommandInfo(
-    builder
-) {
-    val description: String
+) : ApplicationCommandInfoImpl(builder),
+    SlashCommandInfo {
+
+    final override val description: String
 
     final override val eventFunction = builder.toMemberParamFunction<GlobalSlashEvent, _>(context)
     final override val parameters: List<SlashCommandParameter>
@@ -46,7 +47,7 @@ abstract class SlashCommandInfo internal constructor(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
+            SlashCommandParameter(this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
         }
 
         parameters

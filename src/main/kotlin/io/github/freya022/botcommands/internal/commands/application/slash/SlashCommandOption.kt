@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.internal.utils.classRef
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
-class SlashCommandOption(
-    slashCommandInfo: SlashCommandInfo,
+class SlashCommandOption internal constructor(
+    slashCommandInfo: SlashCommandInfoImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>

@@ -1,20 +1,21 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.coroutines.await
+import io.github.freya022.botcommands.api.commands.INamedCommand
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
-import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowUser
@@ -109,7 +110,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .filterCommands()
             .mapCommands { info: TopLevelSlashCommandInfo ->
                 val topLevelData = Commands.slash(info.name, info.description).configureTopLevel(info)
-                if (info.isTopLevelCommandOnly()) {
+                if (info.isTopLevelCommandOnly) {
                     topLevelData.addOptions(info.getDiscordOptions(guild))
                 } else {
                     topLevelData.addSubcommandGroups(
@@ -137,7 +138,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun <T> mapContextCommands(
         commands: Collection<T>,
         type: Command.Type
-    ): List<CommandData> where T : ITopLevelApplicationCommandInfo,
+    ): List<CommandData> where T : TopLevelApplicationCommandInfo,
                                T : ApplicationCommandInfo {
         return commands
             .filterCommands()
@@ -166,7 +167,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun <D : CommandData, T> D.configureTopLevel(info: T): D
-            where T : ITopLevelApplicationCommandInfo,
+            where T : TopLevelApplicationCommandInfo,
                   T : ApplicationCommandInfo = apply {
         if (info.nsfw) isNSFW = true
         if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true

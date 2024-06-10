@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.context.message
 
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
-import io.github.freya022.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
-import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -20,15 +20,16 @@ import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 
-class MessageCommandInfo internal constructor(
+internal class MessageCommandInfoImpl internal constructor(
     private val context: BContext,
     builder: MessageCommandBuilder
-) : ApplicationCommandInfo(builder),
-    ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(builder) {
+) : ApplicationCommandInfoImpl(builder),
+    TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
+    MessageCommandInfo {
 
     override val eventFunction = builder.toMemberParamFunction<GlobalMessageEvent, _>(context)
 
-    override val topLevelInstance: ITopLevelApplicationCommandInfo get() = this
+    override val topLevelInstance: TopLevelApplicationCommandInfo get() = this
     override val parentInstance get() = null
     override val parameters: List<MessageContextCommandParameter>
 

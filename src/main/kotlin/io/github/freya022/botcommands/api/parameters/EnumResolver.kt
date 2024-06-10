@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild

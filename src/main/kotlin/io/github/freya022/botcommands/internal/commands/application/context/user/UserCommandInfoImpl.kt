@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.context.user
 
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
-import io.github.freya022.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
-import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -20,15 +20,16 @@ import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 
-class UserCommandInfo internal constructor(
+internal class UserCommandInfoImpl internal constructor(
     private val context: BContext,
     builder: UserCommandBuilder
-) : ApplicationCommandInfo(builder),
-    ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(builder) {
+) : ApplicationCommandInfoImpl(builder),
+    TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
+    UserCommandInfo {
 
     override val eventFunction = builder.toMemberParamFunction<GlobalUserEvent, _>(context)
 
-    override val topLevelInstance: ITopLevelApplicationCommandInfo get() = this
+    override val topLevelInstance: TopLevelApplicationCommandInfo get() = this
     override val parentInstance get() = null
     override val parameters: List<UserContextCommandParameter>
 

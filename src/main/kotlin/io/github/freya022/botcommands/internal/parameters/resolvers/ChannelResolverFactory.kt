@@ -1,8 +1,10 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
@@ -16,8 +18,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ChannelResolverFactory.ChannelResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal

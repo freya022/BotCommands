@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwUser
 import java.util.*
@@ -55,7 +56,7 @@ internal class UnmodifiableCommandMap<T : ApplicationCommandInfo>(map: CommandMa
     Map<CommandPath, T> by Collections.unmodifiableMap(map)
 
 internal object EmptyCommandMap : CommandMap<ApplicationCommandInfo>,
-    Map<CommandPath, ApplicationCommandInfo> by emptyMap()
+                                  Map<CommandPath, ApplicationCommandInfo> by emptyMap()
 
 internal fun <T : ApplicationCommandInfo> CommandMap<T>.toUnmodifiableMap(): CommandMap<T> =
     UnmodifiableCommandMap(this)

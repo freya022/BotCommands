@@ -9,10 +9,10 @@ import io.github.freya022.botcommands.api.commands.text.annotations.JDATextComma
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
-import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfo
+import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfoImpl
 
 class TextCommandManager internal constructor(private val context: BContext) {
-    internal val textCommands: NamedCommandMap<TopLevelTextCommandInfo> = NamedCommandMap()
+    internal val textCommands: NamedCommandMap<TopLevelTextCommandInfoImpl> = NamedCommandMap()
 
     /**
      * Declares the supplied function as a text command.

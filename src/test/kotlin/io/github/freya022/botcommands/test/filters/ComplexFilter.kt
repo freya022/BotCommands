@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.test.filters
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.test.switches.TestService
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member

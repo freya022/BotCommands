@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
@@ -14,8 +14,8 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName
 
-class AutocompleteCommandParameter(
-    slashCommandInfo: SlashCommandInfo,
+class AutocompleteCommandParameter internal constructor(
+    slashCommandInfo: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
     autocompleteFunction: KFunction<*>
@@ -34,7 +34,7 @@ class AutocompleteCommandParameter(
     }
 
     override fun constructOption(
-        slashCommandInfo: SlashCommandInfo,
+        slashCommandInfo: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>

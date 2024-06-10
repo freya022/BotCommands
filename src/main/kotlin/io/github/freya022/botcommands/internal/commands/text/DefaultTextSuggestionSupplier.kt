@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
+import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
 import kotlin.math.min
 
 internal object DefaultTextSuggestionSupplier : TextSuggestionSupplier {
