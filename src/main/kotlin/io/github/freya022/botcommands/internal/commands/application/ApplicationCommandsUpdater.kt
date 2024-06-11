@@ -62,26 +62,38 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    suspend fun shouldUpdateCommands(): Boolean {
-        val oldBytes = when {
-            onlineCheck -> {
-                (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
-                    .await()
-                    .map { CommandData.fromCommand(it) }.toJsonBytes()
-            }
-
-            else -> {
-                if (Files.notExists(commandsCachePath)) {
-                    logger.trace { "Updating commands because cache file does not exists" }
-                    return true
-                }
-
-                withContext(Dispatchers.IO) {
-                    Files.readAllBytes(commandsCachePath)
-                }
-            }
+    suspend fun tryUpdateCommands(force: Boolean): Boolean {
+        val needsUpdate = force || if (onlineCheck) {
+            checkOnlineCommands()
+        } else {
+            checkOfflineCommands()
         }
 
+        if (!needsUpdate) return false
+
+        updateCommands()
+        return true
+    }
+
+    private suspend fun checkOnlineCommands(): Boolean {
+        val oldBytes = (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
+            .await()
+            .map(CommandData::fromCommand)
+            .toJsonBytes()
+
+        return checkCommandJson(oldBytes)
+    }
+
+    private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
+        if (Files.notExists(commandsCachePath)) {
+            logger.trace { "Updating commands because cache file does not exists" }
+            return@withContext true
+        }
+
+        checkCommandJson(Files.readAllBytes(commandsCachePath))
+    }
+
+    private fun checkCommandJson(oldBytes: ByteArray): Boolean {
         val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
@@ -95,7 +107,7 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    suspend fun updateCommands() {
+    private suspend fun updateCommands() {
         val updateAction = guild?.updateCommands() ?: context.jda.updateCommands()
         val commands = updateAction
             .addCommands(allCommandData)

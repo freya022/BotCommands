@@ -80,9 +80,8 @@ internal class ApplicationCommandsBuilder(
         }
 
         val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
-        val needsUpdate = force || globalUpdater.shouldUpdateCommands()
-        if (needsUpdate) {
-            globalUpdater.updateCommands()
+        val hasUpdated = globalUpdater.tryUpdateCommands(force)
+        if (hasUpdated) {
             logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
         } else {
             logger.debug { "Global commands does not have to be updated, ${globalUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
@@ -91,7 +90,7 @@ internal class ApplicationCommandsBuilder(
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.allApplicationCommands.toApplicationCommandMap())
 
         firstGlobalUpdate = false
-        return CommandUpdateResult(null, needsUpdate, failedDeclarations)
+        return CommandUpdateResult(null, hasUpdated, failedDeclarations)
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
@@ -123,9 +122,8 @@ internal class ApplicationCommandsBuilder(
             }
 
             val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
-            val needsUpdate = force || guildUpdater.shouldUpdateCommands()
-            if (needsUpdate) {
-                guildUpdater.updateCommands()
+            val hasUpdated = guildUpdater.tryUpdateCommands(force)
+            if (hasUpdated) {
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands were${getForceString(force)} updated (${getCheckTypeString()})" }
             } else {
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
@@ -134,7 +132,7 @@ internal class ApplicationCommandsBuilder(
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.allApplicationCommands.toApplicationCommandMap())
 
             firstGuildUpdates.add(guild.idLong)
-            return CommandUpdateResult(guild, needsUpdate, failedDeclarations)
+            return CommandUpdateResult(guild, hasUpdated, failedDeclarations)
         }
     }
 
