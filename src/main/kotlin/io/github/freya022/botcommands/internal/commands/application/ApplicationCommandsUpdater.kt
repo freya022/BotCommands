@@ -23,11 +23,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
+import net.dv8tion.jda.api.utils.data.DataArray
 import java.nio.file.Files
+import kotlin.io.path.bufferedReader
 
 private val logger = KotlinLogging.logger { }
 
@@ -44,9 +47,17 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
+    private val commandsMetadataCachePath = when (guild) {
+        null -> commandsCache.globalCommandsMetadataPath
+        else -> commandsCache.getGuildCommandsMetadataPath(guild)
+    }
+
     internal val allApplicationCommands: Collection<ApplicationCommandInfo> = manager.allApplicationCommands
     private val allCommandData: Collection<CommandData>
     internal val filteredCommandsCount: Int get() = allCommandData.size
+
+    internal lateinit var metadata: List<TopLevelApplicationCommandMetadataImpl>
+        private set
 
     init {
         Files.createDirectories(commandsCachePath.parent)
@@ -63,7 +74,12 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     suspend fun tryUpdateCommands(force: Boolean): Boolean {
-        val needsUpdate = force || if (onlineCheck) {
+        if (force) {
+            updateCommands()
+            return true
+        }
+
+        val needsUpdate = if (onlineCheck) {
             checkOnlineCommands()
         } else {
             checkOfflineCommands()
@@ -76,12 +92,13 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private suspend fun checkOnlineCommands(): Boolean {
-        val oldBytes = (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
-            .await()
+        val oldCommands = (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true)).await()
+        val oldCommandBytes = oldCommands
             .map(CommandData::fromCommand)
             .toJsonBytes()
 
-        return checkCommandJson(oldBytes)
+        metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
+        return checkCommandJson(oldCommandBytes)
     }
 
     private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
@@ -90,7 +107,34 @@ internal class ApplicationCommandsUpdater private constructor(
             return@withContext true
         }
 
-        checkCommandJson(Files.readAllBytes(commandsCachePath))
+        if (Files.notExists(commandsMetadataCachePath)) {
+            logger.trace { "Updating commands metadata because cache file does not exists" }
+            return@withContext true
+        }
+
+        val hasMissingKey = updateOnMissingKey {
+            val array = commandsMetadataCachePath.bufferedReader().use(DataArray::fromJson)
+            metadata = readMetadata(array)
+        }
+
+        hasMissingKey || checkCommandJson(Files.readAllBytes(commandsCachePath))
+    }
+
+    private inline fun updateOnMissingKey(crossinline block: () -> Unit): Boolean = try {
+        block()
+        false
+    } catch (e: ParsingException) {
+        true
+    }
+
+    private fun readMetadata(array: DataArray): List<TopLevelApplicationCommandMetadataImpl> {
+        val metadata = TopLevelApplicationCommandMetadataImpl.fromData(array)
+        val missingCommands = allCommandData.mapTo(hashSetOf()) { it.name } - metadata.mapTo(hashSetOf()) { it.name }
+        if (missingCommands.isNotEmpty()) {
+            throw ParsingException("Missing metadata for $missingCommands")
+        }
+
+        return metadata
     }
 
     private fun checkCommandJson(oldBytes: ByteArray): Boolean {
@@ -112,6 +156,8 @@ internal class ApplicationCommandsUpdater private constructor(
         val commands = updateAction
             .addCommands(allCommandData)
             .await()
+
+        metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
 
         saveCommandData(guild)
         printPushedCommandData(commands, guild)
@@ -203,6 +249,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun saveCommandData(guild: Guild?) {
         try {
             commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
+            commandsMetadataCachePath.overwriteBytes(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
         } catch (e: Exception) {
             logger.error(e) {
                 "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"

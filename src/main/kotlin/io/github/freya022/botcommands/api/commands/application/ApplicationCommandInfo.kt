@@ -5,4 +5,6 @@ import io.github.freya022.botcommands.api.commands.Executable
 
 interface ApplicationCommandInfo : CommandInfo, Executable {
     val topLevelInstance: TopLevelApplicationCommandInfo
+
+    val fullCommandName: String get() = path.getFullPath(' ')
 }

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application.context.message
 
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
@@ -8,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.M
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.TopLevelApplicationCommandMetadataAccessor
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -25,12 +27,16 @@ internal class MessageCommandInfoImpl internal constructor(
     builder: MessageCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
-    MessageCommandInfo {
+    MessageCommandInfo,
+    TopLevelApplicationCommandMetadataAccessor {
 
     override val eventFunction = builder.toMemberParamFunction<GlobalMessageEvent, _>(context)
 
     override val topLevelInstance: TopLevelApplicationCommandInfo get() = this
     override val parentInstance get() = null
+
+    override lateinit var metadata: TopLevelApplicationCommandMetadata
+
     override val parameters: List<MessageContextCommandParameter>
 
     init {

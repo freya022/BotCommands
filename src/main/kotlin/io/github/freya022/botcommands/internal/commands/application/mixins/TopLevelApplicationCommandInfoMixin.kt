@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.TopLevelApplicati
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.internal.utils.downcast
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 
 internal class TopLevelApplicationCommandInfoMixin internal constructor(
@@ -14,6 +15,8 @@ internal class TopLevelApplicationCommandInfoMixin internal constructor(
     override val isDefaultLocked: Boolean = builder.isDefaultLocked
     override val isGuildOnly: Boolean = scope.isGuildOnly
     override val nsfw: Boolean = builder.nsfw
+
+    override val metadata: Nothing get() = throwInternal("Should have been overridden by the implementation")
 
     init {
         downcast<ApplicationCommandBuilder<*>>(builder)

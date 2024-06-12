@@ -30,9 +30,14 @@ internal class ApplicationCommandsCache(jda: JDA) {
     }
 
     val globalCommandsPath: Path = cachePath.resolve("globalCommands.json")
+    val globalCommandsMetadataPath: Path = cachePath.resolve("globalCommands_metadata.json")
 
     fun getGuildCommandsPath(guild: Guild): Path {
         return cachePath.resolve(guild.id).resolve("commands.json")
+    }
+
+    fun getGuildCommandsMetadataPath(guild: Guild): Path {
+        return cachePath.resolve(guild.id).resolve("commands_metadata.json")
     }
 
     companion object {

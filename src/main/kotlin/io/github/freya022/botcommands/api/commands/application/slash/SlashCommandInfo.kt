@@ -7,4 +7,6 @@ interface SlashCommandInfo : ApplicationCommandInfo {
     val description: String
 
     override val parameters: List<SlashCommandParameter>
+
+    val asMention: String get() = "</$fullCommandName:${topLevelInstance.id}>"
 }

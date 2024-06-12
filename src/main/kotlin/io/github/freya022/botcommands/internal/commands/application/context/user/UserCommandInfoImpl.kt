@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application.context.user
 
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
@@ -8,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.User
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.TopLevelApplicationCommandMetadataAccessor
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.Option
@@ -25,12 +27,16 @@ internal class UserCommandInfoImpl internal constructor(
     builder: UserCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
-    UserCommandInfo {
+    UserCommandInfo,
+    TopLevelApplicationCommandMetadataAccessor {
 
     override val eventFunction = builder.toMemberParamFunction<GlobalUserEvent, _>(context)
 
     override val topLevelInstance: TopLevelApplicationCommandInfo get() = this
     override val parentInstance get() = null
+
+    override lateinit var metadata: TopLevelApplicationCommandMetadata
+
     override val parameters: List<UserContextCommandParameter>
 
     init {
