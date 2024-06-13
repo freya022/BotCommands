@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.utils
 
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.parameters.IAggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
@@ -42,7 +42,7 @@ internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap:
     return InsertOptionResult.SKIP
 }
 
-context(IExecutableInteractionInfo)
+context(ExecutableMixin)
 internal suspend fun Collection<IAggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>

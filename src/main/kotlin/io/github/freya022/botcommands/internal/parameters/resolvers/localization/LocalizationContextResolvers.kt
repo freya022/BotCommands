@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
+import io.github.freya022.botcommands.api.commands.Executable
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
@@ -7,7 +8,6 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -22,7 +22,7 @@ internal class AppLocalizationContextResolver(
 ) : ClassParameterResolver<AppLocalizationContextResolver, AppLocalizationContext>(AppLocalizationContext::class),
     ICustomResolver<AppLocalizationContextResolver, AppLocalizationContext> {
 
-    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): AppLocalizationContext {
+    override suspend fun resolveSuspend(executable: Executable, event: Event): AppLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
             //MessageReceivedEvent does not provide user locale
@@ -39,7 +39,7 @@ internal class TextLocalizationContextResolver(
 ) : ClassParameterResolver<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContext::class),
     ICustomResolver<TextLocalizationContextResolver, TextLocalizationContext> {
 
-    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): TextLocalizationContext {
+    override suspend fun resolveSuspend(executable: Executable, event: Event): TextLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
             is MessageReceivedEvent -> when {

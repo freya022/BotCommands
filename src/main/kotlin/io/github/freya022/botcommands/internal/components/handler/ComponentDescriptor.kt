@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
@@ -24,7 +24,7 @@ import kotlin.reflect.full.hasAnnotation
 internal class ComponentDescriptor internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<GenericComponentInteractionCreateEvent, *>
-) : IExecutableInteractionInfo {
+) : ExecutableMixin {
     override val parameters: List<ComponentHandlerParameterImpl>
 
     init {

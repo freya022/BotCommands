@@ -15,7 +15,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
-class AggregatorFunction private constructor(
+internal class AggregatorFunction private constructor(
     boundAggregator: KFunction<*>,
     /**
      * Nullable due to constructor aggregators
@@ -26,9 +26,9 @@ class AggregatorFunction private constructor(
     private val instanceParameter = aggregator.instanceParameter
     private val eventParameter = aggregator.nonInstanceParameters.first().takeIf { it.type.jvmErasure.isAssignableFrom(firstParamType) }
 
-    val aggregator get() = this.kFunction
+    internal val aggregator get() = this.kFunction
 
-    val isSingleAggregator = aggregator.isSingleAggregator()
+    internal val isSingleAggregator get() = aggregator.isSingleAggregator()
 
     internal constructor(
         context: BContext,

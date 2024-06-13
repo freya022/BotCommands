@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
@@ -30,14 +30,14 @@ internal object SlashUtils {
 
     internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
-    context(IExecutableInteractionInfo)
+    context(ExecutableMixin)
     internal inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
         return supplier(this).also { defaultValue ->
             checkDefaultValue(option, defaultValue)
         }
     }
 
-    private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
+    private fun ExecutableMixin.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
             requireUser(expectedType.isInstance(defaultValue), this.function) {

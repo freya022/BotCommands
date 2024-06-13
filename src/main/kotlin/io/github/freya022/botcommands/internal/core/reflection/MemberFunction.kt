@@ -7,7 +7,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
-open class MemberFunction<R> internal constructor(
+internal open class MemberFunction<R> internal constructor(
     boundFunction: KFunction<R>,
     instanceSupplier: () -> Any
 ) : Function<R>(boundFunction) {

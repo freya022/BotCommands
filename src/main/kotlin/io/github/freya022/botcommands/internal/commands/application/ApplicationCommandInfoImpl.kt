@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.utils.reference
 
@@ -15,7 +15,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
     internal val builder: ApplicationCommandBuilder<*>
 ) : AbstractCommandInfoImpl(builder),
     ApplicationCommandInfo,
-    IExecutableInteractionInfo {
+    ExecutableMixin {
 
     internal val filters: List<ApplicationCommandFilter<*>> = builder.filters.onEach { filter ->
         require(!filter.global) {

@@ -62,7 +62,7 @@ internal sealed class SlashCommandInfoImpl(
         return true
     }
 
-    context(IExecutableInteractionInfo)
+    context(ExecutableMixin)
     internal suspend fun <T> getSlashOptions(
         event: T,
         parameters: List<AbstractSlashCommandParameter>

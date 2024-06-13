@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -26,7 +26,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalD
 internal class ModalHandlerInfo internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
-) : IExecutableInteractionInfo {
+) : ExecutableMixin {
     override val parameters: List<ModalHandlerParameterImpl>
 
     private val expectedModalDatas: Int

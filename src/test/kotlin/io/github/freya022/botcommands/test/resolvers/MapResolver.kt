@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.test.resolvers
 
+import io.github.freya022.botcommands.api.commands.Executable
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KType
@@ -18,7 +18,7 @@ sealed class MapResolver<R : Map<*, *>>(
     ICustomResolver<MapResolver<R>, R>
 
 object StringDoubleMapResolver : MapResolver<Map<String, Double>>(typeOf<Map<String, Double>>()) {
-    override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): Map<String, Double> =
+    override suspend fun resolveSuspend(executable: Executable, event: Event): Map<String, Double> =
         mapOf("lol" to 3.14159)
 }
 

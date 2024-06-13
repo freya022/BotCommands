@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.throwUser
@@ -40,7 +40,7 @@ internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     private val autocompleteInfo: AutocompleteInfoImpl
-) : IExecutableInteractionInfo {
+) : ExecutableMixin {
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameterImpl>
 

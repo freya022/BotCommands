@@ -1,5 +1,6 @@
 package doc.kotlin.examples.parameters
 
+import io.github.freya022.botcommands.api.commands.Executable
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -13,7 +14,6 @@ import io.github.freya022.botcommands.api.localization.annotations.LocalizationB
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolverFactory
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
@@ -51,7 +51,7 @@ object MyCustomLocalizationResolverProvider {
         ICustomResolver<MyCustomLocalizationResolver, MyCustomLocalization> {
 
         // Called when a command is used
-        override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): MyCustomLocalization {
+        override suspend fun resolveSuspend(executable: Executable, event: Event): MyCustomLocalization {
             return if (event is Interaction) {
                 val guild = event.guild
                     ?: throw IllegalStateException("Cannot get localization outside of guilds")

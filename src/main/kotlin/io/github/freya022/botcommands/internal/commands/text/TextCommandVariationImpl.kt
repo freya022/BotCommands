@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -30,7 +30,7 @@ internal class TextCommandVariationImpl internal constructor(
     private val context: BContext,
     builder: TextCommandVariationBuilder
 ) : TextCommandVariation,
-    IExecutableInteractionInfo {
+    ExecutableMixin {
 
     override val declarationSite: DeclarationSite = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)

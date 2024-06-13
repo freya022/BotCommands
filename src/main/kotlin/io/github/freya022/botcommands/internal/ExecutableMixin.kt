@@ -8,7 +8,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction
 
-interface IExecutableInteractionInfo : Executable {
+internal interface ExecutableMixin : Executable {
     val eventFunction: MemberParamFunction<*, *>
     override val function: KFunction<*>
         get() = eventFunction.kFunction
@@ -17,10 +17,10 @@ interface IExecutableInteractionInfo : Executable {
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(function, message)
+internal inline fun ExecutableMixin.throwUser(message: String): Nothing = throwUser(function, message)
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun IExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
+internal inline fun ExecutableMixin.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
