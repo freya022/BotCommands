@@ -23,7 +23,7 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
-class ModalHandlerInfo internal constructor(
+internal class ModalHandlerInfo internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
 ) : IExecutableInteractionInfo {
@@ -32,7 +32,7 @@ class ModalHandlerInfo internal constructor(
     private val expectedModalDatas: Int
     private val expectedModalInputs: Int
 
-    val handlerName: String
+    internal val handlerName: String
 
     init {
         val annotation = function.findAnnotation<ModalHandler>()!!
@@ -107,7 +107,7 @@ class ModalHandlerInfo internal constructor(
                 val modalMapping = event.getValue(ModalMaps.getInputId(inputId))
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                option.resolver.resolveSuspend(this, event, modalMapping).also { obj ->
+                option.resolver.resolveSuspend(event, modalMapping).also { obj ->
                     // Technically not required, but provides additional info
                     requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"

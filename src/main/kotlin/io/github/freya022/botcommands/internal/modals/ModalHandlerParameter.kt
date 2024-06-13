@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
 import io.github.freya022.botcommands.internal.parameters.MethodParameterImpl
 import io.github.freya022.botcommands.internal.transform
 
-class ModalHandlerParameter internal constructor(
+internal class ModalHandlerParameter internal constructor(
     context: BContextImpl,
     aggregateBuilder: OptionAggregateBuilder<*>
 ) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {

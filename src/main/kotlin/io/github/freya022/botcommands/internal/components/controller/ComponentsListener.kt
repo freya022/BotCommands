@@ -259,7 +259,7 @@ internal class ComponentsListener(
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(descriptor, event, it) }
+                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(event, it) }
                 if (obj == null && option.isRequired && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 

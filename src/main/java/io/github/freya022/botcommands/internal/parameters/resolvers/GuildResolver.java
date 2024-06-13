@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -69,9 +68,9 @@ public class GuildResolver
 		return resolveGuild(event.getJDA(), optionMapping.getAsString());
 	}
 
-	@Override
 	@Nullable
-	public Guild resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    @Override
+    public Guild resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return resolveGuild(event.getJDA(), arg);
 	}
 

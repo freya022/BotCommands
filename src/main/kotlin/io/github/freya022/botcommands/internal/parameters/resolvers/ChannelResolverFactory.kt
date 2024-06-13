@@ -18,7 +18,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ChannelResolverFactory.ChannelResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -100,11 +99,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(
-            descriptor: ComponentDescriptor,
-            event: GenericComponentInteractionCreateEvent,
-            arg: String
-        ): GuildChannel? {
+        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
             val guild = event.guild ?: throwUser("Cannot resolve a channel outside of a guild")
             val channelId = arg.toLong()
             val channel = guild.getChannelById(type, channelId)

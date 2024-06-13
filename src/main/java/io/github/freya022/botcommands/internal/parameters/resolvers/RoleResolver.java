@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -77,9 +76,9 @@ public class RoleResolver
 		return optionMapping.getAsRole();
 	}
 
-	@Override
 	@Nullable
-	public Role resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    @Override
+    public Role resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
 
 		return event.getGuild().getRoleById(arg);

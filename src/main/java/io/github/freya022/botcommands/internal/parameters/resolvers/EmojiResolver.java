@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -74,9 +73,9 @@ public class EmojiResolver
 		return getEmoji(optionMapping.getAsString());
 	}
 
-	@Override
 	@Nullable
-	public Emoji resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    @Override
+    public Emoji resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return getEmoji(arg);
 	}
 

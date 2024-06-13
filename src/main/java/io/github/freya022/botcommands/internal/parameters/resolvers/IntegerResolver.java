@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -77,9 +76,9 @@ public class IntegerResolver
 		}
 	}
 
-	@Override
 	@Nullable
-	public Integer resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    @Override
+    public Integer resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return Integer.valueOf(arg);
 	}
 

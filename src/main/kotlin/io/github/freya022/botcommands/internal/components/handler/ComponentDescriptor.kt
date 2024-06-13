@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.full.hasAnnotation
 
-class ComponentDescriptor internal constructor(
+internal class ComponentDescriptor internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<GenericComponentInteractionCreateEvent, *>
 ) : IExecutableInteractionInfo {

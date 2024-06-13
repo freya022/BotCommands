@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 
-class ComponentHandlerOption(
+internal class ComponentHandlerOption(
     optionBuilder: ComponentHandlerOptionBuilder,
-    val resolver: ComponentParameterResolver<*, *>
+    internal val resolver: ComponentParameterResolver<*, *>
 ) : OptionImpl(optionBuilder.optionParameter, OptionType.OPTION)
