@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal
 
-import io.github.freya022.botcommands.api.commands.Executable
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.throwUser

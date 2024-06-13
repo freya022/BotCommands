@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.commands.Executable
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory

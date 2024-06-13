@@ -1,6 +1,6 @@
 package doc.kotlin.examples.parameters
 
-import io.github.freya022.botcommands.api.commands.Executable
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService

@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.Executable
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter

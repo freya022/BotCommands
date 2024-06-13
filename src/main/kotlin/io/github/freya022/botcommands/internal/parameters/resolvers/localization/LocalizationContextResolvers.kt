@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
-import io.github.freya022.botcommands.api.commands.Executable
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands
+package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.parameters.IAggregatedParameter
 import kotlin.reflect.KFunction
