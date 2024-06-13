@@ -16,7 +16,7 @@ private val unsupportedTypes = enumSetOf(
     OptionType.MENTIONABLE,
 )
 
-class AutocompleteCommandOption(
+internal class AutocompleteCommandOptionImpl(
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {

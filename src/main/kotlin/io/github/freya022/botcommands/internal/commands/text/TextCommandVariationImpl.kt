@@ -2,19 +2,17 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.CommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
+import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
+import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -30,14 +28,18 @@ private val logger = KotlinLogging.logger { }
 
 internal class TextCommandVariationImpl internal constructor(
     private val context: BContext,
-    internal val info: TextCommandInfoImpl,
     builder: TextCommandVariationBuilder
 ) : TextCommandVariation,
     IExecutableInteractionInfo {
 
     override val declarationSite: DeclarationSite = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
-    override val parameters: List<TextCommandParameter>
+    override val parameters: List<TextCommandParameterImpl>
+
+    override val hasMultipleQuotable: Boolean
+        get() = parameters
+            .flatMap { it.allOptions }
+            .count { o -> o is TextCommandOptionImpl && o.resolver is QuotableTextParameterResolver } > 1
 
     val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
         require(!filter.global) {
@@ -57,7 +59,7 @@ internal class TextCommandVariationImpl internal constructor(
         useTokenizedEvent = eventFunction.firstParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
-            TextCommandParameter(context, it)
+            TextCommandParameterImpl(context, it)
         }
 
         completePattern = when {
@@ -75,7 +77,7 @@ internal class TextCommandVariationImpl internal constructor(
         else -> BaseCommandEventImpl(context, jdaEvent, args, cancellableRateLimit, localizableTextCommand)
     }
 
-    internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<Option, Any?>? {
+    internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<OptionImpl, Any?>? {
         val groupsIterator = matchResult?.groups?.iterator()
         groupsIterator?.next() //Skip entire match
 
@@ -85,10 +87,7 @@ internal class TextCommandVariationImpl internal constructor(
         }
     }
 
-    internal suspend fun execute(
-        event: BaseCommandEvent,
-        optionValues: Map<Option, Any?>
-    ): ExecutionResult {
+    internal suspend fun execute(event: BaseCommandEvent, optionValues: Map<out OptionImpl, Any?>): ExecutionResult {
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
         function.callSuspendBy(finalParameters)
@@ -103,8 +102,8 @@ internal class TextCommandVariationImpl internal constructor(
      */
     private suspend fun tryInsertOption(
         event: BaseCommandEvent,
-        optionMap: MutableMap<Option, Any?>,
-        option: Option,
+        optionMap: MutableMap<OptionImpl, Any?>,
+        option: OptionImpl,
         groupsIterator: Iterator<MatchGroup?>?,
         args: String
     ): InsertOptionResult {
@@ -112,7 +111,7 @@ internal class TextCommandVariationImpl internal constructor(
             OptionType.OPTION -> {
                 groupsIterator ?: throwInternal("No group iterator passed for a regex-based text command")
 
-                option as TextCommandOption
+                option as TextCommandOptionImpl
 
                 var found = 0
                 val groupCount = option.groupCount
@@ -133,9 +132,9 @@ internal class TextCommandVariationImpl internal constructor(
 
                     resolved
                 } else if (!option.isOptionalOrNullable) { //Parameter is not found yet the pattern matched and is not optional
-                    throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
+                    throwInternal(option.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
                 } else { //Parameter is optional
-                    if (option.kParameter.isOptional) {
+                    if (option.isOptional) {
                         return InsertOptionResult.OK
                     }
 

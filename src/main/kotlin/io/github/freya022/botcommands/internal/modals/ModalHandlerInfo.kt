@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.*
@@ -27,7 +27,7 @@ internal class ModalHandlerInfo internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
 ) : IExecutableInteractionInfo {
-    override val parameters: List<ModalHandlerParameter>
+    override val parameters: List<ModalHandlerParameterImpl>
 
     private val expectedModalDatas: Int
     private val expectedModalInputs: Int
@@ -50,7 +50,7 @@ internal class ModalHandlerInfo internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ModalHandlerParameter(context, it) }
+            aggregateBlock = { ModalHandlerParameterImpl(context, it) }
         )
 
         val options = parameters.flatMap { it.allOptions }
@@ -91,10 +91,10 @@ internal class ModalHandlerInfo internal constructor(
 
     private suspend fun tryInsertOption(
         event: ModalEvent,
-        option: Option,
+        option: OptionImpl,
         inputNameToInputIdMap: TObjectLongMap<String>,
         userDataIterator: Iterator<Any?>,
-        optionMap: MutableMap<Option, Any?>
+        optionMap: MutableMap<OptionImpl, Any?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {

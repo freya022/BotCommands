@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
@@ -11,7 +12,6 @@ import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transform
@@ -42,7 +42,7 @@ internal class AutocompleteHandler(
     private val autocompleteInfo: AutocompleteInfoImpl
 ) : IExecutableInteractionInfo {
     override val eventFunction = autocompleteInfo.eventFunction
-    override val parameters: List<AutocompleteCommandParameter>
+    override val parameters: List<AutocompleteCommandParameterImpl>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
@@ -50,7 +50,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
+            AutocompleteCommandParameterImpl(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }

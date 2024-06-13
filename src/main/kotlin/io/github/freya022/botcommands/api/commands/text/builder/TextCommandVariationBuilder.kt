@@ -190,7 +190,7 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     internal fun build(info: TextCommandInfoImpl): TextCommandVariationImpl {
-        return TextCommandVariationImpl(context, info, this)
+        return TextCommandVariationImpl(context, this)
     }
 }
 

@@ -5,9 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import io.github.freya022.botcommands.internal.commands.GeneratedOption
-import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireUser
@@ -54,7 +52,7 @@ internal object SlashUtils {
 
     internal fun SlashCommandInfo.getDiscordOptions(guild: Guild?) = parameters
         .flatMap { it.allOptions }
-        .filterIsInstance<SlashCommandOption>()
+        .filterIsInstance<SlashCommandOptionImpl>()
         //Move all optional options at the front
         .let { options ->
             options.sortedWith { o1, o2 ->
@@ -73,7 +71,7 @@ internal object SlashUtils {
                 .also { configureOptionData(option, it, guild) }
         }
 
-    private fun configureOptionData(option: SlashCommandOption, data: OptionData, guild: Guild?) {
+    private fun configureOptionData(option: SlashCommandOptionImpl, data: OptionData, guild: Guild?) {
         val resolver = option.resolver
         val optionType = resolver.optionType
 
@@ -112,7 +110,7 @@ internal object SlashUtils {
         }
 
         if (option.hasAutocomplete()) {
-            requireUser(optionType.canSupportChoices(), option.kParameter.function) {
+            requireUser(optionType.canSupportChoices(), option.typeCheckingFunction) {
                 "Slash command option #${option.index} does not support autocomplete"
             }
 
@@ -128,14 +126,14 @@ internal object SlashUtils {
                 val predefinedChoices = resolver.getPredefinedChoices(guild)
                 if (predefinedChoices.isEmpty())
                     throwUser(
-                        option.kParameter.function,
+                        option.typeCheckingFunction,
                         "Predefined choices were used for option '${option.declaredName}' but no choices were returned"
                     )
                 choices = predefinedChoices
             }
 
             if (choices != null) {
-                requireUser(!option.hasAutocomplete(), option.kParameter.function) {
+                requireUser(!option.hasAutocomplete(), option.typeCheckingFunction) {
                     "Slash command option #${option.index} cannot have autocomplete and choices at the same time"
                 }
 

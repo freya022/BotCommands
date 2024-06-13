@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 
-class CustomMethodOption(
+internal class CustomMethodOption internal constructor(
     optionParameter: OptionParameter,
     val resolver: ICustomResolver<*, *>
 ) : OptionImpl(optionParameter, OptionType.CUSTOM)

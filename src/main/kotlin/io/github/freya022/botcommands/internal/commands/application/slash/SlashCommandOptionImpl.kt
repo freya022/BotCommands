@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
@@ -12,13 +13,15 @@ import io.github.freya022.botcommands.internal.utils.classRef
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
-class SlashCommandOption internal constructor(
+internal class SlashCommandOptionImpl internal constructor(
     slashCommandInfo: SlashCommandInfoImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
-) : AbstractSlashCommandOption(optionBuilder, resolver) {
-    val description: String
+) : AbstractSlashCommandOption(optionBuilder, resolver),
+    SlashCommandOption {
+
+    override val description: String
 
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
@@ -27,10 +30,10 @@ class SlashCommandOption internal constructor(
         }
     }
 
-    val usePredefinedChoices = optionBuilder.usePredefinedChoices
-    val choices: List<Command.Choice>? = optionBuilder.choices
-    val range: ValueRange? = optionBuilder.valueRange
-    val length: LengthRange? = optionBuilder.lengthRange
+    override val usePredefinedChoices = optionBuilder.usePredefinedChoices
+    override val choices: List<Command.Choice>? = optionBuilder.choices
+    override val range: ValueRange? = optionBuilder.valueRange
+    override val length: LengthRange? = optionBuilder.lengthRange
 
     init {
         choices?.forEach {
@@ -56,5 +59,5 @@ class SlashCommandOption internal constructor(
         autocompleteHandler?.validateParameters()
     }
 
-    fun hasAutocomplete() = autocompleteHandler != null
+    override fun hasAutocomplete() = autocompleteHandler != null
 }

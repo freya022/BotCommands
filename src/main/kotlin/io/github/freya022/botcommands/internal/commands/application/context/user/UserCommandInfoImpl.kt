@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationG
 import io.github.freya022.botcommands.internal.commands.application.TopLevelApplicationCommandMetadataAccessor
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -37,13 +37,13 @@ internal class UserCommandInfoImpl internal constructor(
 
     override lateinit var metadata: TopLevelApplicationCommandMetadata
 
-    override val parameters: List<UserContextCommandParameter>
+    override val parameters: List<UserContextCommandParameterImpl>
 
     init {
         eventFunction.checkEventScope<GuildUserEvent>(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            UserContextCommandParameter(context, this, it)
+            UserContextCommandParameterImpl(context, this, it)
         }
     }
 
@@ -61,12 +61,12 @@ internal class UserCommandInfoImpl internal constructor(
 
     private suspend fun tryInsertOption(
         event: GlobalUserEvent,
-        optionMap: MutableMap<Option, Any?>,
-        option: Option
+        optionMap: MutableMap<OptionImpl, Any?>,
+        option: OptionImpl
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
-                option as UserContextCommandOption
+                option as UserContextCommandOptionImpl
 
                 option.resolver.resolveSuspend(this, event)
             }

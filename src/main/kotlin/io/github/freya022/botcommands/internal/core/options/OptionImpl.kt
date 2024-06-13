@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.options
 
 import io.github.freya022.botcommands.api.commands.CommandOptionBuilder
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.utils.isPrimitive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
@@ -9,25 +10,26 @@ import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
-enum class OptionType {
-    OPTION,
-    CUSTOM,
-    CONSTANT, //TODO
-    SERVICE,
-    GENERATED;
+internal abstract class OptionImpl private constructor(
+    internal val optionParameter: OptionParameter,
+    internal val optionType: OptionType,
+    /** @see CommandOptionBuilder.isOptional */
+    optional: Boolean?
+) : Option {
+    internal constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
 
-    override fun toString(): String {
-        return "${javaClass.simpleNestedName}#$name"
-    }
-}
+    internal constructor(commandOptionBuilder: CommandOptionBuilder) : this(
+        commandOptionBuilder.optionParameter,
+        OptionType.OPTION,
+        commandOptionBuilder.isOptional
+    )
 
-interface Option {
-    val optionParameter: OptionParameter
-    val optionType: OptionType
+    internal val typeCheckingFunction: KFunction<*>
+        get() = optionParameter.typeCheckingFunction
 
     /**
      * This might be a KParameter from the command function or from an aggregate function.
@@ -39,61 +41,27 @@ interface Option {
      *
      * **Also note:** this is not unique, multiple options can be bound to the same KParameter. (varargs for example)
      */
-    val kParameter: KParameter
-
+    final override val kParameter: KParameter
+        get() = optionParameter.typeCheckingParameter
     /**
      * Parameter used solely when inserting the option in the aggregator function.
      *
-     * May be from the command or aggregate function.
+     * May come from the command or aggregate function.
      */
-    val executableParameter: KParameter
-
-    /**
-     * The parameter is a vararg if:
-     * * The aggregator is [InternalAggregators.theVarargAggregator]
-     * * The erased type is [List]
-     */
-    val isVararg: Boolean
-    val isOptionalOrNullable: Boolean
-    val declaredName: String
-    val index: Int
-    val nullValue: Any?
-    val type: KType
-}
-
-internal val Option.isRequired: Boolean get() = !isOptionalOrNullable
-
-abstract class OptionImpl private constructor(
-    final override val optionParameter: OptionParameter,
-    final override val optionType: OptionType,
-    /** @see CommandOptionBuilder.isOptional */
-    optional: Boolean?
-) : Option {
-    constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
-
-    constructor(commandOptionBuilder: CommandOptionBuilder) : this(
-        commandOptionBuilder.optionParameter,
-        OptionType.OPTION,
-        commandOptionBuilder.isOptional
-    )
-
-    final override val kParameter: KParameter
-        get() = optionParameter.typeCheckingParameter
-    final override val executableParameter: KParameter
+    internal val executableParameter: KParameter
         get() = optionParameter.executableParameter
 
     final override val type = kParameter.type
-    final override val isOptionalOrNullable by lazy {
-        when {
-            optional != null -> optional
-            else -> kParameter.isNullable || kParameter.isOptional
-        }
-    }
-    final override val isVararg = optionParameter.executableFunction.isVarargAggregator()
-    final override val declaredName = optionParameter.typeCheckingParameterName
-    final override val index = kParameter.index
+    final override val isOptional: Boolean = optional ?: kParameter.isOptional
+    final override val isNullable: Boolean = kParameter.isNullable
+    final override val isVararg: Boolean
+        get() = optionParameter.executableFunction.isVarargAggregator()
+    final override val declaredName: String
+        get() = optionParameter.typeCheckingParameterName
+    final override val index
+        get() = kParameter.index
     final override val nullValue = when {
-        kParameter.isNullable -> null
+        isNullable -> null
         kParameter.isPrimitive -> primitiveDefaultValue(type.jvmErasure)
         else -> null
     }
@@ -109,5 +77,5 @@ private val primitiveDefaultValues: Map<KClass<*>, *> = mapOf(
     Boolean::class to false
 )
 
-internal fun primitiveDefaultValue(clazz: KClass<*>) =
+private fun primitiveDefaultValue(clazz: KClass<*>) =
     primitiveDefaultValues[clazz] ?: throwInternal("No primitive default value for ${clazz.simpleNestedName}")

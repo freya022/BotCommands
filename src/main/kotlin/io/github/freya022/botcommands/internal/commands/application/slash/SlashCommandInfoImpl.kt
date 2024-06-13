@@ -11,9 +11,8 @@ import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -39,7 +38,7 @@ internal sealed class SlashCommandInfoImpl(
     final override val description: String
 
     final override val eventFunction = builder.toMemberParamFunction<GlobalSlashEvent, _>(context)
-    final override val parameters: List<SlashCommandParameter>
+    final override val parameters: List<SlashCommandParameterImpl>
 
     init {
         eventFunction.checkEventScope<GuildSlashEvent>(builder)
@@ -47,13 +46,13 @@ internal sealed class SlashCommandInfoImpl(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameter(this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
+            SlashCommandParameterImpl(this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
         }
 
         parameters
             .flatMap { it.allOptions }
-            .filterIsInstance<SlashCommandOption>()
-            .forEach(SlashCommandOption::buildAutocomplete)
+            .filterIsInstance<SlashCommandOptionImpl>()
+            .forEach(SlashCommandOptionImpl::buildAutocomplete)
     }
 
     internal suspend fun execute(event: GlobalSlashEvent): Boolean {
@@ -78,8 +77,8 @@ internal sealed class SlashCommandInfoImpl(
 
     private suspend fun <T> tryInsertOption(
         event: T,
-        optionMap: MutableMap<Option, Any?>,
-        option: Option
+        optionMap: MutableMap<OptionImpl, Any?>,
+        option: OptionImpl
     ): InsertOptionResult where T : CommandInteractionPayload,
                                 T : Event {
         val value = when (option.optionType) {

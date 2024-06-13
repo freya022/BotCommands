@@ -2,10 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.messages.InlineEmbed
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
-import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
+import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
@@ -82,7 +79,7 @@ object TextUtils {
             if (usage != null) {
                 append(usage)
             } else {
-                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, isOptional ->
+                commandOptionsByParameters.forEachUniqueOption { commandOption, isOptional ->
                     val boxedType = commandOption.type.jvmErasure
                     val argUsagePart = buildString {
                         append(if (isOptional) '[' else '`')
@@ -104,7 +101,7 @@ object TextUtils {
             if (example != null) {
                 append(example)
             } else {
-                commandOptionsByParameters.forEachUniqueOption { commandOption, hasMultipleQuotable, _ ->
+                commandOptionsByParameters.forEachUniqueOption { commandOption, _ ->
                     val argExample = getArgExample(hasMultipleQuotable, commandOption, event)
                     tryAppendSpaced(argExample, EXAMPLE_MAX_LENGTH)
                 }
@@ -130,10 +127,10 @@ object TextUtils {
 
     private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, event: BaseCommandEvent): String {
         val example = commandOption.helpExample
-            ?: commandOption.resolver.getHelpExample(commandOption.kParameter, event, commandOption.isId)
+            ?: commandOption.getHelpExample(commandOption.kParameter, event, commandOption.isId)
 
         return when {
-            needsQuote && commandOption.resolver is QuotableTextParameterResolver -> "\"$example\""
+            needsQuote && commandOption.isQuotable -> "\"$example\""
             else -> example
         }
     }
@@ -150,10 +147,6 @@ object TextUtils {
     }
 
     @JvmStatic
-    fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
-        count { o -> o.resolver is QuotableTextParameterResolver } > 1
-
-    @JvmStatic
     fun TextCommandVariation.getCommandOptionsByParameters() = buildMap(parameters.size * 2) {
         parameters.forEach {
             val allOptions = it.allOptions.filterIsInstance<TextCommandOption>()
@@ -166,13 +159,11 @@ object TextUtils {
      * Only runs one option from a vararg parameter
      */
     @JvmStatic
-    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, hasMultipleQuotable: Boolean, isOptional: Boolean) -> Boolean) {
+    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, isOptional: Boolean) -> Boolean) {
         forEach { (parameter, commandOptions) ->
-            val hasMultipleQuotable = commandOptions.hasMultipleQuotable()
-
             for (commandOption in commandOptions) {
                 val isOptional = commandOption.isOptionalOrNullable
-                if (!block(commandOption, hasMultipleQuotable, isOptional)) {
+                if (!block(commandOption, isOptional)) {
                     return
                 }
 

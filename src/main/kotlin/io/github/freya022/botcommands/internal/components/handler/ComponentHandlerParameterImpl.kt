@@ -1,27 +1,29 @@
-package io.github.freya022.botcommands.internal.modals
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toEventAggregatorFunction
-import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
-import io.github.freya022.botcommands.internal.parameters.MethodParameterImpl
+import io.github.freya022.botcommands.internal.parameters.AbstractMethodParameter
+import io.github.freya022.botcommands.internal.parameters.IAggregatedParameterMixin
 import io.github.freya022.botcommands.internal.transform
 
-internal class ModalHandlerParameter internal constructor(
+internal class ComponentHandlerParameterImpl internal constructor(
     context: BContextImpl,
     aggregateBuilder: OptionAggregateBuilder<*>
-) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {
+) : AbstractMethodParameter(aggregateBuilder.parameter),
+    IAggregatedParameterMixin {
+
     override val aggregator = aggregateBuilder.aggregator.toEventAggregatorFunction(context)
 
     override val nestedAggregatedParameters = aggregateBuilder.nestedAggregates.transform {
-        ModalHandlerParameter(context, it)
+        ComponentHandlerParameterImpl(context, it)
     }
 
     override val options = CommandOptions.transform(
         context,
         null,
         aggregateBuilder,
-        optionFinalizer = ::ModalHandlerInputOption
+        optionFinalizer = ::ComponentHandlerOption
     )
 }

@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
-internal class SingleAggregatorParameter(
+internal class SingleAggregatorParameter internal constructor(
     commandFunction: KFunction<*>,
     parameterName: String
 ) : AggregatorParameter {

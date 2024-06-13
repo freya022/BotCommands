@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-internal class VarargAggregatorParameter(
+internal class VarargAggregatorParameter internal constructor(
     commandFunction: KFunction<*>,
     parameterName: String
 ) : AggregatorParameter {

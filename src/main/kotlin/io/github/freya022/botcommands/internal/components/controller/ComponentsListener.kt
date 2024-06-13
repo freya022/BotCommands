@@ -29,9 +29,8 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentHandl
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
@@ -251,8 +250,8 @@ internal class ComponentsListener(
     private suspend fun tryInsertOption(
         event: GenericComponentInteractionCreateEvent,
         descriptor: ComponentDescriptor,
-        option: Option,
-        optionMap: MutableMap<Option, Any?>,
+        option: OptionImpl,
+        optionMap: MutableMap<OptionImpl, Any?>,
         userDataIterator: Iterator<String?>
     ): InsertOptionResult {
         val value = when (option.optionType) {

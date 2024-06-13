@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.core.options.Option
-import io.github.freya022.botcommands.internal.parameters.IAggregatedParameter
-import io.github.freya022.botcommands.internal.parameters.MethodParameter
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
+import io.github.freya022.botcommands.internal.parameters.IAggregatedParameterMixin
+import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
 
@@ -13,14 +13,14 @@ internal enum class InsertOptionResult {
     ABORT
 }
 
-internal inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
+internal inline fun List<IAggregatedParameterMixin>.mapOptions(block: MutableMap<OptionImpl, Any?>.(OptionImpl) -> Unit): Map<OptionImpl, Any?> {
     val options = this.flatMap { it.allOptions }
     return buildMap(options.size) {
         options.forEach { block(it) }
     }
 }
 
-internal fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<Option, Any?>): InsertOptionResult {
+internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap: MutableMap<OptionImpl, Any?>): InsertOptionResult {
     if (value != null) {
         optionMap[option] = value
         return InsertOptionResult.OK
@@ -28,7 +28,7 @@ internal fun tryInsertNullableOption(value: Any?, option: Option, optionMap: Mut
         //Continue looking at other options
     } else if (option.isOptionalOrNullable) { //Default or nullable
         //Put null/default value if parameter is not a kotlin default value
-        if (option.kParameter.isOptional) {
+        if (option.isOptional) {
             //Kotlin default value, don't add anything to the parameters map
         } else {
             //Nullable
@@ -36,16 +36,16 @@ internal fun tryInsertNullableOption(value: Any?, option: Option, optionMap: Mut
         }
     } else {
         //Value is null and is required
-        throwUser(option.optionParameter.typeCheckingFunction, "Option #${option.index} (${option.declaredName}) couldn't be resolved, this could be due to a faulty ICustomResolver")
+        throwUser(option.typeCheckingFunction, "Option #${option.index} (${option.declaredName}) couldn't be resolved, this could be due to a faulty ICustomResolver")
     }
 
     return InsertOptionResult.SKIP
 }
 
 context(IExecutableInteractionInfo)
-internal suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
+internal suspend fun Collection<IAggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
-    optionValues: Map<Option, Any?>
+    optionValues: Map<out OptionImpl, Any?>
 ) = buildMap(eventFunction.parametersSize) {
     this[eventFunction.instanceParameter] = instance
     this[eventFunction.firstParameter] = firstParam
@@ -55,7 +55,7 @@ internal suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     }
 }
 
-internal suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
+private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<out OptionImpl, Any?>, parameter: IAggregatedParameterMixin) {
     val aggregator = parameter.aggregator
 
     if (aggregator.isSingleAggregator) {
@@ -101,12 +101,12 @@ internal suspend fun insertAggregate(firstParam: Any, aggregatedObjects: Mutable
     }
 }
 
-private operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: Any?): Any? = obj.also {
+private operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameterMixin, obj: Any?): Any? = obj.also {
     this[parameter.executableParameter] = obj
 }
 
 @Suppress("UNCHECKED_CAST")
-private operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? = obj.also {
+private operator fun MutableMap<KParameter, Any?>.set(option: OptionImpl, obj: Any?): Any? = obj.also {
     if (option.isVararg) {
         (this.getOrPut(option.executableParameter) {
             arrayListOf<Any?>()

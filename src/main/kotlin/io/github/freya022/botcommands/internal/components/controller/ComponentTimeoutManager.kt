@@ -19,7 +19,7 @@ import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHa
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandlerOption
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
@@ -119,8 +119,8 @@ internal class ComponentTimeoutManager(
     }
 
     private suspend fun tryInsertOption(
-        option: Option,
-        optionMap: MutableMap<Option, Any?>,
+        option: OptionImpl,
+        optionMap: MutableMap<OptionImpl, Any?>,
         userDataIterator: Iterator<String?>
     ): InsertOptionResult {
         val value = when (option.optionType) {

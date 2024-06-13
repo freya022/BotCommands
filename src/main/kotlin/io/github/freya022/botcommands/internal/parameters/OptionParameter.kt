@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
-class OptionParameter(
+internal class OptionParameter internal constructor(
     typeCheckingFunction: KFunction<*>,
     override val typeCheckingParameterName: String,
     executableFunction: KFunction<*>,

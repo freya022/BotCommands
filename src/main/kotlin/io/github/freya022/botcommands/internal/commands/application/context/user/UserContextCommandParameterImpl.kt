@@ -1,25 +1,28 @@
 package io.github.freya022.botcommands.internal.commands.application.context.user
 
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.context.user.UserContextCommandParameter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandResolverData
-import io.github.freya022.botcommands.internal.commands.application.context.ContextCommandParameter
+import io.github.freya022.botcommands.internal.commands.application.context.ContextCommandParameterImpl
 import io.github.freya022.botcommands.internal.transform
 
-class UserContextCommandParameter internal constructor(
+internal class UserContextCommandParameterImpl internal constructor(
     context: BContext,
     userCommandInfo: UserCommandInfoImpl,
-    optionAggregateBuilder: UserCommandOptionAggregateBuilder
-) : ContextCommandParameter(context, optionAggregateBuilder) {
+    optionAggregateBuilder: UserCommandOptionAggregateBuilder,
+) : ContextCommandParameterImpl(context, optionAggregateBuilder),
+    UserContextCommandParameter {
+
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
-        UserContextCommandParameter(context, userCommandInfo, it)
+        UserContextCommandParameterImpl(context, userCommandInfo, it)
     }
 
     override val options = CommandOptions.transform(
         context,
         ApplicationCommandResolverData(userCommandInfo),
         optionAggregateBuilder,
-        optionFinalizer = ::UserContextCommandOption
+        optionFinalizer = ::UserContextCommandOptionImpl
     )
 }

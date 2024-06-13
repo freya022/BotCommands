@@ -25,7 +25,7 @@ internal class ComponentDescriptor internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<GenericComponentInteractionCreateEvent, *>
 ) : IExecutableInteractionInfo {
-    override val parameters: List<ComponentHandlerParameter>
+    override val parameters: List<ComponentHandlerParameterImpl>
 
     init {
         val resolverContainer = context.getService<ResolverContainer>()
@@ -48,7 +48,7 @@ internal class ComponentDescriptor internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ComponentHandlerParameter(context, it) }
+            aggregateBlock = { ComponentHandlerParameterImpl(context, it) }
         )
     }
 

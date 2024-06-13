@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.commands.GeneratedOption
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 
-class TextGeneratedOption(
+internal class TextGeneratedOption internal constructor(
     generatedOptionBuilder: TextGeneratedOptionBuilder
 ) : OptionImpl(generatedOptionBuilder.optionParameter, OptionType.GENERATED), GeneratedOption {
     val generatedValueSupplier = generatedOptionBuilder.generatedValueSupplier
