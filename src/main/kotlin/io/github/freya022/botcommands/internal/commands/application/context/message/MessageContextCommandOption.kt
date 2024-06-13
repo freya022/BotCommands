@@ -6,5 +6,5 @@ import io.github.freya022.botcommands.internal.commands.application.context.Cont
 
 class MessageContextCommandOption(
     optionBuilder: MessageCommandOptionBuilder,
-    override val resolver: MessageContextParameterResolver<*, *>
+    val resolver: MessageContextParameterResolver<*, *>
 ) : ContextCommandOption(optionBuilder)

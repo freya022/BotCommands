@@ -63,7 +63,7 @@ interface Option {
 
 internal val Option.isRequired: Boolean get() = !isOptionalOrNullable
 
-open class OptionImpl private constructor(
+abstract class OptionImpl private constructor(
     final override val optionParameter: OptionParameter,
     final override val optionType: OptionType,
     /** @see CommandOptionBuilder.isOptional */
