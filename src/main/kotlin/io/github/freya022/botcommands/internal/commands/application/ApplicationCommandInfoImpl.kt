@@ -22,4 +22,6 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
             "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
         }
     }
+
+    override fun hasFilters(): Boolean = filters.isNotEmpty()
 }

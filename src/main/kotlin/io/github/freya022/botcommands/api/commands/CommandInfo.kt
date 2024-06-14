@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolde
 import net.dv8tion.jda.api.Permission
 import java.util.*
 
-interface CommandInfo : INamedCommand, IDeclarationSiteHolder {
+interface CommandInfo : INamedCommand, IDeclarationSiteHolder, IRateLimitHolder {
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
 }

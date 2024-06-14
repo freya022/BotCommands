@@ -1,9 +1,10 @@
 package io.github.freya022.botcommands.api.commands.text
 
+import io.github.freya022.botcommands.api.commands.IFilterContainer
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.Executable
 
-interface TextCommandVariation : Executable, IDeclarationSiteHolder {
+interface TextCommandVariation : Executable, IDeclarationSiteHolder, IFilterContainer {
     override val parameters: List<TextCommandParameter>
 
     val allDiscordOptions: List<TextCommandOption>

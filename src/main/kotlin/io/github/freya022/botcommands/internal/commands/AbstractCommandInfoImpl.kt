@@ -21,6 +21,7 @@ internal abstract class AbstractCommandInfoImpl internal constructor(
     final override val declarationSite: DeclarationSite = builder.declarationSite
 
     final override val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
+    final override fun hasRateLimiter(): Boolean = rateLimitInfo != null
 
     final override val userPermissions: EnumSet<Permission> = builder.userPermissions
     final override val botPermissions: EnumSet<Permission> = builder.botPermissions

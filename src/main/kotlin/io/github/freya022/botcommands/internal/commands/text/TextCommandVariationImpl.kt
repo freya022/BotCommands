@@ -47,6 +47,8 @@ internal class TextCommandVariationImpl internal constructor(
         }
     }
 
+    override fun hasFilters(): Boolean = filters.isNotEmpty()
+
     override val description: String? = builder.description
     override val usage: String? = builder.usage
     override val example: String? = builder.example
