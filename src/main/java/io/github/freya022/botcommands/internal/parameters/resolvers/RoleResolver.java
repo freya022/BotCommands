@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -57,7 +57,7 @@ public class RoleResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
 		return event.getMember().getRoles().stream().findAny()
 				.or(() -> event.getGuild().getRoleCache().streamUnordered().findAny())
 				.map(Role::getAsMention)

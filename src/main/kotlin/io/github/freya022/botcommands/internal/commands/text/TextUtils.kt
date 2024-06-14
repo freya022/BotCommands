@@ -127,7 +127,7 @@ object TextUtils {
 
     private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, event: BaseCommandEvent): String {
         val example = commandOption.helpExample
-            ?: commandOption.getHelpExample(commandOption.kParameter, event, commandOption.isId)
+            ?: commandOption.getResolverHelpExample(event)
 
         return when {
             needsQuote && commandOption.isQuotable -> "\"$example\""

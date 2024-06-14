@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.text.HelpExampleSupplier
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -17,7 +18,7 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface TextParameterResolver<T, R : Any> : IParameterResolver<T>, HelpExampleSupplier
+interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : TextParameterResolver<T, R> {
     /**
@@ -89,4 +90,14 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>, HelpExample
 
     val preferredPattern: Pattern
         get() = pattern
+
+    /**
+     * Returns a help example for the supplied option.
+     *
+     * **Tip:** You may use the event as a way to get sample data (such as getting the member, channel, roles, etc...).
+     *
+     * @param option    The option of the command being shown in the help content
+     * @param event     The event of the command that triggered help content to be displayed
+     */
+    fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String
 }

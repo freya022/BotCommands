@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptio
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.CommandOptionImpl
-import kotlin.reflect.KParameter
 
 internal class TextCommandOptionImpl internal constructor(
     optionBuilder: TextCommandOptionBuilder,
@@ -24,6 +23,6 @@ internal class TextCommandOptionImpl internal constructor(
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
     val requiredGroups = resolver.requiredGroups
 
-    override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean) =
-        resolver.getHelpExample(parameter, event, isID)
+    override fun getResolverHelpExample(event: BaseCommandEvent) =
+        resolver.getHelpExample(this, event)
 }

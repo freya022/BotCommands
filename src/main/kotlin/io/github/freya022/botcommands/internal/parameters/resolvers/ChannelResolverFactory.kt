@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
@@ -36,7 +37,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 interface IChannelResolver {
     val channelTypes: EnumSet<ChannelType>
@@ -62,7 +62,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         override val pattern: Pattern = channelPattern
         override val testExample: String = "<#1234>"
 
-        override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String =
+        override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String =
             event.channel.asMention
 
         override suspend fun resolveSuspend(

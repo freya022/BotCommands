@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.modals.ModalEvent;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.*;
-import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -58,7 +58,7 @@ public class StringResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
 		return "foo bar";
 	}
 

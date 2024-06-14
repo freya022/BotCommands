@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 private val logger = KotlinLogging.logger { }
 
@@ -44,7 +44,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     final override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     final override val testExample: String = "<@1234>"
 
-    final override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
+    final override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
         return event.member.asMention
     }
 
