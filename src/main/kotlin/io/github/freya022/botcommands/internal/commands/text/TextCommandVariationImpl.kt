@@ -27,7 +27,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 internal class TextCommandVariationImpl internal constructor(
-    private val context: BContext,
+    override val context: BContext,
     builder: TextCommandVariationBuilder
 ) : TextCommandVariation,
     ExecutableMixin {
@@ -61,7 +61,7 @@ internal class TextCommandVariationImpl internal constructor(
         useTokenizedEvent = eventFunction.firstParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
-            TextCommandParameterImpl(context, it)
+            TextCommandParameterImpl(context, this, it)
         }
 
         completePattern = when {

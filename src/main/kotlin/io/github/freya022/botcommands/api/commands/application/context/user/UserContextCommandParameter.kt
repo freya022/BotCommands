@@ -4,4 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.context.ContextCo
 
 interface UserContextCommandParameter : ContextCommandParameter {
     override val nestedAggregatedParameters: List<UserContextCommandParameter>
+
+    override val command: UserCommandInfo
 }

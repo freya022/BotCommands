@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange
 import net.dv8tion.jda.api.interactions.commands.Command
 
 interface SlashCommandOption : ApplicationCommandOption {
+    override val command: SlashCommandInfo
+
     val discordName: String
     val description: String
     val usePredefinedChoices: Boolean

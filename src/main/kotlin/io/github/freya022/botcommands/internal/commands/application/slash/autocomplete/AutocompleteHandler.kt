@@ -50,7 +50,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameterImpl(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
+            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }

@@ -23,7 +23,7 @@ import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 
 internal class UserCommandInfoImpl internal constructor(
-    private val context: BContext,
+    override val context: BContext,
     builder: UserCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),

@@ -30,7 +30,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.logger { }
 
 internal sealed class SlashCommandInfoImpl(
-    val context: BContext,
+    final override val context: BContext,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
@@ -46,7 +46,7 @@ internal sealed class SlashCommandInfoImpl(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameterImpl(this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
+            SlashCommandParameterImpl(context, this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
         }
 
         parameters

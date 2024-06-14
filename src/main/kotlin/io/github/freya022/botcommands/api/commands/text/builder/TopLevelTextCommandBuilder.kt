@@ -14,6 +14,6 @@ class TopLevelTextCommandBuilder internal constructor(context: BContext, name: S
             "Top-level-only text command should have at least 1 variation"
         }
 
-        return TopLevelTextCommandInfoImpl(this)
+        return TopLevelTextCommandInfoImpl(context, this)
     }
 }

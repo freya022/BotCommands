@@ -4,4 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.context.ContextCo
 
 interface MessageContextCommandParameter : ContextCommandParameter {
     override val nestedAggregatedParameters: List<MessageContextCommandParameter>
+
+    override val command: MessageCommandInfo
 }

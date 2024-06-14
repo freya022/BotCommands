@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
@@ -14,7 +15,8 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 internal class SlashCommandOptionImpl internal constructor(
-    slashCommandInfo: SlashCommandInfoImpl,
+    override val context: BContext,
+    override val command: SlashCommandInfoImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
@@ -26,7 +28,7 @@ internal class SlashCommandOptionImpl internal constructor(
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
             null -> null
-            else -> AutocompleteHandler(slashCommandInfo, optionAggregateBuilders, autocompleteInfo)
+            else -> AutocompleteHandler(command, optionAggregateBuilders, autocompleteInfo)
         }
     }
 
@@ -42,7 +44,7 @@ internal class SlashCommandOptionImpl internal constructor(
             }
         }
 
-        description = LocalizationUtils.getOptionDescription(slashCommandInfo.context, optionBuilder)
+        description = LocalizationUtils.getOptionDescription(command.context, optionBuilder)
 
         if (range != null) {
             if (resolver.optionType != OptionType.NUMBER && resolver.optionType != OptionType.INTEGER) {

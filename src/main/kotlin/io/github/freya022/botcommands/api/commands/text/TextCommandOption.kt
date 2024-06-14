@@ -4,6 +4,8 @@ import io.github.freya022.botcommands.api.commands.CommandOption
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 
 interface TextCommandOption : CommandOption {
+    override val command: TextCommandVariation
+
     val helpName: String
     val helpExample: String?
     val isId: Boolean

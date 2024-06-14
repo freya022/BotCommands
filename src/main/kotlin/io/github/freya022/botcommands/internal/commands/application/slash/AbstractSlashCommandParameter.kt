@@ -17,12 +17,11 @@ internal abstract class AbstractSlashCommandParameter internal constructor(
         ApplicationCommandResolverData(slashCommandInfo),
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver ->
-            constructOption(slashCommandInfo, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
+            constructOption(slashCmdOptionAggregateBuilders, optionBuilder, resolver)
         }
     )
 
     internal abstract fun constructOption(
-        slashCommandInfo: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>

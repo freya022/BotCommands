@@ -4,4 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 
 interface SlashCommandParameter : ApplicationCommandParameter {
     override val nestedAggregatedParameters: List<SlashCommandParameter>
+
+    override val command: SlashCommandInfo
 }

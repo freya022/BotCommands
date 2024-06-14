@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
@@ -14,29 +15,29 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName
 
 internal class AutocompleteCommandParameterImpl internal constructor(
-    slashCommandInfo: SlashCommandInfoImpl,
+    override val context: BContext,
+    override val command: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
     autocompleteFunction: KFunction<*>
-) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
+) : AbstractSlashCommandParameter(command, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
 
     override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
         requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
-            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
+            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${command.function.shortSignatureNoSrc}"
         }
     } ?: throwUser(
         autocompleteFunction,
-        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
+        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${command.function.shortSignatureNoSrc}"
     )
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
-        AutocompleteCommandParameterImpl(slashCommandInfo, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
+        AutocompleteCommandParameterImpl(context, command, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
     }
 
     override fun constructOption(
-        slashCommandInfo: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>
-    ) = AutocompleteCommandOptionImpl(optionBuilder, resolver)
+    ) = AutocompleteCommandOptionImpl(context, command, optionBuilder, resolver)
 }

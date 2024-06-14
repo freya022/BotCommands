@@ -4,4 +4,6 @@ import io.github.freya022.botcommands.api.commands.CommandParameter
 
 interface ApplicationCommandParameter : CommandParameter {
     override val nestedAggregatedParameters: List<ApplicationCommandParameter>
+
+    override val command: ApplicationCommandInfo
 }
