@@ -32,7 +32,7 @@ internal class MessageCommandInfoImpl internal constructor(
 
     override val eventFunction = builder.toMemberParamFunction<GlobalMessageEvent, _>(context)
 
-    override val topLevelInstance: TopLevelApplicationCommandInfo get() = this
+    override val topLevelInstance get() = this
     override val parentInstance get() = null
 
     override lateinit var metadata: TopLevelApplicationCommandMetadata

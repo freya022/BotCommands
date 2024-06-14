@@ -4,6 +4,8 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 
 interface UserCommandInfo : TopLevelApplicationCommandInfo, ApplicationCommandInfo {
+    override val topLevelInstance: UserCommandInfo
+
     override val parameters: List<UserContextCommandParameter>
 
     val allDiscordOptions: List<UserContextCommandOption>
