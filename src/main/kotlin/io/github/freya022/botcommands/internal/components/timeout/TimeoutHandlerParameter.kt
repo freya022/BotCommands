@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.CommandOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.parameters.AbstractMethodParameter
-import io.github.freya022.botcommands.internal.parameters.IAggregatedParameterMixin
+import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.transform
 import kotlin.reflect.KClass
 
@@ -14,7 +14,7 @@ internal class TimeoutHandlerParameter internal constructor(
     aggregateBuilder: OptionAggregateBuilder<*>,
     aggregatorFirstParamType: KClass<*>
 ) : AbstractMethodParameter(aggregateBuilder.parameter),
-    IAggregatedParameterMixin {
+    AggregatedParameterMixin {
 
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, aggregatorFirstParamType)
 

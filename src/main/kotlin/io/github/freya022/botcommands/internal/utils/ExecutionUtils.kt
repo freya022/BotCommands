@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
-import io.github.freya022.botcommands.internal.parameters.IAggregatedParameterMixin
+import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
@@ -13,7 +13,7 @@ internal enum class InsertOptionResult {
     ABORT
 }
 
-internal inline fun List<IAggregatedParameterMixin>.mapOptions(block: MutableMap<OptionImpl, Any?>.(OptionImpl) -> Unit): Map<OptionImpl, Any?> {
+internal inline fun List<AggregatedParameterMixin>.mapOptions(block: MutableMap<OptionImpl, Any?>.(OptionImpl) -> Unit): Map<OptionImpl, Any?> {
     val options = this.flatMap { it.allOptions }
     return buildMap(options.size) {
         options.forEach { block(it) }
@@ -43,7 +43,7 @@ internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap:
 }
 
 context(ExecutableMixin)
-internal suspend fun Collection<IAggregatedParameterMixin>.mapFinalParameters(
+internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
 ) = buildMap(eventFunction.parametersSize) {
@@ -55,7 +55,7 @@ internal suspend fun Collection<IAggregatedParameterMixin>.mapFinalParameters(
     }
 }
 
-private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<out OptionImpl, Any?>, parameter: IAggregatedParameterMixin) {
+private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<out OptionImpl, Any?>, parameter: AggregatedParameterMixin) {
     val aggregator = parameter.aggregator
 
     if (aggregator.isSingleAggregator) {
