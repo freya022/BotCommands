@@ -77,7 +77,11 @@ internal class AutocompleteHandler(
         }
     }
 
-    suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
+    internal fun invalidate() {
+        autocompleteInfo.invalidate()
+    }
+
+    internal suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         return autocompleteInfo.cache.retrieveAndCall(this, event, this::generateChoices)
     }
 

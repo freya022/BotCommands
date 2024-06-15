@@ -62,4 +62,11 @@ internal class SlashCommandOptionImpl internal constructor(
     }
 
     override fun hasAutocomplete() = autocompleteHandler != null
+
+    override fun invalidateAutocomplete() {
+        check(hasAutocomplete()) {
+            "There is no autocomplete on this option"
+        }
+        autocompleteHandler!!.invalidate()
+    }
 }

@@ -16,4 +16,11 @@ interface SlashCommandOption : ApplicationCommandOption {
     val length: LengthRange?
 
     fun hasAutocomplete(): Boolean
+
+    /**
+     * Invalidates this option's autocomplete cache, if configured.
+     *
+     * @throws IllegalStateException If this option has [no autocomplete][hasAutocomplete]
+     */
+    fun invalidateAutocomplete()
 }
