@@ -13,4 +13,7 @@ interface UserCommandInfo : TopLevelApplicationCommandInfo, ApplicationCommandIn
 
     override val discordOptions: List<UserContextCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<UserContextCommandOption>()
+
+    override fun getParameter(declaredName: String): UserContextCommandParameter? =
+        parameters.find { it.name == declaredName }
 }

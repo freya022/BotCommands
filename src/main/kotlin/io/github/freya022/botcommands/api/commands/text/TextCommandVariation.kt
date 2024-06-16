@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.commands.ICommandOptionContainer
+import io.github.freya022.botcommands.api.commands.ICommandParameterContainer
 import io.github.freya022.botcommands.api.commands.IFilterContainer
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
@@ -10,7 +11,7 @@ import io.github.freya022.botcommands.api.core.Executable
 /**
  * Represents a text command variation, see [TextCommandBuilder.variation] for more details.
  */
-interface TextCommandVariation : Executable, IDeclarationSiteHolder, ICommandOptionContainer, IFilterContainer {
+interface TextCommandVariation : Executable, IDeclarationSiteHolder, ICommandParameterContainer, ICommandOptionContainer, IFilterContainer {
     /**
      * The main context.
      */
@@ -54,4 +55,14 @@ interface TextCommandVariation : Executable, IDeclarationSiteHolder, ICommandOpt
      * This is `null` on fallback command variations (those that use [CommandEvent]).
      */
     val completePattern: Regex?
+
+    override fun getParameter(declaredName: String): TextCommandParameter? =
+        parameters.find { it.name == declaredName }
+
+    /**
+     * Returns the option with the supplied *display name* (i.e., the name you see on the built-in help command),
+     * or `null` if not found.
+     */
+    fun getOptionByDisplayName(name: String): TextCommandOption? =
+        discordOptions.find { it.helpName == name }
 }

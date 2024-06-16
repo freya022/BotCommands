@@ -28,4 +28,23 @@ interface AggregatedParameter : MethodParameter {
      */
     val allOptions: List<Option>
         get() = options + nestedAggregatedParameters.flatMap { it.allOptions }
+
+    /**
+     * Returns the option with the supplied *declared name* (i.e., name of the method parameter),
+     * or `null` if not found.
+     *
+     * This does not take into account [nested aggregations][nestedAggregatedParameters],
+     * use [getNestedOptionByDeclaredName] instead.
+     */
+    fun getOptionByDeclaredName(name: String): Option? =
+        options.find { it.declaredName == name }
+
+    /**
+     * Returns the option with the supplied *declared name* (i.e., name of the method parameter),
+     * or `null` if not found.
+     *
+     * Takes into account [nested aggregations][nestedAggregatedParameters].
+     */
+    fun getNestedOptionByDeclaredName(name: String): Option? =
+        allOptions.find { it.declaredName == name }
 }

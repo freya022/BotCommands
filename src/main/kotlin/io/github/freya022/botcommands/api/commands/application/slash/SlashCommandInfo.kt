@@ -24,4 +24,14 @@ interface SlashCommandInfo : ApplicationCommandInfo {
      * Equivalent to `"</$fullCommandName:${topLevelInstance.id}>"`.
      */
     val asMention: String get() = "</$fullCommandName:${topLevelInstance.id}>"
+
+    override fun getParameter(declaredName: String): SlashCommandParameter? =
+        parameters.find { it.name == declaredName }
+
+    /**
+     * Returns the option with the supplied *display name* (i.e., the name you see on Discord),
+     * or `null` if not found.
+     */
+    fun getOptionByDisplayName(name: String): SlashCommandOption? =
+        discordOptions.find { it.discordName == name }
 }
