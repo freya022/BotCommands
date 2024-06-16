@@ -11,7 +11,9 @@ import io.github.freya022.botcommands.api.core.Executable
 /**
  * Represents a text command variation, see [TextCommandBuilder.variation] for more details.
  */
-interface TextCommandVariation : Executable, IDeclarationSiteHolder, ICommandParameterContainer, ICommandOptionContainer, IFilterContainer {
+interface TextCommandVariation : Executable, IDeclarationSiteHolder,
+                                 ICommandParameterContainer, ICommandOptionContainer,
+                                 IFilterContainer {
     /**
      * The main context.
      */

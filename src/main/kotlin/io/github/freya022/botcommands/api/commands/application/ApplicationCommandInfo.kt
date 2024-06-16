@@ -12,7 +12,9 @@ import io.github.freya022.botcommands.api.core.Executable
 /**
  * Represents an application command of any kind.
  */
-interface ApplicationCommandInfo : CommandInfo, Executable, ICommandParameterContainer, ICommandOptionContainer, IFilterContainer {
+interface ApplicationCommandInfo : CommandInfo, Executable,
+                                   ICommandParameterContainer, ICommandOptionContainer,
+                                   IFilterContainer {
     /**
      * Retrieves the top-level command owning this application command.
      */
