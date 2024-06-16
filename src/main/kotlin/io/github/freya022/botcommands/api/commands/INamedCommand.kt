@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.commands
 
+import java.util.*
+
 /**
  * A command with a name and possibly a parent.
  */
