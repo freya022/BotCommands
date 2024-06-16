@@ -5,7 +5,6 @@ package io.github.freya022.botcommands.api.commands.builder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.INamedCommand.Companion.computePath
 import io.github.freya022.botcommands.api.commands.annotations.Cooldown
 import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
@@ -18,6 +17,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.time.Duration
@@ -33,7 +33,7 @@ abstract class CommandBuilder internal constructor(
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
-    final override val path: CommandPath by lazy { computePath() }
+    final override val path: CommandPath by lazyPath()
 
     internal var rateLimitInfo: RateLimitInfo? = null
         private set

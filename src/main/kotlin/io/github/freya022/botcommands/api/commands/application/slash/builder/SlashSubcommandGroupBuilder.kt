@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.INamedCommand.Companion.computePath
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
@@ -14,6 +13,7 @@ import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
+import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
@@ -25,7 +25,7 @@ class SlashSubcommandGroupBuilder internal constructor(
     private val topLevelBuilder: TopLevelSlashCommandBuilder
 ) : INamedCommand, IDeclarationSiteHolderBuilder {
     override val parentInstance: INamedCommand = topLevelBuilder
-    override val path: CommandPath by lazy { computePath() }
+    override val path: CommandPath by lazyPath()
     override lateinit var declarationSite: DeclarationSite
 
     internal val subcommands: NamedCommandMap<SlashSubcommandBuilder> = NamedCommandMap()
