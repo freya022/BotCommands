@@ -62,7 +62,7 @@ object TextUtils {
 
         fun StringBuilder.tryAppendSpaced(text: String, limit: Int): Boolean {
             return if (length + text.length + 4 /* truncated */ < limit) {
-                append(text)
+                append(text).append(' ')
                 true
             } else {
                 append(" ...")
