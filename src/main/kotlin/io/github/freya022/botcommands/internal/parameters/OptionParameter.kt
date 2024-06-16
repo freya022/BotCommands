@@ -24,7 +24,7 @@ internal class OptionParameter internal constructor(
         ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$typeCheckingParameterName'")
 
     /**
-     * Can only be the (possibly non-user-defined) aggregator function
+     * Can only be the (possibly non-user-defined) aggregation function
      */
     val executableFunction = executableFunction.reflectReference()
     val executableParameter = this.executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }

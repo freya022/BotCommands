@@ -44,7 +44,7 @@ internal abstract class OptionImpl private constructor(
     final override val kParameter: KParameter
         get() = optionParameter.typeCheckingParameter
     /**
-     * Parameter used solely when inserting the option in the aggregator function.
+     * Parameter used solely when inserting the option in the aggregation function.
      *
      * May come from the command or aggregate function.
      */

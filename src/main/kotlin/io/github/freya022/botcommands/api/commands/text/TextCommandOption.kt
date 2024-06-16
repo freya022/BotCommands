@@ -3,13 +3,37 @@ package io.github.freya022.botcommands.api.commands.text
 import io.github.freya022.botcommands.api.commands.CommandOption
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 
+/**
+ * Represents a Discord input of a text command.
+ */
 interface TextCommandOption : CommandOption {
     override val command: TextCommandVariation
 
+    /**
+     * Name of the text command option,
+     * also displayed on the "Usage" part of the built-in help command.
+     */
     val helpName: String
+
+    /**
+     * Example input for the text command option,
+     * displayed on the "Example" part of the built-in help command.
+     */
     val helpExample: String?
+
+    /**
+     * Whether this option needs to be considered as a snowflake ID.
+     *
+     * Mainly used by [TextParameterResolver.getHelpExample].
+     */
     val isId: Boolean
 
+    /**
+     * Whether this option's resolver supports quotes.
+     *
+     * Quotes are used when multiple quotable options are used, such as two strings,
+     * which helps to parse command arguments.
+     */
     val isQuotable: Boolean
 
     /**
