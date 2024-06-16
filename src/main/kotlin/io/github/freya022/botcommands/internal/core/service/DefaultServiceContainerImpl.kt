@@ -48,8 +48,9 @@ internal class ServiceCreationStack {
     }
 
     internal inline fun <R> withServiceCreateKey(provider: ServiceProvider, block: () -> R): R {
-        if (!set.add(provider.providerKey))
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
+        check(set.add(provider.providerKey)) {
+            "Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}"
+        }
         try {
             return block()
         } finally {

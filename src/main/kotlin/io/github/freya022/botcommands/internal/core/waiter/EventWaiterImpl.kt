@@ -44,8 +44,8 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private val jdaIntents: Set<GatewayIntent> by lazy { jda.gatewayIntents }
 
     override fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T> {
-        if (!::jda.isInitialized) {
-            throw IllegalStateException("Cannot use the event waiter before a JDA instance has been detected")
+        check(::jda.isInitialized) {
+            "Cannot use the event waiter before a JDA instance has been detected"
         }
 
         checkEventIntents(eventType)

@@ -86,8 +86,8 @@ internal class DatabaseImpl internal constructor(
 
                 val version = rs.getString("version")
 
-                if (version != latestVersion) {
-                    throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed")
+                check(version == latestVersion) {
+                    "The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed"
                 }
             }
         }

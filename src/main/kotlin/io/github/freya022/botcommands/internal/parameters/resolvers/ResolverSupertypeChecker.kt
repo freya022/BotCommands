@@ -145,8 +145,8 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     override fun postProcess() {
         tasks.forEach { it.invoke() }
 
-        if (errorMessages.isNotEmpty()) {
-            throw IllegalStateException('\n' + errorMessages.joinAsList())
+        check(errorMessages.isEmpty()) {
+            '\n' + errorMessages.joinAsList()
         }
     }
 }

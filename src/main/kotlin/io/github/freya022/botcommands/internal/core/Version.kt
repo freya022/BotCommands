@@ -54,8 +54,8 @@ internal class Version private constructor(
                 return
             }
 
-            if (currentJdaVersion < requiredJdaVersion) {
-                throw IllegalStateException("This bot is currently running JDA $currentJdaVersionStr but requires at least $requiredJdaVersionStr")
+            check(currentJdaVersion >= requiredJdaVersion) {
+                "This bot is currently running JDA $currentJdaVersionStr but requires at least $requiredJdaVersionStr"
             }
         }
 

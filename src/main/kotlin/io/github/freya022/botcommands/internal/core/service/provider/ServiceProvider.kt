@@ -116,8 +116,8 @@ internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KCla
         else -> buildSet(serviceType.types.size + 1) {
             this += primaryType
             this += serviceType.types.onEach {
-                if (!it.isAssignableFrom(primaryType)) {
-                    throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${primaryType.simpleNestedName}")
+                require(it.isAssignableFrom(primaryType)) {
+                    "${it.simpleNestedName} is not a supertype of service ${primaryType.simpleNestedName}"
                 }
             }
         }

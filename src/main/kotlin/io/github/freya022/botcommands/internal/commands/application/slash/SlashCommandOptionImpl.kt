@@ -47,12 +47,12 @@ internal class SlashCommandOptionImpl internal constructor(
         description = LocalizationUtils.getOptionDescription(command.context, optionBuilder)
 
         if (range != null) {
-            if (resolver.optionType != OptionType.NUMBER && resolver.optionType != OptionType.INTEGER) {
-                throw IllegalStateException("Cannot use ranges on an option that doesn't accept an integer/number")
+            check(resolver.optionType == OptionType.NUMBER || resolver.optionType == OptionType.INTEGER) {
+                "Cannot use ranges on an option that doesn't accept an integer/number"
             }
         } else if (length != null) {
-            if (resolver.optionType != OptionType.STRING) {
-                throw IllegalStateException("Cannot use lengths on an option that doesn't accept an string")
+            check(resolver.optionType == OptionType.STRING) {
+                "Cannot use lengths on an option that doesn't accept an string"
             }
         }
     }

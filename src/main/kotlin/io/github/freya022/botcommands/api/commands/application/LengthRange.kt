@@ -4,10 +4,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 class LengthRange private constructor(val min: Int, val max: Int) {
     init {
-        if (min <= 0) {
-            throw IllegalArgumentException("String length must be positive")
-        } else if (max > OptionData.MAX_STRING_OPTION_LENGTH) {
-            throw IllegalArgumentException("Cannot have a string length higher than ${OptionData.MAX_STRING_OPTION_LENGTH}")
+        require(min > 0) {
+            "String length must be positive"
+        }
+        require(max <= OptionData.MAX_STRING_OPTION_LENGTH) {
+            "Cannot have a string length higher than ${OptionData.MAX_STRING_OPTION_LENGTH}"
         }
     }
 
