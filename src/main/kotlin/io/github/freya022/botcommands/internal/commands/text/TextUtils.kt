@@ -79,13 +79,13 @@ object TextUtils {
             if (usage != null) {
                 append(usage)
             } else {
-                commandOptionsByParameters.forEachUniqueOption { commandOption, isOptional ->
-                    val boxedType = commandOption.type.jvmErasure
+                commandOptionsByParameters.forEachUniqueOption { option ->
+                    val boxedType = option.type.jvmErasure
                     val argUsagePart = buildString {
-                        append(if (isOptional) '[' else '`')
-                        append(getArgName(hasMultipleQuotable, commandOption, boxedType))
-                        if (commandOption.isVararg) append("...")
-                        append(if (isOptional) ']' else '`')
+                        append(if (option.isRequired) '`' else '[')
+                        append(getArgName(hasMultipleQuotable, option, boxedType))
+                        if (option.isVararg) append("...")
+                        append(if (option.isRequired) '`' else ']')
                     }
 
                     tryAppendSpaced(argUsagePart, USAGE_MAX_LENGTH)
@@ -101,7 +101,7 @@ object TextUtils {
             if (example != null) {
                 append(example)
             } else {
-                commandOptionsByParameters.forEachUniqueOption { commandOption, _ ->
+                commandOptionsByParameters.forEachUniqueOption { commandOption ->
                     val argExample = getArgExample(hasMultipleQuotable, commandOption, event)
                     tryAppendSpaced(argExample, EXAMPLE_MAX_LENGTH)
                 }
@@ -159,11 +159,10 @@ object TextUtils {
      * Only runs one option from a vararg parameter
      */
     @JvmStatic
-    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (commandOption: TextCommandOption, isOptional: Boolean) -> Boolean) {
+    fun Map<TextCommandParameter, List<TextCommandOption>>.forEachUniqueOption(block: (option: TextCommandOption) -> Boolean) {
         forEach { (parameter, commandOptions) ->
             for (commandOption in commandOptions) {
-                val isOptional = commandOption.isOptionalOrNullable
-                if (!block(commandOption, isOptional)) {
+                if (!block(commandOption)) {
                     return
                 }
 
