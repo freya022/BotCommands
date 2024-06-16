@@ -3,11 +3,11 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationGeneratedOptionBuilder
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction

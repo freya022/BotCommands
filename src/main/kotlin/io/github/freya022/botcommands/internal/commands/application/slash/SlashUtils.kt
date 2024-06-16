@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.ExecutableMixin
-import io.github.freya022.botcommands.internal.commands.GeneratedOption
+import io.github.freya022.botcommands.internal.core.options.AbstractGeneratedOption
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -31,13 +31,13 @@ internal object SlashUtils {
     internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
     context(ExecutableMixin)
-    internal inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
+    internal inline fun <T : AbstractGeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
         return supplier(this).also { defaultValue ->
             checkDefaultValue(option, defaultValue)
         }
     }
 
-    private fun ExecutableMixin.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
+    private fun ExecutableMixin.checkDefaultValue(option: AbstractGeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
             requireUser(expectedType.isInstance(defaultValue), this.function) {

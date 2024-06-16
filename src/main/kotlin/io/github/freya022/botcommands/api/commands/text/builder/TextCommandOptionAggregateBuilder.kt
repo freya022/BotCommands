@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolde
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
+import io.github.freya022.botcommands.internal.commands.text.builder.TextGeneratedOptionBuilder
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction

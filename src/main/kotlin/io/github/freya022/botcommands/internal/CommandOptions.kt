@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal
 
 import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
-import io.github.freya022.botcommands.api.commands.builder.GeneratedOptionBuilder
 import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
@@ -14,6 +13,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
+import io.github.freya022.botcommands.internal.core.options.builder.AbstractGeneratedOptionBuilder
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -48,10 +48,7 @@ internal object CommandOptions {
                     val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
                     optionFinalizer(optionBuilder, resolver)
                 }
-                //TODO meh,
-                // generated option builders aren't exposed, make them internal,
-                // add generics to return AbstractGeneratedOption (GeneratedOption and OptionImpl)
-                is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption() as OptionImpl
+                is AbstractGeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
                 is ServiceOptionBuilder -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
