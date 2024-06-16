@@ -15,12 +15,12 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName
 
 internal class AutocompleteCommandParameterImpl internal constructor(
-    override val context: BContext,
-    override val command: SlashCommandInfoImpl,
+    context: BContext,
+    command: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
     autocompleteFunction: KFunction<*>
-) : AbstractSlashCommandParameter(command, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
+) : AbstractSlashCommandParameter(context, command, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
 
     override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
         requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
@@ -36,6 +36,8 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     }
 
     override fun constructOption(
+        context: BContext,
+        command: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>

@@ -8,11 +8,11 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.internal.transform
 
 internal class SlashCommandParameterImpl internal constructor(
-    override val context: BContext,
-    override val command: SlashCommandInfoImpl,
+    context: BContext,
+    command: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
-) : AbstractSlashCommandParameter(command, slashCmdOptionAggregateBuilders, optionAggregateBuilder),
+) : AbstractSlashCommandParameter(context, command, slashCmdOptionAggregateBuilders, optionAggregateBuilder),
     SlashCommandParameter {
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
@@ -20,6 +20,8 @@ internal class SlashCommandParameterImpl internal constructor(
     }
 
     override fun constructOption(
+        context: BContext,
+        command: SlashCommandInfoImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>
