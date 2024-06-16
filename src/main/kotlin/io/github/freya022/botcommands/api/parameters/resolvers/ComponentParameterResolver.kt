@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -28,11 +27,10 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param descriptor The descriptor of the component being executed
      * @param event      The corresponding event
      * @param arg        One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
-    fun resolve(descriptor: ComponentDescriptor, event: GenericComponentInteractionCreateEvent, arg: String): R? =
+    fun resolve(event: GenericComponentInteractionCreateEvent, arg: String): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -42,14 +40,10 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param descriptor The descriptor of the component being executed
      * @param event      The corresponding event
      * @param arg        One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(
-        descriptor: ComponentDescriptor,
-        event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ) = resolve(descriptor, event, arg)
+    suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String) =
+        resolve(event, arg)
 }

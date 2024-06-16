@@ -4,6 +4,9 @@ import io.github.freya022.botcommands.internal.utils.StackSensitive
 import io.github.freya022.botcommands.internal.utils.findCaller
 import io.github.freya022.botcommands.internal.utils.toSignature
 
+/**
+ * Holds information on where this object was created at.
+ */
 interface IDeclarationSiteHolder {
     /**
      * Purely for debugging purposes, will be shown in exceptions.

@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.reflection.Function
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
-import io.github.freya022.botcommands.internal.parameters.MethodParameter
+import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -34,10 +34,10 @@ internal class BasicOptionAggregateBuilder(
         BasicOptionAggregateBuilder(aggregatorParameter, aggregator)
 }
 
-internal inline fun <reified T : OptionAggregateBuilder<*>, R : MethodParameter> Map<String, T>.transform(aggregateBlock: (T) -> R) =
+internal inline fun <reified T : OptionAggregateBuilder<*>, R : MethodParameterMixin> Map<String, T>.transform(aggregateBlock: (T) -> R) =
     values.map(aggregateBlock)
 
-internal fun <R : MethodParameter> Function<*>.transformParameters(
+internal fun <R : MethodParameterMixin> Function<*>.transformParameters(
     builderBlock: (function: KFunction<*>, parameter: KParameter, declaredName: String) -> OptionBuilder,
     aggregateBlock: (OptionAggregateBuilder<*>) -> R
 ): List<R> = kFunction.nonInstanceParameters.drop(1).associate { parameter ->

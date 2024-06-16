@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -25,11 +24,10 @@ interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
-     * @param info         The data of the modal handler being executed
      * @param event        The corresponding event
      * @param modalMapping The [ModalMapping] to be resolved
      */
-    fun resolve(info: ModalHandlerInfo, event: ModalEvent, modalMapping: ModalMapping): R? =
+    fun resolve(event: ModalEvent, modalMapping: ModalMapping): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -38,11 +36,10 @@ interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
-     * @param info         The data of the modal handler being executed
      * @param event        The corresponding event
      * @param modalMapping The [ModalMapping] to be resolved
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(info: ModalHandlerInfo, event: ModalEvent, modalMapping: ModalMapping) =
-        resolve(info, event, modalMapping)
+    suspend fun resolveSuspend(event: ModalEvent, modalMapping: ModalMapping) =
+        resolve(event, modalMapping)
 }

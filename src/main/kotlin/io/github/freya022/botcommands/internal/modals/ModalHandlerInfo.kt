@@ -7,9 +7,9 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.*
@@ -23,16 +23,16 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
-class ModalHandlerInfo internal constructor(
+internal class ModalHandlerInfo internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
-) : IExecutableInteractionInfo {
-    override val parameters: List<ModalHandlerParameter>
+) : ExecutableMixin {
+    override val parameters: List<ModalHandlerParameterImpl>
 
     private val expectedModalDatas: Int
     private val expectedModalInputs: Int
 
-    val handlerName: String
+    internal val handlerName: String
 
     init {
         val annotation = function.findAnnotation<ModalHandler>()!!
@@ -50,7 +50,7 @@ class ModalHandlerInfo internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ModalHandlerParameter(context, it) }
+            aggregateBlock = { ModalHandlerParameterImpl(context, it) }
         )
 
         val options = parameters.flatMap { it.allOptions }
@@ -91,10 +91,10 @@ class ModalHandlerInfo internal constructor(
 
     private suspend fun tryInsertOption(
         event: ModalEvent,
-        option: Option,
+        option: OptionImpl,
         inputNameToInputIdMap: TObjectLongMap<String>,
         userDataIterator: Iterator<Any?>,
-        optionMap: MutableMap<Option, Any?>
+        optionMap: MutableMap<OptionImpl, Any?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
@@ -107,7 +107,7 @@ class ModalHandlerInfo internal constructor(
                 val modalMapping = event.getValue(ModalMaps.getInputId(inputId))
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                option.resolver.resolveSuspend(this, event, modalMapping).also { obj ->
+                option.resolver.resolveSuspend(event, modalMapping).also { obj ->
                     // Technically not required, but provides additional info
                     requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"

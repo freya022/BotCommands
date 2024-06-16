@@ -4,10 +4,10 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -33,15 +33,15 @@ internal class AutocompleteListener(private val context: BContext) {
                     // Ignore, if the user tries to use a command we don't know,
                     // it's going to be handled by the slash command handler
                     ?: return@launch onCommandNotFound(event)
-            }
+            } as SlashCommandInfoImpl
 
             for (option in slashCommand.parameters.flatMap { it.allOptions }) {
                 if (option.optionType != OptionType.OPTION) continue
-                option as SlashCommandOption
+                option as SlashCommandOptionImpl
 
                 if (option.discordName == event.focusedOption.name) {
                     val autocompleteHandler = option.autocompleteHandler
-                        ?: throwUser(option.kParameter.function, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+                        ?: throwUser(option.typeCheckingFunction, "Autocomplete handler was not found on parameter '${option.declaredName}'")
 
                     return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
                 }

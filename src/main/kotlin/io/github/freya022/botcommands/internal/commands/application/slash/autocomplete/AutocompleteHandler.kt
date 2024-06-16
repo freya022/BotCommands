@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
@@ -9,9 +10,8 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOption
+import io.github.freya022.botcommands.internal.ExecutableMixin
+import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transform
@@ -37,12 +37,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
  * Due to the Many-to-One associations, the handler cannot store any state, and must be stored in [AutocompleteInfo].
  */
 internal class AutocompleteHandler(
-    private val slashCommandInfo: SlashCommandInfo,
+    private val slashCommandInfo: SlashCommandInfoImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     private val autocompleteInfo: AutocompleteInfoImpl
-) : IExecutableInteractionInfo {
+) : ExecutableMixin {
     override val eventFunction = autocompleteInfo.eventFunction
-    override val parameters: List<AutocompleteCommandParameter>
+    override val parameters: List<AutocompleteCommandParameterImpl>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
@@ -50,7 +50,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
+            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
@@ -77,7 +77,11 @@ internal class AutocompleteHandler(
         }
     }
 
-    suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
+    internal fun invalidate() {
+        autocompleteInfo.invalidate()
+    }
+
+    internal suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         return autocompleteInfo.cache.retrieveAndCall(this, event, this::generateChoices)
     }
 

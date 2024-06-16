@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
@@ -21,11 +21,11 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.full.hasAnnotation
 
-class ComponentDescriptor internal constructor(
+internal class ComponentDescriptor internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<GenericComponentInteractionCreateEvent, *>
-) : IExecutableInteractionInfo {
-    override val parameters: List<ComponentHandlerParameter>
+) : ExecutableMixin {
+    override val parameters: List<ComponentHandlerParameterImpl>
 
     init {
         val resolverContainer = context.getService<ResolverContainer>()
@@ -48,7 +48,7 @@ class ComponentDescriptor internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ComponentHandlerParameter(context, it) }
+            aggregateBlock = { ComponentHandlerParameterImpl(context, it) }
         )
     }
 

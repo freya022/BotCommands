@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -24,10 +24,11 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
-     * @param executableInteractionInfo Basic information about the function using this resolver
-     * @param event                     The event this resolver is called from
+     * @param executable Basic information about the function using this resolver,
+     * may be any application command, text command, etc...
+     * @param event      The event this resolver is called from
      */
-    fun resolve(executableInteractionInfo: IExecutableInteractionInfo, event: Event): R? =
+    fun resolve(executable: Executable, event: Event): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -36,10 +37,10 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
      * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
-     * @param info  Basic information about the function using this resolver
-     * @param event The event this resolver is called from
+     * @param executable Basic information about the function using this resolver
+     * @param event      The event this resolver is called from
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event) =
-        resolve(info, event)
+    suspend fun resolveSuspend(executable: Executable, event: Event) =
+        resolve(executable, event)
 }

@@ -4,7 +4,6 @@ import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.defaultFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
-import io.github.freya022.botcommands.internal.commands.AbstractCommandInfo
 
 /**
  * Retrieves rate limit buckets and handles rate limits by combining [BucketAccessor] and [RateLimitHandler].

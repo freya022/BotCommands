@@ -62,5 +62,5 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
         _optionAggregateBuilders.varargAggregate(declaredName, block)
     }
 
-    protected abstract fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
+    internal abstract fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 }

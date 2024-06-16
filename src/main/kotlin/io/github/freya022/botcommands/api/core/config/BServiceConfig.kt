@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import kotlin.reflect.KClass
 
@@ -24,8 +25,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
     private val _instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()
-    override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
-        get() = _instanceSupplierMap.toImmutableMap()
+    override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> = _instanceSupplierMap.unmodifiableView()
 
     /**
      * Adds a supplier which returns instances of the specified classes
@@ -39,6 +39,6 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {
         override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
-        override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap //Already immutable
+        override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
     }
 }

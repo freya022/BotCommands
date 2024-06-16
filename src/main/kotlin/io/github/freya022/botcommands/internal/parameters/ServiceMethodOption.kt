@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 
-class ServiceMethodOption internal constructor(
+internal class ServiceMethodOption internal constructor(
     optionParameter: OptionParameter,
     private val serviceContainer: ServiceContainer,
 ) : OptionImpl(optionParameter, OptionType.SERVICE) {

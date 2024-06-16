@@ -1,12 +1,15 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandOption
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandOptionImpl
 
-abstract class AbstractSlashCommandOption(
+internal abstract class AbstractSlashCommandOption internal constructor(
     optionBuilder: SlashCommandOptionBuilder,
-    final override val resolver: SlashParameterResolver<*, *>
-) : ApplicationCommandOption(optionBuilder) {
+    internal val resolver: SlashParameterResolver<*, *>
+) : ApplicationCommandOptionImpl(optionBuilder) {
+    abstract override val command: SlashCommandInfo
+
     val discordName = optionBuilder.optionName
 }

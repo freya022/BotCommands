@@ -92,7 +92,7 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
         _nestedAggregates.varargAggregate(declaredName, block)
     }
 
-    protected abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
+    internal abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 
     internal operator fun plusAssign(optionBuilder: OptionBuilder) {
         _optionBuilders.computeIfAbsent(optionBuilder.optionParameter.typeCheckingParameterName) { arrayListOf() }.add(optionBuilder)

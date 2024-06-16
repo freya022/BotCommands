@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-class MemberParamFunction<T : Any, R> internal constructor(
+internal class MemberParamFunction<T : Any, R> internal constructor(
     boundFunction: KFunction<R>,
     instanceSupplier: () -> Any,
     paramClass: KClass<T>

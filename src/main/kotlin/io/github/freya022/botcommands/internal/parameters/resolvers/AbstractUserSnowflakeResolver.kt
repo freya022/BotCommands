@@ -2,18 +2,18 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 private val logger = KotlinLogging.logger { }
 
@@ -45,7 +44,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     final override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     final override val testExample: String = "<@1234>"
 
-    final override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
+    final override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
         return event.member.asMention
     }
 
@@ -66,11 +65,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         optionMapping: OptionMapping
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
-    final override suspend fun resolveSuspend(
-        descriptor: ComponentDescriptor,
-        event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ): R? {
+    final override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): R? {
         val id = arg.toLongOrNull() ?: throwUser("Invalid user id: $arg")
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)

@@ -1,8 +1,11 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
@@ -16,9 +19,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ChannelResolverFactory.ChannelResolver
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 interface IChannelResolver {
     val channelTypes: EnumSet<ChannelType>
@@ -63,7 +62,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         override val pattern: Pattern = channelPattern
         override val testExample: String = "<#1234>"
 
-        override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String =
+        override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String =
             event.channel.asMention
 
         override suspend fun resolveSuspend(
@@ -100,11 +99,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(
-            descriptor: ComponentDescriptor,
-            event: GenericComponentInteractionCreateEvent,
-            arg: String
-        ): GuildChannel? {
+        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
             val guild = event.guild ?: throwUser("Cannot resolve a channel outside of a guild")
             val channelId = arg.toLong()
             val channel = guild.getChannelById(type, channelId)

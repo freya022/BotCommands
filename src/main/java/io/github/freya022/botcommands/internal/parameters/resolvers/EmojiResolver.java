@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
+import io.github.freya022.botcommands.api.commands.text.TextCommandOption;
+import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -8,10 +11,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
 import io.github.freya022.botcommands.api.utils.EmojiUtils;
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation;
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor;
-import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -38,8 +37,8 @@ public class EmojiResolver
 		super(Emoji.class);
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public Emoji resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return getEmoji(args[0]);
 	}
@@ -58,7 +57,7 @@ public class EmojiResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
 		return ":joy:";
 	}
 
@@ -68,15 +67,15 @@ public class EmojiResolver
 		return OptionType.STRING;
 	}
 
-	@Override
 	@Nullable
-	public Emoji resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    @Override
+    public Emoji resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return getEmoji(optionMapping.getAsString());
 	}
 
-	@Override
 	@Nullable
-	public Emoji resolve(@NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    @Override
+    public Emoji resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return getEmoji(arg);
 	}
 

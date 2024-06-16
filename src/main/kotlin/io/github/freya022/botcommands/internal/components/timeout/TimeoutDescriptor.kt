@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.components.timeout
 import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
-import io.github.freya022.botcommands.internal.IExecutableInteractionInfo
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
@@ -20,7 +20,7 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
     context: BContextImpl,
     override val eventFunction: MemberParamFunction<T, *>,
     aggregatorFirstParamType: KClass<T>
-) : IExecutableInteractionInfo {
+) : ExecutableMixin {
     override val parameters: List<TimeoutHandlerParameter>
 
     init {

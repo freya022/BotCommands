@@ -2,8 +2,6 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.hasMultipleQuotable
-import io.github.freya022.botcommands.internal.core.options.isRequired
 import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -14,11 +12,11 @@ import kotlin.reflect.full.staticProperties
 private val logger = KotlinLogging.logger { }
 
 internal object CommandPattern {
-    fun of(variation: TextCommandVariation): Regex {
-        val optionParameters: List<TextCommandOption> = variation.parameters
+    fun of(variation: TextCommandVariationImpl): Regex {
+        val optionParameters: List<TextCommandOptionImpl> = variation.parameters
             .flatMap { it.allOptions }
-            .filterIsInstance<TextCommandOption>()
-        val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
+            .filterIsInstance<TextCommandOptionImpl>()
+        val hasMultipleQuotable = variation.hasMultipleQuotable
 
         val patterns = optionParameters.map { ParameterPattern(it.resolver, it.isOptionalOrNullable, hasMultipleQuotable) }
         val pattern = joinPatterns(patterns)

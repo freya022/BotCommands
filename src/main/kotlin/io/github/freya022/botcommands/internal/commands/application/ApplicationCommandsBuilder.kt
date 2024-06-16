@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application
 
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
@@ -10,10 +11,13 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -79,18 +83,18 @@ internal class ApplicationCommandsBuilder(
         }
 
         val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
-        val needsUpdate = force || globalUpdater.shouldUpdateCommands()
-        if (needsUpdate) {
-            globalUpdater.updateCommands()
+        val hasUpdated = globalUpdater.tryUpdateCommands(force)
+        if (hasUpdated) {
             logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
         } else {
             logger.debug { "Global commands does not have to be updated, ${globalUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
         }
 
+        setMetadata(globalUpdater)
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.allApplicationCommands.toApplicationCommandMap())
 
         firstGlobalUpdate = false
-        return CommandUpdateResult(null, needsUpdate, failedDeclarations)
+        return CommandUpdateResult(null, hasUpdated, failedDeclarations)
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
@@ -122,18 +126,30 @@ internal class ApplicationCommandsBuilder(
             }
 
             val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
-            val needsUpdate = force || guildUpdater.shouldUpdateCommands()
-            if (needsUpdate) {
-                guildUpdater.updateCommands()
+            val hasUpdated = guildUpdater.tryUpdateCommands(force)
+            if (hasUpdated) {
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands were${getForceString(force)} updated (${getCheckTypeString()})" }
             } else {
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
             }
 
+            setMetadata(guildUpdater)
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.allApplicationCommands.toApplicationCommandMap())
 
             firstGuildUpdates.add(guild.idLong)
-            return CommandUpdateResult(guild, needsUpdate, failedDeclarations)
+            return CommandUpdateResult(guild, hasUpdated, failedDeclarations)
+        }
+    }
+
+    private fun setMetadata(updater: ApplicationCommandsUpdater) {
+        updater.metadata.forEach { metadata ->
+            val command = updater.allApplicationCommands.find { it.name == metadata.name }
+                ?: throwInternal("Could not match JDA command '${metadata.name}'")
+
+            val accessor = command as? TopLevelApplicationCommandMetadataAccessor
+                ?: throwInternal("${command.javaClass.simpleNestedName} must implement ${classRef<TopLevelApplicationCommandMetadataAccessor>()}")
+
+            accessor.metadata = metadata
         }
     }
 

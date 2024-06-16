@@ -1,20 +1,21 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.coroutines.await
+import io.github.freya022.botcommands.api.commands.INamedCommand
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
-import io.github.freya022.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import io.github.freya022.botcommands.internal.commands.mixins.INamedCommand
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowUser
@@ -22,11 +23,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
+import net.dv8tion.jda.api.utils.data.DataArray
 import java.nio.file.Files
+import kotlin.io.path.bufferedReader
 
 private val logger = KotlinLogging.logger { }
 
@@ -43,9 +47,17 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
+    private val commandsMetadataCachePath = when (guild) {
+        null -> commandsCache.globalCommandsMetadataPath
+        else -> commandsCache.getGuildCommandsMetadataPath(guild)
+    }
+
     internal val allApplicationCommands: Collection<ApplicationCommandInfo> = manager.allApplicationCommands
     private val allCommandData: Collection<CommandData>
     internal val filteredCommandsCount: Int get() = allCommandData.size
+
+    internal lateinit var metadata: List<TopLevelApplicationCommandMetadataImpl>
+        private set
 
     init {
         Files.createDirectories(commandsCachePath.parent)
@@ -61,26 +73,71 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    suspend fun shouldUpdateCommands(): Boolean {
-        val oldBytes = when {
-            onlineCheck -> {
-                (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
-                    .await()
-                    .map { CommandData.fromCommand(it) }.toJsonBytes()
-            }
-
-            else -> {
-                if (Files.notExists(commandsCachePath)) {
-                    logger.trace { "Updating commands because cache file does not exists" }
-                    return true
-                }
-
-                withContext(Dispatchers.IO) {
-                    Files.readAllBytes(commandsCachePath)
-                }
-            }
+    suspend fun tryUpdateCommands(force: Boolean): Boolean {
+        if (force) {
+            updateCommands()
+            return true
         }
 
+        val needsUpdate = if (onlineCheck) {
+            checkOnlineCommands()
+        } else {
+            checkOfflineCommands()
+        }
+
+        if (!needsUpdate) return false
+
+        updateCommands()
+        return true
+    }
+
+    private suspend fun checkOnlineCommands(): Boolean {
+        val oldCommands = (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true)).await()
+        val oldCommandBytes = oldCommands
+            .map(CommandData::fromCommand)
+            .toJsonBytes()
+
+        metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
+        return checkCommandJson(oldCommandBytes)
+    }
+
+    private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
+        if (Files.notExists(commandsCachePath)) {
+            logger.trace { "Updating commands because cache file does not exists" }
+            return@withContext true
+        }
+
+        if (Files.notExists(commandsMetadataCachePath)) {
+            logger.trace { "Updating commands metadata because cache file does not exists" }
+            return@withContext true
+        }
+
+        val hasMissingKey = updateOnMissingKey {
+            val array = commandsMetadataCachePath.bufferedReader().use(DataArray::fromJson)
+            metadata = readMetadata(array)
+        }
+
+        hasMissingKey || checkCommandJson(Files.readAllBytes(commandsCachePath))
+    }
+
+    private inline fun updateOnMissingKey(crossinline block: () -> Unit): Boolean = try {
+        block()
+        false
+    } catch (e: ParsingException) {
+        true
+    }
+
+    private fun readMetadata(array: DataArray): List<TopLevelApplicationCommandMetadataImpl> {
+        val metadata = TopLevelApplicationCommandMetadataImpl.fromData(array)
+        val missingCommands = allCommandData.mapTo(hashSetOf()) { it.name } - metadata.mapTo(hashSetOf()) { it.name }
+        if (missingCommands.isNotEmpty()) {
+            throw ParsingException("Missing metadata for $missingCommands")
+        }
+
+        return metadata
+    }
+
+    private fun checkCommandJson(oldBytes: ByteArray): Boolean {
         val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
@@ -94,11 +151,13 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    suspend fun updateCommands() {
+    private suspend fun updateCommands() {
         val updateAction = guild?.updateCommands() ?: context.jda.updateCommands()
         val commands = updateAction
             .addCommands(allCommandData)
             .await()
+
+        metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
 
         saveCommandData(guild)
         printPushedCommandData(commands, guild)
@@ -109,7 +168,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .filterCommands()
             .mapCommands { info: TopLevelSlashCommandInfo ->
                 val topLevelData = Commands.slash(info.name, info.description).configureTopLevel(info)
-                if (info.isTopLevelCommandOnly()) {
+                if (info.isTopLevelCommandOnly) {
                     topLevelData.addOptions(info.getDiscordOptions(guild))
                 } else {
                     topLevelData.addSubcommandGroups(
@@ -137,7 +196,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun <T> mapContextCommands(
         commands: Collection<T>,
         type: Command.Type
-    ): List<CommandData> where T : ITopLevelApplicationCommandInfo,
+    ): List<CommandData> where T : TopLevelApplicationCommandInfo,
                                T : ApplicationCommandInfo {
         return commands
             .filterCommands()
@@ -166,7 +225,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun <D : CommandData, T> D.configureTopLevel(info: T): D
-            where T : ITopLevelApplicationCommandInfo,
+            where T : TopLevelApplicationCommandInfo,
                   T : ApplicationCommandInfo = apply {
         if (info.nsfw) isNSFW = true
         if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true
@@ -190,6 +249,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun saveCommandData(guild: Guild?) {
         try {
             commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
+            commandsMetadataCachePath.overwriteBytes(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
         } catch (e: Exception) {
             logger.error(e) {
                 "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"

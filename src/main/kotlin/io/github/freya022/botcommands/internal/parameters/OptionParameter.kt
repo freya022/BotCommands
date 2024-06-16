@@ -13,24 +13,24 @@ import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
-class OptionParameter(
+internal class OptionParameter internal constructor(
     typeCheckingFunction: KFunction<*>,
-    override val typeCheckingParameterName: String,
+    internal val typeCheckingParameterName: String,
     executableFunction: KFunction<*>,
     executableParameterName: String
-) : AggregatedParameter {
-    override val typeCheckingFunction = typeCheckingFunction.reflectReference()
-    override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == typeCheckingParameterName }
+) {
+    internal val typeCheckingFunction = typeCheckingFunction.reflectReference()
+    internal val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == typeCheckingParameterName }
         ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$typeCheckingParameterName'")
 
     /**
-     * Can only be the (possibly non-user-defined) aggregator function
+     * Can only be the (possibly non-user-defined) aggregation function
      */
-    val executableFunction = executableFunction.reflectReference()
-    val executableParameter = this.executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }
+    internal val executableFunction = executableFunction.reflectReference()
+    internal val executableParameter = this.executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }
 
-    companion object {
-        fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
+    internal companion object {
+        internal fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
             SingleAggregatorParameter(commandFunction, parameterName).toOptionParameter(commandFunction, parameterName)
     }
 }

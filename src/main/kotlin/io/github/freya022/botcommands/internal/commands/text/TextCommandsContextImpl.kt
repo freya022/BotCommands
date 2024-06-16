@@ -6,12 +6,12 @@ import io.github.freya022.botcommands.internal.utils.throwUser
 
 @BService
 internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
-    private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
+    private val textCommandMap: MutableMap<String, TopLevelTextCommandInfoImpl> = hashMapOf()
 
-    override val rootCommands: Collection<TopLevelTextCommandInfo>
+    override val rootCommands: Collection<TopLevelTextCommandInfoImpl>
         get() = textCommandMap.values.toList()
 
-    internal fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
+    internal fun addTextCommand(commandInfo: TopLevelTextCommandInfoImpl) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.put(name, commandInfo)?.let {
                 throwUser(commandInfo.variations.first().function, "Text command with path '${commandInfo.path}' already exists")
@@ -19,8 +19,8 @@ internal class TextCommandsContextImpl internal constructor() : TextCommandsCont
         }
     }
 
-    override fun findTextCommand(words: List<String>): TextCommandInfo? {
-        val initial: TextCommandInfo = textCommandMap[words.first()] ?: return null
+    override fun findTextCommand(words: List<String>): TextCommandInfoImpl? {
+        val initial: TextCommandInfoImpl = textCommandMap[words.first()] ?: return null
         return words
             .drop(1) //First word is already resolved
             .fold(initial) { info, subname ->
@@ -28,7 +28,7 @@ internal class TextCommandsContextImpl internal constructor() : TextCommandsCont
             }
     }
 
-    override fun findTextSubcommands(words: List<String>): Collection<TextCommandInfo> {
+    override fun findTextSubcommands(words: List<String>): Collection<TextCommandInfoImpl> {
         val command = findTextCommand(words) ?: return emptyList()
         return command.subcommands.values
     }

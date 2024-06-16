@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import kotlin.reflect.KClass
 
 internal class ApplicationCommandResolverData(
-    val commandInfo: ApplicationCommandInfo
+    val commandInfo: ApplicationCommandInfoImpl
 ) : ResolverData
 
 internal fun ResolverRequest.checkGuildOnly(returnType: KClass<*>) {

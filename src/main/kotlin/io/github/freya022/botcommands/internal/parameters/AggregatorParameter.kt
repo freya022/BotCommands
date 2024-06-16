@@ -1,18 +1,29 @@
 package io.github.freya022.botcommands.internal.parameters
 
+import io.github.freya022.botcommands.api.core.options.Option
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 
-interface AggregatorParameter : AggregatedParameter {
+internal interface AggregatorParameter {
+    /**
+     * **Note:** Can either be the user-defined aggregator or the command function
+     *
+     * See [Option.kParameter]
+     */
+    val typeCheckingFunction: KFunction<*>
+    val typeCheckingParameterName: String
+    val typeCheckingParameter: KParameter
+
     fun toOptionParameter(optionFunction: KFunction<*>, parameterName: String): OptionParameter
 
     companion object {
-        fun fromUserAggregate(aggregator: KFunction<*>, parameterName: String): AggregatorParameter =
+        internal fun fromUserAggregate(aggregator: KFunction<*>, parameterName: String): AggregatorParameter =
             UserAggregatorParameter(aggregator, parameterName)
 
-        fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String): AggregatorParameter =
+        internal fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String): AggregatorParameter =
             SingleAggregatorParameter(commandFunction, parameterName)
 
-        fun fromVarargAggregate(commandFunction: KFunction<*>, parameterName: String): AggregatorParameter =
+        internal fun fromVarargAggregate(commandFunction: KFunction<*>, parameterName: String): AggregatorParameter =
             VarargAggregatorParameter(commandFunction, parameterName)
     }
 }

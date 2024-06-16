@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverData
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
-import io.github.freya022.botcommands.internal.core.options.Option
+import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -28,8 +28,8 @@ internal object CommandOptions {
         context: BContext,
         resolverData: ResolverData?,
         aggregateBuilder: OptionAggregateBuilder<*>,
-        optionFinalizer: (optionBuilder: T, resolver: R) -> Option
-    ): List<Option> {
+        optionFinalizer: (optionBuilder: T, resolver: R) -> OptionImpl
+    ): List<OptionImpl> {
         val aggregator = aggregateBuilder.aggregator
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
@@ -48,7 +48,10 @@ internal object CommandOptions {
                     val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
                     optionFinalizer(optionBuilder, resolver)
                 }
-                is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
+                //TODO meh,
+                // generated option builders aren't exposed, make them internal,
+                // add generics to return AbstractGeneratedOption (GeneratedOption and OptionImpl)
+                is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption() as OptionImpl
                 is ServiceOptionBuilder -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter

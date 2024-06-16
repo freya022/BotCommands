@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
-internal class UserAggregatorParameter(
+internal class UserAggregatorParameter internal constructor(
     typeCheckingFunction: KFunction<*>,
     override val typeCheckingParameterName: String
 ) : AggregatorParameter {

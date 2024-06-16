@@ -1,11 +1,14 @@
 package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
-import io.github.freya022.botcommands.internal.commands.application.*
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.internal.commands.application.CommandMap
+import io.github.freya022.botcommands.internal.commands.application.MutableApplicationCommandMap
+import io.github.freya022.botcommands.internal.commands.application.MutableCommandMap
+import io.github.freya022.botcommands.internal.commands.application.toUnmodifiableMap
 import net.dv8tion.jda.api.interactions.commands.Command
 import org.jetbrains.annotations.Unmodifiable
 import org.jetbrains.annotations.UnmodifiableView

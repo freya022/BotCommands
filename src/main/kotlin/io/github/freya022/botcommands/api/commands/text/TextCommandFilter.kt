@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.text.TextCommandVariation
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 /**

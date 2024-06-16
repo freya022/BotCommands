@@ -1,10 +1,11 @@
 package io.github.freya022.botcommands.internal.commands.application
 
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
@@ -45,7 +46,7 @@ internal class MutableApplicationCommandMap internal constructor(
                 when (info) {
                     is UserCommandInfo, is MessageCommandInfo -> typeMap[info.path] = info
                     is TopLevelSlashCommandInfo -> {
-                        if (info.isTopLevelCommandOnly()) {
+                        if (info.isTopLevelCommandOnly) {
                             typeMap[info.path] = info
                         } else {
                             info.subcommandGroups.values.forEach { groupInfo ->

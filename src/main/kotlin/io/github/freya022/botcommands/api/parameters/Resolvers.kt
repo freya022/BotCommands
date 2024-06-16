@@ -298,7 +298,7 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  *         ICustomResolver<MyCustomLocalizationResolver, MyCustomLocalization> {
  *
  *         // Called when a command is used
- *         override suspend fun resolveSuspend(info: IExecutableInteractionInfo, event: Event): MyCustomLocalization {
+ *         override suspend fun resolveSuspend(executable: Executable, event: Event): MyCustomLocalization {
  *             return if (event is Interaction) {
  *                 val guild = event.guild
  *                     ?: throw IllegalStateException("Cannot get localization outside of guilds")

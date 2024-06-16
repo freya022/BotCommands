@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
+import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver;
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ public class MessageResolver
 	}
 
 	@Nullable
-	@Override
+    @Override
 	public Message resolve(@NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
 		return event.getTarget();
 	}
