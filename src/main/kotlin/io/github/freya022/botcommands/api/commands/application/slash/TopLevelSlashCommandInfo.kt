@@ -20,6 +20,11 @@ interface TopLevelSlashCommandInfo : TopLevelApplicationCommandInfo, SlashComman
      */
     val subcommandGroups: Map<String, SlashSubcommandGroupInfo>
 
+    /**
+     * Whether this slash command is top-level only.
+     *
+     * Top-level commands do not contain any subcommands or subcommand groups, and are thus executable.
+     */
     val isTopLevelCommandOnly: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
 }

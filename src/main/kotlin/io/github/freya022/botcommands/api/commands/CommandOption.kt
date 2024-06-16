@@ -14,7 +14,7 @@ interface CommandOption : Option {
     val context: BContext
 
     /**
-     * The executable command this parameter is from
+     * The executable command this parameter is from.
      */
     val command: Executable
 }
