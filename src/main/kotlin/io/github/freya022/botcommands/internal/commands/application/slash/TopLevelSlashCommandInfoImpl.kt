@@ -30,6 +30,4 @@ internal class TopLevelSlashCommandInfoImpl internal constructor(
         builder.subcommandGroups.map
             .mapValues { it.value.build(this) }
             .unmodifiableView()
-
-    override val isTopLevelCommandOnly get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
 }

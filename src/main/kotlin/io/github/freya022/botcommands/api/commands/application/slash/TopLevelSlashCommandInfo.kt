@@ -9,4 +9,5 @@ interface TopLevelSlashCommandInfo : TopLevelApplicationCommandInfo, SlashComman
     val subcommandGroups: Map<String, SlashSubcommandGroupInfo>
 
     val isTopLevelCommandOnly: Boolean
+        get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
 }
