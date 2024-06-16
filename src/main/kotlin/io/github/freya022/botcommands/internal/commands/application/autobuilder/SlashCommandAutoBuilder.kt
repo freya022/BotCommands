@@ -354,7 +354,9 @@ internal class SlashCommandAutoBuilder(
         processAutocomplete(optionAnnotation)
 
         usePredefinedChoices = optionAnnotation.usePredefinedChoices
-        choices = instance.getOptionChoices(guild, this@SlashCommandBuilder.path, optionName)
+        val optionChoices = instance.getOptionChoices(guild, this@SlashCommandBuilder.path, optionName)
+        if (optionChoices.isNotEmpty())
+            choices = optionChoices
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: SlashOption) {

@@ -54,13 +54,19 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
      *
-     * **Note:** Predefined choices can still be overridden by [ApplicationCommand.getOptionChoices].
-     *
      * @return `true` to enable using choices from [SlashParameterResolver.getPredefinedChoices].
+     *
+     * @throws IllegalStateException If [choices] are set.
      *
      * @see SlashOption.usePredefinedChoices
      */
     var usePredefinedChoices: Boolean = false
+        set(enable) {
+            check(choices == null) {
+                "Cannot use predefined choices when choices are set"
+            }
+            field = enable
+        }
 
     /**
      * The option's choices.
@@ -70,9 +76,20 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see SlashParameterResolver.getPredefinedChoices
      *
+     * @throws IllegalStateException If [usePredefinedChoices] is enabled.
+     *
      * @see ApplicationCommand.getOptionChoices
      */
     var choices: List<Choice>? = null
+        set(choices) {
+            check(!usePredefinedChoices) {
+                "Cannot set choices when predefined choices are enabled"
+            }
+            require(choices == null || choices.isNotEmpty()) {
+                "List cannot be empty"
+            }
+            field = choices
+        }
 
     /**
      * Sets the minimum and maximum values on the specified option.
