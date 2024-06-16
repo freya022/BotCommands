@@ -1,16 +1,17 @@
 package io.github.freya022.botcommands.api.commands.text
 
+import io.github.freya022.botcommands.api.commands.ICommandOptionContainer
 import io.github.freya022.botcommands.api.commands.IFilterContainer
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
 
-interface TextCommandVariation : Executable, IDeclarationSiteHolder, IFilterContainer {
+interface TextCommandVariation : Executable, IDeclarationSiteHolder, ICommandOptionContainer, IFilterContainer {
     val context: BContext
 
     override val parameters: List<TextCommandParameter>
 
-    val allDiscordOptions: List<TextCommandOption>
+    override val discordOptions: List<TextCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
 
     val hasMultipleQuotable: Boolean

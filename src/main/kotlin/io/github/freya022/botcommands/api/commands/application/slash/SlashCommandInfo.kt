@@ -7,7 +7,7 @@ interface SlashCommandInfo : ApplicationCommandInfo {
 
     override val parameters: List<SlashCommandParameter>
 
-    val allDiscordOptions: List<SlashCommandOption>
+    override val discordOptions: List<SlashCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<SlashCommandOption>()
 
     val asMention: String get() = "</$fullCommandName:${topLevelInstance.id}>"

@@ -8,6 +8,6 @@ interface MessageCommandInfo : TopLevelApplicationCommandInfo, ApplicationComman
 
     override val parameters: List<MessageContextCommandParameter>
 
-    val allDiscordOptions: List<MessageContextCommandOption>
+    override val discordOptions: List<MessageContextCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<MessageContextCommandOption>()
 }
