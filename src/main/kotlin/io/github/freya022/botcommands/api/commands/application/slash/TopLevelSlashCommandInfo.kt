@@ -8,8 +8,6 @@ import io.github.freya022.botcommands.api.commands.application.TopLevelApplicati
  * Contains additional info only available on top-level commands.
  */
 interface TopLevelSlashCommandInfo : TopLevelApplicationCommandInfo, SlashCommandInfo {
-    override val topLevelInstance: TopLevelSlashCommandInfo
-
     /**
      * Subcommands of this top-level slash command, the key is the name of the subcommand.
      */

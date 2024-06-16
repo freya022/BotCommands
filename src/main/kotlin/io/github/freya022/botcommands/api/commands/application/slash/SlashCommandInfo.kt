@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
  * Represents a slash command, can be [top-level][TopLevelSlashCommandInfo] or a [subcommand][SlashSubcommandInfo]
  */
 interface SlashCommandInfo : ApplicationCommandInfo {
+    override val topLevelInstance: TopLevelSlashCommandInfo
+
     /**
      * The description of this slash command.
      *
