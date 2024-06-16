@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
-import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -35,11 +34,6 @@ internal class TextCommandVariationImpl internal constructor(
     override val declarationSite: DeclarationSite = builder.declarationSite
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameterImpl>
-
-    override val hasMultipleQuotable: Boolean
-        get() = parameters
-            .flatMap { it.allOptions }
-            .count { o -> o is TextCommandOptionImpl && o.resolver is QuotableTextParameterResolver } > 1
 
     val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
         require(!filter.global) {

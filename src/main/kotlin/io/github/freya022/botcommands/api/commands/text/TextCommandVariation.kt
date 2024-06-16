@@ -14,6 +14,7 @@ interface TextCommandVariation : Executable, IDeclarationSiteHolder, IFilterCont
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
 
     val hasMultipleQuotable: Boolean
+        get() = discordOptions.count { o -> o.isQuotable } > 1
 
     val description: String?
     val usage: String?
