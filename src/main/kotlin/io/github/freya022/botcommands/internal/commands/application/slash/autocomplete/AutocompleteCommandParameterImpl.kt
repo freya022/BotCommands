@@ -8,9 +8,8 @@ import io.github.freya022.botcommands.internal.commands.application.slash.Abstra
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
-import io.github.freya022.botcommands.internal.utils.requireUser
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.requireAt
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName
 
@@ -22,14 +21,18 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     autocompleteFunction: KFunction<*>
 ) : AbstractSlashCommandParameter(context, command, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
 
-    override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
-        requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
-            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${command.function.shortSignatureNoSrc}"
+    override val executableParameter =
+        autocompleteFunction.findParameterByName(name)
+            ?: throwArgument(
+                autocompleteFunction,
+                "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${command.declarationSite}"
+            )
+
+    init {
+        requireAt(executableParameter.isNullable == kParameter.isNullable, autocompleteFunction) {
+            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${command.declarationSite}"
         }
-    } ?: throwUser(
-        autocompleteFunction,
-        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${command.function.shortSignatureNoSrc}"
-    )
+    }
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
         AutocompleteCommandParameterImpl(context, command, it.nestedAggregates, it, optionAggregateBuilder.aggregator)

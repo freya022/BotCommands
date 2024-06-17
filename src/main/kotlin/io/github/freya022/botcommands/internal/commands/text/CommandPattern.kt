@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.regex.Pattern
@@ -26,8 +25,11 @@ internal object CommandPattern {
         val exampleStr = optionParameters.filter { it.isRequired }.joinToString(" ") { it.resolver.testExample }
         require(pattern.matches(exampleStr)) {
             """
-            Failed building pattern for method ${variation.function.shortSignature} with pattern '$pattern' and example '$exampleStr'
-            You can try to either rearrange the arguments as to make a parse-able command, especially moving parameters which are parsed from strings, or, use slash commands""".trimIndent()
+                Failed building text command pattern, you can try to either rearrange the arguments as to make a parse-able command, especially moving parameters which are parsed from strings, or, use slash commands 
+                Text command at: ${variation.function.shortSignature} 
+                Pattern: $pattern
+                Test string: $exampleStr
+            """.trimIndent()
         }
 
         return pattern
@@ -50,7 +52,7 @@ internal object CommandPattern {
         private val flagExpressions: String?
 
         init {
-            requireUser(pattern.matcher("").groupCount() > 0) {
+            require(pattern.matcher("").groupCount() > 0) {
                 // Signature is not available here as resolver might be framework-provided (and so metadata not read)
                 "Regex patterns of ${resolver.javaClass.simpleNestedName} must have at least 1 capturing group"
             }

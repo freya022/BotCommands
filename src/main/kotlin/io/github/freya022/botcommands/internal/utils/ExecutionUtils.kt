@@ -36,7 +36,7 @@ internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap:
         }
     } else {
         //Value is null and is required
-        throwUser(option.typeCheckingFunction, "Option #${option.index} (${option.declaredName}) couldn't be resolved, this could be due to a faulty ICustomResolver")
+        throwArgument(option.typeCheckingFunction, "Option #${option.index} (${option.declaredName}) couldn't be resolved, this could be due to a faulty ICustomResolver")
     }
 
     return InsertOptionResult.SKIP
@@ -95,7 +95,7 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
                     }
                 }
             } else {
-                throwUser(parameter.executableParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
+                throwArgument(parameter.executableParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
             }
         }
     }

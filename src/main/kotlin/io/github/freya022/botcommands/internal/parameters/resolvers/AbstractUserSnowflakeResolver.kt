@@ -14,8 +14,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -66,7 +66,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
     final override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): R? {
-        val id = arg.toLongOrNull() ?: throwUser("Invalid user id: $arg")
+        val id = arg.toLongOrNull() ?: throwArgument("Invalid user id: $arg")
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)
             event.reply_(context.getDefaultMessages(event).resolverUserNotFoundMsg, ephemeral = true).queue()

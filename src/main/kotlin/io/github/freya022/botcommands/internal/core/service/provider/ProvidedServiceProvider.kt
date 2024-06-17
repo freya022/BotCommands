@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.core.service.provider
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmName
@@ -19,7 +19,7 @@ internal class ProvidedServiceProvider internal constructor(
 ) : ServiceProvider {
     init {
         if (!primaryType.isInstance(instance))
-            throwUser("${instance.javaClass.name} is not an instance of ${primaryType.jvmName}")
+            throwArgument("${instance.javaClass.name} is not an instance of ${primaryType.jvmName}")
 
         require(primaryType !in typeAliases) {
             "Primary type ${primaryType.simpleNestedName} cannot be a type alias at the same time"
@@ -27,7 +27,7 @@ internal class ProvidedServiceProvider internal constructor(
 
         typeAliases.forEach {
             if (!it.java.isInstance(instance)) {
-                throwUser("Type alias ${it.simpleNestedName} must be a subclass of ${instance.javaClass.name}")
+                throwArgument("Type alias ${it.simpleNestedName} must be a subclass of ${instance.javaClass.name}")
             }
         }
     }

@@ -20,7 +20,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventPar
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -54,9 +54,13 @@ internal class AutocompleteHandler(
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
-        if (unmappedParameters.isNotEmpty()) {
+        require(unmappedParameters.isEmpty()) {
             val autocompleteSignature = function.getSignature(parameterNames = unmappedParameters)
-            throwUser(slashCommandInfo.function, "\nCould not find options declared as $unmappedParameters, required by autocomplete function $autocompleteSignature")
+            """
+                Could not find options declared as $unmappedParameters
+                Required by autocomplete function $autocompleteSignature
+                From slash command ${slashCommandInfo.function.shortSignature}
+            """.trimIndent()
         }
 
         val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
@@ -123,9 +127,12 @@ internal class AutocompleteHandler(
                 .filterIsInstance<SlashCommandOption>()
                 .map { it.discordName }
             for (compositeKey in compositeKeys) {
-                if (compositeKey !in optionDiscordNames) {
-                    throwUser(autocompleteInfo.function, "Could not find composite key named '$compositeKey', available options: $optionDiscordNames\n" +
-                            "See ${slashCommandInfo.function.shortSignature}")
+                require(compositeKey in optionDiscordNames) {
+                    """
+                        Could not find composite key named '$compositeKey', available options: $optionDiscordNames
+                        On autocomplete function ${autocompleteInfo.function.shortSignature}
+                        Available options from ${slashCommandInfo.function.shortSignature}
+                    """.trimIndent()
                 }
             }
         }
@@ -149,7 +156,7 @@ internal class AutocompleteHandler(
                         null
                     }
                 }
-                else -> throw IllegalArgumentException("Invalid autocomplete option type: $type")
+                else -> throwArgument("Invalid autocomplete option type: $type")
             }
         }
     }

@@ -165,7 +165,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
                 ServiceResult.pass(instance)
             }
         } catch (e: Exception) {
-            throw RuntimeException("Unable to create service ${provider.primaryType.simpleNestedName}", e)
+            e.rethrow("Unable to create service ${provider.primaryType.simpleNestedName}")
         }
     }
 
@@ -436,7 +436,7 @@ internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Bool
     // Due to https://youtrack.jetbrains.com/issue/KT-63929
     // we need to get the annotations from the java type as they are not read by kotlin-reflect
     val elementType = kParameter.type.arguments[0].type
-        ?: throwUser("Star projections cannot be used in lazily injected service")
+        ?: throwArgument("Star projections cannot be used in lazily injected service")
     val function = kParameter.function
     return if (!function.declaringClass.sourceFile.endsWith(".kt")) {
         if (function is CallableReference)

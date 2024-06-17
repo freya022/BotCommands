@@ -11,8 +11,9 @@ import io.github.freya022.botcommands.internal.core.service.annotations.Requires
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
@@ -72,7 +73,7 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
 
         if (serviceError.errorType == UNAVAILABLE_PARAMETER) {
             if (serviceError.nestedError?.errorType == NON_UNIQUE_PROVIDERS) {
-                throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                throwArgument("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
             }
         }
 
@@ -81,7 +82,7 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
                 UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
                 /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE, DYNAMIC_NOT_INSTANTIABLE,*/ INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
-                throwUser("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                throwArgument("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
                 else -> provider
             }
@@ -90,7 +91,7 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
                 UNKNOWN, NO_USABLE_PROVIDER, PROVIDER_RETURNED_NULL, NO_PROVIDER, NON_UNIQUE_PROVIDERS -> throwInternal(serviceError.errorMessage)
 
                 UNAVAILABLE_PARAMETER, DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, INVALID_TYPE, FAILED_FATAL_CUSTOM_CONDITION ->
-                    throwUser("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
+                    throwArgument("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
                 UNAVAILABLE_DEPENDENCY, FAILED_CONDITION, FAILED_CUSTOM_CONDITION, UNAVAILABLE_INSTANCE -> {
                     if (logger.isTraceEnabled()) {
@@ -173,7 +174,7 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
                     appendLine("${interfacedServiceType.clazz.simpleNestedName}:\n${implementations.joinAsList { it.getProviderSignature() }}")
                 }
             }
-            throw IllegalStateException(message)
+            throwState(message)
         }
 
         typeToImplementations.forEach { (interfacedType, providers) ->

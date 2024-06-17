@@ -87,11 +87,13 @@ internal class SlashCommandAutoBuilder(
                 .map {
                     val func = it.function
                     val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("${annotationRef<JDASlashCommand>()} should be present")
-                    val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank()).also { path ->
-                        if (path.group != null && path.nameCount == 2) {
-                            throwUser(func, "Slash commands with groups need to have their subcommand name set")
+                    if (annotation.group.isNotBlank()) {
+                        requireAt(annotation.subcommand.isNotBlank(), func) {
+                            "Slash commands with groups need to have their subcommand name set"
                         }
                     }
+
+                    val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank())
                     val commandId = func.findAnnotation<CommandId>()?.value
 
                     SlashFunctionMetadata(it, annotation, path, commandId)

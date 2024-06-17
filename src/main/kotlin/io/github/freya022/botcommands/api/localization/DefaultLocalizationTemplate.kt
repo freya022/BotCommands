@@ -8,7 +8,8 @@ import io.github.freya022.botcommands.api.localization.arguments.factories.Forma
 import io.github.freya022.botcommands.internal.localization.LocalizableArgument
 import io.github.freya022.botcommands.internal.localization.RawArgument
 import io.github.freya022.botcommands.internal.localization.SimpleArgument
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.rethrow
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import java.text.MessageFormat
 import java.util.*
 
@@ -55,7 +56,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
                 return@argumentsLoop
             }
 
-            throwUser("Could not match formattable argument '$formattableArgument' against ${formattableArgumentFactories.map { it.javaClass.simpleNestedName }}")
+            throwArgument("Could not match formattable argument '$formattableArgument' against ${formattableArgumentFactories.map { it.javaClass.simpleNestedName }}")
         }
         addRawArgument(template.substring(start))
     }
@@ -70,7 +71,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             when (localizableArgument) {
                 is RawArgument -> localizableArgument.get()
                 is FormattableArgument -> formatFormattableString(args, localizableArgument)
-                else -> throwUser("Unknown localizable argument type: ${localizableArgument::class.simpleNestedName}")
+                else -> throwArgument("Unknown localizable argument type: ${localizableArgument::class.simpleNestedName}")
             }
         }
     }
@@ -80,13 +81,13 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
         return try {
             formattableArgument.format(value)
         } catch (e: Exception) { //For example, if the user provided a string to a number format
-            throw RuntimeException("Could not get localized string from ${formattableArgument::class.simpleNestedName} '${formattableArgument.argumentName}' with value '$value'", e)
+            e.rethrow("Could not get localized string from ${formattableArgument::class.simpleNestedName} '${formattableArgument.argumentName}' with value '$value'")
         }
     }
 
     private fun getValueByArgumentName(args: Array<out Localization.Entry>, argumentName: String): Any {
         return args.find { it.argumentName == argumentName }?.value
-            ?: throw IllegalArgumentException("Could not find argument '$argumentName' from passed arguments ${args.contentToString()}, in template: '$template'")
+            ?: throwArgument("Could not find argument '$argumentName' from passed arguments ${args.contentToString()}, in template: '$template'")
     }
 
     override fun toString(): String {

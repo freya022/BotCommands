@@ -12,8 +12,8 @@ import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.hasAnnotation
@@ -45,7 +45,7 @@ internal fun <R : MethodParameterMixin> Function<*>.transformParameters(
     declaredName to when {
         parameter.hasAnnotation<Aggregate>() -> {
             val constructor = parameter.type.jvmErasure.primaryConstructor
-                ?: throwUser(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
+                ?: throwArgument(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
             BasicOptionAggregateBuilder(AggregatorParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
                 constructor.nonInstanceParameters.forEach { constructorParameter ->
                     this += builderBlock(constructor, constructorParameter, constructorParameter.findDeclarationName())

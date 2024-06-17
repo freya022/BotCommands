@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.autobuilder.metadata
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KClass
 
 internal abstract class CommandFunctionMetadata<T : Any, A : Annotation>(
@@ -15,7 +15,7 @@ internal abstract class CommandFunctionMetadata<T : Any, A : Annotation>(
     final override val func get() = classPathFunction.function
 
     init {
-        requireUser(classPathFunction.clazz.isSubclassOf(instanceType), func) {
+        requireAt(classPathFunction.clazz.isSubclassOf(instanceType), func) {
             "Declaring class must extend ${instanceType.simpleName}"
         }
     }

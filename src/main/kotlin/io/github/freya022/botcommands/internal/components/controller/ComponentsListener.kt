@@ -69,7 +69,7 @@ internal class ComponentsListener(
     private val rejectionHandler: ComponentInteractionRejectionHandler<Any>? = when {
         globalFilters.isEmpty() -> null
         else -> rejectionHandler
-            ?: throw IllegalStateException("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
+            ?: throwState("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
     }
 
     @BEventListener
@@ -138,9 +138,9 @@ internal class ComponentsListener(
 
                         val descriptor = when (component.componentType) {
                             ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
-                                ?: throwUser("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
+                                ?: throwArgument("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
                             ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
-                                ?: throwUser("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
+                                ?: throwArgument("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
                             else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                         }
 
@@ -230,7 +230,7 @@ internal class ComponentsListener(
         }
 
         val eventType = descriptor.eventFunction.firstParameter.type
-        requireUser(eventType.jvmErasure.isInstance(event), descriptor.function) {
+        requireAt(eventType.jvmErasure.isInstance(event), descriptor.function) {
             "Received an ${expectedEventType.simpleNestedName} but handler only accepts a ${eventType.simpleNestedName}"
         }
     }

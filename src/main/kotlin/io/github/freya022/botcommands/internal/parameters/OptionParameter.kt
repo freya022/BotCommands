@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.core.service.provider.canCreateWr
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 
 internal class OptionParameter internal constructor(
@@ -21,7 +21,7 @@ internal class OptionParameter internal constructor(
 ) {
     internal val typeCheckingFunction = typeCheckingFunction.reflectReference()
     internal val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == typeCheckingParameterName }
-        ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$typeCheckingParameterName'")
+        ?: throwArgument(this.typeCheckingFunction, "Could not find a parameter named '$typeCheckingParameterName'")
 
     /**
      * Can only be the (possibly non-user-defined) aggregation function

@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.utils.launchCatching
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -41,7 +41,7 @@ internal class AutocompleteListener(private val context: BContext) {
 
                 if (option.discordName == event.focusedOption.name) {
                     val autocompleteHandler = option.autocompleteHandler
-                        ?: throwUser(option.typeCheckingFunction, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+                        ?: throwArgument(option.typeCheckingFunction, "Autocomplete handler was not found on parameter '${option.declaredName}'")
 
                     return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
                 }

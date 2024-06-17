@@ -130,7 +130,7 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
         } else if (elementErasure == SlashCommandReference::class) {
             MentionsStringResolver.ofEntity(elementErasure, MentionType.SLASH_COMMAND)
         } else {
-            throwUser("Unsupported element type: ${elementErasure.shortQualifiedName}")
+            throwArgument("Unsupported element type: ${elementErasure.shortQualifiedName}")
         }
     }
 }

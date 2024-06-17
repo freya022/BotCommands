@@ -54,7 +54,7 @@ internal class ModalListener(
                 is EphemeralModalHandlerData -> handlerData.handler(event)
                 is PersistentModalHandlerData -> {
                     val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
-                        ?: throwUser("Missing ${annotationRef<ModalHandler>()} named '${handlerData.handlerName}'")
+                        ?: throwArgument("Missing ${annotationRef<ModalHandler>()} named '${handlerData.handlerName}'")
 
                     modalHandler.execute(modalData, event)
                 }

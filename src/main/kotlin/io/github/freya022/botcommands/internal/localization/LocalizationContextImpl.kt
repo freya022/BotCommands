@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
@@ -17,10 +17,10 @@ internal class LocalizationContextImpl(
     private val _userLocale: DiscordLocale?
 ) : TextLocalizationContext, AppLocalizationContext {
     override val userLocale: DiscordLocale
-        get() = _userLocale ?: throwUser("Cannot user localize on an event which doesn't provide user localization")
+        get() = _userLocale ?: throwArgument("Cannot user localize on an event which doesn't provide user localization")
 
     override val guildLocale: DiscordLocale
-        get() = _guildLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
+        get() = _guildLocale ?: throwArgument("Cannot guild localize on an event which doesn't provide guild localization")
 
     override val effectiveLocale: DiscordLocale
         get() = when {
@@ -64,7 +64,7 @@ internal class LocalizationContextImpl(
         val localization = getLocalization(locale)
         val effectivePath = getEffectivePath(localizationPath)
         val template = localization[effectivePath]
-            ?: throwUser("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${localization.effectiveLocale}')")
+            ?: throwArgument("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${localization.effectiveLocale}')")
 
         return template.localize(*entries)
     }

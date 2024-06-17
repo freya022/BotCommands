@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.utils
 
 import dev.minn.jda.ktx.coroutines.await
+import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
@@ -18,39 +19,71 @@ internal fun throwInternal(message: String): Nothing =
     throw InternalException(message)
 
 internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
-    throw InternalException("${function.shortSignature} : $message")
+    throw InternalException("$message\n    Function: ${function.shortSignature}")
 
-internal fun throwUser(function: KFunction<*>, message: String): Nothing =
-    throw IllegalArgumentException("${function.shortSignature} : $message")
+internal fun throwInternal(message: String, declarationSite: DeclarationSite? = null): Nothing =
+    when (declarationSite) {
+        null -> throw InternalException(message)
+        else -> throw InternalException("$message\n    Declared at: $declarationSite")
+    }
 
-internal fun rethrowUser(function: KFunction<*>, message: String, e: Throwable): Nothing =
-    throw RuntimeException("${function.shortSignature} : $message", e)
+internal fun throwArgument(function: KFunction<*>, message: String): Nothing =
+    throw IllegalArgumentException("$message\n    Function: ${function.shortSignature}")
 
-internal fun rethrowUser(message: String, e: Throwable): Nothing =
-    throw RuntimeException(message, e)
+internal fun Throwable.rethrow(message: String): Nothing =
+    throw RuntimeException(message, this)
 
-internal fun throwUser(message: String): Nothing =
-    throw IllegalArgumentException(message)
+internal fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothing =
+    throw RuntimeException("$message\n    Function: ${function.shortSignature}", this)
+
+internal fun Throwable.rethrowAt(message: String, declarationSite: DeclarationSite): Nothing =
+    throw RuntimeException("$message\n    Declared at: $declarationSite", this)
+
+internal fun throwArgument(message: String, declarationSite: DeclarationSite? = null): Nothing =
+    when (declarationSite) {
+        null -> throw IllegalArgumentException(message)
+        else -> throw IllegalArgumentException("$message\n    Declared at: $declarationSite")
+    }
+
+internal fun throwState(message: String, declarationSite: DeclarationSite? = null): Nothing =
+    when (declarationSite) {
+        null -> throw IllegalStateException(message)
+        else -> throw IllegalStateException("$message\n    Declared at: $declarationSite")
+    }
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -> String) {
+internal inline fun requireAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
 
     if (!value) {
-        throwUser(function, lazyMessage())
+        if (function != null)
+            throwArgument(function, lazyMessage())
+        else
+            throwArgument(lazyMessage())
     }
 }
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
+internal inline fun requireAt(value: Boolean, declarationSite: DeclarationSite? = null, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
 
     if (!value) {
-        throwUser(lazyMessage())
+        throwArgument(lazyMessage(), declarationSite)
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+internal inline fun checkAt(value: Boolean, declarationSite: DeclarationSite? = null, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
+    if (!value) {
+        throwState(lazyMessage(), declarationSite)
     }
 }
 

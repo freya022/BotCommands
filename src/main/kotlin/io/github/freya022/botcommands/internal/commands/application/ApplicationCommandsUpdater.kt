@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.internal.commands.application.localization
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
-import io.github.freya022.botcommands.internal.utils.rethrowUser
+import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -210,7 +210,7 @@ internal class ApplicationCommandsUpdater private constructor(
             try {
                 transform(it)
             } catch (e: Exception) { //TODO use some sort of exception context for command paths
-                rethrowUser(it.function, "An exception occurred while processing command '${it.path.fullPath}'", e)
+                e.rethrowAt("An exception occurred while processing this command", it.declarationSite)
             }
         }
 

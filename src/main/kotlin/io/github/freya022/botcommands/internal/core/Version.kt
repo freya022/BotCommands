@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 
@@ -60,7 +61,7 @@ internal class Version private constructor(
         }
 
         fun get(versionString: String) =
-            getOrNull(versionString) ?: throw IllegalArgumentException("Cannot parse version '$versionString'")
+            getOrNull(versionString) ?: throwArgument("Cannot parse version '$versionString'")
 
         fun getOrNull(versionString: String): Version? {
             val groups = versionPattern.matchEntire(versionString)?.groups ?: return null

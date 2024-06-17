@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 private val unsupportedTypes = enumSetOf(
@@ -25,7 +25,7 @@ internal class AutocompleteCommandOptionImpl(
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {
     init {
-        requireUser(resolver.optionType !in unsupportedTypes, optionBuilder.parameter.function) {
+        requireAt(resolver.optionType !in unsupportedTypes, optionBuilder.parameter.function) {
             "Autocomplete parameters does not support option type ${resolver.optionType} as Discord does not send them"
         }
     }

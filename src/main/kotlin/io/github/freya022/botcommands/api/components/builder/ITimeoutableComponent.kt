@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.components.data.ITimeoutData
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -2032,11 +2032,11 @@ private fun findHandlerName(func: KFunction<*>): String {
     val groupTimeoutAnnotation = func.findAnnotation<GroupTimeoutHandler>()
 
     if (componentTimeoutAnnotation != null && groupTimeoutAnnotation != null)
-        throwUser(func, "Cannot have the same function with the two annotation")
+        throwArgument(func, "Cannot have the same function with the two annotation")
     else if (componentTimeoutAnnotation != null)
         return componentTimeoutAnnotation.getEffectiveName(func)
     else if (groupTimeoutAnnotation != null)
         return groupTimeoutAnnotation.getEffectiveName(func)
 
-    throwUser(func, "Could not find ${annotationRef<ComponentTimeoutHandler>()} or ${annotationRef<GroupTimeoutHandler>()}")
+    throwArgument(func, "Could not find ${annotationRef<ComponentTimeoutHandler>()} or ${annotationRef<GroupTimeoutHandler>()}")
 }

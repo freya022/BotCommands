@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 
 @BService
 internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
@@ -24,7 +24,7 @@ internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsM
                 val oldHandler = handlers.put(handlerInfo.handlerName, handlerInfo)
 
                 if (oldHandler != null) {
-                    throwUser("Tried to register modal handler '%s' at %s but it was already registered at %s".format(
+                    throwArgument("Tried to register modal handler '%s' at %s but it was already registered at %s".format(
                         handlerInfo.handlerName,
                         handlerInfo.function.shortSignature,
                         oldHandler.function.shortSignature

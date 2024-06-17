@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
-import io.github.freya022.botcommands.internal.utils.throwUser as utilsThrowUser
+import io.github.freya022.botcommands.internal.utils.throwArgument as utilsThrowUser
 
 class ParameterWrapper private constructor(
     val type: KType,

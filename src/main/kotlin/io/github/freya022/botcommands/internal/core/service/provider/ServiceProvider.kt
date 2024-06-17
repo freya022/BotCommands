@@ -297,7 +297,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServ
 
 internal fun <R> KFunction<R>.callStatic(serviceContainer: DefaultServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
     if (this.isSuspend) {
-        throwUser(this, "Suspending functions are not supported in this context")
+        throwArgument(this, "Suspending functions are not supported in this context")
     }
 
     return when (val instanceParameter = this.instanceParameter) {
@@ -306,7 +306,7 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: DefaultServiceContain
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
                 ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
-                    throwUser(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
+                    throwArgument(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
                 }
             args[instanceParameter] = instance
 

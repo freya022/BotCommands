@@ -204,7 +204,7 @@ class EventDispatcher internal constructor(
                 // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
                 .onEach {
                     context.serviceContainer.canCreateService(it)?.let { serviceError ->
-                        throwUser(
+                        throwArgument(
                             classPathFunc.function,
                             "Unable to register event listener due to an unavailable service: ${serviceError.toSimpleString()}"
                         )

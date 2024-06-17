@@ -71,11 +71,12 @@ internal class ModalHandlerInfo internal constructor(
         val userDatas = handlerData.userData
 
         //Check if there's enough arguments to fit user data + modal inputs
-        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, function) {
+        requireAt(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, function) {
             """
-            Modal handler does not match the received modal data:
-            Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)
-            Discord data: ${userDatas.size} userdata parameters and ${event.values.size} modal input(s)""".trimIndent()
+                Modal handler does not match the received modal data:
+                Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)
+                Discord data: ${userDatas.size} userdata parameters and ${event.values.size} modal input(s)
+            """.trimIndent()
         }
 
         val userDataIterator = userDatas.iterator()

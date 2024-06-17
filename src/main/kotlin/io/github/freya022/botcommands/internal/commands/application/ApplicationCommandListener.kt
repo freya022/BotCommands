@@ -23,10 +23,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
-import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.launchCatching
-import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
-import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -51,7 +48,7 @@ internal class ApplicationCommandListener internal constructor(
     private val rejectionHandler: ApplicationCommandRejectionHandler<Any>? = when {
         filters.isEmpty() -> null
         else -> rejectionHandler
-            ?: throw IllegalStateException("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
+            ?: throwState("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
     }
 
     @BEventListener

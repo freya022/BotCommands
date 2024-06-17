@@ -47,7 +47,7 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
     }
 
     if (ex != null) {
-        throw RuntimeException("Exception(s) occurred while registering annotated commands", ex)
+        ex!!.rethrow("Exception(s) occurred while registering annotated commands")
     }
 }
 
@@ -105,7 +105,9 @@ internal enum class TestState {
 
 internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContext): TestState {
     if (func.hasAnnotation<Test>()) {
-        if (scope != CommandScope.GUILD) throwUser(func, "Test commands must have their scope set to GUILD")
+        requireAt(scope == CommandScope.GUILD, func) {
+            "Test commands must have their scope set to GUILD"
+        }
         if (manager !is GuildApplicationCommandManager) throwInternal("GUILD scoped command was not registered with a guild command manager")
 
         //Returns whether the command can be registered
@@ -180,7 +182,7 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
     filters += AnnotationUtils.getFilters(context, func, ApplicationCommandFilter::class)
 
     if (func.hasAnnotation<NSFW>()) {
-        throwUser(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
+        throwArgument(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
 }
 
@@ -189,7 +191,7 @@ internal fun CommandAutoBuilder.requireServiceOptionOrOptional(func: KFunction<*
     if (isOptional) return
 
     val serviceError = serviceContainer.canCreateWrappedService(kParameter) ?: return
-    throwUser(
+    throwArgument(
         func,
         "Cannot determine usage of option '${kParameter.bestName}' (${kParameter.type.simpleNestedName}) and service loading failed, " +
                 "if this is a Discord option, use @${optionAnnotation.simpleNestedName}, check @${commandAnnotation.simpleNestedName} for more details\n" +

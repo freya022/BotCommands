@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
-import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 
@@ -45,7 +44,7 @@ internal class ResolverContainer internal constructor(
                 return compatibleInterfaces.any { it.isInstance(this) }
             }
 
-            requireUser(resolver.hasCompatibleInterface()) {
+            require(resolver.hasCompatibleInterface()) {
                 "The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}"
             }
 

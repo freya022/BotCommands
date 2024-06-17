@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.core.db.query.NonParametrizedQuer
 import io.github.freya022.botcommands.internal.core.db.traced.TracedConnection
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.rethrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
@@ -74,13 +75,12 @@ internal class DatabaseImpl internal constructor(
                 val rs = try {
                     executeQuery().read()
                 } catch (e: Exception) {
-                    throw RuntimeException(
+                    e.rethrow(
                         """
                             Could not check BC schema version, did you either:
                             - Set up migration? See https://freya022.github.io/BotCommands/3.X/using-botcommands/database/#using-migration
                             - Or, run the SQL scripts (in 'bc_database_scripts')
-                        """.trimIndent(),
-                        e
+                        """.trimIndent()
                     )
                 }
 

@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import java.time.Duration
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -27,7 +27,7 @@ private fun Bandwidth.toRealBandwidth(): BucketBandwidth =
 internal fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
     val rateLimitAnnotation = findAnnotation<RateLimit>() ?: this.declaringClass.findAnnotation<RateLimit>()
     val cooldownAnnotation = findAnnotation<Cooldown>() ?: this.declaringClass.findAnnotation<Cooldown>()
-    requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
+    requireAt(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
         "Cannot use both ${annotationRef<Cooldown>()} and ${annotationRef<RateLimit>()}"
     }
 

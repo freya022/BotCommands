@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveReference
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.createSingleton
-import io.github.freya022.botcommands.internal.utils.requireUser
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
@@ -30,7 +29,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
             val customConditionType = conditionMetadata.type
             val checker = customConditionType.createSingleton()
             val checkerAnnotationType = checker.annotationType
-            requireUser(checkerAnnotationType == kClass.java) {
+            require(checkerAnnotationType == kClass.java) {
                 buildString {
                     val conditionName = classInfo.simpleNestedName
                     val annotationTypeGetter = checker::annotationType.resolveReference(checker::class)!!.getter

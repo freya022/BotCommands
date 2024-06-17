@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.components.builder
 
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.toTimestampIfFinite
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
@@ -22,12 +22,12 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
     }
 
     override fun timeout(timeout: Duration): T = instance.also {
-        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwArgument("Timeout must be positive and finite")
         this.timeout = null
     }
 
     override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
-        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be positive and finite")
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwArgument("Timeout must be positive and finite")
         this.timeout = PersistentTimeout.create(handlerName, data.toList())
     }
 }

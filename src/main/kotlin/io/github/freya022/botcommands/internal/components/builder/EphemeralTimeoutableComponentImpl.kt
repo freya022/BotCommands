@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.components.builder
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IEphemeralTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.data.EphemeralTimeout
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.toTimestampIfFinite
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
@@ -22,13 +22,13 @@ internal class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableCompon
     }
 
     override fun timeout(timeout: Duration): T = instance.also {
-        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwArgument("Timeout must be finite and positive")
         this.timeout = null
     }
 
     @JvmSynthetic
     override fun timeout(timeout: Duration, handler: suspend () -> Unit): T = instance.also {
-        this.expiresAt = timeout.toTimestampIfFinite() ?: throwUser("Timeout must be finite and positive")
+        this.expiresAt = timeout.toTimestampIfFinite() ?: throwArgument("Timeout must be finite and positive")
         this.timeout = EphemeralTimeout(handler)
     }
 }

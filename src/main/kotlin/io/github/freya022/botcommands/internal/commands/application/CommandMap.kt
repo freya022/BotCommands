@@ -2,8 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import java.util.*
 
 interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>
@@ -17,38 +16,32 @@ internal class MutableCommandMap<T : ApplicationCommandInfo>(
         //Check if commands with the same name as their entire path are present
         // For example, trying to insert /tag create while /tag already exists
         for ((commandPath, mapInfo) in this) {
-            if (key.fullPath == commandPath.name) {
-                throwUser(
-                    "Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)".format(
-                        key, value.function.shortSignatureNoSrc,
-                        commandPath, mapInfo.function.shortSignatureNoSrc
-                    )
-                )
+            require(key.fullPath != commandPath.name) {
+                """
+                    Tried to add a command but a command with an equal/longer path already exists
+                    First command: $commandPath, at ${mapInfo.declarationSite}
+                    Second command: $key, at ${value.declarationSite}
+                """.trimIndent()
             }
 
-            if (commandPath.fullPath == key.name) {
-                throwUser(
-                    "Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)".format(
-                        key, value.function.shortSignatureNoSrc,
-                        commandPath, mapInfo.function.shortSignatureNoSrc
-                    )
-                )
+            require(commandPath.fullPath != key.name) {
+                """
+                    Tried to add a command but a top-level command already exists
+                    First command: $commandPath, at ${mapInfo.declarationSite}
+                    Second command: $key, at ${value.declarationSite}
+                """.trimIndent()
             }
         }
 
-        val oldInfo = map.put(key, value)
-        if (oldInfo != null) {
-            throwUser(
-                "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
-                    key,
-                    value.function.shortSignatureNoSrc,
-                    oldInfo.path,
-                    oldInfo.function.shortSignatureNoSrc
-                )
-            )
+        map.putIfAbsentOrThrow(key, value) {
+            """
+                Tried to add a command but a command with the same path ($key) already exists
+                First command: ${it.declarationSite}
+                Second command: at ${value.declarationSite}
+            """.trimIndent()
         }
 
-        return null //oldInfo is always null
+        return null // No previous value
     }
 }
 

@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.autoco
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -122,7 +122,7 @@ class SlashCommandOptionBuilder internal constructor(
      * @see AutocompleteHandler @AutocompleteHandler
      */
     fun autocompleteByName(name: String) {
-        autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwUser("Unknown autocomplete handler: $name")
+        autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwArgument("Unknown autocomplete handler: $name")
     }
 
     /**
@@ -133,6 +133,6 @@ class SlashCommandOptionBuilder internal constructor(
      */
     fun autocompleteByFunction(function: KFunction<*>) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[function]
-            ?: throwUser("No autocomplete handler declared from: ${function.shortSignatureNoSrc}")
+            ?: throwArgument("No autocomplete handler declared from: ${function.shortSignatureNoSrc}")
     }
 }

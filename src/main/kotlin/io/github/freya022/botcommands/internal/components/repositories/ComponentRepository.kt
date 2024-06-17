@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.internal.components.data.*
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
@@ -228,7 +228,7 @@ internal class ComponentRepository(
         }
 
         if (hasTimeouts) {
-            throwUser("Cannot put components inside groups if they have a timeout set")
+            throwArgument("Cannot put components inside groups if they have a timeout set")
         }
 
         return@transactional groupId

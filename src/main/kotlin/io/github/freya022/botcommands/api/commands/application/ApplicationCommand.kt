@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 
@@ -91,6 +92,6 @@ abstract class ApplicationCommand {
             append(" is a generated option but no generated value supplier has been given")
         }
 
-        throw IllegalArgumentException(errorStr)
+        throwArgument(errorStr)
     }
 }

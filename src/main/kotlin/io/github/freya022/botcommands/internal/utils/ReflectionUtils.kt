@@ -27,10 +27,10 @@ internal object ReflectionUtils {
         //Still allow internal modifiers as they should be reflectively accessible
         if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
             //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
-            throwUser("$this : Function needs to be public")
+            throwArgument("$this : Function needs to be public")
         }
 
-        requireUser(this.isConstructor || !this.isStatic || this.declaringClass.isValue, this) {
+        requireAt(isConstructor || !isStatic || declaringClass.isValue, this) {
             "Function must not be static"
         }
 
@@ -152,10 +152,10 @@ internal val KClass<*>.isObject: Boolean
     get() = kind == ClassKind.OBJECT
 
 internal fun KParameter.findDeclarationName(): String =
-    name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
+    name ?: throwArgument("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 
 internal fun KParameter.findOptionName(): String =
-    name?.toDiscordString() ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
+    name?.toDiscordString() ?: throwArgument("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
@@ -165,7 +165,7 @@ internal fun <T : Any> KClass<T>.createSingleton(): T {
     if (instance != null)
         return instance
     val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
-        ?: throwUser("Class ${this.simpleNestedName} must either be an object, or have a no-arg constructor (or have only default parameters)")
+        ?: throwArgument("Class $simpleNestedName must either be an object, or have a no-arg constructor (or have only default parameters)")
 
     return constructor.callBy(mapOf())
 }
@@ -178,7 +178,7 @@ internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType 
     val interfaceType = allSupertypes.firstOrNull { it.jvmErasure == targetType }
         ?: throwInternal("Unable to find the supertype '${targetType.simpleNestedName}' in '${this.simpleNestedName}'")
     return interfaceType.arguments[index].type
-        ?: throwUser("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
+        ?: throwArgument("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
 }
 
 @PublishedApi
@@ -188,7 +188,7 @@ internal inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType =
 internal fun KType.findErasureOfAt(index: Int, targetType: KClass<*>): KType {
     if (this.jvmErasure == targetType) {
         return this.arguments[index].type
-            ?: throwUser("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
+            ?: throwArgument("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
     }
 
     return this.jvmErasure.superErasureAt(index, targetType)

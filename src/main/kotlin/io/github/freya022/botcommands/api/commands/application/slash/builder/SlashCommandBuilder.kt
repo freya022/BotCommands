@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
@@ -81,10 +81,10 @@ abstract class SlashCommandBuilder internal constructor(
      */
     fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: KClass<*>, block: SlashCommandOptionBuilder.() -> Unit = {}) {
         val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
             option(parameterName, optionName ?: parameterName.toDiscordString(), block)
         }
     }
@@ -123,10 +123,10 @@ abstract class SlashCommandBuilder internal constructor(
      */
     fun inlineClassOptionVararg(declaredName: String, clazz: KClass<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
             nestedOptionVararg(parameterName, amount, requiredAmount, optionNameSupplier, block)
         }
     }
@@ -180,7 +180,7 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilder {
-        if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
+        if (!allowOptions) throwArgument("Cannot add options as this already contains subcommands/subcommand groups")
 
         return SlashCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
     }

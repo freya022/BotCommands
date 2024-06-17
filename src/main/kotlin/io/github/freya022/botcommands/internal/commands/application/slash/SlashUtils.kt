@@ -2,15 +2,14 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.AbstractGeneratedOption
 import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -30,21 +29,21 @@ internal object SlashUtils {
 
     internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
-    context(ExecutableMixin)
+    context(IDeclarationSiteHolder)
     internal inline fun <T : AbstractGeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
         return supplier(this).also { defaultValue ->
             checkDefaultValue(option, defaultValue)
         }
     }
 
-    private fun ExecutableMixin.checkDefaultValue(option: AbstractGeneratedOption, defaultValue: Any?) {
+    private fun IDeclarationSiteHolder.checkDefaultValue(option: AbstractGeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
-            requireUser(expectedType.isInstance(defaultValue), this.function) {
+            requireAt(expectedType.isInstance(defaultValue), declarationSite) {
                 "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
             }
         } else {
-            requireUser(option.isOptionalOrNullable, this.function) {
+            requireAt(option.isOptionalOrNullable, declarationSite) {
                 "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
             }
         }
@@ -110,7 +109,7 @@ internal object SlashUtils {
         }
 
         if (option.hasAutocomplete()) {
-            requireUser(optionType.canSupportChoices(), option.typeCheckingFunction) {
+            requireAt(optionType.canSupportChoices(), option.typeCheckingFunction) {
                 "Slash command option #${option.index} does not support autocomplete"
             }
 
@@ -124,16 +123,14 @@ internal object SlashUtils {
                 choices = option.choices
             } else if (option.usePredefinedChoices) { //Opt in
                 val predefinedChoices = resolver.getPredefinedChoices(guild)
-                if (predefinedChoices.isEmpty())
-                    throwUser(
-                        option.typeCheckingFunction,
-                        "Predefined choices were used for option '${option.declaredName}' but no choices were returned"
-                    )
+                requireAt(predefinedChoices.isNotEmpty(), option.typeCheckingFunction) {
+                    "Predefined choices were used for option '${option.declaredName}' but no choices were returned"
+                }
                 choices = predefinedChoices
             }
 
             if (choices != null) {
-                requireUser(!option.hasAutocomplete(), option.typeCheckingFunction) {
+                requireAt(!option.hasAutocomplete(), option.typeCheckingFunction) {
                     "Slash command option #${option.index} cannot have autocomplete and choices at the same time"
                 }
 

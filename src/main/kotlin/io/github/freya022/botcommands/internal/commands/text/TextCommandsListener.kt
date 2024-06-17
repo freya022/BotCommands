@@ -14,10 +14,7 @@ import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
-import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.launchCatching
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -48,7 +45,7 @@ internal class TextCommandsListener internal constructor(
     private val rejectionHandler: TextCommandRejectionHandler<Any>? = when {
         globalFilters.isEmpty() -> null
         else -> rejectionHandler
-            ?: throw IllegalStateException("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
+            ?: throwState("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
     }
 
     @BEventListener(ignoreIntents = true)

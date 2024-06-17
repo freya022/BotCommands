@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 
 @BService
 internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
@@ -13,8 +13,12 @@ internal class TextCommandsContextImpl internal constructor() : TextCommandsCont
 
     internal fun addTextCommand(commandInfo: TopLevelTextCommandInfoImpl) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
-            textCommandMap.put(name, commandInfo)?.let {
-                throwUser(commandInfo.variations.first().function, "Text command with path '${commandInfo.path}' already exists")
+            textCommandMap.putIfAbsentOrThrow(name, commandInfo) {
+                """
+                    Text command with path '${commandInfo.path}' already exists
+                    First command: ${it.declarationSite}
+                    Second command: ${commandInfo.declarationSite}
+                """.trimIndent()
             }
         }
     }

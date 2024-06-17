@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components
 
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 
 enum class ComponentType(val key: Int) {
     GROUP(0),
@@ -9,7 +9,7 @@ enum class ComponentType(val key: Int) {
 
     companion object {
         fun fromId(key: Int): ComponentType {
-            return entries.find { it.key == key } ?: throwUser("Unknown ComponentType: $key")
+            return entries.find { it.key == key } ?: throwArgument("Unknown ComponentType: $key")
         }
     }
 }

@@ -104,7 +104,7 @@ internal class TextCommandAutoBuilder(
                     1 -> firstContainer
                     // Navigate to the subcommand that's going to hold the command
                     else -> path.components.drop(1).fold(firstContainer) { acc, subName ->
-                        acc.subcommands[subName] ?: throwUser("Cannot find command variation '$path'")
+                        acc.subcommands[subName] ?: throwArgument("Cannot find command variation '$path'")
                     }
                 }
 
@@ -140,7 +140,7 @@ internal class TextCommandAutoBuilder(
 
                     processBuilder(container, metadata)
                 } catch (e: Exception) {
-                    rethrowUser(metadata.func, "Unable to construct a text command", e)
+                    e.rethrowAt("Unable to construct a text command", metadata.func)
                 }
             }
 
@@ -158,7 +158,7 @@ internal class TextCommandAutoBuilder(
                 try {
                     processBuilder(subContainer, metadata)
                 } catch (e: Exception) {
-                    rethrowUser(metadata.func, "Unable to construct a text subcommand", e)
+                    e.rethrowAt("Unable to construct a text subcommand", metadata.func)
                 }
             }
 
@@ -179,7 +179,7 @@ internal class TextCommandAutoBuilder(
                     try {
                         processVariation(it)
                     } catch (e: Exception) {
-                        rethrowUser(it.func, "Unable to construct a text command variation", e)
+                        e.rethrowAt("Unable to construct a text command variation", it.func)
                     }
                 }
             }

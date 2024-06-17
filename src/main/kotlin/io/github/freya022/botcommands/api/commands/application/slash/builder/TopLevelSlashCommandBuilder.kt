@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
@@ -42,8 +42,8 @@ class TopLevelSlashCommandBuilder internal constructor(
      * @see JDASlashCommand.subcommand
      */
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
-        if (isFunctionSet()) throwUser("Cannot add subcommands as this already contains a function")
-        if (!allowSubcommands) throwUser("Cannot add subcommands as this already contains options")
+        if (isFunctionSet()) throwArgument("Cannot add subcommands as this already contains a function")
+        if (!allowSubcommands) throwArgument("Cannot add subcommands as this already contains options")
 
         SlashSubcommandBuilder(context, name, function, this, this)
             .setCallerAsDeclarationSite()
@@ -61,8 +61,8 @@ class TopLevelSlashCommandBuilder internal constructor(
      * @see JDASlashCommand.group
      */
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {
-        if (isFunctionSet()) throwUser("Cannot add subcommand groups as this already contains a function")
-        if (!allowSubcommandGroups) throwUser("Cannot add subcommand groups as this already contains options")
+        if (isFunctionSet()) throwArgument("Cannot add subcommand groups as this already contains a function")
+        if (!allowSubcommandGroups) throwArgument("Cannot add subcommand groups as this already contains options")
 
         SlashSubcommandGroupBuilder(context, name, this)
             .setCallerAsDeclarationSite()

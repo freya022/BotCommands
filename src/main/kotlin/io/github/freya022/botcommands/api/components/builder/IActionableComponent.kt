@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -1293,11 +1293,11 @@ private fun findHandlerName(func: KFunction<*>): String {
     val selectMenuAnnotation = func.findAnnotation<JDASelectMenuListener>()
 
     if (buttonAnnotation != null && selectMenuAnnotation != null)
-        throwUser(func, "Cannot have the same function with the two annotation")
+        throwArgument(func, "Cannot have the same function with the two annotation")
     else if (buttonAnnotation != null)
         return buttonAnnotation.getEffectiveName(func)
     else if (selectMenuAnnotation != null)
         return selectMenuAnnotation.getEffectiveName(func)
 
-    throwUser(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
+    throwArgument(func, "Could not find ${annotationRef<JDAButtonListener>()} or ${annotationRef<JDASelectMenuListener>()}")
 }

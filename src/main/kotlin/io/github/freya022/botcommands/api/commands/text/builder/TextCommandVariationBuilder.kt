@@ -23,7 +23,7 @@ import io.github.freya022.botcommands.internal.commands.text.TextCommandVariatio
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -85,10 +85,10 @@ class TextCommandVariationBuilder internal constructor(
 
     fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: KClass<*>, block: TextCommandOptionBuilder.() -> Unit = {}) {
         val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
             option(parameterName, optionName ?: parameterName.toDiscordString(), block)
         }
     }
@@ -102,10 +102,10 @@ class TextCommandVariationBuilder internal constructor(
      */
     fun inlineClassOptionVararg(declaredName: String, clazz: KClass<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
             nestedOptionVararg(parameterName, amount, requiredAmount, optionNameSupplier, block)
         }
     }
@@ -122,7 +122,7 @@ class TextCommandVariationBuilder internal constructor(
      */
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         if (_optionAggregateBuilders.hasVararg())
-            throwUser("Cannot have more than 1 vararg in text commands")
+            throwArgument("Cannot have more than 1 vararg in text commands")
 
         //Same as in SlashCommandBuilder#optionVararg
         _optionAggregateBuilders.varargAggregate(declaredName) {

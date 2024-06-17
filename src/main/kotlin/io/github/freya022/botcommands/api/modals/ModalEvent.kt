@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.localization.interaction.LocalizableRe
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableEditCallbackImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
@@ -34,6 +35,6 @@ class ModalEvent internal constructor(
         }
 
         return event.values.first { it.id == component.id }
-            ?: throw IllegalArgumentException("No value found, you likely passed an input from another modal, or haven't attached it")
+            ?: throwArgument("No value found, you likely passed an input from another modal, or haven't attached it")
     }
 }

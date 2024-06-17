@@ -13,9 +13,9 @@ import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -27,7 +27,7 @@ internal class MemberParamFunction<T : Any, R> internal constructor(
     paramClass: KClass<T>
 ) : MemberFunction<R>(boundFunction, instanceSupplier) {
     init {
-        requireUser(firstParameter.type.jvmErasure.isSubclassOf(paramClass), kFunction) {
+        requireAt(firstParameter.type.jvmErasure.isSubclassOf(paramClass), kFunction) {
             "First argument should be a ${paramClass.simpleNestedName}"
         }
     }
@@ -55,7 +55,7 @@ internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberPar
             Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${classRef<GUILD_T>()} as to benefit from non-null getters")
         }
     } else if (eventType.isSubclassOf<GUILD_T>()) {
-        throwUser(kFunction, "Cannot use ${classRef<GUILD_T>()} on a global application command")
+        throwArgument(kFunction, "Cannot use ${classRef<GUILD_T>()} on a global application command")
     }
 }
 
@@ -67,11 +67,11 @@ internal inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(cont
 
 internal inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {
     if (this is ExecutableCommandBuilder<*, *>) {
-        requireUser(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
+        requireAt(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"
         }
     } else if (this is TextCommandVariationBuilder) {
-        requireUser(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
+        requireAt(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"
         }
     }

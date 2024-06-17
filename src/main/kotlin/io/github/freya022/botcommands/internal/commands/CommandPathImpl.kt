@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands
 
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.math.min
 
@@ -56,7 +57,7 @@ internal class CommandPathImpl internal constructor(
             group ?: // /name group subname
             subname // /name subname
         2 -> subname
-        else -> throw IllegalArgumentException("Invalid name count: $i")
+        else -> throwArgument("Invalid name count: $i")
     }
 
     override fun startsWith(o: CommandPath): Boolean {

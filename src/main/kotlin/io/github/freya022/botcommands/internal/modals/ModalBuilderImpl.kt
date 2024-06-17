@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.throwState
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
@@ -50,7 +51,7 @@ internal class ModalBuilderImpl internal constructor(
                 val internalId = ModalMaps.parseInputId(id)
 
                 val data = modalMaps.consumeInput(internalId)
-                    ?: throw IllegalStateException("Modal component with id '$internalId' could not be found in the inputs created with the '${classRef<Modals>()}' class")
+                    ?: throwState("Modal component with id '$internalId' could not be found in the inputs created with the '${classRef<Modals>()}' class")
                 inputDataMap.put(internalId, data)
             }
 

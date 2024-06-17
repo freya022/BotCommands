@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core.db
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.toBoxed
 import io.github.freya022.botcommands.internal.utils.findErasureOfAt
+import io.github.freya022.botcommands.internal.utils.rethrow
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import java.sql.ResultSet
@@ -30,7 +31,7 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
                 this.hasNext = hasNext
                 return hasNext
             } catch (e: SQLException) {
-                throw RuntimeException("Unable to iterate the result set", e)
+                e.rethrow("Unable to iterate the result set")
             }
         }
 

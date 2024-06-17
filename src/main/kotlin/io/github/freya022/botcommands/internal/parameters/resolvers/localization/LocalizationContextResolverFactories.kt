@@ -16,8 +16,8 @@ import io.github.freya022.botcommands.internal.localization.LocalizationContextI
 import io.github.freya022.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.requireUser
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.requireAt
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KClass
@@ -61,10 +61,10 @@ internal object LocalizationContextResolverFactories {
     fun getBaseLocalizationContext(localizationService: LocalizationService, parameter: KParameter, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
         val parameterFunction = parameter.function
         val annotation = parameter.findAnnotation<LocalizationBundle>()
-            ?: throwUser(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with ${annotationRef<LocalizationBundle>()}")
+            ?: throwArgument(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with ${annotationRef<LocalizationBundle>()}")
 
         val firstParamErasure = parameterFunction.valueParameters.first().type.jvmErasure
-        requireUser(firstParamErasure.isSubclassOfAny(*requiredEventTypes), parameterFunction) {
+        requireAt(firstParamErasure.isSubclassOfAny(*requiredEventTypes), parameterFunction) {
             "${parameter.type.jvmErasure.simpleName} parameters only works with ${requiredEventTypes.joinToString(" or ")} as the first parameter"
         }
 

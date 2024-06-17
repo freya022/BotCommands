@@ -55,7 +55,7 @@ internal object ReflectionMetadata {
         val packages = config.packages
         val classes = config.classes
         require(packages.isNotEmpty() || classes.isNotEmpty()) {
-            throwUser("You must specify at least 1 package or class to scan from")
+            throwArgument("You must specify at least 1 package or class to scan from")
         }
 
         if (packages.isNotEmpty())
@@ -205,7 +205,7 @@ internal object ReflectionMetadata {
                 val isService = classInfo.isService(config)
                 classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
             } catch (e: Throwable) {
-                throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
+                e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
         }
     }
@@ -225,7 +225,7 @@ internal object ReflectionMetadata {
 
     internal val Class<*>.sourceFile: String
         get() = (classMetadataMap[this]
-            ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
+            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
 
     internal val Class<*>.sourceFileOrNull: String?
         get() = classMetadataMap[this]?.sourceFile
@@ -239,7 +239,7 @@ internal object ReflectionMetadata {
     internal val KParameter.isNullable: Boolean
         get() {
             val metadata = methodMetadataMap[function.javaMethodOrConstructor]
-                ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
+                ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
             val isNullableAnnotated =
                 metadata.nullabilities[index]
 
@@ -248,7 +248,7 @@ internal object ReflectionMetadata {
 
     internal val KFunction<*>.lineNumber: Int
         get() = (methodMetadataMap[this.javaMethodOrConstructor]
-            ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).line
+            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).line
 
     private val Executable.isSuspend: Boolean
         get() = parameters.any { it.type == Continuation::class.java }

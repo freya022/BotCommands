@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components
 
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 
 enum class LifetimeType(val key: Int) {
     PERSISTENT(0),
@@ -8,7 +8,7 @@ enum class LifetimeType(val key: Int) {
 
     companion object {
         fun fromId(key: Int): LifetimeType {
-            return entries.find { it.key == key } ?: throwUser("Unknown LifetimeType: $key")
+            return entries.find { it.key == key } ?: throwArgument("Unknown LifetimeType: $key")
         }
     }
 }

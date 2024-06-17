@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import java.util.*
 
 internal abstract class AbstractLocalizableAction(
@@ -26,12 +27,12 @@ internal abstract class AbstractLocalizableAction(
         val effectivePath = getEffectivePath(localizationPath)
         localizationBundle?.let { localizationBundle ->
             val localization = localizationService.getInstance(localizationBundle, locale) ?:
-                throw IllegalArgumentException("Could not find a bundle named '$localizationBundle'")
+            throwArgument("Could not find a bundle named '$localizationBundle'")
 
             // Can do a non-local return, skipping the exception below
             block(localization, effectivePath)
 
-            throw IllegalArgumentException("Could not find a localization template at path '$effectivePath' in bundle '$localizationBundle'")
+            throwArgument("Could not find a localization template at path '$effectivePath' in bundle '$localizationBundle'")
         }
 
         responseBundles.forEach { bundleName ->
@@ -40,7 +41,7 @@ internal abstract class AbstractLocalizableAction(
             block(localization, effectivePath)
         }
 
-        throw IllegalArgumentException("Could not find a bundle with locale '$locale' and path '$effectivePath', registered bundles: $responseBundles")
+        throwArgument("Could not find a bundle with locale '$locale' and path '$effectivePath', registered bundles: $responseBundles")
     }
 
     private fun getEffectivePath(localizationPath: String) = when (localizationPrefix) {

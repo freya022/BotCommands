@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.internal.core.options.builder.InternalAggr
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
@@ -19,14 +19,14 @@ internal class VarargAggregatorParameter internal constructor(
     override val typeCheckingFunction = commandFunction.reflectReference()
     override val typeCheckingParameterName = parameterName
     override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == parameterName }
-        ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$parameterName'")
+        ?: throwArgument(this.typeCheckingFunction, "Could not find a parameter named '$parameterName'")
 
     init {
         if (this.typeCheckingFunction.isSpecialAggregator()) {
             throwInternal("Tried to use a special aggregator in a ${javaClass.simpleNestedName}: ${this.typeCheckingFunction}")
         }
 
-        requireUser(typeCheckingParameter.type.jvmErasure == List::class, typeCheckingFunction) {
+        requireAt(typeCheckingParameter.type.jvmErasure == List::class, typeCheckingFunction) {
             "Vararg parameter '$typeCheckingParameterName' must be a List"
         }
     }

@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.M
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
@@ -39,7 +40,7 @@ internal class MutableApplicationCommandMap internal constructor(
                     is MessageCommandInfo -> CommandType.MESSAGE
                     is UserCommandInfo -> CommandType.USER
                     is TopLevelSlashCommandInfo -> CommandType.SLASH
-                    else -> throw IllegalArgumentException("Unknown application command info type: " + info.javaClass.name)
+                    else -> throwArgument("Unknown application command info type: " + info.javaClass.name)
                 }
 
                 val typeMap = map.getTypeMap<ApplicationCommandInfo>(type)
@@ -60,7 +61,7 @@ internal class MutableApplicationCommandMap internal constructor(
                             }
                         }
                     }
-                    else -> throw IllegalArgumentException("Unknown application command info type: " + info.javaClass.name)
+                    else -> throwArgument("Unknown application command info type: " + info.javaClass.name)
                 }
             }
         }

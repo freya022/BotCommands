@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
@@ -99,7 +100,7 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
             }
         }
 
-        throw IllegalArgumentException("Item named '$itemLabel' cannot be found in this pagination wrapper")
+        throwArgument("Item named '$itemLabel' cannot be found in this pagination wrapper")
     }
 
     override fun writeMessage(builder: MessageCreateBuilder) {

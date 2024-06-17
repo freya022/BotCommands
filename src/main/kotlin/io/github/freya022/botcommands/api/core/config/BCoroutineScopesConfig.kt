@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.Executor
 
@@ -32,15 +32,15 @@ fun interface CoroutineScopeFactory {
 
 @ConfigDSL
 class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
-    override val commandUpdateScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val eventDispatcherScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val textCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val applicationCommandsScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val componentScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val componentTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val modalScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val modalTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
-    override val paginationTimeoutScope: Nothing get() = throwUser("Cannot get a coroutine scope from the builder")
+    override val commandUpdateScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val eventDispatcherScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val textCommandsScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val applicationCommandsScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val componentScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val componentTimeoutScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val modalScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val modalTimeoutScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
+    override val paginationTimeoutScope: Nothing get() = throwArgument("Cannot get a coroutine scope from the builder")
 
     var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 0)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)

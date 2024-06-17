@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.internal.core.service.provider.canCreateWr
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KFunction
 
 @CommandDSL
@@ -42,7 +42,7 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
 
     init {
         //Do not check return type of trusted aggregators
-        requireUser(aggregator.isSpecialAggregator() || aggregator.returnType == aggregatorParameter.typeCheckingParameter.type, aggregator) {
+        requireAt(aggregator.isSpecialAggregator() || aggregator.returnType == aggregatorParameter.typeCheckingParameter.type, aggregator) {
             "Aggregator should have the same return type as the parameter (required: ${aggregatorParameter.typeCheckingParameter.type}, found: ${aggregator.returnType})"
         }
     }

@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.internal.core.service.DefaultServiceContai
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.throwState
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -121,7 +122,7 @@ internal class ClassServiceProvider internal constructor(
             when (instantiability.type) {
                 // This should have been checked in canInstantiate!
                 InstantiabilityType.NOT_INSTANTIABLE ->
-                    throw IllegalStateException("${dynamicSupplier.javaClass.simpleNestedName} returned '${InstantiabilityType.NOT_INSTANTIABLE.name}' when instantiability test returned '${InstantiabilityType.INSTANTIABLE.name}'! Instantiability should not change over time")
+                    throwState("${dynamicSupplier.javaClass.simpleNestedName} returned '${InstantiabilityType.NOT_INSTANTIABLE.name}' when instantiability test returned '${InstantiabilityType.INSTANTIABLE.name}'! Instantiability should not change over time")
 
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}

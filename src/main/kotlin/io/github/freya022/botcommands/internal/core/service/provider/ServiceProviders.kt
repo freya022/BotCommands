@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.core.service.provider
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwUser
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
@@ -46,7 +46,7 @@ internal class ServiceProviders : ClassGraphProcessor {
     ) {
         if (isServiceFactory) {
             if (methodInfo.isConstructor)
-                throwUser("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
+                throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
             method as Method
 
             val function =

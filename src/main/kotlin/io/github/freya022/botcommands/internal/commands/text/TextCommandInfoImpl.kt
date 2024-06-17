@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuild
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
@@ -34,8 +34,8 @@ internal sealed class TextCommandInfoImpl(
             builder.subcommands.forEach { subcommandBuilder ->
                 val textCommandInfo = subcommandBuilder.build(this@TextCommandInfoImpl)
                 (subcommandBuilder.aliases + subcommandBuilder.name).forEach { subcommandName ->
-                    this.put(subcommandName, textCommandInfo)?.let { commandInfo ->
-                        throwUser("Text subcommand with path '${commandInfo.path}' already exists")
+                    putIfAbsentOrThrow(subcommandName, textCommandInfo) {
+                        "Text subcommand with path '${it.path}' already exists"
                     }
                 }
             }

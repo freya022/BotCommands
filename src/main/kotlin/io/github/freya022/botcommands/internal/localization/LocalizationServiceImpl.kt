@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.core.SingleLogger
+import io.github.freya022.botcommands.internal.utils.rethrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -44,7 +45,7 @@ internal class LocalizationServiceImpl internal constructor(
                 }
             }
         } catch (e: Exception) {
-            throw RuntimeException("Unable to get bundle '$baseName' for locale '$locale'", e)
+            e.rethrow("Unable to get bundle '$baseName' for locale '$locale'")
         }
     }
 

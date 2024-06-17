@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -94,7 +95,7 @@ internal class CommandEventImpl private constructor(
                     Member::class.java -> findEntity(id, event.message.mentions.members) { guild.retrieveMemberById(id).complete() }
                     TextChannel::class.java -> guild.getTextChannelById(id)
                     CustomEmoji::class.java -> jda.getEmojiById(id)
-                    else -> throw IllegalArgumentException("${clazz.simpleName} is not a valid IMentionable class")
+                    else -> throwArgument("${clazz.simpleName} is not a valid IMentionable class")
                 }
 
                 if (mentionable != null) {

@@ -20,7 +20,7 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.requireUser
+import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 internal object CommandOptions {
@@ -35,7 +35,7 @@ internal object CommandOptions {
         val resolverContainer = context.getService<ResolverContainer>()
 
         val expectedOptions = aggregator.nonEventParameters.size - aggregateBuilder.nestedAggregates.size
-        requireUser(aggregator.isSpecialAggregator() || options.size == expectedOptions, aggregator) {
+        requireAt(aggregator.isSpecialAggregator() || options.size == expectedOptions, aggregator) {
             "Aggregator should have the same number of options as there is options declared, $expectedOptions options were found in the aggregator but ${options.size} were declared, " +
                     "you may have forgotten to put the event as the first parameter"
         }

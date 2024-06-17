@@ -3,7 +3,7 @@
 package io.github.freya022.botcommands.internal.core.config
 
 import io.github.freya022.botcommands.api.core.config.*
-import io.github.freya022.botcommands.internal.utils.throwUser
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -138,4 +138,4 @@ internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComp
     useComponents = configuration.useComponents
 }
 
-private fun unusable(): Nothing = throwUser("Cannot be used")
+private fun unusable(): Nothing = throwArgument("Cannot be used")

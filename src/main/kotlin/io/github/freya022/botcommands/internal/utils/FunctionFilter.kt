@@ -25,7 +25,7 @@ internal abstract class FunctionFilter {
     operator fun invoke(function: Function, required: Boolean): Boolean {
         return filter(function).also { ok ->
             if (!ok && required)
-                throwUser(function, errorMessage)
+                throwArgument(function, errorMessage)
         }
     }
 
