@@ -5,26 +5,24 @@ import io.github.freya022.botcommands.api.commands.application.context.message.M
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
-import io.github.freya022.botcommands.internal.commands.application.CommandMap
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.application.MutableApplicationCommandMap
 import io.github.freya022.botcommands.internal.commands.application.MutableCommandMap
 import io.github.freya022.botcommands.internal.commands.application.toUnmodifiableMap
 import net.dv8tion.jda.api.interactions.commands.Command
 import org.jetbrains.annotations.Unmodifiable
-import org.jetbrains.annotations.UnmodifiableView
-import java.util.*
 
 abstract class ApplicationCommandMap {
     val allApplicationCommands: @Unmodifiable List<ApplicationCommandInfo>
-        get() = Collections.unmodifiableList(Command.Type.entries.flatMap { getTypeMap<ApplicationCommandInfo>(it).values })
+        get() = Command.Type.entries.flatMap { getTypeMap<ApplicationCommandInfo>(it).values }.unmodifiableView()
 
     operator fun get(type: Command.Type, path: CommandPath): ApplicationCommandInfo? {
         return getTypeMap<ApplicationCommandInfo>(type)[path]
     }
 
-    val slashCommands: @UnmodifiableView CommandMap<SlashCommandInfo> get() = getTypeMap(Command.Type.SLASH)
-    val userCommands: @UnmodifiableView CommandMap<UserCommandInfo> get() = getTypeMap(Command.Type.USER)
-    val messageCommands: @UnmodifiableView CommandMap<MessageCommandInfo> get() = getTypeMap(Command.Type.MESSAGE)
+    val slashCommands: CommandMap<SlashCommandInfo> get() = getTypeMap(Command.Type.SLASH)
+    val userCommands: CommandMap<UserCommandInfo> get() = getTypeMap(Command.Type.USER)
+    val messageCommands: CommandMap<MessageCommandInfo> get() = getTypeMap(Command.Type.MESSAGE)
 
     fun findSlashCommand(path: CommandPath): SlashCommandInfo? = slashCommands[path]
     fun findUserCommand(name: String): UserCommandInfo? = userCommands[CommandPath.ofName(name)]

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandMap
+import io.github.freya022.botcommands.api.commands.application.CommandMap
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo

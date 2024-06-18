@@ -2,10 +2,9 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.CommandMap
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import java.util.*
-
-interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>
 
 internal class MutableCommandMap<T : ApplicationCommandInfo>(
     private val map: MutableMap<CommandPath, T> = Collections.synchronizedMap(
@@ -46,7 +45,7 @@ internal class MutableCommandMap<T : ApplicationCommandInfo>(
 }
 
 internal class UnmodifiableCommandMap<T : ApplicationCommandInfo>(map: CommandMap<T>) : CommandMap<T>,
-    Map<CommandPath, T> by Collections.unmodifiableMap(map)
+                                                                                        Map<CommandPath, T> by Collections.unmodifiableMap(map)
 
 internal object EmptyCommandMap : CommandMap<ApplicationCommandInfo>,
                                   Map<CommandPath, ApplicationCommandInfo> by emptyMap()
