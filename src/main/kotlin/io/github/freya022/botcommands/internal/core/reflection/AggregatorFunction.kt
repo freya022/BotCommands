@@ -24,7 +24,7 @@ internal class AggregatorFunction private constructor(
     firstParamType: KClass<*>
 ) : Function<Any?>(boundAggregator) {
     private val instanceParameter = aggregator.instanceParameter
-    private val eventParameter = aggregator.nonInstanceParameters.first().takeIf { it.type.jvmErasure.isAssignableFrom(firstParamType) }
+    private val eventParameter = aggregator.nonInstanceParameters.first().takeIf { it.type.jvmErasure.isSubclassOf(firstParamType) }
 
     internal val aggregator get() = this.kFunction
 
