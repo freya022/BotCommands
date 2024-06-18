@@ -20,7 +20,7 @@ internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsM
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ModalEvent::class))
             .forEach {
-                val handlerInfo = ModalHandlerInfo(context, it.toMemberParamFunction())
+                val handlerInfo = ModalHandlerInfo(context, it.toMemberParamFunction<ModalEvent>())
                 val oldHandler = handlers.put(handlerInfo.handlerName, handlerInfo)
 
                 if (oldHandler != null) {

@@ -22,7 +22,7 @@ internal class GroupTimeoutHandlers(context: BContextImpl, functionAnnotationsMa
             .associate {
                 val function = it.function
                 val annotation = function.findAnnotation<GroupTimeoutHandler>()!!
-                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction(), GroupTimeoutData::class)
+                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction<GroupTimeoutData>(), GroupTimeoutData::class)
             }
 
     override operator fun get(handlerName: String) = map[handlerName]

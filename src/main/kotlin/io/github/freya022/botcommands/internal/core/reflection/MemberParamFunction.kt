@@ -65,6 +65,9 @@ internal inline fun <reified T : Any> ClassPathFunction.toMemberParamFunction() 
 internal inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext) =
     MemberParamFunction(context, this, T::class)
 
+internal fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, paramType: KClass<T>) =
+    MemberParamFunction(context, this, paramType)
+
 internal inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {
     if (this is ExecutableCommandBuilder<*, *>) {
         requireAt(function.nonEventParameters.size == optionAggregateBuilders.size, function) {

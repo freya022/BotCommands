@@ -1,13 +1,12 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSingleAggregator
 import io.github.freya022.botcommands.internal.core.service.getFunctionServiceOrNull
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -49,9 +48,6 @@ internal class AggregatorFunction private constructor(
         return aggregator.callSuspendBy(aggregatorArguments)
     }
 }
-
-internal fun KFunction<*>.toEventAggregatorFunction(context: BContext) =
-    AggregatorFunction(context, this, Event::class)
 
 internal fun KFunction<*>.toAggregatorFunction(context: BContext, firstParamType: KClass<*>) =
     AggregatorFunction(context, this, firstParamType)

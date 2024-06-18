@@ -22,7 +22,7 @@ internal class ComponentTimeoutHandlers(context: BContextImpl, functionAnnotatio
             .associate {
                 val function = it.function
                 val annotation = function.findAnnotation<ComponentTimeoutHandler>()!!
-                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction(), ComponentTimeoutData::class)
+                annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction<ComponentTimeoutData>(), ComponentTimeoutData::class)
             }
 
     override operator fun get(handlerName: String) = map[handlerName]

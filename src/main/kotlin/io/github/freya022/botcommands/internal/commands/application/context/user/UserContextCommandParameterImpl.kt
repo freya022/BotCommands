@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.context.use
 
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.UserContextCommandParameter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
@@ -13,8 +14,8 @@ import io.github.freya022.botcommands.internal.transform
 internal class UserContextCommandParameterImpl internal constructor(
     override val context: BContext,
     override val command: UserCommandInfoImpl,
-    optionAggregateBuilder: UserCommandOptionAggregateBuilder,
-) : ContextCommandParameterImpl(context, optionAggregateBuilder),
+    optionAggregateBuilder: UserCommandOptionAggregateBuilder
+) : ContextCommandParameterImpl(context, optionAggregateBuilder, GlobalUserEvent::class),
     UserContextCommandParameter {
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {

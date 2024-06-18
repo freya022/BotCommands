@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text
 
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandParameter
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionAggregateBuilder
@@ -14,7 +15,7 @@ internal class TextCommandParameterImpl internal constructor(
     override val context: BContext,
     override val command: TextCommandVariation,
     optionAggregateBuilder: TextCommandOptionAggregateBuilder
-) : CommandParameterImpl(context, optionAggregateBuilder),
+) : CommandParameterImpl(context, optionAggregateBuilder, BaseCommandEvent::class),
     TextCommandParameter {
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {

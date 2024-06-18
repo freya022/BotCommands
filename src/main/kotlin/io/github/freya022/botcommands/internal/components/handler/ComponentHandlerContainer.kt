@@ -9,12 +9,12 @@ import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwArgument
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent
 import kotlin.reflect.full.findAnnotation
 
 @BService
@@ -30,7 +30,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotation<JDAButtonListener>()!!.getEffectiveName(it.function)
 
-                val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.toMemberParamFunction()))
+                val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.function, ButtonEvent::class))
                 if (oldDescriptor != null) {
                     throwArgument("Tried to override a button handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
@@ -42,7 +42,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotation<JDASelectMenuListener>()!!.getEffectiveName(it.function)
 
-                val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.toMemberParamFunction()))
+                val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.function, GenericSelectMenuInteractionEvent::class))
                 if (oldDescriptor != null) {
                     throwArgument("Tried to override a select menu handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
