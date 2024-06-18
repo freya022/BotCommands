@@ -23,59 +23,59 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class GuildResolver
-		extends ClassParameterResolver<GuildResolver, Guild>
-		implements TextParameterResolver<GuildResolver, Guild>,
-		           SlashParameterResolver<GuildResolver, Guild>,
-		           ComponentParameterResolver<GuildResolver, Guild> {
+        extends ClassParameterResolver<GuildResolver, Guild>
+        implements TextParameterResolver<GuildResolver, Guild>,
+                   SlashParameterResolver<GuildResolver, Guild>,
+                   ComponentParameterResolver<GuildResolver, Guild> {
 
-	public GuildResolver() {
-		super(Guild.class);
-	}
+    public GuildResolver() {
+        super(Guild.class);
+    }
 
-	@Nullable
-	@Override
-	public Guild resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return resolveGuild(event.getJDA(), args[0]);
-	}
+    @Nullable
+    @Override
+    public Guild resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        return resolveGuild(event.getJDA(), args[0]);
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return Pattern.compile("(\\d+)");
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return Pattern.compile("(\\d+)");
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "1234";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "1234";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return event.getGuild().getId();
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return event.getGuild().getId();
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.STRING;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.STRING;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Guild resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return resolveGuild(event.getJDA(), optionMapping.getAsString());
-	}
+        return resolveGuild(event.getJDA(), optionMapping.getAsString());
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Guild resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return resolveGuild(event.getJDA(), arg);
-	}
+        return resolveGuild(event.getJDA(), arg);
+    }
 
-	@Nullable
-	private Guild resolveGuild(JDA jda, String arg) {
-		return jda.getGuildById(arg);
-	}
+    @Nullable
+    private Guild resolveGuild(JDA jda, String arg) {
+        return jda.getGuildById(arg);
+    }
 }

@@ -5,5 +5,5 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 @FunctionalInterface
 public interface RichTextConsumer {
-	void consume(String substring, RichTextType type);
+    void consume(String substring, RichTextType type);
 }

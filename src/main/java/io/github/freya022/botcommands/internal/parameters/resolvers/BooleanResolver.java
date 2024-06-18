@@ -22,72 +22,72 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class BooleanResolver
-		extends ClassParameterResolver<BooleanResolver, Boolean>
-		implements TextParameterResolver<BooleanResolver, Boolean>,
-		           SlashParameterResolver<BooleanResolver, Boolean>,
-		           ComponentParameterResolver<BooleanResolver, Boolean>,
+        extends ClassParameterResolver<BooleanResolver, Boolean>
+        implements TextParameterResolver<BooleanResolver, Boolean>,
+                   SlashParameterResolver<BooleanResolver, Boolean>,
+                   ComponentParameterResolver<BooleanResolver, Boolean>,
                    TimeoutParameterResolver<BooleanResolver, Boolean> {
 
-	public BooleanResolver() {
-		super(Boolean.class);
-	}
+    public BooleanResolver() {
+        super(Boolean.class);
+    }
 
-	@Nullable
-	@Override
-	public Boolean resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return parseBoolean(args[0]);
-	}
+    @Nullable
+    @Override
+    public Boolean resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        return parseBoolean(args[0]);
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE);
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE);
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "true";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "true";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return "true";
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return "true";
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.BOOLEAN;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.BOOLEAN;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Boolean resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsBoolean();
-	}
+        return optionMapping.getAsBoolean();
+    }
 
-	@Nullable
-	@Override
-	public Boolean resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return parseBoolean(arg);
-	}
+    @Nullable
+    @Override
+    public Boolean resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+        return parseBoolean(arg);
+    }
 
-	@Nullable
-	@Override
-	public Boolean resolve(@NotNull String arg) {
-		return parseBoolean(arg);
-	}
+    @Nullable
+    @Override
+    public Boolean resolve(@NotNull String arg) {
+        return parseBoolean(arg);
+    }
 
-	@Nullable
-	private Boolean parseBoolean(String arg) {
-		if (arg.equalsIgnoreCase("false")) {
-			return Boolean.FALSE;
-		} else if (arg.equalsIgnoreCase("true")) {
-			return Boolean.TRUE;
-		} else {
-			return null;
-		}
-	}
+    @Nullable
+    private Boolean parseBoolean(String arg) {
+        if (arg.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        } else if (arg.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        } else {
+            return null;
+        }
+    }
 }

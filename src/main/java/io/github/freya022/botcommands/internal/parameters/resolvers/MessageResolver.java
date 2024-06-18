@@ -11,16 +11,16 @@ import org.jetbrains.annotations.Nullable;
 
 @Resolver
 public class MessageResolver
-		extends ClassParameterResolver<MessageResolver, Message>
-		implements MessageContextParameterResolver<MessageResolver, Message> {
+        extends ClassParameterResolver<MessageResolver, Message>
+        implements MessageContextParameterResolver<MessageResolver, Message> {
 
-	public MessageResolver() {
-		super(Message.class);
-	}
+    public MessageResolver() {
+        super(Message.class);
+    }
 
-	@Nullable
+    @Nullable
     @Override
-	public Message resolve(@NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
-		return event.getTarget();
-	}
+    public Message resolve(@NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
+        return event.getTarget();
+    }
 }

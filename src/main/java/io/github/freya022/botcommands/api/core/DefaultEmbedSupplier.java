@@ -19,14 +19,14 @@ import org.jetbrains.annotations.NotNull;
  */
 @InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedSupplier {
-	class Default implements DefaultEmbedSupplier {
-		@NotNull
-		@Override
-		public EmbedBuilder get() {
-			return new EmbedBuilder();
-		}
-	}
+    class Default implements DefaultEmbedSupplier {
+        @NotNull
+        @Override
+        public EmbedBuilder get() {
+            return new EmbedBuilder();
+        }
+    }
 
-	@NotNull
-	EmbedBuilder get();
+    @NotNull
+    EmbedBuilder get();
 }

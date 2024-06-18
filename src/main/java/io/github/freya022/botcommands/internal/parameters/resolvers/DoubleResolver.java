@@ -22,69 +22,69 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class DoubleResolver
-		extends ClassParameterResolver<DoubleResolver, Double>
-		implements TextParameterResolver<DoubleResolver, Double>,
-		           SlashParameterResolver<DoubleResolver, Double>,
-		           ComponentParameterResolver<DoubleResolver, Double>,
+        extends ClassParameterResolver<DoubleResolver, Double>
+        implements TextParameterResolver<DoubleResolver, Double>,
+                   SlashParameterResolver<DoubleResolver, Double>,
+                   ComponentParameterResolver<DoubleResolver, Double>,
                    TimeoutParameterResolver<DoubleResolver, Double> {
 
-	public DoubleResolver() {
-		super(Double.class);
-	}
+    public DoubleResolver() {
+        super(Double.class);
+    }
 
-	@Nullable
-	@Override
-	public Double resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		try {
-			return Double.valueOf(args[0]);
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
+    @Nullable
+    @Override
+    public Double resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        try {
+            return Double.valueOf(args[0]);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return Pattern.compile("([-+]?[0-9]*[.,]?[0-9]+)");
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return Pattern.compile("([-+]?[0-9]*[.,]?[0-9]+)");
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "1234.42";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "1234.42";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return "3.14159";
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return "3.14159";
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.NUMBER;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.NUMBER;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Double resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		try {
-			return optionMapping.getAsDouble();
-		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
-			return 0d;
-		}
-	}
+        try {
+            return optionMapping.getAsDouble();
+        } catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
+            return 0d;
+        }
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Double resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return Double.valueOf(arg);
-	}
+        return Double.valueOf(arg);
+    }
 
-	@Nullable
-	@Override
-	public Double resolve(@NotNull String arg) {
-		return Double.valueOf(arg);
-	}
+    @Nullable
+    @Override
+    public Double resolve(@NotNull String arg) {
+        return Double.valueOf(arg);
+    }
 }

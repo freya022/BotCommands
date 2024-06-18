@@ -6,6 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface ApplicationGeneratedValueSupplier {
-	@Nullable
-	Object getDefaultValue(@NotNull CommandInteractionPayload event);
+    @Nullable
+    Object getDefaultValue(@NotNull CommandInteractionPayload event);
 }

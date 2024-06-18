@@ -13,22 +13,22 @@ import org.jetbrains.annotations.Nullable;
 
 @Resolver
 public class AttachmentResolver
-		extends ClassParameterResolver<AttachmentResolver, Attachment>
-		implements SlashParameterResolver<AttachmentResolver, Attachment> {
+        extends ClassParameterResolver<AttachmentResolver, Attachment>
+        implements SlashParameterResolver<AttachmentResolver, Attachment> {
 
-	public AttachmentResolver() {
-		super(Attachment.class);
-	}
+    public AttachmentResolver() {
+        super(Attachment.class);
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.ATTACHMENT;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.ATTACHMENT;
+    }
 
-	@Nullable
-	@Override
-	public Attachment resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsAttachment();
-	}
+    @Nullable
+    @Override
+    public Attachment resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+        return optionMapping.getAsAttachment();
+    }
 }

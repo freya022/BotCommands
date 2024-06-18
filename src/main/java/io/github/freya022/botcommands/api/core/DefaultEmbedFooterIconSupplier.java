@@ -19,14 +19,14 @@ import java.io.InputStream;
  */
 @InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedFooterIconSupplier {
-	class Default implements DefaultEmbedFooterIconSupplier {
-		@Nullable
-		@Override
-		public InputStream get() {
-			return null;
-		}
-	}
+    class Default implements DefaultEmbedFooterIconSupplier {
+        @Nullable
+        @Override
+        public InputStream get() {
+            return null;
+        }
+    }
 
-	@Nullable
-	InputStream get();
+    @Nullable
+    InputStream get();
 }

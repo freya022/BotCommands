@@ -18,43 +18,52 @@ import org.jetbrains.annotations.Nullable;
  * @see GlobalExceptionHandler
  */
 public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHandler {
-	public final void onException(@Nullable Event event, @NotNull Throwable throwable) {
-		if (event instanceof MessageReceivedEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof SlashCommandInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof MessageContextInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof UserContextInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof ButtonInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof StringSelectInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof EntitySelectInteractionEvent e) {
-			handle(e, throwable);
-		} else if (event instanceof ModalInteractionEvent e) {
-			handle(e, throwable);
-		}
+    public final void onException(@Nullable Event event, @NotNull Throwable throwable) {
+        if (event instanceof MessageReceivedEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof SlashCommandInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof MessageContextInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof UserContextInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof ButtonInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof StringSelectInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof EntitySelectInteractionEvent e) {
+            handle(e, throwable);
+        } else if (event instanceof ModalInteractionEvent e) {
+            handle(e, throwable);
+        }
 
-		handle(event, throwable);
-	}
+        handle(event, throwable);
+    }
 
-	public void handle(@Nullable Event event, @NotNull Throwable throwable) {}
+    public void handle(@Nullable Event event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull MessageReceivedEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull MessageReceivedEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull SlashCommandInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull SlashCommandInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull MessageContextInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull MessageContextInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull UserContextInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull UserContextInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull ModalInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull ModalInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull ButtonInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull ButtonInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull StringSelectInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull StringSelectInteractionEvent event, @NotNull Throwable throwable) {
+    }
 
-	public void handle(@NotNull EntitySelectInteractionEvent event, @NotNull Throwable throwable) {}
+    public void handle(@NotNull EntitySelectInteractionEvent event, @NotNull Throwable throwable) {
+    }
 }

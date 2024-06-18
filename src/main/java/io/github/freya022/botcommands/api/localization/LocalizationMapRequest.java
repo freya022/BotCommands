@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public record LocalizationMapRequest(@NotNull String baseName, @NotNull Locale requestedLocale, @NotNull String bundleName) {
+public record LocalizationMapRequest(@NotNull String baseName, @NotNull Locale requestedLocale,
+                                     @NotNull String bundleName) {
 
 }

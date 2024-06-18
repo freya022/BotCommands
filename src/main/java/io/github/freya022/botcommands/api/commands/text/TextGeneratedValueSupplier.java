@@ -5,6 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface TextGeneratedValueSupplier {
-	@Nullable
-	Object getDefaultValue(@NotNull BaseCommandEvent event);
+    @Nullable
+    Object getDefaultValue(@NotNull BaseCommandEvent event);
 }

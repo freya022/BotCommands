@@ -28,11 +28,11 @@ import org.jetbrains.annotations.Nullable;
  */
 @InterfacedService(acceptMultiple = false)
 public interface GlobalExceptionHandler {
-	/**
-	 * <b>Note: You are sent a generic Event, you will need to check it against SlashCommandInteractionEvent, GuildMessageReceivedEvent, etc... in order to differentiate events</b>
-	 *
-	 * @param event     The event which triggered this exception
-	 * @param throwable The throwable which got threw
-	 */
-	void onException(@Nullable Event event, @NotNull Throwable throwable);
+    /**
+     * <b>Note: You are sent a generic Event, you will need to check it against SlashCommandInteractionEvent, GuildMessageReceivedEvent, etc... in order to differentiate events</b>
+     *
+     * @param event     The event which triggered this exception
+     * @param throwable The throwable which got threw
+     */
+    void onException(@Nullable Event event, @NotNull Throwable throwable);
 }

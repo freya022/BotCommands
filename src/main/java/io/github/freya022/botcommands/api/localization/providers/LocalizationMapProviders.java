@@ -22,81 +22,81 @@ import java.util.Locale;
  */
 @BService
 public final class LocalizationMapProviders {
-	private static final Logger LOGGER = Logging.getLogger();
+    private static final Logger LOGGER = Logging.getLogger();
 
-	private final ServiceContainer serviceContainer;
+    private final ServiceContainer serviceContainer;
 
-	private Collection<LocalizationMapProvider> providers = null;
+    private Collection<LocalizationMapProvider> providers = null;
 
-	public LocalizationMapProviders(ServiceContainer serviceContainer) {
-		this.serviceContainer = serviceContainer;
-	}
+    public LocalizationMapProviders(ServiceContainer serviceContainer) {
+        this.serviceContainer = serviceContainer;
+    }
 
-	@NotNull
-	@Unmodifiable
-	public Collection<LocalizationMapProvider> getProviders() {
-		if (providers == null)
-			providers = Collections.unmodifiableList(serviceContainer.getInterfacedServices(LocalizationMapProvider.class));
-		return providers;
-	}
+    @NotNull
+    @Unmodifiable
+    public Collection<LocalizationMapProvider> getProviders() {
+        if (providers == null)
+            providers = Collections.unmodifiableList(serviceContainer.getInterfacedServices(LocalizationMapProvider.class));
+        return providers;
+    }
 
-	/**
-	 * Cycles through all the registered providers with the specified base name and locale,
-	 * and returns a {@link LocalizationMap} when a provider returns one,
-	 * returns null otherwise.
-	 *
-	 * <p>This method should also try to get bundles with parent locales.
-	 *
-	 * @param baseName The base name of the localization bundle
-	 * @param locale   The requested locale for the localization bundle,
-	 *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
-	 *
-	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
-	 */
-	@Nullable
-	public LocalizationMap cycleProvidersWithParents(@NotNull String baseName, @NotNull Locale locale) {
-		for (LocalizationMapProvider provider : getProviders()) {
-			try {
-				final LocalizationMap bundle = provider.fromBundleOrParent(baseName, locale);
+    /**
+     * Cycles through all the registered providers with the specified base name and locale,
+     * and returns a {@link LocalizationMap} when a provider returns one,
+     * returns null otherwise.
+     *
+     * <p>This method should also try to get bundles with parent locales.
+     *
+     * @param baseName The base name of the localization bundle
+     * @param locale   The requested locale for the localization bundle,
+     *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
+     *
+     * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
+     */
+    @Nullable
+    public LocalizationMap cycleProvidersWithParents(@NotNull String baseName, @NotNull Locale locale) {
+        for (LocalizationMapProvider provider : getProviders()) {
+            try {
+                final LocalizationMap bundle = provider.fromBundleOrParent(baseName, locale);
 
-				if (bundle != null) {
-					return bundle;
-				}
-			} catch (Exception e) {
-				LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
-			}
-		}
+                if (bundle != null) {
+                    return bundle;
+                }
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Cycles through all the registered providers with the specified base name and locale,
-	 * and returns a {@link LocalizationMap} when a provider returns one,
-	 * returns null otherwise.
-	 *
-	 * <p>This method will only use the passed locale.
-	 *
-	 * @param baseName The base name of the localization bundle
-	 * @param locale   The requested locale for the localization bundle,
-	 *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
-	 *
-	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
-	 */
-	@Nullable
-	public LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
-		for (LocalizationMapProvider provider : getProviders()) {
-			try {
-				final LocalizationMap bundle = provider.fromBundle(baseName, locale);
+    /**
+     * Cycles through all the registered providers with the specified base name and locale,
+     * and returns a {@link LocalizationMap} when a provider returns one,
+     * returns null otherwise.
+     *
+     * <p>This method will only use the passed locale.
+     *
+     * @param baseName The base name of the localization bundle
+     * @param locale   The requested locale for the localization bundle,
+     *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
+     *
+     * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
+     */
+    @Nullable
+    public LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
+        for (LocalizationMapProvider provider : getProviders()) {
+            try {
+                final LocalizationMap bundle = provider.fromBundle(baseName, locale);
 
-				if (bundle != null) {
-					return bundle;
-				}
-			} catch (Exception e) {
-				LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
-			}
-		}
+                if (bundle != null) {
+                    return bundle;
+                }
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

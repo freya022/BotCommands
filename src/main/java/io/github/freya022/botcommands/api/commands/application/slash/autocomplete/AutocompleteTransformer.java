@@ -23,9 +23,9 @@ import org.jetbrains.annotations.NotNull;
  */
 @InterfacedService(acceptMultiple = true)
 public interface AutocompleteTransformer<E> {
-	@NotNull
-	Class<E> getElementType();
+    @NotNull
+    Class<E> getElementType();
 
-	@NotNull
-	Command.Choice apply(@NotNull E e);
+    @NotNull
+    Command.Choice apply(@NotNull E e);
 }

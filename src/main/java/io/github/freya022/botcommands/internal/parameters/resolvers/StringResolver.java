@@ -21,74 +21,74 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class StringResolver
-		extends ClassParameterResolver<StringResolver, String>
-		implements QuotableTextParameterResolver<StringResolver, String>,
-		           SlashParameterResolver<StringResolver, String>,
-		           ComponentParameterResolver<StringResolver, String>,
-		           ModalParameterResolver<StringResolver, String>,
+        extends ClassParameterResolver<StringResolver, String>
+        implements QuotableTextParameterResolver<StringResolver, String>,
+                   SlashParameterResolver<StringResolver, String>,
+                   ComponentParameterResolver<StringResolver, String>,
+                   ModalParameterResolver<StringResolver, String>,
                    TimeoutParameterResolver<StringResolver, String> {
 
-	public StringResolver() {
-		super(String.class);
-	}
+    public StringResolver() {
+        super(String.class);
+    }
 
-	@Nullable
-	@Override
-	public String resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return args[0];
-	}
+    @Nullable
+    @Override
+    public String resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        return args[0];
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return Pattern.compile("(.+)");
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return Pattern.compile("(.+)");
+    }
 
-	@Override
-	@NotNull
-	public Pattern getQuotedPattern() {
-		return Pattern.compile("\"(.+)\"");
-	}
+    @Override
+    @NotNull
+    public Pattern getQuotedPattern() {
+        return Pattern.compile("\"(.+)\"");
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "foobar";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "foobar";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return "foo bar";
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return "foo bar";
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.STRING;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.STRING;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public String resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsString();
-	}
+        return optionMapping.getAsString();
+    }
 
-	@Nullable
-	@Override
-	public String resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return arg;
-	}
+    @Nullable
+    @Override
+    public String resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+        return arg;
+    }
 
-	@Nullable
-	@Override
-	public String resolve(@NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
-		return modalMapping.getAsString();
-	}
+    @Nullable
+    @Override
+    public String resolve(@NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
+        return modalMapping.getAsString();
+    }
 
-	@NotNull
-	@Override
-	public String resolve(@NotNull String arg) {
-		return arg;
-	}
+    @NotNull
+    @Override
+    public String resolve(@NotNull String arg) {
+        return arg;
+    }
 }

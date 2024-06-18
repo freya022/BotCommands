@@ -151,7 +151,6 @@ public class BlockingDatabase {
      *
      * @see #fetchConnection()
      * @see #withStatement(String, StatementFunction)
-     *
      * @see BDatabaseConfig#getDumpLongTransactions()
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
@@ -179,7 +178,6 @@ public class BlockingDatabase {
      *
      * @see #fetchConnection(boolean)
      * @see #withStatement(String, boolean, StatementFunction)
-     *
      * @see BDatabaseConfig#getDumpLongTransactions()
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */

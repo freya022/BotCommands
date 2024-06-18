@@ -22,69 +22,69 @@ import java.util.regex.Pattern;
 
 @Resolver
 public class IntegerResolver
-		extends ClassParameterResolver<IntegerResolver, Integer>
-		implements TextParameterResolver<IntegerResolver, Integer>,
-		           SlashParameterResolver<IntegerResolver, Integer>,
-		           ComponentParameterResolver<IntegerResolver, Integer>,
+        extends ClassParameterResolver<IntegerResolver, Integer>
+        implements TextParameterResolver<IntegerResolver, Integer>,
+                   SlashParameterResolver<IntegerResolver, Integer>,
+                   ComponentParameterResolver<IntegerResolver, Integer>,
                    TimeoutParameterResolver<IntegerResolver, Integer> {
 
-	public IntegerResolver() {
-		super(Integer.class);
-	}
+    public IntegerResolver() {
+        super(Integer.class);
+    }
 
-	@Nullable
-	@Override
-	public Integer resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		try {
-			return Integer.valueOf(args[0]);
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
+    @Nullable
+    @Override
+    public Integer resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        try {
+            return Integer.valueOf(args[0]);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return Pattern.compile("(\\d+)");
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return Pattern.compile("(\\d+)");
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "1234";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "1234";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return "42";
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return "42";
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.INTEGER;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.INTEGER;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Integer resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		try {
-			return optionMapping.getAsInt();
-		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
-			return 0;
-		}
-	}
+        try {
+            return optionMapping.getAsInt();
+        } catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
+            return 0;
+        }
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Integer resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return Integer.valueOf(arg);
-	}
+        return Integer.valueOf(arg);
+    }
 
-	@Nullable
-	@Override
-	public Integer resolve(@NotNull String arg) {
-		return Integer.valueOf(arg);
-	}
+    @Nullable
+    @Override
+    public Integer resolve(@NotNull String arg) {
+        return Integer.valueOf(arg);
+    }
 }

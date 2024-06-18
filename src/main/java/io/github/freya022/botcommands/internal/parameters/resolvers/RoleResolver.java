@@ -24,63 +24,63 @@ import java.util.regex.Pattern;
  * @see RoleResolverFactoryProvider
  */
 public class RoleResolver
-		extends ClassParameterResolver<RoleResolver, Role>
-		implements TextParameterResolver<RoleResolver, Role>,
-		           SlashParameterResolver<RoleResolver, Role>,
-		           ComponentParameterResolver<RoleResolver, Role> {
+        extends ClassParameterResolver<RoleResolver, Role>
+        implements TextParameterResolver<RoleResolver, Role>,
+                   SlashParameterResolver<RoleResolver, Role>,
+                   ComponentParameterResolver<RoleResolver, Role> {
 
-	private static final Pattern PATTERN = Pattern.compile("(?:<@&)?(\\d+)>?");
+    private static final Pattern PATTERN = Pattern.compile("(?:<@&)?(\\d+)>?");
 
-	public RoleResolver() {
-		super(Role.class);
-	}
+    public RoleResolver() {
+        super(Role.class);
+    }
 
-	@Nullable
-	@Override
-	public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
+    @Nullable
+    @Override
+    public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+        if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
 
-		return event.getGuild().getRoleById(args[0]);
-	}
+        return event.getGuild().getRoleById(args[0]);
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return PATTERN;
-	}
+    @Override
+    @NotNull
+    public Pattern getPattern() {
+        return PATTERN;
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "<@&1234>";
-	}
+    @Override
+    @NotNull
+    public String getTestExample() {
+        return "<@&1234>";
+    }
 
-	@NotNull
-	@Override
-	public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-		return event.getMember().getRoles().stream().findAny()
-				.or(() -> event.getGuild().getRoleCache().streamUnordered().findAny())
-				.map(Role::getAsMention)
-				.orElse("role-id/mention");
-	}
+    @NotNull
+    @Override
+    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
+        return event.getMember().getRoles().stream().findAny()
+                .or(() -> event.getGuild().getRoleCache().streamUnordered().findAny())
+                .map(Role::getAsMention)
+                .orElse("role-id/mention");
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.ROLE;
-	}
+    @Override
+    @NotNull
+    public OptionType getOptionType() {
+        return OptionType.ROLE;
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Role resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsRole();
-	}
+        return optionMapping.getAsRole();
+    }
 
-	@Nullable
+    @Nullable
     @Override
     public Role resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
+        Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
 
-		return event.getGuild().getRoleById(arg);
-	}
+        return event.getGuild().getRoleById(arg);
+    }
 }

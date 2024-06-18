@@ -26,45 +26,48 @@ import java.util.function.Predicate;
  */
 @InterfacedService(acceptMultiple = false)
 public interface SettingsProvider {
-	/**
-	 * Returns the list of prefix this Guild should use <br>
-	 * <b>If the returned list is null or empty, the global prefixes will be used</b>
-	 *
-	 * @return The list of prefixes
-	 */
-	@Nullable
-	default List<String> getPrefixes(@NotNull Guild guild) {
-		return null;
-	}
+    /**
+     * Returns the list of prefix this Guild should use <br>
+     * <b>If the returned list is null or empty, the global prefixes will be used</b>
+     *
+     * @return The list of prefixes
+     */
+    @Nullable
+    default List<String> getPrefixes(@NotNull Guild guild) {
+        return null;
+    }
 
-	/**
-	 * Returns the list of guild commands usable in that Guild.
-	 *
-	 * @return A CommandList of this guild's commands
-	 * @see CommandList#all()
-	 * @see CommandList#none()
-	 * @see CommandList#of(Collection)
-	 * @see CommandList#notOf(Collection)
-	 * @see CommandList#filter(Predicate)
-	 */
-	@NotNull
-	default CommandList getGuildCommands(@NotNull Guild guild) {
-		return CommandList.all();
-	}
+    /**
+     * Returns the list of guild commands usable in that Guild.
+     *
+     * @return A CommandList of this guild's commands
+     *
+     * @see CommandList#all()
+     * @see CommandList#none()
+     * @see CommandList#of(Collection)
+     * @see CommandList#notOf(Collection)
+     * @see CommandList#filter(Predicate)
+     */
+    @NotNull
+    default CommandList getGuildCommands(@NotNull Guild guild) {
+        return CommandList.all();
+    }
 
-	/**
-	 * Returns the {@link Locale} of the given {@link Guild}, will be null for a global context
-	 * <br>This might be used for localization such as in default messages or application commands
-	 *
-	 * @param guild The target {@link Guild} to get the {@link Locale} from
-	 * @return The {@link Locale} of the specified guild
-	 * @see DefaultMessages
-	 */
-	@NotNull
-	default DiscordLocale getLocale(@Nullable Guild guild) {
-		if (guild != null) return guild.getLocale();
+    /**
+     * Returns the {@link Locale} of the given {@link Guild}, will be null for a global context
+     * <br>This might be used for localization such as in default messages or application commands
+     *
+     * @param guild The target {@link Guild} to get the {@link Locale} from
+     *
+     * @return The {@link Locale} of the specified guild
+     *
+     * @see DefaultMessages
+     */
+    @NotNull
+    default DiscordLocale getLocale(@Nullable Guild guild) {
+        if (guild != null) return guild.getLocale();
 
-		//Discord default locale is US english
-		return DiscordLocale.ENGLISH_US;
-	}
+        //Discord default locale is US english
+        return DiscordLocale.ENGLISH_US;
+    }
 }
