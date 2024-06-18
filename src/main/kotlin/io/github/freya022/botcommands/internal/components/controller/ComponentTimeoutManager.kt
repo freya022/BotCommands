@@ -36,7 +36,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentTimeoutManager(
     private val context: BContext,
-    private val serviceContainer: ServiceContainer,
+    serviceContainer: ServiceContainer,
     private val componentRepository: ComponentRepository,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
     private val componentTimeoutHandlers: ComponentTimeoutHandlers

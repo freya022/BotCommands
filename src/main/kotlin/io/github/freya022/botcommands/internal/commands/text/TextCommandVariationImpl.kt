@@ -90,12 +90,10 @@ internal class TextCommandVariationImpl internal constructor(
         }
     }
 
-    internal suspend fun execute(event: BaseCommandEvent, optionValues: Map<out OptionImpl, Any?>): ExecutionResult {
+    internal suspend fun execute(event: BaseCommandEvent, optionValues: Map<out OptionImpl, Any?>) {
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
         function.callSuspendBy(finalParameters)
-
-        return ExecutionResult.OK
     }
 
     /**

@@ -226,7 +226,8 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        return variation.execute(event, optionValues)
+        variation.execute(event, optionValues)
+        return ExecutionResult.OK
     }
 
     private suspend fun replyError(event: MessageReceivedEvent, msg: String) {

@@ -58,7 +58,7 @@ internal class ModalHandlerInfo internal constructor(
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
 
-    internal suspend fun execute(modalData: ModalData, event: ModalEvent): Boolean {
+    internal suspend fun execute(modalData: ModalData, event: ModalEvent) {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap
@@ -86,8 +86,6 @@ internal class ModalHandlerInfo internal constructor(
         }
 
         function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
-
-        return true
     }
 
     private suspend fun tryInsertOption(
