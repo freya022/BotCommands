@@ -31,12 +31,22 @@ interface MethodParameter {
     val index: Int
 
     /**
-     * Whether this parameter can be passed as `null` or be absent.
+     * Whether this parameter's value can be omitted.
+     *
+     * See [default options](https://kotlinlang.org/docs/functions.html#default-arguments).
      */
-    val isNullableOrOptional: Boolean
+    val isNullable: Boolean
 
     /**
-     * Whether this parameter is a **Java** primitive.
+     * Whether this parameter's value can be `null`.
      */
-    val isPrimitive: Boolean
+    val isOptional: Boolean
+
+    /**
+     * Whether this parameter's value can either be omitted or `null`
+     *
+     * **Note:** A parameter that can be omitted but non-null, cannot have `null` passed.
+     */
+    val isNullableOrOptional: Boolean
+        get() = isNullable || isOptional
 }

@@ -83,17 +83,10 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
         if (aggregatedObject != null) {
             aggregatedObjects[parameter] = aggregatedObject
         } else {
-            if (parameter.isNullableOrOptional) { //Default or nullable
-                //Put null/default value if parameter is not a kotlin default value
-                return if (parameter.kParameter.isOptional) {
-                    //Kotlin default value, don't add anything to the parameters map
-                } else {
-                    //Nullable
-                    aggregatedObjects[parameter] = when {
-                        parameter.isPrimitive -> throwInternal("Cannot have user-defined aggregators returning primitives")
-                        else -> null
-                    }
-                }
+            if (parameter.isNullable) {
+                aggregatedObjects[parameter] = null
+            } else if (parameter.isOptional) {
+                // Don't associate parameter to a value
             } else {
                 throwArgument(parameter.executableParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
             }
