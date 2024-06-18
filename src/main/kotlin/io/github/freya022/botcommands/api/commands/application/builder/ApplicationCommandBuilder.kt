@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
@@ -17,8 +18,14 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     name: String,
     function: KFunction<Any>
 ) : ExecutableCommandBuilder<T, Any>(context, name, function) {
-    abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
+    internal abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
+    /**
+     * Set of filters preventing this command from executing.
+     *
+     * @see ApplicationCommandFilter
+     * @see ApplicationCommandRejectionHandler
+     */
     val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
 
     /**
@@ -48,6 +55,11 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     }
 }
 
+/**
+ * Convenience extension to load an [ApplicationCommandFilter] service.
+ *
+ * Typically used as `filters += filter<MyApplicationCommandFilter>()`
+ */
 inline fun <reified T : ApplicationCommandFilter<*>> ApplicationCommandBuilder<*>.filter(): T {
     return context.getService<T>()
 }

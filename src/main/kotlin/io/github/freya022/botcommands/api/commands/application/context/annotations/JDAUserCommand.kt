@@ -65,7 +65,7 @@ annotation class JDAUserCommand(
      * Specifies whether the application command is disabled for everyone but administrators by default,
      * so that administrators can further configure the command.
      *
-     * **Note:** You cannot use this with [UserPermissions].
+     * **Note:** You cannot use this with [@UserPermissions][UserPermissions].
      *
      * **Default:** false
      *

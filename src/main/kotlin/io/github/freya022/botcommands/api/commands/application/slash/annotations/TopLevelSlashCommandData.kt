@@ -32,7 +32,7 @@ annotation class TopLevelSlashCommandData(
      * Specifies whether the application command is disabled for everyone but administrators by default,
      * so that administrators can further configure the command.
      *
-     * **Note:** You cannot use this with [UserPermissions].
+     * **Note:** You cannot use this with [@UserPermissions][UserPermissions].
      *
      * For example, this may let administrators configure which members/roles have access to the ban command,
      * without requiring the [Ban Members][Permission.BAN_MEMBERS] permission.

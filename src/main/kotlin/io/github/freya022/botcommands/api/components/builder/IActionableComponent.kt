@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
@@ -43,6 +44,7 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      * - The filter must be available via dependency injection.
      *
      * @see ComponentInteractionFilter
+     * @see ComponentInteractionRejectionHandler
      */
     val filters: MutableList<ComponentInteractionFilter<*>>
 
@@ -86,9 +88,9 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
 }
 
 /**
- * Retrieves an existing component filter from the context.
+ * Convenience extension to load an [ComponentInteractionFilter] service.
  *
- * This is equivalent to `context.getService<T>()`.
+ * Typically used as `filters += filter<MyApplicationCommandFilter>()`
  */
 inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent<*>.filter(): T {
     return context.getService<T>()

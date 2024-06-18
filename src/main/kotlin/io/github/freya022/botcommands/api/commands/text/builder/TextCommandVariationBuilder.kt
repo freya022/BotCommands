@@ -6,9 +6,11 @@ import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
@@ -16,7 +18,9 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariationImpl
@@ -44,6 +48,12 @@ class TextCommandVariationBuilder internal constructor(
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
+    /**
+     * Set of filters preventing this command from executing.
+     *
+     * @see TextCommandFilter
+     * @see TextCommandRejectionHandler
+     */
     val filters: MutableList<TextCommandFilter<*>> = arrayListOf()
 
     /**
@@ -75,7 +85,12 @@ class TextCommandVariationBuilder internal constructor(
     var example: String? = null
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * Declares an input option, supported types and modifiers are in [ParameterResolver],
+     * additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param optionName   Name of the option on Discord,
+     * transforms the declared name uppercase characters with underscore + lowercase by default
      */
     fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
         selfAggregate(declaredName) {
@@ -83,6 +98,17 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
+    /**
+     * Declares an input option encapsulated in an inline class.
+     *
+     * Supported types can be found in [ParameterResolver],
+     * additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param optionName   Name of the option on Discord,
+     * transforms the declared name uppercase characters with underscore + lowercase by default
+     * @param clazz        The inline class type
+     */
     fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: KClass<*>, block: TextCommandOptionBuilder.() -> Unit = {}) {
         val aggregatorConstructor = clazz.primaryConstructor
             ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
@@ -93,11 +119,36 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
+    /**
+     * Declares an input option encapsulated in an inline class.
+     *
+     * Supported types can be found in [ParameterResolver],
+     * additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param optionName   Name of the option on Discord,
+     * transforms the declared name uppercase characters with underscore + lowercase by default
+     *
+     * @param T            The inline class type
+     */
     inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: TextCommandOptionBuilder.() -> Unit = {}) {
         inlineClassOption(declaredName, optionName, T::class, block)
     }
 
     /**
+     * Declares multiple input options encapsulated in an inline class.
+     *
+     * The property of the inline class needs to be a [List],
+     * where the element type is supported by [ParameterResolver].
+     *
+     * Additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName       Name of the declared parameter in the [command function][function]
+     * @param clazz              The inline class type
+     * @param amount             How many options to generate
+     * @param requiredAmount     How many of the generated options are required
+     * @param optionNameSupplier Block generating an option name from the option's index
+     *
      * @see VarArgs
      */
     fun inlineClassOptionVararg(declaredName: String, clazz: KClass<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
@@ -111,6 +162,20 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     /**
+     * Declares multiple input options encapsulated in an inline class.
+     *
+     * The property of the inline class needs to be a [List],
+     * where the element type is supported by [ParameterResolver].
+     *
+     * Additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName       Name of the declared parameter in the [command function][function]
+     * @param amount             How many options to generate
+     * @param requiredAmount     How many of the generated options are required
+     * @param optionNameSupplier Block generating an option name from the option's index
+     *
+     * @param T                  The inline class type
+     *
      * @see VarArgs
      */
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
@@ -118,6 +183,18 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     /**
+     * Declares multiple input options in a single parameter.
+     *
+     * The parameter's type needs to be a [List],
+     * where the element type is supported by [ParameterResolver].
+     *
+     * Additional types can be added by implementing [TextParameterResolver].
+     *
+     * @param declaredName       Name of the declared parameter in the [command function][function]
+     * @param amount             How many options to generate
+     * @param requiredAmount     How many of the generated options are required
+     * @param optionNameSupplier Block generating an option name from the option's index
+     *
      * @see VarArgs
      */
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
@@ -179,7 +256,14 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     /**
-     * @param declaredName Name of the declared parameter in the [function]
+     * Declares multiple options aggregated in a single parameter.
+     *
+     * The aggregator will receive all the options in the declared order and produce a single output.
+     *
+     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param aggregator   The function taking all the options and merging them in a single output
+     *
+     * @see Aggregate @Aggregate
      */
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: TextCommandOptionAggregateBuilder.() -> Unit = {}) {
         _optionAggregateBuilders.aggregate(declaredName, aggregator, block)
@@ -190,10 +274,15 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     internal fun build(info: TextCommandInfoImpl): TextCommandVariationImpl {
-        return TextCommandVariationImpl(context, this)
+        return TextCommandVariationImpl(context, info, this)
     }
 }
 
+/**
+ * Convenience extension to load an [TextCommandFilter] service.
+ *
+ * Typically used as `filters += filter<MyApplicationCommandFilter>()`
+ */
 inline fun <reified T : TextCommandFilter<*>> TextCommandVariationBuilder.filter(): T {
     return context.getService<T>()
 }

@@ -24,13 +24,23 @@ import kotlin.time.Duration
 
 @CommandDSL
 abstract class CommandBuilder internal constructor(
+    /**
+     * The main context.
+     */
     val context: BContext,
     override val name: String
 ) : INamedCommand, IDeclarationSiteHolderBuilder {
     internal abstract val type: CommandType
     override lateinit var declarationSite: DeclarationSite
 
+    /**
+     * The permissions required for the caller to use this command.
+     */
     var userPermissions: EnumSet<Permission> = enumSetOf()
+
+    /**
+     * The permissions required for the bot to run this command.
+     */
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
     final override val path: CommandPath by lazyPath()

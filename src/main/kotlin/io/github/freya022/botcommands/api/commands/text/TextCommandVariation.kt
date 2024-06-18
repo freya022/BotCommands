@@ -19,6 +19,13 @@ interface TextCommandVariation : Executable, IDeclarationSiteHolder,
      */
     val context: BContext
 
+    /**
+     * The text command this variation is from,
+     * a text command has one or more variations,
+     * see [TextCommandBuilder.variation] for details.
+     */
+    val command: TextCommandInfo
+
     override val parameters: List<TextCommandParameter>
 
     override val discordOptions: List<TextCommandOption>

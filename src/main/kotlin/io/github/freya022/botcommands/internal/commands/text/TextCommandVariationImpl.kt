@@ -27,6 +27,7 @@ private val logger = KotlinLogging.logger { }
 
 internal class TextCommandVariationImpl internal constructor(
     override val context: BContext,
+    override val command: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : TextCommandVariation,
     ExecutableMixin {
@@ -35,6 +36,12 @@ internal class TextCommandVariationImpl internal constructor(
     override val eventFunction = builder.toMemberParamFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameterImpl>
 
+    /**
+     * Set of filters preventing this command from executing.
+     *
+     * @see TextCommandFilter
+     * @see TextCommandRejectionHandler
+     */
     val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
         require(!filter.global) {
             "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"

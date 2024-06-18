@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.slash.builder.mixins
 
-import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
@@ -19,9 +19,9 @@ interface ITopLevelApplicationCommandBuilder {
      * Specifies whether the application command is disabled for everyone but administrators by default,
      * so that administrators can further configure the command.
      *
-     * **Note:** You cannot use this with [UserPermissions].
+     * **Note:** You cannot use this with [userPermissions][ApplicationCommandBuilder.userPermissions].
      *
-     * For example, maybe you want a ban command to be usable by someone who has a certain role,
+     * For example, if you want a ban command to be usable by someone who has a certain role,
      * but which doesn't have the [BAN_MEMBERS][Permission.BAN_MEMBERS] permission,
      * you would then default lock the command and let the admins of the guild configure it
      *
