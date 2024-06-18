@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.internal.utils.isObject
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
-object ConditionalObjectChecker : ClassGraphProcessor {
+internal object ConditionalObjectChecker : ClassGraphProcessor {
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (!isService) return
         if (!kClass.isObject) return

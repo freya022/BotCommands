@@ -21,6 +21,6 @@ internal val Class<*>.shortQualifiedReference: String
 internal val KClass<*>.shortQualifiedReference: String
     get() = this.java.shortQualifiedReference
 
-inline fun <reified A : Annotation> annotationRef(): String = "@${classRef<A>()}"
+internal inline fun <reified A : Annotation> annotationRef(): String = "@${classRef<A>()}"
 
-inline fun <reified A : Any> classRef(): String = A::class.java.simpleNestedName
+internal inline fun <reified A : Any> classRef(): String = A::class.java.simpleNestedName

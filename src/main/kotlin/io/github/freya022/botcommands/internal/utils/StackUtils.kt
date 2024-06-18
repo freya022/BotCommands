@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFi
 import java.lang.StackWalker.StackFrame
 
 @RequiresOptIn("Make sure internal classes are ignored", level = RequiresOptIn.Level.WARNING)
-annotation class StackSensitive
+internal annotation class StackSensitive
 
 internal val stackWalker: StackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 

@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 //@BService //TODO user-defined implementation detection
-class DefaultDefaultMessagesSupplier(private val context: BContext) : DefaultMessagesSupplier {
+internal class DefaultDefaultMessagesSupplier(private val context: BContext) : DefaultMessagesSupplier {
     private val localeDefaultMessagesMap: MutableMap<DiscordLocale, DefaultMessages> = EnumMap(DiscordLocale::class.java)
 
     override fun get(discordLocale: DiscordLocale): DefaultMessages {

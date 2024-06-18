@@ -38,7 +38,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
-interface IChannelResolver {
+internal sealed interface IChannelResolver {
     val channelTypes: EnumSet<ChannelType>
 }
 
