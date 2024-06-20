@@ -29,7 +29,7 @@ internal fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
     var info = this
 
     do {
-        components.addFirst(info.name)
+        components.add(info.name)
         info = info.parentInstance ?: break
     } while (true)
 
