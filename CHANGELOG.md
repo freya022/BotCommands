@@ -213,27 +213,9 @@ You can also add per-variant usage and examples, both in annotations and in the 
 <details>
 <summary>Example</summary>
 
-```kt
-@Command
-class TextBan : TextCommand() {
-    // Applies to "ban"
-    @TextCommandData(description = "Permanently bans an user.")
-    @JDATextCommandVariation(path = ["ban"])
-    suspend fun onTextBan(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
+For the [following commands](src/test/kotlin/io/github/freya022/botcommands/test/readme/TextBan.kt):
 
-    @JDATextCommandVariation(path = ["ban"])
-    suspend fun onTextBan(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
-
-    // Applies to "temp" of "ban"
-    @TextCommandData(description = "Temporarily bans an user.")
-    @JDATextCommandVariation(path = ["ban", "temp"])
-    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption user: InputUser) { ... }
-
-    @JDATextCommandVariation(path = ["ban", "temp"])
-    suspend fun onTextBanTemp(event: BaseCommandEvent, @TextOption(example = "freya02") name: String) { ... }
-}
-```
-![test](assets/command_help_embed_example.png)
+![Help content example](assets/command_help_embed_example.png)
 </details>
 
 ## Async loading

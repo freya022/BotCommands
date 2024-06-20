@@ -33,27 +33,76 @@ while also easily being able to use services provided by the framework.
 
 ### Commands
 * Automatic registration of commands, resolvers, services, etc... with full dependency injection
-* Text commands (annotated or manually declared), either with:
-  * Automatic token parsing into your parameters
-    * Suppose the prefix is `!` and the command is `ban`
-      ```kt
-      @JDATextCommandVariation(name = "ban")
-      fun onTextBan(event: BaseCommandEvent,
-                    @TextOption user: User,
-                    @TextOption timeframe: Long,
-                    @TextOption unit: TimeUnit, // A resolver is used here
-                    @TextOption reason: String) {
-          //Ban the user
-      }
-      ```
-    * Which can be used as: `!ban @freya02 7 days Get banned`
-  * Manual token consumption
-* Application commands (annotated or DSL-declared)
-  * Slash commands with **automatic & customizable argument parsing**
-    * Supports choices, min/max values/length, channel types and autocomplete
-    * Options can be grouped into objects
-  * Context menu commands (User / Message)
-  * Automatic, smart application commands registration
+* Can be used with annotations or with code (in Kotlin)
+
+### Application commands
+* Slash commands with automatic & customizable argument processing
+  * Supports choices, min/max values/length, channel types and autocomplete
+  * Options can be grouped into objects
+* Context menu commands (User / Message)
+* Automatic, smart application commands registration
+
+<details>
+<summary>Example</summary>
+
+```kt
+@Command
+class SlashBan : ApplicationCommand() {
+    @JDASlashCommand(name = "ban", description = "Bans an user")
+    suspend fun onSlashBan(
+        event: GuildSlashEvent,
+        @SlashOption(description = "The user to ban") user: User,
+        @SlashOption(description = "Timeframe of messages to delete") timeframe: Long,
+        // Use choices that come from the TimeUnit resolver
+        @SlashOption(description = "Unit of the timeframe", usePredefinedChoices = true) unit: TimeUnit, // A resolver is used here
+        @SlashOption(description = "Why the user gets banned") reason: String = "No reason supplied" // Optional
+    ) {
+        // ...
+        event.reply_("${user.asMention} has been banned for '$reason'", ephemeral = true)
+          .deleteDelayed(5.seconds)
+          .await()
+    }
+}
+```
+
+![Slash ban example](assets/slash_ban_example.gif)
+
+</details>
+
+### Text commands
+* Supports prefix and mentions
+* With two parsing modes:
+  1. Each parameter is an argument, works the same as slash commands
+  2. Manual argument consumption
+
+<details>
+<summary>Example</summary>
+
+```kt
+@Command
+class TextBan : TextCommand() {
+    @JDATextCommandVariation(path = ["ban"], description = "Bans the mentioned user")
+    suspend fun onTextBan(
+        event: BaseCommandEvent,
+        @TextOption user: User,
+        @TextOption(example = "2") timeframe: Long,
+        @TextOption unit: TimeUnit, // A resolver is used here
+        @TextOption(example = "Get banned") reason: String = "No reason supplied" // Optional
+    ) {
+        // ...
+        event.reply("${user.asMention} has been banned")
+            .deleteDelayed(5.seconds)
+            .await()
+    }
+}
+```
+
+Can then be used as `@Bot ban @freya02 1 days A totally valid reason`
+
+Here's how the help content would look with [a subcommand and a few more variations](src/test/kotlin/io/github/freya022/botcommands/test/readme/TextBan.kt):
+
+![Help content example](assets/command_help_embed_example.png)
+</details>
 
 ### Components and modals
 * Unlimited data storage for components, with persistent and ephemeral storage
