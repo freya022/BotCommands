@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -146,8 +147,8 @@ internal class ApplicationCommandsBuilder(
             val command = updater.allApplicationCommands.find { it.name == metadata.name }
                 ?: throwInternal("Could not match JDA command '${metadata.name}'")
 
-            val accessor = command as? TopLevelApplicationCommandMetadataAccessor
-                ?: throwInternal("${command.javaClass.simpleNestedName} must implement ${classRef<TopLevelApplicationCommandMetadataAccessor>()}")
+            val accessor = command as? TopLevelApplicationCommandInfoMixin
+                ?: throwInternal("${command.javaClass.simpleNestedName} must implement ${classRef<TopLevelApplicationCommandInfoMixin>()}")
 
             accessor.metadata = metadata
         }

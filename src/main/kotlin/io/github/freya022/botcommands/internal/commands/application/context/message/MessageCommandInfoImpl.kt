@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.context.message
 
-import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.commands.application.context.message.M
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
-import io.github.freya022.botcommands.internal.commands.application.TopLevelApplicationCommandMetadataAccessor
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -26,14 +25,18 @@ internal class MessageCommandInfoImpl internal constructor(
     override val context: BContext,
     builder: MessageCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
-    TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
     MessageCommandInfo,
-    TopLevelApplicationCommandMetadataAccessor {
+    TopLevelApplicationCommandInfoMixin {
 
     override val eventFunction = builder.toMemberParamFunction<GlobalMessageEvent, _>(context)
 
     override val topLevelInstance get() = this
     override val parentInstance get() = null
+
+    override val scope: CommandScope = builder.scope
+    override val isDefaultLocked: Boolean = builder.isDefaultLocked
+    override val isGuildOnly: Boolean = scope.isGuildOnly
+    override val nsfw: Boolean = builder.nsfw
 
     override lateinit var metadata: TopLevelApplicationCommandMetadata
 
@@ -41,6 +44,8 @@ internal class MessageCommandInfoImpl internal constructor(
 
     init {
         eventFunction.checkEventScope<GuildMessageEvent>(builder)
+
+        initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             MessageContextCommandParameterImpl(context, this, it)

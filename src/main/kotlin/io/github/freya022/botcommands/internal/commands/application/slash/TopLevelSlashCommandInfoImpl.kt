@@ -1,26 +1,29 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
-import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
-import io.github.freya022.botcommands.internal.commands.application.TopLevelApplicationCommandMetadataAccessor
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 
 internal class TopLevelSlashCommandInfoImpl internal constructor(
     context: BContext,
     builder: TopLevelSlashCommandBuilder
 ) : SlashCommandInfoImpl(context, builder),
-    TopLevelApplicationCommandInfo by TopLevelApplicationCommandInfoMixin(builder),
     TopLevelSlashCommandInfo,
-    TopLevelApplicationCommandMetadataAccessor {
+    TopLevelApplicationCommandInfoMixin {
 
     override val topLevelInstance: TopLevelSlashCommandInfoImpl get() = this
     override val parentInstance get() = null
 
     override lateinit var metadata: TopLevelApplicationCommandMetadata
+
+    override val scope: CommandScope = builder.scope
+    override val isDefaultLocked: Boolean = builder.isDefaultLocked
+    override val isGuildOnly: Boolean = scope.isGuildOnly
+    override val nsfw: Boolean = builder.nsfw
 
     override val subcommands: Map<String, SlashSubcommandInfoImpl> =
         builder.subcommands.map
@@ -30,4 +33,8 @@ internal class TopLevelSlashCommandInfoImpl internal constructor(
         builder.subcommandGroups.map
             .mapValues { it.value.build(this) }
             .unmodifiableView()
+
+    init {
+        initChecks(builder)
+    }
 }

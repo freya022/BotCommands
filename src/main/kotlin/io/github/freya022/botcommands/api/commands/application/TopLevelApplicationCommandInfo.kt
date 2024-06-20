@@ -9,7 +9,7 @@ import java.time.OffsetDateTime
  *
  * Contains additional info only available on top-level commands.
  */
-interface TopLevelApplicationCommandInfo : TopLevelApplicationCommandMetadata, ISnowflake {
+interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelApplicationCommandMetadata, ISnowflake {
     /**
      * The scope on which this application command is pushed on.
      */
