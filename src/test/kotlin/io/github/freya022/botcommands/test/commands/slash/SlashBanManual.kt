@@ -13,7 +13,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.test.services.Disabled
 
+@Disabled
 @Command
 class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
     @Test(guildIds = [722891685755093072])
