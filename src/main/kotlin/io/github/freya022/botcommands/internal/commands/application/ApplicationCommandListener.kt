@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
@@ -9,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.core.BContext
@@ -58,10 +58,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received slash command: ${event.commandString}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
-                context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
-            } as SlashCommandInfoImpl
+            val slashCommand = context.applicationCommandsContext
+                .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
+                ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
 
             val isNotOwner = event.user !in context.botOwners
             slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -84,10 +83,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received user context command: ${event.name}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val userCommand = event.name.let {
-                context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
-            } as UserCommandInfoImpl
+            val userCommand = context.applicationCommandsContext
+                .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+                ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
 
             val isNotOwner = event.user !in context.botOwners
             userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -110,10 +108,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received message context command: ${event.name}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val messageCommand = event.name.let {
-                context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
-            } as MessageCommandInfoImpl
+            val messageCommand = context.applicationCommandsContext
+                .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+                ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
 
             val isNotOwner = event.user !in context.botOwners
             messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->

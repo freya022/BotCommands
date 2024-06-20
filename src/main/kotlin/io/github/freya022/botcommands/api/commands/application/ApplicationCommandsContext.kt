@@ -64,6 +64,8 @@ interface ApplicationCommandsContext {
      */
     fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap
 
+    fun <T : ApplicationCommandInfo> getApplicationCommandById(type: Class<T>, commandId: Long, group: String?, subcommand: String?): T?
+
     /**
      * Updates the application commands for the global scope.
      *
@@ -92,3 +94,10 @@ interface ApplicationCommandsContext {
      */
     fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
 }
+
+inline fun <reified T : ApplicationCommandInfo> ApplicationCommandsContext.getApplicationCommandById(
+    commandId: Long,
+    group: String?,
+    subcommand: String?,
+): T? = getApplicationCommandById(T::class.java, commandId, group, subcommand)
+

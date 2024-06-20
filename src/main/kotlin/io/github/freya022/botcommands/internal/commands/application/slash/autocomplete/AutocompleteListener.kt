@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -28,12 +28,10 @@ internal class AutocompleteListener(private val context: BContext) {
         logger.trace { "Received autocomplete interaction for '${event.focusedOption.name}' on '${event.commandString}'" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val slashCommand = CommandPath.of(event.fullCommandName).let {
-                applicationContext.findLiveSlashCommand(event.guild, it)
-                    // Ignore, if the user tries to use a command we don't know,
-                    // it's going to be handled by the slash command handler
-                    ?: return@launch onCommandNotFound(event)
-            } as SlashCommandInfoImpl
+            val slashCommand = applicationContext.getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
+                // Ignore, if the user tries to use a command we don't know,
+                // it's going to be handled by the slash command handler
+                ?: return@launch onCommandNotFound(event)
 
             for (option in slashCommand.parameters.flatMap { it.allOptions }) {
                 if (option.optionType != OptionType.OPTION) continue
