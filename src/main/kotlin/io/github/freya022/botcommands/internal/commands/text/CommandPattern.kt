@@ -22,7 +22,13 @@ internal object CommandPattern {
 
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
-        val exampleStr = optionParameters.filter { it.isRequired }.joinToString(" ") { it.resolver.testExample }
+        val exampleStr = optionParameters.filter { it.isRequired }.joinToString(" ") {
+            if (hasMultipleQuotable && it.isQuotable) {
+                "\"${it.resolver.testExample}\""
+            } else {
+                it.resolver.testExample
+            }
+        }
         require(pattern.matches(exampleStr)) {
             """
                 Failed building text command pattern, you can try to either rearrange the arguments as to make a parse-able command, especially moving parameters which are parsed from strings, or, use slash commands 
