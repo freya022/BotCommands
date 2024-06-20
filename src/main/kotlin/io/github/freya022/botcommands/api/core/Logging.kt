@@ -71,3 +71,43 @@ private fun <T : Any> unwrapCompanionClass(clazz: Class<T>): Class<*> {
         else -> clazz
     }
 }
+
+/**
+ * Lazy logs if [KLogger.isErrorEnabled] is `true`
+ */
+fun <T> KLogger.errorNull(throwable: Throwable? = null, block: () -> Any?): T? {
+    error(throwable, block)
+    return null
+}
+
+/**
+ * Lazy logs if [KLogger.isWarnEnabled] is `true`
+ */
+fun <T> KLogger.warnNull(throwable: Throwable? = null, block: () -> Any?): T? {
+    warn(throwable, block)
+    return null
+}
+
+/**
+ * Lazy logs if [KLogger.isInfoEnabled] is `true`
+ */
+fun <T> KLogger.infoNull(throwable: Throwable? = null, block: () -> Any?): T? {
+    info(throwable, block)
+    return null
+}
+
+/**
+ * Lazy logs if [KLogger.isDebugEnabled] is `true`
+ */
+fun <T> KLogger.debugNull(throwable: Throwable? = null, block: () -> Any?): T? {
+    debug(throwable, block)
+    return null
+}
+
+/**
+ * Lazy logs if [KLogger.isTraceEnabled] is `true`
+ */
+fun <T> KLogger.traceNull(throwable: Throwable? = null, block: () -> Any?): T? {
+    trace(throwable, block)
+    return null
+}
