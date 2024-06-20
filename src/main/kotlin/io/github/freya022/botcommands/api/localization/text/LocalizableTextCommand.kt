@@ -6,8 +6,6 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
-import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
-import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import java.util.*
@@ -21,14 +19,18 @@ import javax.annotation.CheckReturnValue
  * You can change the bundle and prefix in the first lines of your interaction handler,
  * with [localizationBundle] and [localizationPrefix].
  *
- * ### Configuring the user / guild locale source
- * They are by default retrieved from the interaction,
- * but you can get them in other ways by implementing [UserLocaleProvider] and/or [GuildLocaleProvider].
+ * ### Configuring the guild locale source
+ * They are by default retrieved from the guild,
+ * but you can get them in other ways by implementing [TextCommandLocaleProvider].
  *
  * @see Localization
  */
 interface LocalizableTextCommand : LocalizableAction {
-    override fun getLocalizationContext(bundleName: String, pathPrefix: String): TextLocalizationContext
+    /**
+     * Returns a localization context for the provided bundle name and path prefix,
+     * using the locale from [TextCommandLocaleProvider.getDiscordLocale].
+     */
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext
 
     /**
      * Returns the localized message at the following [path][localizationPath],

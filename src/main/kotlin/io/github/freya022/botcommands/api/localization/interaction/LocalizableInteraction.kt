@@ -31,7 +31,11 @@ import io.github.freya022.botcommands.api.localization.context.mapToEntries
 interface LocalizableInteraction : LocalizableAction {
     fun getHook(): LocalizableInteractionHook
 
-    override fun getLocalizationContext(bundleName: String, pathPrefix: String): AppLocalizationContext
+    /**
+     * Returns a localization context for the provided bundle name and path prefix,
+     * using the locales from [UserLocaleProvider.getDiscordLocale] and [GuildLocaleProvider.getDiscordLocale].
+     */
+    override fun getLocalizationContext(bundleName: String, pathPrefix: String?): AppLocalizationContext
 
     /**
      * Returns the localized message at the following [path][localizationPath],

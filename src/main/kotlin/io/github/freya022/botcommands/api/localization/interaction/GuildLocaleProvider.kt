@@ -13,6 +13,9 @@ import java.util.*
  * Provides the locale of a guild in a Discord interaction,
  * may be useful if the guild has set its own locale, for example.
  *
+ * It is recommended to override both [getDiscordLocale] and [getLocale] for best results,
+ * when using localization in events, and in [AppLocalizationContext].
+ *
  * This returns [Interaction.getGuildLocale] by default.
  *
  * ### Usage

@@ -33,8 +33,10 @@ interface LocalizableAction {
      */
     var localizationPrefix: String?
 
-    //TODO docs when implemented
-    fun getLocalizationContext(bundleName: String, pathPrefix: String): LocalizationContext
+    /**
+     * Returns a localization context for the provided bundle name and path prefix.
+     */
+    fun getLocalizationContext(bundleName: String, pathPrefix: String?): LocalizationContext
 
     /**
      * Returns the localized message at the following [path][localizationPath],

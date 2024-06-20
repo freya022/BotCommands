@@ -12,6 +12,9 @@ import java.util.*
  * Provides the locale of a user in a Discord interaction,
  * may be useful if the user has set its own locale, for example.
  *
+ * It is recommended to override both [getDiscordLocale] and [getLocale] for best results,
+ * when using localization in events, and in [AppLocalizationContext].
+ *
  * This returns [Interaction.getUserLocale] by default.
  *
  * ### Usage
