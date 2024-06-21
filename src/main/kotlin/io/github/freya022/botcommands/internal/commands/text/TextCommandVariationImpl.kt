@@ -18,12 +18,9 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
-
-private val logger = KotlinLogging.logger { }
 
 internal class TextCommandVariationImpl internal constructor(
     override val context: BContext,
@@ -68,10 +65,6 @@ internal class TextCommandVariationImpl internal constructor(
         completePattern = when {
             parameters.flatMap { it.allOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
-        }
-
-        completePattern?.let {
-            logger.trace { "Registered text command variation '$it': ${function.shortSignature}" }
         }
     }
 
