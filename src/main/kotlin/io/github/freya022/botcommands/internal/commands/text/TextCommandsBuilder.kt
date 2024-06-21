@@ -2,30 +2,26 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
-import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.events.FirstGuildReadyEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
+import io.github.freya022.botcommands.internal.utils.rethrowAt
 
 @BService
-internal class TextCommandsBuilder {
-    @BEventListener
-    internal fun onFirstReady(event: FirstGuildReadyEvent, context: BContextImpl) {
-        try {
-            val manager = TextCommandManager(context)
-            context.serviceContainer
-                .getInterfacedServices<TextCommandProvider>()
-                .forEach { textCommandProvider ->
-                    textCommandProvider.declareTextCommands(manager)
-                }
-
-            manager.textCommands.map.values.forEach { context.textCommandsContext.addTextCommand(it) }
-        } catch (e: Throwable) {
-            KotlinLogging.logger { }.error(e) { "An error occurred while updating text commands" }
-        } finally {
-            context.eventDispatcher.removeEventListener(this)
+internal class TextCommandsBuilder internal constructor(
+    context: BContextImpl,
+    providers: List<TextCommandProvider>,
+) {
+    init {
+        val manager = TextCommandManager(context)
+        providers.forEach { textCommandProvider ->
+            try {
+                textCommandProvider.declareTextCommands(manager)
+            } catch (e: Throwable) {
+                e.rethrowAt("An error occurred while running a text command provider", textCommandProvider::declareTextCommands.resolveBestReference())
+            }
         }
+
+        manager.textCommands.values.forEach { context.textCommandsContext.addTextCommand(it) }
     }
 }
