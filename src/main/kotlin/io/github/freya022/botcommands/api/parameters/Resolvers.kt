@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -23,9 +22,9 @@ object Resolvers {
      * Creates an enum resolver for [slash][SlashParameterResolver] commands,
      * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
      *
-     * As sharing the same display name for text commands and slash commands would be a bad UX,
-     * and their values are not per-guild, text command options are unsupported;
-     * however, you can make your own, see [TextParameterResolver].
+     * ### Text command support
+     * To add support for text command options,
+     * you have to use [EnumResolverBuilder.withTextSupport].
      *
      * ### Using choices
      *
@@ -83,9 +82,9 @@ object Resolvers {
      * Creates an enum resolver for [slash][SlashParameterResolver] commands,
      * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
      *
-     * As sharing the same display name for text commands and slash commands would be a bad UX,
-     * and their values are not per-guild, text command options are unsupported;
-     * however, you can make your own, see [TextParameterResolver].
+     * ### Text command support
+     * To add support for text command options,
+     * you have to use [EnumResolverBuilder.withTextSupport][EnumResolverBuilder.withTextSupport].
      *
      * ### Using choices
      *
@@ -154,9 +153,9 @@ object Resolvers {
  * Creates an enum resolver for [slash][SlashParameterResolver] commands,
  * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
  *
- * As sharing the same display name for text commands and slash commands would be a bad UX,
- * and their values are not per-guild, text command options are unsupported;
- * however, you can make your own, see [TextParameterResolver].
+ * ### Text command support
+ * To add support for text command options,
+ * you have to use [EnumResolverBuilder.withTextSupport] in the configuration [block].
  *
  * ### Using choices
  *
@@ -210,9 +209,9 @@ inline fun <reified E : Enum<E>> enumResolver(
  * Creates an enum resolver for [slash][SlashParameterResolver] commands,
  * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
  *
- * As sharing the same display name for text commands and slash commands would be a bad UX,
- * and their values are not per-guild, text command options are unsupported;
- * however, you can make your own, see [TextParameterResolver].
+ * ### Text command support
+ * To add support for text command options,
+ * you have to use [EnumResolverBuilder.withTextSupport] in the configuration [block].
  *
  * ### Using choices
  *
