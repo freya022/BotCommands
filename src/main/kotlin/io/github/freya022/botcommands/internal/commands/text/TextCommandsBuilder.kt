@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.system.exitProcess
 
 @BService
 internal class TextCommandsBuilder internal constructor(
@@ -69,8 +68,6 @@ internal class TextCommandsBuilder internal constructor(
         } else {
             logger.debug { "Loaded ${textCommands.size} text commands" }
         }
-
-        exitProcess(0)
 
         textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
     }
