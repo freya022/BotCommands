@@ -4,7 +4,9 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException;
 import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException;
 import io.github.freya022.botcommands.api.core.BContext;
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext;
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand;
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
 import io.github.freya022.botcommands.internal.commands.text.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
@@ -17,13 +19,23 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Text command event containing all the information about the triggered command.
+ * Event for <b>fallback</b> text commands.
  *
  * <p>Arguments are tokenized and resolved into entities if possible
  *
- * <p><b>This is only used as a command fallback</b>
+ * <h3>Localization</h3>
+ * You can send localized replies using the user, guild and also any [Locale],
+ * by using this event directly, see {@link LocalizableTextCommand} for more details and configuration.
+ * <p>
+ * An alternative to using this event is injecting an {@link TextLocalizationContext} in a parameter,
+ * or retrieving one using {@link #getLocalizationContext(String, String)}.
+ * <p>
+ * In both cases, you can configure the locale, using {@link TextCommandLocaleProvider}.
  *
- * @see BaseCommandEvent
+ * <h3>Rate limit cancellation</h3>
+ * Although it is recommended to reject commands using {@link TextCommandFilter},
+ * you can also return the bucket token with {@link #cancelRateLimit()}
+ * if you want to avoid consuming bandwidth in certain conditions.
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
     public CommandEvent(BContext context, MessageReceivedEvent event, String args, CancellableRateLimit cancellableRateLimit, LocalizableTextCommand localizableTextCommand) {

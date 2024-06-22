@@ -4,7 +4,9 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier;
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier;
+import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext;
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand;
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,13 +27,21 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Base text command event containing several utility methods.
- * <ul>
- *     <li>Unhandled exception reporting</li>
- *     <li>Send embeds with footer icon with specified icons / default icon</li>
- *     <li>Sending the command's help embed</li>
- *     <li>Adding a reaction to indicate command success/failure</li>
- * </ul>
+ * Event for regex-based text commands.
+ *
+ * <h3>Localization</h3>
+ * You can send localized replies using the user, guild and also any [Locale],
+ * by using this event directly, see {@link LocalizableTextCommand} for more details and configuration.
+ * <p>
+ * An alternative to using this event is injecting an {@link TextLocalizationContext} in a parameter,
+ * or retrieving one using {@link #getLocalizationContext(String, String)}.
+ * <p>
+ * In both cases, you can configure the locale, using {@link TextCommandLocaleProvider}.
+ *
+ * <h3>Rate limit cancellation</h3>
+ * Although it is recommended to reject commands using {@link TextCommandFilter},
+ * you can also return the bucket token with {@link #cancelRateLimit()}
+ * if you want to avoid consuming bandwidth in certain conditions.
  */
 public abstract class BaseCommandEvent
         extends MessageReceivedEvent
