@@ -35,7 +35,8 @@ annotation class CacheAutocomplete(
     val cacheMode: AutocompleteCacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY,
 
     /**
-     * Whether the cache should be used even if [autocomplete cache is disabled][BConfigBuilder.disableAutocompleteCache].<br>
+     * Whether the cache should be used even if [autocomplete cache is disabled][BConfigBuilder.disableAutocompleteCache].
+     *
      * This could be useful if your autocomplete is heavy even in a development environment.
      *
      * @return `true` if the autocomplete results should be cached anyway

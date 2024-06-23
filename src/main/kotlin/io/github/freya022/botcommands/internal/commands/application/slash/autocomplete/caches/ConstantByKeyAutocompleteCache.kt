@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.CompositeAutocompleteKey
 import kotlinx.coroutines.sync.Mutex

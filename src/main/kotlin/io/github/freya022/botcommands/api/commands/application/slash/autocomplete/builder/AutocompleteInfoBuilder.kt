@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
@@ -9,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import kotlin.reflect.KFunction
 

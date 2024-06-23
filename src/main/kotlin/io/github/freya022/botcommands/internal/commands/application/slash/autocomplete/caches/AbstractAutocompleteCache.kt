@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfo
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 
