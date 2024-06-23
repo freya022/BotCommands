@@ -46,14 +46,28 @@ class AutocompleteInfoBuilder internal constructor(
     /**
      * Sets up autocomplete caching.
      *
+     * The cache key is the input of the focused option, however,
+     * you can use composite keys if you want to cache based off multiple option values,
+     * see [AutocompleteCacheInfoBuilder.compositeKeys] for more details.
+     *
+     * @see CacheAutocomplete @CacheAutocomplete
+     */
+    fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {
+        autocompleteCache = AutocompleteCacheInfoBuilder().apply(block).build()
+    }
+
+    /**
+     * Sets up autocomplete caching.
+     *
      * By default, this will cache results by key, which is the input of the focused option.<br>
      * However, you can use composite keys if you want to cache based off multiple option values,
      * see [AutocompleteCacheInfoBuilder.compositeKeys] for more details.
      *
      * @see CacheAutocomplete @CacheAutocomplete
      */
+    @Deprecated("Only had one mode ever, that always has been and will still be the default", ReplaceWith("cache(block)"))
     fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {
-        autocompleteCache = AutocompleteCacheInfoBuilder(cacheMode).apply(block).build()
+        autocompleteCache = AutocompleteCacheInfoBuilder().apply(block).build()
     }
 
     internal fun build(): AutocompleteInfoImpl {

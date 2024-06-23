@@ -36,7 +36,7 @@ internal class AutocompleteInfoAutoBuilder internal constructor() : Autocomplete
                     showUserInput = autocompleteHandlerAnnotation.showUserInput
 
                     autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
-                        cache(autocompleteCacheAnnotation.cacheMode) {
+                        cache {
                             forceCache = autocompleteCacheAnnotation.forceCache
                             cacheSize = autocompleteCacheAnnotation.cacheSize
 

@@ -1,5 +1,9 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete
 
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval
+
+@Deprecated("Only had one mode ever, that always has been and will still be the default")
+@ScheduledForRemoval
 enum class AutocompleteCacheMode {
     /**
      *

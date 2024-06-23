@@ -31,6 +31,7 @@ annotation class CacheAutocomplete(
      * this would be useful to make an autocomplete result depend on multiple options,
      * instead of only the focused one.
      */
+    @Deprecated("Only had one mode ever, that always has been and will still be the default", ReplaceWith("cache(block)"))
     val cacheMode: AutocompleteCacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY,
 
     /**
@@ -46,8 +47,6 @@ annotation class CacheAutocomplete(
 
     /**
      * Sets the cache size for this autocomplete cache, **in kilobytes (KB)**.
-     *
-     * **Note:** This only takes effect with [AutocompleteCacheMode.CONSTANT_BY_KEY].
      *
      * @see AutocompleteCacheInfoBuilder.cacheSize
      */

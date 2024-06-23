@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.test.CustomObject
@@ -60,7 +59,7 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
         manager.autocomplete(::onInlineAutoStrAutocomplete) {
             this.showUserInput = false
 
-            cache(AutocompleteCacheMode.CONSTANT_BY_KEY) {
+            cache {
                 compositeKeys = listOf("string", "nestedDouble")
             }
         }

@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.utils.toDiscordString
 
 class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoBuilder) {
     val force: Boolean = builder.forceCache
-    val cacheMode: AutocompleteCacheMode = builder.cacheMode
+    val cacheMode: AutocompleteCacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY
     val cacheSize: Long = builder.cacheSize
     val compositeKeys: List<String> = builder.compositeKeys.map { it.toDiscordString() }
     val guildLocal: Boolean = builder.guildLocal

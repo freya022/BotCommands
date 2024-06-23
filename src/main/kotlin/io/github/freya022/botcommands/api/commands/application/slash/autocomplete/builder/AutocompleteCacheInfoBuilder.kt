@@ -1,14 +1,13 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 
 @CommandDSL
-class AutocompleteCacheInfoBuilder internal constructor(val cacheMode: AutocompleteCacheMode) {
+class AutocompleteCacheInfoBuilder internal constructor() {
     internal fun build() = AutocompleteCacheInfo(this)
 
     /**
