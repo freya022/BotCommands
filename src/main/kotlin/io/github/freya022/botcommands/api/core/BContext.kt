@@ -6,11 +6,13 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
+import io.github.freya022.botcommands.api.core.events.*
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -19,10 +21,32 @@ import kotlin.reflect.KFunction
 
 @InterfacedService(acceptMultiple = false)
 interface BContext {
+    /**
+     * Initialization status of the framework.
+     *
+     * Each status change fires a [BStatusChangeEvent].
+     */
     enum class Status {
+        /**
+         * Fires [PreLoadEvent].
+         */
         PRE_LOAD,
+
+        /**
+         * Fires [LoadEvent].
+         */
         LOAD,
+
+        /**
+         * Fires [PostLoadEvent].
+         */
         POST_LOAD,
+
+        /**
+         * State at which point all services are loaded.
+         *
+         * Fires [BReadyEvent].
+         */
         READY
     }
 
@@ -45,7 +69,11 @@ interface BContext {
     //endregion
 
     //region Services
-    //TODO docs
+    /**
+     * Returns the [ServiceContainer] service.
+     *
+     * @see ServiceContainer
+     */
     val serviceContainer: ServiceContainer
 
     //TODO docs
@@ -55,39 +83,55 @@ interface BContext {
     fun <T : Any> getService(clazz: Class<T>): T = serviceContainer.getService(clazz)
     //endregion
 
-    //TODO docs
+    /**
+     * Returns the [EventDispatcher] service.
+     *
+     * @see EventDispatcher
+     */
     val eventDispatcher: EventDispatcher
 
     /**
-     * Returns the JDA instance associated with this context
+     * Returns the JDA instance associated with this context.
      *
-     * @return the JDA instance of this context
+     * **Note:** This must not be used to access JDA before it has started,
+     * prefer using [InjectedJDAEvent].
+     *
+     * @throws ServiceException If JDA is not registered yet
      */
     val jda: JDA get() = getService<JDA>()
 
-    //TODO docs
+    /**
+     * Returns the initialization status of the framework.
+     *
+     * @see Status
+     */
     val status: Status
 
     /**
-     * Returns the IDs of the bot owners
+     * Returns the IDs of the bot owners.
      *
-     * @return the IDs of the bot owners
+     * @see BConfig.ownerIds
      */
     val ownerIds: Collection<Long> get() = config.ownerIds
 
+    /**
+     * Returns the [DefaultMessagesSupplier] service.
+     *
+     * @see DefaultMessagesSupplier
+     */
     val defaultMessagesSupplier: DefaultMessagesSupplier
 
     /**
-     * Returns the [SettingsProvider] for this context
+     * Returns the [SettingsProvider] service, or `null` if none exists.
      *
-     * @return The current [SettingsProvider]
+     * @see SettingsProvider
      */
     val settingsProvider: SettingsProvider?
 
     /**
-     * Returns the [global exception handler][GlobalExceptionHandler], used to handle errors caught by the framework.
+     * Returns the [global exception handler][GlobalExceptionHandler],
+     * used to handle errors caught by the framework, or `null` if none exists.
      *
-     * @return The global exception handler
      * @see GlobalExceptionHandler
      */
     val globalExceptionHandler: GlobalExceptionHandler?
@@ -96,18 +140,22 @@ interface BContext {
      * Tells whether this user is an owner or not.
      *
      * @param userId ID of the user
+     *
      * @return `true` if the user is an owner
      */
     fun isOwner(userId: Long): Boolean = userId in ownerIds
 
+    /**
+     * Returns the [DefaultMessages] instance for the provided Discord locale.
+     *
+     * @param locale The locale to get the messages in
+     */
     fun getDefaultMessages(locale: DiscordLocale): DefaultMessages = defaultMessagesSupplier.get(locale)
 
     /**
      * Returns the [DefaultMessages] instance for this Guild's locale
      *
      * @param guild The Guild to take the locale from
-     *
-     * @return The [DefaultMessages] instance with the Guild's locale
      */
     fun getDefaultMessages(guild: Guild?): DefaultMessages {
         return getDefaultMessages(getEffectiveLocale(guild))
@@ -117,8 +165,6 @@ interface BContext {
      * Returns the [DefaultMessages] instance for this user's locale
      *
      * @param interaction The Interaction to take the user's locale from
-     *
-     * @return The [DefaultMessages] instance with the user's locale
      */
     fun getDefaultMessages(interaction: Interaction): DefaultMessages {
         return getDefaultMessages(interaction.userLocale)
@@ -159,7 +205,11 @@ interface BContext {
     }
 
     //region Text commands
-    //TODO docs
+    /**
+     * Returns the [TextCommandsContext] service.
+     *
+     * @see TextCommandsContext
+     */
     val textCommandsContext: TextCommandsContext
 
     /**
@@ -188,20 +238,16 @@ interface BContext {
             else -> prefixes.firstOrNull()
         }
 
-    //TODO docs
     /**
-     * Returns the [DefaultEmbedSupplier]
+     * Returns the [DefaultEmbedSupplier] service.
      *
-     * @return The [DefaultEmbedSupplier]
      * @see DefaultEmbedSupplier
      */
     val defaultEmbedSupplier: DefaultEmbedSupplier
 
-    //TODO docs
     /**
-     * Returns the [DefaultEmbedFooterIconSupplier]
+     * Returns the [DefaultEmbedFooterIconSupplier] service.
      *
-     * @return The [DefaultEmbedFooterIconSupplier]
      * @see DefaultEmbedFooterIconSupplier
      */
     val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier

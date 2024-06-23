@@ -65,6 +65,9 @@ private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFuncti
 
 private val logger = KotlinLogging.logger { }
 
+/**
+ * Dispatches JDA and BC events to [@BEventListener][BEventListener] methods.
+ */
 @BService
 class EventDispatcher internal constructor(
     private val context: BContextImpl,
