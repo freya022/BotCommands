@@ -16,7 +16,7 @@ object AutocompleteAlgorithms {
      * @param toStringFunction The function to transform an item into a String
      * @param query            The query to match items against
      *
-     * @return A collection of extract results with the scores of each item
+     * @return A collection of results with the scores of each item
      */
     @JvmStatic
     fun <T> fuzzyMatching(items: Collection<T>, toStringFunction: ToStringFunction<T>, query: String): Collection<FuzzyResult<T>> {
@@ -43,9 +43,8 @@ object AutocompleteAlgorithms {
      * @param items            The items to sort
      * @param toStringFunction The function to transform an item into a String
      * @param query            The query to match items against
-     * @param <T>              Type of the items
      *
-     * @return A collection of extract results with the scores of each item
+     * @return A collection of results with the scores of each item
      */
     @JvmStatic
     fun <T> fuzzyMatchingWithContinuity(

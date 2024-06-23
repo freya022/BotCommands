@@ -28,9 +28,12 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> = _instanceSupplierMap.unmodifiableView()
 
     /**
-     * Adds a supplier which returns instances of the specified classes
+     * Registers a supplier returning an instance of the specified class.
      *
-     * This is used when creating services
+     * The specified class still needs to be annotated with a compatible service annotation.
+     *
+     * The difference is that instead of using the constructor of the class,
+     * the provided instance supplier is used.
      */
     fun <T : Any> registerInstanceSupplier(clazz: Class<T>, instanceSupplier: InstanceSupplier<T>) {
         _instanceSupplierMap[clazz.kotlin] = instanceSupplier

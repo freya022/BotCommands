@@ -1,39 +1,35 @@
-package io.github.freya022.botcommands.api.commands.application.slash.autocomplete;
+package io.github.freya022.botcommands.api.commands.application.slash.autocomplete
 
-import org.jetbrains.annotations.NotNull;
-
-public record FuzzyResult<T>(T item, String string, double distance) implements Comparable<FuzzyResult<T>> {
-    public double similarity() {
-        return 1d - distance;
+@JvmRecord
+data class FuzzyResult<T>(val item: T, val string: String, val distance: Double) : Comparable<FuzzyResult<T>> {
+    fun similarity(): Double {
+        return 1.0 - distance
     }
 
     //Serves for ordering purpose
-    @Override
-    public int compareTo(@NotNull FuzzyResult<T> o) {
-        if (distance == o.distance) { //This is needed as TreeSet considers entries as duplicated if compare result is 0
-            final int strCompare = string.compareTo(o.string);
+    override fun compareTo(other: FuzzyResult<T>): Int {
+        if (distance == other.distance) { //This is needed as TreeSet considers entries as duplicated if compare result is 0
+            val strCompare = string.compareTo(other.string)
             if (strCompare == 0) {
-                return 1; //Don't care about ordering if both strings are equal
+                return 1 //Don't care about ordering if both strings are equal
             }
 
-            return strCompare;
+            return strCompare
         }
 
-        return Double.compare(distance, o.distance);
+        return distance.compareTo(other.distance)
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
 
-        FuzzyResult<?> that = (FuzzyResult<?>) o;
+        val that = other as FuzzyResult<*>
 
-        return item.equals(that.item);
+        return item == that.item
     }
 
-    @Override
-    public int hashCode() {
-        return item.hashCode();
+    override fun hashCode(): Int {
+        return item.hashCode()
     }
 }
