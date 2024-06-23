@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 internal class SlashCommandOptionImpl internal constructor(
     override val context: BContext,
     override val command: SlashCommandInfoImpl,
+    builder: SlashCommandBuilder,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
@@ -28,7 +30,7 @@ internal class SlashCommandOptionImpl internal constructor(
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
             null -> null
-            else -> AutocompleteHandler(command, optionAggregateBuilders, autocompleteInfo)
+            else -> AutocompleteHandler(command, optionAggregateBuilders, autocompleteInfo, builder)
         }
     }
 

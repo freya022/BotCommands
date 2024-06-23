@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.core.BContext
 
 internal class SlashSubcommandInfoImpl internal constructor(
     context: BContext,
-    override val topLevelInstance: TopLevelSlashCommandInfoImpl,
-    override val parentInstance: INamedCommand,
+    topLevelInstance: TopLevelSlashCommandInfoImpl,
+    parentInstance: INamedCommand,
     builder: SlashCommandBuilder
-) : SlashCommandInfoImpl(context, builder),
+) : SlashCommandInfoImpl(context, topLevelInstance, parentInstance, builder),
     SlashSubcommandInfo

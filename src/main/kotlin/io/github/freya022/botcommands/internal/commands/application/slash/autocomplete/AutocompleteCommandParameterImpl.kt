@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -16,10 +17,11 @@ import kotlin.reflect.full.findParameterByName
 internal class AutocompleteCommandParameterImpl internal constructor(
     context: BContext,
     command: SlashCommandInfoImpl,
+    builder: SlashCommandBuilder,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
     autocompleteFunction: KFunction<*>
-) : AbstractSlashCommandParameter(context, command, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
+) : AbstractSlashCommandParameter(context, command, builder, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
 
     override val executableParameter =
         autocompleteFunction.findParameterByName(name)
@@ -35,12 +37,13 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     }
 
     override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
-        AutocompleteCommandParameterImpl(context, command, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
+        AutocompleteCommandParameterImpl(context, command, builder, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
     }
 
     override fun constructOption(
         context: BContext,
         command: SlashCommandInfoImpl,
+        builder: SlashCommandBuilder,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>

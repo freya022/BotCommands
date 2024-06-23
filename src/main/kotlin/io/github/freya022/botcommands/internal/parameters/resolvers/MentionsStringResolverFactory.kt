@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
@@ -14,7 +15,6 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import io.github.freya022.botcommands.internal.utils.*
 import net.dv8tion.jda.api.entities.IMentionable

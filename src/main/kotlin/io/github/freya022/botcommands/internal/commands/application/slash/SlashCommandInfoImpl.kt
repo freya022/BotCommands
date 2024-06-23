@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
@@ -31,9 +32,16 @@ private val logger = KotlinLogging.logger { }
 
 internal sealed class SlashCommandInfoImpl(
     final override val context: BContext,
+    private val _topLevelInstance: TopLevelSlashCommandInfoImpl?,
+    private val _parentInstance: INamedCommand?,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
+
+    override val topLevelInstance: TopLevelSlashCommandInfoImpl
+        get() = _topLevelInstance ?: throwInternal("This should have been overridden or not been null")
+    override val parentInstance: INamedCommand?
+        get() = _parentInstance ?: throwInternal("This should have been overridden")
 
     final override val description: String
 
@@ -46,7 +54,7 @@ internal sealed class SlashCommandInfoImpl(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameterImpl(context, this@SlashCommandInfoImpl, builder.optionAggregateBuilders, it)
+            SlashCommandParameterImpl(context, this@SlashCommandInfoImpl, builder, builder.optionAggregateBuilders, it)
         }
 
         parameters

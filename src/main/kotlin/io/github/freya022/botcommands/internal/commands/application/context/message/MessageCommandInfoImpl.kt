@@ -48,7 +48,7 @@ internal class MessageCommandInfoImpl internal constructor(
         initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            MessageContextCommandParameterImpl(context, this, it)
+            MessageContextCommandParameterImpl(context, this, builder, it)
         }
     }
 

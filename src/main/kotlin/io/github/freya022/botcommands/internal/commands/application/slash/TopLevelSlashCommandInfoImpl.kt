@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.internal.commands.application.mixins.TopLe
 internal class TopLevelSlashCommandInfoImpl internal constructor(
     context: BContext,
     builder: TopLevelSlashCommandBuilder
-) : SlashCommandInfoImpl(context, builder),
+) : SlashCommandInfoImpl(context, null, null, builder),
     TopLevelSlashCommandInfo,
     TopLevelApplicationCommandInfoMixin {
 

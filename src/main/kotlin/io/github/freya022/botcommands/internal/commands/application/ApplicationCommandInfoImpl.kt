@@ -10,9 +10,7 @@ import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.utils.reference
 
 internal abstract class ApplicationCommandInfoImpl internal constructor(
-    // Unfortunately needs to be kept due to ApplicationCommandResolverDataKt.checkGuildOnly;
-    // without it, we would try to access being-initialized objects and cause NPEs
-    internal val builder: ApplicationCommandBuilder<*>
+    builder: ApplicationCommandBuilder<*>
 ) : AbstractCommandInfoImpl(builder),
     ApplicationCommandInfo,
     ExecutableMixin {

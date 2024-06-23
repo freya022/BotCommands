@@ -48,7 +48,7 @@ internal class UserCommandInfoImpl internal constructor(
         initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            UserContextCommandParameterImpl(context, this, it)
+            UserContextCommandParameterImpl(context, this, builder, it)
         }
     }
 
