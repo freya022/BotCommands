@@ -39,6 +39,9 @@ internal fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothi
 internal fun Throwable.rethrowAt(message: String, declarationSite: DeclarationSite): Nothing =
     throw RuntimeException("$message\n    Declared at: $declarationSite", this)
 
+internal fun Throwable.rethrowAt(exceptionSupplier: (String, Throwable) -> Throwable, message: String, declarationSite: DeclarationSite): Nothing =
+    throw exceptionSupplier("$message\n    Declared at: $declarationSite", this)
+
 internal fun throwArgument(message: String, declarationSite: DeclarationSite? = null): Nothing =
     when (declarationSite) {
         null -> throw IllegalArgumentException(message)

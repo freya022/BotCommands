@@ -5,12 +5,14 @@ import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.exceptions.ApplicationCommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
+import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
@@ -181,38 +183,43 @@ internal class ApplicationCommandsUpdater private constructor(
             }
 
     private fun Collection<SlashSubcommandGroupInfo>.mapToSubcommandGroupData() =
-        this.map { subcommandGroupInfo ->
+        this.mapCommands { subcommandGroupInfo ->
             SubcommandGroupData(subcommandGroupInfo.name, subcommandGroupInfo.description).also {
                 it.addSubcommands(subcommandGroupInfo.subcommands.values.mapToSubcommandData())
             }
         }
 
     private fun Collection<SlashSubcommandInfo>.mapToSubcommandData() =
-        this.map { subcommandInfo ->
+        this.mapCommands { subcommandInfo ->
             SubcommandData(subcommandInfo.name, subcommandInfo.description)
                 .addOptions(subcommandInfo.getDiscordOptions(guild))
         }
 
-    private fun <T> mapContextCommands(
-        commands: Collection<T>,
+    private fun mapContextCommands(
+        commands: Collection<TopLevelApplicationCommandInfo>,
         type: Command.Type
-    ): List<CommandData> where T : TopLevelApplicationCommandInfo,
-                               T : ApplicationCommandInfo {
+    ): List<CommandData> {
         return commands
             .filterCommands()
-            .mapCommands { info: T ->
+            .mapCommands { info: TopLevelApplicationCommandInfo ->
                 Commands.context(type, info.name).configureTopLevel(info)
             }
     }
 
-    private inline fun <T : ApplicationCommandInfo, R : CommandData> List<T>.mapCommands(transform: (T) -> R): List<R> =
-        map {
+    private inline fun <T, R> Collection<T>.mapCommands(
+        transform: (T) -> R,
+    ): List<R> where T : INamedCommand,
+                     T : IDeclarationSiteHolder {
+        return map {
             try {
                 transform(it)
-            } catch (e: Exception) { //TODO use some sort of exception context for command paths
-                e.rethrowAt("An exception occurred while processing this command", it.declarationSite)
+            } catch (e: ApplicationCommandUpdateException) {
+                throw e
+            } catch (e: Exception) {
+                e.rethrowAt(::ApplicationCommandUpdateException, "An exception occurred while pushing '${it.path}'", it.declarationSite)
             }
         }
+    }
 
     private fun <T : INamedCommand> Collection<T>.filterCommands() = filter { info ->
         context.settingsProvider?.let { settings ->
@@ -224,9 +231,7 @@ internal class ApplicationCommandsUpdater private constructor(
         return@filter true
     }
 
-    private fun <D : CommandData, T> D.configureTopLevel(info: T): D
-            where T : TopLevelApplicationCommandInfo,
-                  T : ApplicationCommandInfo = apply {
+    private fun <D : CommandData> D.configureTopLevel(info: TopLevelApplicationCommandInfo): D = apply {
         if (info.nsfw) isNSFW = true
         if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true
         if (info.isDefaultLocked) {
