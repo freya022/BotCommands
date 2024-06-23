@@ -108,7 +108,15 @@ class SlashNewButtons(
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
         }
 
-        buttons.group(firstButton).ephemeral {
+        val secondButton = buttons.secondary("Invisible").ephemeral {
+            noTimeout()
+            oneUse = true //Cancels whole group if used
+            addUserIds(1234L)
+            constraints += Permission.ADMINISTRATOR
+            bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
+        }
+
+        buttons.group(secondButton).ephemeral {
             timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

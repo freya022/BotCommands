@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.components.builder.group
 
-import io.github.freya022.botcommands.api.components.IdentifiableComponent
+import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.api.components.builder.IEphemeralTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.EphemeralTimeoutableComponentImpl
@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 
 class EphemeralComponentGroupBuilder internal constructor(
     componentController: ComponentController,
-    components: Array<out IdentifiableComponent>,
+    components: Array<out IGroupHolder>,
     instanceRetriever: InstanceRetriever<EphemeralComponentGroupBuilder>
 ) : ComponentGroupBuilder<EphemeralComponentGroupBuilder>(componentController, components),
     IEphemeralTimeoutableComponent<EphemeralComponentGroupBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {

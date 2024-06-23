@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.group
 
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.IdentifiableComponent
+import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import javax.annotation.CheckReturnValue
@@ -12,7 +12,7 @@ import javax.annotation.CheckReturnValue
  */
 class ComponentGroupFactory internal constructor(
     private val componentController: ComponentController,
-    private val components: Array<out IdentifiableComponent>
+    private val components: Array<out IGroupHolder>
 ) {
     @CheckReturnValue
     fun ephemeral(): EphemeralComponentGroupBuilder =

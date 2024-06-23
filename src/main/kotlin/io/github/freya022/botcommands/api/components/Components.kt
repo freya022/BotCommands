@@ -70,13 +70,13 @@ class Components internal constructor(componentController: ComponentController) 
     @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent()"))
     @CheckReturnValue
     @ScheduledForRemoval
-    fun persistentGroup(vararg components: IdentifiableComponent): PersistentComponentGroupBuilder =
+    fun persistentGroup(vararg components: IGroupHolder): PersistentComponentGroupBuilder =
         PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
 
     @Deprecated("Use group + persistent instead", replaceWith = ReplaceWith("group(*components).persistent { \nblock() }"))
     @JvmSynthetic
     @ScheduledForRemoval
-    suspend inline fun persistentGroup(vararg components: IdentifiableComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
+    suspend inline fun persistentGroup(vararg components: IGroupHolder, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
         persistentGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Ephemeral groups --------------------
@@ -84,13 +84,13 @@ class Components internal constructor(componentController: ComponentController) 
     @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral()"))
     @CheckReturnValue
     @ScheduledForRemoval
-    fun ephemeralGroup(vararg components: IdentifiableComponent): EphemeralComponentGroupBuilder =
+    fun ephemeralGroup(vararg components: IGroupHolder): EphemeralComponentGroupBuilder =
         EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
 
     @Deprecated("Use group + ephemeral instead", replaceWith = ReplaceWith("group(*components).ephemeral { block() }"))
     @JvmSynthetic
     @ScheduledForRemoval
-    suspend inline fun ephemeralGroup(vararg components: IdentifiableComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
+    suspend inline fun ephemeralGroup(vararg components: IGroupHolder, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
         ephemeralGroup(*components).apply(block).buildSuspend()
 
     // -------------------- Persistent buttons --------------------

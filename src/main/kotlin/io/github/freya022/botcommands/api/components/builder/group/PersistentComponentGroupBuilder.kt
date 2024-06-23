@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.components.builder.group
 
-import io.github.freya022.botcommands.api.components.IdentifiableComponent
+import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 
 class PersistentComponentGroupBuilder internal constructor(
     componentController: ComponentController,
-    components: Array<out IdentifiableComponent>,
+    components: Array<out IGroupHolder>,
     instanceRetriever: InstanceRetriever<PersistentComponentGroupBuilder>
 ) : ComponentGroupBuilder<PersistentComponentGroupBuilder>(componentController, components),
     IPersistentTimeoutableComponent<PersistentComponentGroupBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {

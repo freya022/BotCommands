@@ -11,7 +11,7 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
     private val logger = objectLogger()
 
     @CheckReturnValue
-    fun group(vararg components: IdentifiableComponent): ComponentGroupFactory =
+    fun group(vararg components: IGroupHolder): ComponentGroupFactory =
         ComponentGroupFactory(componentController, components)
 
     @JvmName("deleteComponentsByIds")

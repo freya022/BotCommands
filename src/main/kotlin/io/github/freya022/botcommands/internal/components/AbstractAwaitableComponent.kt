@@ -9,11 +9,11 @@ import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 abstract class AbstractAwaitableComponent<T : ComponentInteraction> internal constructor(
     @get:JvmSynthetic
     internal val componentController: ComponentController
-) : AwaitableComponent<T> {
+) : AwaitableComponent<T>,
+    IGroupHolderMixin {
 
     @set:JvmSynthetic
     override var group: ComponentGroup? = null
-        internal set
 
     @JvmSynthetic
     override suspend fun await(): T {
