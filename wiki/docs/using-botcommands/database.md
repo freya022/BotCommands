@@ -127,6 +127,16 @@ where you can directly give the connection details, that's it.
 The framework's tables may be automatically created and migrated on updates,
 while the migration scripts uses a naming scheme compatible with Flyway, it may work with other migration libraries.
 
+!!! note "Using [`ServiceLoader`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html)-based libraries"
+
+    Libraries like Flyway, PostgreSQL and SLF4J,
+    uses a `ServiceLoader` which requires having files in your JAR to load these services.
+
+    While creating your JAR, your build tools needs to be configured to merge those files properly,
+    as it would overwrite those files when multiple libraries target a common interface, causing missing services.
+
+    You can see how it's done in [this Setup section](../setup/getting-started.md#creating-a-runnable-jar).
+
 !!! example "Migration using Flyway"
 
     You can run this after creating your database:
