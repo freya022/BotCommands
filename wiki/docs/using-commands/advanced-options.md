@@ -49,6 +49,18 @@ You can also use a `List<IMentionable>`, where you can set the requested mention
     This won't restrict what the user can type on Discord,
     this only enables parsing mentions inside the string.
 
+??? example "Bulk ban example"
+
+    === "Kotlin"
+        ```kotlin
+        --8<-- "wiki/commands/slash/SlashBulkBan.kt:bulk_ban-kotlin"
+        ```
+
+    === "Java"
+        ```java
+        --8<-- "wiki/java/commands/slash/SlashBulkBan.java:bulk_ban-java"
+        ```
+
 ## Advanced code-declared options
 
 The Kotlin DSL also lets you do more, for example, using loops to generate commands, or even options.
