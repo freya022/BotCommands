@@ -17,17 +17,16 @@ you should instead use `Database` (Kotlin) and `BlockingDatabase` (Java).
 If you wish not to use these abstractions, you can use their `fetchConnection` methods,
 to at least take advantage of statement logging and long transaction reports.
 
-!!! tip "Connection pooling"
+We'll also use [HikariCP](https://github.com/brettwooldridge/HikariCP), a connection pool
+that will reduce latency a lot when often reacquiring connections.
 
-    I highly recommend using [HikariCP](https://github.com/brettwooldridge/HikariCP), 
-    this will help you reduce latency when running statements.
-
-    Implement `HikariSourceSupplier` instead of `ConnectionSupplier`.
+Creating a datasource requires implementing `HikariSourceSupplier`,
+where you can directly give the connection details, that's it.
 
 ??? example
 
-    === "Kotlin"
-        === "PostgreSQL"
+    === "PostgreSQL"
+        === "Kotlin"
             ```kotlin
             @BService
             class DatabaseSource(config: Config) : HikariSourceSupplier {
@@ -44,24 +43,7 @@ to at least take advantage of statement logging and long transaction reports.
                 })
             }
             ```
-        === "H2"
-            ```kotlin
-            @BService
-            class DatabaseSource : HikariSourceSupplier {
-                override val source = HikariDataSource(HikariConfig().apply {
-                    // Create an in-memory database with the PostgreSQL compatibility mode
-                    jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
-            
-                    // At most 2 JDBC connections, suspends the coroutine if all connections are used
-                    maximumPoolSize = 2
-                    // Emits a warning and does a thread/coroutine dump after the duration
-                    leakDetectionThreshold = 10.seconds.inWholeMilliseconds
-                })
-            }
-            ```
-
-    === "Java"
-        === "PostgreSQL"
+        === "Java"
             ```java
             @BService
             public class DatabaseSource implements HikariSourceSupplier {
@@ -90,7 +72,27 @@ to at least take advantage of statement logging and long transaction reports.
                 }
             }
             ```
-        === "H2"
+
+        !!! tip "PostgreSQL connection URL"
+            The URL should be similar to `jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]`, by default, the port is 5432.
+        
+    === "H2"
+        === "Kotlin"
+            ```kotlin
+            @BService
+            class DatabaseSource : HikariSourceSupplier {
+                override val source = HikariDataSource(HikariConfig().apply {
+                    // Create an in-file database with the PostgreSQL compatibility mode
+                    jdbcUrl = "jdbc:h2:./MyBotDatabase;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+            
+                    // At most 2 JDBC connections, suspends the coroutine if all connections are used
+                    maximumPoolSize = 2
+                    // Emits a warning and does a thread/coroutine dump after the duration
+                    leakDetectionThreshold = 10.seconds.inWholeMilliseconds
+                })
+            }
+            ```
+        === "Java"
             ```java
             @BService
             public class DatabaseSource implements HikariSourceSupplier {
@@ -98,8 +100,8 @@ to at least take advantage of statement logging and long transaction reports.
             
                 public DatabaseSource() {
                     final var hikariConfig = new HikariConfig();
-                    // Create an in-memory database with the PostgreSQL compatibility mode
-                    hikariConfig.setJdbcUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH");
+                    // Create an in-file database with the PostgreSQL compatibility mode
+                    hikariConfig.setJdbcUrl("jdbc:h2:./MyBotDatabase;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH");
             
                     // At most 2 JDBC connections, the database will block if all connections are used
                     hikariConfig.setMaximumPoolSize(2);
@@ -117,8 +119,9 @@ to at least take advantage of statement logging and long transaction reports.
                 }
             }
             ```
-    !!! tip "PostgreSQL connection URL"
-        The URL should be similar to `jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]`
+
+        This will create a database stored in a file called `MyBotDatabase`, in the current working directory,
+        see more details on the [H2 website](https://www.h2database.com/html/features.html#database_url).
 
 ## Using migration
 The framework's tables may be automatically created and migrated on updates,
@@ -139,9 +142,9 @@ while the migration scripts uses a naming scheme compatible with Flyway, it may 
         .migrate() // Create or update existing schema
     ```
 
-    !!! tip
+!!! tip
 
-        You can also use the same code to migrate your own database, using similar migration scripts.
+    You can also use the same code to migrate your own database, using similar migration scripts.
 
 ## Configuration
 ### Logging statements
