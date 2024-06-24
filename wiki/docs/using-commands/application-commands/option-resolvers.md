@@ -6,11 +6,9 @@ and will handle the conversion from the Discord value to the corresponding objec
 The class implementing the resolver, or the function returning a resolver, must be annotated with `#!java @Resolver`.
 
 !!! note
-    `#!java @Resolver` is one of the annotations that are considered as a service annotation.
+    `#!java @Resolver` is one of the annotations that are considered as a [service annotation](../../using-botcommands/dependency-injection/creating-services.md).
     This means that it behaves exactly the same as if you had used `@BService`,
     except here the annotation is more meaningful.
-
-[//]: # (TODO Add link to DI section in note)
 
 ### Implementation
 

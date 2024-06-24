@@ -5,9 +5,7 @@ and officially supports PostgreSQL and H2 (in PostgreSQL compatibility mode).
 
 !!! info
 
-    Some features requires a database, such as components and paginators.
-
-[//]: # (TODO add components link above)
+    Some features requires a database, such as [components](../using-components.md) and paginators.
 
 ## Creating a `ConnectionSupplier`
 
