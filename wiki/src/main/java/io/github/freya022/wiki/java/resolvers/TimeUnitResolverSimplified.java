@@ -16,7 +16,7 @@ public class TimeUnitResolverSimplified {
     @Resolver
     public static ParameterResolver<?, TimeUnit> getTimeUnitResolverSimplified() {
         // The displayed name should be lowercase with the first letter uppercase, see Resolvers#toHumanName
-        return Resolvers.enumResolver(TimeUnit.class, EnumSet.of(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS));
+        return Resolvers.enumResolver(TimeUnit.class, EnumSet.of(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS)).build();
     }
 }
 // --8<-- [end:time_unit_resolver-simplified-java]
