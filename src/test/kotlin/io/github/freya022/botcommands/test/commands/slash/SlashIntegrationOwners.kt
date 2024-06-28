@@ -33,8 +33,17 @@ class SlashIntegrationOwners(private val buttons: Buttons) : GlobalApplicationCo
     }
 
     private suspend fun run(event: GlobalSlashEvent) {
+        println("Is user-installed interaction only: " + event.isUserInstalledInteractionOnly)
+        println("User integration: " + event.integrationOwners.userIntegration)
+        println("Guild integration: " + event.integrationOwners.guildIntegration)
+
         val button = buttons.primary("click me").ephemeral {
-            bindTo { it.deferEdit().await() }
+            bindTo {
+                println("Is user-installed interaction only: " + event.isUserInstalledInteractionOnly)
+                println("User integration: " + event.integrationOwners.userIntegration)
+                println("Guild integration: " + event.integrationOwners.guildIntegration)
+                it.deferEdit().await()
+            }
         }
         event.replyComponents(button.into()).setEphemeral(true).await()
     }
