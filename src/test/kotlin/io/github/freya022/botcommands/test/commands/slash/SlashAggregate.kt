@@ -22,9 +22,11 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
     data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
 
     @CommandMarker
-    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, inlineAutoStr: MyInlineString, customObject: CustomObject) {
+    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, intFromAgg: Int?, inlineAutoStr: MyInlineString, customObject: CustomObject) {
         event.reply_("$agg + $inlineAutoStr", ephemeral = true).queue()
     }
+
+    fun intAgg(event: GuildSlashEvent): Int? = null
 
     @CommandMarker
     fun onInlineAutoStrAutocomplete(
@@ -46,6 +48,8 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
                     generatedOption("bool") { true }
                 }
             }
+
+            aggregate("intFromAgg", ::intAgg)
 
             inlineClassOption<MyInlineString>("inlineAutoStr") {
                 autocompleteByFunction(::onInlineAutoStrAutocomplete)
