@@ -90,9 +90,9 @@ internal class HelpCommand internal constructor(
 
         event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message"))
             .awaitCatching()
-            .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
-                event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).queue()
-            }.getOrThrow()
+            .recover(ErrorResponse.CANNOT_SEND_TO_USER) {
+                event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).await()
+            }.orThrow()
 
         event.reactSuccess().queue()
     }
