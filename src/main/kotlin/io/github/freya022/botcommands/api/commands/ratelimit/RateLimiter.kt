@@ -8,11 +8,8 @@ import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHa
 /**
  * Retrieves rate limit buckets and handles rate limits by combining [BucketAccessor] and [RateLimitHandler].
  *
- * You can also make your own implementation by either implementing this interface directly,
+ * You can also make your own implementation by either implementing this interface directly
  * or by delegating both interfaces.
- *
- * As this will be accessible in [AbstractCommandInfo.rateLimitInfo],
- * you can safe-cast into your instance and retrieve fields if you need to.
  *
  * @see DefaultRateLimiter
  * @see defaultFactory

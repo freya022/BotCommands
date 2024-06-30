@@ -36,7 +36,7 @@ annotation class GroupTimeoutHandler(
     /**
      * Name of the timeout handler, referenced by [ComponentGroupBuilder.timeout].
      *
-     * This can be omitted if you use the type-safe [timeout] extensions.
+     * This can be omitted if you use the type-safe [timeoutWith] extensions.
      *
      * Defaults to `FullyQualifiedClassName.methodName`.
      */

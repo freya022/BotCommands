@@ -20,7 +20,7 @@ class MessageCommandOptionAggregateBuilder internal constructor(
      * Declares an input option, supported types and modifiers are in [ParameterResolver],
      * additional types can be added by implementing [MessageContextParameterResolver].
      *
-     * @param declaredName Name of the declared parameter in the [command function][function]
+     * @param declaredName Name of the declared parameter in the aggregator
      */
     fun option(declaredName: String) {
         this += MessageCommandOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
