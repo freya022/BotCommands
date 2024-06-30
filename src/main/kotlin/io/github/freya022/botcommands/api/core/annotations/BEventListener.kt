@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.annotations
 
+import dev.minn.jda.ktx.events.CoroutineEventManager
+import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import java.util.concurrent.TimeUnit
@@ -23,7 +25,11 @@ annotation class BEventListener(
      * @see BConfig.ignoredIntents
      */
     val ignoreIntents: Boolean = false,
-    /** The time before the coroutine is cancelled, using a negative value means no timeout */
+    /**
+     * The time before the coroutine is canceled, using a negative value means no timeout.
+     *
+     * **Default:** [CoroutineEventManager.timeout] from [ICoroutineEventManagerSupplier]
+     */
     val timeout: Long = 0,
     /** The time unit used for the timeout */
     val timeoutUnit: TimeUnit = TimeUnit.SECONDS)

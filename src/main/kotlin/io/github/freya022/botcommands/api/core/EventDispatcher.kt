@@ -84,10 +84,6 @@ class EventDispatcher internal constructor(
             .get<BEventListener>()
             .addAsEventListeners()
 
-        if (eventManager.timeout.isPositive() && eventManager.timeout.isFinite()) {
-            logger.warn { "Timeout set on ${classRef<CoroutineEventManager>()} is ignored, consider setting them on ${annotationRef<BEventListener>()}" }
-        }
-
         //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
         // as jda-ktx takes this group of listeners as only being one.
         eventManager.listener<Event>(timeout = Duration.INFINITE) {
