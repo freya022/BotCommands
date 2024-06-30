@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.internal.commands.application.mixins.TopLe
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.checkEventScope
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
