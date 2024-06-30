@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.test.commands.slash
+package io.github.freya022.botcommands.test.commands.slash.userapps
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
