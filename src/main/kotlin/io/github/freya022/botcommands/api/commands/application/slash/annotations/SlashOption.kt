@@ -18,10 +18,18 @@ import org.jetbrains.annotations.Nullable
 /**
  * Sets a parameter as a slash command option from Discord.
  *
+ * ### Display name
  * Option names can be inferred from the parameter's name,
  * see [the wiki](https://freya022.github.io/BotCommands/3.X/using-botcommands/parameter-names/)
  * for more details.
  *
+ * ### Order
+ * Options have the same order on Discord and the method,
+ * however, required options must be placed first (i.e., not null, and without a default value).
+ *
+ * If the options are unordered, they will be automatically ordered and logged.
+ *
+ * ### Choices
  * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
  * or the [application command itself][ApplicationCommand.getOptionChoices].
  *
