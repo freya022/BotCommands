@@ -6,33 +6,40 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.utils.FileUpload
-import kotlin.io.path.Path
-import kotlin.io.path.inputStream
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 @Command
-@ConditionalService(SlashUploadStream.Companion::class)
 class SlashUploadStream : ApplicationCommand() {
     @JDASlashCommand(name = "upload_stream")
     suspend fun execute(event: GuildSlashEvent) {
-        Embed {
-            description = "empty"
-        }.let { event.replyEmbeds(it).setEphemeral(true).await() }
+        event.deferReply(true).queue()
 
-        Path("target", "apidocs", "resources", "glass.png")
-                .inputStream()
-                .let { FileUpload.fromData(it, "glass.png") }
-                .use { upload ->
-                    Embed {
-                        image = "attachment://glass.png"
-                    }.also { event.hook.editOriginalEmbeds(it).setFiles(upload).queue() }
-                }
-    }
+        val out = ByteArrayOutputStream()
+        val written = withContext(Dispatchers.IO) {
+            val bufferedImage = BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR)
+            val graphics = bufferedImage.createGraphics()
+            graphics.fillRect(0, 0, 100, 100)
+            ImageIO.write(bufferedImage, "png", out).also {
+                graphics.dispose()
+            }
+        }
+        require(written)
 
-    companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>) = "nope"
+        val bytes = out.toByteArray()
+
+        FileUpload.fromData(bytes, "img.png").use { upload ->
+            val embed = Embed {
+                image = "attachment://img.png"
+            }
+
+            event.hook.sendMessageEmbeds(embed)
+                .setFiles(upload)
+                .await()
+        }
     }
 }
