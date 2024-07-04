@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalContracts::class)
+@file:Suppress("UNCHECKED_CAST")
 
 package io.github.freya022.botcommands.api.core.utils
 
@@ -17,47 +18,78 @@ import kotlin.contracts.contract
  * @see runIgnoringResponse
  * @see runIgnoringResponseOrNull
  */
-class RestResult<out T>(val result: Result<T>) {
+@JvmInline
+value class RestResult<out T> @PublishedApi internal constructor(
+    @PublishedApi internal val value: Any?
+) {
+    internal sealed class Failure(val exception: Throwable) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Failure
+
+            return exception == other.exception
+        }
+
+        override fun hashCode(): Int = exception.hashCode()
+    }
+
+    internal class FatalFailure(exception: Throwable) : Failure(exception) {
+        override fun toString(): String = "FatalFailure($exception)"
+    }
+    internal class IgnoredFailure(exception: Throwable) : Failure(exception) {
+        override fun toString(): String = "IgnoredFailure($exception)"
+    }
+
     /**
      * Returns `true` if this instance represents a successful outcome.
      * In this case [isFailure] returns `false`.
      */
     val isSuccess: Boolean
-        get() = result.isSuccess
+        get() = value !is Failure
 
     /**
      * Returns `true` if this instance represents a failed outcome.
      * In this case [isSuccess] returns `false`.
      */
     val isFailure: Boolean
-        get() = result.isFailure
+        get() = value is Failure
 
     /**
      * Whether this result's exception has been ignored.
      *
      * Methods attempting to read a value will still throw the ignored exception.
      */
-    var isIgnoringExceptions: Boolean = true
-        private set
+    val isIgnoredException: Boolean
+        get() = value is IgnoredFailure
 
     /**
-     * Returns the encapsulated value if this instance represents [success][RestResult.isSuccess]
-     * or throws the encapsulated [Throwable] exception if it is [failure][RestResult.isFailure].
+     * Returns the encapsulated value if this instance represents [success][isSuccess]
+     * or throws the encapsulated [Throwable] exception if it is [failure][isFailure].
      */
-    fun getOrThrow(): T = result.getOrThrow()
+    fun getOrThrow(): T = when {
+        value is Failure -> throw value.exception
+        else -> value as T
+    }
 
     /**
-     * Returns the encapsulated value if this instance represents [success][RestResult.isSuccess]
-     * or `null` if it is [failure][RestResult.isFailure].
+     * Returns the encapsulated value if this instance represents [success][isSuccess]
+     * or `null` if it is [failure][isFailure].
      */
-    fun getOrNull(): T? = result.getOrNull()
+    fun getOrNull(): T? = when {
+        value is Failure -> null
+        else -> value as T
+    }
 
     /**
-     * Throws the encapsulated [Throwable] exception if it is [failure][RestResult.isFailure]
-     * and it is not [ignored][isIgnoringExceptions].
+     * Throws the encapsulated [Throwable] exception if it is [failure][isFailure]
+     * and it is not [ignored][isIgnoredException].
      */
     fun orThrow() {
-        throw result.exceptionOrNull() ?: return
+        // Only throw if not ignored
+        if (value is FatalFailure)
+            throw value.exception
     }
 
     /**
@@ -67,17 +99,20 @@ class RestResult<out T>(val result: Result<T>) {
      * Ignored exceptions are still returned, use [exceptionOrNullIfIgnored] instead
      */
     fun exceptionOrNull(): Throwable? =
-        result.exceptionOrNull()
+        when (value) {
+            is Failure -> value.exception
+            else -> null
+        }
 
     /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
-     * if it is [success][isSuccess] or the exception is [ignored][isIgnoringExceptions].
+     * if it is [success][isSuccess] or the exception is [ignored][isIgnoredException].
      */
     fun exceptionOrNullIfIgnored(): Throwable? =
-        result.exceptionOrNull()?.takeUnless { isIgnoringExceptions }
+        exceptionOrNull()?.takeUnless { isIgnoredException }
 
     /**
-     * Runs the given [block] on the encapsulated value if this instance represents [success][RestResult.isSuccess].
+     * Runs the given [block] on the encapsulated value if this instance represents [success][isSuccess].
      *
      * Returns the original `RestResult` unchanged.
      */
@@ -86,14 +121,15 @@ class RestResult<out T>(val result: Result<T>) {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
 
-        result.onSuccess(block)
+        if (isSuccess)
+            block(value as T)
         return this
     }
 
     /**
      * Runs the given [block] on the encapsulated [Throwable] exception
-     * if this instance represents [failure][RestResult.isFailure],
-     * and the exception is not [ignored][isIgnoringExceptions].
+     * if this instance represents [failure][isFailure],
+     * and the exception is not [ignored][isIgnoredException].
      *
      * Returns the original `RestResult` unchanged.
      */
@@ -102,27 +138,25 @@ class RestResult<out T>(val result: Result<T>) {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
 
-        if (result.isSuccess) return this
-        if (isIgnoringExceptions) return this
-
-        result.onFailure(block)
+        exceptionOrNullIfIgnored()?.let(block)
         return this
     }
 
-    /**
-     * Dismisses the encapsulated [error response][ErrorResponse]
-     * if it corresponds to an ignored response.
-     * 
-     * Allows for [orThrow] to be used on failures without throwing,
-     * but does not allow using functions returning values.
-     *
-     * Returns the original `RestResult` unchanged.
-     *
-     * @see handle
-     */
-    fun ignore(vararg responses: ErrorResponse) = apply {
-        val it = result.exceptionOrNull() ?: return@apply
-        isIgnoringExceptions = isIgnoringExceptions && (it is ErrorResponseException && it.errorResponse in responses)
+    override fun toString(): String = when (value) {
+        is Failure -> value.toString()
+        else -> "Success($value)"
+    }
+
+    companion object {
+        /**
+         * Returns an instance that encapsulates the given [value] as successful value.
+         */
+        fun <T> success(value: T): RestResult<T> = RestResult(value)
+
+        /**
+         * Returns an instance that encapsulates the given [Throwable] [exception] as failure.
+         */
+        fun <T> failure(exception: Throwable): RestResult<T> = RestResult(FatalFailure(exception))
     }
 }
 
@@ -148,7 +182,7 @@ inline fun <T> RestResult<T>.onErrorResponseException(block: (ErrorResponseExcep
  *
  * Returns the original `RestResult` unchanged.
  *
- * @see RestResult.ignore
+ * @see ignore
  * @see handle
  */
 inline fun <T> RestResult<T>.onErrorResponse(block: (ErrorResponse) -> Unit): RestResult<T> {
@@ -166,7 +200,7 @@ inline fun <T> RestResult<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Re
  *
  * Returns the original `RestResult` unchanged.
  *
- * @see RestResult.ignore
+ * @see ignore
  * @see handle
  */
 inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
@@ -175,6 +209,28 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
     }
 
     return onErrorResponseException { if (it.errorResponse == error) block(it) }
+}
+
+/**
+ * Dismisses the encapsulated [error response][ErrorResponse]
+ * if it corresponds to an ignored response.
+ *
+ * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
+ * but does not allow using functions returning values.
+ *
+ * May return a new `RestResult`.
+ *
+ * @see handle
+ */
+fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> {
+    if (value !is RestResult.FatalFailure) return this
+
+    val it = value.exception
+    return if (it is ErrorResponseException && it.errorResponse in responses) {
+        RestResult(RestResult.IgnoredFailure(it))
+    } else {
+        this
+    }
 }
 
 /**
@@ -187,14 +243,14 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
  *
  * May return a new `RestResult`.
  *
- * @see RestResult.ignore
+ * @see ignore
  */
 inline fun <T : R, R> RestResult<T>.recover(vararg responses: ErrorResponse, block: (ErrorResponseException) -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    val it = result.exceptionOrNull()
+    val it = exceptionOrNull()
     return if (it is ErrorResponseException && it.errorResponse in responses) {
         runCatchingRest { block(it) }
     } else {
@@ -210,20 +266,20 @@ inline fun <T : R, R> RestResult<T>.recover(vararg responses: ErrorResponse, blo
  *
  * Returns the original `RestResult` unchanged otherwise.
  *
- * @see RestResult.ignore
+ * @see ignore
  */
 inline fun <T> RestResult<T>.handle(vararg responses: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    val it = result.exceptionOrNull() ?: return this
+    val it = exceptionOrNull() ?: return this
     if (it is ErrorResponseException && it.errorResponse in responses) {
         try {
             block(it)
             return this
         } catch (e: Throwable) {
-            return RestResult(Result.failure(e))
+            return RestResult.failure(e)
         } finally { // For non-local returns
             ignore(*responses)
         }
@@ -242,5 +298,9 @@ inline fun <T> runCatchingRest(block: () -> T): RestResult<T> {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
 
-    return RestResult(runCatching(block))
+    return try {
+        RestResult.success(block())
+    } catch (e: Throwable) {
+        RestResult.failure(e)
+    }
 }
