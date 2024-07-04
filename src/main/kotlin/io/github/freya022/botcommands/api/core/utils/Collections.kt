@@ -9,6 +9,10 @@ inline fun <reified T : Enum<T>> enumSetOfAll(): EnumSet<T> = EnumSet.allOf(T::c
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSetOf<T>().apply { addAll(elems) }
 inline fun <reified T : Enum<T>, V> enumMapOf(): EnumMap<T, V> = EnumMap<T, V>(T::class.java)
 
+fun <T> Collection<T>.unmodifiableView(): Collection<T> {
+    return Collections.unmodifiableCollection(this)
+}
+
 fun <T> List<T>.toImmutableList(): List<T> {
     return Collections.unmodifiableList(toMutableList())
 }

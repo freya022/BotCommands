@@ -54,8 +54,6 @@ internal class TextCommandsListener internal constructor(
 
         if (!event.isFromGuild) return
 
-        val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
-
         val isBotMentioned = event.message.mentions.isMentioned(event.jda.selfUser)
         if (GatewayIntent.MESSAGE_CONTENT !in event.jda.gatewayIntents && !isBotMentioned) return
 
@@ -69,6 +67,7 @@ internal class TextCommandsListener internal constructor(
         logger.trace { "Received text command: $msg" }
 
         scope.launchCatching({ handleException(event, it, msg) }) launch@{
+            val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
             val isNotOwner = !context.config.isOwner(member.idLong)
 
             val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
