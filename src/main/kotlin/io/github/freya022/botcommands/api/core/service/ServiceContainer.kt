@@ -38,8 +38,8 @@ interface ServiceContainer {
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
-    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>>
-    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>): List<Class<T>> =
+    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<out T>>
+    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>): List<Class<out T>> =
         getInterfacedServiceTypes(clazz.kotlin).map { it.java }
 
     /**
