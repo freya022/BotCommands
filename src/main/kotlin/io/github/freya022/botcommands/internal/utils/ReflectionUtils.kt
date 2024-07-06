@@ -166,6 +166,9 @@ internal fun <T : Any> KClass<T>.createSingleton(): T {
         return instance
     val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
         ?: throwArgument("Class $simpleNestedName must either be an object, or have a no-arg constructor (or have only default parameters)")
+    check(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
+        "Constructor of ${this.simpleNestedName} must be effectively public (internal is allowed)"
+    }
 
     return constructor.callBy(mapOf())
 }
