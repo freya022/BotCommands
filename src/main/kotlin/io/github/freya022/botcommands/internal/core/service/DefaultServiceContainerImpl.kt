@@ -171,7 +171,11 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
-        return serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
+        return serviceProviders.findAllForType(clazz)
+            // Avoid circular dependency, we can't supply ourselves
+            .filterNot { it in serviceCreationStack }
+            .filter { it.canInstantiate(this) == null }
+            .map { it.primaryType as KClass<T> }
     }
 
     private val failedInterfacedServices: MutableSet<KClass<*>> = ConcurrentHashMap.newKeySet()
