@@ -117,12 +117,7 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
             .filter { it.value.size > 1 }
 
         check(duplicatedNamedProviders.isEmpty()) {
-            buildString {
-                appendLine("More than one service provider define usable services by the same name:")
-                appendLine(duplicatedNamedProviders.entries.joinAsList("-") { (k, v) -> "$k\n${v.joinAsList(linePrefix = "    -") { it.getProviderSignature() }}" })
-                appendLine()
-                appendLine("Consider using a condition so only one of them can be used, or use a different name")
-            }
+            duplicatedNamedProvidersMsg(duplicatedNamedProviders)
         }
     }
 
@@ -181,4 +176,11 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
             logger.trace { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
         }
     }
+}
+
+internal fun duplicatedNamedProvidersMsg(providers: Map<String, List<ServiceProvider>>) = buildString {
+    appendLine("More than one service provider define usable services by the same name:")
+    appendLine(providers.entries.joinAsList("-") { (k, v) -> "$k\n${v.joinAsList(linePrefix = "    -") { it.getProviderSignature() }}" })
+    appendLine()
+    appendLine("Consider using a condition so only one of them can be used, or use a different name")
 }

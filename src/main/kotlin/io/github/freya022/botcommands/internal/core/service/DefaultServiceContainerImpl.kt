@@ -271,8 +271,16 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
 
         if (primaryProviders.size > 1) {
             // Getting a provider by name cannot give multiple providers
-            if (name != null)
-                throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
+            if (name != null) {
+                // If DefaultInstantiableServices is still running,
+                // usable providers with the same names weren't checked yet,
+                // throw here too.
+                if (serviceProviders.findAllForType(DefaultInstantiableServices::class).single() in serviceCreationStack) {
+                    throwState(duplicatedNamedProvidersMsg(mapOf(name to primaryProviders)))
+                } else {
+                    throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
+                }
+            }
 
             return NON_UNIQUE_PROVIDERS.toResult(
                 errorMessage = "Requested service of ${getProviderCharacteristics(clazz, name = null)} had multiple providers",
