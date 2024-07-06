@@ -62,7 +62,11 @@ internal class FunctionServiceProvider(
                 return ServiceError.ErrorType.UNAVAILABLE_INSTANCE.toError(
                     errorMessage = "The '${instanceParameter.type.simpleNestedName}' instance required by the service factory was unavailable",
                     failedFunction = function,
-                    nestedError = serviceError
+                    nestedError = serviceError,
+                    extra = mapOf(
+                        "Java hint" to "Should the factory be 'static'?",
+                        "Kotlin hint" to "Should the class be an 'object' instead?",
+                    )
                 )
             }
         }
