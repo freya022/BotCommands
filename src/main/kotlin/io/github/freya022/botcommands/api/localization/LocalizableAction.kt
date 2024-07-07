@@ -39,6 +39,13 @@ interface LocalizableAction {
     fun getLocalizationContext(bundleName: String, pathPrefix: String?): LocalizationContext
 
     /**
+     * Retrieves a [DefaultMessages] instance, using a locale suitable for messages sent to the user.
+     *
+     * @see DefaultMessagesFactory
+     */
+    fun getDefaultMessages(): DefaultMessages
+
+    /**
      * Returns the localized message at the following [path][localizationPath],
      * using the provided locale and parameters.
      *
