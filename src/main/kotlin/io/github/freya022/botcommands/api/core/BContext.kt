@@ -157,6 +157,7 @@ interface BContext {
      *
      * @param guild The Guild to take the locale from
      */
+    @Deprecated("Use TextCommandLocaleProvider")
     fun getDefaultMessages(guild: Guild?): DefaultMessages {
         return getDefaultMessages(getEffectiveLocale(guild))
     }
@@ -219,12 +220,16 @@ interface BContext {
      *
      * @return Full list of prefixes
      */
-    val prefixes: List<String> get() = textConfig.prefixes
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.prefixes"))
+    val prefixes: List<String>
+        get() = textCommandsContext.prefixes
 
     /**
      * @return `true` if the bot responds to its own mention.
      */
-    val isPingAsPrefix: Boolean get() = textConfig.usePingAsPrefix
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.isPingAsPrefix"))
+    val isPingAsPrefix: Boolean
+        get() = textCommandsContext.isPingAsPrefix
 
     /**
      * Returns the preferred prefix for triggering this bot,
@@ -232,11 +237,9 @@ interface BContext {
      *
      * @return The preferred prefix
      */
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.getPreferredPrefix(jda)"))
     val prefix: String?
-        get() = when {
-            isPingAsPrefix -> jda.selfUser.asMention + " "
-            else -> prefixes.firstOrNull()
-        }
+        get() = textCommandsContext.getPreferredPrefix(jda)
 
     /**
      * Returns the [DefaultEmbedSupplier] service.
@@ -261,7 +264,9 @@ interface BContext {
      *
      * @return The help builder consumer
      */
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.helpBuilderConsumer"))
     val helpBuilderConsumer: HelpBuilderConsumer?
+        get() = textCommandsContext.helpBuilderConsumer
     //endregion
 
     //region Application commands

@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -36,7 +35,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, o
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
     override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
-    override val helpBuilderConsumer: HelpBuilderConsumer? by lazy { serviceContainer.getServiceOrNull() }
 
     override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()
 

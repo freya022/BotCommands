@@ -70,7 +70,7 @@ object TextUtils {
             }
         }
 
-        val prefix = event.context.prefix ?: throwInternal("Cannot generate help content without a prefix")
+        val prefix = event.context.textCommandsContext.getPreferredPrefix(event.context.jda) ?: throwInternal("Cannot generate help content without a prefix")
         fun TextCommandVariation.buildUsage(commandOptionsByParameters: Map<TextCommandParameter, List<TextCommandOption>>) = buildString {
             append(prefix)
             append(name)
