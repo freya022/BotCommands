@@ -15,13 +15,14 @@ import io.github.freya022.botcommands.internal.core.service.annotations.Requires
 import io.github.freya022.botcommands.test.services.INamedService
 import io.github.freya022.botcommands.test.services.NamedService1
 import io.github.freya022.botcommands.test.services.UnusedInterfacedService
+import net.dv8tion.jda.api.EmbedBuilder
 
 @Command
 @RequiresDefaultInjection
 class SlashDI internal constructor(
     @ServiceName("modifiedNamedService") namedService: INamedService?,
-    @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default(),
-    unusedInterfacedService: UnusedInterfacedService?
+    @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() },
+    unusedInterfacedService: UnusedInterfacedService?,
 ) : ApplicationCommand() {
     init {
         check(namedService is NamedService1)
@@ -37,7 +38,7 @@ class SlashDI internal constructor(
         filters: List<ApplicationCommandFilter<*>>,
         databaseLazy: LazyService<BlockingDatabase>,
         @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener?,
-        @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier.Default()
+        @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() }
     ) {
         event.reply_(
             """

@@ -243,14 +243,18 @@ interface BContext {
      *
      * @see DefaultEmbedSupplier
      */
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.defaultEmbedSupplier"))
     val defaultEmbedSupplier: DefaultEmbedSupplier
+        get() = textCommandsContext.defaultEmbedSupplier
 
     /**
      * Returns the [DefaultEmbedFooterIconSupplier] service.
      *
      * @see DefaultEmbedFooterIconSupplier
      */
+    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.defaultEmbedFooterIconSupplier"))
     val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier
+        get() = textCommandsContext.defaultEmbedFooterIconSupplier
 
     /**
      * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it

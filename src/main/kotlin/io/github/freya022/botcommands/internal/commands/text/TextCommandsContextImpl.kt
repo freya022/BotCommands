@@ -1,12 +1,21 @@
 package io.github.freya022.botcommands.internal.commands.text
 
+import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
+import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
+import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
+import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 
 @BService
-internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
+internal class TextCommandsContextImpl internal constructor(
+    override val textConfig: BTextConfig,
+    override val defaultEmbedSupplier: DefaultEmbedSupplier,
+    override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier,
+    override val helpBuilderConsumer: HelpBuilderConsumer?
+) : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfoImpl> = hashMapOf()
 
     override val rootCommands: Collection<TopLevelTextCommandInfoImpl>

@@ -59,10 +59,10 @@ internal open class BaseCommandEventImpl(
     }
 
     override fun getDefaultEmbed(): EmbedBuilder {
-        return context.defaultEmbedSupplier.get()
+        return context.textCommandsContext.defaultEmbedSupplier.get()
     }
 
-    override fun getDefaultIconStream(): InputStream? = context.defaultEmbedFooterIconSupplier.get()
+    override fun getDefaultIconStream(): InputStream? = context.textCommandsContext.defaultEmbedFooterIconSupplier.get()
 
     override fun sendWithEmbedFooterIcon(embed: MessageEmbed, onException: Consumer<in Throwable>): RestAction<Message> =
         sendWithEmbedFooterIcon(channel, embed, onException)

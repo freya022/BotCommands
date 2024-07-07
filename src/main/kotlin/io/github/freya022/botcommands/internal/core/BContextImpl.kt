@@ -36,8 +36,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, o
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
     override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
-    override val defaultEmbedSupplier: DefaultEmbedSupplier by serviceContainer.lazyOrElse { DefaultEmbedSupplier.Default() }
-    override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by serviceContainer.lazyOrElse { DefaultEmbedFooterIconSupplier.Default() }
     override val helpBuilderConsumer: HelpBuilderConsumer? by lazy { serviceContainer.getServiceOrNull() }
 
     override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()

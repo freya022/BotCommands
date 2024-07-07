@@ -3,10 +3,7 @@ package io.github.freya022.botcommands.internal.commands.text
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.CommandEvent
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
@@ -15,10 +12,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
-import io.github.freya022.botcommands.api.core.utils.handle
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -40,7 +34,11 @@ private val spacePattern = Regex("\\s+")
 @Command
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
 @ConditionalOnMissingBean(IHelpCommand::class)
-internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand, TextCommandProvider {
+internal class HelpCommand internal constructor(
+    private val context: BContextImpl,
+    private val textCommandsContext: TextCommandsContext,
+    private val helpBuilderConsumer: HelpBuilderConsumer?
+) : IHelpCommand, TextCommandProvider {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
             // Try to get IHelpCommand interfaced services, except ours
@@ -121,7 +119,7 @@ internal class HelpCommand internal constructor(private val context: BContextImp
     }
 
     private fun generateGlobalHelp(member: Member, channel: GuildMessageChannel): EmbedBuilder {
-        val builder = context.defaultEmbedSupplier.get()
+        val builder = textCommandsContext.defaultEmbedSupplier.get()
         builder.setTimestamp(Instant.now())
         builder.setColor(member.colorRaw)
 
