@@ -21,7 +21,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import java.time.Instant
@@ -73,11 +72,8 @@ internal class HelpCommand internal constructor(
 
     @CommandMarker
     suspend fun onTextHelpCommand(event: BaseCommandEvent, commandStr: String) {
-        val commandInfo = context.textCommandsContext.findTextCommand(spacePattern.split(commandStr))
-        if (commandInfo == null) {
-            event.respond("Command '$commandStr' does not exist").await()
-            return
-        }
+        val commandInfo = textCommandsContext.findTextCommand(spacePattern.split(commandStr))
+            ?: return event.respond("Command '$commandStr' does not exist").awaitUnit()
 
         sendCommandHelp(event, commandInfo, temporary = false)
     }
@@ -102,17 +98,18 @@ internal class HelpCommand internal constructor(
 
     private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo, temporary: Boolean) {
         val member = event.member
-        val usability = Usability.of(context, commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
+        val usability = Usability.of(commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
         if (usability.isNotShowable) {
-            event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").await()
-            return
+            return event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").awaitUnit()
         }
 
         val embed = generateCommandHelp(event, commandInfo)
         if (temporary) {
-            event.respond(embed.build())
-                .deleteDelayed(1.minutes)
-                .queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE, ErrorResponse.MISSING_ACCESS, ErrorResponse.MISSING_PERMISSIONS))
+            runIgnoringResponse(ErrorResponse.UNKNOWN_MESSAGE, ErrorResponse.MISSING_ACCESS, ErrorResponse.MISSING_PERMISSIONS) {
+                event.respond(embed.build())
+                    .deleteDelayed(1.minutes)
+                    .await()
+            }
         } else {
             event.respond(embed.build()).queue()
         }
@@ -124,8 +121,8 @@ internal class HelpCommand internal constructor(
         builder.setColor(member.colorRaw)
 
         val isNotOwner = !context.isOwner(member.idLong)
-        context.textCommandsContext.rootCommands
-            .filter { Usability.of(context, it, member, channel, isNotOwner).isShowable }
+        textCommandsContext.rootCommands
+            .filter { Usability.of(it, member, channel, isNotOwner).isShowable }
             .groupByTo(TreeMap(String.CASE_INSENSITIVE_ORDER)) { it.category }
             .forEach { (category, commands) ->
                 val commandListStr =
@@ -133,7 +130,7 @@ internal class HelpCommand internal constructor(
                 builder.addField(category, commandListStr, false)
             }
 
-        context.helpBuilderConsumer?.accept(builder, true, null)
+        helpBuilderConsumer?.accept(builder, true, null)
 
         return builder
     }
@@ -143,7 +140,7 @@ internal class HelpCommand internal constructor(
         builder.setTimestamp(Instant.now())
         builder.setColor(event.member.colorRaw)
 
-        context.helpBuilderConsumer?.accept(builder, false, commandInfo)
+        helpBuilderConsumer?.accept(builder, false, commandInfo)
 
         return builder
     }
