@@ -8,6 +8,8 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -33,13 +35,15 @@ import kotlin.reflect.KClass
 private val logger = KotlinLogging.logger { }
 
 internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeResolver<T, R>, R : UserSnowflake>(
-    protected val context: BContext,
+    context: BContext,
     clazz: KClass<R>
 ) : ClassParameterResolver<T, R>(clazz),
     TextParameterResolver<T, R>,
     SlashParameterResolver<T, R>,
     ComponentParameterResolver<T, R>,
     UserContextParameterResolver<T, R> {
+        
+    private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
 
     final override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     final override val testExample: String = "<@1234>"
@@ -69,7 +73,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         val id = arg.toLongOrNull() ?: throwArgument("Invalid user id: $arg")
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)
-            event.reply_(context.getDefaultMessages(event).resolverUserNotFoundMsg, ephemeral = true).queue()
+            event.reply_(defaultMessagesFactory.get(event).resolverUserNotFoundMsg, ephemeral = true).queue()
 
         return entity
     }

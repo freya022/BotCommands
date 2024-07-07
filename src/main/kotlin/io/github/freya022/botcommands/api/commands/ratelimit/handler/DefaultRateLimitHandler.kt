@@ -8,10 +8,12 @@ import io.github.freya022.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -59,7 +61,7 @@ class DefaultRateLimitHandler(
             event.guildChannel.canTalk() -> event.channel
             else -> event.author.openPrivateChannel().await()
         }
-        val messages = context.getDefaultMessages(event.guild)
+        val messages = context.getService<DefaultMessagesFactory>().get(event)
         val content = getRateLimitMessage(messages, probe)
 
         runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
@@ -92,7 +94,7 @@ class DefaultRateLimitHandler(
     }
 
     private suspend fun onRateLimit(context: BContext, event: IReplyCallback, probe: ConsumptionProbe) {
-        val messages = context.getDefaultMessages(event)
+        val messages = context.getService<DefaultMessagesFactory>().get(event)
         val content = getRateLimitMessage(messages, probe)
         val hook = event.reply(content).setEphemeral(true).await()
         // Only schedule delete if the interaction hook doesn't expire before

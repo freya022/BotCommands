@@ -12,7 +12,9 @@ import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeExce
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.reflect.function
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
@@ -45,7 +47,7 @@ internal sealed interface IChannelResolver {
 @ResolverFactory
 internal class ChannelResolverFactory(private val context: BContext) : ParameterResolverFactory<ChannelResolver>(ChannelResolver::class) {
     internal class ChannelResolver(
-        private val context: BContext,
+        context: BContext,
         private val type: Class<out GuildChannel>,
         override val channelTypes: EnumSet<ChannelType>
     ) : ClassParameterResolver<ChannelResolver, GuildChannel>(GuildChannel::class),
@@ -57,6 +59,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         // When a component expired while the bot was offline,
         // the required JDA instance isn't there yet.
         IChannelResolver {
+            
+        private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
 
         //region Text
         override val pattern: Pattern = channelPattern
@@ -108,7 +112,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
                     return retrieveThreadChannel(event, guild, channelId)
 
                 logger.trace { "Could not find channel of type ${type.simpleNestedName} and id $channelId" }
-                event.reply_(context.getDefaultMessages(event).resolverChannelNotFoundMsg, ephemeral = true).queue()
+                event.reply_(defaultMessagesFactory.get(event).resolverChannelNotFoundMsg, ephemeral = true).queue()
             }
 
             return channel
@@ -120,7 +124,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
             if (event.channel.canTalk())
-                event.message.reply(context.getDefaultMessages(event.guild).getResolverChannelMissingAccessMsg("<#$channelId>")).queue()
+                event.message.reply(defaultMessagesFactory.get(event).getResolverChannelMissingAccessMsg("<#$channelId>")).queue()
         })
 
         private suspend fun retrieveThreadChannel(
@@ -128,7 +132,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             guild: Guild,
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(guild, channelId, onMissingAccess = {
-            event.reply_(context.getDefaultMessages(event).getResolverChannelMissingAccessMsg("<#$channelId>"), ephemeral = true).queue()
+            event.reply_(defaultMessagesFactory.get(event).getResolverChannelMissingAccessMsg("<#$channelId>"), ephemeral = true).queue()
         })
 
         private suspend fun retrieveThreadChannel(

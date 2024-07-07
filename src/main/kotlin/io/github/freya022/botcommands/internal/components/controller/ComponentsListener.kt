@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.AbstractComponentData
@@ -54,6 +55,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ComponentInteractionFilter<Any>>,
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
@@ -85,13 +87,13 @@ internal class ComponentsListener(
             }
             val component = componentRepository.getComponent(componentId)
                 ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
-                ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                ?: return@launch event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
             if (component !is AbstractComponentData)
                 throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
 
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
-                return@launch event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+                return@launch event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
             }
 
             component.filters.onEach { filter ->
@@ -102,7 +104,7 @@ internal class ComponentsListener(
 
             component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
                 if (!component.constraints.isAllowed(event)) {
-                    event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+                    event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
                     return@withRateLimit false
                 }
 
@@ -155,7 +157,7 @@ internal class ComponentsListener(
                                     Component raw data: $userData
                                 """.trimIndent()
                             }
-                            event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                            event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
                             return@withRateLimit false
                         }
 
@@ -241,9 +243,9 @@ internal class ComponentsListener(
             "Component" to event.component
         ))
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(context.getDefaultMessages(event).getBotPermErrorMsg(setOf(e.permission)))
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
         }
     }
 
