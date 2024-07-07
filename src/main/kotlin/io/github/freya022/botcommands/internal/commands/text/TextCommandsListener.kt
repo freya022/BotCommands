@@ -4,9 +4,16 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
+import io.github.freya022.botcommands.api.core.config.BTextConfig
+import io.github.freya022.botcommands.api.core.infoNull
+import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.commands.Usability
@@ -26,6 +33,8 @@ private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
 @BService
+//TODO expand this to a custom condition, included in built-in text command stuff
+@ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
     private val textCommandsContext: TextCommandsContextImpl,
@@ -53,9 +62,6 @@ internal class TextCommandsListener internal constructor(
         if (event.author.isBot || event.isWebhookMessage) return
 
         if (!event.isFromGuild) return
-
-        val isBotMentioned = event.message.mentions.isMentioned(event.jda.selfUser)
-        if (GatewayIntent.MESSAGE_CONTENT !in event.jda.gatewayIntents && !isBotMentioned) return
 
         val msg: String = event.message.contentRaw
         val content = when {
@@ -250,6 +256,20 @@ internal class TextCommandsListener internal constructor(
         if (suggestions.isNotEmpty()) {
             val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
             replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
+        }
+    }
+
+    internal object ActivationCondition : ConditionalServiceChecker {
+        // Require either message content or mention prefix
+        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
+            val jdaService = serviceContainer.getService<JDAService>()
+            return if (GatewayIntent.MESSAGE_CONTENT in jdaService.intents) {
+                null
+            } else if (serviceContainer.getService<BTextConfig>().usePingAsPrefix) {
+                logger.infoNull { "Listening to text commands, only using ping-as-prefix, as GatewayIntent.MESSAGE_CONTENT is disabled" }
+            } else {
+                "GatewayIntent.MESSAGE_CONTENT is missing and ${BTextConfig::usePingAsPrefix.reference} is disabled"
+            }
         }
     }
 }
