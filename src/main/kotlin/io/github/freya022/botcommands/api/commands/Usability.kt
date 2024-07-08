@@ -1,9 +1,16 @@
 package io.github.freya022.botcommands.api.commands
 
 /**
- * Represents whether a command is usable (and if it is visible).
+ * Represents whether a command can be used, and if it should be visible.
  */
 interface Usability {
+    /**
+     * All reasons this command might be unusable/invisible.
+     *
+     * The set is not sorted in any specific order.
+     *
+     * @see bestReason
+     */
     val unusableReasons: Set<UnusableReason>
 
     /**

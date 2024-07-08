@@ -30,7 +30,7 @@ interface ApplicationCommandInfo : CommandInfo, Executable,
     val fullCommandName: String get() = path.getFullPath(' ')
 
     /**
-     * Checks the usability (and visibility) of this application command.
+     * Returns a [Usability] instance, representing whether this application command can be used.
      */
     fun getUsability(inputUser: InputUser, channel: MessageChannel): Usability
 }

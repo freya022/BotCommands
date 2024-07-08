@@ -69,7 +69,8 @@ interface TextCommandInfo : CommandInfo {
     val detailedDescription: Consumer<EmbedBuilder>?
 
     /**
-     * Checks the usability (and visibility) of this text command.
+     * Returns a [Usability] instance, representing whether this text command can be used,
+     * and if it is visible, for example, in the help content.
      */
     fun getUsability(member: Member, channel: GuildMessageChannel): Usability
 }
