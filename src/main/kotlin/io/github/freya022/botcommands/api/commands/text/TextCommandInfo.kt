@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.commands.CommandInfo
+import io.github.freya022.botcommands.api.commands.Usability
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.internal.commands.Usability
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel

@@ -1,15 +1,11 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.commands.CommandInfo
-import io.github.freya022.botcommands.api.commands.ICommandOptionContainer
-import io.github.freya022.botcommands.api.commands.ICommandParameterContainer
-import io.github.freya022.botcommands.api.commands.IFilterContainer
+import io.github.freya022.botcommands.api.commands.*
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.internal.commands.Usability
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
 /**

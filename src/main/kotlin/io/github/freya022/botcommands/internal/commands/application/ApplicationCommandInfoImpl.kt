@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application
 
+import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -11,8 +12,7 @@ import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.Usability
-import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
+import io.github.freya022.botcommands.internal.commands.UsabilityImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -61,7 +61,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
         }
     }
 
-    final override fun getUsability(inputUser: InputUser, channel: MessageChannel): Usability = Usability.build {
+    final override fun getUsability(inputUser: InputUser, channel: MessageChannel): UsabilityImpl = UsabilityImpl.build {
         // Nothing to check outside a guild
         val member = inputUser.member
             ?: return@build logger.trace { "Skipping usability checks for non-members" }
