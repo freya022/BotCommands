@@ -8,6 +8,8 @@ import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 import kotlin.time.Duration
 
 internal fun String.toDiscordString(): String {
@@ -98,3 +100,20 @@ internal fun Duration.toTimestampIfFinite(): Instant? =
 
 internal fun Duration.takeIfFinite(): Duration? =
     takeIf { it.isFinite() && it.isPositive() }
+
+internal class WriteOnce<T : Any> : ReadWriteProperty<Any?, T> {
+    private var value: T? = null
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return value ?: throwState("Property ${property.name} must be initialized before getting it.")
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        check(this.value == null) {
+            "Cannot set value twice"
+        }
+        this.value = value
+    }
+
+    internal fun isInitialized(): Boolean = value != null
+}

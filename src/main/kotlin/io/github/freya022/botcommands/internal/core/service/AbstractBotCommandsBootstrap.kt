@@ -24,16 +24,12 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
         Version.checkVersions()
 
-        if (config.ownerIds.isEmpty())
-            logger.info { "No owner ID specified, exceptions won't be sent to owners" }
         if (config.disableExceptionsInDMs)
             logger.info { "Configuration disabled sending exception in bot owners DMs" }
         if (config.disableAutocompleteCache)
             logger.info { "Configuration disabled autocomplete cache, except forced caches" }
         if (!config.textConfig.usePingAsPrefix && config.textConfig.prefixes.isEmpty())
             logger.info { "Text commands will not work as ping-as-prefix is disabled and no prefix has been added" }
-
-        logger.debug { "Reminder that bot owners will bypass cooldowns, user permissions checks, and will have hidden and owner-only commands be displayed and usable" }
 
         measure("Scanned reflection metadata") {
             ReflectionMetadata.runScan(config, this)
