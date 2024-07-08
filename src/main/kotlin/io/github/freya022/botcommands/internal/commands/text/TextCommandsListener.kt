@@ -87,7 +87,7 @@ internal class TextCommandsListener internal constructor(
             logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
 
             commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                if (!canRun(event, commandInfo, isNotOwner)) {
+                if (!canRun(event, commandInfo)) {
                     false
                 } else {
                     tryVariations(event, commandInfo, content, args, cancellableRateLimit)
@@ -184,7 +184,7 @@ internal class TextCommandsListener internal constructor(
         return context.textConfig.prefixes
     }
 
-    private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
+    private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo): Boolean {
         val member = event.member ?: throwInternal("Text command was executed out of a Guild")
         val usability = commandInfo.getUsability(member, event.guildChannel)
 

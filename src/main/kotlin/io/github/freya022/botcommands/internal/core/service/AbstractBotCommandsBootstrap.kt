@@ -33,6 +33,8 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
         if (!config.textConfig.usePingAsPrefix && config.textConfig.prefixes.isEmpty())
             logger.info { "Text commands will not work as ping-as-prefix is disabled and no prefix has been added" }
 
+        logger.debug { "Reminder that bot owners will bypass cooldowns, user permissions checks, and will have hidden and owner-only commands be displayed and usable" }
+
         measure("Scanned reflection metadata") {
             ReflectionMetadata.runScan(config, this)
         }

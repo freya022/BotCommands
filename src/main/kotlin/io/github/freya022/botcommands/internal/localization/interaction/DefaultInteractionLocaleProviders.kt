@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration
 // as ConditionalOnMissingBean doesn't always work
 @BService
 @Configuration
-internal open class DefaultUserLocaleProviderProvider internal constructor() {
+internal open class DefaultInteractionLocaleProviders internal constructor() {
     private object DefaultUserLocaleProvider : UserLocaleProvider {
         override fun getDiscordLocale(interaction: Interaction): DiscordLocale = interaction.userLocale
 

@@ -354,7 +354,7 @@ and [Using components](../using-components.md).
 
 ### Examples
 
-You can find examples covering parts of the framework [here](https://github.com/freya022/BotCommands/tree/3.X/examples).
+You can find examples covering parts of the framework [here](https://github.com/freya022/BotCommands/tree/3.X/src/examples).
 
 ### Getting help
 

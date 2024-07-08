@@ -17,6 +17,7 @@ import java.util.*
  *
  * @see InterfacedService @InterfacedService
  */
+@InterfacedService(acceptMultiple = false)
 interface DefaultMessagesFactory {
     /**
      * Retrieves a [DefaultMessages] instance for the given locale.
