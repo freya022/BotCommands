@@ -11,9 +11,9 @@ import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import java.util.*
 import java.util.function.Consumer
 
@@ -70,7 +70,7 @@ internal sealed class TextCommandInfoImpl(
             return checkNSFW(channel.parentMessageChannel)
         }
 
-        if (channel is StandardGuildMessageChannel) {
+        if (channel is IAgeRestrictedChannel) {
             if (!channel.isNSFW) {
                 add(UnusableReason.NSFW_ONLY)
             }
