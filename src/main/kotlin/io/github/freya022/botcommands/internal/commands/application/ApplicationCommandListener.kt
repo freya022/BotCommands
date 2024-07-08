@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -13,11 +14,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
+import io.github.freya022.botcommands.api.core.entities.inputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.Usability
-import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
@@ -65,7 +65,7 @@ internal class ApplicationCommandListener internal constructor(
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                if (!canRun(event, slashCommand, isNotOwner)) {
+                if (!canRun(event, slashCommand)) {
                     false
                 } else {
                     val localizableInteraction = localizableInteractionFactory.create(event)
@@ -91,7 +91,7 @@ internal class ApplicationCommandListener internal constructor(
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                if (!canRun(event, userCommand, isNotOwner)) {
+                if (!canRun(event, userCommand)) {
                     false
                 } else {
                     val localizableInteraction = localizableInteractionFactory.create(event)
@@ -117,7 +117,7 @@ internal class ApplicationCommandListener internal constructor(
 
             val isNotOwner = !context.isOwner(event.user.idLong)
             messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
-                if (!canRun(event, messageCommand, isNotOwner)) {
+                if (!canRun(event, messageCommand)) {
                     false
                 } else {
                     val localizableInteraction = localizableInteractionFactory.create(event)
@@ -195,33 +195,26 @@ internal class ApplicationCommandListener internal constructor(
         }
     }
 
-    private suspend fun canRun(
-        event: GenericCommandInteractionEvent,
-        applicationCommand: ApplicationCommandInfoImpl,
-        isNotOwner: Boolean
-    ): Boolean {
-        val usability = Usability.of(event, applicationCommand, isNotOwner)
-        if (usability.isUnusable) {
-            val unusableReasons = usability.unusableReasons
-            when {
-                UnusableReason.OWNER_ONLY in unusableReasons -> {
-                    reply(event, defaultMessagesFactory.get(event).ownerOnlyErrorMsg)
-                    return false
-                }
-                UnusableReason.NSFW_ONLY in unusableReasons -> throwInternal("Discord already handles NSFW commands")
-                UnusableReason.USER_PERMISSIONS in unusableReasons -> {
+    private suspend fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfoImpl): Boolean {
+        val usability = applicationCommand.getUsability(event.inputUser, event.messageChannel)
+        if (usability.isNotUsable) {
+            val errorMessage: String = when (usability.bestReason) {
+                UnusableReason.OWNER_ONLY -> defaultMessagesFactory.get(event).ownerOnlyErrorMsg
+                UnusableReason.USER_PERMISSIONS -> {
                     val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
                     val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
-                    reply(event, defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions))
-                    return false
+                    defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions)
                 }
-                UnusableReason.BOT_PERMISSIONS in unusableReasons -> {
+                UnusableReason.BOT_PERMISSIONS -> {
                     val guild = event.guild ?: throwInternal("BOT_PERMISSIONS got checked even if guild is null")
                     val missingPermissions = getMissingPermissions(applicationCommand.botPermissions, guild.selfMember, event.guildChannel)
-                    reply(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions))
-                    return false
+                    defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions)
                 }
+                UnusableReason.NSFW_ONLY -> throwInternal("Discord already handles NSFW commands")
+                UnusableReason.HIDDEN -> throwInternal("Application commands can't be hidden")
             }
+            reply(event, errorMessage)
+            return false
         }
 
         checkFilters(globalFilters, applicationCommand.filters) { filter ->

@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.reference
@@ -100,8 +99,8 @@ internal class HelpCommand internal constructor(
 
     private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo, temporary: Boolean) {
         val member = event.member
-        val usability = Usability.of(commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
-        if (usability.isNotShowable) {
+        val usability = commandInfo.getUsability(member, event.guildChannel)
+        if (usability.isNotVisible) {
             return event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").awaitUnit()
         }
 
@@ -122,9 +121,8 @@ internal class HelpCommand internal constructor(
         builder.setTimestamp(Instant.now())
         builder.setColor(member.colorRaw)
 
-        val isNotOwner = !context.isOwner(member.idLong)
         textCommandsContext.rootCommands
-            .filter { Usability.of(it, member, channel, isNotOwner).isShowable }
+            .filter { it.getUsability(member, channel).isVisible }
             .groupByTo(TreeMap(String.CASE_INSENSITIVE_ORDER)) { it.category }
             .forEach { (category, commands) ->
                 val commandListStr =

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.coroutines.await
+import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.core.BContext
@@ -17,8 +18,6 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.Usability
-import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
@@ -187,27 +186,24 @@ internal class TextCommandsListener internal constructor(
 
     private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
         val member = event.member ?: throwInternal("Text command was executed out of a Guild")
-        val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
+        val usability = commandInfo.getUsability(member, event.guildChannel)
 
-        if (usability.isUnusable) {
-            val unusableReasons = usability.unusableReasons
-            if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
-            } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-                replyError(event, defaultMessagesFactory.get(event).ownerOnlyErrorMsg)
-                return false
-            } else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
-                replyError(event, defaultMessagesFactory.get(event).nsfwOnlyErrorMsg)
-                return false
-            } else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-                val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
-                replyError(event, defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions))
-                return false
-            } else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
-                val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
-                replyError(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions))
-                return false
+        if (usability.isNotUsable) {
+            val errorMessage: String = when (usability.bestReason) {
+                UnusableReason.HIDDEN -> throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
+                UnusableReason.OWNER_ONLY -> defaultMessagesFactory.get(event).ownerOnlyErrorMsg
+                UnusableReason.USER_PERMISSIONS -> {
+                    val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
+                    defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions)
+                }
+                UnusableReason.BOT_PERMISSIONS -> {
+                    val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
+                    defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions)
+                }
+                UnusableReason.NSFW_ONLY -> defaultMessagesFactory.get(event).nsfwOnlyErrorMsg
             }
+            replyError(event, errorMessage)
+            return false
         }
 
         return true
@@ -252,7 +248,7 @@ internal class TextCommandsListener internal constructor(
         if (!context.textConfig.showSuggestions) return
 
         val candidates = context.textCommandsContext.rootCommands
-            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner = isNotOwner).isShowable }
+            .filter { it.getUsability(event.member!!, event.guildChannel).isVisible }
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
