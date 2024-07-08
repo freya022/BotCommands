@@ -21,20 +21,26 @@ class Usability private constructor(val unusableReasons: Set<UnusableReason>) {
         get() = !isUsable
 
     /**
-     * Returns `true` if the command should be visible, even if unusable (in help content, for example)
+     * Returns `true` if the command should be visible, even if unusable (in help content, for example).
      */
     val isVisible: Boolean = unusableReasons.all { it.isVisible }
 
     /**
-     * @return `true` if the command should **not** be visible (in help content, for example)
+     * @return `true` if the command should **not** be visible (in help content, for example).
      */
     val isNotVisible: Boolean
         get() = !isVisible
 
+    /**
+     * Returns the most important un-usability reason.
+     */
+    val bestReason: UnusableReason
+        get() = unusableReasons.maxBy { it.priority }
+
     enum class UnusableReason(
         internal val priority: Int,
         /**
-         * Returns `true` if the command should be visible, even if unusable (in help content, for example)
+         * Returns `true` if the command should be visible, even if unusable (in help content, for example).
          */
         val isVisible: Boolean
     ) {
