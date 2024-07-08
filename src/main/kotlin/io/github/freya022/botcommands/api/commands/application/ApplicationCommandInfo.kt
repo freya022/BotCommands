@@ -8,6 +8,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcom
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.entities.InputUser
+import io.github.freya022.botcommands.internal.commands.Usability
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
 /**
  * Represents an application command of any kind.
@@ -29,4 +32,9 @@ interface ApplicationCommandInfo : CommandInfo, Executable,
      * - [SlashSubcommandGroupInfo] == `docs search`
      */
     val fullCommandName: String get() = path.getFullPath(' ')
+
+    /**
+     * Checks the usability (and visibility) of this application command.
+     */
+    fun getUsability(inputUser: InputUser, channel: MessageChannel): Usability
 }

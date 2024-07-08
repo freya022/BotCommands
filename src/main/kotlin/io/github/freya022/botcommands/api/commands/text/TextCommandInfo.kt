@@ -3,8 +3,11 @@ package io.github.freya022.botcommands.api.commands.text
 import io.github.freya022.botcommands.api.commands.CommandInfo
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.internal.commands.Usability
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import java.util.function.Consumer
 
 /**
@@ -64,4 +67,9 @@ interface TextCommandInfo : CommandInfo {
      * Consumer of an [EmbedBuilder], runs after generating the built-in help content.
      */
     val detailedDescription: Consumer<EmbedBuilder>?
+
+    /**
+     * Checks the usability (and visibility) of this text command.
+     */
+    fun getUsability(member: Member, channel: GuildMessageChannel): Usability
 }

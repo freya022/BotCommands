@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
@@ -187,9 +186,9 @@ internal class TextCommandsListener internal constructor(
 
     private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
         val member = event.member ?: throwInternal("Text command was executed out of a Guild")
-        val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
+        val usability = commandInfo.getUsability(member, event.guildChannel)
 
-        if (usability.isUnusable) {
+        if (usability.isNotUsable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
                 throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
@@ -252,7 +251,7 @@ internal class TextCommandsListener internal constructor(
         if (!context.textConfig.showSuggestions) return
 
         val candidates = context.textCommandsContext.rootCommands
-            .filter { Usability.of(context, it, event.member!!, event.guildChannel, isNotOwner = isNotOwner).isShowable }
+            .filter { it.getUsability(event.member!!, event.guildChannel).isVisible }
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
