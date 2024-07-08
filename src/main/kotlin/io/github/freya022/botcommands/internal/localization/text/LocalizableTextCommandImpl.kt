@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.localization.text
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
@@ -17,6 +19,7 @@ internal class LocalizableTextCommandImpl internal constructor(
     localizationService: LocalizationService,
     localizationConfig: BLocalizationConfig,
     private val localeProvider: TextCommandLocaleProvider,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService), LocalizableTextCommand {
     private val locale: Locale by lazy { localeProvider.getLocale(event) }
 
@@ -27,6 +30,10 @@ internal class LocalizableTextCommandImpl internal constructor(
             pathPrefix,
             guildLocale = localeProvider.getDiscordLocale(event)
         )
+    }
+
+    override fun getDefaultMessages(): DefaultMessages {
+        return defaultMessagesFactory.get(locale)
     }
 
     override fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String {

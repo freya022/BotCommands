@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -115,13 +116,6 @@ interface BContext {
     val ownerIds: Collection<Long> get() = config.ownerIds
 
     /**
-     * Returns the [DefaultMessagesSupplier] service.
-     *
-     * @see DefaultMessagesSupplier
-     */
-    val defaultMessagesSupplier: DefaultMessagesSupplier
-
-    /**
      * Returns the [SettingsProvider] service, or `null` if none exists.
      *
      * @see SettingsProvider
@@ -150,16 +144,36 @@ interface BContext {
      *
      * @param locale The locale to get the messages in
      */
-    fun getDefaultMessages(locale: DiscordLocale): DefaultMessages = defaultMessagesSupplier.get(locale)
+    @Deprecated(
+        message = "Get from DefaultMessagesFactory",
+        replaceWith = ReplaceWith(
+            expression = "this.getService<DefaultMessagesFactory>().get(locale.toLocale())",
+            imports = [
+                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
+                "io.github.freya022.botcommands.api.core.service.getService"
+            ]
+        )
+    )
+    fun getDefaultMessages(locale: DiscordLocale): DefaultMessages =
+        getService<DefaultMessagesFactory>().get(locale.toLocale())
 
     /**
      * Returns the [DefaultMessages] instance for this Guild's locale
      *
      * @param guild The Guild to take the locale from
      */
-    @Deprecated("Use TextCommandLocaleProvider")
+    @Deprecated(
+        message = "Get from DefaultMessagesFactory, using the message event",
+        replaceWith = ReplaceWith(
+            expression = "this.getService<DefaultMessagesFactory>().get(event)",
+            imports = [
+                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
+                "io.github.freya022.botcommands.api.core.service.getService"
+            ]
+        )
+    )
     fun getDefaultMessages(guild: Guild?): DefaultMessages {
-        return getDefaultMessages(getEffectiveLocale(guild))
+        return getService<DefaultMessagesFactory>().get(getEffectiveLocale(guild).toLocale())
     }
 
     /**
@@ -167,8 +181,18 @@ interface BContext {
      *
      * @param interaction The Interaction to take the user's locale from
      */
+    @Deprecated(
+        message = "Get from DefaultMessagesFactory",
+        replaceWith = ReplaceWith(
+            expression = "this.getService<DefaultMessagesFactory>().get(interaction)",
+            imports = [
+                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
+                "io.github.freya022.botcommands.api.core.service.getService"
+            ]
+        )
+    )
     fun getDefaultMessages(interaction: Interaction): DefaultMessages {
-        return getDefaultMessages(interaction.userLocale)
+        return getService<DefaultMessagesFactory>().get(interaction)
     }
 
     /**

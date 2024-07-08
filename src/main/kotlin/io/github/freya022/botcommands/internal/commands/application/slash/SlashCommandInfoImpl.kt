@@ -7,7 +7,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
@@ -36,6 +38,8 @@ internal sealed class SlashCommandInfoImpl(
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
+
+    private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
 
     override val topLevelInstance: TopLevelSlashCommandInfoImpl
         get() = _topLevelInstance ?: throwInternal("This should have been overridden or not been null")
@@ -109,7 +113,7 @@ internal sealed class SlashCommandInfoImpl(
                                 //Only use the generic message if the user didn't handle this situation
                                 if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
                                     event.reply_(
-                                        context.getDefaultMessages(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
+                                        defaultMessagesFactory.get(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
                                         ephemeral = true
                                     ).queue()
                                 }

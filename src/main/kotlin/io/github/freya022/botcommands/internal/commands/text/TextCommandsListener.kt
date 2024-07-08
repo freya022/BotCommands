@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
@@ -37,6 +38,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     filters: List<TextCommandFilter<Any>>,
@@ -136,9 +138,9 @@ internal class TextCommandsListener internal constructor(
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         if (e is InsufficientPermissionException) {
-            replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(setOf(e.permission)))
+            replyError(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
         } else {
-            replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
+            replyError(event, defaultMessagesFactory.get(event).generalErrorMsg)
         }
     }
 
@@ -192,18 +194,18 @@ internal class TextCommandsListener internal constructor(
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
                 throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-                replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
+                replyError(event, defaultMessagesFactory.get(event).ownerOnlyErrorMsg)
                 return false
             } else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
-                replyError(event, context.getDefaultMessages(event.guild).nsfwOnlyErrorMsg)
+                replyError(event, defaultMessagesFactory.get(event).nsfwOnlyErrorMsg)
                 return false
             } else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
                 val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
-                replyError(event, context.getDefaultMessages(event.guild).getUserPermErrorMsg(missingPermissions))
+                replyError(event, defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions))
                 return false
             } else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
                 val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
-                replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(missingPermissions))
+                replyError(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions))
                 return false
             }
         }
@@ -255,7 +257,7 @@ internal class TextCommandsListener internal constructor(
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
             val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
-            replyError(event, context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestionsStr))
+            replyError(event, defaultMessagesFactory.get(event).getCommandNotFoundMsg(suggestionsStr))
         }
     }
 

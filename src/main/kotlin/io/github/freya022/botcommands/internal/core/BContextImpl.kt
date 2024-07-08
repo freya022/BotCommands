@@ -1,17 +1,22 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.core.*
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BContext.Status
+import io.github.freya022.botcommands.api.core.EventDispatcher
+import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
+import io.github.freya022.botcommands.api.core.SettingsProvider
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
-import io.github.freya022.botcommands.api.core.service.*
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
+import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
-import io.github.freya022.botcommands.internal.localization.DefaultDefaultMessagesSupplier
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
@@ -28,8 +33,6 @@ internal class BContextImpl internal constructor(override val config: BConfig, o
 
     override var status: Status = Status.PRE_LOAD
         private set
-
-    override val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.lazyOrElse { DefaultDefaultMessagesSupplier(this) }
 
     override val settingsProvider: SettingsProvider? by lazy { serviceContainer.getServiceOrNull() }
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }

@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -35,6 +36,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalOnMissingBean(IHelpCommand::class)
 internal class HelpCommand internal constructor(
     private val context: BContextImpl,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
     private val textCommandsContext: TextCommandsContext,
     private val helpBuilderConsumer: HelpBuilderConsumer?
 ) : IHelpCommand, TextCommandProvider {
@@ -90,7 +92,7 @@ internal class HelpCommand internal constructor(
         event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message"))
             .awaitCatching()
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
-                event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
+                event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).queue()
             }.getOrThrow()
 
         event.reactSuccess().queue()

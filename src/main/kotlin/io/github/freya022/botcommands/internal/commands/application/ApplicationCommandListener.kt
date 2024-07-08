@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.Usability
 import io.github.freya022.botcommands.internal.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
@@ -36,6 +37,7 @@ private val logger = KotlinLogging.logger {  }
 @BService
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ApplicationCommandFilter<Any>>,
     rejectionHandler: ApplicationCommandRejectionHandler<Any>?
@@ -136,7 +138,7 @@ internal class ApplicationCommandListener internal constructor(
         val guildMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild)
         val globalMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(null)
         if (guildMap == null || globalMap == null) {
-            return event.reply_(context.getDefaultMessages(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+            return event.reply_(defaultMessagesFactory.get(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
         }
 
         //This is done so warnings are printed after the exception
@@ -187,9 +189,9 @@ internal class ApplicationCommandListener internal constructor(
         exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap())
 
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(context.getDefaultMessages(event).getBotPermErrorMsg(setOf(e.permission)))
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(context.getDefaultMessages(event).generalErrorMsg)
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
         }
     }
 
@@ -203,20 +205,20 @@ internal class ApplicationCommandListener internal constructor(
             val unusableReasons = usability.unusableReasons
             when {
                 UnusableReason.OWNER_ONLY in unusableReasons -> {
-                    reply(event, context.getDefaultMessages(event).ownerOnlyErrorMsg)
+                    reply(event, defaultMessagesFactory.get(event).ownerOnlyErrorMsg)
                     return false
                 }
                 UnusableReason.NSFW_ONLY in unusableReasons -> throwInternal("Discord already handles NSFW commands")
                 UnusableReason.USER_PERMISSIONS in unusableReasons -> {
                     val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
                     val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
-                    reply(event, context.getDefaultMessages(event).getUserPermErrorMsg(missingPermissions))
+                    reply(event, defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions))
                     return false
                 }
                 UnusableReason.BOT_PERMISSIONS in unusableReasons -> {
                     val guild = event.guild ?: throwInternal("BOT_PERMISSIONS got checked even if guild is null")
                     val missingPermissions = getMissingPermissions(applicationCommand.botPermissions, guild.selfMember, event.guildChannel)
-                    reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingPermissions))
+                    reply(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions))
                     return false
                 }
             }

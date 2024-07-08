@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization;
 
-import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
 import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
@@ -51,9 +50,7 @@ public final class DefaultMessages {
      * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
      */
     @ApiStatus.Internal
-    public DefaultMessages(@NotNull BContext context, @NotNull Locale locale) {
-        final LocalizationService localizationService = context.getService(LocalizationService.class);
-
+    public DefaultMessages(@NotNull LocalizationService localizationService, @NotNull Locale locale) {
         this.localization = localizationService.getInstance("DefaultMessages", locale);
         if (this.localization == null) {
             final var mappingProviders = localizationService.getMappingProviders();

@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -19,6 +21,7 @@ internal class LocalizableInteractionImpl internal constructor(
     localizationConfig: BLocalizationConfig,
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
+    private val defaultMessagesFactory: DefaultMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService),
     LocalizableInteraction {
 
@@ -33,6 +36,10 @@ internal class LocalizableInteractionImpl internal constructor(
             guildLocale = guildLocaleProvider.getDiscordLocale(deferrableCallback),
             userLocale = userLocaleProvider.getDiscordLocale(deferrableCallback)
         )
+    }
+
+    override fun getDefaultMessages(): DefaultMessages {
+        return defaultMessagesFactory.get(deferrableCallback)
     }
 
     override fun getUserMessage(localizationPath: String, vararg entries: Localization.Entry): String {
