@@ -5,6 +5,9 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.DefaultMessages;
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider;
+import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider;
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
@@ -62,8 +65,11 @@ public interface SettingsProvider {
      * @return The {@link Locale} of the specified guild
      *
      * @see DefaultMessages
+     *
+     * @deprecated Replaced by {@link TextCommandLocaleProvider} / {@link UserLocaleProvider} / {@link GuildLocaleProvider}
      */
     @NotNull
+    @Deprecated
     default DiscordLocale getLocale(@Nullable Guild guild) {
         if (guild != null) return guild.getLocale();
 

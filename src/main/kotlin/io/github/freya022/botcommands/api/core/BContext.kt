@@ -219,6 +219,7 @@ interface BContext {
      *
      * @return The [DiscordLocale] of the [Guild]
      */
+    @Deprecated("Replaced with TextCommandLocaleProvider")
     fun getEffectiveLocale(guild: Guild?): DiscordLocale {
         if (guild != null && guild.features.contains("COMMUNITY")) {
             return guild.locale
