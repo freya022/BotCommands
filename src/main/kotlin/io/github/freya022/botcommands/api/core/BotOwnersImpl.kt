@@ -44,6 +44,8 @@ class BotOwnersImpl internal constructor(
         logger.debug { "Reminder that bot owners will bypass cooldowns, user permissions checks, and will have hidden and owner-only commands be displayed and usable" }
     }
 
+    override fun isOwner(user: UserSnowflake): Boolean = user.idLong in owners
+
     @BEventListener
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         if (ownerWriter.isInitialized()) return
@@ -80,6 +82,4 @@ class BotOwnersImpl internal constructor(
             logger.debug { "Registered ${owners.size} bot owners: ${owners.joinToString { it.name }}" }
         }
     }
-
-    override fun isOwner(user: UserSnowflake): Boolean = user.idLong in owners
 }
