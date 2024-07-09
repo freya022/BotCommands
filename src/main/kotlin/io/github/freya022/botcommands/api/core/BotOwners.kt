@@ -4,6 +4,12 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import net.dv8tion.jda.api.entities.UserSnowflake
 
+/**
+ * Holds owners of this bot.
+ *
+ * Bot owners are allowed to bypass cooldowns, user permission checks,
+ * and have hidden commands shown.
+ */
 @InterfacedService(acceptMultiple = false)
 interface BotOwners {
     /**
@@ -24,4 +30,6 @@ interface BotOwners {
      * @see UserSnowflake.fromId
      */
     fun isOwner(user: UserSnowflake): Boolean
+
+    operator fun contains(user: UserSnowflake): Boolean = isOwner(user)
 }
