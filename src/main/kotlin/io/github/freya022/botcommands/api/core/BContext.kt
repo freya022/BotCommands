@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KFunction
@@ -118,9 +119,13 @@ interface BContext {
     /**
      * Returns the IDs of the bot owners.
      *
-     * @see BConfig.ownerIds
+     * @see BotOwners.ownerIds
      */
-    val ownerIds: Collection<Long> get() = config.ownerIds
+    @Deprecated(
+        message = "Get from BotOwners directly",
+        replaceWith = ReplaceWith("botOwners.ownerIds")
+    )
+    val ownerIds: Collection<Long> get() = botOwners.ownerIds
 
     /**
      * Returns the [SettingsProvider] service, or `null` if none exists.
@@ -144,7 +149,14 @@ interface BContext {
      *
      * @return `true` if the user is an owner
      */
-    fun isOwner(userId: Long): Boolean = userId in ownerIds
+    @Deprecated(
+        message = "Prefer using BotOwners#isOwner/contains",
+        replaceWith = ReplaceWith(
+            expression = "UserSnowflake.fromId(userId) in botOwners",
+            imports = ["net.dv8tion.jda.api.entities.UserSnowflake"]
+        )
+    )
+    fun isOwner(userId: Long): Boolean = UserSnowflake.fromId(userId) in botOwners
 
     /**
      * Returns the [DefaultMessages] instance for the provided Discord locale.

@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.BotOwners
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
@@ -58,7 +58,7 @@ abstract class TextCommandBuilder internal constructor(context: BContext, name: 
 
     /**
      * Hides a command and its subcommands from help content and execution,
-     * except for [bot owners][BConfigBuilder.ownerIds].
+     * except for [bot owners][BotOwners].
      *
      * @see Hidden
      */

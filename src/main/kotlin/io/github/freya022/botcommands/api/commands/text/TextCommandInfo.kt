@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.text
 import io.github.freya022.botcommands.api.commands.CommandInfo
 import io.github.freya022.botcommands.api.commands.Usability
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
-import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.BotOwners
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
@@ -47,7 +47,7 @@ interface TextCommandInfo : CommandInfo {
     val nsfw: Boolean
 
     /**
-     * Whether this command can only be run by the [bot owners][BConfig.ownerIds].
+     * Whether this command can only be run by the [bot owners][BotOwners].
      *
      * Owner-only commands are hidden in the built-in help content,
      * but will still be responded to if a user tries to use it,
@@ -59,7 +59,7 @@ interface TextCommandInfo : CommandInfo {
      * Whether this command is hidden.
      *
      * This command and its subcommands are hidden from help content and cannot run,
-     * except for [bot owners][BConfig.ownerIds].
+     * except for [bot owners][BotOwners].
      */
     val hidden: Boolean
 

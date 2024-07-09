@@ -35,7 +35,7 @@ class BotOwnersImpl internal constructor(
     }
 
     init {
-        val ownerIds = config.ownerIds
+        val ownerIds = config.predefinedOwnerIds
         if (ownerIds.isNotEmpty()) {
             logger.debug { "Using predefined bot owners, IDs: ${ownerIds.joinToString()}" }
             owners = TLongHashSet(ownerIds)

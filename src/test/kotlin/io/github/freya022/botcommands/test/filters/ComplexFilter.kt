@@ -95,7 +95,7 @@ class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter<Str
     ): String? = check(event.user)
 
     private fun check(userSnowflake: UserSnowflake): String? {
-        if (!context.isOwner(userSnowflake.idLong)) {
+        if (userSnowflake !in context.botOwners) {
             return "You must be the bot owner"
         }
         return null

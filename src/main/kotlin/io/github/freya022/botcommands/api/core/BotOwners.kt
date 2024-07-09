@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 @InterfacedService(acceptMultiple = false)
 interface BotOwners {
     /**
-     * The owners of this bot, uses [BConfigBuilder.ownerIds] if configured,
+     * The owners of this bot, uses [BConfigBuilder.predefinedOwnerIds] if configured,
      * else retrieve the owners from Discord, where only owners, admin and developers are taken.
      *
      * Allows bypassing cooldowns, user permission checks,

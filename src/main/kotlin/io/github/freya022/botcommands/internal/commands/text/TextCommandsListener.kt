@@ -75,12 +75,12 @@ internal class TextCommandsListener internal constructor(
 
         scope.launchCatching({ handleException(event, it, msg) }) launch@{
             val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
-            val isNotOwner = !context.config.isOwner(member.idLong)
+            val isNotOwner = member !in context.botOwners
 
             val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
                 // At this point no top level command was found,
                 // if a subcommand wasn't matched, it would simply appear in the args
-                onCommandNotFound(event, content.substringBefore(' '), isNotOwner)
+                onCommandNotFound(event, content.substringBefore(' '))
                 return@launch
             }
 
@@ -244,7 +244,7 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private suspend fun onCommandNotFound(event: MessageReceivedEvent, commandName: String, isNotOwner: Boolean) {
+    private suspend fun onCommandNotFound(event: MessageReceivedEvent, commandName: String) {
         if (!context.textConfig.showSuggestions) return
 
         val candidates = context.textCommandsContext.rootCommands
