@@ -51,9 +51,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * ### Example - Rejecting component interactions from non-owners
  * ```kt
  * @BService
- * class MyComponentFilter(private val context: BContext) : ComponentInteractionFilter<String> {
+ * class MyComponentFilter(private val botOwners: BotOwners) : ComponentInteractionFilter<String> {
  *     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
- *         if (event.channel.idLong == 932902082724380744 && event.user.idLong !in context.ownerIds) {
+ *         if (event.channel.idLong == 932902082724380744 && event.user !in botOwners) {
  *             return "Only owners are allowed to use components in <#932902082724380744>"
  *         }
  *         return null
@@ -66,16 +66,16 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * ```java
  * @BService
  * public class MyComponentFilter implements ComponentInteractionFilter<String> {
- *     private final BContext context;
+ *     private final BotOwners botOwners;
  *
- *     public MyComponentFilter(BContext context) {
- *         this.context = context;
+ *     public MyComponentFilter(BotOwners botOwners) {
+ *         this.botOwners = botOwners;
  *     }
  *
  *     @Nullable
  *     @Override
  *     public String check(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName) {
- *         if (event.getChannel().getIdLong() == 932902082724380744L && context.isOwner(event.getUser().getIdLong())) {
+ *         if (event.getChannel().getIdLong() == 932902082724380744L && !botOwners.isOwner(event.getUser())) {
  *             return "Only owners are allowed to use components in <#932902082724380744>";
  *         }
  *         return null;
