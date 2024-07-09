@@ -99,7 +99,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .map(CommandData::fromCommand)
             .toJsonBytes()
 
-        metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
+        metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
         return checkCommandJson(oldCommandBytes)
     }
 
@@ -159,7 +159,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .addCommands(allCommandData)
             .await()
 
-        metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(it) }
+        metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
 
         saveCommandData(guild)
         printPushedCommandData(commands, guild)

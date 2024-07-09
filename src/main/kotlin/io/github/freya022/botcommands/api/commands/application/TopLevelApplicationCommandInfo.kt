@@ -45,4 +45,6 @@ interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelAppli
         get() = metadata.id
     override val timeModified: OffsetDateTime
         get() = metadata.timeModified
+    override val guildId: Long?
+        get() = metadata.guildId
 }
