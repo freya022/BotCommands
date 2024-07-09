@@ -204,3 +204,8 @@ internal fun KType.typeOfAtOrNullOnStar(index: Int, targetType: KClass<*>): KTyp
 
     return this.jvmErasure.superErasureAt(index, targetType)
 }
+
+internal fun <T : Any> Class<T>.safeCast(instance: Any?): T? = when {
+    isInstance(instance) -> cast(instance)
+    else -> null
+}

@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
@@ -9,8 +8,10 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
@@ -37,6 +38,7 @@ private val logger = KotlinLogging.logger {  }
 @BService
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
+    private val applicationCommandsBuilder: ApplicationCommandsBuilder,
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ApplicationCommandFilter<Any>>,
@@ -58,10 +60,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received slash command: ${event.commandString}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val slashCommand = CommandPath.of(event.name, event.subcommandGroup, event.subcommandName).let {
-                context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
-            } as SlashCommandInfoImpl
+            val slashCommand = context.applicationCommandsContext
+                .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
+                ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
 
             val isNotOwner = event.user !in context.botOwners
             slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -84,10 +85,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received user context command: ${event.name}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val userCommand = event.name.let {
-                context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
-            } as UserCommandInfoImpl
+            val userCommand = context.applicationCommandsContext
+                .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+                ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
 
             val isNotOwner = event.user !in context.botOwners
             userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -110,10 +110,9 @@ internal class ApplicationCommandListener internal constructor(
         logger.trace { "Received message context command: ${event.name}" }
 
         scope.launchCatching({ handleException(it, event) }) launch@{
-            val messageCommand = event.name.let {
-                context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
-                    ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
-            } as MessageCommandInfoImpl
+            val messageCommand = context.applicationCommandsContext
+                .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+                ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
 
             val isNotOwner = event.user !in context.botOwners
             messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
@@ -132,12 +131,19 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     // In rare cases where a user sends a command before they have been registered
-    // Or the command list is somehow not the same
+    // Or the command list is somehow different
     private suspend fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
-        // If an exception occurred during first-time commands registration, the command map for it does not exist
-        val guildMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild)
-        val globalMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(null)
-        if (guildMap == null || globalMap == null) {
+        val guild = event.guild
+        val failedGlobal = !applicationCommandsBuilder.hasPushedGlobalOnceSuccessfully()
+        val failedGuild = if (guild != null) !applicationCommandsBuilder.hasPushedGuildOnceSuccessfully(guild) else false
+        if (failedGlobal || failedGuild) {
+            if (failedGlobal && failedGuild) {
+                logger.debug { "Ignored '${event.fullCommandName}' as global command and guild commands (${guild!!.id}) could not be updated" }
+            } else if (failedGlobal) {
+                logger.debug { "Ignored '${event.fullCommandName}' as global commands could not be updated" }
+            } else {
+                logger.debug { "Ignored '${event.fullCommandName}' as guild (${guild!!.id}) commands could not be updated" }
+            }
             return event.reply_(defaultMessagesFactory.get(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
         }
 
@@ -149,17 +155,29 @@ internal class ApplicationCommandListener internal constructor(
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
         val guild = event.guild
         logger.debug {
-            val commandsMap = context.applicationCommandsContext.getEffectiveApplicationCommandsMap(guild)
+            val topLevelCommands = context.applicationCommandsContext.getEffectiveApplicationCommands(guild)
             val scopeName = if (guild != null) "'" + guild.name + "'" else "Global scope"
-            val availableCommands = commandsMap.allApplicationCommands
-                .map { commandInfo ->
-                    when (commandInfo) {
-                        is SlashCommandInfoImpl -> "/" + commandInfo.path.getFullPath(' ')
-                        else -> commandInfo.path.fullPath
+            val availableCommands = buildString {
+                topLevelCommands
+                    .sortedBy { it.name }
+                    .forEach { command ->
+                        if (command is TopLevelSlashCommandInfo) {
+                            appendLine(" - /${command.name}")
+                            command.subcommands.values.forEach { subcommand ->
+                                appendLine("${" ".repeat(4)} - ${subcommand.name}")
+                            }
+
+                            command.subcommandGroups.values.forEach { subcommandGroup ->
+                                appendLine("${" ".repeat(4)} - ${subcommandGroup.name}")
+                                subcommandGroup.subcommands.values.forEach { subcommand ->
+                                    appendLine("${" ".repeat(8)} - ${subcommand.name}")
+                                }
+                            }
+                        } else {
+                            appendLine(" - ${command.name}")
+                        }
                     }
-                }
-                .sorted()
-                .joinToString("\n")
+            }
             "Commands available in $scopeName:\n$availableCommands"
         }
 

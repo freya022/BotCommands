@@ -27,4 +27,9 @@ interface TopLevelApplicationCommandMetadata {
      * The time at which this application command was created/modified, retrieved from the [version].
      */
     val timeModified: OffsetDateTime
+
+    /**
+     * The ID of the guild on which this command was pushed on.
+     */
+    val guildId: Long?
 }

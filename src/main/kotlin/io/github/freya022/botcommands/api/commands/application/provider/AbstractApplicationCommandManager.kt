@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.provider
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
@@ -18,7 +19,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
@@ -38,7 +38,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
     private val messageContextCommandMap: NamedCommandMap<MessageCommandInfoImpl> = NamedCommandMap()
     internal val messageContextCommands: Collection<MessageCommandInfoImpl> = messageContextCommandMap.values
 
-    internal val allApplicationCommands: Collection<ApplicationCommandInfoImpl>
+    internal val allApplicationCommands: Collection<TopLevelApplicationCommandInfo>
         get() = slashCommands + userContextCommands + messageContextCommands
 
     internal abstract val defaultScope: CommandScope
