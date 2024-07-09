@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.WriteOnce
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.utils.data.DataPath
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.requests.RestActionImpl
 
-private val logger = KotlinLogging.logger { }
+private val logger = KotlinLogging.loggerOf<BotOwners>()
 
 //private val notifiedRoles = enumSetOf(RoleType.OWNER, RoleType.ADMIN, RoleType.DEVELOPER)
 private val notifiedRoles = setOf("admin", "developer")
