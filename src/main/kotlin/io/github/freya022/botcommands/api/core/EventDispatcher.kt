@@ -2,8 +2,11 @@ package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.BEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -70,7 +73,9 @@ private val logger = KotlinLogging.logger { }
  */
 @BService
 class EventDispatcher internal constructor(
-    private val context: BContextImpl,
+    private val config: BConfig,
+    private val coroutineScopesConfig: BCoroutineScopesConfig,
+    private val serviceContainer: ServiceContainer,
     private val eventManager: CoroutineEventManager,
     private val eventTreeService: EventTreeService,
     private val jdaService: JDAService,
@@ -118,7 +123,7 @@ class EventDispatcher internal constructor(
 
         handlers.forEach { eventHandler ->
             if (eventHandler.isAsync) {
-                context.coroutineScopesConfig.eventDispatcherScope.launch {
+                coroutineScopesConfig.eventDispatcherScope.launch {
                     runEventHandler(eventHandler, event)
                 }
             } else {
@@ -135,7 +140,7 @@ class EventDispatcher internal constructor(
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return emptyList()
 
-        val scope = context.coroutineScopesConfig.eventDispatcherScope
+        val scope = coroutineScopesConfig.eventDispatcherScope
         return handlers.map { eventHandler ->
             scope.async { runEventHandler(eventHandler, event) }
         }
@@ -190,7 +195,7 @@ class EventDispatcher internal constructor(
             if (!annotation.ignoreIntents && eventErasure.isSubclassOf<Event>()) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
-                val missingIntents = requiredIntents - jdaService.intents - context.config.ignoredIntents
+                val missingIntents = requiredIntents - jdaService.intents - config.ignoredIntents
                 if (missingIntents.isNotEmpty()) {
                     return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
                 }
@@ -202,7 +207,7 @@ class EventDispatcher internal constructor(
                 // The main risk was with injected services, as they may not be available at that point,
                 // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
                 .onEach {
-                    context.serviceContainer.canCreateService(it)?.let { serviceError ->
+                    serviceContainer.canCreateService(it)?.let { serviceError ->
                         throwArgument(
                             classPathFunc.function,
                             "Unable to register event listener due to an unavailable service: ${serviceError.toSimpleString()}"
@@ -215,7 +220,7 @@ class EventDispatcher internal constructor(
                 priority = annotation.priority,
                 parametersBlock = {
                     //Getting services is delayed until execution, as to ensure late services can be used in listeners
-                    context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
+                    serviceContainer.getParameters(eventParametersErasures).toTypedArray()
                 })
 
             classPathFunc.function.declaringClass.java.let { clazz ->

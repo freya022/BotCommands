@@ -7,13 +7,14 @@ import io.github.freya022.botcommands.api.commands.application.context.message.M
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
+import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.debugNull
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.safeCast
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -27,7 +28,12 @@ import kotlin.concurrent.withLock
 private val logger = KotlinLogging.loggerOf<ApplicationCommandsContext>()
 
 @BService
-internal class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
+internal class ApplicationCommandsContextImpl internal constructor(
+    private val coroutineScopesConfig: BCoroutineScopesConfig,
+    serviceContainer: ServiceContainer
+) : ApplicationCommandsContext {
+    private val applicationCommandsBuilder: ApplicationCommandsBuilder by serviceContainer.lazy()
+
     private val writeLock = ReentrantLock()
     private val liveTopLevelApplicationCommands = TLongObjectHashMap<TopLevelApplicationCommandInfo>()
 
@@ -100,14 +106,14 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
     }
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return context.coroutineScopesConfig.commandUpdateScope.async {
-            context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force)
+        return coroutineScopesConfig.commandUpdateScope.async {
+            applicationCommandsBuilder.updateGlobalCommands(force)
         }.asCompletableFuture()
     }
 
     override fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult> {
-        return context.coroutineScopesConfig.commandUpdateScope.async {
-            context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force)
+        return coroutineScopesConfig.commandUpdateScope.async {
+            applicationCommandsBuilder.updateGuildCommands(guild, force)
         }.asCompletableFuture()
     }
 }
