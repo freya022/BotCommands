@@ -31,8 +31,6 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
     private val writeLock = ReentrantLock()
     private val liveTopLevelApplicationCommands = TLongObjectHashMap<TopLevelApplicationCommandInfo>()
 
-    //TODO remove need for liveApplicationCommandInfoMap (and probably ApplicationCommandMap altogether?)
-    // however, to find with a guild, the top level data will require the (nullable) guild id
     override fun findSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? {
         val topLevelCommand = liveTopLevelApplicationCommands.valueCollection()
             .find { it.guildId == guild?.idLong && it.name == path.name }
@@ -72,10 +70,9 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
         }
     }
 
-    internal fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap): Unit = writeLock.withLock {
-        map.allApplicationCommands.forEach {
-            val topLevelInstance = it.topLevelInstance
-            liveTopLevelApplicationCommands.put(topLevelInstance.idLong, topLevelInstance)
+    internal fun putLiveApplicationCommandsMap(topLevelCommands: Collection<TopLevelApplicationCommandInfo>): Unit = writeLock.withLock {
+        topLevelCommands.forEach { topLevelCommand ->
+            liveTopLevelApplicationCommands.put(topLevelCommand.idLong, topLevelCommand)
         }
     }
 

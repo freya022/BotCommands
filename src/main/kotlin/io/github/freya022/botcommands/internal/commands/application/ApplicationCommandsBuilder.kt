@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
@@ -92,7 +91,7 @@ internal class ApplicationCommandsBuilder(
         }
 
         setMetadata(globalUpdater)
-        applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.allApplicationCommands.toApplicationCommandMap())
+        applicationCommandsContext.putLiveApplicationCommandsMap(globalUpdater.allApplicationCommands)
 
         firstGlobalUpdate = false
         return CommandUpdateResult(null, hasUpdated, failedDeclarations)
@@ -103,7 +102,7 @@ internal class ApplicationCommandsBuilder(
         if (slashGuildIds.isNotEmpty()) {
             if (guild.idLong !in slashGuildIds) {
                 logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::slashGuildIds.reference}" }
-                applicationCommandsContext.putLiveApplicationCommandsMap(guild, MutableApplicationCommandMap.EMPTY_MAP)
+                applicationCommandsContext.putLiveApplicationCommandsMap(emptyList())
                 return CommandUpdateResult(guild, false, listOf())
             }
         }
@@ -135,7 +134,7 @@ internal class ApplicationCommandsBuilder(
             }
 
             setMetadata(guildUpdater)
-            applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.allApplicationCommands.toApplicationCommandMap())
+            applicationCommandsContext.putLiveApplicationCommandsMap(guildUpdater.allApplicationCommands)
 
             firstGuildUpdates.add(guild.idLong)
             return CommandUpdateResult(guild, hasUpdated, failedDeclarations)
@@ -158,8 +157,6 @@ internal class ApplicationCommandsBuilder(
 
     private fun getCheckTypeString(): String =
         if (context.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
-
-    private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
     private inline fun updateCatching(guild: Guild?, block: () -> CommandUpdateResult) {
         runCatching(block)

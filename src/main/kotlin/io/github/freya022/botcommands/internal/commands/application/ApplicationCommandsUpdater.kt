@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.exceptions.ApplicationCommandUpdateException
@@ -54,7 +53,7 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsMetadataPath(guild)
     }
 
-    internal val allApplicationCommands: Collection<ApplicationCommandInfo> = manager.allApplicationCommands
+    internal val allApplicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands
     private val allCommandData: Collection<CommandData>
     internal val filteredCommandsCount: Int get() = allCommandData.size
 
