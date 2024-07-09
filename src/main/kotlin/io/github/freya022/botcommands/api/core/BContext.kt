@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KFunction
 
+/**
+ * Main context for BotCommands framework.
+ */
 @InterfacedService(acceptMultiple = false)
 interface BContext {
     /**
