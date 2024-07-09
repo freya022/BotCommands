@@ -109,6 +109,13 @@ interface BContext {
     val status: Status
 
     /**
+     * Returns the [BotOwners] service.
+     *
+     * @see BotOwners
+     */
+    val botOwners: BotOwners
+
+    /**
      * Returns the IDs of the bot owners.
      *
      * @see BConfig.ownerIds
