@@ -27,6 +27,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -150,11 +151,12 @@ internal class ApplicationCommandListener internal constructor(
         //This is done so warnings are printed after the exception
         handleException(IllegalArgumentException(message), event)
         printAvailableCommands(event)
+        forceUpdateCommands(guild)
     }
 
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
-        val guild = event.guild
         logger.debug {
+            val guild = event.guild
             val topLevelCommands = context.applicationCommandsContext.getEffectiveApplicationCommands(guild)
             val scopeName = if (guild != null) "'" + guild.name + "'" else "Global scope"
             val availableCommands = buildString {
@@ -180,7 +182,9 @@ internal class ApplicationCommandListener internal constructor(
             }
             "Commands available in $scopeName:\n$availableCommands"
         }
+    }
 
+    private fun forceUpdateCommands(guild: Guild?) {
         if (context.applicationConfig.onlineAppCommandCheckEnabled) {
             logger.warn {
                 """
@@ -194,11 +198,10 @@ internal class ApplicationCommandListener internal constructor(
                     if (e != null)
                         logger.error(e) { "An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing" }
                 }
-            } else {
-                context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
-                    if (e != null)
-                        logger.error(e) { "An exception occurred while trying to update global commands after a command was missing" }
-                }
+            }
+            context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
+                if (e != null)
+                    logger.error(e) { "An exception occurred while trying to update global commands after a command was missing" }
             }
         }
     }
