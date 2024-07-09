@@ -66,6 +66,17 @@ interface ApplicationCommandsContext {
      */
     fun getEffectiveApplicationCommands(guild: Guild?): List<TopLevelApplicationCommandInfo>
 
+    /**
+     * Returns the application command with the specific type, id, group and subcommand,
+     * or `null` if one of the expected arguments does not match.
+     *
+     * Works for both global and guild commands.
+     *
+     * @param type       Expected type of the application command
+     * @param commandId  Expected ID of the top-level command
+     * @param group      Optional group name
+     * @param subcommand Optional subcommand name
+     */
     fun <T : ApplicationCommandInfo> getApplicationCommandById(type: Class<T>, commandId: Long, group: String?, subcommand: String?): T?
 
     /**
@@ -97,6 +108,17 @@ interface ApplicationCommandsContext {
     fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
 }
 
+/**
+ * Returns the application command with the specific type, id, group and subcommand,
+ * or `null` if one of the expected arguments does not match.
+ *
+ * Works for both global and guild commands.
+ *
+ * @param T          Expected type of the application command
+ * @param commandId  Expected ID of the top-level command
+ * @param group      Optional group name
+ * @param subcommand Optional subcommand name
+ */
 inline fun <reified T : ApplicationCommandInfo> ApplicationCommandsContext.getApplicationCommandById(
     commandId: Long,
     group: String?,
