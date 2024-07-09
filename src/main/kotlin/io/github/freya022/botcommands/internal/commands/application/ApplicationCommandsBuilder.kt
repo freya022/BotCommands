@@ -108,7 +108,7 @@ internal class ApplicationCommandsBuilder(
         if (slashGuildIds.isNotEmpty()) {
             if (guild.idLong !in slashGuildIds) {
                 logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::slashGuildIds.reference}" }
-                applicationCommandsContext.putLiveApplicationCommandsMap(emptyList())
+                firstGuildUpdates.add(guild.idLong)
                 return CommandUpdateResult(guild, false, listOf())
             }
         }
