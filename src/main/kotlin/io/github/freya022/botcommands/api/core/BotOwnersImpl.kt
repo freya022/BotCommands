@@ -27,7 +27,7 @@ private val notifiedRoles = setOf("admin", "developer")
 class BotOwnersImpl internal constructor(
     config: BConfig,
 ) : BotOwners {
-    private val ownerWriter = WriteOnce<TLongSet>()
+    private val ownerWriter = WriteOnce<TLongSet>(wait = true)
     private var owners: TLongSet by ownerWriter
 
     override val ownerIds: Collection<Long> by lazy {
