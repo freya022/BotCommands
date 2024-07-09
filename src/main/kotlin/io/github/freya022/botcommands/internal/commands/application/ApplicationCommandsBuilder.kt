@@ -41,6 +41,12 @@ internal class ApplicationCommandsBuilder(
     private var firstGlobalUpdate = true
     private val firstGuildUpdates = hashSetOf<Long>()
 
+    // Set to false when the first push succeeded
+    internal fun hasPushedGlobalOnceSuccessfully(): Boolean = firstGlobalUpdate
+
+    // Added to set when the first push succeeded
+    internal fun hasPushedGuildOnceSuccessfully(guild: Guild): Boolean = guild.idLong !in firstGuildUpdates
+
     @BEventListener
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         try {

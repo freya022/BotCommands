@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.getApplicationCom
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsBuilder
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
@@ -18,7 +19,10 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 private val logger = KotlinLogging.logger { }
 
 @BService
-internal class AutocompleteListener(private val context: BContext) {
+internal class AutocompleteListener(
+    private val context: BContext,
+    private val applicationCommandsBuilder: ApplicationCommandsBuilder,
+) {
     private val applicationContext = context.applicationCommandsContext
     private val scope = context.coroutineScopesConfig.applicationCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
@@ -49,11 +53,12 @@ internal class AutocompleteListener(private val context: BContext) {
 
     private fun onCommandNotFound(event: CommandAutoCompleteInteractionEvent) {
         // In rare cases where a user sends an autocomplete request before the commands have been registered
-        // Log on DEBUG as the exception is going to be more apparent when the user executes the command
-        val guildMap = applicationContext.getApplicationCommands(event.guild)
-        val globalMap = applicationContext.getApplicationCommands(null)
-        if (guildMap == null || globalMap == null) {
-            logger.debug { "Ignoring autocomplete request for '${event.fullCommandName}' in guild '${event.guild?.name}' (${event.guild?.id}) as the commands haven't loaded yet" }
+        // Log on DEBUG as the exception is going to be more noticeable when the user executes the command
+        val guild = event.guild
+        val failedGlobal = !applicationCommandsBuilder.hasPushedGlobalOnceSuccessfully()
+        val failedGuild = if (guild != null) !applicationCommandsBuilder.hasPushedGuildOnceSuccessfully(guild) else false
+        if (failedGlobal || failedGuild) {
+            logger.debug { "Ignoring autocomplete request for '${event.fullCommandName}' in guild '${event.guild?.name}' (${event.guild?.id}) as the commands failed to update on startup" }
         } else {
             logger.debug { "Ignoring autocomplete request for '${event.fullCommandName}' in guild '${event.guild?.name}' (${event.guild?.id}) as the command does not exist" }
         }

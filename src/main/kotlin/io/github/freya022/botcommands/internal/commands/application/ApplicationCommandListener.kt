@@ -38,6 +38,7 @@ private val logger = KotlinLogging.logger {  }
 @BService
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
+    private val applicationCommandsBuilder: ApplicationCommandsBuilder,
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ApplicationCommandFilter<Any>>,
@@ -130,12 +131,19 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     // In rare cases where a user sends a command before they have been registered
-    // Or the command list is somehow not the same
+    // Or the command list is somehow different
     private suspend fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
-        // If an exception occurred during first-time commands registration, the command map for it does not exist
-        val guildMap = context.applicationCommandsContext.getApplicationCommands(event.guild)
-        val globalMap = context.applicationCommandsContext.getApplicationCommands(null)
-        if (guildMap == null || globalMap == null) {
+        val guild = event.guild
+        val failedGlobal = !applicationCommandsBuilder.hasPushedGlobalOnceSuccessfully()
+        val failedGuild = if (guild != null) !applicationCommandsBuilder.hasPushedGuildOnceSuccessfully(guild) else false
+        if (failedGlobal || failedGuild) {
+            if (failedGlobal && failedGuild) {
+                logger.debug { "Ignored '${event.fullCommandName}' as global command and guild commands (${guild!!.id}) could not be updated" }
+            } else if (failedGlobal) {
+                logger.debug { "Ignored '${event.fullCommandName}' as global commands could not be updated" }
+            } else {
+                logger.debug { "Ignored '${event.fullCommandName}' as guild (${guild!!.id}) commands could not be updated" }
+            }
             return event.reply_(defaultMessagesFactory.get(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
         }
 
