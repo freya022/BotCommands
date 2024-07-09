@@ -12,7 +12,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.safeCast
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.async
@@ -27,37 +29,50 @@ private val logger = KotlinLogging.loggerOf<ApplicationCommandsContext>()
 @BService
 internal class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
     private val writeLock = ReentrantLock()
-    private val liveApplicationCommandInfoMap = TLongObjectHashMap<ApplicationCommandMap>()
     private val liveTopLevelApplicationCommands = TLongObjectHashMap<TopLevelApplicationCommandInfo>()
 
     //TODO remove need for liveApplicationCommandInfoMap (and probably ApplicationCommandMap altogether?)
     // however, to find with a guild, the top level data will require the (nullable) guild id
-    override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
-        getLiveApplicationCommandsMap(guild)?.findSlashCommand(path)
-            ?: getLiveApplicationCommandsMap(null)?.findSlashCommand(path)
+    override fun findSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? {
+        val topLevelCommand = liveTopLevelApplicationCommands.valueCollection()
+            .find { it.guildId == guild?.idLong && it.name == path.name }
+            ?: return logger.debugNull { "Could not find slash command with top-level name '${path.name}'" }
 
-    override fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo? =
-        getLiveApplicationCommandsMap(guild)?.findUserCommand(name)
-            ?: getLiveApplicationCommandsMap(null)?.findUserCommand(name)
-
-    override fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo? =
-        getLiveApplicationCommandsMap(guild)?.findMessageCommand(name)
-            ?: getLiveApplicationCommandsMap(null)?.findMessageCommand(name)
-
-    override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap? {
-        return liveApplicationCommandInfoMap[getGuildKey(guild)]
+        return getApplicationCommandById<SlashCommandInfo>(topLevelCommand.idLong, path.group, path.subname)
     }
 
-    override fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap = when (guild) {
-        null -> getLiveApplicationCommandsMap(guild = null) ?: MutableApplicationCommandMap.EMPTY_MAP
+    override fun findUserCommand(guild: Guild?, name: String): UserCommandInfo? {
+        val topLevelCommand = liveTopLevelApplicationCommands.valueCollection()
+            .find { it.guildId == guild?.idLong && it.name == name }
+            ?: return logger.debugNull { "Could not find user command '$name'" }
 
-        else -> (getLiveApplicationCommandsMap(guild = null) ?: MutableApplicationCommandMap.EMPTY_MAP) +
-                (getLiveApplicationCommandsMap(guild = guild) ?: MutableApplicationCommandMap.EMPTY_MAP)
+        return topLevelCommand as? UserCommandInfo
+            ?: return logger.debugNull { "Top level command '$name' is not a ${classRef<UserCommandInfo>()}" }
+    }
+
+    override fun findMessageCommand(guild: Guild?, name: String): MessageCommandInfo? {
+        val topLevelCommand = liveTopLevelApplicationCommands.valueCollection()
+            .find { it.guildId == guild?.idLong && it.name == name }
+            ?: return logger.debugNull { "Could not find message command '$name'" }
+
+        return topLevelCommand as? MessageCommandInfo
+            ?: return logger.debugNull { "Top level command '$name' is not a ${classRef<MessageCommandInfo>()}" }
+    }
+
+    override fun getApplicationCommands(guild: Guild?): List<TopLevelApplicationCommandInfo> =
+        liveTopLevelApplicationCommands.valueCollection().filter { it.guildId == guild?.idLong }
+
+    override fun getEffectiveApplicationCommands(guild: Guild?): List<TopLevelApplicationCommandInfo> {
+        val topLevelCommands = liveTopLevelApplicationCommands.valueCollection()
+        return when (guild) {
+            // Keep global
+            null -> topLevelCommands.filter { it.guildId == null }.unmodifiableView()
+            // Keep global and guild with id
+            else -> topLevelCommands.filter { it.guildId == null || it.guildId == guild.idLong }.unmodifiableView()
+        }
     }
 
     internal fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap): Unit = writeLock.withLock {
-        liveApplicationCommandInfoMap.put(getGuildKey(guild), map.toUnmodifiableMap())
-
         map.allApplicationCommands.forEach {
             val topLevelInstance = it.topLevelInstance
             liveTopLevelApplicationCommands.put(topLevelInstance.idLong, topLevelInstance)
@@ -97,9 +112,5 @@ internal class ApplicationCommandsContextImpl internal constructor(private val c
         return context.coroutineScopesConfig.commandUpdateScope.async {
             context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force)
         }.asCompletableFuture()
-    }
-
-    private fun getGuildKey(guild: Guild?): Long {
-        return guild?.idLong ?: 0
     }
 }

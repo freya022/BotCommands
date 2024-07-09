@@ -50,8 +50,8 @@ internal class AutocompleteListener(private val context: BContext) {
     private fun onCommandNotFound(event: CommandAutoCompleteInteractionEvent) {
         // In rare cases where a user sends an autocomplete request before the commands have been registered
         // Log on DEBUG as the exception is going to be more apparent when the user executes the command
-        val guildMap = applicationContext.getLiveApplicationCommandsMap(event.guild)
-        val globalMap = applicationContext.getLiveApplicationCommandsMap(null)
+        val guildMap = applicationContext.getApplicationCommands(event.guild)
+        val globalMap = applicationContext.getApplicationCommands(null)
         if (guildMap == null || globalMap == null) {
             logger.debug { "Ignoring autocomplete request for '${event.fullCommandName}' in guild '${event.guild?.name}' (${event.guild?.id}) as the commands haven't loaded yet" }
         } else {

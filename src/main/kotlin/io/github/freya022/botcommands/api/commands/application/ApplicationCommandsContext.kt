@@ -23,7 +23,7 @@ interface ApplicationCommandsContext {
      * @param guild The guild from which to get the commands, can be `null` for global commands
      * @param path  Full path of the slash command (Examples: `ban` ; `info user` ; `ban user perm`)
      */
-    fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo?
+    fun findSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo?
 
     /**
      * Returns the [UserCommandInfo] with the specified name,
@@ -32,7 +32,7 @@ interface ApplicationCommandsContext {
      * @param guild The guild from which to get the commands, can be `null` for global commands
      * @param name  Name of the user context command
      */
-    fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo?
+    fun findUserCommand(guild: Guild?, name: String): UserCommandInfo?
 
     /**
      * Returns the [MessageCommandInfo] with the specified name,
@@ -41,28 +41,30 @@ interface ApplicationCommandsContext {
      * @param guild The guild from which to get the commands, can be `null` for global commands
      * @param name  Name of the message context command
      */
-    fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo?
+    fun findMessageCommand(guild: Guild?, name: String): MessageCommandInfo?
 
     /**
      * Returns the application commands currently pushed in the specified guild's scope.
      *
      * If a guild is specified, the global commands will not be included,
-     * use [getEffectiveApplicationCommandsMap] instead.
+     * use [getEffectiveApplicationCommands] instead.
      *
      * @param guild The guild from which to get the commands, can be `null` for global commands
      *
-     * @see getEffectiveApplicationCommandsMap
+     * @see getEffectiveApplicationCommands
      */
-    fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap?
+    fun getApplicationCommands(guild: Guild?): List<TopLevelApplicationCommandInfo>
 
     /**
-     * Returns the effective application commands available for the specific guild.
+     * Returns the effective list of application commands this guild has access to.
      *
-     * @param guild The guild in which to query the commands, can be `null` for global commands
+     * This always includes global commands.
      *
-     * @return The [ApplicationCommandMap] of the specific guild
+     * @param guild The guild in which to query the commands, can be `null` for global commands.
+     *
+     * @return The effective list of top-level commands this guild has access to
      */
-    fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap
+    fun getEffectiveApplicationCommands(guild: Guild?): List<TopLevelApplicationCommandInfo>
 
     fun <T : ApplicationCommandInfo> getApplicationCommandById(type: Class<T>, commandId: Long, group: String?, subcommand: String?): T?
 

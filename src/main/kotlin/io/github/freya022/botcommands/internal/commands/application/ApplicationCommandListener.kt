@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Guil
 import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
@@ -132,8 +133,8 @@ internal class ApplicationCommandListener internal constructor(
     // Or the command list is somehow not the same
     private suspend fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
         // If an exception occurred during first-time commands registration, the command map for it does not exist
-        val guildMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(event.guild)
-        val globalMap = context.applicationCommandsContext.getLiveApplicationCommandsMap(null)
+        val guildMap = context.applicationCommandsContext.getApplicationCommands(event.guild)
+        val globalMap = context.applicationCommandsContext.getApplicationCommands(null)
         if (guildMap == null || globalMap == null) {
             return event.reply_(defaultMessagesFactory.get(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
         }
@@ -146,17 +147,29 @@ internal class ApplicationCommandListener internal constructor(
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
         val guild = event.guild
         logger.debug {
-            val commandsMap = context.applicationCommandsContext.getEffectiveApplicationCommandsMap(guild)
+            val topLevelCommands = context.applicationCommandsContext.getEffectiveApplicationCommands(guild)
             val scopeName = if (guild != null) "'" + guild.name + "'" else "Global scope"
-            val availableCommands = commandsMap.allApplicationCommands
-                .map { commandInfo ->
-                    when (commandInfo) {
-                        is SlashCommandInfoImpl -> "/" + commandInfo.path.getFullPath(' ')
-                        else -> commandInfo.path.fullPath
+            val availableCommands = buildString {
+                topLevelCommands
+                    .sortedBy { it.name }
+                    .forEach { command ->
+                        if (command is TopLevelSlashCommandInfo) {
+                            appendLine(" - /${command.name}")
+                            command.subcommands.values.forEach { subcommand ->
+                                appendLine("${" ".repeat(4)} - ${subcommand.name}")
+                            }
+
+                            command.subcommandGroups.values.forEach { subcommandGroup ->
+                                appendLine("${" ".repeat(4)} - ${subcommandGroup.name}")
+                                subcommandGroup.subcommands.values.forEach { subcommand ->
+                                    appendLine("${" ".repeat(8)} - ${subcommand.name}")
+                                }
+                            }
+                        } else {
+                            appendLine(" - ${command.name}")
+                        }
                     }
-                }
-                .sorted()
-                .joinToString("\n")
+            }
             "Commands available in $scopeName:\n$availableCommands"
         }
 
