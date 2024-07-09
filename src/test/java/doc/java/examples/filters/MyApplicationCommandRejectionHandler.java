@@ -4,10 +4,12 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
+import io.github.freya022.botcommands.test.switches.TestService;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 @BService
+@TestService
 @TestLanguage(TestLanguage.Language.JAVA)
 public class MyApplicationCommandRejectionHandler implements ApplicationCommandRejectionHandler<String> {
     @Override
