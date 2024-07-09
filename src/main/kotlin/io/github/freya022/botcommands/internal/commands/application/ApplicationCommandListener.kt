@@ -63,7 +63,7 @@ internal class ApplicationCommandListener internal constructor(
                     ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
             } as SlashCommandInfoImpl
 
-            val isNotOwner = !context.isOwner(event.user.idLong)
+            val isNotOwner = event.user !in context.botOwners
             slashCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                 if (!canRun(event, slashCommand)) {
                     false
@@ -89,7 +89,7 @@ internal class ApplicationCommandListener internal constructor(
                     ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
             } as UserCommandInfoImpl
 
-            val isNotOwner = !context.isOwner(event.user.idLong)
+            val isNotOwner = event.user !in context.botOwners
             userCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                 if (!canRun(event, userCommand)) {
                     false
@@ -115,7 +115,7 @@ internal class ApplicationCommandListener internal constructor(
                     ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
             } as MessageCommandInfoImpl
 
-            val isNotOwner = !context.isOwner(event.user.idLong)
+            val isNotOwner = event.user !in context.botOwners
             messageCommand.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
                 if (!canRun(event, messageCommand)) {
                     false

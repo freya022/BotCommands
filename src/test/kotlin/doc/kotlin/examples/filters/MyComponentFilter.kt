@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.test.switches.TestLanguage
 import io.github.freya022.botcommands.test.switches.TestService
@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 @BService
 @TestService
 @TestLanguage(TestLanguage.Language.KOTLIN)
-class MyComponentFilter(private val context: BContext) : ComponentInteractionFilter<String> {
+class MyComponentFilter(private val botOwners: BotOwners) : ComponentInteractionFilter<String> {
     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
-        if (event.channel.idLong == 932902082724380744 && event.user.idLong !in context.ownerIds) {
+        if (event.channel.idLong == 932902082724380744 && event.user !in botOwners) {
             return "Only owners are allowed to use components in <#932902082724380744>"
         }
         return null

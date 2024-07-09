@@ -71,7 +71,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
         val guild = channel.guild
         if (!guild.selfMember.hasPermission(channel, botPermissions)) add(UnusableReason.BOT_PERMISSIONS)
 
-        val isNotOwner = !context.isOwner(inputUser.idLong)
+        val isNotOwner = inputUser !in context.botOwners
         if (isNotOwner && !member.hasPermission(channel, userPermissions)) add(UnusableReason.USER_PERMISSIONS)
     }
 }

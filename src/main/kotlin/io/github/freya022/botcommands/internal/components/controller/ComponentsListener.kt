@@ -102,7 +102,7 @@ internal class ComponentsListener(
                 }
             }
 
-            component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) { cancellableRateLimit ->
+            component.withRateLimit(context, event, event.user !in context.botOwners) { cancellableRateLimit ->
                 if (!component.constraints.isAllowed(event)) {
                     event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
                     return@withRateLimit false

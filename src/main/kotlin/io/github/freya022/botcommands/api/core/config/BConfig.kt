@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
@@ -24,7 +25,20 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.ownerIds`
      */
+    @Deprecated("Renamed into 'predefinedOwnerIds', however, use BotOwner#ownerIds to get the effective bot owners")
     val ownerIds: Set<Long>
+
+    /**
+     * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
+     * and having [hidden commands][Hidden] shown.
+     *
+     * If not set, the application owners will be used, with roles "Developer" and above.
+     *
+     * **Note:** Prefer using [BotOwners] to get the effective bot owners, regardless of if this property is set or not.
+     *
+     * Spring property: `botcommands.core.ownerIds`
+     */
+    val predefinedOwnerIds: Set<Long>
 
     /**
      * The packages the framework will scan through for services, commands, handlers...
@@ -87,7 +101,16 @@ interface BConfig {
     val componentsConfig: BComponentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
-    fun isOwner(id: Long): Boolean = id in ownerIds
+    /**
+     * Whether this user is one of the [bot owners][predefinedOwnerIds].
+     *
+     * @param userId ID of the user
+     *
+     * @return `true` if the user is an owner
+     */
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated(message = "Prefer using BotOwners#isOwner(UserSnowflake), get the service, or from BContext#botOwners")
+    fun isOwner(userId: Long): Boolean = userId in predefinedOwnerIds
 }
 
 @ConfigDSL
@@ -95,7 +118,9 @@ class BConfigBuilder internal constructor() : BConfig {
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
 
-    override val ownerIds: MutableSet<Long> = HashSet()
+    @Suppress("OVERRIDE_DEPRECATION")
+    override val ownerIds: MutableSet<Long> get() = predefinedOwnerIds
+    override val predefinedOwnerIds: MutableSet<Long> = HashSet()
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
@@ -131,7 +156,7 @@ class BConfigBuilder internal constructor() : BConfig {
      * @param ownerIds Owners Long IDs to add
      */
     fun addOwners(ownerIds: Collection<Long>) {
-        this.ownerIds += ownerIds
+        this.predefinedOwnerIds += ownerIds
     }
 
     /**
@@ -228,9 +253,11 @@ class BConfigBuilder internal constructor() : BConfig {
         componentsConfig.apply(block)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     @JvmSynthetic
-    internal fun build() = object : BConfig {
-        override val ownerIds = this@BConfigBuilder.ownerIds.toImmutableSet()
+    internal fun build(): BConfig = object : BConfig {
+        override val ownerIds: Set<Long> get() = predefinedOwnerIds
+        override val predefinedOwnerIds = this@BConfigBuilder.predefinedOwnerIds.toImmutableSet()
         override val packages = this@BConfigBuilder.packages.toImmutableSet()
         override val classes = this@BConfigBuilder.classes.toImmutableSet()
         override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs

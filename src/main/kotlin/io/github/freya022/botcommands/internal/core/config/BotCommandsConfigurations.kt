@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
 internal class BotCommandsCoreConfiguration(
-    override val ownerIds: Set<Long> = emptySet(),
+    override val predefinedOwnerIds: Set<Long> = emptySet(),
     override val packages: Set<String> = emptySet(),
     override val classes: Set<Class<*>> = emptySet(),
     override val disableExceptionsInDMs: Boolean = false,
@@ -21,6 +21,8 @@ internal class BotCommandsCoreConfiguration(
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
 ) : BConfig {
+    @Suppress("OVERRIDE_DEPRECATION")
+    override val ownerIds: Set<Long> get() = predefinedOwnerIds
     override val classGraphProcessors: Nothing get() = unusable()
     override val debugConfig: Nothing get() = unusable()
     override val serviceConfig: Nothing get() = unusable()
@@ -34,7 +36,7 @@ internal class BotCommandsCoreConfiguration(
 
 @OptIn(DevConfig::class)
 internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfiguration) = apply {
-    ownerIds += configuration.ownerIds
+    predefinedOwnerIds += configuration.predefinedOwnerIds
     packages += configuration.packages
     classes += configuration.classes
     disableExceptionsInDMs = configuration.disableExceptionsInDMs

@@ -1,11 +1,8 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.BContext.Status
-import io.github.freya022.botcommands.api.core.EventDispatcher
-import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
-import io.github.freya022.botcommands.api.core.SettingsProvider
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -28,7 +25,11 @@ import kotlin.time.Duration.Companion.minutes
 private val logger = KotlinLogging.loggerOf<BContext>()
 
 @BService
-internal class BContextImpl internal constructor(override val config: BConfig, override val serviceContainer: ServiceContainer) : BContext {
+internal class BContextImpl internal constructor(
+    override val config: BConfig,
+    override val serviceContainer: ServiceContainer,
+    override val botOwners: BotOwners
+) : BContext {
     override val eventDispatcher: EventDispatcher by serviceContainer.lazy()
 
     override var status: Status = Status.PRE_LOAD

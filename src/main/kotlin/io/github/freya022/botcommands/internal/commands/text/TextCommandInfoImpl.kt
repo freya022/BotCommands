@@ -51,7 +51,7 @@ internal sealed class TextCommandInfoImpl(
     }
 
     final override fun getUsability(member: Member, channel: GuildMessageChannel) = UsabilityImpl.build {
-        val isNotOwner = !context.isOwner(member.idLong)
+        val isNotOwner = member !in context.botOwners
         if (isNotOwner && hidden) add(UnusableReason.HIDDEN)
         if (isNotOwner && isOwnerRequired) add(UnusableReason.OWNER_ONLY)
 

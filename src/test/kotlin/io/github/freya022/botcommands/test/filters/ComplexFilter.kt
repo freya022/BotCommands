@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.test.switches.TestService
 import net.dv8tion.jda.api.entities.Guild
@@ -75,7 +75,7 @@ class IsBotOwner : ApplicationCommandFilter<String>, TextCommandFilter<String>, 
 
 @BService
 @TestService
-class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
+class IsGuildOwner(private val botOwners: BotOwners) : ApplicationCommandFilter<String>, TextCommandFilter<String>, ComponentInteractionFilter<String> {
     override val global: Boolean = false
 
     override suspend fun checkSuspend(
@@ -95,7 +95,7 @@ class IsGuildOwner(private val context: BContext) : ApplicationCommandFilter<Str
     ): String? = check(event.user)
 
     private fun check(userSnowflake: UserSnowflake): String? {
-        if (!context.isOwner(userSnowflake.idLong)) {
+        if (userSnowflake !in botOwners) {
             return "You must be the bot owner"
         }
         return null
