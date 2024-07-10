@@ -218,7 +218,7 @@ interface BContext {
     }
 
     /**
-     * Sends an exception message to the unique bot owner, retrieved via [JDA.retrieveApplicationInfo]
+     * Sends an exception message to the [bot owners][BotOwners].
      *
      * @param message The message describing the context
      * @param t       An optional exception
@@ -226,7 +226,7 @@ interface BContext {
     fun dispatchException(message: String, t: Throwable?) = dispatchException(message, t, emptyMap())
 
     /**
-     * Sends an exception message to the unique bot owner, retrieved via [JDA.retrieveApplicationInfo]
+     * Sends an exception message to the [bot owners][BotOwners].
      *
      * @param message      The message describing the context
      * @param t            An optional exception

@@ -95,18 +95,25 @@ internal class BContextImpl internal constructor(
                 append("\nPlease check the logs for more detail and possible exceptions")
             }
 
-            jda.retrieveApplicationInfo()
-                .map { applicationInfo -> applicationInfo.owner }
-                .queue { appOwner ->
-                    appOwner.openPrivateChannel()
-                        .flatMap { channel -> channel.sendMessage(content) }
-                        .queue(
+            botOwners.ownerIds.forEach { ownerId ->
+                ownerId
+                    .let(jda::openPrivateChannelById)
+                    .queue { channel ->
+                        fun onUserNotFound() {
+                            if (botOwners.ownerIds.size > 1)
+                                logger.warn { "Could not send exception DM to team member '${channel.user?.effectiveName}' (${ownerId})" }
+                            else
+                                logger.warn { "Could not send exception DM to owner '${channel.user?.effectiveName}' ($ownerId)" }
+                        }
+
+                        channel.sendMessage(content).queue(
                             null,
                             ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) {
-                                logger.warn { "Could not send exception DM to owner '${appOwner.effectiveName}' (${appOwner.id})" }
+                                onUserNotFound()
                             }
                         )
-                }
+                    }
+            }
         }
     }
 
