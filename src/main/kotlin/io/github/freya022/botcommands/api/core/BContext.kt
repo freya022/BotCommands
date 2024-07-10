@@ -235,6 +235,15 @@ interface BContext {
     fun dispatchException(message: String, t: Throwable?, extraContext: Map<String, Any?>)
 
     /**
+     * Gets the message that would be sent by [dispatchException].
+     *
+     * @param message      The message describing the context
+     * @param t            An optional exception
+     * @param extraContext Additional context of the exception; can be empty
+     */
+    fun getExceptionContent(message: String, t: Throwable?, extraContext: Map<String, Any?>): String
+
+    /**
      * Returns the [DiscordLocale] for the specified [Guild]
      *
      * @param guild The [Guild] in which to take the [DiscordLocale] from
