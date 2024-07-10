@@ -25,8 +25,8 @@ class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
     ) {
-        val button = buttons.primary("TimeUnit: ${timeUnit.name}").persistent() {
-            oneUse = true
+        val button = buttons.primary("TimeUnit: ${timeUnit.name}").persistent {
+            singleUse = true
             bindWith(::onTimeUnitClicked, timeUnit)
         }
         event.reply_("${timeUnit.name} / ${chronoUnit.name}", components = button.into(), ephemeral = true).queue()

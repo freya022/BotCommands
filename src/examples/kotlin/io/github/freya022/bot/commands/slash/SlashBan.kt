@@ -62,14 +62,14 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
         val cancelButton = buttons.primary(localizationContext.localize("buttons.cancel")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
-            oneUse = true
+            singleUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
         val confirmButton = buttons.danger(localizationContext.localize("buttons.confirm")).ephemeral {
             // This is required as the button is in a group
             noTimeout()
-            oneUse = true
+            singleUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }

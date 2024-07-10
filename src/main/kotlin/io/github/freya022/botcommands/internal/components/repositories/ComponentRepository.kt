@@ -79,7 +79,7 @@ internal class ComponentRepository(
     suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
         return database.transactional {
             // Create base component
-            val componentId: Int = insertBaseComponent(builder, builder.oneUse, builder.rateLimitGroup, getFilterNames(builder.filters))
+            val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitGroup, getFilterNames(builder.filters))
 
             // Add constraints
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
@@ -237,7 +237,7 @@ internal class ComponentRepository(
     context(Transaction)
     private suspend fun <T> insertBaseComponent(
         builder: T,
-        oneUse: Boolean,
+        singleUse: Boolean,
         rateLimitGroup: String?,
         filterNames: Array<out String>
     ): Int where T : IComponentBuilder,
@@ -246,7 +246,7 @@ internal class ComponentRepository(
             "insert into bc_component (component_type, lifetime_type, expires_at, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
-            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.expiresAt?.toSqlTimestamp(), oneUse, rateLimitGroup, filterNames)
+            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.expiresAt?.toSqlTimestamp(), singleUse, rateLimitGroup, filterNames)
                 .read()
                 .getInt("component_id")
         }

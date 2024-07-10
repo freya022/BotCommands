@@ -33,7 +33,8 @@ import java.time.Duration as JavaDuration
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -55,7 +56,8 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -74,7 +76,8 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -92,7 +95,8 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -120,7 +124,8 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -154,7 +159,8 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -187,7 +193,8 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -228,7 +235,8 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -252,7 +260,8 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -277,7 +286,8 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      * **Note:** Components inside groups cannot have timeouts.
      *
      * ### Timeout cancellation
-     * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
      *
      * ### Component deletion
      * - If the component is a group, then all of its owned components will also be deleted.
@@ -304,7 +314,8 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -330,7 +341,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duratio
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -356,7 +368,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData> T.timeout(duratio
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -382,7 +395,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(dur
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -408,7 +422,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1> T.timeout(dur
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -434,7 +449,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -460,7 +476,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2> T.timeout
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -486,7 +503,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.tim
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -512,7 +530,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3> T.tim
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -538,7 +557,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -564,7 +584,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4> T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -590,7 +611,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -616,7 +638,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -642,7 +665,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -668,7 +692,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -694,7 +719,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -720,7 +746,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -746,7 +773,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -772,7 +800,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -798,7 +827,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -824,7 +854,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -850,7 +881,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -876,7 +908,8 @@ fun <T : IPersistentTimeoutableComponent<T>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -902,7 +935,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(dur
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -928,7 +962,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(dur
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -954,7 +989,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -980,7 +1016,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1006,7 +1043,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeout
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1032,7 +1070,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeout
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1058,7 +1097,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.tim
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1084,7 +1124,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.tim
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1110,7 +1151,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1136,7 +1178,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1162,7 +1205,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1188,7 +1232,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1214,7 +1259,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1240,7 +1286,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1266,7 +1313,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1292,7 +1340,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1318,7 +1367,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1344,7 +1394,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1370,7 +1421,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1396,7 +1448,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1422,7 +1475,8 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1452,7 +1506,8 @@ private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithBoundCallable(
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1478,7 +1533,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeou
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1504,7 +1560,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeou
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1530,7 +1587,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.ti
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1556,7 +1614,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.ti
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1582,7 +1641,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1608,7 +1668,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1634,7 +1695,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1660,7 +1722,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1686,7 +1749,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1712,7 +1776,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1738,7 +1803,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1764,7 +1830,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1790,7 +1857,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1816,7 +1884,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1842,7 +1911,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1868,7 +1938,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1894,7 +1965,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1920,7 +1992,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1946,7 +2019,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1972,7 +2046,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.
@@ -1998,7 +2073,8 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  * **Note:** Components inside groups cannot have timeouts.
  *
  * ### Timeout cancellation
- * The timeout will be canceled once a component has been deleted, like with [IUniqueComponent.oneUse].
+ * The timeout will be canceled once a component has been deleted,
+ * including if the component was set to a [single use][IUniqueComponent.singleUse].
  *
  * ### Component deletion
  * - If the component is a group, then all of its owned components will also be deleted.

@@ -69,21 +69,21 @@ class SlashNewButtons(
 
     private suspend fun noGroupButton(event: GuildSlashEvent) =
         buttons.danger("Delete").ephemeral {
-            oneUse = true
+            singleUse = true
             bindTo { event.hook.deleteOriginal().queue() }
             timeout(5.seconds)
         }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton = buttons.primary("Persistent").persistent {
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
             bindWith(::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
         }
 
         val secondButton = buttons.primary("Invisible").persistent {
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
             bindWith(SlashNewButtons::onFirstButtonClicked, ThreadLocalRandom.current().nextDouble(), event.member.asInputUser(), null)
@@ -102,7 +102,7 @@ class SlashNewButtons(
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
         val firstButton = buttons.secondary("Ephemeral").ephemeral {
             noTimeout()
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
@@ -110,7 +110,7 @@ class SlashNewButtons(
 
         val secondButton = buttons.secondary("Invisible").ephemeral {
             noTimeout()
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             addUserIds(1234L)
             constraints += Permission.ADMINISTRATOR
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }

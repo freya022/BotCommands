@@ -7,5 +7,5 @@ internal class UniqueComponentImpl<T : IUniqueComponent<T>> internal constructor
 ) : BuilderInstanceHolderImpl<T>(),
     IUniqueComponent<T> {
 
-    override var oneUse: Boolean = false
+    override var singleUse: Boolean = false
 }

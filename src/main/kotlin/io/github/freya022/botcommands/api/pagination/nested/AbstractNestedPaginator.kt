@@ -50,7 +50,7 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
 
         return selectMenus.stringSelectMenu().ephemeral()
             .bindTo(this::onItemSelected)
-            .oneUse(true)
+            .singleUse(true)
             .constraints(constraints)
             .addOptions(options)
             .build()

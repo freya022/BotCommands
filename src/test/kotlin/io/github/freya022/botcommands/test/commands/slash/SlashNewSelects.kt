@@ -57,7 +57,7 @@ class SlashNewSelects(
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): StringSelectMenu {
         val firstSelect = selectMenus.stringSelectMenu().persistent {
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             constraints += UserSnowflake.fromId(1234L)
             constraints += Permission.ADMINISTRATOR
             bindWith(::onFirstSelectClicked)
@@ -68,7 +68,7 @@ class SlashNewSelects(
         }
 
         val secondSelect = selectMenus.stringSelectMenu().persistent {
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
                 allowingPermissions += Permission.ADMINISTRATOR
@@ -89,7 +89,7 @@ class SlashNewSelects(
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): EntitySelectMenu {
         val firstSelect = selectMenus.entitySelectMenu(SelectTarget.ROLE).ephemeral {
             noTimeout()
-            oneUse = true //Cancels whole group if used
+            singleUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
                 allowingPermissions += Permission.ADMINISTRATOR
