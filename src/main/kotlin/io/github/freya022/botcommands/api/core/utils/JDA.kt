@@ -162,8 +162,8 @@ suspend fun <R> RestAction<R>.awaitOrNullOn(vararg errorResponses: ErrorResponse
 /**
  * Awaits the completion of this RestAction and wraps it in a Result.
  */
-suspend fun <R> RestAction<R>.awaitCatching(): Result<R> {
-    return runCatching { submit().await() }
+suspend fun <R> RestAction<R>.awaitCatching(): RestResult<R> {
+    return runCatchingRest { submit().await() }
 }
 //endregion
 
