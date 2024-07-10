@@ -218,7 +218,7 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
  * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
  * but does not allow using functions returning values.
  *
- * May return a new `RestResult`.
+ * Returns a new `RestResult` if the exception matches.
  *
  * @see handle
  */
@@ -264,7 +264,7 @@ inline fun <T : R, R> RestResult<T>.recover(vararg responses: ErrorResponse, blo
  *
  * Any thrown exception will be encapsulated in a new [RestResult].
  *
- * Returns the original `RestResult` unchanged otherwise.
+ * Returns a new `RestResult` with the ignored exception, or itself if it didn't match.
  *
  * @see ignore
  */
@@ -277,11 +277,9 @@ inline fun <T> RestResult<T>.handle(vararg responses: ErrorResponse, block: (Err
     if (it is ErrorResponseException && it.errorResponse in responses) {
         try {
             block(it)
-            return this
+            return ignore(*responses)
         } catch (e: Throwable) {
             return RestResult.failure(e)
-        } finally { // For non-local returns
-            ignore(*responses)
         }
     } else {
         return this
