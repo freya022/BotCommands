@@ -15,8 +15,9 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
-import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
+import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
@@ -239,9 +240,12 @@ internal class TextCommandsListener internal constructor(
             else -> event.author.openPrivateChannel().await()
         }
 
-        runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
-            channel.sendMessage(msg).await()
-        }
+        channel.sendMessage(msg)
+            .awaitCatching()
+            .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
+                event.message.addReaction(context.textConfig.dmClosedEmoji).await()
+            }
+            .orThrow()
     }
 
     private suspend fun onCommandNotFound(event: MessageReceivedEvent, commandName: String) {

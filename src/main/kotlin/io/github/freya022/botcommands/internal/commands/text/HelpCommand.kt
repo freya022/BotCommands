@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -88,13 +89,23 @@ internal class HelpCommand internal constructor(
         val builder = generateGlobalHelp(event.member, event.guildChannel)
         val embed = builder.build()
 
+        val hasReactionPermissions = event.guild.selfMember.hasPermission(event.guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY)
         event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message"))
             .awaitCatching()
-            .recover(ErrorResponse.CANNOT_SEND_TO_USER) {
-                event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).await()
-            }.orThrow()
-
-        event.reactSuccess().queue()
+            .onSuccess {
+                if (hasReactionPermissions)
+                    event.reactSuccess().awaitCatching()
+                        .ignore(ErrorResponse.REACTION_BLOCKED)
+                        .orThrow()
+            }
+            .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
+                if (event.channel.canTalk())
+                    event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).await()
+                else if (hasReactionPermissions)
+                    event.message.addReaction(context.textConfig.dmClosedEmoji).await()
+            }
+            .ignore(ErrorResponse.REACTION_BLOCKED)
+            .orThrow()
     }
 
     private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo, temporary: Boolean) {
@@ -149,6 +160,8 @@ internal class HelpCommand internal constructor(
         manager.textCommand("help") {
             category = "Utils"
             description = "Gives help for a command"
+
+            botPermissions = enumSetOf(VIEW_CHANNEL, MESSAGE_SEND)
 
             variation(HelpCommand::onTextHelpCommand) {
                 option("commandStr", "command path") {

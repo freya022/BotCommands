@@ -8,7 +8,8 @@ import io.github.freya022.botcommands.api.localization.text.LocalizableTextComma
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.Permission.MESSAGE_ADD_REACTION
+import net.dv8tion.jda.api.Permission.MESSAGE_HISTORY
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -113,17 +114,17 @@ internal open class BaseCommandEventImpl(
         channel.sendTyping().flatMap { message.replyFiles(*fileUploads) }
 
     override fun indicateError(text: CharSequence): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, Permission.MESSAGE_ADD_REACTION) -> reactError().flatMap { channel.sendMessage(text) }
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessage(text) }
         else -> channel.sendMessage(text)
     }
 
     override fun indicateErrorFormat(format: String, vararg args: Any): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, Permission.MESSAGE_ADD_REACTION) -> reactError().flatMap { channel.sendMessageFormat(format, *args) }
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageFormat(format, *args) }
         else -> channel.sendMessageFormat(format, *args)
     }
 
     override fun indicateError(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, Permission.MESSAGE_ADD_REACTION) -> reactError().flatMap { channel.sendMessageEmbeds(embed, *other) }
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageEmbeds(embed, *other) }
         else -> channel.sendMessageEmbeds(embed, *other)
     }
 
