@@ -90,7 +90,7 @@ internal class HelpCommand internal constructor(
         val embed = builder.build()
 
         val hasReactionPermissions = event.guild.selfMember.hasPermission(event.guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY)
-        event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message"))
+        event.sendWithEmbedFooterIcon(privateChannel, embed)
             .awaitCatching()
             .onSuccess {
                 if (hasReactionPermissions)

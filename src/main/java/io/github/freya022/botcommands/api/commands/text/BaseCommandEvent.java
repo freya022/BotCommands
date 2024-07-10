@@ -127,30 +127,26 @@ public abstract class BaseCommandEvent
      * Sends a {@link MessageEmbed} on the event's channel with the default footer icon
      *
      * @param embed       {@link MessageEmbed} to send
-     * @param onException Consumer to call when an exception occurred
-     *
      * @return The RestAction of the Message to send
      *
      * @see DefaultEmbedSupplier
      * @see DefaultEmbedFooterIconSupplier
      */
     @CheckReturnValue
-    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
+    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed);
 
     /**
      * Sends a {@link MessageEmbed} on the specified channel with the default footer icon
      *
      * @param channel     {@link MessageChannel} to send the embed in
      * @param embed       {@link MessageEmbed} to send
-     * @param onException Consumer to call when an exception occurred
-     *
      * @return The RestAction of the Message to send
      *
      * @see DefaultEmbedSupplier
      * @see DefaultEmbedFooterIconSupplier
      */
     @CheckReturnValue
-    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
+    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed);
 
     /**
      * Sends a {@link MessageEmbed} on the specified channel with the default footer icon
@@ -158,15 +154,13 @@ public abstract class BaseCommandEvent
      * @param channel     {@link MessageChannel} to send the embed in
      * @param iconStream  InputStream of the footer icon, the input stream is closed once it is unreachable
      * @param embed       {@link MessageEmbed} to send
-     * @param onException Consumer to call when an exception occurred
-     *
      * @return The RestAction of the Message to send
      *
      * @see DefaultEmbedSupplier
      * @see DefaultEmbedFooterIconSupplier
      */
     @CheckReturnValue
-    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException);
+    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed);
 
     /**
      * Add a :white_check_mark: reaction on the event message to indicate command success

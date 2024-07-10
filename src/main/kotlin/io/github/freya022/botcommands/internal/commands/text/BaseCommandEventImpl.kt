@@ -23,6 +23,9 @@ import javax.annotation.CheckReturnValue
 
 private val logger = KotlinLogging.loggerOf<BaseCommandEvent>()
 
+private val SUCCESS = EmojiUtils.resolveJDAEmoji("white_check_mark")
+private val ERROR = EmojiUtils.resolveJDAEmoji("x")
+
 internal open class BaseCommandEventImpl(
     private val context: BContext,
     private val event: MessageReceivedEvent,
@@ -65,22 +68,20 @@ internal open class BaseCommandEventImpl(
 
     override fun getDefaultIconStream(): InputStream? = context.textCommandsContext.defaultEmbedFooterIconSupplier.get()
 
-    override fun sendWithEmbedFooterIcon(embed: MessageEmbed, onException: Consumer<in Throwable>): RestAction<Message> =
-        sendWithEmbedFooterIcon(channel, embed, onException)
+    override fun sendWithEmbedFooterIcon(embed: MessageEmbed): RestAction<Message> =
+        sendWithEmbedFooterIcon(channel, embed)
 
     @CheckReturnValue
     override fun sendWithEmbedFooterIcon(
         channel: MessageChannel,
-        embed: MessageEmbed,
-        onException: Consumer<in Throwable>
-    ): RestAction<Message> = sendWithEmbedFooterIcon(channel, defaultIconStream, embed, onException)
+        embed: MessageEmbed
+    ): RestAction<Message> = sendWithEmbedFooterIcon(channel, defaultIconStream, embed)
 
     @CheckReturnValue
     override fun sendWithEmbedFooterIcon(
         channel: MessageChannel,
         iconStream: InputStream?,
-        embed: MessageEmbed,
-        onException: Consumer<in Throwable>
+        embed: MessageEmbed
     ): RestAction<Message> = when {
         iconStream != null -> channel.sendTyping().flatMap { channel.sendFiles(FileUpload.fromData(iconStream, "icon.jpg")).setEmbeds(embed) }
         else -> channel.sendTyping().flatMap { channel.sendMessageEmbeds(embed) }
@@ -126,10 +127,5 @@ internal open class BaseCommandEventImpl(
     override fun indicateError(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = when {
         guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageEmbeds(embed, *other) }
         else -> channel.sendMessageEmbeds(embed, *other)
-    }
-
-    companion object {
-        @JvmField val SUCCESS = EmojiUtils.resolveJDAEmoji(":white_check_mark:")
-        @JvmField val ERROR = EmojiUtils.resolveJDAEmoji(":x:")
     }
 }
