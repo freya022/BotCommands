@@ -34,6 +34,8 @@ fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.a
 inline fun <reified T : Any> KClass<*>.isSuperclassOf(): Boolean = this.isAssignableFrom(T::class)
 inline fun <reified T : Any> KClass<*>.isSubclassOf(): Boolean = T::class.isAssignableFrom(this)
 
+inline fun <reified T : Any> Class<*>.isSubclassOf(): Boolean = T::class.java.isAssignableFrom(this)
+
 fun KClass<*>.isSubclassOf(kClass: KClass<*>): Boolean = kClass.isAssignableFrom(this)
 
 fun KClass<*>.isAssignableFrom(clazz: Class<*>) = this.java.isAssignableFrom(clazz)
