@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.reflect.KClass
 
 /**
  * Encapsulates a successful outcome or a failure.
@@ -22,6 +23,7 @@ import kotlin.contracts.contract
 value class RestResult<out T> @PublishedApi internal constructor(
     @PublishedApi internal val value: Any?
 ) {
+    @PublishedApi
     internal sealed class Failure(val exception: Throwable) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -38,6 +40,7 @@ value class RestResult<out T> @PublishedApi internal constructor(
     internal class FatalFailure(exception: Throwable) : Failure(exception) {
         override fun toString(): String = "FatalFailure($exception)"
     }
+    @PublishedApi
     internal class IgnoredFailure(exception: Throwable) : Failure(exception) {
         override fun toString(): String = "IgnoredFailure($exception)"
     }
@@ -115,6 +118,8 @@ value class RestResult<out T> @PublishedApi internal constructor(
      * Runs the given [block] on the encapsulated value if this instance represents [success][isSuccess].
      *
      * Returns the original `RestResult` unchanged.
+     *
+     * Thrown exceptions inside the block are rethrown.
      */
     inline fun onSuccess(block: (T) -> Unit): RestResult<T> {
         contract {
@@ -212,6 +217,29 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
 }
 
 /**
+ * Dismisses the encapsulated exception if it corresponds to an predicate.
+ *
+ * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
+ * but does not allow using functions returning values.
+ *
+ * Returns a new `RestResult` if the exception matches.
+ *
+ * @see handle
+ */
+inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResult<T> {
+    if (value !is RestResult.FatalFailure) return this
+
+    // Problem, IntelliJ?
+    @Suppress("NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
+    val it = value.exception
+    return if (predicate(it)) {
+        RestResult(RestResult.IgnoredFailure(it))
+    } else {
+        this
+    }
+}
+
+/**
  * Dismisses the encapsulated [error response][ErrorResponse]
  * if it corresponds to an ignored response.
  *
@@ -222,16 +250,22 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
  *
  * @see handle
  */
-fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> {
-    if (value !is RestResult.FatalFailure) return this
+fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> =
+    ignore { it is ErrorResponseException && it.errorResponse in responses }
 
-    val it = value.exception
-    return if (it is ErrorResponseException && it.errorResponse in responses) {
-        RestResult(RestResult.IgnoredFailure(it))
-    } else {
-        this
-    }
-}
+/**
+ * Dismisses the encapsulated exception
+ * if it corresponds to an ignored exception.
+ *
+ * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
+ * but does not allow using functions returning values.
+ *
+ * Returns a new `RestResult` if the exception matches.
+ *
+ * @see handle
+ */
+fun <T> RestResult<T>.ignore(vararg types: KClass<out Throwable>): RestResult<T> =
+    ignore { throwable -> types.any { it.isInstance(throwable) } }
 
 /**
  * Maps the encapsulated [error response][ErrorResponse] using the given function [block]
