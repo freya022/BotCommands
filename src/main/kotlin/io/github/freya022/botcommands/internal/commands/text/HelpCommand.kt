@@ -96,15 +96,21 @@ internal class HelpCommand internal constructor(
                 if (hasReactionPermissions)
                     event.reactSuccess().awaitCatching()
                         .ignore(ErrorResponse.REACTION_BLOCKED)
+                        // Throw only if there was an exception we haven't handled/ignored.
+                        // onSuccess doesn't catch exceptions, this is reported to sendGlobalHelp
                         .orThrow()
             }
+            // Ignore and reply in channel/react if we can't send to DMs
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                 if (event.channel.canTalk())
                     event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).await()
                 else if (hasReactionPermissions)
+                    // May throw REACTION_BLOCKED
                     event.message.addReaction(context.textConfig.dmClosedEmoji).await()
             }
+            // Ignore when the bot has been blocked
             .ignore(ErrorResponse.REACTION_BLOCKED)
+            // Throw only if there was an exception we haven't handled/ignored
             .orThrow()
     }
 
