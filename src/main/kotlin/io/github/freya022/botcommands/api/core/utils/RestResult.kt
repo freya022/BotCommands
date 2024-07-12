@@ -227,6 +227,10 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
  * @see handle
  */
 inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResult<T> {
+    contract {
+        callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
+    }
+
     if (value !is RestResult.FatalFailure) return this
 
     // Problem, IntelliJ?
@@ -267,6 +271,20 @@ fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> =
 fun <T> RestResult<T>.ignore(vararg types: KClass<out Throwable>): RestResult<T> =
     ignore { throwable -> types.any { it.isInstance(throwable) } }
 
+inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, block: (Throwable) -> R): RestResult<R> {
+    contract {
+        callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    val it = exceptionOrNull()
+    return if (it != null && predicate(it)) {
+        runCatchingRest { block(it) }
+    } else {
+        this
+    }
+}
+
 /**
  * Maps the encapsulated [error response][ErrorResponse] using the given function [block]
  * if it corresponds to an ignored response.
@@ -284,11 +302,39 @@ inline fun <T : R, R> RestResult<T>.recover(vararg responses: ErrorResponse, blo
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
+    return recover(
+        predicate = { it is ErrorResponseException && it.errorResponse in responses },
+        block = { block(it as ErrorResponseException) }
+    )
+}
+
+inline fun <T : R, R> RestResult<T>.recover(vararg types: KClass<out Throwable>, block: (Throwable) -> R): RestResult<R> {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    return recover(
+        predicate = { exception -> types.any { it.isInstance(exception) } },
+        block = block
+    )
+}
+
+inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (Throwable) -> Unit): RestResult<T> {
+    contract {
+        callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
     val it = exceptionOrNull()
-    return if (it is ErrorResponseException && it.errorResponse in responses) {
-        runCatchingRest { block(it) }
+    if (it != null && predicate(it)) {
+        try {
+            block(it)
+            return ignore(predicate)
+        } catch (e: Throwable) {
+            return RestResult.failure(e)
+        }
     } else {
-        this
+        return this
     }
 }
 
@@ -307,17 +353,21 @@ inline fun <T> RestResult<T>.handle(vararg responses: ErrorResponse, block: (Err
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    val it = exceptionOrNull() ?: return this
-    if (it is ErrorResponseException && it.errorResponse in responses) {
-        try {
-            block(it)
-            return ignore(*responses)
-        } catch (e: Throwable) {
-            return RestResult.failure(e)
-        }
-    } else {
-        return this
+    return handle(
+        predicate = { it is ErrorResponseException && it.errorResponse in responses },
+        block = { block(it as ErrorResponseException) }
+    )
+}
+
+inline fun <T> RestResult<T>.handle(vararg types: KClass<out Throwable>, block: (Throwable) -> Unit): RestResult<T> {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
+
+    return handle(
+        predicate = { exception -> types.any { it.isInstance(exception) } },
+        block = block
+    )
 }
 
 /**
