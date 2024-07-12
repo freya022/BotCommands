@@ -93,11 +93,11 @@ internal class ApplicationCommandsBuilder(
         if (hasUpdated) {
             logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
         } else {
-            logger.debug { "Global commands does not have to be updated, ${globalUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
+            logger.debug { "Global commands does not have to be updated, ${globalUpdater.commandsCount} were kept (${getCheckTypeString()})" }
         }
 
         setMetadata(globalUpdater)
-        applicationCommandsContext.putLiveApplicationCommandsMap(globalUpdater.allApplicationCommands)
+        applicationCommandsContext.putLiveApplicationCommandsMap(globalUpdater.applicationCommands)
 
         firstGlobalUpdate = false
         return CommandUpdateResult(null, hasUpdated, failedDeclarations)
@@ -136,11 +136,11 @@ internal class ApplicationCommandsBuilder(
             if (hasUpdated) {
                 logger.debug { "Guild '${guild.name}' (${guild.id}) commands were${getForceString(force)} updated (${getCheckTypeString()})" }
             } else {
-                logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.filteredCommandsCount} were kept (${getCheckTypeString()})" }
+                logger.debug { "Guild '${guild.name}' (${guild.id}) commands does not have to be updated, ${guildUpdater.commandsCount} were kept (${getCheckTypeString()})" }
             }
 
             setMetadata(guildUpdater)
-            applicationCommandsContext.putLiveApplicationCommandsMap(guildUpdater.allApplicationCommands)
+            applicationCommandsContext.putLiveApplicationCommandsMap(guildUpdater.applicationCommands)
 
             firstGuildUpdates.add(guild.idLong)
             return CommandUpdateResult(guild, hasUpdated, failedDeclarations)
@@ -149,7 +149,7 @@ internal class ApplicationCommandsBuilder(
 
     private fun setMetadata(updater: ApplicationCommandsUpdater) {
         updater.metadata.forEach { metadata ->
-            val command = updater.allApplicationCommands.find { it.name == metadata.name }
+            val command = updater.applicationCommands.find { it.name == metadata.name }
                 ?: throwInternal("Could not match JDA command '${metadata.name}'")
 
             val accessor = command as? TopLevelApplicationCommandInfoMixin

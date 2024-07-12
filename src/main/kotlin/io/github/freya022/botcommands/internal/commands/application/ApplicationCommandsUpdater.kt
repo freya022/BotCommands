@@ -53,9 +53,9 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsMetadataPath(guild)
     }
 
-    internal val allApplicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands
-    private val allCommandData: Collection<CommandData>
-    internal val filteredCommandsCount: Int get() = allCommandData.size
+    internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands.filterCommands()
+    private val commandData: Collection<CommandData>
+    internal inline val commandsCount: Int get() = commandData.size
 
     internal lateinit var metadata: List<TopLevelApplicationCommandMetadataImpl>
         private set
@@ -63,13 +63,13 @@ internal class ApplicationCommandsUpdater private constructor(
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        allCommandData = mapSlashCommands(manager.slashCommands) +
+        commandData = mapSlashCommands(manager.slashCommands) +
                 mapContextCommands(manager.userContextCommands, Command.Type.USER) +
                 mapContextCommands(manager.messageContextCommands, Command.Type.MESSAGE)
 
         //Apply localization
         val localizationFunction: LocalizationFunction = BCLocalizationFunction(context)
-        for (commandData in allCommandData) {
+        for (commandData in commandData) {
             commandData.setLocalizationFunction(localizationFunction)
         }
     }
@@ -134,7 +134,7 @@ internal class ApplicationCommandsUpdater private constructor(
                 add(TopLevelApplicationCommandMetadataImpl.fromData(array.getObject(i)))
             }
         }
-        val missingCommands = allCommandData.mapTo(hashSetOf()) { it.name } - metadata.mapTo(hashSetOf()) { it.name }
+        val missingCommands = commandData.mapTo(hashSetOf()) { it.name } - metadata.mapTo(hashSetOf()) { it.name }
         if (missingCommands.isNotEmpty()) {
             throw ParsingException("Missing metadata for $missingCommands")
         }
@@ -143,7 +143,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun checkCommandJson(oldBytes: ByteArray): Boolean {
-        val newBytes = allCommandData.toJsonBytes()
+        val newBytes = commandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
                 logger.trace { "Updating commands because content is not equal" }
@@ -159,7 +159,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private suspend fun updateCommands() {
         val updateAction = guild?.updateCommands() ?: context.jda.updateCommands()
         val commands = updateAction
-            .addCommands(allCommandData)
+            .addCommands(commandData)
             .await()
 
         metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
@@ -250,13 +250,13 @@ internal class ApplicationCommandsUpdater private constructor(
         logger.trace {
             val commandNumber = commands.size
             val scope = guild.asScopeString()
-            "Updated $commandNumber / $filteredCommandsCount commands for $scope"
+            "Updated $commandNumber commands for $scope"
         }
     }
 
     private fun saveCommandData(guild: Guild?) {
         try {
-            commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
+            commandsCachePath.overwriteBytes(commandData.toJsonBytes())
             commandsMetadataCachePath.overwriteBytes(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
         } catch (e: Exception) {
             logger.error(e) {
