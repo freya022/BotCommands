@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.TopLevelApplicati
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.utils.TimeUtil
-import net.dv8tion.jda.api.utils.data.DataArray
 import net.dv8tion.jda.api.utils.data.DataObject
 import java.time.OffsetDateTime
 
@@ -26,16 +25,13 @@ internal class TopLevelApplicationCommandMetadataImpl private constructor(
         internal fun fromCommand(guild: Guild?, command: Command) =
             TopLevelApplicationCommandMetadataImpl(command.name, command.version, command.idLong, guild?.idLong)
 
-        internal fun fromData(array: DataArray): List<TopLevelApplicationCommandMetadataImpl> = buildList(array.length()) {
-            for (i in 0..<array.length()) {
-                val obj = array.getObject(i)
-                val name = obj.getString("name")
-                val version = obj.getLong("version")
-                val id = obj.getLong("id")
-                val guildId = if (obj.hasKey("guild_id")) obj.getLong("guild_id") else null
+        internal fun fromData(obj: DataObject): TopLevelApplicationCommandMetadataImpl {
+            val name = obj.getString("name")
+            val version = obj.getLong("version")
+            val id = obj.getLong("id")
+            val guildId = if (obj.hasKey("guild_id")) obj.getLong("guild_id") else null
 
-                add(TopLevelApplicationCommandMetadataImpl(name, version, id, guildId))
-            }
+            return TopLevelApplicationCommandMetadataImpl(name, version, id, guildId)
         }
     }
 }

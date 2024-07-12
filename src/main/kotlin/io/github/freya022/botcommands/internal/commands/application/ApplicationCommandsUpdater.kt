@@ -129,7 +129,11 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun readMetadata(array: DataArray): List<TopLevelApplicationCommandMetadataImpl> {
-        val metadata = TopLevelApplicationCommandMetadataImpl.fromData(array)
+        val metadata = buildList(array.length()) {
+            for (i in 0..<array.length()) {
+                add(TopLevelApplicationCommandMetadataImpl.fromData(array.getObject(i)))
+            }
+        }
         val missingCommands = allCommandData.mapTo(hashSetOf()) { it.name } - metadata.mapTo(hashSetOf()) { it.name }
         if (missingCommands.isNotEmpty()) {
             throw ParsingException("Missing metadata for $missingCommands")
