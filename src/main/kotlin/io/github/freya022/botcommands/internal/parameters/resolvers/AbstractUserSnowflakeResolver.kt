@@ -45,7 +45,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         
     private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
 
-    final override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
+    final override val pattern: Pattern get() = userMentionPattern
     final override val testExample: String = "<@1234>"
 
     final override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
@@ -103,4 +103,8 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     }
 
     protected abstract fun transformEntities(user: User, member: Member?): R?
+
+    internal companion object {
+        internal val userMentionPattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
+    }
 }
