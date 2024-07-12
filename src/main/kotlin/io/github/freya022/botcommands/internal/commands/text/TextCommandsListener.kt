@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.handle
+import io.github.freya022.botcommands.api.core.utils.suppressContentWarning
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
@@ -65,7 +66,8 @@ internal class TextCommandsListener internal constructor(
 
         if (!event.isFromGuild) return
 
-        val msg: String = event.message.contentRaw
+        // Could also check mentions, but this is way easier and faster
+        val msg: String = suppressContentWarning { event.message.contentRaw }
         val content = when {
             context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ', missingDelimiterValue = "")
             else -> getMsgNoPrefix(msg, event.guild)
