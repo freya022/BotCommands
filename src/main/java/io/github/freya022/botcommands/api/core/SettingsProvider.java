@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.core;
 
 import io.github.freya022.botcommands.api.commands.CommandList;
+import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter;
+import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
@@ -50,8 +52,11 @@ public interface SettingsProvider {
      * @see CommandList#of(Collection)
      * @see CommandList#notOf(Collection)
      * @see CommandList#filter(Predicate)
+     *
+     * @deprecated Replaced by {@link DeclarationFilter} with {@link CommandDeclarationFilter}
      */
     @NotNull
+    @Deprecated
     default CommandList getGuildCommands(@NotNull Guild guild) {
         return CommandList.all();
     }

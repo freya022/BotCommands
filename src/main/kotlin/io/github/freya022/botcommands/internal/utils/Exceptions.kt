@@ -54,6 +54,12 @@ internal fun throwState(message: String, declarationSite: DeclarationSite? = nul
         else -> throw IllegalStateException("$message\n    Declared at: $declarationSite")
     }
 
+internal fun throwState(message: String, function: KFunction<*>): Nothing =
+    throw IllegalStateException("$message\n    Function: ${function.shortSignature}")
+
+internal fun throwState(message: String): Nothing =
+    throw IllegalStateException(message)
+
 @OptIn(ExperimentalContracts::class)
 internal inline fun requireAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
     contract {
@@ -87,6 +93,20 @@ internal inline fun checkAt(value: Boolean, declarationSite: DeclarationSite? = 
 
     if (!value) {
         throwState(lazyMessage(), declarationSite)
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+internal inline fun checkAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
+    if (!value) {
+        if (function != null)
+            throwState(lazyMessage(), function)
+        else
+            throwState(lazyMessage())
     }
 }
 
