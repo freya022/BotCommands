@@ -30,8 +30,6 @@ internal object IMentionableResolver : ClassParameterResolver<IMentionableResolv
             .toPattern()
     override val testExample: String = "</name group sub:1234>"
 
-    override val requiredGroups: Int = 1 //1 group minimum
-
     override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
         return event.member.asMention
     }
