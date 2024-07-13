@@ -1,11 +1,15 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.isConstructor
+import io.github.freya022.botcommands.api.core.utils.isStatic
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSingleAggregator
 import io.github.freya022.botcommands.internal.core.service.getFunctionServiceOrNull
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.freya022.botcommands.internal.utils.checkAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -22,6 +26,17 @@ internal class AggregatorFunction private constructor(
     private val aggregatorInstance: Any?,
     firstParamType: KClass<*>
 ) : Function<Any?>(boundAggregator) {
+    init {
+        // Check that the function is not static
+        // as we don't have any reflection metadata for those.
+        // Constructors and value class "constructors" are static, ignore those.
+        if (!aggregator.isConstructor && !aggregator.declaringClass.isValue) {
+            checkAt(!aggregator.isStatic, aggregator) {
+                "Non-constructor aggregators must be in a service and cannot be static"
+            }
+        }
+    }
+
     private val instanceParameter = aggregator.instanceParameter
     private val eventParameter = aggregator.nonInstanceParameters.first().takeIf { it.type.jvmErasure.isSubclassOf(firstParamType) }
 
