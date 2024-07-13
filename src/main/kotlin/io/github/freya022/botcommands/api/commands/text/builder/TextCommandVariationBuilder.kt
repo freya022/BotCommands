@@ -110,12 +110,8 @@ class TextCommandVariationBuilder internal constructor(
      * @param clazz        The inline class type
      */
     fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: KClass<*>, block: TextCommandOptionBuilder.() -> Unit = {}) {
-        val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
-        aggregate(declaredName, aggregatorConstructor) {
-            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
-            option(parameterName, optionName ?: parameterName.toDiscordString(), block)
+        inlineClassAggregate(declaredName, clazz) { valueName ->
+            option(valueName, optionName ?: valueName.toDiscordString(), block)
         }
     }
 
@@ -152,12 +148,8 @@ class TextCommandVariationBuilder internal constructor(
      * @see VarArgs
      */
     fun inlineClassOptionVararg(declaredName: String, clazz: KClass<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
-        val aggregatorConstructor = clazz.primaryConstructor
-            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
-        aggregate(declaredName, aggregatorConstructor) {
-            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
-                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
-            nestedOptionVararg(parameterName, amount, requiredAmount, optionNameSupplier, block)
+        inlineClassAggregate(declaredName, clazz) { valueName ->
+            nestedOptionVararg(valueName, amount, requiredAmount, optionNameSupplier, block)
         }
     }
 
@@ -267,6 +259,16 @@ class TextCommandVariationBuilder internal constructor(
      */
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: TextCommandOptionAggregateBuilder.() -> Unit = {}) {
         _optionAggregateBuilders.aggregate(declaredName, aggregator, block)
+    }
+
+    fun inlineClassAggregate(declaredName: String, clazz: KClass<*>, block: TextCommandOptionAggregateBuilder.(valueName: String) -> Unit = {}) {
+        val aggregatorConstructor = clazz.primaryConstructor
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
+        aggregate(declaredName, aggregatorConstructor) {
+            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
+            block(parameterName)
+        }
     }
 
     private fun selfAggregate(declaredName: String, block: TextCommandOptionAggregateBuilder.() -> Unit) {

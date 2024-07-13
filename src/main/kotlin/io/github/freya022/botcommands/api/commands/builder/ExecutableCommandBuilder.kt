@@ -6,10 +6,15 @@ import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBu
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
+import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.throwArgument
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.primaryConstructor
 
 abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> internal constructor(
     context: BContext,
@@ -52,6 +57,16 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
      */
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit = {}) {
         _optionAggregateBuilders.aggregate(declaredName, aggregator, block)
+    }
+
+    fun inlineClassAggregate(declaredName: String, clazz: KClass<*>, block: T.(valueName: String) -> Unit = {}) {
+        val aggregatorConstructor = clazz.primaryConstructor
+            ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
+        aggregate(declaredName, aggregatorConstructor) {
+            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+                ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
+            block(parameterName)
+        }
     }
 
     protected fun selfAggregate(declaredName: String, block: T.() -> Unit) {

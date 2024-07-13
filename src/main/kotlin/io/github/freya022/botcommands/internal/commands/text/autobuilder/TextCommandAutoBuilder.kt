@@ -216,6 +216,7 @@ internal class TextCommandAutoBuilder(
         detailedDescription = instance.detailedDescription
     }
 
+    //TODO
     private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()

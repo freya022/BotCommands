@@ -324,51 +324,55 @@ internal class SlashCommandAutoBuilder(
         val func = metadata.func
         val path = metadata.path
 
-        func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            val declaredName = kParameter.findDeclarationName()
-            when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
-                null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> {
-                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                            customOption(declaredName)
-                        } else {
-                            requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
-                            serviceOption(declaredName)
-                        }
-                    }
-                    else -> generatedOption(
-                        declaredName, instance.getGeneratedValueSupplier(
-                            guild,
-                            metadata.commandId,
-                            path,
-                            kParameter.findOptionName(),
-                            ParameterType.ofType(kParameter.type)
-                        )
-                    )
-                }
-                else -> {
-                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName.toDiscordString()
-                    if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
+        fun slashOption(kParameter: KParameter, declaredName: String, optionAnnotation: SlashOption) {
+            val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
+            val varArgs = kParameter.findAnnotation<VarArgs>()
+            if (kParameter.type.jvmErasure.isValue) {
+                val inlineClassType = kParameter.type.jvmErasure
+                inlineClassAggregate(declaredName, inlineClassType) { valueName ->
+                    if (varArgs != null) {
+                        nestedOptionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                            configureOption(guild, instance, kParameter, optionAnnotation)
                         }
                     } else {
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> option(declaredName, optionName) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
+                        option(valueName, optionName) {
+                            configureOption(guild, instance, kParameter, optionAnnotation)
                         }
                     }
                 }
+            } else {
+                if (varArgs != null) {
+                    optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                        configureOption(guild, instance, kParameter, optionAnnotation)
+                    }
+                } else {
+                    option(declaredName, optionName) {
+                        configureOption(guild, instance, kParameter, optionAnnotation)
+                    }
+                }
+            }
+        }
+
+        func.nonInstanceParameters.drop(1).forEach { kParameter ->
+            val declaredName = kParameter.findDeclarationName()
+            val optionAnnotation = kParameter.findAnnotation<SlashOption>()
+            if (optionAnnotation != null) {
+                slashOption(kParameter, declaredName, optionAnnotation)
+            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+                generatedOption(
+                    declaredName, instance.getGeneratedValueSupplier(
+                        guild,
+                        metadata.commandId,
+                        path,
+                        kParameter.findOptionName(),
+                        ParameterType.ofType(kParameter.type)
+                    )
+                )
+            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
+                customOption(declaredName)
+            } else {
+                requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
+                serviceOption(declaredName)
             }
         }
     }
