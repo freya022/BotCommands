@@ -26,7 +26,7 @@ internal object IMentionableResolver : ClassParameterResolver<IMentionableResolv
     //region Text
     override val pattern: Pattern =
         enumSetOf(MentionType.CHANNEL, MentionType.USER, MentionType.ROLE, MentionType.EMOJI, MentionType.SLASH_COMMAND)
-            .joinToString(separator = "|") { "(?:${it.pattern.pattern()})" }
+            .joinToString(separator = "|") { it.pattern.pattern() }
             .toPattern()
     override val testExample: String = "</name group sub:1234>"
 

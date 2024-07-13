@@ -160,7 +160,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         }
 
         private companion object {
-            private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
+            private val channelPattern = Pattern.compile("<#(\\d+)>|(\\d+)")
             private val logger = KotlinLogging.logger { }
         }
     }

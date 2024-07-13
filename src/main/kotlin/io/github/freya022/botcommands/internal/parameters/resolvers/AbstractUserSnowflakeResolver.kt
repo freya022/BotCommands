@@ -105,6 +105,6 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     protected abstract fun transformEntities(user: User, member: Member?): R?
 
     internal companion object {
-        internal val userMentionPattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
+        internal val userMentionPattern = Pattern.compile("<@(\\d+)>|(\\d+)")
     }
 }

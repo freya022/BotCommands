@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
+import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -29,7 +30,7 @@ public class RoleResolver
                    SlashParameterResolver<RoleResolver, Role>,
                    ComponentParameterResolver<RoleResolver, Role> {
 
-    private static final Pattern PATTERN = Pattern.compile("(?:<@&)?(\\d+)>?");
+    private static final Pattern PATTERN = Pattern.compile("<@&(\\d+)>|(\\d+)");
 
     public RoleResolver() {
         super(Role.class);
@@ -37,10 +38,15 @@ public class RoleResolver
 
     @Nullable
     @Override
-    public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-        if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
+    public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @Nullable String @NotNull [] args) {
+        final var id = args[0] != null ? args[0] : args[1];
+        if (id == null) {
+            ExceptionsKt.throwInternal("How can it not have either");
+            return null; //Nope
+        }
+        if (event.getGuild().getId().equals(id)) return null; //@everyone role
 
-        return event.getGuild().getRoleById(args[0]);
+        return event.getGuild().getRoleById(id);
     }
 
     @Override
