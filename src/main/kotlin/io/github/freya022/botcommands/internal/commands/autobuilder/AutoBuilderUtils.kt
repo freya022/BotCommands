@@ -51,9 +51,9 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
     }
 }
 
+context(CommandAutoBuilder, SkipLogger)
 internal fun runFiltered(
     manager: AbstractApplicationCommandManager,
-    skipLogger: SkipLogger,
     forceGuildCommands: Boolean,
     applicationFunctionMetadata: ApplicationFunctionMetadata<*>,
     scope: CommandScope,
@@ -73,14 +73,14 @@ internal fun runFiltered(
     if (!forceGuildCommands && !manager.isValidScope(scope)) return
 
     if (commandId != null && !checkCommandId(manager, instance, commandId, path))
-        return skipLogger.skip(path, "Guild does not support that command ID")
+        return skip(path, "Guild does not support that command ID")
 
     val testState = checkTestCommand(manager, func, scope, manager.context)
     if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
 
     if (testState == TestState.EXCLUDE)
-        return skipLogger.skip(path, "Is a test command while this guild isn't a test guild")
+        return skip(path, "Is a test command while this guild isn't a test guild")
 
     block()
 }

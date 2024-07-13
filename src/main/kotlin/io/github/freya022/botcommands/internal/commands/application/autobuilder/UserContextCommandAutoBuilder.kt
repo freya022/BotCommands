@@ -56,17 +56,17 @@ internal class UserContextCommandAutoBuilder(
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
-        val skipLogger = SkipLogger(logger)
-        userFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(
-                manager,
-                skipLogger,
-                forceGuildCommands,
-                metadata,
-                metadata.annotation.scope
-            ) { processUserCommand(manager, metadata) }
+        with(SkipLogger(logger)) {
+            userFunctions.forEachWithDelayedExceptions { metadata ->
+                runFiltered(
+                    manager,
+                    forceGuildCommands,
+                    metadata,
+                    metadata.annotation.scope
+                ) { processUserCommand(manager, metadata) }
+            }
+            log((manager as? GuildApplicationCommandManager)?.guild, CommandType.USER)
         }
-        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, CommandType.USER)
     }
 
     private fun processUserCommand(manager: AbstractApplicationCommandManager, metadata: UserContextFunctionMetadata) {
