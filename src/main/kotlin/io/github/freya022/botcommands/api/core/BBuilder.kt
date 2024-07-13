@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.minutes
  * Entry point for the BotCommands framework.
  *
  * The only requirement for a basic bot is a service extending [JDAService],
- * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/from-scratch/#creating-a-jdaservice).
+ * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/#creating-a-jdaservice).
  *
  * @see BService @BService
  * @see InterfacedService @InterfacedService
