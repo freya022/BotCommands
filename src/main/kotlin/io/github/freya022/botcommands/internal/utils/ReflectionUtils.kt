@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.internal.utils
 
-import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.core.utils.isStatic
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
@@ -30,10 +33,6 @@ internal object ReflectionUtils {
             throwArgument("$this : Function needs to be public")
         }
 
-        requireAt(isConstructor || !isStatic || declaringClass.isValue, this) {
-            "Function must not be static"
-        }
-
         return lock.withLock {
             reflectedMap.computeIfAbsent(this) {
                 when (this) { //Try to match the original function
@@ -60,8 +59,15 @@ internal object ReflectionUtils {
             throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
 
         val targetClass = if (this.boundReceiver === CallableReference.NO_RECEIVER) {
-            this.owner as? KClass<*>
-                ?: throwInternal("Owner of callable reference is not class: ${this.owner}")
+            if (isStatic) {
+                @Suppress("UNCHECKED_CAST")
+                return this.owner.members.filterIsInstance<KFunction<*>>()
+                    .findFunction(this) as KFunction<R>?
+                    ?: throwInternal("Could not find best reference of static function $this")
+            } else {
+                this.owner as? KClass<*>
+                    ?: throwInternal("Owner of callable reference is not class: ${this.owner}")
+            }
         } else {
             this.boundReceiver::class
         }
@@ -71,7 +77,7 @@ internal object ReflectionUtils {
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <R> KFunction<R>.resolveReferenceOrNull(targetClass: KClass<*>): KFunction<R>? {
+    private fun <R> KFunction<R>.resolveReferenceOrNull(targetClass: KClass<*>): KFunction<R>? {
         if (this !is CallableReference)
             throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
 
