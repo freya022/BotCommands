@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.core.utils
 
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.lineNumber
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.lineNumberOrNull
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFileOrNull
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -139,35 +139,45 @@ fun KFunction<*>.getSignature(
     returnType: Boolean = false,
     source: Boolean = true
 ): String = buildString {
-    val declaringClassName = if (qualifiedClass) declaringClass.let { it.qualifiedName ?: it.jvmName } else declaringClass.simpleNestedName
+    val declaringClassName = when {
+        qualifiedClass -> declaringClass.let { it.qualifiedName ?: it.jvmName }
+        else -> declaringClass.simpleNestedName
+    }
     val methodName = name
-    val parameters = valueParameters.joinToString {
+    val parameters = getParameters(parameterNames, qualifiedTypes)
+
+    append("$declaringClassName.$methodName($parameters)")
+    if (returnType)
+        append(": ${getReturnType(qualifiedTypes)}")
+    if (source)
+        append(" (${getSource()})")
+}
+
+fun KFunction<*>.getParameters(parameterNames: List<String>, qualifiedTypes: Boolean): String {
+    return valueParameters.joinToString {
         val type = if (qualifiedTypes) it.type.qualifiedNestedName else it.type.simpleNestedName
         when (it.name) {
             in parameterNames -> "${it.bestName}: $type"
             else -> type
         }
     }
+}
 
-    append("$declaringClassName.$methodName($parameters)")
-    if (returnType) {
-        append(": ")
-        append(if (qualifiedTypes) this@getSignature.returnType.qualifiedNestedName else this@getSignature.returnType.simpleNestedName)
+private fun KFunction<*>.getReturnType(qualifiedTypes: Boolean): String {
+    return if (qualifiedTypes) {
+        returnType.qualifiedNestedName
+    } else {
+        returnType.simpleNestedName
     }
-    if (source) {
-        val sourceStr = javaMethodOrConstructorOrNull.let { method ->
-            return@let when {
-                method != null && lineNumber != 0 -> {
-                    val sourceFile = method.declaringClass.sourceFile
-                    val lineNumber = lineNumber
+}
 
-                    "$sourceFile:$lineNumber"
-                }
-                else -> "<no-source>"
-            }
-        }
-        append(" ($sourceStr)")
-    }
+private fun KFunction<*>.getSource(): String {
+    val executable = javaMethodOrConstructorOrNull ?: return "<no-source>"
+
+    val sourceFile = executable.declaringClass.sourceFileOrNull ?: return "<no-source>"
+    val lineNumber = lineNumberOrNull ?: 0
+
+    return "$sourceFile:$lineNumber"
 }
 
 fun KClass<*>.toBoxed(): KClass<*> {

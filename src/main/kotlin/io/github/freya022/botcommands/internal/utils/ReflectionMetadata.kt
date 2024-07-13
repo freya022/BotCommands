@@ -247,8 +247,11 @@ internal object ReflectionMetadata {
         }
 
     internal val KFunction<*>.lineNumber: Int
-        get() = (methodMetadataMap[this.javaMethodOrConstructor]
-            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).line
+        get() = lineNumberOrNull
+            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
+
+    internal val KFunction<*>.lineNumberOrNull: Int?
+        get() = methodMetadataMap[this.javaMethodOrConstructor]?.line
 
     private val Executable.isSuspend: Boolean
         get() = parameters.any { it.type == Continuation::class.java }
