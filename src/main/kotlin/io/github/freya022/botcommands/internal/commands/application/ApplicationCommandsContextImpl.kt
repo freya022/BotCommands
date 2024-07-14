@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.*
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
@@ -30,6 +31,7 @@ import kotlin.reflect.KFunction
 private val logger = KotlinLogging.loggerOf<ApplicationCommandsContext>()
 
 @BService
+@RequiresApplicationCommands
 internal class ApplicationCommandsContextImpl internal constructor(
     private val coroutineScopesConfig: BCoroutineScopesConfig,
     private val autocompleteInfoContainer: AutocompleteInfoContainer,

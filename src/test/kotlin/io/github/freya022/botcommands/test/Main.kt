@@ -58,10 +58,14 @@ object Main {
                 }
 
                 textCommands {
+                    enable = true
+
                     usePingAsPrefix = true
                 }
 
                 applicationCommands {
+                    enable = true
+
                     @OptIn(DevConfig::class)
                     onlineAppCommandCheckEnabled = true
 

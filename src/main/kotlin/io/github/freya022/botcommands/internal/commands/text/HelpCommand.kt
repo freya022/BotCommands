@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.text
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.text.*
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
@@ -39,6 +40,7 @@ private val spacePattern = Regex("\\s+")
 internal open class BuiltInHelpCommandProvider {
     @Bean
     @BService
+    @RequiresTextCommands
     @ConditionalService(HelpCommand.ExistingHelpChecker::class)
     @ConditionalOnMissingBean(IHelpCommand::class)
     internal open fun builtInHelpCommand(
@@ -48,7 +50,6 @@ internal open class BuiltInHelpCommandProvider {
         helpBuilderConsumer: HelpBuilderConsumer?,
     ) = HelpCommand(context, defaultMessagesFactory, textCommandsContext, helpBuilderConsumer)
 }
-
 internal class HelpCommand internal constructor(
     private val context: BContextImpl,
     private val defaultMessagesFactory: DefaultMessagesFactory,

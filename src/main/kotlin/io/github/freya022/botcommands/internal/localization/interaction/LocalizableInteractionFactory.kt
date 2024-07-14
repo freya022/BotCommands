@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.localization.interaction.GuildLocalePr
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 
+// Don't require enabled feature, could be used by user's own impl
 @BService
 internal class LocalizableInteractionFactory internal constructor(
     private val localizationService: LocalizationService,

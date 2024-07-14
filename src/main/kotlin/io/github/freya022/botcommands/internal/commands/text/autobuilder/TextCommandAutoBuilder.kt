@@ -42,6 +42,7 @@ private val logger = KotlinLogging.logger { }
 private val defaultExtraData = TextCommandData()
 
 @BService
+@RequiresTextCommands
 internal class TextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer,
     functionAnnotationsMap: FunctionAnnotationsMap,

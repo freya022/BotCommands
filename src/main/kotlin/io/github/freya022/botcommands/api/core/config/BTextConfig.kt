@@ -12,6 +12,16 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 @InjectedService
 interface BTextConfig {
     /**
+     * Whether text commands should be listened for.
+     *
+     * Default: `true`
+     *
+     * Spring property: `botcommands.text.enable`
+     */
+    @ConfigurationValue(path = "botcommands.text.enable", defaultValue = "true")
+    val enable: Boolean
+
+    /**
      * Whether the bot should look for commands when it is mentioned.
      *
      * Default: `false`
@@ -67,6 +77,7 @@ interface BTextConfig {
 
 @ConfigDSL
 class BTextConfigBuilder internal constructor() : BTextConfig {
+    override var enable: Boolean = true
     @set:JvmName("usePingAsPrefix")
     override var usePingAsPrefix: Boolean = false
     override val prefixes: MutableList<String> = mutableListOf()
@@ -80,6 +91,7 @@ class BTextConfigBuilder internal constructor() : BTextConfig {
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {
+        override val enable = this@BTextConfigBuilder.enable
         override val usePingAsPrefix = this@BTextConfigBuilder.usePingAsPrefix
         override val prefixes = this@BTextConfigBuilder.prefixes.toImmutableList()
         override val isHelpDisabled = this@BTextConfigBuilder.isHelpDisabled

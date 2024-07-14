@@ -27,6 +27,7 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
 
+// Don't require enabled feature, could be used by user's own impl
 @ResolverFactory
 internal class AppLocalizationContextResolverFactory(
     private val localizationService: LocalizationService,
@@ -41,6 +42,7 @@ internal class AppLocalizationContextResolverFactory(
         )
 }
 
+// Don't require enabled feature, could be used by user's own impl
 @ResolverFactory
 internal class TextLocalizationContextResolverFactory(
     private val localizationService: LocalizationService,

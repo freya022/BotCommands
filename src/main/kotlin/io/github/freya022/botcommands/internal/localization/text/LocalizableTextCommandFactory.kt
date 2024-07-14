@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+// Don't require enabled feature, could be used by user's own impl
 @BService
 internal class LocalizableTextCommandFactory internal constructor(
     private val localizationService: LocalizationService,

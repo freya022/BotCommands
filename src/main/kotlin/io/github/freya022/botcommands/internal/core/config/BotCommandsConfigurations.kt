@@ -90,6 +90,7 @@ internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDataba
 
 @ConfigurationProperties(prefix = "botcommands.text", ignoreUnknownFields = false)
 internal class BotCommandsTextConfiguration(
+    override val enable: Boolean = true,
     override val usePingAsPrefix: Boolean = false,
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
@@ -100,6 +101,7 @@ internal class BotCommandsTextConfiguration(
 }
 
 internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
+    enable = configuration.enable
     usePingAsPrefix = configuration.usePingAsPrefix
     prefixes += configuration.prefixes
     isHelpDisabled = configuration.isHelpDisabled
@@ -118,6 +120,7 @@ internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLo
 
 @ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = false)
 internal class BotCommandsApplicationConfiguration(
+    override val enable: Boolean = true,
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
@@ -130,6 +133,7 @@ internal class BotCommandsApplicationConfiguration(
 
 @OptIn(DevConfig::class)
 internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApplicationConfiguration) = apply {
+    enable = configuration.enable
     slashGuildIds += configuration.slashGuildIds
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache

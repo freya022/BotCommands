@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 private val logger = KotlinLogging.logger { }
 
 @BService
+@RequiresApplicationCommands
 internal class AutocompleteListener(
     private val context: BContext,
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,

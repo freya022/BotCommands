@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
@@ -37,6 +38,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 private val logger = KotlinLogging.logger {  }
 
 @BService
+@RequiresApplicationCommands
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
