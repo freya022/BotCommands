@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -39,23 +40,33 @@ internal object IMentionableResolver : ClassParameterResolver<IMentionableResolv
         event: MessageReceivedEvent,
         args: Array<String?>
     ): IMentionable? {
-        // The pattern being a combination of N patterns with each their set of groups, most groups will be null/empty.
-        // The last element is used as this is correct for channel/user/role/emoji/slash commands
-        val groups = args.filterNotNull()
-        val id = groups.last().toLongOrNull()
-            ?: throwInternal("Unable to parse the ID of a mentionable, pattern should have rejected the command")
-        return if (groups.size == 4) {
-            // For now, only slash commands have that many groups
-            // Slash commands need special handling as a command ID refers to the top level command,
-            // so we need to differentiate subcommands (and groups)
-            event.message.mentions.slashCommands.first {
-                it.idLong == id &&
-                        groups[0] == it.name &&
-                        groups[1] == it.subcommandGroup &&
-                        groups[2] == it.subcommandName
+        val filteredArgs = args.filterNotNull()
+        // ID is always on the right side
+        val id = filteredArgs
+            .lastOrNull().ifNullThrowInternal { "Pattern matched but no args were present" }
+            .toLongOrNull().ifNullThrowInternal { "ID matched but was not a Long" }
+        return if (filteredArgs.size >= 2) {
+            val name = filteredArgs[0]
+            // Both emojis and slash commands can have two groups
+            if (filteredArgs.size == 2) {
+                val emoji = event.message.mentions.customEmojis.firstOrNull { it.idLong == id }
+                if (emoji != null)
+                    return emoji
+            }
+
+            // Can't use ID only as it's for top-level command
+            event.message.mentions.slashCommands.firstOrNull {
+                when (filteredArgs.size) {
+                    2 -> id == it.idLong && name == it.name
+                    3 -> id == it.idLong && name == it.name && filteredArgs[1] == it.subcommandName
+                    4 -> id == it.idLong && name == it.name && filteredArgs[1] == it.subcommandGroup && filteredArgs[2] == it.subcommandName
+                    else -> throwInternal("Matched more than 4 for slash commands")
+                }
             }
         } else {
-            event.message.mentions.getMentions().first { it.idLong == id }
+            event.message.mentions
+                .getMentions(MentionType.CHANNEL, MentionType.USER, MentionType.ROLE)
+                .firstOrNull { it.idLong == id }
         }
     }
     //endregion
