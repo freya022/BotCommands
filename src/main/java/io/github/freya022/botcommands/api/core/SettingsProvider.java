@@ -53,7 +53,7 @@ public interface SettingsProvider {
      * @see CommandList#notOf(Collection)
      * @see CommandList#filter(Predicate)
      *
-     * @deprecated Replaced by {@link DeclarationFilter} with {@link CommandDeclarationFilter}
+     * @deprecated Replaced by {@link DeclarationFilter @DeclarationFilter} with {@link CommandDeclarationFilter}
      */
     @NotNull
     @Deprecated

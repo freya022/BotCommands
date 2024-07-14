@@ -1,5 +1,8 @@
 package io.github.freya022.botcommands.api.commands;
 
+import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter;
+import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
@@ -8,7 +11,10 @@ import java.util.stream.Collectors;
 /**
  * Represents a list of enabled commands, the enabled commands are only qualified by their base name.
  * <br><b>Keep in mind you cannot disable global commands on a per-guild basis.</b>
+ *
+ * @deprecated Replaced by {@link DeclarationFilter @DeclarationFilter} with {@link CommandDeclarationFilter}
  */
+@Deprecated
 public class CommandList {
     private final Predicate<CommandPath> filter;
 
