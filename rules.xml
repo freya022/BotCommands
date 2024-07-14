@@ -4,7 +4,7 @@
     <rules>
         <rule groupId="org.jetbrains.kotlin" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">.+-Beta.+</ignoreVersion>
+                <ignoreVersion type="regex">.+-(?:Beta|RC).*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jetbrains.kotlinx" comparisonMethod="maven">
@@ -25,6 +25,11 @@
         <rule groupId="net.dv8tion" comparisonMethod="maven">
             <ignoreVersions>
                 <ignoreVersion type="regex">.+_DEV</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.jupiter" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.+-M\d+</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>
