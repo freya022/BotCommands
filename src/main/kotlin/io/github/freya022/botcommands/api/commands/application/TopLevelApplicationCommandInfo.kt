@@ -1,7 +1,10 @@
 package io.github.freya022.botcommands.api.commands.application
 
+import io.github.freya022.botcommands.internal.utils.throwState
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
+import net.dv8tion.jda.api.requests.RestAction
 import java.time.OffsetDateTime
 
 /**
@@ -47,4 +50,24 @@ interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelAppli
         get() = metadata.timeModified
     override val guildId: Long?
         get() = metadata.guildId
+
+    /**
+     * Retrieves the [IntegrationPrivileges][IntegrationPrivilege] for this application command.
+     *
+     * Moderators of a guild can modify these privileges through the `Integrations` menu.
+     *
+     * @throws IllegalStateException If the command is registered globally, or the guild could not be found
+     *
+     * @return [RestAction] - Type: [List] of [IntegrationPrivilege]
+     */
+    fun retrieveIntegrationPrivileges(): RestAction<List<IntegrationPrivilege>> {
+        val guildId = guildId
+        checkNotNull(guildId) {
+            "Cannot get integration privileges on a global command"
+        }
+
+        val guild = context.jda.getGuildById(guildId)
+            ?: throwState("Could not find guild with id $guildId")
+        return guild.retrieveIntegrationPrivilegesById(idLong)
+    }
 }
