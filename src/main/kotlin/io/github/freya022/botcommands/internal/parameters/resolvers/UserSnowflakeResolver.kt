@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
+import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -49,7 +50,12 @@ internal object UserSnowflakeResolver :
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>,
-    ): UserSnowflake = UserSnowflake.fromId(args[0]!!)
+    ): UserSnowflake {
+        val id = args.filterNotNull()
+            .singleOrNull().ifNullThrowInternal { "Pattern matched but no args were present" }
+            .toLongOrNull().ifNullThrowInternal { "ID matched but was not a Long" }
+        return UserSnowflake.fromId(id)
+    }
 
     override suspend fun resolveSuspend(info: UserCommandInfo, event: UserContextInteractionEvent): UserSnowflake =
         event.target
