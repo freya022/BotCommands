@@ -18,10 +18,12 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringCl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.AnnotatedParameterizedType
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
+import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -30,16 +32,158 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
+import kotlin.time.measureTimedValue
 
-internal class ServiceCreationStack {
+internal interface ServiceCreationStack {
+    operator fun contains(provider: ServiceProvider): Boolean
+
+    fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError?
+
+    fun <R : Any> withServiceCreateKey(provider: ServiceProvider, block: () -> ServiceResult<R>): ServiceResult<R>
+}
+
+internal class TracedServiceCreationStack : ServiceCreationStack {
+    internal class SetStack<K, V> {
+        private val stack: Stack<Pair<K, V>> = Stack()
+
+        val values: List<V> get() = stack.map { it.second }
+
+        fun isEmpty(): Boolean = stack.isEmpty()
+        fun isNotEmpty(): Boolean = stack.isNotEmpty()
+
+        operator fun contains(key: K) = stack.any { it.first == key }
+
+        fun add(key: K, value: V): Boolean {
+            if (contains(key))
+                return false
+            stack.add(key to value)
+            return true
+        }
+
+        fun removeLast(): V = stack.removeLast().second
+
+        fun lastElement(): V = stack.lastElement().second
+    }
+
+    internal class ServiceOperation(val provider: ServiceProvider, val type: Type, private val mark: TimeSource.Monotonic.ValueTimeMark) {
+        internal enum class Type {
+            CHECK,
+            CREATE;
+
+            val humanName get() = name.lowercase().replaceFirstChar { it.uppercaseChar() }
+        }
+
+        val providerKey get() = provider.providerKey
+        val children: MutableList<ServiceOperation> = arrayListOf()
+
+        var instance: Any? = null
+        var elapsed: Duration by Delegates.notNull()
+            private set
+
+        fun setElapsedNow() {
+            elapsed = mark.elapsedNow()
+        }
+
+        override fun toString(): String {
+            return providerKey
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ServiceOperation
+
+            return providerKey == other.providerKey
+        }
+
+        override fun hashCode(): Int {
+            return providerKey.hashCode()
+        }
+    }
+
+    private val localSet: ThreadLocal<SetStack<ProviderName, ServiceOperation>> = ThreadLocal.withInitial { SetStack() }
+    private val set get() = localSet.get()
+
+    override fun contains(provider: ServiceProvider) = provider.providerKey in set
+
+    //If services have circular dependencies during checking, consider it to not be an issue
+    override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
+        return withServiceKey(provider, ServiceOperation.Type.CHECK, block, onDuplicate = {
+            return null
+        })
+    }
+
+    override fun <R : Any> withServiceCreateKey(
+        provider: ServiceProvider,
+        block: () -> ServiceResult<R>
+    ): ServiceResult<R> {
+        return withServiceKey(provider, ServiceOperation.Type.CREATE, block, onDuplicate = {
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.values.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
+        })
+    }
+
+    private inline fun <R> withServiceKey(provider: ServiceProvider, operationType: ServiceOperation.Type, crossinline block: () -> R, onDuplicate: () -> Unit): R {
+        val serviceOperation = ServiceOperation(provider, operationType, TimeSource.Monotonic.markNow())
+
+        if (provider.providerKey in set)
+            onDuplicate()
+
+        if (set.isNotEmpty())
+            set.lastElement().children += serviceOperation
+        set.add(provider.providerKey, serviceOperation)
+
+        try {
+            val value = block()
+            if (value is ServiceResult<*>)
+                serviceOperation.instance = value.service
+
+            return value
+        } finally {
+            serviceOperation.setElapsedNow()
+            set.removeLast()
+
+            if (set.isEmpty()) {
+                logger.trace {
+                    buildString {
+                        val opType = when (serviceOperation.type) {
+                            ServiceOperation.Type.CHECK -> "Checked"
+                            ServiceOperation.Type.CREATE -> "Loaded"
+                        }
+                        appendLine("$opType service ${serviceOperation.provider.primaryType.simpleNestedName}:")
+                        serviceOperation.print()
+                    }.trim()
+                }
+            }
+        }
+    }
+
+    context(StringBuilder)
+    private fun ServiceOperation.print(indent: Int = 0) {
+        appendLine(buildString {
+            val processedType = instance?.let { it::class } ?: provider.primaryType
+            append("[${type.humanName}, ${elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)}] ${processedType.simpleNestedName}")
+            if (type == ServiceOperation.Type.CREATE) {
+                val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
+                append(" as $loadedAsTypes")
+            }
+            append(" (${provider.providerKey})")
+        }.prependIndent("  ".repeat(indent)))
+        children.forEach { it.print(indent + 1) }
+    }
+}
+
+internal class DefaultServiceCreationStack : ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
     private val set get() = localSet.get()
 
-    internal operator fun contains(provider: ServiceProvider) = set.contains(provider.providerKey)
+    override fun contains(provider: ServiceProvider) = set.contains(provider.providerKey)
 
     //If services have circular dependencies during checking, consider it to not be an issue
-    internal inline fun <R> withServiceCheckKey(provider: ServiceProvider, block: () -> R): R? {
+    override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
         if (!set.add(provider.providerKey)) return null
         try {
             return block()
@@ -48,12 +192,20 @@ internal class ServiceCreationStack {
         }
     }
 
-    internal inline fun <R> withServiceCreateKey(provider: ServiceProvider, block: () -> R): R {
+    override fun <R : Any> withServiceCreateKey(
+        provider: ServiceProvider,
+        block: () -> ServiceResult<R>
+    ): ServiceResult<R> {
         check(set.add(provider.providerKey)) {
             "Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}"
         }
         try {
-            return block()
+            val (value, duration) = measureTimedValue(block)
+            logger.trace {
+                val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
+                "Loaded service ${value.service!!.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
+            }
+            return value
         } finally {
             set.remove(provider.providerKey)
         }
@@ -66,7 +218,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()
-    private val serviceCreationStack = ServiceCreationStack()
+    private val serviceCreationStack = if (serviceConfig.debug) TracedServiceCreationStack() else DefaultServiceCreationStack()
 
     internal fun loadServices() {
         getService<DefaultInstantiableServices>()
@@ -149,20 +301,16 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, duration) = provider.createInstance(this)
+                val (anyResult, _) = provider.createInstance(this)
                 //Doesn't really matter, the object is not used anyway
                 val result: ServiceResult<T> = anyResult as ServiceResult<T>
                 if (result.serviceError != null)
-                    return result
+                    return@withServiceCreateKey result
 
                 val instance = result.getOrThrow()
                 if (!provider.primaryType.isInstance(instance))
                     throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
 
-                logger.trace {
-                    val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-                    "Loaded service ${instance.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
-                }
                 ServiceResult.pass(instance)
             }
         } catch (e: Exception) {
