@@ -90,7 +90,7 @@ internal fun runFiltered(
 }
 
 context(CommandAutoBuilder, SkipLogger)
-private fun checkDeclarationFilter(
+internal fun checkDeclarationFilter(
     manager: AbstractApplicationCommandManager,
     func: KFunction<*>,
     path: CommandPath,

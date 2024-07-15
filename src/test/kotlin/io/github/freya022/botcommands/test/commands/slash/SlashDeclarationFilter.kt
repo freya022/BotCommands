@@ -24,6 +24,11 @@ class BigGuildDeclarationFilter : CommandDeclarationFilter {
     }
 }
 
+@BService
+object ImpossibleDeclarationFilter : CommandDeclarationFilter {
+    override fun filter(guild: Guild, path: CommandPath, commandId: String?): Boolean = false
+}
+
 @Command
 @RequiredIntents(GatewayIntent.GUILD_MEMBERS)
 class SlashDeclarationFilter : ApplicationCommand() {
@@ -32,5 +37,17 @@ class SlashDeclarationFilter : ApplicationCommand() {
     @TopLevelSlashCommandData(scope = CommandScope.GUILD)
     suspend fun onSlashDeclarationFilter(event: GuildSlashEvent) {
         event.reply_("Works, guild members: ${event.guild.memberCount}", ephemeral = true).await()
+    }
+
+    @JDASlashCommand(name = "declaration_filter_subcommand", subcommand = "subcommand")
+    @TopLevelSlashCommandData(scope = CommandScope.GUILD)
+    suspend fun onSlashDeclarationFilterSubcommand(event: GuildSlashEvent) {
+        event.reply_("Works", ephemeral = true).await()
+    }
+
+    @DeclarationFilter(ImpossibleDeclarationFilter::class)
+    @JDASlashCommand(name = "declaration_filter_subcommand", group = "group", subcommand = "subcommand")
+    fun onSlashDeclarationFilterSubcommandGroupSubcommand(event: GuildSlashEvent) {
+        throw AssertionError("Cannot run")
     }
 }

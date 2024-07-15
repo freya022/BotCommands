@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
@@ -229,6 +230,7 @@ internal class SlashCommandAutoBuilder(
         }
     }
 
+    context(SkipLogger)
     private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {
         val metadata = topLevelMetadata.metadata
         val annotation = metadata.annotation
@@ -252,30 +254,54 @@ internal class SlashCommandAutoBuilder(
             }
             description = annotation.description.nullIfBlank() ?: topLevelMetadata.annotation.description.nullIfBlank()
 
-            subcommandsMetadata.forEach { subMetadata ->
-                subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
-                    configureSubcommand(manager, subMetadata)
-                }
-            }
+            addSubcommands(manager, subcommandsMetadata, metadata.commandId)
 
-            subcommandGroupsMetadata.values.forEach { groupMetadata ->
-                subcommandGroup(groupMetadata.name) {
-                    this@subcommandGroup.description = groupMetadata.properties.description.nullIfBlank()
-
-                    groupMetadata.subcommands.forEach { (subname, metadataList) ->
-                        metadataList.forEach { subMetadata ->
-                            subcommand(subname, subMetadata.func.castFunction()) {
-                                configureSubcommand(manager, subMetadata)
-                            }
-                        }
-                    }
-                }
-            }
+            addSubcommandGroups(manager, subcommandGroupsMetadata, metadata.commandId)
 
             configureBuilder(metadata)
 
             if (isTopLevelOnly) {
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata)
+            }
+        }
+    }
+
+    context(SkipLogger)
+    private fun TopLevelSlashCommandBuilder.addSubcommandGroups(
+        manager: AbstractApplicationCommandManager,
+        subcommandGroupsMetadata: MutableMap<String, SlashSubcommandGroupMetadata>,
+        commandId: String?,
+    ) {
+        subcommandGroupsMetadata.values.forEach { groupMetadata ->
+            subcommandGroup(groupMetadata.name) {
+                description = groupMetadata.properties.description.nullIfBlank()
+
+                groupMetadata.subcommands.forEach { (subname, metadataList) ->
+                    metadataList.forEach subcommandLoop@{ subMetadata ->
+                        if (!checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, commandId))
+                            return@subcommandLoop // Already logged
+
+                        subcommand(subname, subMetadata.func.castFunction()) {
+                            configureSubcommand(manager, subMetadata)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    context(SkipLogger)
+    private fun TopLevelSlashCommandBuilder.addSubcommands(
+        manager: AbstractApplicationCommandManager,
+        subcommandsMetadata: MutableList<SlashFunctionMetadata>,
+        commandId: String?,
+    ) {
+        subcommandsMetadata.forEach { subMetadata ->
+            if (!checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, commandId))
+                return@forEach // Already logged
+
+            subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
+                configureSubcommand(manager, subMetadata)
             }
         }
     }
