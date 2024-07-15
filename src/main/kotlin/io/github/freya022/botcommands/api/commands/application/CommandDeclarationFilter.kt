@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.Guild
 /**
  * A filter determining if an application command needs to be registered.
  *
+ * Needs to be referenced by a [@DeclarationFilter][DeclarationFilter].
+ *
  * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
