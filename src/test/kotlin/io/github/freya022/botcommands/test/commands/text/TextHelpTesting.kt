@@ -26,6 +26,19 @@ class TextHelpTesting : TextCommand() {
                           @TextOption role: Role,
                           @TextOption string: String,
     ) {
-        event.respond("testing").queue()
+        event.respond("""
+            testing
+            $boolean
+            $double
+            ${emoji.formatted}
+            ${guild.name}
+            $int
+            $long
+            ${member.asMention}
+            ${user.asMention}
+            ${role.asMention}
+            $string
+            """.trimIndent()
+        ).setAllowedMentions(emptyList()).queue()
     }
 }

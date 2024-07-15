@@ -219,7 +219,7 @@ internal class TextCommandsListener internal constructor(
         variation: TextCommandVariationImpl,
         matchResult: MatchResult?
     ): ExecutionResult {
-        val optionValues = variation.tryParseOptionValues(event, args, matchResult)
+        val optionValues = variation.tryParseOptionValues(event, matchResult)
             ?: return ExecutionResult.CONTINUE //Go to next variation
 
         // At this point, we're sure that the command is executable

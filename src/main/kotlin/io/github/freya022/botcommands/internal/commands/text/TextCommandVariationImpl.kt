@@ -73,12 +73,12 @@ internal class TextCommandVariationImpl internal constructor(
         else -> BaseCommandEventImpl(context, jdaEvent, args, cancellableRateLimit, localizableTextCommand)
     }
 
-    internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<OptionImpl, Any?>? {
+    internal suspend fun tryParseOptionValues(event: BaseCommandEvent, matchResult: MatchResult?): Map<OptionImpl, Any?>? {
         val groupsIterator = matchResult?.groups?.iterator()
-        groupsIterator?.next() //Skip entire match
+        groupsIterator?.next() //Skip the entire match
 
         return parameters.mapOptions { option ->
-            if (tryInsertOption(event, this, option, groupsIterator, args) == InsertOptionResult.ABORT)
+            if (tryInsertOption(event, this, option, groupsIterator) == InsertOptionResult.ABORT)
                 return null
         }
     }
@@ -98,8 +98,7 @@ internal class TextCommandVariationImpl internal constructor(
         event: BaseCommandEvent,
         optionMap: MutableMap<OptionImpl, Any?>,
         option: OptionImpl,
-        groupsIterator: Iterator<MatchGroup?>?,
-        args: String
+        groupsIterator: Iterator<MatchGroup?>?
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
@@ -107,33 +106,8 @@ internal class TextCommandVariationImpl internal constructor(
 
                 option as TextCommandOptionImpl
 
-                var found = 0
-                val groupCount = option.groupCount
-                val groups = arrayOfNulls<String>(groupCount)
-                for (j in 0 until groupCount) {
-                    groups[j] = groupsIterator.next()?.value.also {
-                        if (it != null) found++
-                    }
-                }
-
-                if (found >= option.requiredGroups) { //Found all the groups
-                    val resolved = option.resolver.resolveSuspend(this, event, groups)
-                    //Regex matched but could not be resolved
-                    // if optional then it's ok
-                    if (resolved == null && !option.isOptionalOrNullable) {
-                        return InsertOptionResult.SKIP
-                    }
-
-                    resolved
-                } else if (!option.isOptionalOrNullable) { //Parameter is not found yet the pattern matched and is not optional
-                    throwInternal(option.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
-                } else { //Parameter is optional
-                    if (option.isOptional) {
-                        return InsertOptionResult.OK
-                    }
-
-                    option.nullValue
-                }
+                val groups: Array<String?> = Array(option.groupCount) { groupsIterator.next()?.value }
+                option.resolver.resolveSuspend(this, event, groups)
             }
 
             OptionType.CUSTOM -> {

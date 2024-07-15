@@ -16,8 +16,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterRes
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
+import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
@@ -59,7 +59,9 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         event: MessageReceivedEvent,
         args: Array<String?>
     ): R? {
-        val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
+        val id = args.filterNotNull()
+            .singleOrNull().ifNullThrowInternal { "Pattern matched but no args were present" }
+            .toLongOrNull().ifNullThrowInternal { "ID matched but was not a Long" }
         return retrieveOrNull(id, event.message)
     }
 
@@ -105,6 +107,6 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     protected abstract fun transformEntities(user: User, member: Member?): R?
 
     internal companion object {
-        internal val userMentionPattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
+        internal val userMentionPattern = Pattern.compile("<@(\\d+)>|(\\d+)")
     }
 }

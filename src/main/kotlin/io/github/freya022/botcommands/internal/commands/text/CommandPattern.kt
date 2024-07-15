@@ -126,7 +126,7 @@ internal object CommandPattern {
 
             return when {
                 optional -> "(?:$paddedPatternWithFlags)?"
-                else -> paddedPatternWithFlags
+                else -> "(?:$paddedPatternWithFlags)"
             }
         }
     }

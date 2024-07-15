@@ -103,6 +103,12 @@ internal fun Duration.toTimestampIfFinite(): Instant? =
 internal fun Duration.takeIfFinite(): Duration? =
     takeIf { it.isFinite() && it.isPositive() }
 
+internal inline fun <reified T : Any> T?.ifNullThrowInternal(message: () -> String): T {
+    if (this == null)
+        throwInternal(message())
+    return this
+}
+
 internal class WriteOnce<T : Any>(private val wait: Boolean) : ReadWriteProperty<Any?, T> {
     private val lock = ReentrantLock()
     private val condition = lock.newCondition()

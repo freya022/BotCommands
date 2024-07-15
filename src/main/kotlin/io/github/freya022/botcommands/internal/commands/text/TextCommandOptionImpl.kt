@@ -25,7 +25,6 @@ internal class TextCommandOptionImpl internal constructor(
         get() = resolver is QuotableTextParameterResolver
 
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
-    val requiredGroups = resolver.requiredGroups
 
     override fun getResolverHelpExample(event: BaseCommandEvent) =
         resolver.getHelpExample(this, event)

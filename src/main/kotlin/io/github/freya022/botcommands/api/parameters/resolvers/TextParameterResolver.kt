@@ -58,6 +58,7 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      * This may be overridden if your pattern provides more groups than it actually needs to match a string,
      * such as patterns with `|`.
      */
+    @Deprecated("No longer required")
     val requiredGroups: Int get() = preferredPattern.matcher("").groupCount()
 
     /**

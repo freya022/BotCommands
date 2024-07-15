@@ -22,6 +22,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.ChannelResolverFactory.ChannelResolver
+import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -74,7 +75,9 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             event: MessageReceivedEvent,
             args: Array<String?>
         ): GuildChannel? {
-            val channelId = args[0]!!.toLong()
+            val channelId = args.filterNotNull()
+                .singleOrNull().ifNullThrowInternal { "Pattern matched but no args were present" }
+                .toLongOrNull().ifNullThrowInternal { "ID matched but was not a Long" }
             val channel = event.guild.getChannelById(type, channelId)
             if (channel == null) {
                 if (ThreadChannel::class.java.isAssignableFrom(type))
@@ -160,7 +163,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         }
 
         private companion object {
-            private val channelPattern = Pattern.compile("(?:<#)?(\\d+)>?")
+            private val channelPattern = Pattern.compile("<#(\\d+)>|(\\d+)")
             private val logger = KotlinLogging.logger { }
         }
     }
