@@ -321,7 +321,7 @@ inline fun <T : R, R> RestResult<T>.recover(vararg types: KClass<out Throwable>,
 
 inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (Throwable) -> Unit): RestResult<T> {
     contract {
-        callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(predicate, InvocationKind.UNKNOWN)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
