@@ -63,6 +63,7 @@ abstract class ApplicationCommand {
      *
      * @see CommandId @CommandId
      */
+    @Deprecated(message = "Replaced by DeclarationFilter and CommandDeclarationFilter")
     open fun getGuildsForCommandId(commandId: String, commandPath: CommandPath): Collection<Long>? {
         return null
     }

@@ -211,22 +211,22 @@ internal class SlashCommandAutoBuilder(
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declare(manager)
 
     private fun declare(manager: AbstractApplicationCommandManager) {
-        val skipLogger = SkipLogger(logger)
-        topLevelMetadata
-            .values
-            .forEachWithDelayedExceptions loop@{ topLevelMetadata ->
-                val metadata = topLevelMetadata.metadata
-                runFiltered(
-                    manager,
-                    skipLogger,
-                    forceGuildCommands,
-                    metadata,
-                    topLevelMetadata.annotation.scope
-                ) {
-                    processCommand(manager, topLevelMetadata)
+        with(SkipLogger(logger)) {
+            topLevelMetadata
+                .values
+                .forEachWithDelayedExceptions loop@{ topLevelMetadata ->
+                    val metadata = topLevelMetadata.metadata
+                    runFiltered(
+                        manager,
+                        forceGuildCommands,
+                        metadata,
+                        topLevelMetadata.annotation.scope
+                    ) {
+                        processCommand(manager, topLevelMetadata)
+                    }
                 }
-            }
-        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, JDACommand.Type.SLASH)
+            log((manager as? GuildApplicationCommandManager)?.guild, JDACommand.Type.SLASH)
+        }
     }
 
     private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {

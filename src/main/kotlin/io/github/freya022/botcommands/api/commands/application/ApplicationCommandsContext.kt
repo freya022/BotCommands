@@ -1,9 +1,11 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.commands.CommandList
 import io.github.freya022.botcommands.api.commands.CommandPath
+import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import kotlinx.coroutines.Deferred
@@ -82,6 +84,9 @@ interface ApplicationCommandsContext {
     /**
      * Updates the application commands for the global scope.
      *
+     * This will redeclare all [code-declared][GlobalApplicationCommandProvider]
+     * and annotated application commands.
+     *
      * @param force Whether the commands should be updated no matter what
      *
      * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
@@ -94,8 +99,8 @@ interface ApplicationCommandsContext {
     /**
      * Updates the application commands in the specified guild.
      *
-     * A use case may be to remove a command from a guild while the bot is running
-     * (either by filtering with [CommandList] or not running a DSL declaration).
+     * This will redeclare all [code-declared][GuildApplicationCommandProvider]
+     * and annotated application commands (after [filtering][DeclarationFilter]).
      *
      * @param guild The guild which needs to be updated
      * @param force Whether the commands should be updated no matter what

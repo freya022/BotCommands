@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.RateLimitReferenc
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
@@ -51,9 +52,9 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
     }
 }
 
+context(CommandAutoBuilder, SkipLogger)
 internal fun runFiltered(
     manager: AbstractApplicationCommandManager,
-    skipLogger: SkipLogger,
     forceGuildCommands: Boolean,
     applicationFunctionMetadata: ApplicationFunctionMetadata<*>,
     scope: CommandScope,
@@ -72,17 +73,43 @@ internal fun runFiltered(
     // If guild commands aren't forced, check the scope
     if (!forceGuildCommands && !manager.isValidScope(scope)) return
 
+    if (!checkDeclarationFilter(manager, func, path, commandId))
+        return // Already logged
+
     if (commandId != null && !checkCommandId(manager, instance, commandId, path))
-        return skipLogger.skip(path, "Guild does not support that command ID")
+        return skip(path, "Guild does not support that command ID")
 
     val testState = checkTestCommand(manager, func, scope, manager.context)
     if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
 
     if (testState == TestState.EXCLUDE)
-        return skipLogger.skip(path, "Is a test command while this guild isn't a test guild")
+        return skip(path, "Is a test command while this guild isn't a test guild")
 
     block()
+}
+
+context(CommandAutoBuilder, SkipLogger)
+private fun checkDeclarationFilter(
+    manager: AbstractApplicationCommandManager,
+    func: KFunction<*>,
+    path: CommandPath,
+    commandId: String?,
+): Boolean {
+    func.findAnnotation<DeclarationFilter>()?.let { declarationFilter ->
+        checkAt(manager is GuildApplicationCommandManager, func) {
+            "${annotationRef<DeclarationFilter>()} can only be used on guild commands"
+        }
+
+        declarationFilter.filters.forEach {
+            if (!serviceContainer.getService(it).filter(manager.guild, path, commandId)) {
+                val commandIdStr = if (commandId != null) " (id ${commandId})" else ""
+                skip(path, "${it.simpleNestedName} rejected this command$commandIdStr on guild ${manager.guild.id}")
+                return false
+            }
+        }
+    }
+    return true
 }
 
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {

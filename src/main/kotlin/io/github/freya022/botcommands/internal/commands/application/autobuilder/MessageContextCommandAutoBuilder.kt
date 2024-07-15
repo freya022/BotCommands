@@ -56,17 +56,17 @@ internal class MessageContextCommandAutoBuilder(
     override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declareMessage(manager)
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
-        val skipLogger = SkipLogger(logger)
-        messageFunctions.forEachWithDelayedExceptions { metadata ->
-            runFiltered(
-                manager,
-                skipLogger,
-                forceGuildCommands,
-                metadata,
-                metadata.annotation.scope
-            ) { processMessageCommand(manager, metadata) }
+        with(SkipLogger(logger)) {
+            messageFunctions.forEachWithDelayedExceptions { metadata ->
+                runFiltered(
+                    manager,
+                    forceGuildCommands,
+                    metadata,
+                    metadata.annotation.scope
+                ) { processMessageCommand(manager, metadata) }
+            }
+            log((manager as? GuildApplicationCommandManager)?.guild, CommandType.MESSAGE)
         }
-        skipLogger.log((manager as? GuildApplicationCommandManager)?.guild, CommandType.MESSAGE)
     }
 
     private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
