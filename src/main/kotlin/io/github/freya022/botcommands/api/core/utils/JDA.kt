@@ -123,14 +123,14 @@ suspend fun Guild.retrieveThreadChannelOrNull(id: Long): ThreadChannel? {
  * Awaits the completion of this RestAction.
  */
 suspend fun RestAction<*>.awaitUnit() {
-    submit().await()
+    await()
 }
 
 /**
  * Awaits the completion of this RestAction and returns `null`.
  */
 suspend fun <R> RestAction<*>.awaitNull(): R? {
-    submit().await()
+    await()
     return null
 }
 
@@ -155,7 +155,7 @@ fun RestAction<*>.queueIgnoring(vararg errorResponses: ErrorResponse) {
  */
 suspend fun <R> RestAction<R>.awaitOrNullOn(vararg errorResponses: ErrorResponse): R? {
     return runIgnoringResponseOrNull(*errorResponses) {
-        submit().await()
+        await()
     }
 }
 
@@ -163,7 +163,7 @@ suspend fun <R> RestAction<R>.awaitOrNullOn(vararg errorResponses: ErrorResponse
  * Awaits the completion of this RestAction and wraps it in a Result.
  */
 suspend fun <R> RestAction<R>.awaitCatching(): RestResult<R> {
-    return runCatchingRest { submit().await() }
+    return runCatchingRest { await() }
 }
 //endregion
 

@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.waiter
 
-import dev.minn.jda.ktx.coroutines.await
+import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.*
 import java.util.function.Consumer
