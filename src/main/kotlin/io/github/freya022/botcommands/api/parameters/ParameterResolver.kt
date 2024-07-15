@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * | [IMentionable]                                                | ✓ (only mentions) | ✓               |                    |                 |            |        |
  * | [List] of mentionable (see [@MentionsString][MentionsString]) |                   | ✓               |                    |                 |            |        |
  * | [Role]                                                        | ✓                 | ✓               |                    |                 | ✓          |        |
+ * | [UserSnowflake]                                               | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
  * | [User]                                                        | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
  * | [Member]                                                      | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
  * | [InputUser]                                                   | ✓                 | ✓               |                    | ✓ (target user) | ✓          |        |
