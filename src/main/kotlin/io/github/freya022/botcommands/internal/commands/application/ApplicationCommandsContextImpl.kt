@@ -79,7 +79,7 @@ internal class ApplicationCommandsContextImpl internal constructor(
         }
     }
 
-    internal fun putLiveApplicationCommandsMap(topLevelCommands: Collection<TopLevelApplicationCommandInfo>): Unit = writeLock.withLock {
+    internal fun putApplicationCommands(topLevelCommands: Collection<TopLevelApplicationCommandInfo>): Unit = writeLock.withLock {
         topLevelCommands.forEach { topLevelCommand ->
             liveTopLevelApplicationCommands.put(topLevelCommand.idLong, topLevelCommand)
         }

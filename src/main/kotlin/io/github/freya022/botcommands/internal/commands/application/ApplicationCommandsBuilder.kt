@@ -97,7 +97,7 @@ internal class ApplicationCommandsBuilder(
         }
 
         setMetadata(globalUpdater)
-        applicationCommandsContext.putLiveApplicationCommandsMap(globalUpdater.applicationCommands)
+        applicationCommandsContext.putApplicationCommands(globalUpdater.applicationCommands)
 
         firstGlobalUpdate = false
         return CommandUpdateResult(null, hasUpdated, failedDeclarations)
@@ -140,7 +140,7 @@ internal class ApplicationCommandsBuilder(
             }
 
             setMetadata(guildUpdater)
-            applicationCommandsContext.putLiveApplicationCommandsMap(guildUpdater.applicationCommands)
+            applicationCommandsContext.putApplicationCommands(guildUpdater.applicationCommands)
 
             firstGuildUpdates.add(guild.idLong)
             return CommandUpdateResult(guild, hasUpdated, failedDeclarations)
