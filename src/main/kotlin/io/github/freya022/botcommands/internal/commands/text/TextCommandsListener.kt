@@ -44,7 +44,7 @@ internal class TextCommandsListener internal constructor(
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     filters: List<TextCommandFilter<Any>>,
     rejectionHandler: TextCommandRejectionHandler<Any>?,
-    private val suggestionSupplier: TextSuggestionSupplier = DefaultTextSuggestionSupplier,
+    private val suggestionSupplier: TextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
     private data class CommandWithArgs(val command: TextCommandInfoImpl, val args: String)
