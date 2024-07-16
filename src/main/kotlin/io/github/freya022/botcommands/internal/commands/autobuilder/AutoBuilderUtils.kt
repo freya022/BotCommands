@@ -104,7 +104,7 @@ internal fun checkDeclarationFilter(
         declarationFilter.filters.forEach {
             if (!serviceContainer.getService(it).filter(manager.guild, path, commandId)) {
                 val commandIdStr = if (commandId != null) " (id ${commandId})" else ""
-                skip(path, "${it.simpleNestedName} rejected this command$commandIdStr on guild ${manager.guild.id}")
+                skip(path, "${it.simpleNestedName} rejected this command$commandIdStr")
                 return false
             }
         }
