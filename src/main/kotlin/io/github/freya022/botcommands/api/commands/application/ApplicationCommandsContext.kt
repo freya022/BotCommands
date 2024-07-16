@@ -7,11 +7,14 @@ import io.github.freya022.botcommands.api.commands.application.context.user.User
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.future.asDeferred
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
+import kotlin.reflect.KFunction
 
 /**
  * Helps to get application commands of a specific scope, find application commands with their name and update commands.
@@ -111,6 +114,26 @@ interface ApplicationCommandsContext {
      * @see Deferred.await
      */
     fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
+
+    /**
+     * Invalidates the autocomplete cache of the specified autocomplete handler.
+     *
+     * This means that the cache of this autocomplete handler will be fully cleared.
+     *
+     * @param autocompleteHandlerName The name of the autocomplete handler,
+     * supplied at [AutocompleteHandler.name] or [AutocompleteManager.autocomplete]
+     */
+    fun invalidateAutocompleteCache(autocompleteHandlerName: String)
+
+    /**
+     * Invalidates the autocomplete cache of the specified autocomplete handler.
+     *
+     * This means that the cache of this autocomplete handler will be fully cleared.
+     *
+     * @param autocompleteHandler The autocomplete handler, supplied at [AutocompleteManager.autocomplete]
+     */
+    @JvmSynthetic
+    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>)
 }
 
 /**

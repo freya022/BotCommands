@@ -40,11 +40,7 @@ object Main {
             val config = Config.instance
 
             BotCommands.create {
-                if (Environment.isDev) {
-                    disableExceptionsInDMs = true
-                    @OptIn(DevConfig::class)
-                    disableAutocompleteCache = true
-                }
+                disableExceptionsInDMs = Environment.isDev
 
                 addOwners(*config.ownerIds.toLongArray())
 
@@ -57,6 +53,9 @@ object Main {
                 }
 
                 applicationCommands {
+                    @OptIn(DevConfig::class)
+                    disableAutocompleteCache = Environment.isDev
+
                     // Check command updates based on Discord's commands.
                     // This is only useful during development,
                     // as you can develop on multiple machines (but not simultaneously!).

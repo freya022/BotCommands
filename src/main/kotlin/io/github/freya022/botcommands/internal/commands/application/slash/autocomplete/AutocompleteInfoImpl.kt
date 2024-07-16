@@ -24,7 +24,7 @@ internal class AutocompleteInfoImpl internal constructor(
     override val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
 
     internal val cache = when {
-        context.config.disableAutocompleteCache && builder.autocompleteCache?.force != true -> NoCacheAutocomplete
+        context.applicationConfig.disableAutocompleteCache && builder.autocompleteCache?.force != true -> NoCacheAutocomplete
         else -> AbstractAutocompleteCache.fromMode(this)
     }
 

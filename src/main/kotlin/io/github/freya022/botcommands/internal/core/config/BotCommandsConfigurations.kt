@@ -19,6 +19,7 @@ internal class BotCommandsCoreConfiguration(
     override val packages: Set<String> = emptySet(),
     override val classes: Set<Class<*>> = emptySet(),
     override val disableExceptionsInDMs: Boolean = false,
+    @Suppress("OVERRIDE_DEPRECATION")
     override val disableAutocompleteCache: Boolean = false,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
@@ -42,6 +43,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     packages += configuration.packages
     classes += configuration.classes
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
+    @Suppress("DEPRECATION")
     disableAutocompleteCache = configuration.disableAutocompleteCache
     ignoredIntents += configuration.ignoredIntents
     ignoredEventIntents += configuration.ignoredEventIntents
@@ -117,6 +119,7 @@ internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLo
 internal class BotCommandsApplicationConfiguration(
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
+    override val disableAutocompleteCache: Boolean = false,
     override val onlineAppCommandCheckEnabled: Boolean = false,
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap()
@@ -128,6 +131,7 @@ internal class BotCommandsApplicationConfiguration(
 internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApplicationConfiguration) = apply {
     slashGuildIds += configuration.slashGuildIds
     testGuildIds += configuration.testGuildIds
+    disableAutocompleteCache = configuration.disableAutocompleteCache
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
     forceGuildCommands = configuration.forceGuildCommands
     configuration.baseNameToLocalesMap.forEach(::addLocalizations)

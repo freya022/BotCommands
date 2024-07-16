@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
@@ -29,6 +30,17 @@ interface BApplicationConfig {
      * @see Test @Test
      */
     val testGuildIds: List<Long>
+
+    /**
+     * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
+     *
+     * This could be useful when testing methods that use autocomplete caching while using hotswap.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.application.disableAutocompleteCache`
+     */
+    val disableAutocompleteCache: Boolean
 
     /**
      * Enables the library to compare local commands against Discord's command,
@@ -84,6 +96,9 @@ interface BApplicationConfig {
 class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
+    @set:DevConfig
+    @set:JvmName("disableAutocompleteCache")
+    override var disableAutocompleteCache = false
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
@@ -154,6 +169,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     internal fun build() = object : BApplicationConfig {
         override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
         override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
+        override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
         override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
         override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
         override val baseNameToLocalesMap =

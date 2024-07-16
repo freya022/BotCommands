@@ -341,7 +341,12 @@ interface BContext {
      * @param autocompleteHandlerName The name of the autocomplete handler,
      * supplied at [AutocompleteHandler.name] or [AutocompleteManager.autocomplete]
      */
-    fun invalidateAutocompleteCache(autocompleteHandlerName: String)
+    @Deprecated(
+        message = "Moved to ApplicationCommandsContext",
+        replaceWith = ReplaceWith(expression = "applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandlerName)")
+    )
+    fun invalidateAutocompleteCache(autocompleteHandlerName: String) =
+        applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandlerName)
 
     /**
      * Invalidates the autocomplete cache of the specified autocomplete handler.
@@ -350,7 +355,12 @@ interface BContext {
      *
      * @param autocompleteHandler The autocomplete handler, supplied at [AutocompleteManager.autocomplete]
      */
+    @Deprecated(
+        message = "Moved to ApplicationCommandsContext",
+        replaceWith = ReplaceWith(expression = "applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)")
+    )
     @JvmSynthetic
-    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>)
+    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) =
+        applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)
     //endregion
 }

@@ -7,19 +7,16 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
-import kotlin.reflect.KFunction
 import kotlin.time.Duration.Companion.minutes
 
 private val logger = KotlinLogging.loggerOf<BContext>()
@@ -116,14 +113,6 @@ internal class BContextImpl internal constructor(
             replace(lastIndex, lastIndex + 1, "```")
         }
         append("\nPlease check the logs for more detail and possible exceptions")
-    }
-
-    override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
-        getService<AutocompleteInfoContainer>()[autocompleteHandlerName]?.invalidate()
-    }
-
-    override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) {
-        getService<AutocompleteInfoContainer>()[autocompleteHandler]?.invalidate()
     }
 
     internal suspend fun setStatus(newStatus: Status) {

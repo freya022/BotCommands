@@ -61,6 +61,7 @@ interface BConfig {
      * Spring property: `botcommands.core.disableExceptionsInDMs`
      */
     val disableExceptionsInDMs: Boolean
+
     /**
      * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
      *
@@ -70,7 +71,12 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.disableAutocompleteCache`
      */
+    @Deprecated(
+        message = "Moved to BApplicationConfig",
+        replaceWith = ReplaceWith(expression = "applicationConfig.disableAutocompleteCache")
+    )
     val disableAutocompleteCache: Boolean
+        get() = applicationConfig.disableAutocompleteCache
 
     /**
      * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
@@ -124,9 +130,17 @@ class BConfigBuilder internal constructor() : BConfig {
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+    @Deprecated(
+        message = "Moved to BApplicationConfig",
+        replaceWith = ReplaceWith("applicationConfig.disableAutocompleteCache")
+    )
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
-    override var disableAutocompleteCache = false
+    override var disableAutocompleteCache
+        get() = applicationConfig.disableAutocompleteCache
+        set(value) {
+            applicationConfig.disableAutocompleteCache = value
+        }
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
@@ -261,7 +275,6 @@ class BConfigBuilder internal constructor() : BConfig {
         override val packages = this@BConfigBuilder.packages.toImmutableSet()
         override val classes = this@BConfigBuilder.classes.toImmutableSet()
         override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
-        override val disableAutocompleteCache = this@BConfigBuilder.disableAutocompleteCache
         override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
         override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
         override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()

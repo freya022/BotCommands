@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.safeCast
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -24,12 +25,14 @@ import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.reflect.KFunction
 
 private val logger = KotlinLogging.loggerOf<ApplicationCommandsContext>()
 
 @BService
 internal class ApplicationCommandsContextImpl internal constructor(
     private val coroutineScopesConfig: BCoroutineScopesConfig,
+    private val autocompleteInfoContainer: AutocompleteInfoContainer,
     serviceContainer: ServiceContainer
 ) : ApplicationCommandsContext {
     private val applicationCommandsBuilder: ApplicationCommandsBuilder by serviceContainer.lazy()
@@ -115,5 +118,13 @@ internal class ApplicationCommandsContextImpl internal constructor(
         return coroutineScopesConfig.commandUpdateScope.async {
             applicationCommandsBuilder.updateGuildCommands(guild, force)
         }.asCompletableFuture()
+    }
+
+    override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
+        autocompleteInfoContainer[autocompleteHandlerName]?.invalidate()
+    }
+
+    override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) {
+        autocompleteInfoContainer[autocompleteHandler]?.invalidate()
     }
 }
