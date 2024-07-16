@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
-import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
@@ -158,18 +157,42 @@ class BConfigBuilder internal constructor() : BConfig {
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
-     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
+     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
      *
-     * @param ownerIds Owners Long IDs to add
+     * @param ownerIds IDs of the bot owners
+     *
+     * @see BotOwners
      */
-    fun addOwners(vararg ownerIds: Long) = addOwners(ownerIds.asList())
+    @Deprecated("Renamed to addPredefinedOwners", ReplaceWith("addPredefinedOwners(*ownerIds)"))
+    fun addOwners(vararg ownerIds: Long) = addPredefinedOwners(*ownerIds)
 
     /**
-     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
+     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
      *
-     * @param ownerIds Owners Long IDs to add
+     * @param ownerIds IDs of the bot owners
+     *
+     * @see BotOwners
      */
-    fun addOwners(ownerIds: Collection<Long>) {
+    @Deprecated("Renamed to addPredefinedOwners", ReplaceWith("addPredefinedOwners(ownerIds)"))
+    fun addOwners(ownerIds: Collection<Long>) = addPredefinedOwners(ownerIds)
+
+    /**
+     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
+     *
+     * @param ownerIds IDs of the bot owners
+     *
+     * @see BotOwners
+     */
+    fun addPredefinedOwners(vararg ownerIds: Long) = addPredefinedOwners(ownerIds.asList())
+
+    /**
+     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
+     *
+     * @param ownerIds IDs of the bot owners
+     *
+     * @see BotOwners
+     */
+    fun addPredefinedOwners(ownerIds: Collection<Long>) {
         this.predefinedOwnerIds += ownerIds
     }
 

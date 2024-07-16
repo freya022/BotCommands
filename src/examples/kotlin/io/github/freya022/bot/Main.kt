@@ -42,7 +42,7 @@ object Main {
             BotCommands.create {
                 disableExceptionsInDMs = Environment.isDev
 
-                addOwners(*config.ownerIds.toLongArray())
+                addPredefinedOwners(*config.ownerIds.toLongArray())
 
                 addSearchPath(mainPackageName)
 
