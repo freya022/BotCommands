@@ -29,7 +29,7 @@ internal class TopLevelApplicationCommandMetadataImpl private constructor(
             val name = obj.getString("name")
             val version = obj.getLong("version")
             val id = obj.getLong("id")
-            val guildId = if (obj.hasKey("guild_id")) obj.getLong("guild_id") else null
+            val guildId = if (obj.isNull("guild_id")) null else obj.getLong("guild_id")
 
             return TopLevelApplicationCommandMetadataImpl(name, version, id, guildId)
         }
