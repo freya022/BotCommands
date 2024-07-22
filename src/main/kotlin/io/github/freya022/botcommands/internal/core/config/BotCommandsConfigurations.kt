@@ -5,7 +5,6 @@ package io.github.freya022.botcommands.internal.core.config
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -95,8 +94,10 @@ internal class BotCommandsTextConfiguration(
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
     override val showSuggestions: Boolean = true,
-    override val dmClosedEmoji: Emoji = EmojiUtils.resolveJDAEmoji("mailbox_closed")
-) : BTextConfig
+    dmClosedEmoji: String? = null
+) : BTextConfig {
+    override val dmClosedEmoji = EmojiUtils.resolveJDAEmoji(dmClosedEmoji ?: "mailbox_closed")
+}
 
 internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
     usePingAsPrefix = configuration.usePingAsPrefix
