@@ -37,7 +37,7 @@ interface BConfig {
      *
      * **Note:** Prefer using [BotOwners] to get the effective bot owners, regardless of if this property is set or not.
      *
-     * Spring property: `botcommands.core.ownerIds`
+     * Spring property: `botcommands.core.predefinedOwnerIds`
      */
     @ConfigurationValue(path = "botcommands.core.predefinedOwnerIds")
     val predefinedOwnerIds: Set<Long>
