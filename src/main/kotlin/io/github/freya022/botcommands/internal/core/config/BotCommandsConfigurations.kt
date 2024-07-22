@@ -140,9 +140,9 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
 internal class BotCommandsComponentsConfiguration(
-    val enable: Boolean = false
+    enable: Boolean = false
 ) : BComponentsConfig {
-    override val useComponents: Boolean get() = enable
+    override val useComponents: Boolean = enable
 }
 
 internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComponentsConfiguration) = apply {
