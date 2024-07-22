@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 @InjectedService
@@ -17,6 +18,7 @@ interface BTextConfig {
      *
      * Spring property: `botcommands.text.usePingAsPrefix`
      */
+    @ConfigurationValue(path = "botcommands.text.usePingAsPrefix", defaultValue = "false")
     val usePingAsPrefix: Boolean
 
     /**
@@ -24,6 +26,7 @@ interface BTextConfig {
      *
      * Spring property: `botcommands.text.prefixes`
      */
+    @ConfigurationValue(path = "botcommands.text.prefixes")
     val prefixes: List<String>
 
     /**
@@ -35,6 +38,7 @@ interface BTextConfig {
      *
      * Spring property: `botcommands.text.isHelpDisabled`
      */
+    @ConfigurationValue(path = "botcommands.text.isHelpDisabled", defaultValue = "false")
     val isHelpDisabled: Boolean
 
     /**
@@ -44,6 +48,7 @@ interface BTextConfig {
      *
      * Spring property: `botcommands.text.showSuggestions`
      */
+    @ConfigurationValue(path = "botcommands.text.showSuggestions", defaultValue = "true")
     val showSuggestions: Boolean
 
     // 🐟 was also a strong candidate
@@ -56,6 +61,7 @@ interface BTextConfig {
      *
      * Spring property: `botcommands.text.dmClosedEmoji`
      */
+    @ConfigurationValue(path = "botcommands.text.dmClosedEmoji", defaultValue = "mailbox_closed", type = "java.lang.String")
     val dmClosedEmoji: Emoji
 }
 

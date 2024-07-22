@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.localization.interaction.LocalizableIn
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
 interface BLocalizationConfig {
@@ -24,6 +25,7 @@ interface BLocalizationConfig {
      *
      * @see BApplicationConfigBuilder.addLocalizations
      */
+    @ConfigurationValue(path = "botcommands.localization.responseBundles")
     val responseBundles: Set<String>
 }
 

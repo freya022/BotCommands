@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
@@ -20,6 +21,7 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.slashGuildIds`
      */
+    @ConfigurationValue(path = "botcommands.application.slashGuildIds")
     val slashGuildIds: List<Long>
 
     /**
@@ -29,6 +31,7 @@ interface BApplicationConfig {
      *
      * @see Test @Test
      */
+    @ConfigurationValue(path = "botcommands.application.testGuildIds")
     val testGuildIds: List<Long>
 
     /**
@@ -40,6 +43,7 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.disableAutocompleteCache`
      */
+    @ConfigurationValue(path = "botcommands.application.disableAutocompleteCache", defaultValue = "false")
     val disableAutocompleteCache: Boolean
 
     /**
@@ -61,6 +65,7 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.onlineAppCommandCheckEnabled`
      */
+    @ConfigurationValue(path = "botcommands.application.onlineAppCommandCheckEnabled", defaultValue = "false")
     val onlineAppCommandCheckEnabled: Boolean
 
     /**
@@ -75,6 +80,7 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.forceGuildCommands`
      */
+    @ConfigurationValue(path = "botcommands.application.forceGuildCommands", defaultValue = "false")
     val forceGuildCommands: Boolean
 
     /**
@@ -89,6 +95,7 @@ interface BApplicationConfig {
      * @see DefaultLocalizationMapProvider
      * @see DefaultJsonLocalizationMapReader
      */
+    @ConfigurationValue(path = "botcommands.application.localizations")
     val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
 }
 

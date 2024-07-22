@@ -256,15 +256,21 @@
             <plugin>
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>fd9954ffbe</version>
+                <version>f21620801b</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>generate-version-info</goal>
+                            <goal>generate-configuration-metadata</goal>
                             <goal>check-ci-version</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <sourceDirs>
+                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                    </sourceDirs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>

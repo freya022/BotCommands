@@ -12,6 +12,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  */
 @ConfigurationProperties(prefix = "jda")
 class JDAConfiguration internal constructor(
+    @ConfigurationValue("jda.intents")
     val intents: Set<GatewayIntent> = JDAService.defaultIntents,
+    @ConfigurationValue("jda.cacheFlags")
     val cacheFlags: Set<CacheFlag> = emptySet()
 )

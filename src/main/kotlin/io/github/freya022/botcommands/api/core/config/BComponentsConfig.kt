@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
 interface BComponentsConfig {
@@ -21,6 +22,7 @@ interface BComponentsConfig {
      *
      * @see ConnectionSupplier
      */
+    @ConfigurationValue(path = "botcommands.components.enable", defaultValue = "false")
     val useComponents: Boolean
 }
 
