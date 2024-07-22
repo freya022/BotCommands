@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 @ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
 internal class BotCommandsCoreConfiguration(
@@ -75,9 +76,9 @@ internal class BotCommandsDatabaseConfiguration(
     override val dumpLongTransactions: Boolean = false,
     override val logQueries: Boolean = false,
     override val logQueryParameters: Boolean = true,
-    queryLogThresholdMillis: Long? = null
+    queryLogThreshold: JavaDuration? = null
 ) : BDatabaseConfig {
-    override val queryLogThreshold: Duration = queryLogThresholdMillis?.milliseconds ?: Duration.INFINITE
+    override val queryLogThreshold: Duration = queryLogThreshold?.toKotlinDuration() ?: Duration.INFINITE
 }
 
 @OptIn(DevConfig::class)

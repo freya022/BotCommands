@@ -47,14 +47,16 @@ interface BDatabaseConfig {
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThresholdMillis`, **in milliseconds**
+     * Spring property: `botcommands.database.queryLogThreshold`,
+     * see [duration conversions](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations)
      */
     val queryLogThreshold: Duration
 
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
+     * Spring property: `botcommands.database.queryLogThreshold`,
+     * see [duration conversions](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations)
      */
     fun getQueryLogThreshold(): JavaDuration = queryLogThreshold.toJavaDuration()
 }
