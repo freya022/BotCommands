@@ -72,7 +72,6 @@ internal fun BServiceConfigBuilder.applyConfig(configuration: BotCommandsService
 
 @ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
 internal class BotCommandsDatabaseConfiguration(
-    val enable: Boolean = false,
     override val dumpLongTransactions: Boolean = false,
     override val logQueries: Boolean = false,
     override val logQueryParameters: Boolean = true,
