@@ -81,8 +81,9 @@ internal object ReflectionMetadata {
             .disableNestedJarScanning()
             .scan()
             .use { scan ->
+                val referencedByFactories = hashSetOf<Class<*>>()
                 scan.allClasses
-                    .filterLibraryClasses(config)
+                    .filterLibraryClasses(config, referencedByFactories)
                     .filterClasses(config)
                     .also { classes ->
                         val userClasses = classes.filterNot { it.isFromLib() }
@@ -100,16 +101,29 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> = filter {
-        // Only keep api/internal classes which are services, or contain service factories,
-        // or their outer class contains one,
-        // or they have a Condition
-        if (it.isFromLib())
-            return@filter it.isServiceOrHasFactories(config)
-                    || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
-                    || it.hasAnnotation(Condition::class.java)
-                    || it.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)
-        return@filter true
+    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig, referencedByFactories: MutableSet<Class<*>>): List<ClassInfo> = filter { classInfo ->
+        if (!classInfo.isFromLib()) return@filter true
+
+        if (classInfo.loadClass() in referencedByFactories) return@filter true
+
+        if (classInfo.isServiceOrHasFactories(config, referencedByFactories)) return@filter true
+        if (classInfo.outerClasses.any { it.isServiceOrHasFactories(config, referencedByFactories) }) return@filter true
+        if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
+        if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
+
+        return@filter false
+    }
+
+    private fun ClassInfo.isServiceOrHasFactories(config: BConfig, referencedByFactories: MutableSet<Class<*>>): Boolean {
+        if (this.isService(config)) return true
+
+        val factories = this.methodInfo.filter { it.isService(config) }
+        if (factories.isNotEmpty()) {
+            referencedByFactories += factories.map { it.loadClassAndGetMethod().returnType }
+            return true
+        } else {
+            return false
+        }
     }
 
     private fun ClassInfo.isFromLib() =
@@ -151,9 +165,6 @@ internal object ReflectionMetadata {
         val declaredAnnotations = annotationInfo.directOnly()
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
-
-    private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
-        isService(config) || methodInfo.any { it.isService(config) }
 
     private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
