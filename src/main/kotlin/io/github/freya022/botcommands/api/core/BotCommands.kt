@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.core
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -21,8 +20,7 @@ import kotlin.time.measureTimedValue
  * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/#creating-a-jdaservice).
  *
  * ### Spring support
- *
- * Spring users must use [@EnableBotCommands][EnableBotCommands] instead.
+ * Spring users must not use this, the framework will autoconfigure itself.
  *
  * @see BService @BService
  * @see InterfacedService @InterfacedService
