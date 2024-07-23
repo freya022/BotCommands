@@ -2,13 +2,14 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
@@ -24,6 +25,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.requests.ErrorResponse
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -31,9 +34,21 @@ import kotlin.time.Duration.Companion.minutes
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
-@Command
-@ConditionalService(HelpCommand.ExistingHelpChecker::class)
-@ConditionalOnMissingBean(IHelpCommand::class)
+@Configuration
+@BConfiguration
+internal open class BuiltInHelpCommandProvider {
+    @Bean
+    @BService
+    @ConditionalService(HelpCommand.ExistingHelpChecker::class)
+    @ConditionalOnMissingBean(IHelpCommand::class)
+    internal open fun builtInHelpCommand(
+        context: BContextImpl,
+        defaultMessagesFactory: DefaultMessagesFactory,
+        textCommandsContext: TextCommandsContext,
+        helpBuilderConsumer: HelpBuilderConsumer?,
+    ) = HelpCommand(context, defaultMessagesFactory, textCommandsContext, helpBuilderConsumer)
+}
+
 internal class HelpCommand internal constructor(
     private val context: BContextImpl,
     private val defaultMessagesFactory: DefaultMessagesFactory,
