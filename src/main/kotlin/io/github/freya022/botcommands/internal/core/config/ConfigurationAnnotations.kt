@@ -14,7 +14,7 @@ internal annotation class ConfigurationValue(
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.SOURCE)
 @MustBeDocumented
-annotation class DeprecatedValue(
+internal annotation class DeprecatedValue(
     val reason: String,
     val level: DeprecationLevel = DeprecationLevel.WARNING,
     val replacement: String = "",
