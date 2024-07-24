@@ -31,13 +31,15 @@ jobs:
         run: mvn -B BotCommandsBuild:set-ci-version
       - name: Generate KDocs
         run: mvn -B -P docs generate-sources dokka:dokka
-      - name: Upload staging repository
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./target/dokka
   publish-docs:
     name: Publish docs
     runs-on: ubuntu-latest
+
+    needs: build-docs
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
