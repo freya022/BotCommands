@@ -18,7 +18,7 @@ import kotlin.time.measureTimedValue
  * Entry point for the BotCommands framework.
  *
  * The only requirement for a basic bot is a service extending [JDAService],
- * learn more on [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/#creating-a-jdaservice).
+ * learn more on [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/#creating-a-jdaservice).
  *
  * ### Spring support
  *
@@ -36,7 +36,7 @@ object BotCommands {
      *
      * @return The context for the newly created framework instance,
      * while this is returned, using it *usually* is not a good idea,
-     * your architecture should rely on [dependency injection](https://freya022.github.io/BotCommands/3.X/using-botcommands/dependency-injection/)
+     * your architecture should rely on [dependency injection](https://bc.freya02.dev/3.X/using-botcommands/dependency-injection/)
      * and events instead.
      *
      * @see BotCommands
@@ -52,7 +52,7 @@ object BotCommands {
      *
      * @return The context for the newly created framework instance,
      * while this is returned, using it *usually* is not a good idea,
-     * your architecture should rely on [dependency injection](https://freya022.github.io/BotCommands/3.X/using-botcommands/dependency-injection/)
+     * your architecture should rely on [dependency injection](https://bc.freya02.dev/3.X/using-botcommands/dependency-injection/)
      * and events instead.
      *
      * @see BotCommands
@@ -68,7 +68,7 @@ object BotCommands {
      *
      * @return The context for the newly created framework instance,
      * while this is returned, using it *usually* is not a good idea,
-     * your architecture should rely on [dependency injection](https://freya022.github.io/BotCommands/3.X/using-botcommands/dependency-injection/)
+     * your architecture should rely on [dependency injection](https://bc.freya02.dev/3.X/using-botcommands/dependency-injection/)
      * and events instead.
      *
      * @see BotCommands

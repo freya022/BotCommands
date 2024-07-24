@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable
  *
  * ### Display name
  * Option names can be inferred from the parameter's name,
- * see [the wiki](https://freya022.github.io/BotCommands/3.X/using-botcommands/parameter-names/)
+ * see [the wiki](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)
  * for more details.
  *
  * ### Order
@@ -60,7 +60,7 @@ annotation class SlashOption(
      * This can be localized, see [LocalizationFunction] on how options are mapped.
      *
      * This is optional if the parameter name is found,
-     * see [the wiki](https://freya022.github.io/BotCommands/3.X/using-botcommands/parameter-names/) for more details.
+     * see [the wiki](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/) for more details.
      */
     val name: String = "",
 

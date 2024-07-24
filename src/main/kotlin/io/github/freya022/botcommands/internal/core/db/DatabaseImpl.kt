@@ -78,7 +78,7 @@ internal class DatabaseImpl internal constructor(
                     e.rethrow(
                         """
                             Could not check BC schema version, did you either:
-                            - Set up migration? See https://freya022.github.io/BotCommands/3.X/using-botcommands/database/#using-migration
+                            - Set up migration? See https://bc.freya02.dev/3.X/using-botcommands/database/#using-migration
                             - Or, run the SQL scripts (in 'bc_database_scripts')
                         """.trimIndent()
                     )
