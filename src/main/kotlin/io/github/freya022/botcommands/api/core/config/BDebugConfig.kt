@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
 interface BDebugConfig {
@@ -12,6 +13,7 @@ interface BDebugConfig {
      *
      * Spring property: `botcommands.debug.enableApplicationDiffsLogs`
      */
+    @ConfigurationValue(path = "botcommands.debug.enableApplicationDiffsLogs", defaultValue = "false")
     val enableApplicationDiffsLogs: Boolean
 
     /**
@@ -21,6 +23,7 @@ interface BDebugConfig {
      *
      * Spring property: `botcommands.debug.enabledMissingLocalizationLogs`
      */
+    @ConfigurationValue(path = "botcommands.debug.enabledMissingLocalizationLogs", defaultValue = "false")
     val enabledMissingLocalizationLogs: Boolean
 }
 

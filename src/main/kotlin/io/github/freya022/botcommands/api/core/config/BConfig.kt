@@ -12,6 +12,8 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -35,8 +37,9 @@ interface BConfig {
      *
      * **Note:** Prefer using [BotOwners] to get the effective bot owners, regardless of if this property is set or not.
      *
-     * Spring property: `botcommands.core.ownerIds`
+     * Spring property: `botcommands.core.predefinedOwnerIds`
      */
+    @ConfigurationValue(path = "botcommands.core.predefinedOwnerIds")
     val predefinedOwnerIds: Set<Long>
 
     /**
@@ -44,12 +47,14 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.packages`
      */
+    @ConfigurationValue(path = "botcommands.core.packages")
     val packages: Set<String>
     /**
      * Additional classes the framework will scan through for services, commands, handlers...
      *
      * Spring property: `botcommands.core.classes`
      */
+    @ConfigurationValue(path = "botcommands.core.classes", type = "java.util.Set<java.lang.Class<?>>")
     val classes: Set<Class<*>>
 
     /**
@@ -59,6 +64,7 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.disableExceptionsInDMs`
      */
+    @ConfigurationValue(path = "botcommands.core.disableExceptionsInDMs", defaultValue = "false")
     val disableExceptionsInDMs: Boolean
 
     /**
@@ -74,6 +80,8 @@ interface BConfig {
         message = "Moved to BApplicationConfig",
         replaceWith = ReplaceWith(expression = "applicationConfig.disableAutocompleteCache")
     )
+    @ConfigurationValue(path = "botcommands.core.disableAutocompleteCache", defaultValue = "false")
+    @DeprecatedValue(reason = "Moved to BApplicationConfig", replacement = "botcommands.application.disableAutocompleteCache")
     val disableAutocompleteCache: Boolean
         get() = applicationConfig.disableAutocompleteCache
 
@@ -84,6 +92,7 @@ interface BConfig {
      *
      * @see BEventListener.ignoreIntents
      */
+    @ConfigurationValue(path = "botcommands.core.ignoredIntents")
     val ignoredIntents: Set<GatewayIntent>
 
     /**
@@ -93,6 +102,7 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.ignoredEventIntents`
      */
+    @ConfigurationValue(path = "botcommands.core.ignoredEventIntents", type = "java.util.Set<java.lang.Class<net.dv8tion.jda.api.events.Event>>")
     val ignoredEventIntents: Set<Class<out Event>>
 
     val classGraphProcessors: List<ClassGraphProcessor>

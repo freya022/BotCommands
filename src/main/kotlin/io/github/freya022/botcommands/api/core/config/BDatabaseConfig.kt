@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
+import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import kotlinx.coroutines.debug.DebugProbes
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
@@ -25,6 +26,7 @@ interface BDatabaseConfig {
      * @see DebugProbes
      * @see DebugProbes.enableCreationStackTraces
      */
+    @ConfigurationValue(path = "botcommands.database.dumpLongTransactions", defaultValue = "false")
     val dumpLongTransactions: Boolean
     /**
      * Determines whether *all* SQL queries should be logged on `TRACE`.
@@ -35,6 +37,7 @@ interface BDatabaseConfig {
      *
      * Spring property: `botcommands.database.logQueries`
      */
+    @ConfigurationValue(path = "botcommands.database.logQueries", defaultValue = "false")
     val logQueries: Boolean
     /**
      * Determines if the SQL query logger will replace query parameters by their value.
@@ -43,18 +46,22 @@ interface BDatabaseConfig {
      *
      * Spring property: `botcommands.database.logQueryParameters`
      */
+    @ConfigurationValue(path = "botcommands.database.logQueryParameters", defaultValue = "true")
     val logQueryParameters: Boolean
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThresholdMillis`, **in milliseconds**
+     * Spring property: `botcommands.database.queryLogThreshold`,
+     * see [duration conversions](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations)
      */
+    @ConfigurationValue(path = "botcommands.database.queryLogThreshold", type = "java.time.Duration")
     val queryLogThreshold: Duration
 
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
-     * Spring property: `botcommands.database.queryLogThreshold`, **in milliseconds**
+     * Spring property: `botcommands.database.queryLogThreshold`,
+     * see [duration conversions](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations)
      */
     fun getQueryLogThreshold(): JavaDuration = queryLogThreshold.toJavaDuration()
 }

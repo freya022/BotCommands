@@ -5,13 +5,13 @@ package io.github.freya022.botcommands.internal.core.config
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.toKotlinDuration
+import java.time.Duration as JavaDuration
 
 @ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
 internal class BotCommandsCoreConfiguration(
@@ -72,13 +72,12 @@ internal fun BServiceConfigBuilder.applyConfig(configuration: BotCommandsService
 
 @ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
 internal class BotCommandsDatabaseConfiguration(
-    val enable: Boolean = false,
     override val dumpLongTransactions: Boolean = false,
     override val logQueries: Boolean = false,
     override val logQueryParameters: Boolean = true,
-    queryLogThresholdMillis: Long? = null
+    queryLogThreshold: JavaDuration? = null
 ) : BDatabaseConfig {
-    override val queryLogThreshold: Duration = queryLogThresholdMillis?.milliseconds ?: Duration.INFINITE
+    override val queryLogThreshold: Duration = queryLogThreshold?.toKotlinDuration() ?: Duration.INFINITE
 }
 
 @OptIn(DevConfig::class)
@@ -95,8 +94,10 @@ internal class BotCommandsTextConfiguration(
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
     override val showSuggestions: Boolean = true,
-    override val dmClosedEmoji: Emoji = EmojiUtils.resolveJDAEmoji("mailbox_closed")
-) : BTextConfig
+    dmClosedEmoji: String? = null
+) : BTextConfig {
+    override val dmClosedEmoji = EmojiUtils.resolveJDAEmoji(dmClosedEmoji ?: "mailbox_closed")
+}
 
 internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
     usePingAsPrefix = configuration.usePingAsPrefix
@@ -139,9 +140,9 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
 internal class BotCommandsComponentsConfiguration(
-    val enable: Boolean = false
+    enable: Boolean = false
 ) : BComponentsConfig {
-    override val useComponents: Boolean get() = enable
+    override val useComponents: Boolean = enable
 }
 
 internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComponentsConfiguration) = apply {

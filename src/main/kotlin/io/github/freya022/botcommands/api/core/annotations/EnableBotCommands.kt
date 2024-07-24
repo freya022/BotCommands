@@ -60,6 +60,8 @@ import org.springframework.stereotype.Component
  * - [BApplicationConfigConfigurer] ([BApplicationConfig])
  * - [BComponentsConfigConfigurer] ([BComponentsConfig])
  * - [BCoroutineScopesConfigConfigurer] ([BCoroutineScopesConfigConfigurer])
+ *
+ * There are additionally a few options you can set in [JDAConfiguration], for convenient use in your [JDAService].
  */
 @Deprecated("Replaced with autoconfiguration", level = DeprecationLevel.WARNING)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
