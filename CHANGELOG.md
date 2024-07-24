@@ -9,7 +9,7 @@ they should still be usable by Java users.
 
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
 
-You can also refer to the [examples](src/examples) and the [wiki](https://freya022.github.io/BotCommands/3.X)
+You can also refer to the [examples](src/examples) and the [wiki](https://bc.freya02.dev/3.X)
 to have an idea on how V3 is supposed to be used.
 
 ## Base package change

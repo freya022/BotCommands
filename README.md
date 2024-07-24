@@ -8,9 +8,9 @@
 [discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
 [discord-invite]: https://discord.gg/frpCcQfvTz
 [kdoc-shield]: https://img.shields.io/badge/API_reference-KDoc-blue
-[kdoc-link]: https://freya022.github.io/BotCommands/docs
+[kdoc-link]: https://docs.bc.freya02.dev
 [wiki-shield]: https://img.shields.io/badge/Wiki-Home-blue
-[wiki-link]: https://freya022.github.io/BotCommands/3.X
+[wiki-link]: https://bc.freya02.dev/3.X
 
 <img align="right" src="assets/logo.svg" height="150" alt="BotCommands logo">
 
@@ -134,11 +134,12 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=21) installation
 * A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
-* (Only Java) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands/3.X/using-botcommands/parameter-names/)
+* (Only Java) Enable method parameters names, please refer to the [wiki page](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)
 * (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
 * (Recommended) Use [stacktrace-decoroutinator](https://github.com/Anamorphosee/stacktrace-decoroutinator), to get clearer stack traces in suspending code
 
-Head over to [the wiki](https://freya022.github.io/BotCommands/3.X/setup/getting-started/) to get started.
+Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to get started,
+you can also check out the [examples](src/examples).
 
 ## Getting the library
 [![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]

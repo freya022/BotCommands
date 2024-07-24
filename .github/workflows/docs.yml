@@ -1,10 +1,3 @@
-# This workflow builds the docs and uploads them to a subdirectory of a staging repository.
-# The staging repository is used as more than one workflow can modify the website's content.
-# A gh-pages branch could have been used, but this wasn't possible as it would trigger webhooks.
-
-# So the goal here is to create the outputs, write them to the remote repo,
-# then grab the entire staging repo and publish it, since it will contain all the merged content.
-
 name: Deploy KDocs to Pages
 
 on:
@@ -19,11 +12,13 @@ on:
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  staging:
+  build-docs:
+    name: Build docs
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -36,21 +31,13 @@ jobs:
         run: mvn -B BotCommandsBuild:set-ci-version
       - name: Generate KDocs
         run: mvn -B -P docs generate-sources dokka:dokka
-      # The docs are uploaded to a directory in the staging repository
-      - name: Upload to staging repository
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+      - name: Upload staging repository
+        uses: actions/upload-pages-artifact@v3
         with:
-          git-config-name: GitHub Actions
-          git-config-email: 41898282+github-actions[bot]@users.noreply.github.com
-          ssh-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
-          repository-name: freya022/BotCommands-Pages-Staging
-          branch: staging
-          folder: ./target/dokka
-          target-folder: docs
-
-  # Same as in wiki.yml
-  deploy:
-    needs: staging
+          path: ./target/dokka
+  publish-docs:
+    name: Publish docs
+    runs-on: ubuntu-latest
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
@@ -62,19 +49,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
     steps:
-      # The entire staging repository (docs + wiki) gets deployed
-      - uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.STAGING_REPO_SSH_KEY }}
-          repository: freya022/BotCommands-Pages-Staging
-          ref: staging
-      - name: Upload staging repository
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: .
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
