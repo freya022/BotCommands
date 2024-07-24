@@ -7,7 +7,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 @Component
-internal data object BotCommandsInitializer {
+internal data object SpringBotCommandsInitializer {
     @EventListener
     internal fun onAppReadyEvent(event: ApplicationReadyEvent) {
         val bootstrap = event.applicationContext.getBean<SpringBotCommandsBootstrap>()

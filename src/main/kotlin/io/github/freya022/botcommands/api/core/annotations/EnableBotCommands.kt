@@ -61,6 +61,7 @@ import org.springframework.stereotype.Component
  * - [BComponentsConfigConfigurer] ([BComponentsConfig])
  * - [BCoroutineScopesConfigConfigurer] ([BCoroutineScopesConfigConfigurer])
  */
+@Deprecated("Replaced with autoconfiguration", level = DeprecationLevel.WARNING)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @ComponentScan(

@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.spring.test
 
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
-import io.github.freya022.botcommands.api.core.annotations.EnableBotCommands
 import io.github.freya022.botcommands.test.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -10,7 +9,6 @@ import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
 
-@EnableBotCommands
 @SpringBootApplication(
         scanBasePackages = [
             "io.github.freya022.botcommands.test",
