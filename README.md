@@ -141,7 +141,7 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to get started,
 you can also check out the [examples](src/examples).
 
-## Getting the library
+## Installation
 [![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]
 ### Maven
 ```xml
@@ -275,15 +275,6 @@ public class SlashSay extends ApplicationCommand {
 }
 ```
 </details>
-
-## Examples
-
-You can find a number of feature demonstrations in the [examples](src/examples).
-
-## Debugging tips
-
-- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands/3.X/setup/logging/)
-- Look at the switches in `BDebugConfig`
 
 ## Live templates
 
