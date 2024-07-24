@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
@@ -16,6 +17,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
+@RequiresApplicationCommands
 internal class AutocompleteInfoAutoBuilder internal constructor() : AutocompleteHandlerProvider {
     override fun declareAutocomplete(manager: AutocompleteManager) {
         val functionAnnotationsMap = manager.context.getService<FunctionAnnotationsMap>()

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.config.BTextConfig
@@ -10,6 +11,7 @@ import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 
 @BService
+@RequiresTextCommands
 internal class TextCommandsContextImpl internal constructor(
     override val textConfig: BTextConfig,
     override val defaultEmbedSupplier: DefaultEmbedSupplier,

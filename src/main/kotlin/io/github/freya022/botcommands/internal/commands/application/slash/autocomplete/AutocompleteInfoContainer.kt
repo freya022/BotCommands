@@ -1,11 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import kotlin.reflect.KFunction
 
 @BService
+@RequiresApplicationCommands
 internal class AutocompleteInfoContainer internal constructor() {
     private val infoByName: MutableMap<String, AutocompleteInfoImpl> = hashMapOf()
     private val infoByFunction: MutableMap<KFunction<*>, AutocompleteInfoImpl> = hashMapOf()

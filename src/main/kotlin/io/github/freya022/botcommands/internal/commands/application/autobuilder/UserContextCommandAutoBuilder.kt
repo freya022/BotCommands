@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 private val logger = KotlinLogging.logger { }
 
 @BService
+@RequiresApplicationCommands
 internal class UserContextCommandAutoBuilder(
     applicationConfig: BApplicationConfig,
     resolverContainer: ResolverContainer,

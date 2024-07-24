@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -11,6 +12,7 @@ import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 @BService
+@RequiresTextCommands
 internal class TextCommandsBuilder internal constructor(
     context: BContextImpl,
     providers: List<TextCommandProvider>,

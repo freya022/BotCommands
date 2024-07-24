@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 
 @BService
+@RequiresApplicationCommands
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
     private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,

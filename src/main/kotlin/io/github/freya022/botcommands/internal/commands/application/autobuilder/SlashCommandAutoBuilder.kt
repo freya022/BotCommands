@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
@@ -48,6 +49,7 @@ private val logger = KotlinLogging.logger { }
 private val defaultTopLevelMetadata = TopLevelSlashCommandData()
 
 @BService
+@RequiresApplicationCommands
 internal class SlashCommandAutoBuilder(
     override val serviceContainer: ServiceContainer,
     applicationConfig: BApplicationConfig,

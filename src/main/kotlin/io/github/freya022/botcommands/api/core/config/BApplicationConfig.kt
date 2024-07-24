@@ -15,6 +15,16 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 @InjectedService
 interface BApplicationConfig {
     /**
+     * Whether application commands should be listened for.
+     *
+     * Default: `true`
+     *
+     * Spring property: `botcommands.application.enable`
+     */
+    @ConfigurationValue(path = "botcommands.application.enable", defaultValue = "true")
+    val enable: Boolean
+
+    /**
      * If not empty, only these guilds will have their application commands updated.
      *
      * Existing commands won't be removed in other guilds, global commands will still be updated.
@@ -102,6 +112,7 @@ interface BApplicationConfig {
 
 @ConfigDSL
 class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
+    override var enable: Boolean = true
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     @set:DevConfig
@@ -175,6 +186,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
 
     @JvmSynthetic
     internal fun build() = object : BApplicationConfig {
+        override val enable = this@BApplicationConfigBuilder.enable
         override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
         override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
         override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache

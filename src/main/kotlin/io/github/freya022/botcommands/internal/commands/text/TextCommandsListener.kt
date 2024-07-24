@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
@@ -35,6 +36,7 @@ private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
 @BService
+@RequiresTextCommands
 //TODO expand this to a custom condition, included in built-in text command stuff
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(

@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.text
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -17,6 +18,7 @@ import kotlin.math.min
 
 @BService
 @Configuration
+@RequiresTextCommands
 internal open class DefaultTextSuggestionSupplierProvider {
     @Bean
     @ConditionalOnMissingBean(TextSuggestionSupplier::class)
