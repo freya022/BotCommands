@@ -24,3 +24,7 @@ internal annotation class DeprecatedValue(
         ERROR,
     }
 }
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.SOURCE)
+internal annotation class IgnoreDefaultValue
