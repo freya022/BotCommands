@@ -1,0 +1,22 @@
+[
+  {
+    "dm_permission": true,
+    "name_localizations": {},
+    "nsfw": false,
+    "name": "tag",
+    "description": "",
+    "description_localizations": {},
+    "default_member_permissions": null,
+    "type": 1
+  },
+  {
+    "dm_permission": true,
+    "name_localizations": {},
+    "nsfw": false,
+    "name": "tags",
+    "description": "",
+    "description_localizations": {},
+    "default_member_permissions": null,
+    "type": 1
+  }
+]

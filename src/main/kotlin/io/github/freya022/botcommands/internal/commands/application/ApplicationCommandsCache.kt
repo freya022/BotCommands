@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
-import io.github.freya022.botcommands.internal.application.diff.DiffLogger
+import io.github.freya022.botcommands.internal.application.diff.*
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -47,103 +47,97 @@ internal class ApplicationCommandsCache(jda: JDA) {
             val oldMap = DefaultObjectMapper.readList(oldContentBytes)
             val newMap = DefaultObjectMapper.readList(newContentBytes)
 
-            val isSame = DiffLogger.getLogger(context).let { diffLogger ->
-                checkDiff(oldMap, newMap, diffLogger, 0).also {
-                    diffLogger.printLogs()
-                }
+            val isSame: Boolean
+            DiffLogger.getLogger(context).apply {
+                isSame = checkDiff(oldMap, newMap)
+                printLogs()
             }
 
             return isSame
         }
 
-        private fun checkDiff(oldObj: Any?, newObj: Any?, logger: DiffLogger, indent: Int): Boolean {
+        context(DiffLogger)
+        internal fun checkDiff(oldObj: Any?, newObj: Any?): Boolean {
             if (oldObj == null && newObj == null) {
-                return true
+                return logSame("Both null")
             }
 
             if (oldObj == null) {
-                logger.trace(indent, "oldObj is null")
-                return false
+                return logDifferent("oldObj is null")
             } else if (newObj == null) {
-                logger.trace(indent, "newObj is null")
-                return false
+                return logDifferent("newObj is null")
             }
 
             if (oldObj.javaClass != newObj.javaClass) {
-                logger.trace(indent, "Class type not equal: %s to %s", oldObj.javaClass.simpleName, newObj.javaClass.simpleName)
-                return false
+                return logDifferent("Class type not equal: %s to %s", oldObj.javaClass.simpleName, newObj.javaClass.simpleName)
             }
 
-            if (oldObj is Map<*, *> && newObj is Map<*, *>) {
-                if (!checkMap(oldObj, newObj, logger, indent)) return false
+            return if (oldObj is Map<*, *> && newObj is Map<*, *>) {
+                checkMap(oldObj, newObj)
             } else if (oldObj is List<*> && newObj is List<*>) {
-                if (!checkList(oldObj, newObj, logger, indent)) return false
+                checkList(oldObj, newObj)
             } else {
-                return (oldObj == newObj).also { equals ->
-                    if (!equals) logger.trace(indent, "Not same object: %s to %s", oldObj, newObj)
+                return when (oldObj == newObj) {
+                    true -> logSame("Same object: %s to %s", oldObj, newObj)
+                    false -> logDifferent("Not same object: %s to %s", oldObj, newObj)
                 }
             }
-
-            return true
         }
 
-        private fun checkList(oldList: List<*>, newList: List<*>, logger: DiffLogger, indent: Int): Boolean {
-            if (oldList.size != newList.size) return false
+        context(DiffLogger)
+        private fun checkList(oldList: List<*>, newList: List<*>): Boolean {
+            if (oldList.size != newList.size)
+                return logDifferent("List is not of the same size")
 
-            for (i in oldList.indices) {
-                var found = false
-                var index = -1
-                for (o in newList) {
-                    index++
-                    if (checkDiff(oldList[i], o, logger, indent + 1)) {
-                        found = true
-                        break
-                    }
-                }
+            oldList.indices.forEach { i ->
+                withKey(i.toString()) {
+                    // Try to find an object with the same content but at a different index
+                    // Whether it is effectively different depends on the type of the object
+                    val index = newList.indexOfFirst { ignoreLogs { checkDiff(oldList[i], it) } }
+                    if (index == -1)
+                        return logDifferent("List item not found: %s to %s", oldList[i], newList[i])
 
-                if (found) {
-                    //If command options (parameters, not subcommands, not groups) are moved
-                    // then it means the command data changed
-                    if (i != index) {
-                        //Check if any final command property is here,
-                        // such as autocomplete, or required
-                        if (oldList[index] is Map<*, *>) {
-                            val map = oldList[index] as Map<*, *>
-                            if (map["autocomplete"] != null) {
-                                //We found a real command option that has **changed index**,
-                                // this is NOT equal under different indexes
-                                logger.trace(
-                                    indent,
-                                    "Final command option has changed place from index %s to %s : %s",
-                                    i,
-                                    index,
-                                    oldList[i]
-                                )
-                                return false
-                            }
+                    if (index != i) {
+                        // Found the obj somewhere else, let's see if the object is an option
+                        val oldObj = oldList[index]
+                        if (oldObj is Map<*, *> && "autocomplete" in oldObj) {
+                            // Is an option
+                            return logDifferent("Final command option has changed place from index %s to %s : %s",
+                                i,
+                                index,
+                                oldList[i]
+                            )
+                        } else {
+                            // Is not an option
+                            logSame("Found exact object at index %s (original object at %s) : %s", index, i, oldList[i])
+                            return@forEach // Look at other options
                         }
+                    } else {
+                        // Same index
+                        logSame("Found exact object at same index : %s", i, oldList[i])
+                        return@forEach // Look at other options
                     }
-
-                    logger.trace(indent, "Found exact object at index %s (original object at %s) : %s", index, i, oldList[i])
-                    continue
-                }
-
-                if (!checkDiff(oldList[i], newList[i], logger, indent + 1)) {
-                    logger.trace(indent, "List item not equal: %s to %s", oldList[i], newList[i])
-                    return false
                 }
             }
 
             return true
         }
 
-        private fun checkMap(oldMap: Map<*, *>, newMap: Map<*, *>, logger: DiffLogger, indent: Int): Boolean {
-            if (!oldMap.keys.containsAll(newMap.keys)) return false
+        context(DiffLogger)
+        private fun checkMap(oldMap: Map<*, *>, newMap: Map<*, *>): Boolean {
+            val missingKeys = oldMap.keys - newMap.keys
+            if (missingKeys.isNotEmpty())
+                return logDifferent("Missing keys: %s", missingKeys)
+
+            val addedKeys = newMap.keys - oldMap.keys
+            if (addedKeys.isNotEmpty())
+                return logDifferent("Added keys: %s", addedKeys)
 
             for (key in oldMap.keys) {
-                if (!checkDiff(oldMap[key], newMap[key], logger, indent + 1)) {
-                    logger.trace(indent, "Map value not equal for key '%s': %s to %s", key, oldMap[key], newMap[key])
-                    return false
+                withKey(key.toString()) {
+                    if (!checkDiff(oldMap[key], newMap[key])) {
+                        return logDifferent("Map value not equal for key '%s': %s to %s", key, oldMap[key], newMap[key])
+                    }
                 }
             }
 

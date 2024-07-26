@@ -1,0 +1,41 @@
+[
+  {
+    "dm_permission": true,
+    "name_localizations": {},
+    "nsfw": false,
+    "name": "tag",
+    "options": [
+      {
+        "name_localizations": {},
+        "autocomplete": true,
+        "name": "name",
+        "description": "",
+        "description_localizations": {},
+        "type": 3,
+        "required": true
+      },
+      {
+        "name_localizations": {},
+        "autocomplete": false,
+        "name": "title",
+        "description": "",
+        "description_localizations": {},
+        "type": 6,
+        "required": true
+      },
+      {
+        "name_localizations": {},
+        "autocomplete": false,
+        "name": "new_owner",
+        "description": "",
+        "description_localizations": {},
+        "type": 6,
+        "required": true
+      }
+    ],
+    "description": "",
+    "description_localizations": {},
+    "default_member_permissions": null,
+    "type": 1
+  }
+]
