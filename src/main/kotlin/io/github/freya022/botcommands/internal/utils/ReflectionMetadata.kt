@@ -26,6 +26,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 import kotlin.reflect.jvm.jvmName
 
 private typealias IsNullableAnnotated = Boolean
+private typealias FullClassName = String
 
 internal object ReflectionMetadata {
     private val logger = KotlinLogging.logger { }
@@ -81,7 +82,7 @@ internal object ReflectionMetadata {
             .disableNestedJarScanning()
             .scan()
             .use { scan ->
-                val referencedByFactories = hashSetOf<Class<*>>()
+                val referencedByFactories = hashSetOf<FullClassName>()
                 scan.allClasses
                     .filterLibraryClasses(config, referencedByFactories)
                     .filterClasses(config)
@@ -101,10 +102,10 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig, referencedByFactories: MutableSet<Class<*>>): List<ClassInfo> = filter { classInfo ->
+    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig, referencedByFactories: MutableSet<FullClassName>): List<ClassInfo> = filter { classInfo ->
         if (!classInfo.isFromLib()) return@filter true
 
-        if (classInfo.loadClass() in referencedByFactories) return@filter true
+        if (classInfo.name in referencedByFactories) return@filter true
 
         if (classInfo.isServiceOrHasFactories(config, referencedByFactories)) return@filter true
         if (classInfo.outerClasses.any { it.isServiceOrHasFactories(config, referencedByFactories) }) return@filter true
@@ -114,12 +115,12 @@ internal object ReflectionMetadata {
         return@filter false
     }
 
-    private fun ClassInfo.isServiceOrHasFactories(config: BConfig, referencedByFactories: MutableSet<Class<*>>): Boolean {
+    private fun ClassInfo.isServiceOrHasFactories(config: BConfig, referencedByFactories: MutableSet<FullClassName>): Boolean {
         if (this.isService(config)) return true
 
         val factories = this.methodInfo.filter { it.isService(config) }
         if (factories.isNotEmpty()) {
-            referencedByFactories += factories.map { it.loadClassAndGetMethod().returnType }
+            referencedByFactories += factories.map { it.typeDescriptor.resultType.toStringWithSimpleNames() }
             return true
         } else {
             return false
