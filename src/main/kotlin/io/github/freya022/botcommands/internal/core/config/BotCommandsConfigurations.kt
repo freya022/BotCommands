@@ -153,13 +153,11 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
 internal class BotCommandsComponentsConfiguration(
-    enable: Boolean = false
-) : BComponentsConfig {
-    override val useComponents: Boolean = enable
-}
+    override val enable: Boolean = false
+) : BComponentsConfig
 
 internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComponentsConfiguration) = apply {
-    useComponents = configuration.useComponents
+    enable = configuration.enable
 }
 
 private fun unusable(): Nothing = throwArgument("Cannot be used")
