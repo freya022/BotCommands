@@ -54,6 +54,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
 internal class BotCommandsDebugConfiguration(
     @Suppress("OVERRIDE_DEPRECATION")
     override val enableApplicationDiffsLogs: Boolean = false,
+    @Suppress("OVERRIDE_DEPRECATION")
     override val enabledMissingLocalizationLogs: Boolean = false
 ) : BDebugConfig
 
@@ -130,7 +131,8 @@ internal class BotCommandsApplicationConfiguration(
     override val diffEngine: DiffEngine = DiffEngine.NEW,
     override val logApplicationCommandData: Boolean = false,
     override val forceGuildCommands: Boolean = false,
-    localizations: Map<String, List<DiscordLocale>> = emptyMap()
+    localizations: Map<String, List<DiscordLocale>> = emptyMap(),
+    override val logMissingLocalizationKeys: Boolean = false,
 ) : BApplicationConfig {
     override val baseNameToLocalesMap = localizations
 }
@@ -146,6 +148,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     logApplicationCommandData = configuration.logApplicationCommandData
     forceGuildCommands = configuration.forceGuildCommands
     configuration.baseNameToLocalesMap.forEach(::addLocalizations)
+    logMissingLocalizationKeys = configuration.logMissingLocalizationKeys
 }
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)

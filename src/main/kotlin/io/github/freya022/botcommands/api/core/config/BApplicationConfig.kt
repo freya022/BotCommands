@@ -132,6 +132,20 @@ interface BApplicationConfig {
      */
     @ConfigurationValue(path = "botcommands.application.localizations")
     val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
+
+    /**
+     * Whether to log a `WARN` if a localization key isn't found when registering the commands.
+     *
+     * They will occur when a bundle from [baseNameToLocalesMap] doesn't contain
+     * a value for a key requested by [LocalizationFunction],
+     * such as command name/description, option name/description, choice name...
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.application.logMissingLocalizationKeys`
+     */
+    @ConfigurationValue(path = "botcommands.application.logMissingLocalizationKeys", defaultValue = "false")
+    val logMissingLocalizationKeys: Boolean
 }
 
 @ConfigDSL
@@ -154,6 +168,8 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
 
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<DiscordLocale>> = hashMapOf()
     override val baseNameToLocalesMap: Map<String, List<DiscordLocale>> = _baseNameToLocalesMap.unmodifiableView()
+
+    override var logMissingLocalizationKeys: Boolean = false
 
     /**
      * Adds the specified bundle names with its locales;
@@ -224,5 +240,6 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
         override val baseNameToLocalesMap =
             this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
                 .unmodifiableView()
+        override val logMissingLocalizationKeys = this@BApplicationConfigBuilder.logMissingLocalizationKeys
     }
 }

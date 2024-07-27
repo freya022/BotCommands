@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.core.SingleLogger
+import io.github.freya022.botcommands.internal.core.SingleLogger.Companion.toSingleLogger
 import io.github.freya022.botcommands.internal.utils.rethrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
@@ -19,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 private val logger = KotlinLogging.loggerOf<LocalizationService>()
+private val singleLogger = logger.toSingleLogger()
 
 @BService
 internal class LocalizationServiceImpl internal constructor(
@@ -52,19 +54,19 @@ internal class LocalizationServiceImpl internal constructor(
     private fun retrieveLocalization(baseName: String, targetLocale: Locale): LocalizationImpl? {
         return when (val localizationMap = localizationMapProviders.cycleProvidersWithParents(baseName, targetLocale)) {
             null -> {
-                if (SingleLogger.current().tryLog(baseName))
-                    logger.warn { "Could not find localization resources for '${baseName}'" }
-
+                singleLogger.warn(baseName) { "Could not find localization resources for '${baseName}'" }
                 null
             }
             else -> {
                 if (localizationMap.effectiveLocale != targetLocale) { //Not default
                     if (localizationMap.effectiveLocale.toString().isEmpty()) { //neutral lang
-                        if (SingleLogger.current().tryLog(baseName, targetLocale.toLanguageTag()))
-                            logger.warn { "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to neutral lang" }
+                        singleLogger.warn(baseName, targetLocale.toLanguageTag()) {
+                            "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to neutral lang"
+                        }
                     } else {
-                        if (SingleLogger.current().tryLog(baseName, targetLocale.toLanguageTag(), localizationMap.effectiveLocale.toLanguageTag()))
-                            logger.warn { "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to '${localizationMap.effectiveLocale}'" }
+                        singleLogger.warn(baseName, targetLocale.toLanguageTag(), localizationMap.effectiveLocale.toLanguageTag()) {
+                            "Unable to find bundle '${baseName}' with locale '${targetLocale}', falling back to '${localizationMap.effectiveLocale}'"
+                        }
                     }
                 }
 

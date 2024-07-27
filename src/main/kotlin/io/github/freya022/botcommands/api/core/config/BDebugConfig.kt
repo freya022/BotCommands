@@ -29,7 +29,9 @@ interface BDebugConfig {
      *
      * Spring property: `botcommands.debug.enabledMissingLocalizationLogs`
      */
+    @Deprecated("Moved to BApplicationConfig#logMissingLocalizationKeys")
     @ConfigurationValue(path = "botcommands.debug.enabledMissingLocalizationLogs", defaultValue = "false")
+    @DeprecatedValue(reason = "Moved to BApplicationConfig#logMissingLocalizationKeys", replacement = "botcommands.application.logMissingLocalizationKeys")
     val enabledMissingLocalizationLogs: Boolean
 }
 
@@ -38,6 +40,7 @@ class BDebugConfigBuilder internal constructor() : BDebugConfig {
     @Deprecated("Always on with the default diff engine")
     @set:JvmName("enableApplicationDiffsLogs")
     override var enableApplicationDiffsLogs: Boolean = false
+    @Deprecated("Moved to BApplicationConfig#logMissingLocalizationKeys")
     @set:JvmName("enabledMissingLocalizationLogs")
     override var enabledMissingLocalizationLogs: Boolean = false
 
@@ -45,6 +48,7 @@ class BDebugConfigBuilder internal constructor() : BDebugConfig {
     internal fun build() = object : BDebugConfig {
         @Suppress("OVERRIDE_DEPRECATION")
         override val enableApplicationDiffsLogs = this@BDebugConfigBuilder.enableApplicationDiffsLogs
+        @Suppress("OVERRIDE_DEPRECATION")
         override val enabledMissingLocalizationLogs = this@BDebugConfigBuilder.enabledMissingLocalizationLogs
     }
 }
