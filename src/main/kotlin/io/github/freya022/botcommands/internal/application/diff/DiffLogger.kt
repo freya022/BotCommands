@@ -12,7 +12,7 @@ internal sealed class DiffLogger {
     internal abstract fun printLogs()
 
     internal companion object {
-        internal fun <R> withLogger(context: BContext, block: DiffLogger.() -> R): R {
+        internal fun <R> withLogger(context: BContext, title: String, block: DiffLogger.() -> R): R {
             val logsEnabled = when (context.applicationConfig.diffEngine) {
                 DiffEngine.OLD, DiffEngine.OLD_REFACTORED -> logger.isTraceEnabled() && context.debugConfig.enableApplicationDiffsLogs
                 DiffEngine.NEW -> logger.isTraceEnabled()
@@ -20,7 +20,7 @@ internal sealed class DiffLogger {
 
             return when {
                 logsEnabled -> {
-                    val diffLogger = DiffLoggerImpl()
+                    val diffLogger = DiffLoggerImpl(title)
                     val value = diffLogger.block()
                     diffLogger.printLogs()
                     value
@@ -37,14 +37,21 @@ internal data object DiffLoggerNoop : DiffLogger() {
     override fun printLogs() {}
 }
 
-internal class DiffLoggerImpl : DiffLogger() {
+internal class DiffLoggerImpl(private val title: String) : DiffLogger() {
     private val logItems: MutableList<() -> Any?> = arrayListOf()
 
     override fun log(message: () -> Any?) {
         logItems += message
     }
 
-    override fun printLogs() = logItems.forEach(logger::trace)
+    override fun printLogs() {
+        if (logItems.isEmpty()) return
+
+        logger.trace {
+            val diffs = logItems.joinToString("\n") { " - ${it()}" }
+            "Command changes on $title:\n$diffs"
+        }
+    }
 }
 
 internal fun DiffLogger.logSame(indent: Int, message: () -> Any?): Boolean {

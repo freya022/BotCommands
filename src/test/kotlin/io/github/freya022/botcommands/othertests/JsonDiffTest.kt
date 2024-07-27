@@ -47,7 +47,7 @@ object JsonDiffTest {
         val oldMap = readResource("/commands_data/$folderName/old.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
         val newMap = readResource("/commands_data/$folderName/new.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
 
-        DiffLoggerImpl().apply {
+        DiffLoggerImpl("tests").apply {
             val isEqual = diffEngine.instance.checkCommands(oldMap, newMap)
             printLogs()
             assertEquals(shouldBeEqual, isEqual)

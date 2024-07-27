@@ -150,7 +150,7 @@ internal class ApplicationCommandsUpdater private constructor(
         val oldCommands = DefaultObjectMapper.readList(oldBytes) as List<Map<String, *>>
         val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
 
-        val isSame = DiffLogger.withLogger(context) {
+        val isSame = DiffLogger.withLogger(context, guild.asScopeString()) {
             context.applicationConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
         }
 
