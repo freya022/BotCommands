@@ -77,6 +77,7 @@ interface BTextConfig {
 
 @ConfigDSL
 class BTextConfigBuilder internal constructor() : BTextConfig {
+    @set:JvmName("enable")
     override var enable: Boolean = true
     @set:JvmName("usePingAsPrefix")
     override var usePingAsPrefix: Boolean = false

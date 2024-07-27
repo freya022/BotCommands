@@ -150,6 +150,7 @@ interface BApplicationConfig {
 
 @ConfigDSL
 class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
+    @set:JvmName("enable")
     override var enable: Boolean = true
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
