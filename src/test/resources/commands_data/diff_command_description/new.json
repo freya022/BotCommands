@@ -1,0 +1,151 @@
+[
+  {
+    "dm_permission": true,
+    "name_localizations": {},
+    "nsfw": false,
+    "name": "tags",
+    "options": [
+      {
+        "name_localizations": {},
+        "name": "transfer",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": true,
+            "name": "name",
+            "description": "Name of the tag",
+            "description_localizations": {},
+            "type": 3,
+            "required": true
+          },
+          {
+            "name_localizations": {},
+            "autocomplete": false,
+            "name": "new_owner",
+            "description": "Member to transfer the tag to",
+            "description_localizations": {},
+            "type": 6,
+            "required": true
+          }
+        ],
+        "description": "Transfers a tag ownership to someone else in this guild",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "edit",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": true,
+            "name": "name",
+            "description": "Name of the tag",
+            "description_localizations": {},
+            "type": 3,
+            "required": true
+          }
+        ],
+        "description": "Edits a tag in this guild",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "create",
+        "options": [],
+        "description": "Creates a tag in this guild",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "raw",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": true,
+            "name": "name",
+            "description": "Name of the tag",
+            "description_localizations": {},
+            "type": 3,
+            "required": true
+          }
+        ],
+        "description": "Sends a predefined tag with all the markdown escaped",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "list",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": false,
+            "name": "sorting",
+            "description": "Type of tag sorting",
+            "description_localizations": {},
+            "type": 3,
+            "choices": [
+              {
+                "name_localizations": {},
+                "name": "Name",
+                "value": "NAME"
+              },
+              {
+                "name_localizations": {},
+                "name": "Uses",
+                "value": "USES"
+              }
+            ],
+            "required": false
+          }
+        ],
+        "description": "Creates a tag in this guild",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "delete",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": true,
+            "name": "name",
+            "description": "Name of the tag",
+            "description_localizations": {},
+            "type": 3,
+            "required": true
+          }
+        ],
+        "description": "Deletes a tag you own in this guild",
+        "description_localizations": {},
+        "type": 1
+      },
+      {
+        "name_localizations": {},
+        "name": "info",
+        "options": [
+          {
+            "name_localizations": {},
+            "autocomplete": true,
+            "name": "tag_name",
+            "description": "Name of the tag",
+            "description_localizations": {},
+            "type": 3,
+            "required": true
+          }
+        ],
+        "description": "Gives information about a tag in this guild",
+        "description_localizations": {},
+        "type": 1
+      }
+    ],
+    "description": "Deletes a tag you own in this guild",
+    "description_localizations": {},
+    "default_member_permissions": null,
+    "type": 1
+  }
+]

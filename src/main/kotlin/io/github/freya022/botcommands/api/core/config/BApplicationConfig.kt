@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
+import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
@@ -79,6 +80,29 @@ interface BApplicationConfig {
     val onlineAppCommandCheckEnabled: Boolean
 
     /**
+     * The diff engine to use when comparing old and new application commands,
+     * to determine if commands needs to be updated.
+     *
+     * Only change this if necessary.
+     *
+     * Default: [DiffEngine.NEW]
+     *
+     * Spring property: `botcommands.application.diffEngine`
+     */
+    @ConfigurationValue(path = "botcommands.application.diffEngine", defaultValue = "new")
+    val diffEngine: DiffEngine
+
+    /**
+     * Whether the raw JSON of the application commands should be logged when an update is required.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.application.logApplicationCommandData`
+     */
+    @ConfigurationValue(path = "botcommands.application.logApplicationCommandData", defaultValue = "false")
+    val logApplicationCommandData: Boolean
+
+    /**
      * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation.
      *
      * **Beware**: This also means that your global application commands will **not** be registered.
@@ -121,6 +145,9 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
+    @set:DevConfig
+    override var diffEngine: DiffEngine = DiffEngine.NEW
+    override var logApplicationCommandData: Boolean = false
     @set:DevConfig
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
@@ -191,6 +218,8 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
         override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
         override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
         override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
+        override val diffEngine = this@BApplicationConfigBuilder.diffEngine
+        override val logApplicationCommandData = this@BApplicationConfigBuilder.logApplicationCommandData
         override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
         override val baseNameToLocalesMap =
             this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
