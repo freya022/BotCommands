@@ -1,33 +1,37 @@
 package io.github.freya022.botcommands.internal.core
 
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.utils.stackWalker
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.slf4j.toKLogger
+import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 
-internal class SingleLogger {
+internal class SingleLogger internal constructor(private val logger: KLogger) {
     private val set: MutableSet<String> = hashSetOf()
 
-    fun tryLog(vararg keyComponents: Any): Boolean = set.add(keyComponents.joinToString("/") { it.toString() })
-
-    @JvmSynthetic
-    fun tryLog(vararg keyComponents: Any, block: () -> Unit) {
-        if (tryLog(*keyComponents)) {
-            block()
+    internal fun warn(vararg keyComponents: Any, message: () -> Any?) {
+        if (set.add(keyComponents.joinToString("/"))) {
+            logger.warn(message)
         }
     }
 
-    fun clear() {
+    internal fun clear() {
         set.clear()
     }
 
-    companion object {
-        private val map: MutableMap<Class<*>, SingleLogger> = hashMapOf()
+    internal companion object {
+        private val map: MutableMap<String, SingleLogger> = hashMapOf()
 
-        @JvmStatic
-        fun current() = get(stackWalker.callerClass)
+        internal fun current() = get(stackWalker.callerClass)
 
-        @JvmStatic
-        operator fun get(clazz: Class<*>) = map.computeIfAbsent(clazz) { SingleLogger() }
+        internal operator fun get(clazz: Class<*>) = LoggerFactory.getLogger(clazz).toKLogger().toSingleLogger()
 
-        operator fun get(clazz: KClass<*>) = get(clazz.java)
+        internal operator fun get(clazz: KClass<*>) = get(clazz.java)
+
+        internal inline fun <reified T : Any> of() = KotlinLogging.loggerOf<T>().toSingleLogger()
+
+        internal fun KLogger.toSingleLogger() = map.computeIfAbsent(this.name) { SingleLogger(this) }
     }
 }
