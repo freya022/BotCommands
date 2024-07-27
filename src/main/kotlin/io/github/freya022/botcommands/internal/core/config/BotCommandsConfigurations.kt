@@ -2,6 +2,7 @@
 
 package io.github.freya022.botcommands.internal.core.config
 
+import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -125,6 +126,7 @@ internal class BotCommandsApplicationConfiguration(
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
     override val onlineAppCommandCheckEnabled: Boolean = false,
+    override val diffEngine: DiffEngine = DiffEngine.NEW,
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap()
 ) : BApplicationConfig {
@@ -138,6 +140,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
+    diffEngine = configuration.diffEngine
     forceGuildCommands = configuration.forceGuildCommands
     configuration.baseNameToLocalesMap.forEach(::addLocalizations)
 }
