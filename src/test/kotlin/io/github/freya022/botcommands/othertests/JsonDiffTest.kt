@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.readResource
 import io.github.freya022.botcommands.internal.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.application.diff.DiffLoggerImpl
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache
+import io.github.freya022.botcommands.internal.commands.application.diff.NewApplicationCommandDiff
 import io.github.freya022.botcommands.test.config.Environment
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -38,12 +38,13 @@ object JsonDiffTest {
         runTest(folderName = "diff_command_order", shouldBeEqual = true)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun runTest(folderName: String, shouldBeEqual: Boolean) {
-        val oldMap = readResource("/commands_data/$folderName/old.json").let(DefaultObjectMapper::readList)
-        val newMap = readResource("/commands_data/$folderName/new.json").let(DefaultObjectMapper::readList)
+        val oldMap = readResource("/commands_data/$folderName/old.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
+        val newMap = readResource("/commands_data/$folderName/new.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
 
-        DiffLoggerImpl(arrayListOf()).apply {
-            val isEqual = ApplicationCommandsCache.checkDiff(oldMap, newMap)
+        DiffLoggerImpl().apply {
+            val isEqual = NewApplicationCommandDiff.checkCommands(oldMap, newMap)
             printLogs()
             assertEquals(shouldBeEqual, isEqual)
         }
