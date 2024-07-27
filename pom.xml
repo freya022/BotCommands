@@ -256,7 +256,7 @@
             <plugin>
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>645eb5ef03</version>
+                <version>ec268e17be</version>
                 <executions>
                     <execution>
                         <goals>
