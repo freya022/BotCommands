@@ -13,8 +13,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcom
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
+import io.github.freya022.botcommands.internal.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
@@ -142,18 +143,23 @@ internal class ApplicationCommandsUpdater private constructor(
         return metadata
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun checkCommandJson(oldBytes: ByteArray): Boolean {
         val newBytes = commandData.toJsonBytes()
-        return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
-            if (needUpdate) {
-                logger.trace { "Updating commands because content is not equal" }
 
-                if (context.debugConfig.enableApplicationDiffsLogs) {
-                    logger.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
-                    logger.trace { "New commands bytes: ${newBytes.decodeToString()}" }
-                }
-            }
+        val oldCommands = DefaultObjectMapper.readList(oldBytes) as List<Map<String, *>>
+        val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
+
+        val isSame = DiffLogger.withLogger(context) {
+            context.applicationConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
         }
+
+        if (!isSame && context.applicationConfig.logApplicationCommandData) {
+            logger.trace { "Old commands data: ${oldBytes.decodeToString()}" }
+            logger.trace { "New commands data: ${newBytes.decodeToString()}" }
+        }
+
+        return !isSame
     }
 
     private suspend fun updateCommands() {
@@ -264,6 +270,8 @@ internal class ApplicationCommandsUpdater private constructor(
             }
         }
     }
+
+    private fun Collection<CommandData>.toJsonBytes(): ByteArray = DataArray.fromCollection(this).toJson()
 
     companion object {
         fun ofGlobal(context: BContextImpl, manager: GlobalApplicationCommandManager): ApplicationCommandsUpdater {

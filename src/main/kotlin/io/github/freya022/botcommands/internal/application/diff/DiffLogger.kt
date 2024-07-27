@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.application.diff
 
+import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -11,14 +12,21 @@ internal sealed class DiffLogger {
     internal abstract fun printLogs()
 
     internal companion object {
-        internal fun <R> withLogger(context: BContext, block: DiffLogger.() -> R): R = when {
-            logger.isTraceEnabled() && context.debugConfig.enableApplicationDiffsLogs -> {
-                val diffLogger = DiffLoggerImpl()
-                val value = diffLogger.block()
-                diffLogger.printLogs()
-                value
+        internal fun <R> withLogger(context: BContext, block: DiffLogger.() -> R): R {
+            val logsEnabled = when (context.applicationConfig.diffEngine) {
+                DiffEngine.OLD, DiffEngine.OLD_REFACTORED -> logger.isTraceEnabled() && context.debugConfig.enableApplicationDiffsLogs
+                DiffEngine.NEW -> logger.isTraceEnabled()
             }
-            else -> DiffLoggerNoop.block()
+
+            return when {
+                logsEnabled -> {
+                    val diffLogger = DiffLoggerImpl()
+                    val value = diffLogger.block()
+                    diffLogger.printLogs()
+                    value
+                }
+                else -> DiffLoggerNoop.block()
+            }
         }
     }
 }
