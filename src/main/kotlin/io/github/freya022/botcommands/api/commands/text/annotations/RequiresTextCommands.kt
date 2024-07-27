@@ -12,5 +12,5 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Condition(RequiresTextCommandsChecker::class)
-@ConditionalOnProperty("botcommands.text.enable")
+@ConditionalOnProperty("botcommands.text.enable", matchIfMissing = true)
 annotation class RequiresTextCommands

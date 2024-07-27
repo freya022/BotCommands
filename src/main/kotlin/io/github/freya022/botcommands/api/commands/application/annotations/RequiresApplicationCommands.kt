@@ -12,5 +12,5 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Condition(RequiresApplicationCommandsChecker::class)
-@ConditionalOnProperty("botcommands.application.enable")
+@ConditionalOnProperty("botcommands.application.enable", matchIfMissing = true)
 annotation class RequiresApplicationCommands
