@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.application.diff
+package io.github.freya022.botcommands.internal.commands.application.diff
 
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.BContext

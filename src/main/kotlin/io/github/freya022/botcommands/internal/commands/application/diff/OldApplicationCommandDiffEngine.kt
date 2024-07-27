@@ -1,9 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application.diff
 
-import io.github.freya022.botcommands.internal.application.diff.DiffLogger
-import io.github.freya022.botcommands.internal.application.diff.logDifferent
-import io.github.freya022.botcommands.internal.application.diff.logSame
-
 internal object OldApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
     context(DiffLogger)
     override fun checkCommands(oldCommands: List<Map<String, *>>, newCommands: List<Map<String, *>>): Boolean {

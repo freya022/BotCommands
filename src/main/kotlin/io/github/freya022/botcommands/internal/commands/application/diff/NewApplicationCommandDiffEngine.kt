@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application.diff
 
-import io.github.freya022.botcommands.internal.application.diff.DiffLogger
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 private typealias Command = Map<String, *>

@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolde
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
-import io.github.freya022.botcommands.internal.application.diff.DiffLogger
+import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl

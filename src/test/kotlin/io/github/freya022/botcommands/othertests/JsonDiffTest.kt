@@ -6,8 +6,8 @@ import ch.qos.logback.classic.Logger
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.readResource
-import io.github.freya022.botcommands.internal.application.diff.DiffLogger
-import io.github.freya022.botcommands.internal.application.diff.DiffLoggerImpl
+import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
+import io.github.freya022.botcommands.internal.commands.application.diff.DiffLoggerImpl
 import io.github.freya022.botcommands.test.config.Environment
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
