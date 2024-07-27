@@ -65,6 +65,7 @@ interface BContext {
         get() = config.componentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
         get() = config.coroutineScopesConfig
+    @Deprecated("For removal", replaceWith = ReplaceWith(""))
     val debugConfig: BDebugConfig
         get() = config.debugConfig
     val serviceConfig: BServiceConfig

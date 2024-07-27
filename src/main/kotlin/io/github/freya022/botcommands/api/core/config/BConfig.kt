@@ -280,6 +280,7 @@ class BConfigBuilder internal constructor() : BConfig {
         databaseConfig.apply(block)
     }
 
+    @Deprecated("For removal", ReplaceWith(""))
     fun debug(block: ReceiverConsumer<BDebugConfigBuilder>) {
         debugConfig.apply(block)
     }

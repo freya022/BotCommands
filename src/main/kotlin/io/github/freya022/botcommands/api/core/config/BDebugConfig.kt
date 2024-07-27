@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 
+@Deprecated("For removal")
 @InjectedService
 interface BDebugConfig {
     /**
@@ -35,6 +36,7 @@ interface BDebugConfig {
     val enabledMissingLocalizationLogs: Boolean
 }
 
+@Deprecated("For removal")
 @ConfigDSL
 class BDebugConfigBuilder internal constructor() : BDebugConfig {
     @Deprecated("Always on with the default diff engine")
