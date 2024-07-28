@@ -23,6 +23,7 @@ import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
@@ -36,6 +37,8 @@ internal class MessageContextCommandAutoBuilder(
     functionAnnotationsMap: FunctionAnnotationsMap,
     serviceContainer: ServiceContainer
 ) : ContextCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer) {
+    override val commandAnnotation: KClass<out Annotation> get() = JDAMessageCommand::class
+
     private val messageFunctions: List<MessageContextFunctionMetadata>
 
     init {
@@ -86,7 +89,7 @@ internal class MessageContextCommandAutoBuilder(
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, JDAMessageCommand::class, instance, commandId)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
     }
 }

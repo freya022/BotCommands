@@ -18,7 +18,7 @@ internal class TextCommandParameterImpl internal constructor(
 ) : CommandParameterImpl(context, optionAggregateBuilder, BaseCommandEvent::class),
     TextCommandParameter {
 
-    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
         TextCommandParameterImpl(context, command, it)
     }
 

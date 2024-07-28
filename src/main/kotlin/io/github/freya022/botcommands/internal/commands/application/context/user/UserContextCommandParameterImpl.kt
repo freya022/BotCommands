@@ -20,7 +20,7 @@ internal class UserContextCommandParameterImpl internal constructor(
 ) : ContextCommandParameterImpl(context, optionAggregateBuilder, GlobalUserEvent::class),
     UserContextCommandParameter {
 
-    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
         UserContextCommandParameterImpl(context, command, builder, it)
     }
 

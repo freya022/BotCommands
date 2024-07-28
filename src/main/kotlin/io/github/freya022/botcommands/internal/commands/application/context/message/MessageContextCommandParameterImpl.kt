@@ -20,7 +20,7 @@ internal class MessageContextCommandParameterImpl internal constructor(
 ) : ContextCommandParameterImpl(context, optionAggregateBuilder, GlobalMessageEvent::class),
     MessageContextCommandParameter {
 
-    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
         MessageContextCommandParameterImpl(context, command, builder, it)
     }
 

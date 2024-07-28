@@ -12,8 +12,10 @@ import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
+import io.github.freya022.botcommands.api.commands.text.builder.TextOptionRegistry
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
+import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -216,52 +218,50 @@ internal class TextCommandAutoBuilder(
         detailedDescription = instance.detailedDescription
     }
 
-    //TODO
     private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
+        fun textOption(kParameter: KParameter, declaredName: String, optionAnnotation: TextOption) {
+            fun TextOptionRegistry.addOption(valueName: String) {
+                val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
+                val varArgs = kParameter.findAnnotation<VarArgs>()
+                if (varArgs != null) {
+                    optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                        configureOption(kParameter, optionAnnotation)
+                    }
+                } else {
+                    option(valueName, optionName) {
+                        configureOption(kParameter, optionAnnotation)
+                    }
+                }
+            }
+
+            if (kParameter.type.jvmErasure.isValue) {
+                val inlineClassType = kParameter.type.jvmErasure
+                inlineClassAggregate(declaredName, inlineClassType) { valueName ->
+                    addOption(valueName)
+                }
+            } else {
+                addOption(declaredName)
+            }
+        }
+
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
-                null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> {
-                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                            customOption(declaredName)
-                        } else {
-                            requireServiceOptionOrOptional(func, kParameter, JDATextCommandVariation::class)
-                            serviceOption(declaredName)
-                        }
-                    }
-                    else -> generatedOption(
-                        declaredName, instance.getGeneratedValueSupplier(
-                            path,
-                            kParameter.findOptionName(),
-                            ParameterType.ofType(kParameter.type)
-                        )
+            val optionAnnotation = kParameter.findAnnotation<TextOption>()
+            if (optionAnnotation != null) {
+                textOption(kParameter, declaredName, optionAnnotation)
+            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+                generatedOption(
+                    declaredName, instance.getGeneratedValueSupplier(
+                        path,
+                        kParameter.findOptionName(),
+                        ParameterType.ofType(kParameter.type)
                     )
-                }
-                else -> {
-                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName
-                    if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
-                                configureOption(kParameter, optionAnnotation)
-                            }
-                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(kParameter, optionAnnotation)
-                            }
-                        }
-                    } else {
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> option(declaredName, optionName) {
-                                configureOption(kParameter, optionAnnotation)
-                            }
-                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(kParameter, optionAnnotation)
-                            }
-                        }
-                    }
-
-                }
+                )
+            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
+                customOption(declaredName)
+            } else {
+                requireServiceOptionOrOptional(func, kParameter, JDATextCommandVariation::class)
+                serviceOption(declaredName)
             }
         }
     }

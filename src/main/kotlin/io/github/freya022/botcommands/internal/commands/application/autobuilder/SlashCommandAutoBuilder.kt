@@ -14,11 +14,9 @@ import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.*
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -325,31 +323,27 @@ internal class SlashCommandAutoBuilder(
         val path = metadata.path
 
         fun slashOption(kParameter: KParameter, declaredName: String, optionAnnotation: SlashOption) {
-            val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
-            val varArgs = kParameter.findAnnotation<VarArgs>()
-            if (kParameter.type.jvmErasure.isValue) {
-                val inlineClassType = kParameter.type.jvmErasure
-                inlineClassAggregate(declaredName, inlineClassType) { valueName ->
-                    if (varArgs != null) {
-                        nestedOptionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                            configureOption(guild, instance, kParameter, optionAnnotation)
-                        }
-                    } else {
-                        option(valueName, optionName) {
-                            configureOption(guild, instance, kParameter, optionAnnotation)
-                        }
-                    }
-                }
-            } else {
+            fun SlashOptionRegistry.addOption(valueName: String) {
+                val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
+                val varArgs = kParameter.findAnnotation<VarArgs>()
                 if (varArgs != null) {
-                    optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                    optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
                         configureOption(guild, instance, kParameter, optionAnnotation)
                     }
                 } else {
-                    option(declaredName, optionName) {
+                    option(valueName, optionName) {
                         configureOption(guild, instance, kParameter, optionAnnotation)
                     }
                 }
+            }
+
+            if (kParameter.type.jvmErasure.isValue) {
+                val inlineClassType = kParameter.type.jvmErasure
+                inlineClassAggregate(declaredName, inlineClassType) { valueName ->
+                    addOption(valueName)
+                }
+            } else {
+                addOption(declaredName)
             }
         }
 

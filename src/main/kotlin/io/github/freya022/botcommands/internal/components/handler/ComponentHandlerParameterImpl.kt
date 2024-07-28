@@ -19,7 +19,7 @@ internal class ComponentHandlerParameterImpl internal constructor(
 
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, eventType)
 
-    override val nestedAggregatedParameters = aggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = aggregateBuilder.optionAggregateBuilders.transform {
         ComponentHandlerParameterImpl(context, it, eventType)
     }
 

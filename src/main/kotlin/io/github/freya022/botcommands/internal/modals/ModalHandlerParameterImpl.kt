@@ -17,7 +17,7 @@ internal class ModalHandlerParameterImpl internal constructor(
 
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, ModalEvent::class)
 
-    override val nestedAggregatedParameters = aggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = aggregateBuilder.optionAggregateBuilders.transform {
         ModalHandlerParameterImpl(context, it)
     }
 

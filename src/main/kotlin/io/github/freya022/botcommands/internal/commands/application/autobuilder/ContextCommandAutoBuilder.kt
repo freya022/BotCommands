@@ -32,6 +32,7 @@ internal sealed class ContextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer
 ) : CommandAutoBuilder, GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
 
+    protected abstract val commandAnnotation: KClass<out Annotation>
     override val optionAnnotation: KClass<out Annotation> = ContextOption::class
 
     protected val forceGuildCommands = applicationConfig.forceGuildCommands
@@ -39,37 +40,32 @@ internal sealed class ContextCommandAutoBuilder(
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
-        commandAnnotation: KClass<out Annotation>,
         instance: ApplicationCommand,
         commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            if (kParameter.hasAnnotation<ContextOption>()) {
+            val optionAnnotation = kParameter.findAnnotation<ContextOption>()
+            if (optionAnnotation != null) {
                 when (this) {
                     is UserCommandBuilder -> option(declaredName)
                     is MessageCommandBuilder -> option(declaredName)
                 }
-            } else {
-                when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> {
-                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                            customOption(declaredName)
-                        } else {
-                            requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
-                            serviceOption(declaredName)
-                        }
-                    }
-                    else -> generatedOption(
-                        declaredName, instance.getGeneratedValueSupplier(
-                            guild,
-                            commandId,
-                            CommandPath.ofName(name),
-                            kParameter.findOptionName(),
-                            ParameterType.ofType(kParameter.type)
-                        )
+            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+                generatedOption(
+                    declaredName, instance.getGeneratedValueSupplier(
+                        guild,
+                        commandId,
+                        CommandPath.ofName(name),
+                        kParameter.findOptionName(),
+                        ParameterType.ofType(kParameter.type)
                     )
-                }
+                )
+            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
+                customOption(declaredName)
+            } else {
+                requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
+                serviceOption(declaredName)
             }
         }
     }

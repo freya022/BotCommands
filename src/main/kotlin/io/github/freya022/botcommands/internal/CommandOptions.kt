@@ -34,7 +34,7 @@ internal object CommandOptions {
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
 
-        val expectedOptions = aggregator.nonEventParameters.size - aggregateBuilder.nestedAggregates.size
+        val expectedOptions = aggregator.nonEventParameters.size - aggregateBuilder.optionAggregateBuilders.size
         requireAt(aggregator.isSpecialAggregator() || options.size == expectedOptions, aggregator) {
             "Aggregator should have the same number of options as there is options declared, $expectedOptions options were found in the aggregator but ${options.size} were declared, " +
                     "you may have forgotten to put the event as the first parameter"

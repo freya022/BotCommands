@@ -36,8 +36,8 @@ internal class AutocompleteCommandParameterImpl internal constructor(
         }
     }
 
-    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
-        AutocompleteCommandParameterImpl(context, command, builder, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
+    override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
+        AutocompleteCommandParameterImpl(context, command, builder, it.optionAggregateBuilders, it, optionAggregateBuilder.aggregator)
     }
 
     override fun constructOption(

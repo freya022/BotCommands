@@ -17,7 +17,7 @@ internal class SlashCommandParameterImpl internal constructor(
 ) : AbstractSlashCommandParameter(context, command, builder, slashCmdOptionAggregateBuilders, optionAggregateBuilder),
     SlashCommandParameter {
 
-    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
         SlashCommandParameterImpl(context, command, builder, slashCmdOptionAggregateBuilders, it)
     }
 

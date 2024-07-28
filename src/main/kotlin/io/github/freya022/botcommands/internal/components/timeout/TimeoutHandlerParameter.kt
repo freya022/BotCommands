@@ -18,7 +18,7 @@ internal class TimeoutHandlerParameter internal constructor(
 
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, aggregatorFirstParamType)
 
-    override val nestedAggregatedParameters = aggregateBuilder.nestedAggregates.transform {
+    override val nestedAggregatedParameters = aggregateBuilder.optionAggregateBuilders.transform {
         TimeoutHandlerParameter(context, it, aggregatorFirstParamType)
     }
 
