@@ -38,7 +38,7 @@ internal abstract class CommandBuilderImpl internal constructor(
         limiterFactory: RateLimiterFactory,
         block: RateLimitBuilder.() -> Unit
     ) {
-        rateLimitInfo = RateLimitBuilder("$type: ${path.fullPath}", bucketFactory, limiterFactory)
+        rateLimitInfo = RateLimitBuilderImpl("$type: ${path.fullPath}", bucketFactory, limiterFactory)
             .setCallerAsDeclarationSite()
             .apply(block)
             .build()
