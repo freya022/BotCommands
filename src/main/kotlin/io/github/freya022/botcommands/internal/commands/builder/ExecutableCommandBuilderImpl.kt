@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.builder
 
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
-import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderContainerMixin

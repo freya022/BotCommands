@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
-import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.text.TextCommandVariationImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderContainerMixin

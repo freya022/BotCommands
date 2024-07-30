@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
-import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.builder.ExecutableCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
