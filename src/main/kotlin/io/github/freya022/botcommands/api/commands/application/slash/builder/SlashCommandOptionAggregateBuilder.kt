@@ -5,12 +5,13 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationGeneratedOptionBuilder
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder internal constructor(
     override val context: BContext,
-    private val commandBuilder: SlashCommandBuilder,
+    private val commandBuilder: SlashCommandBuilderImpl,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator),

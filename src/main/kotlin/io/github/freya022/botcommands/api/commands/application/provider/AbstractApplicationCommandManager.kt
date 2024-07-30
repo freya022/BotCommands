@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.application.provider
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
@@ -20,9 +19,12 @@ import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclaratio
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
+import io.github.freya022.botcommands.internal.commands.application.context.builder.MessageCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.builder.UserCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.TopLevelSlashCommandBuilderImpl
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -65,7 +67,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
     fun slashCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         checkScope(scope)
 
-        TopLevelSlashCommandBuilder(context, name, function, scope)
+        TopLevelSlashCommandBuilderImpl(context, name, function, scope)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
@@ -76,7 +78,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      * Declares the supplied function as a user context command.
      *
      * The targeted function must have a [GlobalUserEvent] or a [GuildUserEvent],
-     * with the only accepted [options][ContextOption] being [Member], [User] and [InputUser],
+     * with the only accepted [options][UserCommandBuilder.option] being [Member], [User] and [InputUser],
      * which will be the *targeted* entity.
      *
      * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
@@ -93,7 +95,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
     fun userCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
         checkScope(scope)
 
-        UserCommandBuilder(context, name, function, scope)
+        UserCommandBuilderImpl(context, name, function, scope)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
@@ -120,7 +122,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
     fun messageCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         checkScope(scope)
 
-        MessageCommandBuilder(context, name, function, scope)
+        MessageCommandBuilderImpl(context, name, function, scope)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()

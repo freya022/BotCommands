@@ -2,21 +2,15 @@ package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
-import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
-import kotlin.reflect.KFunction
 
-abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
-    context: BContext,
-    name: String,
-    function: KFunction<Any>
-) : ExecutableCommandBuilder<T, Any>(context, name, function),
-    ApplicationOptionRegistry<T> {
+interface ApplicationCommandBuilder<T> : ExecutableCommandBuilder<T>,
+                                         ApplicationOptionRegistry<T> where T : ApplicationCommandOptionAggregateBuilder<T> {
 
-    internal abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
+    //TODO document
+    val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     /**
      * Set of filters preventing this command from executing.
@@ -24,13 +18,7 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
      * @see ApplicationCommandFilter
      * @see ApplicationCommandRejectionHandler
      */
-    val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
-
-    override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        selfAggregate(declaredName) {
-            generatedOption(declaredName, generatedValueSupplier)
-        }
-    }
+    val filters: MutableList<ApplicationCommandFilter<*>>
 }
 
 /**

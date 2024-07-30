@@ -2,13 +2,13 @@ package io.github.freya022.botcommands.internal.commands.application.mixins
 
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationCommandBuilderImpl
 import io.github.freya022.botcommands.internal.utils.requireAt
 
 internal interface TopLevelApplicationCommandInfoMixin : TopLevelApplicationCommandInfo {
     override var metadata: TopLevelApplicationCommandMetadata
 
-    fun initChecks(builder: ApplicationCommandBuilder<*>) {
+    fun initChecks(builder: ApplicationCommandBuilderImpl<*>) {
         //Administrators manage who can use what; the bot doesn't need to check for user mistakes
         // Why would you ask for a permission
         // if the administrators want a less-powerful user to be able to use it?

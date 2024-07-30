@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.text
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
@@ -11,6 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -25,7 +25,7 @@ import kotlin.reflect.jvm.jvmErasure
 internal class TextCommandVariationImpl internal constructor(
     override val context: BContext,
     override val command: TextCommandInfo,
-    builder: TextCommandVariationBuilder
+    builder: TextCommandVariationBuilderImpl
 ) : TextCommandVariation,
     ExecutableMixin {
 

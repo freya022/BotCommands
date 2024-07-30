@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -26,7 +27,7 @@ import kotlin.reflect.KFunction
 
 class SlashCommandOptionBuilder internal constructor(
     private val context: BContext,
-    internal val commandBuilder: SlashCommandBuilder,
+    internal val commandBuilder: SlashCommandBuilderImpl,
     optionParameter: OptionParameter,
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {

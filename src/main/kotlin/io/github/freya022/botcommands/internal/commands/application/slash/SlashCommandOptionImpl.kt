@@ -3,13 +3,13 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.classRef
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 internal class SlashCommandOptionImpl internal constructor(
     override val context: BContext,
     override val command: SlashCommandInfoImpl,
-    builder: SlashCommandBuilder,
+    builder: SlashCommandBuilderImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>

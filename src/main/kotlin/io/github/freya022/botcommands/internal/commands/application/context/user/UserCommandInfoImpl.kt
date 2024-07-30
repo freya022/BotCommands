@@ -2,13 +2,13 @@ package io.github.freya022.botcommands.internal.commands.application.context.use
 
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.context.builder.UserCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -22,7 +22,7 @@ import kotlin.reflect.full.callSuspendBy
 
 internal class UserCommandInfoImpl internal constructor(
     override val context: BContext,
-    builder: UserCommandBuilder
+    builder: UserCommandBuilderImpl
 ) : ApplicationCommandInfoImpl(builder),
     UserCommandInfo,
     TopLevelApplicationCommandInfoMixin {

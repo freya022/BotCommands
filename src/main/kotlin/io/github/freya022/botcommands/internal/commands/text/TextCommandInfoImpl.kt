@@ -2,11 +2,11 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.UsabilityImpl
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandBuilderImpl
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder
@@ -18,7 +18,7 @@ import java.util.*
 import java.util.function.Consumer
 
 internal sealed class TextCommandInfoImpl(
-    builder: TextCommandBuilder,
+    builder: TextCommandBuilderImpl,
     override val parentInstance: TextCommandInfoImpl?
 ) : AbstractCommandInfoImpl(builder),
     TextCommandInfo {
