@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 //See AutocompleteHandler for implementation details
 internal class AutocompleteInfoImpl internal constructor(
     context: BContext,
-    builder: AutocompleteInfoBuilder
+    builder: AutocompleteInfoBuilderImpl
 ) : AutocompleteInfo() {
     override val declarationSite: DeclarationSite = builder.declarationSite
     override val name: String? = builder.name

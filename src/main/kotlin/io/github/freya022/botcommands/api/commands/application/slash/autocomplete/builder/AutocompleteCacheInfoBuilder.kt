@@ -3,13 +3,8 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.internal.commands.CommandDSL
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 
-@CommandDSL
-class AutocompleteCacheInfoBuilder internal constructor() {
-    internal fun build() = AutocompleteCacheInfo(this)
-
+interface AutocompleteCacheInfoBuilder {
     /**
      * Whether the cache should be used even if [autocomplete cache is disabled][BConfig.disableAutocompleteCache].
      *
@@ -18,30 +13,30 @@ class AutocompleteCacheInfoBuilder internal constructor() {
      * @see BConfigBuilder.disableAutocompleteCache
      * @see CacheAutocomplete.forceCache
      */
-    var forceCache: Boolean = false
+    var forceCache: Boolean
 
     /**
      * @see CacheAutocomplete.cacheSize
      */
-    var cacheSize: Long = 2048
+    var cacheSize: Long
 
     /**
      * @see CacheAutocomplete.compositeKeys
      */
-    var compositeKeys: List<String> = emptyList()
+    var compositeKeys: List<String>
 
     /**
      * @see CacheAutocomplete.userLocal
      */
-    var guildLocal: Boolean = false
+    var guildLocal: Boolean
 
     /**
      * @see CacheAutocomplete.userLocal
      */
-    var userLocal: Boolean = false
+    var userLocal: Boolean
 
     /**
      * @see CacheAutocomplete.channelLocal
      */
-    var channelLocal: Boolean = false
+    var channelLocal: Boolean
 }

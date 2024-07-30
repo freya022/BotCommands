@@ -4,21 +4,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
-import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
-import kotlin.reflect.KFunction
 
-class AutocompleteInfoBuilder internal constructor(
-    private val context: BContext,
-    val name: String?,
-    override val function: KFunction<Collection<Any>>
-) : IBuilderFunctionHolder<Collection<*>>, IDeclarationSiteHolderBuilder {
-    override lateinit var declarationSite: DeclarationSite
-
+interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
     /**
      * Sets the [autocomplete mode][AutocompleteMode].
      *
@@ -26,7 +14,7 @@ class AutocompleteInfoBuilder internal constructor(
      *
      * @see AutocompleteHandler.mode
      */
-    var mode: AutocompleteMode = AutocompleteMode.FUZZY
+    var mode: AutocompleteMode
 
     /**
      * Whether the user input is shown as the first suggestion.
@@ -38,10 +26,7 @@ class AutocompleteInfoBuilder internal constructor(
      *
      * @see AutocompleteHandler.showUserInput
      */
-    var showUserInput: Boolean = false
-
-    internal var autocompleteCache: AutocompleteCacheInfo? = null
-        private set
+    var showUserInput: Boolean
 
     /**
      * Sets up autocomplete caching.
@@ -52,9 +37,7 @@ class AutocompleteInfoBuilder internal constructor(
      *
      * @see CacheAutocomplete @CacheAutocomplete
      */
-    fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {
-        autocompleteCache = AutocompleteCacheInfoBuilder().apply(block).build()
-    }
+    fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit = {})
 
     /**
      * Sets up autocomplete caching.
@@ -66,11 +49,6 @@ class AutocompleteInfoBuilder internal constructor(
      * @see CacheAutocomplete @CacheAutocomplete
      */
     @Deprecated("Only had one mode ever, that always has been and will still be the default", ReplaceWith("cache(block)"))
-    fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {
-        autocompleteCache = AutocompleteCacheInfoBuilder().apply(block).build()
-    }
-
-    internal fun build(): AutocompleteInfoImpl {
-        return AutocompleteInfoImpl(context, this)
-    }
+    fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {})
 }
+

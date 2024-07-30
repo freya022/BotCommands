@@ -6,13 +6,14 @@ import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclaratio
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilderImpl
 import kotlin.reflect.KFunction
 
 internal class AutocompleteManagerImpl internal constructor(override val context: BContext) : AutocompleteManager {
     private val autocompleteInfoContainer = context.getService<AutocompleteInfoContainer>()
 
     override fun autocomplete(function: KFunction<Collection<Any>>, name: String?, block: AutocompleteInfoBuilder.() -> Unit) {
-        autocompleteInfoContainer += AutocompleteInfoBuilder(context, name, function)
+        autocompleteInfoContainer += AutocompleteInfoBuilderImpl(context, name, function)
             .setCallerAsDeclarationSite()
             .apply(block)
             .build()
