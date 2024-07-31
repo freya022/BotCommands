@@ -83,11 +83,15 @@ internal object ReflectionMetadata {
             .disableNestedJarScanning()
             .scan()
             .use { scan ->
-                scan.allClasses
+                val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib() }
+                libClasses
                     .filterLibraryClasses(config)
                     .filterClasses(config)
-                    .also { classes ->
-                        val userClasses = classes.filterNot { it.isFromLib() }
+                    .processClasses(config, classGraphProcessors)
+
+                userClasses
+                    .filterClasses(config)
+                    .also {
                         if (logger.isTraceEnabled()) {
                             logger.trace { "Found ${userClasses.size} user classes: ${userClasses.joinToString { it.simpleNestedName }}" }
                         } else {
@@ -104,14 +108,12 @@ internal object ReflectionMetadata {
 
     private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> {
         // Get types referenced by factories so we get metadata from those as well
-        val referencedTypes = filter { it.isFromLib() }
+        val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
             .filter { it.isService(config) }
             .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
 
         return filter { classInfo ->
-            if (!classInfo.isFromLib()) return@filter true
-
             if (classInfo.isServiceOrHasFactories(config)) return@filter true
 
             // Get metadata from all classes that extend a referenced type
