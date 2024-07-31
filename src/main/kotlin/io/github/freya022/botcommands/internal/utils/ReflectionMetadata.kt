@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.utils.containsAny
 import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -82,9 +83,8 @@ internal object ReflectionMetadata {
             .disableNestedJarScanning()
             .scan()
             .use { scan ->
-                val referencedByFactories = hashSetOf<FullClassName>()
                 scan.allClasses
-                    .filterLibraryClasses(config, referencedByFactories)
+                    .filterLibraryClasses(config)
                     .filterClasses(config)
                     .also { classes ->
                         val userClasses = classes.filterNot { it.isFromLib() }
@@ -102,29 +102,33 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig, referencedByFactories: MutableSet<FullClassName>): List<ClassInfo> = filter { classInfo ->
-        if (!classInfo.isFromLib()) return@filter true
+    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> {
+        // Get types referenced by factories so we get metadata from those as well
+        val referencedTypes = filter { it.isFromLib() }
+            .flatMap { it.methodInfo }
+            .filter { it.isService(config) }
+            .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
 
-        if (classInfo.name in referencedByFactories) return@filter true
+        return filter { classInfo ->
+            if (!classInfo.isFromLib()) return@filter true
 
-        if (classInfo.isServiceOrHasFactories(config, referencedByFactories)) return@filter true
-        if (classInfo.outerClasses.any { it.isServiceOrHasFactories(config, referencedByFactories) }) return@filter true
-        if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
-        if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
+            if (classInfo.isServiceOrHasFactories(config)) return@filter true
 
-        return@filter false
+            // Get metadata from all classes that extend a referenced type
+            // As we can't know exactly what object a factory could return
+            val superclasses = (classInfo.superclasses + classInfo.interfaces + classInfo).mapTo(hashSetOf()) { it.name }
+            if (superclasses.containsAny(referencedTypes)) return@filter true
+
+            if (classInfo.outerClasses.any { it.isServiceOrHasFactories(config) }) return@filter true
+            if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
+            if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
+
+            return@filter false
+        }
     }
 
-    private fun ClassInfo.isServiceOrHasFactories(config: BConfig, referencedByFactories: MutableSet<FullClassName>): Boolean {
-        if (this.isService(config)) return true
-
-        val factories = this.methodInfo.filter { it.isService(config) }
-        if (factories.isNotEmpty()) {
-            referencedByFactories += factories.map { it.typeDescriptor.resultType.toStringWithSimpleNames() }
-            return true
-        } else {
-            return false
-        }
+    private fun ClassInfo.isServiceOrHasFactories(config: BConfig): Boolean {
+        return isService(config) || methodInfo.any { it.isService(config) }
     }
 
     private fun ClassInfo.isFromLib() =
