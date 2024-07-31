@@ -3,10 +3,12 @@ package io.github.freya022.botcommands.internal.utils
 import io.github.classgraph.*
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.debugNull
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.containsAny
 import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.shortSignature
@@ -176,47 +178,9 @@ internal object ReflectionMetadata {
     private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
-                // Ignore unknown classes
-                val kClass = runCatching {
-                    classInfo.loadClass().kotlin
-                }.onFailure {
-                    // ClassGraph wraps Class#forName exceptions in an IAE
-                    if (it is IllegalArgumentException) {
-                        val cause = it.cause
-                        if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
-                            logger.debug { "Ignoring ${classInfo.name} due to unsatisfied dependency ${cause.message}" }
-                            return@onEach
-                        }
-                    }
-                }.getOrThrow()
+                val kClass = tryGetClass(classInfo) ?: return@onEach
 
-                for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
-                    //Don't inspect methods with generics
-                    if (methodInfo.parameterInfo
-                            .map { it.typeSignatureOrTypeDescriptor }
-                            .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
-                    ) continue
-
-                    // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
-                    val method: Executable = try {
-                        when {
-                            methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
-                            else -> methodInfo.loadClassAndGetMethod()
-                        }
-                    } catch (e: NoClassDefFoundError) {
-                        if (logger.isTraceEnabled())
-                            logger.trace(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
-                        else
-                            logger.debug { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
-                        continue
-                    }
-                    val nullabilities = getMethodParameterNullabilities(methodInfo, method)
-
-                    methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
-
-                    val isServiceFactory = methodInfo.isService(config)
-                    classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
-                }
+                processMethods(config, classGraphProcessors, classInfo, kClass)
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
@@ -225,6 +189,64 @@ internal object ReflectionMetadata {
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
+        }
+    }
+
+    private fun tryGetClass(classInfo: ClassInfo): KClass<*>? {
+        // Ignore unknown classes
+        return try {
+            classInfo.loadClass().kotlin
+        } catch(e: IllegalArgumentException) {
+            // ClassGraph wraps Class#forName exceptions in an IAE
+            val cause = e.cause
+            if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
+                return if (logger.isTraceEnabled()) {
+                    logger.traceNull(e) { "Ignoring ${classInfo.name} due to unsatisfied dependency" }
+                } else {
+                    logger.debugNull { "Ignoring ${classInfo.name} due to unsatisfied dependency: ${cause.message}" }
+                }
+            } else {
+                throw e
+            }
+        }
+    }
+
+    private fun processMethods(
+        config: BConfig,
+        classGraphProcessors: List<ClassGraphProcessor>,
+        classInfo: ClassInfo,
+        kClass: KClass<out Any>,
+    ) {
+        for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
+            //Don't inspect methods with generics
+            if (methodInfo.parameterInfo
+                    .map { it.typeSignatureOrTypeDescriptor }
+                    .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
+            ) continue
+
+            val method: Executable = tryGetExecutable(methodInfo) ?: continue
+            val nullabilities = getMethodParameterNullabilities(methodInfo, method)
+
+            methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
+
+            val isServiceFactory = methodInfo.isService(config)
+            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
+        }
+    }
+
+    private fun tryGetExecutable(methodInfo: MethodInfo): Executable? {
+        // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
+        try {
+            return when {
+                methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
+                else -> methodInfo.loadClassAndGetMethod()
+            }
+        } catch (e: NoClassDefFoundError) {
+            if (logger.isTraceEnabled())
+                logger.trace(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
+            else
+                logger.debug { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+            return null
         }
     }
 
