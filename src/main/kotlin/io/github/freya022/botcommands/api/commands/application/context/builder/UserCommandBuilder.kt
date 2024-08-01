@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.context.builder
 
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 
-interface UserCommandBuilder : ApplicationCommandBuilder<UserCommandOptionAggregateBuilder>,
-                               UserCommandOptionRegistry,
-                               ITopLevelApplicationCommandBuilder
+interface UserCommandBuilder : TopLevelApplicationCommandBuilder<UserCommandOptionAggregateBuilder>,
+                               UserCommandOptionRegistry

@@ -5,14 +5,13 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.mixins.TopLevelApplicationCommandBuilderMixin
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.mixins.TopLevelApplicationCommandBuilderMixinImpl
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 
@@ -23,10 +22,9 @@ internal class TopLevelSlashCommandBuilderImpl internal constructor(
     scope: CommandScope
 ) : SlashCommandBuilderImpl(context, name, function),
     TopLevelSlashCommandBuilder,
-    //TODO uhhh
-    ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
+    TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(scope) {
 
-    override val topLevelBuilder: ITopLevelApplicationCommandBuilder get() = this
+    override val topLevelBuilder get() = this
     override val parentInstance: INamedCommand? get() = null
 
     internal val subcommands: NamedCommandMap<SlashSubcommandBuilderImpl> = NamedCommandMap()

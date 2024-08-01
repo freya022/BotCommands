@@ -1,13 +1,12 @@
-package io.github.freya022.botcommands.api.commands.application.slash.builder.mixins
+package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import net.dv8tion.jda.api.Permission
 
-interface ITopLevelApplicationCommandBuilder {
+interface TopLevelApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> : ApplicationCommandBuilder<T> {
     /**
      * @see TopLevelSlashCommandData.scope
      * @see JDAUserCommand.scope

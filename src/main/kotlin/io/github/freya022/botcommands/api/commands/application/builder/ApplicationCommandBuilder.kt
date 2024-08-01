@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
-import io.github.freya022.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 
@@ -10,7 +9,7 @@ interface ApplicationCommandBuilder<T> : ExecutableCommandBuilder<T>,
                                          ApplicationOptionRegistry<T> where T : ApplicationCommandOptionAggregateBuilder<T> {
 
     //TODO document
-    val topLevelBuilder: ITopLevelApplicationCommandBuilder
+    val topLevelBuilder: TopLevelApplicationCommandBuilder<T>
 
     /**
      * Set of filters preventing this command from executing.
