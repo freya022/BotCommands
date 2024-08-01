@@ -22,7 +22,7 @@ internal class MessageCommandBuilderImpl internal constructor(
     MessageCommandBuilder,
     TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(scope) {
 
-    override val type: CommandType = CommandType.MESSAGE_CONTEXT
+    override val type: CommandType get() = CommandType.MESSAGE_CONTEXT
     override val topLevelBuilder get() = this
     override val parentInstance: INamedCommand? get() = null
 

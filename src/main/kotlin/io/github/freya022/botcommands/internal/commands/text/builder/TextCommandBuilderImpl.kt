@@ -17,7 +17,7 @@ internal abstract class TextCommandBuilderImpl internal constructor(
 ) : CommandBuilderImpl(context, name),
     TextCommandBuilder {
 
-    final override val type: CommandType = CommandType.TEXT
+    final override val type: CommandType get() = CommandType.TEXT
     internal val subcommands: MutableList<TextSubcommandBuilderImpl> = arrayListOf()
 
     internal val variations: MutableList<TextCommandVariationBuilderImpl> = arrayListOf()

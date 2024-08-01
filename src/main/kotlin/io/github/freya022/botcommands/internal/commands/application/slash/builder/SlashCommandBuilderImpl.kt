@@ -19,7 +19,7 @@ internal abstract class SlashCommandBuilderImpl internal constructor(
 ) : ApplicationCommandBuilderImpl<SlashCommandOptionAggregateBuilder>(context, name, function ?: SlashUtils.fakeSlashFunction),
     SlashCommandBuilder {
 
-    final override val type: CommandType = CommandType.SLASH
+    final override val type: CommandType get() = CommandType.SLASH
 
     final override var description: String? = null
         set(value) {

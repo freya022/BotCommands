@@ -22,7 +22,7 @@ internal class UserCommandBuilderImpl internal constructor(
     UserCommandBuilder,
     TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(scope) {
 
-    override val type: CommandType = CommandType.USER_CONTEXT
+    override val type: CommandType get() = CommandType.USER_CONTEXT
     override val topLevelBuilder get() = this
     override val parentInstance: INamedCommand? get() = null
 
