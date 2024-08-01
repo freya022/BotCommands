@@ -4,12 +4,14 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -25,6 +27,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 internal sealed class ContextCommandAutoBuilder(
     override val serviceContainer: ServiceContainer,
@@ -47,9 +50,20 @@ internal sealed class ContextCommandAutoBuilder(
             val declaredName = kParameter.findDeclarationName()
             val optionAnnotation = kParameter.findAnnotation<ContextOption>()
             if (optionAnnotation != null) {
-                when (this) {
-                    is UserCommandBuilder -> option(declaredName)
-                    is MessageCommandBuilder -> option(declaredName)
+                fun ApplicationOptionRegistry<*>.addOption(valueName: String) {
+                    when (this) {
+                        is UserCommandOptionRegistry -> option(valueName)
+                        is MessageCommandOptionRegistry -> option(valueName)
+                    }
+                }
+
+                if (kParameter.type.jvmErasure.isValue) {
+                    val inlineClassType = kParameter.type.jvmErasure
+                    inlineClassAggregate(declaredName, inlineClassType) { valueName ->
+                        addOption(valueName)
+                    }
+                } else {
+                    addOption(declaredName)
                 }
             } else if (kParameter.hasAnnotation<GeneratedOption>()) {
                 generatedOption(
