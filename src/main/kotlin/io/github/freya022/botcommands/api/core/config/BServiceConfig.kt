@@ -15,13 +15,14 @@ import kotlin.reflect.KClass
 
 @InjectedService
 interface BServiceConfig {
-    //TODO document - this seems to be mostly used to retain classpath elements
+    @Deprecated(message = "For removal, didn't do much in the first place")
     val serviceAnnotations: Set<KClass<out Annotation>>
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
 }
 
 @ConfigDSL
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
+    @Deprecated("For removal, didn't do much in the first place")
     override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
     private val _instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()
@@ -41,6 +42,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
 
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {
+        @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
         override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
     }
