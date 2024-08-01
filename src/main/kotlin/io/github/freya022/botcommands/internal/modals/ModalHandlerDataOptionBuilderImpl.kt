@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.modals
 
-import io.github.freya022.botcommands.internal.core.options.builder.AbstractGeneratedOptionBuilder
+import io.github.freya022.botcommands.internal.core.options.builder.AbstractGeneratedOptionBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 
-internal class ModalHandlerDataOptionBuilder(
+internal class ModalHandlerDataOptionBuilderImpl(
     optionParameter: OptionParameter
-) : AbstractGeneratedOptionBuilder(optionParameter) {
+) : AbstractGeneratedOptionBuilderImpl(optionParameter) {
     override fun toGeneratedOption() = ModalHandlerDataOption(this)
 }

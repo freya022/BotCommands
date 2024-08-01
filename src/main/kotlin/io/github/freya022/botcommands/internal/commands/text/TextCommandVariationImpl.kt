@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -59,7 +60,7 @@ internal class TextCommandVariationImpl internal constructor(
         useTokenizedEvent = eventFunction.firstParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
-            TextCommandParameterImpl(context, this, it)
+            TextCommandParameterImpl(context, this, it as TextCommandOptionAggregateBuilderImpl)
         }
 
         completePattern = when {

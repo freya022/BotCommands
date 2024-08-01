@@ -15,7 +15,7 @@ internal class OptionAggregateBuilderContainerMixinImpl<T : OptionAggregateBuild
     override val optionAggregateBuilders: Map<String, T>
         get() = _optionAggregateBuilders.unmodifiableView()
 
-    override fun hasVararg() = optionAggregateBuilders.values.any { it.aggregator.isVarargAggregator() }
+    override fun hasVararg() = optionAggregateBuilders.values.any { (it as OptionAggregateBuilderImpl<*>).aggregator.isVarargAggregator() }
 
     override fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
         aggregate(AggregatorParameter.fromUserAggregate(targetFunction, declaredName), aggregator, block)

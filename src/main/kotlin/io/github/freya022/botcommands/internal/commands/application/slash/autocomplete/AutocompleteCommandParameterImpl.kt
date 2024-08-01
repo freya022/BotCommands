@@ -1,12 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.requireAt
@@ -19,7 +20,7 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     command: SlashCommandInfoImpl,
     builder: SlashCommandBuilderImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
-    optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
+    optionAggregateBuilder: SlashCommandOptionAggregateBuilderImpl,
     autocompleteFunction: KFunction<*>
 ) : AbstractSlashCommandParameter(context, command, builder, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
 
@@ -37,7 +38,7 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     }
 
     override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
-        AutocompleteCommandParameterImpl(context, command, builder, it.optionAggregateBuilders, it, optionAggregateBuilder.aggregator)
+        AutocompleteCommandParameterImpl(context, command, builder, (it as SlashCommandOptionAggregateBuilderImpl).optionAggregateBuilders, it, optionAggregateBuilder.aggregator)
     }
 
     override fun constructOption(
@@ -45,7 +46,7 @@ internal class AutocompleteCommandParameterImpl internal constructor(
         command: SlashCommandInfoImpl,
         builder: SlashCommandBuilderImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
-        optionBuilder: SlashCommandOptionBuilder,
+        optionBuilder: SlashCommandOptionBuilderImpl,
         resolver: SlashParameterResolver<*, *>
     ) = AutocompleteCommandOptionImpl(context, command, optionBuilder, resolver)
 }

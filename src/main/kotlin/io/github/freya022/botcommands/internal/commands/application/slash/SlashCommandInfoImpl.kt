@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -57,7 +58,13 @@ internal sealed class SlashCommandInfoImpl(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameterImpl(context, this@SlashCommandInfoImpl, builder, builder.optionAggregateBuilders, it)
+            SlashCommandParameterImpl(
+                context,
+                this@SlashCommandInfoImpl,
+                builder,
+                builder.optionAggregateBuilders,
+                it as SlashCommandOptionAggregateBuilderImpl
+            )
         }
 
         parameters

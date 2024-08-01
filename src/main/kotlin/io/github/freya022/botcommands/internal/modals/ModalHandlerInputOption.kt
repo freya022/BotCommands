@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
 import kotlin.reflect.full.findAnnotation
 
 internal class ModalHandlerInputOption(
-    optionBuilder: ModalHandlerInputOptionBuilder,
+    optionBuilder: ModalHandlerInputOptionBuilderImpl,
     val resolver: ModalParameterResolver<*, *>
 ) : ModalHandlerOption(optionBuilder) {
     val inputName: String = kParameter.findAnnotation<ModalInput>()!!.name

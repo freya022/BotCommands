@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
@@ -51,7 +52,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it, function)
+            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }

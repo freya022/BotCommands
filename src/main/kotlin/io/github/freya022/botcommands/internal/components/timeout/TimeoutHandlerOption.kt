@@ -5,6 +5,6 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 
 internal class TimeoutHandlerOption internal constructor(
-    optionBuilder: TimeoutHandlerOptionBuilder,
+    optionBuilder: TimeoutHandlerOptionBuilderImpl,
     val resolver: TimeoutParameterResolver<*, *>
 ) : OptionImpl(optionBuilder.optionParameter, OptionType.OPTION)

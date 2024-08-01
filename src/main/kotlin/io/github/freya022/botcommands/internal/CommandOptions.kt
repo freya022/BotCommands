@@ -1,10 +1,6 @@
 package io.github.freya022.botcommands.internal
 
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
-import io.github.freya022.botcommands.api.commands.builder.ServiceOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.options.builder.OptionBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
@@ -13,7 +9,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
-import io.github.freya022.botcommands.internal.core.options.builder.AbstractGeneratedOptionBuilder
+import io.github.freya022.botcommands.internal.core.options.builder.*
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
@@ -24,10 +20,10 @@ import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 internal object CommandOptions {
-    internal inline fun <reified T : OptionBuilder, reified R : IParameterResolver<R>> transform(
+    internal inline fun <reified T : OptionBuilderImpl, reified R : IParameterResolver<R>> transform(
         context: BContext,
         resolverData: ResolverData?,
-        aggregateBuilder: OptionAggregateBuilder<*>,
+        aggregateBuilder: OptionAggregateBuilderImpl<*>,
         optionFinalizer: (optionBuilder: T, resolver: R) -> OptionImpl
     ): List<OptionImpl> {
         val aggregator = aggregateBuilder.aggregator
@@ -48,9 +44,9 @@ internal object CommandOptions {
                     val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
                     optionFinalizer(optionBuilder, resolver)
                 }
-                is AbstractGeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
-                is ServiceOptionBuilder -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
-                is CustomOptionBuilder -> {
+                is AbstractGeneratedOptionBuilderImpl -> optionBuilder.toGeneratedOption()
+                is ServiceOptionBuilderImpl -> ServiceMethodOption(optionBuilder.optionParameter, context.serviceContainer)
+                is CustomOptionBuilderImpl -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
                     val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(ResolverRequest(parameter, resolverData))
@@ -61,7 +57,7 @@ internal object CommandOptions {
         }
     }
 
-    private val OptionBuilder.innerWrappedParameter: ParameterWrapper
+    private val OptionBuilderImpl.innerWrappedParameter: ParameterWrapper
         get() = when {
             optionParameter.executableFunction.isVarargAggregator() -> parameter.wrap().toListElementType()
             else -> parameter.wrap()

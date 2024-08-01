@@ -3,16 +3,16 @@ package io.github.freya022.botcommands.internal.commands.text
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.QuotableTextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.commands.CommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandOptionBuilderImpl
 
 internal class TextCommandOptionImpl internal constructor(
     override val context: BContext,
     override val command: TextCommandVariation,
-    optionBuilder: TextCommandOptionBuilder,
+    optionBuilder: TextCommandOptionBuilderImpl,
     internal val resolver: TextParameterResolver<*, *>
 ) : CommandOptionImpl(optionBuilder),
     TextCommandOption {

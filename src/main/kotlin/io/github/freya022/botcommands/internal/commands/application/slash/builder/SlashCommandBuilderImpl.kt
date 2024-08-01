@@ -47,15 +47,15 @@ internal abstract class SlashCommandBuilderImpl internal constructor(
             for (i in 0..<amount) {
                 option("args", optionNameSupplier(i)) {
                     block(i)
-                    isOptional = i >= requiredAmount
+                    (this as SlashCommandOptionBuilderImpl).isOptional = i >= requiredAmount
                 }
             }
         }
     }
 
-    final override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilder {
+    final override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilderImpl {
         if (!allowOptions) throwArgument("Cannot add options as this already contains subcommands/subcommand groups")
 
-        return SlashCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
+        return SlashCommandOptionAggregateBuilderImpl(context, this, aggregatorParameter, aggregator)
     }
 }

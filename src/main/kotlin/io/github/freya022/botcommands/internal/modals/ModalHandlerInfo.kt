@@ -43,9 +43,9 @@ internal class ModalHandlerInfo internal constructor(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
                 if (parameter.hasAnnotation<ModalInput>()) {
-                    ModalHandlerInputOptionBuilder(optionParameter)
+                    ModalHandlerInputOptionBuilderImpl(optionParameter)
                 } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
-                    ModalHandlerDataOptionBuilder(optionParameter)
+                    ModalHandlerDataOptionBuilderImpl(optionParameter)
                 } else {
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }

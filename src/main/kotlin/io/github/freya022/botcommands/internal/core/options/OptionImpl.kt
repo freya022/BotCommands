@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.core.options
 
-import io.github.freya022.botcommands.api.commands.CommandOptionBuilder
 import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.utils.isPrimitive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.commands.builder.CommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
@@ -17,12 +17,12 @@ import kotlin.reflect.jvm.jvmErasure
 internal abstract class OptionImpl private constructor(
     internal val optionParameter: OptionParameter,
     internal val optionType: OptionType,
-    /** @see CommandOptionBuilder.isOptional */
+    /** @see CommandOptionBuilderImpl.isOptional */
     optional: Boolean?
 ) : Option {
     internal constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
 
-    internal constructor(commandOptionBuilder: CommandOptionBuilder) : this(
+    internal constructor(commandOptionBuilder: CommandOptionBuilderImpl) : this(
         commandOptionBuilder.optionParameter,
         OptionType.OPTION,
         commandOptionBuilder.isOptional

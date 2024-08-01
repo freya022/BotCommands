@@ -28,7 +28,7 @@ internal class TextCommandVariationBuilderImpl internal constructor(
 
     private val aggregateContainer =
         OptionAggregateBuilderContainerMixinImpl(function) { aggregatorParameter, aggregator ->
-            TextCommandOptionAggregateBuilder(context, this, aggregatorParameter, aggregator)
+            TextCommandOptionAggregateBuilderImpl(context, this, aggregatorParameter, aggregator)
         }
 
     override val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
@@ -59,7 +59,7 @@ internal class TextCommandVariationBuilderImpl internal constructor(
             for (i in 0..<amount) {
                 option("args", optionNameSupplier(i)) {
                     block(i)
-                    isOptional = i >= requiredAmount
+                    (this as TextCommandOptionBuilderImpl).isOptional = i >= requiredAmount
                 }
             }
         }

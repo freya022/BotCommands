@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.context.builder.UserCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.builder.UserCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -47,7 +48,7 @@ internal class UserCommandInfoImpl internal constructor(
         initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            UserContextCommandParameterImpl(context, this, builder, it)
+            UserContextCommandParameterImpl(context, this, builder, it as UserCommandOptionAggregateBuilderImpl)
         }
     }
 

@@ -10,27 +10,17 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
-import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
-class SlashCommandOptionBuilder internal constructor(
-    private val context: BContext,
-    internal val commandBuilder: SlashCommandBuilderImpl,
-    optionParameter: OptionParameter,
+interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
+    //TODO docs
     val optionName: String
-): ApplicationCommandOptionBuilder(optionParameter) {
+
     /**
      * Description of the option.<br>
      * Must follow the Discord specifications,
@@ -46,11 +36,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see SlashOption.usePredefinedChoices
      */
-    var description: String? = null
-        set(value) {
-            require(value == null || value.isNotBlank()) { "Description cannot be blank" }
-            field = value
-        }
+    var description: String?
 
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
@@ -61,13 +47,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see SlashOption.usePredefinedChoices
      */
-    var usePredefinedChoices: Boolean = false
-        set(enable) {
-            check(choices == null) {
-                "Cannot use predefined choices when choices are set"
-            }
-            field = enable
-        }
+    var usePredefinedChoices: Boolean
 
     /**
      * The option's choices.
@@ -81,16 +61,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see ApplicationCommand.getOptionChoices
      */
-    var choices: List<Choice>? = null
-        set(choices) {
-            check(!usePredefinedChoices) {
-                "Cannot set choices when predefined choices are enabled"
-            }
-            require(choices == null || choices.isNotEmpty()) {
-                "List cannot be empty"
-            }
-            field = choices
-        }
+    var choices: List<Choice>?
 
     /**
      * Sets the minimum and maximum values on the specified option.
@@ -100,7 +71,7 @@ class SlashCommandOptionBuilder internal constructor(
      * @see DoubleRange
      * @see LongRange
      */
-    var valueRange: ValueRange? = null
+    var valueRange: ValueRange?
 
     /**
      * Sets the minimum and maximum string length on the specified option.
@@ -109,10 +80,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see Length
      */
-    var lengthRange: LengthRange? = null
-
-    internal var autocompleteInfo: AutocompleteInfoImpl? = null
-        private set
+    var lengthRange: LengthRange?
 
     /**
      * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name].
@@ -122,9 +90,7 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * @see AutocompleteHandler @AutocompleteHandler
      */
-    fun autocompleteByName(name: String) {
-        autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwArgument("Unknown autocomplete handler: $name")
-    }
+    fun autocompleteByName(name: String)
 
     /**
      * Uses an existing autocomplete handler with the specified function.
@@ -132,8 +98,5 @@ class SlashCommandOptionBuilder internal constructor(
      * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
      * or [AutocompleteManager.autocomplete].
      */
-    fun autocompleteByFunction(function: KFunction<*>) {
-        autocompleteInfo = context.getService<AutocompleteInfoContainer>()[function]
-            ?: throwArgument("No autocomplete handler declared from: ${function.shortSignatureNoSrc}")
-    }
+    fun autocompleteByFunction(function: KFunction<*>)
 }
