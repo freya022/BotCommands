@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.commands.text.options.TextCommandOptionImpl
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.regex.Pattern

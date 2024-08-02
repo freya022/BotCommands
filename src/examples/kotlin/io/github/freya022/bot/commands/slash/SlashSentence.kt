@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import io.github.freya022.botcommands.api.commands.application.slash.builder.inlineClassOptionVararg
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice

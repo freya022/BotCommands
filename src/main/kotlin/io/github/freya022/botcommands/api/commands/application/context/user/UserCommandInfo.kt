@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.application.context.user
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
+import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandParameter
 
 /**
  * Represents a context command that acts on a user.

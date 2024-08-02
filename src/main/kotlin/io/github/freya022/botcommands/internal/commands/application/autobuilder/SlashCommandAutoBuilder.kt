@@ -14,7 +14,11 @@ import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
-import io.github.freya022.botcommands.api.commands.application.slash.builder.*
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashOptionRegistry
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType

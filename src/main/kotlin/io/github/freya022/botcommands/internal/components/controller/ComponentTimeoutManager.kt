@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.internal.components.repositories.Component
 import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
-import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandlerOption
+import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerOption
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType

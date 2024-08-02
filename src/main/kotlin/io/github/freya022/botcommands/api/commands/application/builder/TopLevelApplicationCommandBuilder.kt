@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.builder
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import net.dv8tion.jda.api.Permission
 

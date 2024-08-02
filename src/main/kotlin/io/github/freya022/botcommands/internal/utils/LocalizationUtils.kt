@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.LocalizationService
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 

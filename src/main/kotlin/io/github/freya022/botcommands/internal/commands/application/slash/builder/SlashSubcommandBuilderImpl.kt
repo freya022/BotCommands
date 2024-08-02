@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.commands.application.slash.build
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl

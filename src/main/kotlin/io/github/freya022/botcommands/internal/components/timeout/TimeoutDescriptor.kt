@@ -3,13 +3,15 @@ package io.github.freya022.botcommands.internal.components.timeout
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.internal.ExecutableMixin
+import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerParameter
+import io.github.freya022.botcommands.internal.components.timeout.options.builder.TimeoutHandlerOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.builder.ServiceOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.shortSignature

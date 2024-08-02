@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.core.options
 import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.utils.isPrimitive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.builder.CommandOptionBuilderImpl
+import io.github.freya022.botcommands.internal.commands.options.builder.CommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.OptionParameter

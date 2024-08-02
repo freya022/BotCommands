@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandOption
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.requireAt
 import net.dv8tion.jda.api.interactions.commands.OptionType

@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
@@ -13,9 +13,9 @@ import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.throwUser
-import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.classRef

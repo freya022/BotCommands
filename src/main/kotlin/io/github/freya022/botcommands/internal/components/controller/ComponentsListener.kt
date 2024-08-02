@@ -26,8 +26,8 @@ import io.github.freya022.botcommands.internal.components.data.EphemeralComponen
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerContainer
-import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerOption
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerOption
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionImpl

@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.application.context.message
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandOption
+import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandParameter
 
 /**
  * Represents a context command that acts on a message.

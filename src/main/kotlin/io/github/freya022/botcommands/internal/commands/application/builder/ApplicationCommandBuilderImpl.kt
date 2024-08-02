@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application.builder
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.builder.ExecutableCommandBuilderImpl
 import kotlin.reflect.KFunction

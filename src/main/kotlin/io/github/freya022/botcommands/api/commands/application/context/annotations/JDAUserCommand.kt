@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.api.commands.application.context.annotati
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.context.user.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider

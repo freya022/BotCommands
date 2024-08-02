@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionAggregateBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandOptionBuilderImpl
-import io.github.freya022.botcommands.internal.transform
+import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandParameter
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwArgument

@@ -10,9 +10,9 @@ import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.builder.TextOptionRegistry
+import io.github.freya022.botcommands.api.commands.text.options.builder.TextCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.text.options.builder.TextOptionRegistry
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate

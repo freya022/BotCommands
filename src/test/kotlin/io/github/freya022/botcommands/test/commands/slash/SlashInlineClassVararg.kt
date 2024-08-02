@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.builder.inlineClassOptionVararg
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
 
 @Command
 class SlashInlineClassVararg : ApplicationCommand(), GlobalApplicationCommandProvider {

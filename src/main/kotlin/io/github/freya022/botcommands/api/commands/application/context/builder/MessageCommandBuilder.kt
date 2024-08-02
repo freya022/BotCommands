@@ -1,6 +1,0 @@
-package io.github.freya022.botcommands.api.commands.application.context.builder
-
-import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
-
-interface MessageCommandBuilder : TopLevelApplicationCommandBuilder<MessageCommandOptionAggregateBuilder>,
-                                  MessageCommandOptionRegistry

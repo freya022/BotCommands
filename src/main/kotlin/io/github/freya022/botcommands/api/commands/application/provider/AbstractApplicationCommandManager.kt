@@ -5,12 +5,12 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.api.commands.application.context.message.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.context.user.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -19,10 +19,10 @@ import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclaratio
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
-import io.github.freya022.botcommands.internal.commands.application.context.builder.MessageCommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.context.builder.UserCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.builder.MessageCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.builder.UserCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.TopLevelSlashCommandBuilderImpl
 import net.dv8tion.jda.api.entities.Member

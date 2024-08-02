@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.application.builder
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 

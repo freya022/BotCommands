@@ -2,11 +2,13 @@ package io.github.freya022.botcommands.internal.commands.application.slash.build
 
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.internal.utils.Checks

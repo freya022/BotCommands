@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandParameter
 
 /**
  * Represents a slash command, can be [top-level][TopLevelSlashCommandInfo] or a [subcommand][SlashSubcommandInfo]

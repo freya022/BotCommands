@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsBuilder
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.utils.launchCatching

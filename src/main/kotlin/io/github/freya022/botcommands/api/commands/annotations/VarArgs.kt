@@ -3,10 +3,10 @@ package io.github.freya022.botcommands.api.commands.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.inlineClassOptionVararg
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.builder.inlineClassOptionVararg
+import io.github.freya022.botcommands.api.commands.text.options.builder.inlineClassOptionVararg
 
 /**
  * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].

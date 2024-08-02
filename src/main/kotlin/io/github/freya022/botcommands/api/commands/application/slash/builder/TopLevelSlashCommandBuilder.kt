@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 

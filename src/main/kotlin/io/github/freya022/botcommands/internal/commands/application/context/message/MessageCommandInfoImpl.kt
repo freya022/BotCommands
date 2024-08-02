@@ -7,17 +7,19 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
-import io.github.freya022.botcommands.internal.commands.application.context.builder.MessageCommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.context.builder.MessageCommandOptionAggregateBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.builder.MessageCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.MessageContextCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.MessageContextCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.builder.MessageCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
+import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
-import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 

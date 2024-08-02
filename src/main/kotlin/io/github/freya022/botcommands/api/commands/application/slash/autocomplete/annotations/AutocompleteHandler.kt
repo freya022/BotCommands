@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver

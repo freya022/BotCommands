@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolde
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
+import io.github.freya022.botcommands.api.commands.text.options.builder.TextOptionRegistry
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.CommandDSL

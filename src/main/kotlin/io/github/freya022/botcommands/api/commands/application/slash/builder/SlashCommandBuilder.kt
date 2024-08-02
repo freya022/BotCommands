@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashOptionRegistry
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 

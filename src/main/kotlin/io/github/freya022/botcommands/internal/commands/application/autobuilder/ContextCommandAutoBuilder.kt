@@ -4,10 +4,10 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandOptionRegistry
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig

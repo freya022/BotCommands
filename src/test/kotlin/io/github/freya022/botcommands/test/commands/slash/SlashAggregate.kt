@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
-import io.github.freya022.botcommands.api.commands.application.slash.builder.inlineClassOption
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOption
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
