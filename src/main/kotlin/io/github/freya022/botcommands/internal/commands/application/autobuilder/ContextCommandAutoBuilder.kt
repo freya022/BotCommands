@@ -57,9 +57,9 @@ internal sealed class ContextCommandAutoBuilder(
                     }
                 }
 
-                if (kParameter.type.jvmErasure.isValue) {
-                    val inlineClassType = kParameter.type.jvmErasure
-                    inlineClassAggregate(declaredName, inlineClassType) { valueName ->
+                val paramType = kParameter.type.jvmErasure
+                if (paramType.isValue) {
+                    inlineClassAggregate(declaredName, paramType) { valueName ->
                         addOption(valueName)
                     }
                 } else {
