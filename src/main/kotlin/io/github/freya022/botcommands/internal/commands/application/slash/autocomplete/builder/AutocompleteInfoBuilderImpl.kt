@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
@@ -28,14 +27,6 @@ internal class AutocompleteInfoBuilderImpl internal constructor(
         private set
 
     override fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit) {
-        autocompleteCache = AutocompleteCacheInfoBuilderImpl().apply(block).build()
-    }
-
-    @Deprecated(
-        message = "Only had one mode ever, that always has been and will still be the default",
-        ReplaceWith("cache(block)")
-    )
-    override fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit) {
         autocompleteCache = AutocompleteCacheInfoBuilderImpl().apply(block).build()
     }
 

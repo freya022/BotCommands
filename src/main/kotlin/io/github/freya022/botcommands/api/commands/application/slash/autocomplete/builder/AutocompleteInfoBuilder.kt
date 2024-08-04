@@ -49,6 +49,6 @@ interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
      * @see CacheAutocomplete @CacheAutocomplete
      */
     @Deprecated("Only had one mode ever, that always has been and will still be the default", ReplaceWith("cache(block)"))
-    fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {})
+    fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {}) = cache(block)
 }
 
