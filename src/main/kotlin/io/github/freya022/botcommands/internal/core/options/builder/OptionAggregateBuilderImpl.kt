@@ -29,7 +29,7 @@ internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>
         get() = _optionBuilders
 
     private val aggregateContainer = OptionAggregateBuilderContainerMixinImpl(aggregator, ::constructNestedAggregate)
-    override val optionAggregateBuilders: Map<String, T> get() = aggregateContainer.optionAggregateBuilders
+    final override val optionAggregateBuilders: Map<String, T> get() = aggregateContainer.optionAggregateBuilders
 
     init {
         //Do not check return type of trusted aggregators
@@ -44,13 +44,13 @@ internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>
     protected abstract val context: BContext
     protected abstract val declarationSiteHolder: IDeclarationSiteHolder
 
-    override fun hasVararg(): Boolean = aggregateContainer.hasVararg()
+    final override fun hasVararg(): Boolean = aggregateContainer.hasVararg()
 
-    override fun serviceOption(declaredName: String) {
+    final override fun serviceOption(declaredName: String) {
         this += ServiceOptionBuilderImpl(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
-    override fun customOption(declaredName: String) {
+    final override fun customOption(declaredName: String) {
         if (context.serviceContainer.canCreateWrappedService(aggregatorParameter.typeCheckingParameter) == null) {
             objectLogger().warn { "Using ${this::customOption.resolveBestReference().getSignature(source = false)} **for services** has been deprecated, please use ${this::serviceOption.resolveBestReference().getSignature(source = false)} instead, parameter '$declaredName' of ${declarationSiteHolder.declarationSite}" }
             return serviceOption(declaredName)
@@ -58,13 +58,13 @@ internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>
         this += CustomOptionBuilderImpl(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
-    override fun selfAggregate(declaredName: String, block: T.() -> Unit) =
+    final override fun selfAggregate(declaredName: String, block: T.() -> Unit) =
         aggregateContainer.selfAggregate(declaredName, block)
 
-    override fun varargAggregate(declaredName: String, block: T.() -> Unit) =
+    final override fun varargAggregate(declaredName: String, block: T.() -> Unit) =
         aggregateContainer.varargAggregate(declaredName, block)
 
-    override fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) =
+    final override fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) =
         aggregateContainer.aggregate(declaredName, aggregator, block)
 
     internal abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
