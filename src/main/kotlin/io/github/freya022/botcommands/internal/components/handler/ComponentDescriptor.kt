@@ -1,20 +1,22 @@
 package io.github.freya022.botcommands.internal.components.handler
 
-import io.github.freya022.botcommands.api.commands.builder.CustomOptionBuilder
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.ExecutableMixin
+import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerParameterImpl
+import io.github.freya022.botcommands.internal.components.handler.options.builder.ComponentHandlerOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
+import io.github.freya022.botcommands.internal.core.options.builder.CustomOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.parameters.toFallbackOptionBuilder
-import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -37,16 +39,16 @@ internal class ComponentDescriptor internal constructor(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
                 if (parameter.hasAnnotation<ComponentData>()) {
-                    ComponentHandlerOptionBuilder(optionParameter)
+                    ComponentHandlerOptionBuilderImpl(optionParameter)
                 } else if (/* TODO remove */ context.serviceContainer.canCreateWrappedService(parameter) != null) {
                     // Fallback to component data if no service is found
                     function.declaringClass.java.toUnwrappedLogger()
                         .warn { "Component data parameter '$declaredName' must be annotated with ${annotationRef<ComponentData>()}, it will be enforced in a later release, in ${function.shortSignature}" }
 
                     if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.wrap())) {
-                        CustomOptionBuilder(optionParameter)
+                        CustomOptionBuilderImpl(optionParameter)
                     } else {
-                        ComponentHandlerOptionBuilder(optionParameter)
+                        ComponentHandlerOptionBuilderImpl(optionParameter)
                     }
                 } else {
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)

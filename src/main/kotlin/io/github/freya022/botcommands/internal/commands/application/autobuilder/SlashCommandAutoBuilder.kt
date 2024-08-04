@@ -15,10 +15,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashOptionRegistry
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -324,51 +326,51 @@ internal class SlashCommandAutoBuilder(
         val func = metadata.func
         val path = metadata.path
 
+        fun slashOption(kParameter: KParameter, declaredName: String, optionAnnotation: SlashOption) {
+            fun SlashOptionRegistry.addOption(valueName: String) {
+                val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
+                val varArgs = kParameter.findAnnotation<VarArgs>()
+                if (varArgs != null) {
+                    optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                        configureOption(guild, instance, kParameter, optionAnnotation)
+                    }
+                } else {
+                    option(valueName, optionName) {
+                        configureOption(guild, instance, kParameter, optionAnnotation)
+                    }
+                }
+            }
+
+            val paramType = kParameter.type.jvmErasure
+            if (paramType.isValue) {
+                inlineClassAggregate(declaredName, paramType) { valueName ->
+                    addOption(valueName)
+                }
+            } else {
+                addOption(declaredName)
+            }
+        }
+
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
-                null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> {
-                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                            customOption(declaredName)
-                        } else {
-                            requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
-                            serviceOption(declaredName)
-                        }
-                    }
-                    else -> generatedOption(
-                        declaredName, instance.getGeneratedValueSupplier(
-                            guild,
-                            metadata.commandId,
-                            path,
-                            kParameter.findOptionName(),
-                            ParameterType.ofType(kParameter.type)
-                        )
+            val optionAnnotation = kParameter.findAnnotation<SlashOption>()
+            if (optionAnnotation != null) {
+                slashOption(kParameter, declaredName, optionAnnotation)
+            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+                generatedOption(
+                    declaredName, instance.getGeneratedValueSupplier(
+                        guild,
+                        metadata.commandId,
+                        path,
+                        kParameter.findOptionName(),
+                        ParameterType.ofType(kParameter.type)
                     )
-                }
-                else -> {
-                    val optionName = optionAnnotation.name.nullIfBlank() ?: declaredName.toDiscordString()
-                    if (kParameter.type.jvmErasure.isValue) {
-                        val inlineClassType = kParameter.type.jvmErasure
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                        }
-                    } else {
-                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                            null -> option(declaredName, optionName) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                                configureOption(guild, instance, kParameter, optionAnnotation)
-                            }
-                        }
-                    }
-                }
+                )
+            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
+                customOption(declaredName)
+            } else {
+                requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
+                serviceOption(declaredName)
             }
         }
     }

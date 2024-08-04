@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.text
 import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
@@ -11,12 +10,17 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
+import io.github.freya022.botcommands.internal.commands.text.options.TextCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.text.options.TextCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.text.options.TextGeneratedOption
+import io.github.freya022.botcommands.internal.commands.text.options.builder.TextCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
-import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.full.callSuspendBy
@@ -25,7 +29,7 @@ import kotlin.reflect.jvm.jvmErasure
 internal class TextCommandVariationImpl internal constructor(
     override val context: BContext,
     override val command: TextCommandInfo,
-    builder: TextCommandVariationBuilder
+    builder: TextCommandVariationBuilderImpl
 ) : TextCommandVariation,
     ExecutableMixin {
 
@@ -59,7 +63,7 @@ internal class TextCommandVariationImpl internal constructor(
         useTokenizedEvent = eventFunction.firstParameter.type.jvmErasure.isSubclassOf<CommandEvent>()
 
         parameters = builder.optionAggregateBuilders.transform {
-            TextCommandParameterImpl(context, this, it)
+            TextCommandParameterImpl(context, this, it as TextCommandOptionAggregateBuilderImpl)
         }
 
         completePattern = when {

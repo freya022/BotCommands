@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 
@@ -31,7 +31,7 @@ internal object LocalizationUtils {
         return getRootLocalization(context, "$joinedPath.description")
     }
 
-    internal fun getOptionDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String {
+    internal fun getOptionDescription(context: BContext, optionBuilder: SlashCommandOptionBuilderImpl): String {
         val rootDescription = getOptionRootDescription(context, optionBuilder)
         val optionDescription = optionBuilder.description
         return if (optionDescription != null) {
@@ -47,7 +47,7 @@ internal object LocalizationUtils {
         }
     }
 
-    private fun getOptionRootDescription(context: BContext, optionBuilder: SlashCommandOptionBuilder): String? {
+    private fun getOptionRootDescription(context: BContext, optionBuilder: SlashCommandOptionBuilderImpl): String? {
         val joinedPath = optionBuilder.commandBuilder.path.getFullPath('.')
         return getRootLocalization(context, "$joinedPath.options.${optionBuilder.optionName}.description")
     }

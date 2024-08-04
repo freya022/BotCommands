@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextComm
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.text.builder.TopLevelTextCommandBuilderImpl
 
 class TextCommandManager internal constructor(private val context: BContext) {
     internal val textCommands: NamedCommandMap<TopLevelTextCommandInfoImpl> = NamedCommandMap()
@@ -37,7 +38,7 @@ class TextCommandManager internal constructor(private val context: BContext) {
      *  @see JDATextCommandVariation @JDATextCommandVariation
      */
     fun textCommand(name: String, builder: TopLevelTextCommandBuilder.() -> Unit) {
-        TopLevelTextCommandBuilder(context, name)
+        TopLevelTextCommandBuilderImpl(context, name)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()

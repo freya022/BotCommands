@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands
 
+import io.github.freya022.botcommands.api.commands.options.CommandOption
 import io.github.freya022.botcommands.api.core.Executable
 
 /**

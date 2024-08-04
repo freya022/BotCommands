@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
-import io.github.freya022.botcommands.api.commands.builder.ExecutableCommandBuilder
-import io.github.freya022.botcommands.api.commands.builder.IBuilderFunctionHolder
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.commands.builder.ExecutableCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
+import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
@@ -42,11 +42,11 @@ internal fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, 
     MemberParamFunction(context, this, paramType)
 
 internal inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {
-    if (this is ExecutableCommandBuilder<*, *>) {
+    if (this is ExecutableCommandBuilderImpl<*, *>) {
         requireAt(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"
         }
-    } else if (this is TextCommandVariationBuilder) {
+    } else if (this is TextCommandVariationBuilderImpl) {
         requireAt(function.nonEventParameters.size == optionAggregateBuilders.size, function) {
             "Function must have the same number of options declared as on the method"
         }

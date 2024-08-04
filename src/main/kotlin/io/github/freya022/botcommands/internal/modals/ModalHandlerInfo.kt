@@ -12,10 +12,15 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
+import io.github.freya022.botcommands.internal.modals.options.ModalHandlerDataOption
+import io.github.freya022.botcommands.internal.modals.options.ModalHandlerInputOption
+import io.github.freya022.botcommands.internal.modals.options.ModalHandlerParameterImpl
+import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerDataOptionBuilderImpl
+import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerInputOptionBuilderImpl
+import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.*
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
-import io.github.freya022.botcommands.internal.transformParameters
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findAnnotation
@@ -43,9 +48,9 @@ internal class ModalHandlerInfo internal constructor(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
                 if (parameter.hasAnnotation<ModalInput>()) {
-                    ModalHandlerInputOptionBuilder(optionParameter)
+                    ModalHandlerInputOptionBuilderImpl(optionParameter)
                 } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
-                    ModalHandlerDataOptionBuilder(optionParameter)
+                    ModalHandlerDataOptionBuilderImpl(optionParameter)
                 } else {
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }

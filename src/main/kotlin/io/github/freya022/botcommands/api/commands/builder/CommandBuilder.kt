@@ -2,51 +2,39 @@
 
 package io.github.freya022.botcommands.api.commands.builder
 
-import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.annotations.Cooldown
 import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.ratelimit.*
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.CommandDSL
-import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
-import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.time.Duration
 
 @CommandDSL
-abstract class CommandBuilder internal constructor(
+interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
     /**
      * The main context.
      */
-    val context: BContext,
-    override val name: String
-) : INamedCommand, IDeclarationSiteHolderBuilder {
-    internal abstract val type: CommandType
-    override lateinit var declarationSite: DeclarationSite
+    val context: BContext
 
     /**
      * The permissions required for the caller to use this command.
      */
-    var userPermissions: EnumSet<Permission> = enumSetOf()
+    var userPermissions: EnumSet<Permission>
 
     /**
      * The permissions required for the bot to run this command.
      */
-    var botPermissions: EnumSet<Permission> = enumSetOf()
-
-    final override val path: CommandPath by lazyPath()
-
-    internal var rateLimitInfo: RateLimitInfo? = null
-        private set
+    var botPermissions: EnumSet<Permission>
 
     /**
      * Sets an anonymous rate limiter on this command.
@@ -91,12 +79,7 @@ abstract class CommandBuilder internal constructor(
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         block: RateLimitBuilder.() -> Unit = {}
-    ) {
-        rateLimitInfo = RateLimitBuilder("$type: ${path.fullPath}", bucketFactory, limiterFactory)
-            .setCallerAsDeclarationSite()
-            .apply(block)
-            .build()
-    }
+    )
 
     /**
      * Sets the rate limiter of this command to one declared by a [RateLimitProvider].
@@ -105,10 +88,7 @@ abstract class CommandBuilder internal constructor(
      *
      * @see RateLimitReference @RateLimitReference
      */
-    fun rateLimitReference(group: String) {
-        rateLimitInfo = context.getService<RateLimitContainer>()[group]
-            ?: throw NoSuchElementException("Could not find a rate limiter for '$group'")
-    }
+    fun rateLimitReference(group: String)
 }
 
 /**

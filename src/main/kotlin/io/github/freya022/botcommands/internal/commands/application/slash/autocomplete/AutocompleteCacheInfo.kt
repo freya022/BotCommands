@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilderImpl
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 
-internal class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoBuilder) {
+internal class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoBuilderImpl) {
     val force: Boolean = builder.forceCache
     val cacheSize: Long = builder.cacheSize
     val compositeKeys: List<String> = builder.compositeKeys.map { it.toDiscordString() }

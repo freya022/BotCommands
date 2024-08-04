@@ -2,27 +2,30 @@ package io.github.freya022.botcommands.internal.commands.application.context.use
 
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.context.user.builder.UserCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.options.UserContextCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.options.UserContextCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.application.context.user.options.builder.UserCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
+import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
-import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 
 internal class UserCommandInfoImpl internal constructor(
     override val context: BContext,
-    builder: UserCommandBuilder
+    builder: UserCommandBuilderImpl
 ) : ApplicationCommandInfoImpl(builder),
     UserCommandInfo,
     TopLevelApplicationCommandInfoMixin {
@@ -47,7 +50,7 @@ internal class UserCommandInfoImpl internal constructor(
         initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            UserContextCommandParameterImpl(context, this, builder, it)
+            UserContextCommandParameterImpl(context, this, builder, it as UserCommandOptionAggregateBuilderImpl)
         }
     }
 

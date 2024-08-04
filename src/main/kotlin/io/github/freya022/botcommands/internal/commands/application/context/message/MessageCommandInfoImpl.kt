@@ -2,27 +2,30 @@ package io.github.freya022.botcommands.internal.commands.application.context.mes
 
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.context.message.builder.MessageCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.MessageContextCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.MessageContextCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.application.context.message.options.builder.MessageCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
+import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
-import io.github.freya022.botcommands.internal.transform
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
 
 internal class MessageCommandInfoImpl internal constructor(
     override val context: BContext,
-    builder: MessageCommandBuilder
+    builder: MessageCommandBuilderImpl
 ) : ApplicationCommandInfoImpl(builder),
     MessageCommandInfo,
     TopLevelApplicationCommandInfoMixin {
@@ -47,7 +50,7 @@ internal class MessageCommandInfoImpl internal constructor(
         initChecks(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
-            MessageContextCommandParameterImpl(context, this, builder, it)
+            MessageContextCommandParameterImpl(context, this, builder, it as MessageCommandOptionAggregateBuilderImpl)
         }
     }
 

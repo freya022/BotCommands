@@ -5,18 +5,24 @@ import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.application.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
+import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandOption
+import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandParameter
+import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
+import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
@@ -35,7 +41,7 @@ internal sealed class SlashCommandInfoImpl(
     final override val context: BContext,
     private val _topLevelInstance: TopLevelSlashCommandInfoImpl?,
     private val _parentInstance: INamedCommand?,
-    builder: SlashCommandBuilder
+    builder: SlashCommandBuilderImpl
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
 
@@ -57,7 +63,13 @@ internal sealed class SlashCommandInfoImpl(
         description = LocalizationUtils.getCommandDescription(context, builder, builder.description)
 
         parameters = builder.optionAggregateBuilders.transform {
-            SlashCommandParameterImpl(context, this@SlashCommandInfoImpl, builder, builder.optionAggregateBuilders, it)
+            SlashCommandParameterImpl(
+                context,
+                this@SlashCommandInfoImpl,
+                builder,
+                builder.optionAggregateBuilders,
+                it as SlashCommandOptionAggregateBuilderImpl
+            )
         }
 
         parameters

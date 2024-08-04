@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.context.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.context.message.builder.MessageCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.context.user.builder.UserCommandBuilder
 import org.jetbrains.annotations.Nullable
 
 /**

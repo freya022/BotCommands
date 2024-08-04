@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.application
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.entities.InputUser
@@ -13,6 +12,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.UsabilityImpl
+import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -28,7 +28,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val logger = KotlinLogging.loggerOf<ApplicationCommandInfo>()
 
 internal abstract class ApplicationCommandInfoImpl internal constructor(
-    builder: ApplicationCommandBuilder<*>
+    builder: ApplicationCommandBuilderImpl<*>
 ) : AbstractCommandInfoImpl(builder),
     ApplicationCommandInfo,
     ExecutableMixin {
@@ -44,7 +44,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
     // Using the builder to get the scope is required as the info object is still initializing
     // and would NPE when getting the top level instance
     protected inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberParamFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
-        builder: ApplicationCommandBuilder<*>
+        builder: ApplicationCommandBuilderImpl<*>
     ) {
         if (kFunction.isFakeSlashFunction()) return
 

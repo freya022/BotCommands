@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOption
 import io.github.freya022.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
@@ -41,9 +42,9 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
                 option("string")
                 option("int")
 
-                nestedOptionVararg("ints", 2, 1, { "int_$it" })
+                optionVararg("ints", 2, 1, { "int_$it" })
 
-                nestedAggregate("nestedAggregate", ::NestedAggregate) {
+                aggregate("nestedAggregate", ::NestedAggregate) {
                     option("nestedDouble")
                     generatedOption("bool") { true }
                 }

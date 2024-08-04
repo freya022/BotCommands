@@ -5,11 +5,13 @@ import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
-import io.github.freya022.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -25,6 +27,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 internal sealed class ContextCommandAutoBuilder(
     override val serviceContainer: ServiceContainer,
@@ -32,6 +35,7 @@ internal sealed class ContextCommandAutoBuilder(
     private val resolverContainer: ResolverContainer
 ) : CommandAutoBuilder, GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
 
+    protected abstract val commandAnnotation: KClass<out Annotation>
     override val optionAnnotation: KClass<out Annotation> = ContextOption::class
 
     protected val forceGuildCommands = applicationConfig.forceGuildCommands
@@ -39,37 +43,43 @@ internal sealed class ContextCommandAutoBuilder(
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
-        commandAnnotation: KClass<out Annotation>,
         instance: ApplicationCommand,
         commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            if (kParameter.hasAnnotation<ContextOption>()) {
-                when (this) {
-                    is UserCommandBuilder -> option(declaredName)
-                    is MessageCommandBuilder -> option(declaredName)
-                }
-            } else {
-                when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> {
-                        if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                            customOption(declaredName)
-                        } else {
-                            requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
-                            serviceOption(declaredName)
-                        }
+            val optionAnnotation = kParameter.findAnnotation<ContextOption>()
+            if (optionAnnotation != null) {
+                fun ApplicationOptionRegistry<*>.addOption(valueName: String) {
+                    when (this) {
+                        is UserCommandOptionRegistry -> option(valueName)
+                        is MessageCommandOptionRegistry -> option(valueName)
                     }
-                    else -> generatedOption(
-                        declaredName, instance.getGeneratedValueSupplier(
-                            guild,
-                            commandId,
-                            CommandPath.ofName(name),
-                            kParameter.findOptionName(),
-                            ParameterType.ofType(kParameter.type)
-                        )
-                    )
                 }
+
+                val paramType = kParameter.type.jvmErasure
+                if (paramType.isValue) {
+                    inlineClassAggregate(declaredName, paramType) { valueName ->
+                        addOption(valueName)
+                    }
+                } else {
+                    addOption(declaredName)
+                }
+            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+                generatedOption(
+                    declaredName, instance.getGeneratedValueSupplier(
+                        guild,
+                        commandId,
+                        CommandPath.ofName(name),
+                        kParameter.findOptionName(),
+                        ParameterType.ofType(kParameter.type)
+                    )
+                )
+            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
+                customOption(declaredName)
+            } else {
+                requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
+                serviceOption(declaredName)
             }
         }
     }
