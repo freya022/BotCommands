@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
 import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder

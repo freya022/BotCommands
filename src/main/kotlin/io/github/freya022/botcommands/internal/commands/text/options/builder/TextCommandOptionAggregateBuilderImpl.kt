@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.text.options.builder
 
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.options.builder.TextCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.text.options.builder.TextCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.throwArgument

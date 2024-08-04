@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 
 /**
  * Represents a slash subcommand group.

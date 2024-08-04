@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.utils
 
 import dev.minn.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException

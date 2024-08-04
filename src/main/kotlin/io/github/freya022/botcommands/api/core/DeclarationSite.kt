@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.builder
+package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.utils.shortSignature

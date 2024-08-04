@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.CommandType
-import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.builder.CommandBuilderImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks

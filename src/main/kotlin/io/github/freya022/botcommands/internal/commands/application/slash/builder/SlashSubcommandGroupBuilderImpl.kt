@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
-import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.DeclarationSite
+import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl

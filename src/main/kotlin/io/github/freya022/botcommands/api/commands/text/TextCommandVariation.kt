@@ -3,12 +3,12 @@ package io.github.freya022.botcommands.api.commands.text
 import io.github.freya022.botcommands.api.commands.ICommandOptionContainer
 import io.github.freya022.botcommands.api.commands.ICommandParameterContainer
 import io.github.freya022.botcommands.api.commands.IFilterContainer
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandParameter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 
 /**
  * Represents a text command variation, see [TextCommandBuilder.variation] for more details.

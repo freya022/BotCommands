@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.annotations
 
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.db.Database
 
 /**

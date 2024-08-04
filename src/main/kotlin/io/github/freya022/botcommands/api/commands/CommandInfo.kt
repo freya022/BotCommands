@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands
 
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import net.dv8tion.jda.api.Permission
 import java.util.*
 

@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.commands
 
 import io.github.freya022.botcommands.api.commands.CommandInfo
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
+import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.internal.commands.builder.CommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimited
 import io.github.freya022.botcommands.internal.utils.lazyPath

@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 
 interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
     /**

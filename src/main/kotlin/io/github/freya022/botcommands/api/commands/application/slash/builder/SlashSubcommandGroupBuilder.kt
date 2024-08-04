@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolderBuilder
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction

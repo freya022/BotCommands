@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
+import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashSubcommandGroupBuilderImpl
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils

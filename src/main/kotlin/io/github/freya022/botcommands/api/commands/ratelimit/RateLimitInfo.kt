@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.ratelimit
 
-import io.github.freya022.botcommands.api.commands.builder.DeclarationSite
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.DeclarationSite
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 
 /**
  * Container for rate limiters data.

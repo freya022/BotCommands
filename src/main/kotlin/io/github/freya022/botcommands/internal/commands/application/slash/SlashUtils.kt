@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
-import io.github.freya022.botcommands.api.commands.builder.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.options.AbstractGeneratedOption
