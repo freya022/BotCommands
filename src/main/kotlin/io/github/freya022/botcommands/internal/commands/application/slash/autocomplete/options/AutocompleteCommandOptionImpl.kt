@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.enumSetOf

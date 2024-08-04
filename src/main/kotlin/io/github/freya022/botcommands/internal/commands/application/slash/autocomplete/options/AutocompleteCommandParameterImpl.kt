@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.BContext
@@ -38,7 +38,14 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     }
 
     override val nestedAggregatedParameters = optionAggregateBuilder.optionAggregateBuilders.transform {
-        AutocompleteCommandParameterImpl(context, command, builder, (it as SlashCommandOptionAggregateBuilderImpl).optionAggregateBuilders, it, optionAggregateBuilder.aggregator)
+        AutocompleteCommandParameterImpl(
+            context,
+            command,
+            builder,
+            (it as SlashCommandOptionAggregateBuilderImpl).optionAggregateBuilders,
+            it,
+            optionAggregateBuilder.aggregator
+        )
     }
 
     override fun constructOption(
