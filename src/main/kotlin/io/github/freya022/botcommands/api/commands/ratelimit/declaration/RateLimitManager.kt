@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
-import io.github.freya022.botcommands.internal.commands.builder.RateLimitBuilderImpl
 import kotlin.time.Duration
 import java.time.Duration as JavaDuration
 
@@ -25,11 +24,11 @@ import java.time.Duration as JavaDuration
 abstract class RateLimitManager internal constructor() {
     abstract val context: BContext
 
-    internal abstract fun createRateLimit(
+    protected abstract fun createRateLimit(
         group: String,
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory,
-        block: RateLimitBuilderImpl.() -> Unit
+        block: RateLimitBuilder.() -> Unit
     ): RateLimitInfo
 
     /**

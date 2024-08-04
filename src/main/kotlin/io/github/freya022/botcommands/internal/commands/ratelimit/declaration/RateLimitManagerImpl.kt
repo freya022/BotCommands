@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit.declaration
 
+import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
 import io.github.freya022.botcommands.api.commands.builder.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
@@ -17,7 +18,7 @@ internal class RateLimitManagerImpl internal constructor(override val context: B
         group: String,
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory,
-        block: RateLimitBuilderImpl.() -> Unit
+        block: RateLimitBuilder.() -> Unit
     ): RateLimitInfo {
         val rateLimitInfo = RateLimitBuilderImpl(group, bucketFactory, limiterFactory)
             .setCallerAsDeclarationSite()
