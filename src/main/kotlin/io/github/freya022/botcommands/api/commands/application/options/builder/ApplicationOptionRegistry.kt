@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.api.commands.application.options.builder
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilderContainer
+import io.github.freya022.botcommands.api.core.options.builder.OptionRegistry
 
-interface ApplicationOptionRegistry<T : OptionAggregateBuilder<T>> : OptionAggregateBuilderContainer<T> {
+interface ApplicationOptionRegistry<T : OptionAggregateBuilder<T>> : OptionRegistry<T> {
     /**
      * Declares a generated option, the supplier gets called on each command execution.
      *
