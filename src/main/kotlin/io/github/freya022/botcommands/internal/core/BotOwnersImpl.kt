@@ -8,22 +8,18 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.WriteOnce
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.entities.TeamMember.RoleType
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.requests.Route
-import net.dv8tion.jda.api.utils.data.DataObject
-import net.dv8tion.jda.api.utils.data.DataPath
-import net.dv8tion.jda.internal.JDAImpl
-import net.dv8tion.jda.internal.requests.RestActionImpl
 
 private val logger = KotlinLogging.loggerOf<BotOwners>()
 
-//private val notifiedRoles = enumSetOf(RoleType.OWNER, RoleType.ADMIN, RoleType.DEVELOPER)
-private val notifiedRoles = setOf("admin", "developer")
+private val notifiedRoles = enumSetOf(RoleType.OWNER, RoleType.ADMIN, RoleType.DEVELOPER)
 
 @BService
 class BotOwnersImpl internal constructor(
@@ -52,28 +48,12 @@ class BotOwnersImpl internal constructor(
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         if (ownerWriter.isInitialized()) return
 
-        lateinit var rawAppInfo: DataObject
-        val appInfo = RestActionImpl(event.jda, Route.Applications.GET_BOT_APPLICATION.compile()) { response, _ ->
-            rawAppInfo = response.`object`
-            (event.jda as JDAImpl).entityBuilder.createApplicationInfo(response.`object`)
-        }.await()
-
+        val appInfo = event.jda.retrieveApplicationInfo().await()
         val owners = when (val team = appInfo.team) {
             null -> listOf(appInfo.owner)
-            else -> {
-                team.members.filterIndexed { index, _ ->
-                    DataPath.getString(rawAppInfo, "team.members[$index].role") in notifiedRoles
-                }.map { it.user }
-            }
+            else -> team.members.filter { it.roleType in notifiedRoles }.map { it.user }
         }
         this.owners = owners.map { it.idLong }.let(::TLongHashSet)
-
-        //TODO once JDA merges PR
-//        val owners = when (val team = appInfo.team) {
-//            null -> listOf(appInfo.owner)
-//            else -> team.members.filter { it.roleType in notifiedRoles }.map { it.user }
-//        }
-//        this.owners = owners.map { it.idLong }.let(::TLongHashSet)
 
         if (logger.isTraceEnabled()) {
             logger.trace {
