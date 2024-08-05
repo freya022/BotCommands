@@ -98,5 +98,5 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
      * or [AutocompleteManager.autocomplete].
      */
-    fun autocompleteByFunction(function: KFunction<*>)
+    fun autocompleteByFunction(function: KFunction<Collection<Any>>)
 }

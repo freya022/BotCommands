@@ -126,7 +126,7 @@ internal class ApplicationCommandsContextImpl internal constructor(
         autocompleteInfoContainer[autocompleteHandlerName]?.invalidate()
     }
 
-    override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) {
+    override fun invalidateAutocompleteCache(autocompleteHandler: KFunction<Collection<Any>>) {
         autocompleteInfoContainer[autocompleteHandler]?.invalidate()
     }
 }

@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 @RequiresApplicationCommands
 internal class AutocompleteInfoContainer internal constructor() {
     private val infoByName: MutableMap<String, AutocompleteInfoImpl> = hashMapOf()
-    private val infoByFunction: MutableMap<KFunction<*>, AutocompleteInfoImpl> = hashMapOf()
+    private val infoByFunction: MutableMap<KFunction<Collection<Any>>, AutocompleteInfoImpl> = hashMapOf()
 
     internal val allInfos get() = infoByFunction.values
     internal val size get() = infoByFunction.size
@@ -27,5 +27,5 @@ internal class AutocompleteInfoContainer internal constructor() {
     }
 
     internal operator fun get(handlerName: String): AutocompleteInfoImpl? = infoByName[handlerName]
-    internal operator fun get(handlerFunction: KFunction<*>): AutocompleteInfoImpl? = infoByFunction[handlerFunction.reflectReference()]
+    internal operator fun get(handlerFunction: KFunction<Collection<Any>>): AutocompleteInfoImpl? = infoByFunction[handlerFunction.reflectReference()]
 }

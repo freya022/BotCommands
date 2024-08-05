@@ -133,7 +133,7 @@ interface ApplicationCommandsContext {
      * @param autocompleteHandler The autocomplete handler, supplied at [AutocompleteManager.autocomplete]
      */
     @JvmSynthetic
-    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>)
+    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<Collection<Any>>)
 }
 
 /**

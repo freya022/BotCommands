@@ -361,7 +361,7 @@ interface BContext {
         replaceWith = ReplaceWith(expression = "applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)")
     )
     @JvmSynthetic
-    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<*>) =
+    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<Collection<Any>>) =
         applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)
     //endregion
 }

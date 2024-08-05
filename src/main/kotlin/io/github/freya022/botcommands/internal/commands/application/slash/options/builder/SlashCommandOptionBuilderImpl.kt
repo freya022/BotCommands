@@ -59,7 +59,7 @@ internal class SlashCommandOptionBuilderImpl internal constructor(
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwArgument("Unknown autocomplete handler: $name")
     }
 
-    override fun autocompleteByFunction(function: KFunction<*>) {
+    override fun autocompleteByFunction(function: KFunction<Collection<Any>>) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[function]
             ?: throwArgument("No autocomplete handler declared from: ${function.shortSignatureNoSrc}")
     }
