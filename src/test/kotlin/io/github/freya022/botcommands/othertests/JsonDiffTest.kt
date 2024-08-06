@@ -42,6 +42,12 @@ object JsonDiffTest {
         runTest(diffEngine, folderName = "diff_command_order", shouldBeEqual = true)
     }
 
+    @ParameterizedTest
+    @EnumSource(DiffEngine::class)
+    fun `Add option in subcommand`(diffEngine: DiffEngine) {
+        runTest(diffEngine, folderName = "add_option_in_subcommand", shouldBeEqual = false)
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun runTest(diffEngine: DiffEngine, folderName: String, shouldBeEqual: Boolean) {
         val oldMap = readResource("/commands_data/$folderName/old.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>

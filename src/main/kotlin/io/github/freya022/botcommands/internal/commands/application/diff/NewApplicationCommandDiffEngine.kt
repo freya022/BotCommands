@@ -66,7 +66,8 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         if (removedSubcommands.isNotEmpty()) log { "Removed subcommands from '$parentName': ${removedSubcommands.joinToString()}" }
 
         val isSame = forEachByName(oldSubcommands, newSubcommands) { subcommandName, oldSubcommand, newSubcommand ->
-            checkProperties(oldSubcommand, newSubcommand, "Subcommand '$parentName $subcommandName'")
+            checkProperties(oldSubcommand, newSubcommand, "Subcommand '$parentName $subcommandName'") &&
+                    checkOptions("Subcommand '$parentName $subcommandName'", oldSubcommand, newSubcommand)
         }
 
         return addedSubcommands.isEmpty() && removedSubcommands.isEmpty() && isSame
