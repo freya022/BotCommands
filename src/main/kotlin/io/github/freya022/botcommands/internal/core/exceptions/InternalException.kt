@@ -7,4 +7,4 @@ internal class InternalException internal constructor(
     message: String
 ) : RuntimeException("$message, please report this to the devs. ${getDiagnosticVersions()}")
 
-private fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
+internal fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"

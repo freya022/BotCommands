@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
+import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -16,6 +17,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSla
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
+import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.entities.inputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
@@ -25,6 +27,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -153,8 +156,22 @@ internal class ApplicationCommandListener internal constructor(
         //This is done so warnings are printed after the exception
         handleException(IllegalArgumentException(message), event)
         printAvailableCommands(event)
+        logger.warn {
+            if (context.applicationConfig.onlineAppCommandCheckEnabled) {
+                createCommandMismatchMessage("An application command could not be recognized even though online command check was performed, an update will be forced.")
+            } else {
+                createCommandMismatchMessage("An application command could not be recognized, an update will be forced.")
+            }
+        }
         forceUpdateCommands(guild)
     }
+
+    private fun createCommandMismatchMessage(preMessage: String): String = """
+        $preMessage
+        Please check if you have another bot instance running as it could have replaced the current command set.
+        Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
+        If the problem persists, try changing the diff engine in ${BApplicationConfigBuilder::diffEngine.reference} to ${DiffEngine.OLD} and report the issue. ${getDiagnosticVersions()}
+    """.trimIndent()
 
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
         logger.debug {
@@ -187,24 +204,15 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private fun forceUpdateCommands(guild: Guild?) {
-        if (context.applicationConfig.onlineAppCommandCheckEnabled) {
-            logger.warn {
-                """
-                    An application command could not be recognized even though online command check was performed. An update will be forced.
-                    Please check if you have another bot instance running as it could have replaced the current command set.
-                    Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
-                """.trimIndent()
-            }
-            if (guild != null) {
-                context.applicationCommandsContext.updateGuildApplicationCommands(guild, force = true).whenComplete { _, e ->
-                    if (e != null)
-                        logger.error(e) { "An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing" }
-                }
-            }
-            context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
+        if (guild != null) {
+            context.applicationCommandsContext.updateGuildApplicationCommands(guild, force = true).whenComplete { _, e ->
                 if (e != null)
-                    logger.error(e) { "An exception occurred while trying to update global commands after a command was missing" }
+                    logger.error(e) { "An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing" }
             }
+        }
+        context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
+            if (e != null)
+                logger.error(e) { "An exception occurred while trying to update global commands after a command was missing" }
         }
     }
 
