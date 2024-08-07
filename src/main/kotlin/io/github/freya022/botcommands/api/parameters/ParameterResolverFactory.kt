@@ -49,6 +49,15 @@ abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverT
     abstract val supportedTypesStr: List<String>
 
     /**
+     * The priority of this factory.
+     *
+     * When getting a resolver factory, the factory with the highest value that is [resolvable][isResolvable] is taken.
+     *
+     * If two factories with the same priority exist and are both resolvable, an exception is thrown.
+     */
+    open val priority: Int get() = 0
+
+    /**
      * Determines if a given parameter is supported, only one factory must return `true`.
      *
      * This only gets called if the requested resolver is compatible with [resolverType].

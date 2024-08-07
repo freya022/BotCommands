@@ -65,7 +65,7 @@ internal class ResolverContainer internal constructor(
                         .sortedBy { it.resolverType.simpleNestedName }
 
                     appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
-                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} (${it.supportedTypesStr.joinToString()})" })
+                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} ; priority ${it.priority} (${it.supportedTypesStr.joinToString()})" })
                 }
             }
 
@@ -82,9 +82,16 @@ internal class ResolverContainer internal constructor(
             .filter { it.resolverType.isSubclassOf(resolverType) }
             .map { it as ParameterResolverFactory<T> }
             .filter { it.isResolvable(request) }
+            .let { resolvableFactories ->
+                if (resolvableFactories.isEmpty())
+                    return@let resolvableFactories
+                // Keep most important factories, if two has same priority, it gets reported down
+                val maxPriority = resolvableFactories.maxOf { it.priority }
+                resolvableFactories.filter { it.priority == maxPriority }
+            }
         require(resolvableFactories.size <= 1) {
             val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
-            "Found multiple compatible resolvers for the provided request\n$factoryNameList"
+            "Found multiple compatible resolvers, with the same priority, for the provided request\n$factoryNameList"
         }
 
         val factory = resolvableFactories.firstOrNull()
