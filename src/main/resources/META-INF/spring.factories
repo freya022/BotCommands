@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationListener=io.github.freya022.botcommands.internal.core.service.SpringBotCommandsVersionChecker

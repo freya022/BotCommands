@@ -1,14 +1,17 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.service.putServiceWithTypeAlias
+import io.github.freya022.botcommands.internal.core.Version
 import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.JDAInfo
 
 internal class DefaultBotCommandsBootstrap internal constructor(
     config: BConfig
@@ -26,6 +29,9 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         setOf(ConditionalObjectChecker, serviceProviders, customConditionsContainer, stagingClassAnnotations.processor)
 
     init {
+        logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
+        Version.checkVersions()
+
         init()
     }
 

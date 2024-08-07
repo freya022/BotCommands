@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
@@ -10,10 +9,8 @@ import io.github.freya022.botcommands.api.core.events.PreLoadEvent
 import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.BContextImpl
-import io.github.freya022.botcommands.internal.core.Version
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.JDAInfo
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
@@ -21,9 +18,6 @@ internal abstract class AbstractBotCommandsBootstrap(protected val config: BConf
     protected val logger = objectLogger()
 
     internal fun init() {
-        logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
-        Version.checkVersions()
-
         if (config.disableExceptionsInDMs)
             logger.info { "Configuration disabled sending exception in bot owners DMs" }
         if (config.applicationConfig.disableAutocompleteCache)
