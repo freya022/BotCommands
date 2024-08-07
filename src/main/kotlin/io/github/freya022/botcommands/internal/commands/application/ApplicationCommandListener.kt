@@ -25,12 +25,14 @@ import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.Level
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -217,8 +219,15 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
-        exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap())
+        val logLevel = if (e is OptionNotFoundException) {
+            logger.warn { createCommandMismatchMessage("An option could not be found, commands will be force updated.") }
+            forceUpdateCommands(event.guild)
+            Level.DEBUG
+        } else {
+            Level.ERROR
+        }
 
+        exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap(), logLevel)
         if (e is InsufficientPermissionException) {
             event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
         } else {

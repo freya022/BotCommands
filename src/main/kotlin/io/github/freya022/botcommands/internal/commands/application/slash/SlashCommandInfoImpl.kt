@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.commands.application.ApplicationC
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
 import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandOption
 import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandParameter
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
@@ -30,7 +31,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
@@ -112,32 +115,12 @@ internal sealed class SlashCommandInfoImpl(
                 val optionMapping = event.getOption(optionName)
 
                 if (optionMapping != null) {
-                    val resolved = option.resolver.resolveSuspend(this, event, optionMapping)
-                    if (resolved == null) {
-                        //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                        logger.trace {
-                            "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
-                        }
-
-                        return when {
-                            option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
-                            else -> {
-                                //Only use the generic message if the user didn't handle this situation
-                                if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                                    event.reply_(
-                                        defaultMessagesFactory.get(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
-                                        ephemeral = true
-                                    ).queue()
-                                }
-
-                                InsertOptionResult.ABORT
-                            }
-                        }
-                    }
-
-                    resolved
+                    option.resolver.resolveSuspend(this, event, optionMapping)
+                        ?: return onUnresolvableOption(option, optionMapping, event)
                 } else if (option.isRequired && event is CommandAutoCompleteInteractionEvent) {
                     return InsertOptionResult.ABORT
+                } else if (option.isRequired) {
+                    throw OptionNotFoundException("Option '$optionName' was not found")
                 } else {
                     null
                 }
@@ -157,5 +140,31 @@ internal sealed class SlashCommandInfoImpl(
         }
 
         return tryInsertNullableOption(value, option, optionMap)
+    }
+
+    private fun onUnresolvableOption(
+        option: AbstractSlashCommandOption,
+        optionMapping: OptionMapping,
+        event: Interaction,
+    ): InsertOptionResult {
+        //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+        logger.trace {
+            "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
+        }
+
+        return when {
+            option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
+            else -> {
+                //Only use the generic message if the user didn't handle this situation
+                if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
+                    event.reply_(
+                        defaultMessagesFactory.get(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
+                        ephemeral = true
+                    ).queue()
+                }
+
+                InsertOptionResult.ABORT
+            }
+        }
     }
 }
