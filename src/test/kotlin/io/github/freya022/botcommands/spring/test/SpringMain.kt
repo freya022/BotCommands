@@ -17,9 +17,12 @@ import kotlin.system.exitProcess
 )
 open class SpringMain
 
-private val logger = KotlinLogging.logger { }
+private val logger by lazy { KotlinLogging.logger { } }
 
 fun main(args: Array<String>) {
+    System.setProperty("logging.config", Environment.logbackConfigPath.absolutePathString())
+    logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+
     // I use hotswap agent in order to update my code without restarting the bot
     // Of course this only supports modifying existing code
     // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
