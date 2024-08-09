@@ -3,10 +3,9 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
-import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrowInternal
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.memberFunctions
 
 @BService(priority = Int.MAX_VALUE - 1)
 internal class FunctionAnnotationsMap(
@@ -14,7 +13,7 @@ internal class FunctionAnnotationsMap(
     instantiableServices: InstantiableServices,
     private val classAnnotationsMap: ClassAnnotationsMap
 ) {
-    private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()
+    private val map: MutableMap<KClass<out Annotation>, MutableMap<Method, ClassPathFunction>> = hashMapOf()
 
     init {
         instantiableServices
@@ -23,18 +22,29 @@ internal class FunctionAnnotationsMap(
             // thus having the same annotated function be returned more than once
             .availablePrimaryTypes
             .forEach { kClass ->
-                kClass.memberFunctions.forEach { function ->
-                    function.annotations.forEach { annotation ->
-                        put(context, kClass, function, annotation.annotationClass)
+                // The main difference with the kotlin-reflect version
+                // is that the Java methods target their declaring class.
+                // For example, on ClassA, #wait() in Java is Object#wait()
+                // while in kotlin-reflect, it is ClassA#wait()
+                // This doesn't matter here since the annotations are going to be the same
+                kClass.java.methods.forEach methods@{ method ->
+                    if (Modifier.isStatic(method.modifiers)) return@methods
+
+                    method.annotations.forEach { annotation ->
+                        put(context, kClass, method, annotation.annotationClass)
                     }
                 }
+//                kClass.memberFunctions.forEach { function ->
+//                    function.annotations.forEach { annotation ->
+//                        put(context, kClass, function, annotation.annotationClass)
+//                    }
+//                }
             }
     }
 
-    private fun <A : Annotation> put(context: BContextImpl, kClass: KClass<*>, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
+    private fun <A : Annotation> put(context: BContextImpl, kClass: KClass<*>, method: Method, annotationType: KClass<A>) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
-        // An annotation type cannot be present twice on a function, that wouldn't compile
-        instanceAnnotationMap.putIfAbsentOrThrowInternal(annotationReceiver, ClassPathFunction(context, kClass, annotationReceiver))
+        instanceAnnotationMap.computeIfAbsent(method) { ClassPathFunction(context, kClass, it) }
     }
 
     internal fun <A : Annotation> get(annotationClass: KClass<A>): Collection<ClassPathFunction> =

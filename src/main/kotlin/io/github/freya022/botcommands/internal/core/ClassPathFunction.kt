@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.asKFunction
+import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -31,12 +33,13 @@ internal sealed class ClassPathFunction {
 internal class LazyClassPathFunction internal constructor(
     context: BContextImpl,
     override val clazz: KClass<*>,
-    override val function: KFunction<*>
+    method: Method
 ) : ClassPathFunction() {
+    override val function: KFunction<*> by lazy { method.asKFunction() }
     override val instance by context.serviceContainer.lazy(clazz)
 }
 
-internal fun ClassPathFunction(context: BContextImpl, clazz: KClass<*>, function: KFunction<*>): ClassPathFunction {
+internal fun ClassPathFunction(context: BContextImpl, clazz: KClass<*>, function: Method): ClassPathFunction {
     return LazyClassPathFunction(context, clazz, function)
 }
 

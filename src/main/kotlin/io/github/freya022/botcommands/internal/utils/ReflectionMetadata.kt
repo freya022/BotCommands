@@ -29,7 +29,6 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 import kotlin.reflect.jvm.jvmName
 
 private typealias IsNullableAnnotated = Boolean
-private typealias FullClassName = String
 
 internal object ReflectionMetadata {
     private val logger = KotlinLogging.logger { }

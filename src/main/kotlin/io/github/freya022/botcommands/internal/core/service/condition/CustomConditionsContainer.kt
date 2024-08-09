@@ -12,10 +12,9 @@ import io.github.freya022.botcommands.internal.utils.createSingleton
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.logger { }
+private val conditionName = Condition::class.java.name
 
 internal class CustomConditionsContainer : ClassGraphProcessor {
     private val _customConditionCheckers: MutableList<CustomConditionInfo> = arrayListOf()
@@ -24,8 +23,8 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         // kClass is the condition, i.e., the meta-annotated class
 
-        if (classInfo.annotationInfo.directOnly().containsName(Condition::class.jvmName)) {
-            val conditionMetadata = kClass.findAnnotation<Condition>()!!
+        val conditionMetadata = classInfo.annotationInfo.directOnly()[conditionName]?.loadClassAndInstantiate() as Condition?
+        if (conditionMetadata != null) {
             val customConditionType = conditionMetadata.type
             val checker = customConditionType.createSingleton()
             val checkerAnnotationType = checker.annotationType
