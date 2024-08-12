@@ -73,6 +73,8 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
         if (channel !is GuildMessageChannel)
             return@build logger.warn { "Cannot get usability outside of a ${classRef<GuildMessageChannel>()}" }
 
+        if (channel.isDetached) return@build
+
         val guild = channel.guild
         if (!guild.selfMember.hasPermission(channel, botPermissions)) add(UnusableReason.BOT_PERMISSIONS)
 

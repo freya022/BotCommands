@@ -180,7 +180,11 @@ internal class ApplicationCommandListener internal constructor(
         logger.debug {
             val guild = event.guild
             val topLevelCommands = context.applicationCommandsContext.getEffectiveApplicationCommands(guild)
-            val scopeName = if (guild != null) "'" + guild.name + "'" else "Global scope"
+            val scopeName = when (guild?.isDetached) {
+                false -> "'${guild.name}'"
+                // Detached guild == global command
+                else -> "Global scope"
+            }
             val availableCommands = buildString {
                 topLevelCommands
                     .sortedBy { it.name }
@@ -207,7 +211,7 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private fun forceUpdateCommands(guild: Guild?) {
-        if (guild != null) {
+        if (guild?.isDetached == false) {
             context.applicationCommandsContext.updateGuildApplicationCommands(guild, force = true).whenComplete { _, e ->
                 if (e != null)
                     logger.error(e) { "An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing" }
