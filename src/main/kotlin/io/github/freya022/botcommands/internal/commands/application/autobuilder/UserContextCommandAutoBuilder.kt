@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
@@ -81,11 +80,12 @@ internal class UserContextCommandAutoBuilder(
         val commandId = metadata.commandId
 
         val annotation = metadata.annotation
-        val actualScope = if (forceGuildCommands) CommandScope.GUILD else annotation.scope
-        manager.userCommand(path.name, actualScope, func.castFunction()) {
+        manager.userCommand(path.name, func.castFunction()) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 
+            contexts = annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            integrationTypes = annotation.integrationTypes.toEnumSetOr(manager.defaultIntegrationTypes)
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 

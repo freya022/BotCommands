@@ -67,7 +67,13 @@ internal fun runFiltered(
         return
 
     // If guild commands aren't forced, check the scope
-    if (!forceGuildCommands && !manager.isValidScope(scope)) return
+    if (!forceGuildCommands) {
+        val requiredScope = when (manager) {
+            is GlobalApplicationCommandManager -> CommandScope.GLOBAL
+            is GuildApplicationCommandManager -> CommandScope.GUILD
+        }
+        if (requiredScope != scope) return
+    }
 
     if (!checkDeclarationFilter(manager, func, path, commandId))
         return // Already logged
@@ -76,7 +82,7 @@ internal fun runFiltered(
         return skip(path, "Guild does not support that command ID")
 
     val testState = checkTestCommand(manager, func, scope, manager.context)
-    if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
+    if (scope == CommandScope.GLOBAL && testState != TestState.NO_ANNOTATION)
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
 
     if (testState == TestState.EXCLUDE)
@@ -106,6 +112,12 @@ internal fun checkDeclarationFilter(
         }
     }
     return true
+}
+
+context(CommandAutoBuilder)
+internal inline fun <reified E : Enum<E>> Array<out E>.toEnumSetOr(fallback: Set<E>): Set<E> = when {
+    this.isEmpty() -> fallback
+    else -> enumSetOf<E>(*this)
 }
 
 @Suppress("DEPRECATION")
