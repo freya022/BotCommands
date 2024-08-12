@@ -4,12 +4,14 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
@@ -229,18 +231,24 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     }
 
     @JvmSynthetic
-    internal fun build() = object : BApplicationConfig {
-        override val enable = this@BApplicationConfigBuilder.enable
-        override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
-        override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
-        override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
-        override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
-        override val diffEngine = this@BApplicationConfigBuilder.diffEngine
-        override val logApplicationCommandData = this@BApplicationConfigBuilder.logApplicationCommandData
-        override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
-        override val baseNameToLocalesMap =
-            this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
-                .unmodifiableView()
-        override val logMissingLocalizationKeys = this@BApplicationConfigBuilder.logMissingLocalizationKeys
+    internal fun build(): BApplicationConfig {
+        val logger = KotlinLogging.loggerOf<BApplicationConfig>()
+        if (disableAutocompleteCache)
+            logger.info { "Disabled autocomplete cache, except forced caches" }
+
+        return object : BApplicationConfig {
+            override val enable = this@BApplicationConfigBuilder.enable
+            override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
+            override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
+            override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
+            override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
+            override val diffEngine = this@BApplicationConfigBuilder.diffEngine
+            override val logApplicationCommandData = this@BApplicationConfigBuilder.logApplicationCommandData
+            override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
+            override val baseNameToLocalesMap =
+                this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
+                    .unmodifiableView()
+            override val logMissingLocalizationKeys = this@BApplicationConfigBuilder.logMissingLocalizationKeys
+        }
     }
 }

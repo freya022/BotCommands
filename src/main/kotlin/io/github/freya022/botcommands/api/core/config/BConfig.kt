@@ -8,12 +8,14 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -303,22 +305,28 @@ class BConfigBuilder internal constructor() : BConfig {
 
     @Suppress("OVERRIDE_DEPRECATION")
     @JvmSynthetic
-    internal fun build(): BConfig = object : BConfig {
-        override val ownerIds: Set<Long> get() = predefinedOwnerIds
-        override val predefinedOwnerIds = this@BConfigBuilder.predefinedOwnerIds.toImmutableSet()
-        override val packages = this@BConfigBuilder.packages.toImmutableSet()
-        override val classes = this@BConfigBuilder.classes.toImmutableSet()
-        override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
-        override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
-        override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
-        override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
-        override val debugConfig = this@BConfigBuilder.debugConfig.build()
-        override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
-        override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
-        override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
-        override val textConfig = this@BConfigBuilder.textConfig.build()
-        override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
-        override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
-        override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
+    internal fun build(): BConfig {
+        val logger = KotlinLogging.loggerOf<BConfig>()
+        if (disableExceptionsInDMs)
+            logger.info { "Disabled sending exception in bot owners DMs" }
+
+        return object : BConfig {
+            override val ownerIds: Set<Long> get() = predefinedOwnerIds
+            override val predefinedOwnerIds = this@BConfigBuilder.predefinedOwnerIds.toImmutableSet()
+            override val packages = this@BConfigBuilder.packages.toImmutableSet()
+            override val classes = this@BConfigBuilder.classes.toImmutableSet()
+            override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
+            override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
+            override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
+            override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
+            override val debugConfig = this@BConfigBuilder.debugConfig.build()
+            override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
+            override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
+            override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
+            override val textConfig = this@BConfigBuilder.textConfig.build()
+            override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
+            override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
+            override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
+        }
     }
 }
