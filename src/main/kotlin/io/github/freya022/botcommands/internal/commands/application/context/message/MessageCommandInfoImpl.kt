@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.commands.application.context.message
 
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.builder.MessageCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.options.MessageContextCommandOptionImpl
@@ -21,6 +21,8 @@ import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
 import kotlin.reflect.full.callSuspendBy
 
@@ -36,10 +38,11 @@ internal class MessageCommandInfoImpl internal constructor(
     override val topLevelInstance get() = this
     override val parentInstance get() = null
 
-    override val scope: CommandScope = builder.scope
     override val type: Command.Type get() = Command.Type.MESSAGE
+
+    override val contexts: Set<InteractionContextType> = builder.contexts.toImmutableSet()
+    override val integrationTypes: Set<IntegrationType> = builder.integrationTypes.toImmutableSet()
     override val isDefaultLocked: Boolean = builder.isDefaultLocked
-    override val isGuildOnly: Boolean = scope.isGuildOnly
     override val nsfw: Boolean = builder.nsfw
 
     override lateinit var metadata: TopLevelApplicationCommandMetadata
