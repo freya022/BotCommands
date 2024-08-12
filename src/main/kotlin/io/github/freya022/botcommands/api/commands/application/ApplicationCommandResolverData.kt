@@ -1,13 +1,15 @@
 package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.core.reflect.throwUser
+import io.github.freya022.botcommands.api.commands.application.builder.isGuildOnly
+import io.github.freya022.botcommands.api.core.reflect.requireUser
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverData
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.KClass
 
 /**
@@ -22,9 +24,14 @@ class ApplicationCommandResolverData internal constructor(
 
 internal fun ResolverRequest.checkGuildOnly(returnType: KClass<*>) {
     (resolverData as? ApplicationCommandResolverData)?.let { data ->
-        //TODO[User apps] throw if there is no guild scope at all, regardless of nullability
-        if (!data.commandBuilder.topLevelBuilder.scope.isGuildOnly && parameter.isRequired) {
-            parameter.throwUser("Cannot get a required ${returnType.simpleNestedName} in a global command")
+        parameter.requireUser(InteractionContextType.GUILD in data.commandBuilder.topLevelBuilder.contexts) {
+            "Commands that cannot run in guilds can't have a ${returnType.simpleNestedName} option"
+        }
+
+        if (parameter.isRequired) {
+            parameter.requireUser(data.commandBuilder.topLevelBuilder.isGuildOnly) {
+                "Commands executable outside of guilds cannot have a required ${returnType.simpleNestedName} option"
+            }
         }
     }
 }
