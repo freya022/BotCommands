@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BTextConfig
-import io.github.freya022.botcommands.api.core.infoNull
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -22,6 +21,7 @@ import io.github.freya022.botcommands.api.core.utils.handle
 import io.github.freya022.botcommands.api.core.utils.suppressContentWarning
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
+import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
 import io.github.freya022.botcommands.internal.utils.*
@@ -265,16 +265,60 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
+    internal enum class Status {
+        /** Disabled by config */
+        DISABLED,
+        /** Enabled */
+        ENABLED,
+        //TODO this can't disable text commands as prefixes can be given in SettingsProvider,
+        // which needs to be revisited
+        // NOTHING_SET,
+        /** No prefix, with ping-as-prefix  */
+        CAN_READ_PING,
+        /** Uses prefix but no content intent, with ping (ok) */
+        MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING,
+        /** Uses prefix but no content intent, without ping (error) */
+        MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING,
+        ;
+
+        internal companion object {
+            internal fun check(config: BTextConfig, jdaService: JDAService): Status {
+                // Priority:
+                // DISABLED
+                // MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING
+                // MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING
+                // CAN_READ_PING
+                // ENABLED
+                if (!config.enable) return DISABLED
+
+                val hasContentIntent = GatewayIntent.MESSAGE_CONTENT in jdaService.intents
+                val usePingAsPrefix = config.usePingAsPrefix
+                val hasPrefix = config.prefixes.isNotEmpty()
+
+                return when {
+                    hasPrefix && !hasContentIntent -> {
+                        if (usePingAsPrefix) {
+                            MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING
+                        } else {
+                            MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING
+                        }
+                    }
+                    !hasPrefix && usePingAsPrefix -> CAN_READ_PING
+                    else -> ENABLED
+                }
+            }
+        }
+    }
+
     internal object ActivationCondition : ConditionalServiceChecker {
         // Require either message content or mention prefix
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
-            val jdaService = serviceContainer.getService<JDAService>()
-            return if (GatewayIntent.MESSAGE_CONTENT in jdaService.intents) {
-                null
-            } else if (serviceContainer.getService<BTextConfig>().usePingAsPrefix) {
-                logger.infoNull { "Listening to text commands, only using ping-as-prefix, as GatewayIntent.MESSAGE_CONTENT is disabled" }
-            } else {
-                "GatewayIntent.MESSAGE_CONTENT is missing and ${BTextConfig::usePingAsPrefix.reference} is disabled"
+            return when (Status.check(serviceContainer.getService(), serviceContainer.getService())) {
+                DISABLED -> "Text commands needs to be enabled, see ${BTextConfig::enable.reference}"
+                ENABLED -> null
+                CAN_READ_PING -> null
+                MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING -> null
+                MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING -> "Text prefixes can't be used without GatewayIntent.MESSAGE_CONTENT, and ${BTextConfig::usePingAsPrefix.reference} is disabled"
             }
         }
     }
