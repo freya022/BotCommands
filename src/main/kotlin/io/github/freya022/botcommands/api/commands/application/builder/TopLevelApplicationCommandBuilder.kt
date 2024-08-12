@@ -89,3 +89,6 @@ interface TopLevelApplicationCommandBuilder<T : ApplicationCommandOptionAggregat
      */
     var nsfw: Boolean
 }
+
+val TopLevelApplicationCommandBuilder<*>.isGuildOnly: Boolean
+    get() = contexts.singleOrNull() == InteractionContextType.GUILD
