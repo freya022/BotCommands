@@ -1,46 +1,28 @@
 package io.github.freya022.botcommands.api.commands.application;
 
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
-import io.github.freya022.botcommands.api.commands.application.annotations.Test;
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 /**
- * Defines command scopes for application commands.
+ * Defines the scope on which an application command is pushed to.
  */
 public enum CommandScope {
     /**
-     * The guild command scope, only pushes application commands to the guilds
-     * <br>Can be filtered with {@link DeclarationFilter @DeclarationFilter}.
-     * <br>Can be forced with {@link BApplicationConfigBuilder#forceGuildCommands(boolean)} and {@link Test @Test}
-     */
-    GUILD(false, true),
-    /**
-     * The global command scope, pushes this command to the first shard
+     * The guild command scope, making the application command accessible on a per-guild basis.
+     * <br>These commands can only be executed in the guild they are pushed to.
      *
-     * <p>Cannot be filtered on a per-guild basis
+     * <p>Can be filtered with {@link DeclarationFilter @DeclarationFilter}.
+     * <br>Can be forced with {@link BApplicationConfigBuilder#forceGuildCommands(boolean)}.
      */
-    GLOBAL(true, false),
+    GUILD,
     /**
-     * The global command scope, but with DMs disabled, pushes this command to the first shard
-     * <br>This might be useful to have guild commands but without having to push them on every guild
+     * The global command scope, making the application command be accessible
+     * in the {@link InteractionContextType interaction contexts} set on the command.
      *
-     * <p>Cannot be filtered on a per-guild basis
+     * <p>These commands cannot be filtered.
      */
-    GLOBAL_NO_DM(true, true);
-
-    private final boolean isGlobal;
-    private final boolean guildOnly;
-
-    CommandScope(boolean isGlobal, boolean guildOnly) {
-        this.isGlobal = isGlobal;
-        this.guildOnly = guildOnly;
-    }
-
-    public boolean isGlobal() {
-        return isGlobal;
-    }
-
-    public boolean isGuildOnly() {
-        return guildOnly;
-    }
+    GLOBAL,
+    @Deprecated
+    GLOBAL_NO_DM;
 }
