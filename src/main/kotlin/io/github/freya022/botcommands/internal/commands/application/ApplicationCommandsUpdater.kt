@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.exceptions.ApplicationCommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
@@ -274,7 +273,8 @@ internal class ApplicationCommandsUpdater private constructor(
 
     private fun <D : CommandData> D.configureTopLevel(info: TopLevelApplicationCommandInfo): D = apply {
         if (info.nsfw) isNSFW = true
-        if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true
+        setContexts(info.contexts)
+        setIntegrationTypes(info.integrationTypes)
         if (info.isDefaultLocked) {
             defaultPermissions = DefaultMemberPermissions.DISABLED
         } else if (info.userPermissions.isNotEmpty()) {

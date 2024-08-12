@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.api.commands.application
 import io.github.freya022.botcommands.internal.utils.throwState
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.api.requests.RestAction
 import java.time.OffsetDateTime
@@ -14,9 +16,15 @@ import java.time.OffsetDateTime
  */
 interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelApplicationCommandMetadata, ISnowflake {
     /**
-     * The scope on which this application command is pushed on.
+     * The interaction contexts in which this command is executable in,
+     * think of it as 'Where can I use this command in the Discord client'.
      */
-    val scope: CommandScope
+    val contexts: Set<InteractionContextType>
+
+    /**
+     * The integration types in which this command can be installed in.
+     */
+    val integrationTypes: Set<IntegrationType>
 
     /**
      * Whether this application command is (initially) locked to administrators.
@@ -29,6 +37,7 @@ interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelAppli
      * Whether this application command is usable only in guilds (i.e., no DMs).
      */
     val isGuildOnly: Boolean
+        get() = contexts.singleOrNull() == InteractionContextType.GUILD
 
     /**
      * Whether this application commands is usable only in [NSFW channels][IAgeRestrictedChannel].

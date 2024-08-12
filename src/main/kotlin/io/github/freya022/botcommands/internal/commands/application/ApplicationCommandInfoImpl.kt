@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.commands.application
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.entities.InputUser
@@ -23,6 +24,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.loggerOf<ApplicationCommandInfo>()
@@ -49,7 +51,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
         if (kFunction.isFakeSlashFunction()) return
 
         val eventType = firstParameter.type.jvmErasure
-        if (builder.topLevelBuilder.scope.isGuildOnly) {
+        if (builder.topLevelBuilder.isGuildOnly) {
             if (!eventType.isSubclassOf<GUILD_T>()) {
                 // Do not warn about guild-restricted types when everything is forced as a guild command
                 if (builder.context.applicationConfig.forceGuildCommands) return
@@ -60,6 +62,9 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
             throwArgument(kFunction, "Cannot use ${classRef<GUILD_T>()} on a global application command")
         }
     }
+
+    private val TopLevelApplicationCommandBuilder<*>.isGuildOnly: Boolean
+        get() = contexts.singleOrNull() == InteractionContextType.GUILD
 
     final override fun getUsability(inputUser: InputUser, channel: MessageChannel): UsabilityImpl = UsabilityImpl.build {
         // Nothing to check outside a guild
