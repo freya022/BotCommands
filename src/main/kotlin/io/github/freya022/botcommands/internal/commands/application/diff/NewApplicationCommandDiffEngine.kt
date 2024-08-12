@@ -18,7 +18,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         if (removedCommands.isNotEmpty()) log { "Removed top-level commands: ${removedCommands.joinToString()}" }
 
         val isSame = forEachByName(oldCommands, newCommands) { commandName, oldCommand, newCommand ->
-            checkProperties(oldCommand, newCommand, "Top-level command '$commandName'") &&
+            checkProperties(oldCommand, newCommand, "top-level command '$commandName'") &&
                     checkOptions(commandName, oldCommand, newCommand) &&
                     checkSubcommands(commandName, oldCommand, newCommand) &&
                     checkSubcommandGroups(commandName, oldCommand, newCommand)
@@ -43,7 +43,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         if (removedSubcommandGroups.isNotEmpty()) log { "Removed subcommand groups from '$topLevelName': ${removedSubcommandGroups.joinToString()}" }
 
         val isSame = forEachByName(oldSubcommandGroups, newSubcommandGroups) { subcommandGroupName, oldSubcommandGroup, newSubcommandGroup ->
-            checkProperties(oldSubcommandGroup, newSubcommandGroup, "Subcommand group '$topLevelName $subcommandGroupName'") &&
+            checkProperties(oldSubcommandGroup, newSubcommandGroup, "subcommand group '$topLevelName $subcommandGroupName'") &&
                     checkSubcommands("$topLevelName $subcommandGroupName", oldSubcommandGroup, newSubcommandGroup)
         }
 
@@ -66,8 +66,8 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         if (removedSubcommands.isNotEmpty()) log { "Removed subcommands from '$parentName': ${removedSubcommands.joinToString()}" }
 
         val isSame = forEachByName(oldSubcommands, newSubcommands) { subcommandName, oldSubcommand, newSubcommand ->
-            checkProperties(oldSubcommand, newSubcommand, "Subcommand '$parentName $subcommandName'") &&
-                    checkOptions("Subcommand '$parentName $subcommandName'", oldSubcommand, newSubcommand)
+            checkProperties(oldSubcommand, newSubcommand, "subcommand '$parentName $subcommandName'") &&
+                    checkOptions("$parentName $subcommandName", oldSubcommand, newSubcommand)
         }
 
         return addedSubcommands.isEmpty() && removedSubcommands.isEmpty() && isSame
@@ -92,7 +92,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
             }
 
             isSame &&
-                    checkProperties(oldOption, newOption, "Option '$optionName' in '$cmdName'") &&
+                    checkProperties(oldOption, newOption, "option '$optionName' in '$cmdName'") &&
                     checkChoices(cmdName, optionName, oldOption, newOption)
         }
 
@@ -111,7 +111,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         if (removedChoices.isNotEmpty()) log { "Removed choices from option '$optionName' of '$cmdName': ${removedChoices.joinToString()}" }
 
         val isUnmodified = forEachByName(oldChoices, newChoices) { choiceName, oldChoice, newChoice ->
-            checkProperties(oldChoice, newChoice, "Choice '$choiceName' in option '$optionName' of '$cmdName'")
+            checkProperties(oldChoice, newChoice, "choice '$choiceName' in option '$optionName' of '$cmdName'")
         }
 
         return addedChoices.isEmpty() && removedChoices.isEmpty() && isUnmodified
