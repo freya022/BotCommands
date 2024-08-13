@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import org.springframework.beans.factory.BeanCurrentlyInCreationException
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -69,6 +70,14 @@ internal class SpringServiceContainer internal constructor(private val applicati
         }
 
         return null
+    }
+
+    override fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): List<String> {
+        return applicationContext.getBeanNamesForAnnotation(annotationType.java).asList().unmodifiableView()
+    }
+
+    override fun <A : Annotation> findAnnotationOnService(name: String, annotationType: KClass<A>): A? {
+        return applicationContext.findAnnotationOnBean(name, annotationType.java)
     }
 
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {

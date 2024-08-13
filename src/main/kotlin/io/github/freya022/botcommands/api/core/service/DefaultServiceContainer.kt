@@ -10,6 +10,7 @@ interface DefaultServiceContainer : ServiceContainer {
         name: String = clazz.getServiceName(),
         isPrimary: Boolean = false,
         priority: Int = 0,
+        annotations: Collection<Annotation> = emptySet(),
         typeAliases: Set<KClass<*>> = emptySet()
     )
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String) = putService(t, clazz, name)
@@ -25,12 +26,14 @@ inline fun <reified T : Any> DefaultServiceContainer.putServiceAs(
     name: String = T::class.getServiceName(),
     isPrimary: Boolean = false,
     priority: Int = 0,
-    typeAliases: Set<KClass<*>> = emptySet()
-) = putService(t, T::class, name, isPrimary, priority, typeAliases)
+    typeAliases: Set<KClass<*>> = emptySet(),
+    annotations: Collection<Annotation> = emptySet(),
+) = putService(t, T::class, name, isPrimary, priority, annotations, typeAliases)
 
 inline fun <reified A : Any> DefaultServiceContainer.putServiceWithTypeAlias(
     t: Any,
     name: String = t::class.getServiceName(),
     isPrimary: Boolean = false,
-    priority: Int = 0
-) = putService(t, t::class, name, isPrimary, priority, setOf(A::class))
+    priority: Int = 0,
+    annotations: Collection<Annotation> = emptySet(),
+) = putService(t, t::class, name, isPrimary, priority, annotations, setOf(A::class))

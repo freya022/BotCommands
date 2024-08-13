@@ -15,6 +15,7 @@ internal class ProvidedServiceProvider internal constructor(
     override val name: String,
     override val isPrimary: Boolean,
     override val priority: Int,
+    override val annotations: Collection<Annotation>,
     typeAliases: Set<KClass<*>>
 ) : ServiceProvider {
     init {

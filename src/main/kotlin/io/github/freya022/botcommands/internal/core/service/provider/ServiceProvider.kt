@@ -48,6 +48,7 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val isPrimary: Boolean
     val isLazy: Boolean
     val priority: Int
+    val annotations: Collection<Annotation>
 
     val instance: Any?
 

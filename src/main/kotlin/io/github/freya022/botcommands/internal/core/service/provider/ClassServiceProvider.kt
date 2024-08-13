@@ -41,6 +41,7 @@ internal class ClassServiceProvider internal constructor(
     override val isPrimary = clazz.hasAnnotation<Primary>()
     override val isLazy = clazz.hasAnnotation<Lazy>()
     override val priority = clazz.getAnnotatedServicePriority()
+    override val annotations get() = clazz.annotations
 
     override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
