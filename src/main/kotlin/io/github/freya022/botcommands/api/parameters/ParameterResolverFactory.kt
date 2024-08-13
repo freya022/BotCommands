@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
@@ -54,6 +55,8 @@ abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverT
      * When getting a resolver factory, the factory with the highest value that is [resolvable][isResolvable] is taken.
      *
      * If two factories with the same priority exist and are both resolvable, an exception is thrown.
+     *
+     * @see Resolver.priority
      */
     open val priority: Int get() = 0
 

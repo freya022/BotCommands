@@ -2,14 +2,21 @@ package io.github.freya022.botcommands.internal.parameters
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.core.service.findAnnotationOnService
+import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotation
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger { }
@@ -27,7 +34,7 @@ private val compatibleInterfaces = listOf(
 
 @BService
 internal class ResolverContainer internal constructor(
-    resolvers: List<ParameterResolver<*, *>>,
+    serviceContainer: ServiceContainer,
     resolverFactories: List<ParameterResolverFactory<*>>,
 ) {
     private data class CacheKey(
@@ -39,7 +46,7 @@ internal class ResolverContainer internal constructor(
     private val cache: MutableMap<CacheKey, ParameterResolverFactory<*>?> = hashMapOf()
 
     init {
-        fun addResolver(resolver: ParameterResolver<*, *>) {
+        fun addResolver(resolver: ParameterResolver<*, *>, annotation: Resolver) {
             fun ParameterResolver<*, *>.hasCompatibleInterface(): Boolean {
                 return compatibleInterfaces.any { it.isInstance(this) }
             }
@@ -49,12 +56,19 @@ internal class ResolverContainer internal constructor(
             }
 
             factories += when (resolver) {
-                is ClassParameterResolver -> resolver.toResolverFactory()
-                is TypedParameterResolver -> resolver.toResolverFactory()
+                is ClassParameterResolver -> resolver.toResolverFactory(annotation)
+                is TypedParameterResolver -> resolver.toResolverFactory(annotation)
             }
         }
 
-        resolvers.forEach(::addResolver)
+        // Add resolvers with their annotation
+        serviceContainer.getServiceNamesForAnnotation<Resolver>().forEach { resolverName ->
+            val annotation = serviceContainer.findAnnotationOnService<Resolver>(resolverName)
+                ?: throwInternal("DI said ${annotationRef<Resolver>()} was present but isn't")
+            val resolver = serviceContainer.getService(resolverName, ParameterResolver::class)
+            addResolver(resolver, annotation)
+        }
+
         factories += resolverFactories
 
         logger.trace {
