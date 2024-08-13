@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
 import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
 import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
@@ -169,6 +170,27 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         }
     }
 
+    override fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): Collection<String> {
+        return serviceProviders.allProviders
+            .filter { it.annotations.any { a -> a.annotationClass == annotationType } }
+            .map { it.name }
+            .unmodifiableView()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <A : Annotation> findAnnotationOnService(name: String, annotationType: KClass<A>): A? {
+        val providers = serviceProviders.findAllForName(name)
+        val providerResult = getInstantiablePrimaryProvider(clazz = null, name, providers)
+        val provider = providerResult.getProviderOrThrow()
+        return provider.annotations.find { it.annotationClass == annotationType } as A?
+    }
+
+    private fun ServiceResult<ServiceProvider>.getProviderOrThrow(): ServiceProvider {
+        if (service != null)
+            return service
+        throw ServiceException(serviceError ?: throwInternal("Can't have no provider and no error"))
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
         return serviceProviders.findAllForType(clazz)
@@ -215,9 +237,10 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         name: String,
         isPrimary: Boolean,
         priority: Int,
+        annotations: Collection<Annotation>,
         typeAliases: Set<KClass<*>>
     ) {
-        serviceProviders.putServiceProvider(ProvidedServiceProvider(t, clazz, name, isPrimary, priority, typeAliases))
+        serviceProviders.putServiceProvider(ProvidedServiceProvider(t, clazz, name, isPrimary, priority, annotations, typeAliases))
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
@@ -249,47 +272,17 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
      *
      * - **No usable provider:** The result contains the error.
      */
-    private fun getInstantiablePrimaryProvider(clazz: KClass<*>, name: String?, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
+    private fun getInstantiablePrimaryProvider(clazz: KClass<*>?, name: String?, providers: Collection<ServiceProvider>): ServiceResult<ServiceProvider> {
         if (providers.isEmpty())
             return NO_PROVIDER.toResult(
                 errorMessage = "No service or factories found for ${getProviderCharacteristics(clazz, name)}",
-                extraMessage = clazz.findAnnotation<MissingServiceMessage>()?.message
+                extraMessage = clazz?.findAnnotation<MissingServiceMessage>()?.message
             )
 
-        // Get instantiable providers, otherwise their errors
-        val errors: MutableList<ServiceError> = arrayListOf()
-        val instantiableProviders: MutableList<ServiceProvider> = arrayListOf()
-        for (provider in providers) {
-            when (val serviceError = canCreateService(provider)) {
-                null -> instantiableProviders += provider
-                else -> errors += serviceError
-            }
-        }
-
-        val primaryProviders = when {
-            // Filter by primary if we're getting providers by type, if there's no primary provider, take all of them
-            name == null -> instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
-            // If we got providers by name, use them
-            else -> instantiableProviders
-        }
+        val (errors, primaryProviders) = partitionPrimaryProviders(name, providers)
 
         if (primaryProviders.size > 1) {
-            // Getting a provider by name cannot give multiple providers
-            if (name != null) {
-                // If DefaultInstantiableServices is still running,
-                // usable providers with the same names weren't checked yet,
-                // throw here too.
-                if (serviceProviders.findAllForType(DefaultInstantiableServices::class).single() in serviceCreationStack) {
-                    throwState(duplicatedNamedProvidersMsg(mapOf(name to primaryProviders)))
-                } else {
-                    throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
-                }
-            }
-
-            return NON_UNIQUE_PROVIDERS.toResult(
-                errorMessage = "Requested service of ${getProviderCharacteristics(clazz, name = null)} had multiple providers",
-                extra = mapOf("Providers" to lazy { '\n' + primaryProviders.toPrimaryProviderString().prependIndent() })
-            )
+            return onMultiplePrimaryProviders(clazz, name, primaryProviders)
         }
 
         val primaryProvider = if (errors.isEmpty()) {
@@ -306,7 +299,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
                 }
         }
 
-        if (!primaryProvider.primaryType.isSubclassOf(clazz)) {
+        if (clazz != null && !primaryProvider.primaryType.isSubclassOf(clazz)) {
             val errorMessage = "A provider was found but type is incorrect, " +
                     "requested: ${clazz.simpleNestedName}, actual: ${primaryProvider.primaryType.simpleNestedName}"
 
@@ -324,9 +317,52 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         return ServiceResult.pass(primaryProvider)
     }
 
-    private fun getProviderCharacteristics(clazz: KClass<*>, name: String?) = when {
-        name != null -> "type ${clazz.simpleNestedName} and name '$name'"
-        else -> "type ${clazz.simpleNestedName}"
+    /**
+     * Returns the errors of unavailable providers, and the **primary** providers
+     */
+    private fun partitionPrimaryProviders(name: String?, providers: Collection<ServiceProvider>): Pair<List<ServiceError>, List<ServiceProvider>> {
+        // Get instantiable providers, otherwise their errors
+        val errors: MutableList<ServiceError> = arrayListOf()
+        val instantiableProviders: MutableList<ServiceProvider> = arrayListOf()
+        for (provider in providers) {
+            when (val serviceError = canCreateService(provider)) {
+                null -> instantiableProviders += provider
+                else -> errors += serviceError
+            }
+        }
+
+        return errors to when {
+            // Filter by primary if we're getting providers by type, if there's no primary provider, take all of them
+            name == null -> instantiableProviders.filter { it.isPrimary }.ifEmpty { instantiableProviders }
+            // If we got providers by name, use them
+            else -> instantiableProviders
+        }
+    }
+
+    private fun onMultiplePrimaryProviders(clazz: KClass<*>?, name: String?, primaryProviders: List<ServiceProvider>): ServiceResult<ServiceProvider> {
+        // Getting a provider by name cannot give multiple providers
+        if (name != null) {
+            // If DefaultInstantiableServices is still running,
+            // usable providers with the same names weren't checked yet,
+            // throw here too.
+            if (serviceProviders.findAllForType(DefaultInstantiableServices::class).single() in serviceCreationStack) {
+                throwState(duplicatedNamedProvidersMsg(mapOf(name to primaryProviders)))
+            } else {
+                throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")
+            }
+        }
+
+        return NON_UNIQUE_PROVIDERS.toResult(
+            errorMessage = "Requested service of ${getProviderCharacteristics(clazz, name = null)} had multiple providers",
+            extra = mapOf("Providers" to lazy { '\n' + primaryProviders.toPrimaryProviderString().prependIndent() })
+        )
+    }
+
+    private fun getProviderCharacteristics(clazz: KClass<*>?, name: String?) = when {
+        clazz == null && name == null -> throwInternal("Cannot get provider characteristics with nothing")
+        clazz != null && name != null -> "type ${clazz.simpleNestedName} and name '$name'"
+        clazz != null -> "type ${clazz.simpleNestedName}"
+        else -> "name $name"
     }
 
     private fun List<ServiceProvider>.toPrimaryProviderString() = joinAsList {

@@ -33,6 +33,14 @@ interface ServiceContainer {
     fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? = tryGetService(clazz).getOrNull()
     fun <T : Any> getServiceOrNull(clazz: Class<T>): T? = getServiceOrNull(clazz.kotlin)
 
+    fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): Collection<String>
+    fun getServiceNamesForAnnotation(annotationType: Class<out Annotation>): Collection<String> =
+        getServiceNamesForAnnotation(annotationType.kotlin)
+
+    fun <A : Annotation> findAnnotationOnService(name: String, annotationType: KClass<A>): A?
+    fun <A : Annotation> findAnnotationOnService(name: String, annotationType: Class<A>): A? =
+        findAnnotationOnService(name, annotationType.kotlin)
+
     fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(name: String, requiredType: Class<T>): T? = peekServiceOrNull(name, requiredType.kotlin)
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
@@ -74,6 +82,12 @@ inline fun <reified T : Any> ServiceContainer.canCreateService(): ServiceError? 
 fun <T : Any> BContext.getService(kClass: KClass<T>): T = serviceContainer.getService(kClass)
 inline fun <reified T : Any> BContext.getService(): T = serviceContainer.getService<T>()
 inline fun <reified T : Any> ServiceContainer.getService(): T = getService(T::class)
+
+inline fun <reified A : Annotation> ServiceContainer.getServiceNamesForAnnotation(): Collection<String> =
+    getServiceNamesForAnnotation(A::class)
+
+inline fun <reified A : Annotation> ServiceContainer.findAnnotationOnService(name: String): A? =
+    findAnnotationOnService(name, A::class)
 
 fun <T : Any> BContext.getServiceOrNull(kClass: KClass<T>): T? = serviceContainer.getServiceOrNull(kClass)
 inline fun <reified T : Any> BContext.getServiceOrNull(): T? = serviceContainer.getServiceOrNull<T>()

@@ -26,6 +26,7 @@ internal class FunctionServiceProvider(
     override val isPrimary = function.hasAnnotation<Primary>()
     override val isLazy = function.hasAnnotation<Lazy>()
     override val priority = function.getAnnotatedServicePriority()
+    override val annotations get() = function.annotations
 
     /**
      * If not the sentinel value, the service was attempted to be created.
