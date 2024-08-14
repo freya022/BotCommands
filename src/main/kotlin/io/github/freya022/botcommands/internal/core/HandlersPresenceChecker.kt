@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -43,7 +43,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
             }
 
         if (isHandler && handlerDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortQualifiedReference
+            noDeclarationClasses += classInfo.shortQualifiedName
         } else if (!isHandlerOrCommand && handlerDeclarations.isNotEmpty()) {
             // If there is no handler annotation but handler declarations were found
             noAnnotationMethods += handlerDeclarations

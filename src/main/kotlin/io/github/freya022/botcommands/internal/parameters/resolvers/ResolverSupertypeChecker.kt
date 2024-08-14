@@ -60,13 +60,13 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 // Skip if a factory references the resolver or one of its subtypes
                 if (ignoredClasses.any { it.isAssignableFrom(kClass.java) }) return@task
 
-                errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<Resolver>()}"
+                errorMessages += "Resolver ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<Resolver>()}"
             } else if (missingResolverSuperClass) {
-                errorMessages += "Resolver ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolver<*, *>>()}"
+                errorMessages += "Resolver ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolver<*, *>>()}"
             } else if (missingResolverFactoryAnnotation) {
-                errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to be annotated with ${annotationRef<ResolverFactory>()}"
+                errorMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<ResolverFactory>()}"
             } else if (missingResolverFactorySuperClass) {
-                errorMessages += "Resolver factory ${classInfo.shortQualifiedReference} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
+                errorMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
             }
         }
     }

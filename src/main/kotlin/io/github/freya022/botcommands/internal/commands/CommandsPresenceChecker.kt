@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.JDATextComma
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedReference
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -51,7 +51,7 @@ internal class CommandsPresenceChecker : ClassGraphProcessor {
         }
 
         if (isCommand && !hasCommandProviderInterfaces && commandDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.shortQualifiedReference
+            noDeclarationClasses += classInfo.shortQualifiedName
         } else if (!isCommand && commandDeclarations.isNotEmpty()) {
             // If there is no command annotation but command declarations were found
             noAnnotationMethods += commandDeclarations

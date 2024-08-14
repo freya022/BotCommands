@@ -27,5 +27,6 @@ val MethodInfo.shortSignature: String
         return "$shortSignatureNoSrc: $returnType ($source)"
     }
 
+@Deprecated("Replaced by shortQualifiedName", ReplaceWith("shortQualifiedName"))
 val ClassInfo.shortQualifiedReference: String
-    get() = "$shortQualifiedName($sourceFile:0)"
+    inline get() = shortQualifiedName
