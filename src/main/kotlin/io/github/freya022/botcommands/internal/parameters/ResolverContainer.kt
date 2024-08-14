@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.findAnnotationOnService
 import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotation
-import io.github.freya022.botcommands.api.core.utils.arrayOfSize
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -104,8 +101,8 @@ internal class ResolverContainer internal constructor(
                 resolvableFactories.filter { it.priority == maxPriority }
             }
         require(resolvableFactories.size <= 1) {
-            val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
-            "Found multiple compatible resolvers, with the same priority, for the provided request\n$factoryNameList"
+            val factoryNameList = resolvableFactories.joinAsList { it.resolverType.shortQualifiedName }
+            "Found multiple compatible resolvers, with the same priority\n$factoryNameList\nIncrease the priority of a resolver to override others"
         }
 
         val factory = resolvableFactories.firstOrNull()
