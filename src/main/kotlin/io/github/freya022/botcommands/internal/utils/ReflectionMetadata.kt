@@ -164,13 +164,21 @@ internal object ReflectionMetadata {
         }
     }
 
+    private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
     private fun ClassInfo.isService(config: BConfig): Boolean {
-        val declaredAnnotations = annotations.directOnly()
+        val allAnnotations = annotations
+        if (allAnnotations.containsName(COMPONENT_ANNOTATION_NAME)) return true
+
+        val declaredAnnotations = allAnnotations.directOnly()
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 
+    private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
     private fun MethodInfo.isService(config: BConfig): Boolean {
-        val declaredAnnotations = annotationInfo.directOnly()
+        val allAnnotations = annotationInfo
+        if (allAnnotations.containsName(BEAN_ANNOTATION_NAME)) return true
+
+        val declaredAnnotations = allAnnotations.directOnly()
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 
