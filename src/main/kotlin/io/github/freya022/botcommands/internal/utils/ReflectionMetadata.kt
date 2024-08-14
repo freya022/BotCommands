@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.utils
 import io.github.classgraph.*
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.debugNull
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
@@ -93,7 +94,9 @@ internal object ReflectionMetadata {
                 userClasses
                     .filterClasses(config)
                     .also {
-                        if (logger.isTraceEnabled()) {
+                        if (userClasses.isEmpty()) {
+                            logger.warn { "Found no user classes to scan, check the packages set in ${BConfigBuilder::packages.reference}" }
+                        } else if (logger.isTraceEnabled()) {
                             logger.trace { "Found ${userClasses.size} user classes: ${userClasses.joinToString { it.simpleNestedName }}" }
                         } else {
                             logger.debug { "Found ${userClasses.size} user classes" }
