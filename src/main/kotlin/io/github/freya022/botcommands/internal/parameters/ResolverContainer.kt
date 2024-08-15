@@ -2,14 +2,18 @@ package io.github.freya022.botcommands.internal.parameters
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.throwUser
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.arrayOfSize
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.core.service.findAnnotationOnService
+import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotation
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger { }
@@ -27,7 +31,7 @@ private val compatibleInterfaces = listOf(
 
 @BService
 internal class ResolverContainer internal constructor(
-    resolvers: List<ParameterResolver<*, *>>,
+    serviceContainer: ServiceContainer,
     resolverFactories: List<ParameterResolverFactory<*>>,
 ) {
     private data class CacheKey(
@@ -39,7 +43,7 @@ internal class ResolverContainer internal constructor(
     private val cache: MutableMap<CacheKey, ParameterResolverFactory<*>?> = hashMapOf()
 
     init {
-        fun addResolver(resolver: ParameterResolver<*, *>) {
+        fun addResolver(resolver: ParameterResolver<*, *>, annotation: Resolver) {
             fun ParameterResolver<*, *>.hasCompatibleInterface(): Boolean {
                 return compatibleInterfaces.any { it.isInstance(this) }
             }
@@ -49,12 +53,19 @@ internal class ResolverContainer internal constructor(
             }
 
             factories += when (resolver) {
-                is ClassParameterResolver -> resolver.toResolverFactory()
-                is TypedParameterResolver -> resolver.toResolverFactory()
+                is ClassParameterResolver -> resolver.toResolverFactory(annotation)
+                is TypedParameterResolver -> resolver.toResolverFactory(annotation)
             }
         }
 
-        resolvers.forEach(::addResolver)
+        // Add resolvers with their annotation
+        serviceContainer.getServiceNamesForAnnotation<Resolver>().forEach { resolverName ->
+            val annotation = serviceContainer.findAnnotationOnService<Resolver>(resolverName)
+                ?: throwInternal("DI said ${annotationRef<Resolver>()} was present but isn't")
+            val resolver = serviceContainer.getService(resolverName, ParameterResolver::class)
+            addResolver(resolver, annotation)
+        }
+
         factories += resolverFactories
 
         logger.trace {
@@ -65,7 +76,7 @@ internal class ResolverContainer internal constructor(
                         .sortedBy { it.resolverType.simpleNestedName }
 
                     appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
-                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} (${it.supportedTypesStr.joinToString()})" })
+                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.simpleNestedName} ; priority ${it.priority} (${it.supportedTypesStr.joinToString()})" })
                 }
             }
 
@@ -82,9 +93,16 @@ internal class ResolverContainer internal constructor(
             .filter { it.resolverType.isSubclassOf(resolverType) }
             .map { it as ParameterResolverFactory<T> }
             .filter { it.isResolvable(request) }
+            .let { resolvableFactories ->
+                if (resolvableFactories.isEmpty())
+                    return@let resolvableFactories
+                // Keep most important factories, if two has same priority, it gets reported down
+                val maxPriority = resolvableFactories.maxOf { it.priority }
+                resolvableFactories.filter { it.priority == maxPriority }
+            }
         require(resolvableFactories.size <= 1) {
-            val factoryNameList = resolvableFactories.joinAsList { it.resolverType.simpleNestedName }
-            "Found multiple compatible resolvers for the provided request\n$factoryNameList"
+            val factoryNameList = resolvableFactories.joinAsList { it.resolverType.shortQualifiedName }
+            "Found multiple compatible resolvers, with the same priority\n$factoryNameList\nIncrease the priority of a resolver to override others"
         }
 
         val factory = resolvableFactories.firstOrNull()

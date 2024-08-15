@@ -328,6 +328,7 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  * }
  * ```
  *
+ * @param priority Priority of this resolver factory, see [ParameterResolverFactory.priority]
  * @param producer Function providing a [resolver][ParameterResolver] for the provided function parameter
  * @param T Type of the produced parameter resolver
  * @param R Type of the object returned by the resolver
@@ -335,8 +336,10 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  * @see ParameterResolverFactory
  * @see ParameterResolver
  */
-inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory<T> {
+inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(priority: Int = 0, crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory<T> {
     return object : TypedParameterResolverFactory<T>(T::class, R::class) {
+        override val priority: Int get() = priority
+
         override fun get(request: ResolverRequest): T = producer(request)
     }
 }

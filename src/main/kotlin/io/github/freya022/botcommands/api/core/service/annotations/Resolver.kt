@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
@@ -21,4 +22,15 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @Bean
 @Component
-annotation class Resolver
+annotation class Resolver(
+    /**
+     * The priority of this resolver (then wrapped as a resolver factory).
+     *
+     * When getting a resolver factory, the factory with the highest value that is [resolvable][ParameterResolverFactory.isResolvable] is taken.
+     *
+     * If two factories with the same priority exist and are both resolvable, an exception is thrown.
+     *
+     * @see ParameterResolverFactory.priority
+     */
+    val priority: Int = 0
+)
