@@ -15,10 +15,10 @@ internal class RequiresComponentsChecker : CustomConditionChecker<RequiresCompon
         checkedClass: Class<*>,
         annotation: RequiresComponents
     ): String? {
-        if (serviceContainer.getService<BComponentsConfig>().useComponents) {
+        if (serviceContainer.getService<BComponentsConfig>().enable) {
             return null
         }
 
-        return "Components needs to be enabled, see ${BComponentsConfig::useComponents.reference}"
+        return "Components needs to be enabled, see ${BComponentsConfig::enable.reference}"
     }
 }

@@ -74,7 +74,7 @@ object Main {
                     // Enables usage of components
                     // This can be removed if you don't have a database,
                     // but you'll need to use raw JDA components
-                    useComponents = true
+                    enable = true
                 }
             }
 

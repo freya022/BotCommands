@@ -65,6 +65,7 @@ interface BContext {
         get() = config.componentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
         get() = config.coroutineScopesConfig
+    @Suppress("DEPRECATION")
     @Deprecated("For removal", replaceWith = ReplaceWith(""))
     val debugConfig: BDebugConfig
         get() = config.debugConfig
@@ -195,6 +196,7 @@ interface BContext {
             ]
         )
     )
+    @Suppress("DEPRECATION")
     fun getDefaultMessages(guild: Guild?): DefaultMessages {
         return getService<DefaultMessagesFactory>().get(getEffectiveLocale(guild).toLocale())
     }
@@ -251,6 +253,7 @@ interface BContext {
      *
      * @return The [DiscordLocale] of the [Guild]
      */
+    @Suppress("DEPRECATION")
     @Deprecated("Replaced with TextCommandLocaleProvider")
     fun getEffectiveLocale(guild: Guild?): DiscordLocale {
         if (guild != null && guild.features.contains("COMMUNITY")) {

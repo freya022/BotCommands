@@ -36,6 +36,7 @@ interface BDebugConfig {
     val enabledMissingLocalizationLogs: Boolean
 }
 
+@Suppress("DEPRECATION")
 @Deprecated("For removal")
 @ConfigDSL
 class BDebugConfigBuilder internal constructor() : BDebugConfig {

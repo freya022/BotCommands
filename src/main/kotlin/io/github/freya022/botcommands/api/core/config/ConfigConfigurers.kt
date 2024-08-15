@@ -12,6 +12,7 @@ interface BConfigConfigurer : BConfigurer<BConfigBuilder>
 /**
  * Configurer for [BConfig].
  */
+@Suppress("DEPRECATION")
 interface BDebugConfigConfigurer : BConfigurer<BDebugConfigBuilder>
 
 /**

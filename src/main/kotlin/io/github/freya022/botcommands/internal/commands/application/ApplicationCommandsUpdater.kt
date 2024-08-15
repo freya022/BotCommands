@@ -233,6 +233,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun <T : INamedCommand> Collection<T>.filterCommands() = filter { info ->
         context.settingsProvider?.let { settings ->
             guild?.let { guild ->
+                @Suppress("DEPRECATION")
                 return@filter settings.getGuildCommands(guild).filter.test(info.path)
             }
         }

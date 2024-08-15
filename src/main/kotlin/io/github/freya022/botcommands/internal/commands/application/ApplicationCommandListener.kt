@@ -168,6 +168,7 @@ internal class ApplicationCommandListener internal constructor(
         forceUpdateCommands(guild)
     }
 
+    @Suppress("DEPRECATION")
     private fun createCommandMismatchMessage(preMessage: String): String = """
         $preMessage
         Please check if you have another bot instance running as it could have replaced the current command set.

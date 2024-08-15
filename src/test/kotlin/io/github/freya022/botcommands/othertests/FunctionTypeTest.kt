@@ -1,3 +1,5 @@
+@file:Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+
 package io.github.freya022.botcommands.othertests
 
 import io.github.freya022.botcommands.api.ReceiverConsumer

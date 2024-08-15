@@ -12,6 +12,7 @@ internal sealed class DiffLogger {
     internal abstract fun printLogs()
 
     internal companion object {
+        @Suppress("DEPRECATION")
         internal fun <R> withLogger(context: BContext, title: String, block: DiffLogger.() -> R): R {
             val logsEnabled = when (context.applicationConfig.diffEngine) {
                 DiffEngine.OLD, DiffEngine.OLD_REFACTORED -> logger.isTraceEnabled() && context.debugConfig.enableApplicationDiffsLogs

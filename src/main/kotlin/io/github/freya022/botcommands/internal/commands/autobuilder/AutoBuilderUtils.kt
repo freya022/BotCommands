@@ -112,6 +112,7 @@ internal fun checkDeclarationFilter(
     return true
 }
 
+@Suppress("DEPRECATION")
 internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
     if (manager is GuildApplicationCommandManager) {
         val guildIds = instance.getGuildsForCommandId(commandId, path) ?: return true

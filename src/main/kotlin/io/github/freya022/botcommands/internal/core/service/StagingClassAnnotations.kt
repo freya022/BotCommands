@@ -19,6 +19,7 @@ internal class StagingClassAnnotations internal constructor(private val serviceC
             //Fill map with all the @Command, @Resolver, etc... declarations
             if (isService) {
                 classInfo.annotationInfo.directOnly().forEach { annotationInfo ->
+                    @Suppress("DEPRECATION")
                     if (serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
                         put(
                             annotationReceiver = kClass,

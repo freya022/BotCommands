@@ -38,6 +38,7 @@ internal open class ConfigProvider {
 
     @Bean
     @Primary
+    @Suppress("DEPRECATION")
     internal open fun bDebugConfig(config: BConfig): BDebugConfig = config.debugConfig
 
     @Bean

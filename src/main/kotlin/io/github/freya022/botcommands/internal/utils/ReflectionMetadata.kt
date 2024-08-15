@@ -173,6 +173,7 @@ internal object ReflectionMetadata {
         if (allAnnotations.containsName(COMPONENT_ANNOTATION_NAME)) return true
 
         val declaredAnnotations = allAnnotations.directOnly()
+        @Suppress("DEPRECATION")
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 
@@ -182,6 +183,7 @@ internal object ReflectionMetadata {
         if (allAnnotations.containsName(BEAN_ANNOTATION_NAME)) return true
 
         val declaredAnnotations = allAnnotations.directOnly()
+        @Suppress("DEPRECATION")
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 

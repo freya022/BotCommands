@@ -50,6 +50,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     ignoredEventIntents += configuration.ignoredEventIntents
 }
 
+@Suppress("DEPRECATION")
 @ConfigurationProperties(prefix = "botcommands.debug", ignoreUnknownFields = false)
 internal class BotCommandsDebugConfiguration(
     @Suppress("OVERRIDE_DEPRECATION")
@@ -58,6 +59,7 @@ internal class BotCommandsDebugConfiguration(
     override val enabledMissingLocalizationLogs: Boolean = false
 ) : BDebugConfig
 
+@Suppress("DEPRECATION")
 internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConfiguration) = apply {
     enableApplicationDiffsLogs = configuration.enableApplicationDiffsLogs
     enabledMissingLocalizationLogs = configuration.enabledMissingLocalizationLogs
@@ -65,6 +67,7 @@ internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConf
 
 @ConfigurationProperties(prefix = "botcommands.service", ignoreUnknownFields = false)
 internal class BotCommandsServiceConfiguration : BServiceConfig {
+    @Deprecated("For removal, didn't do much in the first place")
     override val serviceAnnotations: Nothing get() = unusable()
     override val instanceSupplierMap: Nothing get() = unusable()
 }

@@ -109,6 +109,7 @@ interface BConfig {
 
     val classGraphProcessors: List<ClassGraphProcessor>
 
+    @Suppress("DEPRECATION")
     val debugConfig: BDebugConfig
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
@@ -159,6 +160,7 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
+    @Suppress("DEPRECATION")
     override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
     override val databaseConfig = BDatabaseConfigBuilder()
@@ -282,6 +284,7 @@ class BConfigBuilder internal constructor() : BConfig {
         databaseConfig.apply(block)
     }
 
+    @Suppress("DEPRECATION")
     @Deprecated("For removal", ReplaceWith(""))
     fun debug(block: ReceiverConsumer<BDebugConfigBuilder>) {
         debugConfig.apply(block)
