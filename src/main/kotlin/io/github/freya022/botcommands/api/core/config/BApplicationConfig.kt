@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader
+import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -122,8 +123,20 @@ interface BApplicationConfig {
     /**
      * Mappings between the base bundle name and the locales it supports.
      *
-     * For example: `MyCommands` -> `[Locale.GERMAN, Locale.FRENCH]`
-     * will, by default, find bundles `MyCommands_de_DE.json` and `MyCommands_fr_FR.json`.
+     * The file can be anywhere and of any extension,
+     * as long as it can be read by a [LocalizationMapReader],
+     * see the [default implementation][DefaultJsonLocalizationMapReader].
+     *
+     * To know the final name of your file,
+     * which in most cases is `<name>_<language>_<country>.<extension>`,
+     * you can take a look at the [language tag][DiscordLocale.getLocale] of your [DiscordLocale],
+     * replacing the `-` (hyphen) by a `_` (underscore).
+     *
+     * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
+     * will, by default, read in the [`/bc_localization`][DefaultJsonLocalizationMapReader] folder:
+     * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
+     * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
+     * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
      *
      * Spring property: `botcommands.application.localizations` ;
      * Append the bundle name to the key, and have the values be the locales,
