@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 /**
  * Supplies the prefixes which the bot would respond to in a specific guild.
@@ -28,9 +28,9 @@ interface TextPrefixSupplier {
      *
      * Returning an empty list means the bot will not respond to commands in that guild.
      *
-     * @param guild The guild in which the command is executed
+     * @param channel The channel in which the command is executed
      */
-    fun getPrefixes(guild: Guild): List<String>
+    fun getPrefixes(channel: GuildMessageChannel): List<String>
 
     /**
      * Returns the preferred prefix this bot is able to respond to, in the provided guild.
@@ -41,7 +41,7 @@ interface TextPrefixSupplier {
      *
      * Used by the built-in help command to show command examples.
      *
-     * @param guild The guild in which the command would be executed
+     * @param channel The channel in which the command would be executed
      */
-    fun getPreferredPrefix(guild: Guild): String
+    fun getPreferredPrefix(channel: GuildMessageChannel): String
 }

@@ -26,7 +26,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -70,7 +70,7 @@ internal class TextCommandsListener internal constructor(
 
         // Could also check mentions, but this is way easier and faster
         val msg: String = suppressContentWarning { event.message.contentRaw }
-        val content = getMsgNoPrefix(msg, event.guild)
+        val content = getMsgNoPrefix(msg, event.guildChannel)
         if (content.isNullOrBlank()) return
 
         logger.trace { "Received text command: $msg" }
@@ -171,8 +171,8 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private fun getMsgNoPrefix(msg: String, guild: Guild): String? {
-        return textCommandsContext.getEffectivePrefixes(guild)
+    private fun getMsgNoPrefix(msg: String, channel: GuildMessageChannel): String? {
+        return textCommandsContext.getEffectivePrefixes(channel)
             .find { prefix -> msg.startsWith(prefix) }
             ?.let { prefix -> msg.substring(prefix.length).trimStart() }
     }

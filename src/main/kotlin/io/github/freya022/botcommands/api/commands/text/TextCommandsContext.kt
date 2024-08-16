@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 /**
  * Helps to get the registered text commands.
@@ -48,7 +48,7 @@ interface TextCommandsContext {
      *
      * As a reminder, [TextPrefixSupplier.getPrefixes] takes over the prefixes set in [BTextConfig].
      */
-    fun getEffectivePrefixes(guild: Guild): List<String>
+    fun getEffectivePrefixes(channel: GuildMessageChannel): List<String>
 
     /**
      * Returns the preferred prefix this bot is able to respond to, in the specified guild,
@@ -56,7 +56,7 @@ interface TextCommandsContext {
      *
      * As a reminder, [TextPrefixSupplier.getPreferredPrefix] takes over the prefixes set in [BTextConfig].
      */
-    fun getPreferredPrefix(guild: Guild): String?
+    fun getPreferredPrefix(channel: GuildMessageChannel): String?
 
     /**
      * Returns the [DefaultEmbedSupplier] service.

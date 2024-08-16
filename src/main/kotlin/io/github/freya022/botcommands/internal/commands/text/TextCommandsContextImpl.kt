@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
-import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 @BService
 @RequiresTextCommands
@@ -28,31 +28,31 @@ internal class TextCommandsContextImpl internal constructor(
     override val rootCommands: Collection<TopLevelTextCommandInfoImpl>
         get() = textCommandMap.values.unmodifiableView()
 
-    override fun getEffectivePrefixes(guild: Guild): List<String> {
+    override fun getEffectivePrefixes(channel: GuildMessageChannel): List<String> {
         if (textPrefixSupplier != null) {
-            return textPrefixSupplier.getPrefixes(guild)
+            return textPrefixSupplier.getPrefixes(channel)
         }
 
         if (settingsProvider != null) {
-            val prefixes = settingsProvider.getPrefixes(guild)
+            val prefixes = settingsProvider.getPrefixes(channel.guild)
             if (!prefixes.isNullOrEmpty()) return prefixes
         }
 
         val prefixes = textConfig.prefixes
         return when (textConfig.usePingAsPrefix) {
             false -> prefixes
-            true -> prefixes + guild.selfMember.asMention
+            true -> prefixes + channel.jda.selfUser.asMention
         }
     }
 
-    override fun getPreferredPrefix(guild: Guild): String? {
+    override fun getPreferredPrefix(channel: GuildMessageChannel): String? {
         if (textPrefixSupplier != null) {
-            return textPrefixSupplier.getPreferredPrefix(guild)
+            return textPrefixSupplier.getPreferredPrefix(channel)
         }
 
         val prefixes = textConfig.prefixes
         return when (textConfig.usePingAsPrefix) {
-            true -> guild.selfMember.asMention
+            true -> channel.jda.selfUser.asMention
             false -> prefixes.firstOrNull()
         }
     }
