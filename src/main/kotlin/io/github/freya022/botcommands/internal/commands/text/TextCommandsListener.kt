@@ -177,7 +177,7 @@ internal class TextCommandsListener internal constructor(
     private fun getMsgNoPrefix(msg: String, guild: Guild): String? {
         return getPrefixes(guild)
             .find { prefix -> msg.startsWith(prefix) }
-            ?.let { prefix -> msg.substring(prefix.length).trim() }
+            ?.let { prefix -> msg.substring(prefix.length).trimStart() }
     }
 
     private fun getPrefixes(guild: Guild): List<String> {
