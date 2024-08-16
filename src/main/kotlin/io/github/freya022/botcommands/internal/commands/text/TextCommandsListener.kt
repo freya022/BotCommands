@@ -70,10 +70,7 @@ internal class TextCommandsListener internal constructor(
 
         // Could also check mentions, but this is way easier and faster
         val msg: String = suppressContentWarning { event.message.contentRaw }
-        val content = when {
-            context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ', missingDelimiterValue = "")
-            else -> getMsgNoPrefix(msg, event.guild)
-        }
+        val content = getMsgNoPrefix(msg, event.guild)
         if (content.isNullOrBlank()) return
 
         logger.trace { "Received text command: $msg" }
@@ -186,7 +183,11 @@ internal class TextCommandsListener internal constructor(
             if (!prefixes.isNullOrEmpty()) return prefixes
         }
 
-        return context.textConfig.prefixes
+        val prefixes = context.textConfig.prefixes
+        return when (context.textConfig.usePingAsPrefix) {
+            false -> prefixes
+            true -> prefixes + guild.selfMember.asMention
+        }
     }
 
     private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo): Boolean {
