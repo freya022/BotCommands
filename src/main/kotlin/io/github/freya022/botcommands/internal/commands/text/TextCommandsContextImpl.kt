@@ -45,6 +45,18 @@ internal class TextCommandsContextImpl internal constructor(
         }
     }
 
+    override fun getPreferredPrefix(guild: Guild): String? {
+        if (textPrefixSupplier != null) {
+            return textPrefixSupplier.getPreferredPrefix(guild)
+        }
+
+        val prefixes = textConfig.prefixes
+        return when (textConfig.usePingAsPrefix) {
+            true -> guild.selfMember.asMention
+            false -> prefixes.firstOrNull()
+        }
+    }
+
     internal fun addTextCommand(commandInfo: TopLevelTextCommandInfoImpl) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.putIfAbsentOrThrow(name, commandInfo) {

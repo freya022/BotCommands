@@ -31,4 +31,17 @@ interface TextPrefixSupplier {
      * @param guild The guild in which the command is executed
      */
     fun getPrefixes(guild: Guild): List<String>
+
+    /**
+     * Returns the preferred prefix this bot is able to respond to, in the provided guild.
+     *
+     * If you have no preferred prefix for this guild,
+     * you can return one of the [prefixes][BTextConfig.prefixes],
+     * or [JDA.getSelfUser().asMention][User.getAsMention]).
+     *
+     * Used by the built-in help command to show command examples.
+     *
+     * @param guild The guild in which the command would be executed
+     */
+    fun getPreferredPrefix(guild: Guild): String
 }

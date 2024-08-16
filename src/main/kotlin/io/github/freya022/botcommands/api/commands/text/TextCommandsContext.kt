@@ -51,6 +51,14 @@ interface TextCommandsContext {
     fun getEffectivePrefixes(guild: Guild): List<String>
 
     /**
+     * Returns the preferred prefix this bot is able to respond to, in the specified guild,
+     * or `null` if no prefix could be determined, in which case text commands are not usable.
+     *
+     * As a reminder, [TextPrefixSupplier.getPreferredPrefix] takes over the prefixes set in [BTextConfig].
+     */
+    fun getPreferredPrefix(guild: Guild): String?
+
+    /**
      * Returns the [DefaultEmbedSupplier] service.
      *
      * @see DefaultEmbedSupplier
