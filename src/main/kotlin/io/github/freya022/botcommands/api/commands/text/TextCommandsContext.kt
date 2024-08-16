@@ -23,12 +23,20 @@ interface TextCommandsContext {
      *
      * @return Full list of prefixes
      */
+    @Deprecated(
+        message = "Read directly on BTextConfig if necessary, this property doesn't mean the bot always responds to these prefixes",
+        replaceWith = ReplaceWith(expression = "textConfig.prefixes")
+    )
     val prefixes: List<String>
         get() = textConfig.prefixes
 
     /**
      * @return `true` if the bot responds to its own mention.
      */
+    @Deprecated(
+        message = "Read directly on BTextConfig if necessary, this property doesn't mean the bot always responds to pings",
+        replaceWith = ReplaceWith(expression = "textConfig.usePingAsPrefix")
+    )
     val isPingAsPrefix: Boolean
         get() = textConfig.usePingAsPrefix
 
@@ -37,6 +45,11 @@ interface TextCommandsContext {
      * Returns the preferred prefix for triggering this bot,
      * or `null` if [BTextConfig.usePingAsPrefix] is disabled and no prefix was added in [BTextConfig.prefixes].
      */
+    @Deprecated(
+        message = "Now requires a GuildMessageChannel",
+        replaceWith = ReplaceWith(expression = "this.getPreferredPrefix(channel)")
+    )
+    @Suppress("DEPRECATION")
     fun getPreferredPrefix(jda: JDA): String? = when {
         isPingAsPrefix -> jda.selfUser.asMention + " "
         else -> prefixes.firstOrNull()

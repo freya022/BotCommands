@@ -282,6 +282,7 @@ interface BContext {
      */
     @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.prefixes"))
     val prefixes: List<String>
+        @Suppress("DEPRECATION")
         get() = textCommandsContext.prefixes
 
     /**
@@ -289,6 +290,7 @@ interface BContext {
      */
     @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.isPingAsPrefix"))
     val isPingAsPrefix: Boolean
+        @Suppress("DEPRECATION")
         get() = textCommandsContext.isPingAsPrefix
 
     /**
@@ -299,6 +301,7 @@ interface BContext {
      */
     @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.getPreferredPrefix(jda)"))
     val prefix: String?
+        @Suppress("DEPRECATION")
         get() = textCommandsContext.getPreferredPrefix(jda)
 
     /**
