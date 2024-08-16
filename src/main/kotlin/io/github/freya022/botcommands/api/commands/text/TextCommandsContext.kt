@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
 
 /**
  * Helps to get the registered text commands.
@@ -40,6 +41,14 @@ interface TextCommandsContext {
         isPingAsPrefix -> jda.selfUser.asMention + " "
         else -> prefixes.firstOrNull()
     }
+
+    /**
+     * Returns the prefixes this bot responds to in the specified guild,
+     * or an empty list if the bot shouldn't respond to anything.
+     *
+     * As a reminder, [TextPrefixSupplier.getPrefixes] takes over the prefixes set in [BTextConfig].
+     */
+    fun getEffectivePrefixes(guild: Guild): List<String>
 
     /**
      * Returns the [DefaultEmbedSupplier] service.

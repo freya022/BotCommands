@@ -19,7 +19,8 @@ import net.dv8tion.jda.api.entities.User
 @InterfacedService(acceptMultiple = false)
 interface TextPrefixSupplier {
     /**
-     * Returns the prefixes this bot should respond to, in the provided [guild].
+     * Returns the prefixes this bot responds to in the specified guild,
+     * or an empty list if the bot shouldn't respond to anything.
      *
      * The prefixes returned will be the only ones checked for when receiving a text command,
      * if you want it to reply to [configured prefixes][BTextConfig.prefixes] and/or [ping-as-prefix][BTextConfig.usePingAsPrefix],
