@@ -1,3 +1,5 @@
+@file:Suppress("removal", "DEPRECATION")
+
 package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer

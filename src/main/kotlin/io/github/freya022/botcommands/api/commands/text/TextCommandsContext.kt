@@ -40,7 +40,6 @@ interface TextCommandsContext {
     val isPingAsPrefix: Boolean
         get() = textConfig.usePingAsPrefix
 
-    //TODO replace with TextCommandPrefixSupplier
     /**
      * Returns the preferred prefix for triggering this bot,
      * or `null` if [BTextConfig.usePingAsPrefix] is disabled and no prefix was added in [BTextConfig.prefixes].

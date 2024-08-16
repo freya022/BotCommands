@@ -137,6 +137,7 @@ interface BContext {
      *
      * @see SettingsProvider
      */
+    @Suppress("removal", "DEPRECATION")
     val settingsProvider: SettingsProvider?
 
     /**

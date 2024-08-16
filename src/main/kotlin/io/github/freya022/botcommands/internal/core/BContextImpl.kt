@@ -32,6 +32,7 @@ internal class BContextImpl internal constructor(
     override var status: Status = Status.PRE_LOAD
         private set
 
+    @Suppress("removal", "DEPRECATION")
     override val settingsProvider: SettingsProvider? by lazy { serviceContainer.getServiceOrNull() }
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
