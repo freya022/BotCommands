@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 /**
  * Supplies the prefixes which the bot would respond to in a specific guild.
  *
+ * This overrides any other configured prefixes.
+ *
  * **Usage**: Register your instance as a service with [@BService][BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
