@@ -114,8 +114,12 @@ internal object ReflectionMetadata {
         // Get types referenced by factories so we get metadata from those as well
         val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
-            .filter { it.isService(config) }
+            .filter { it.isAnyService(config) }
             .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
+
+        fun ClassInfo.isServiceOrHasFactories(config: BConfig): Boolean {
+            return isAnyService(config) || methodInfo.any { it.isAnyService(config) }
+        }
 
         return filter { classInfo ->
             if (classInfo.isServiceOrHasFactories(config)) return@filter true
@@ -131,10 +135,6 @@ internal object ReflectionMetadata {
 
             return@filter false
         }
-    }
-
-    private fun ClassInfo.isServiceOrHasFactories(config: BConfig): Boolean {
-        return isService(config) || methodInfo.any { it.isService(config) }
     }
 
     private fun ClassInfo.isFromLib() =
@@ -161,30 +161,38 @@ internal object ReflectionMetadata {
 
     private fun ClassInfo.checkFacadeFactories(config: BConfig) {
         this.declaredMethodInfo.forEach { methodInfo ->
-            check(!methodInfo.isService(config)) {
+            check(!methodInfo.isAnyService(config)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
             }
         }
     }
 
-    private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
-    private fun ClassInfo.isService(config: BConfig): Boolean {
-        val allAnnotations = annotations
-        if (allAnnotations.containsName(COMPONENT_ANNOTATION_NAME)) return true
+    private fun ClassInfo.isAnyService(config: BConfig): Boolean = isSpringService() || isDefaultService(config)
 
-        val declaredAnnotations = allAnnotations.directOnly()
+    private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
+    private fun ClassInfo.isSpringService(): Boolean {
+        return annotations.containsName(COMPONENT_ANNOTATION_NAME)
+    }
+
+    private fun ClassInfo.isDefaultService(config: BConfig): Boolean {
+        val declaredAnnotations = annotations.directOnly()
         @Suppress("DEPRECATION")
         return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 
-    private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
-    private fun MethodInfo.isService(config: BConfig): Boolean {
-        val allAnnotations = annotationInfo
-        if (allAnnotations.containsName(BEAN_ANNOTATION_NAME)) return true
+    private fun MethodInfo.isAnyService(config: BConfig): Boolean = isSpringService() || isDefaultService(config)
 
-        val declaredAnnotations = allAnnotations.directOnly()
+    private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
+    private fun MethodInfo.isSpringService(): Boolean {
+        return annotationInfo.containsName(BEAN_ANNOTATION_NAME)
+    }
+
+    private fun MethodInfo.isDefaultService(config: BConfig): Boolean {
+        val declaredAnnotations = annotationInfo.directOnly()
         @Suppress("DEPRECATION")
-        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
+        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation ->
+            declaredAnnotations.containsName(serviceAnnotation.jvmName)
+        }
     }
 
     private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
@@ -196,8 +204,9 @@ internal object ReflectionMetadata {
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
-                val isService = classInfo.isService(config)
-                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
+                val isDefaultService = classInfo.isDefaultService(config)
+                val isSpringService = classInfo.isSpringService()
+                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isDefaultService, isSpringService) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
@@ -241,8 +250,9 @@ internal object ReflectionMetadata {
 
             methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-            val isServiceFactory = methodInfo.isService(config)
-            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
+            val isServiceFactory = methodInfo.isDefaultService(config)
+            val isBeanFactory = methodInfo.isSpringService()
+            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory, isBeanFactory) }
         }
     }
 

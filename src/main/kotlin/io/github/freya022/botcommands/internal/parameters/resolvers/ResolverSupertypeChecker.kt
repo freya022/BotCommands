@@ -30,14 +30,20 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     private val ignoredClasses: MutableSet<Class<*>> = hashSetOf()
     private val errorMessages: MutableList<String> = arrayListOf()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    @Suppress("t")
+    override fun processClass(
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isDefaultService: Boolean,
+        isSpringService: Boolean
+    ) {
         if (classInfo.isAbstract) return
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory<*>>()
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass
                 // Only check for annotation if the class is already a service
-                && isService
+                && (isDefaultService || isSpringService)
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isResolverFactorySubclass
 
         // Do not care about resolvers returned by factories given by service factories
@@ -52,7 +58,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverSubclass = kClass.isSubclassOf<ParameterResolver<*, *>>()
         val missingResolverAnnotation = !isResolverAnnotated && isResolverSubclass
                 // Only check for annotation if the class is already a service
-                && isService
+                && (isDefaultService || isSpringService)
         val missingResolverSuperClass = isResolverAnnotated && !isResolverSubclass
 
         tasks += task@{
@@ -71,12 +77,14 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         }
     }
 
+    @Suppress("t")
     override fun processMethod(
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,
         kClass: KClass<*>,
-        isServiceFactory: Boolean
+        isServiceFactory: Boolean,
+        isBeanFactory: Boolean
     ) {
         if (method !is Method) return
 
@@ -84,7 +92,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isReturnTypeResolverFactory = ParameterResolverFactory::class.isAssignableFrom(method.returnType)
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isReturnTypeResolverFactory
                 // Only check for annotation if the class is already a service
-                && isServiceFactory
+                && (isServiceFactory || isBeanFactory)
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isReturnTypeResolverFactory
 
         // Do not care about resolvers returned by factories given by service factories
@@ -96,7 +104,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         val isResolverReturnType = ParameterResolver::class.isAssignableFrom(method.returnType)
         val missingResolverAnnotation = !isResolverAnnotated && isResolverReturnType
                 // Only check for annotation if the class is already a service
-                && isServiceFactory
+                && (isServiceFactory || isBeanFactory)
         val missingResolverSuperClass = isResolverAnnotated && !isResolverReturnType
 
         tasks += task@{

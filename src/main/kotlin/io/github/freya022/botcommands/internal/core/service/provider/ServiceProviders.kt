@@ -31,10 +31,15 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
-        if (isService) {
-            putServiceProvider(ClassServiceProvider(kClass))
-        }
+    override fun processClass(
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isDefaultService: Boolean,
+        isSpringService: Boolean
+    ) {
+        if (!isDefaultService) return
+
+        putServiceProvider(ClassServiceProvider(kClass))
     }
 
     override fun processMethod(
@@ -42,18 +47,19 @@ internal class ServiceProviders : ClassGraphProcessor {
         method: Executable,
         classInfo: ClassInfo,
         kClass: KClass<*>,
-        isServiceFactory: Boolean
+        isServiceFactory: Boolean,
+        isBeanFactory: Boolean
     ) {
-        if (isServiceFactory) {
-            if (methodInfo.isConstructor)
-                throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
-            method as Method
+        if (!isServiceFactory) return
 
-            val function =
-                method.kotlinFunction
-                    ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
-                    ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
-            putServiceProvider(FunctionServiceProvider(function))
-        }
+        if (methodInfo.isConstructor)
+            throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
+        method as Method
+
+        val function =
+            method.kotlinFunction
+                ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
+                ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
+        putServiceProvider(FunctionServiceProvider(function))
     }
 }

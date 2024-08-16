@@ -20,7 +20,12 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     private val _customConditionCheckers: MutableList<CustomConditionInfo> = arrayListOf()
     internal val customConditionCheckers: List<CustomConditionInfo> get() = _customConditionCheckers
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isDefaultService: Boolean,
+        isSpringService: Boolean
+    ) {
         // kClass is the condition, i.e., the meta-annotated class
 
         val conditionMetadata = classInfo.annotationInfo.directOnly()[conditionName]?.loadClassAndInstantiate() as Condition?

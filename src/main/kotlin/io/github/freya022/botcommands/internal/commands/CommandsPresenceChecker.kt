@@ -37,7 +37,12 @@ internal class CommandsPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isDefaultService: Boolean,
+        isSpringService: Boolean
+    ) {
         if (classInfo.isAbstract) return
 
         val isCommand = classInfo.hasAnnotation(Command::class.java)

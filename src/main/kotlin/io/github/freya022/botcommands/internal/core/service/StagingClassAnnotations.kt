@@ -15,17 +15,22 @@ internal class StagingClassAnnotations internal constructor(private val serviceC
     internal val processor = Processor()
 
     internal inner class Processor internal constructor() : ClassGraphProcessor {
-        override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        override fun processClass(
+            classInfo: ClassInfo,
+            kClass: KClass<*>,
+            isDefaultService: Boolean,
+            isSpringService: Boolean
+        ) {
+            if (!isDefaultService && !isSpringService) return
+
             //Fill map with all the @Command, @Resolver, etc... declarations
-            if (isService) {
-                classInfo.annotationInfo.directOnly().forEach { annotationInfo ->
-                    @Suppress("DEPRECATION")
-                    if (serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
-                        put(
-                            annotationReceiver = kClass,
-                            annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin
-                        )
-                    }
+            classInfo.annotationInfo.directOnly().forEach { annotationInfo ->
+                @Suppress("DEPRECATION")
+                if (serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
+                    put(
+                        annotationReceiver = kClass,
+                        annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin
+                    )
                 }
             }
         }

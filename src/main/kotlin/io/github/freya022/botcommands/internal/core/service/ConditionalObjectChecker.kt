@@ -9,8 +9,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
 
 internal object ConditionalObjectChecker : ClassGraphProcessor {
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
-        if (!isService) return
+    override fun processClass(
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isDefaultService: Boolean,
+        isSpringService: Boolean
+    ) {
+        if (!isDefaultService && !isSpringService) return
         if (!kClass.isObject) return
 
         // Taking all (including inherited) annotations using ClassGraph would have been faster and cleaner,
