@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.localization.readers;
 
 import io.github.freya022.botcommands.api.core.BContext;
-import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper;
 import io.github.freya022.botcommands.api.localization.*;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +11,10 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Default implementation for {@link LocalizationTemplate} mappings readers.
+ * Implementation for {@link LocalizationTemplate} mappings readers.
  *
- * <p>Localization templates are loaded from the {@code /bc_localization} folder (i.e., the {@code bc_localization} in your jar's root)
+ * <h3>Default behavior</h3>
+ * Localization templates are loaded from the {@code /bc_localization} folder (i.e., the {@code bc_localization} in your jar's root)
  * <br>Your localization bundle must be a valid JSON file and use the {@code .json} extension.
  * <br>The localization bundle can use any name, but <b>must</b> be suffixed with the same locale formatting as {@link ResourceBundle} would use, such as {@code _fr} or {@code _en_US}.
  *
@@ -31,20 +31,57 @@ import java.util.*;
  *
  * <p>This reader uses the default localization templates, see {@link DefaultLocalizationTemplate} for more details.
  *
+ * <h3>Customization</h3>
+ * You can create more {@link DefaultJsonLocalizationMapReader} instances with different folder names,
+ * by creating a service factory, with a different folder name given in the constructor.
+ *
+ * <h4>Example - Kotlin</h4>
+ * <pre><code>
+ *     {@code @BConfiguration}
+ *     object LocalizationProviders {
+ *         {@code @BService} // Creates a new LocalizationMapReader which finds its JSON files in the "locales" folder
+ *         fun localesLocalizationReader(context: BContext): LocalizationMapReader {
+ *             return DefaultJsonLocalizationMapReader(context, "locales")
+ *         }
+ *     }
+ * </code></pre>
+ *
+ * <h4>Example - Java</h4>
+ * <pre><code>
+ *     {@code @BConfiguration}
+ *     public class LocalizationProviders {
+ *         {@code @BService} // Creates a new LocalizationMapReader which finds its JSON files in the "locales" folder
+ *         public LocalizationMapReader localesLocalizationReader(BContext context) {
+ *             return new DefaultJsonLocalizationMapReader(context, "locales");
+ *         }
+ *     }
+ * </code></pre>
+ *
  * @see DefaultLocalizationTemplate
  */
-@BService
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
     private final BContext context;
+    private final String folderName;
 
-    public DefaultJsonLocalizationMapReader(BContext context) {
+    /**
+     * Constructs a new {@link DefaultJsonLocalizationMapReader}.
+     *
+     * <p>Note that the files are not walked recursively,
+     * and the folder name is found at the {@code resources} root,
+     * meaning the path is always {@code /$folderName/$bundleName.json}.
+     *
+     * @param context    The main context
+     * @param folderName The folder in which to find the localization files
+     */
+    public DefaultJsonLocalizationMapReader(BContext context, String folderName) {
         this.context = context;
+        this.folderName = folderName;
     }
 
     @Nullable
     @Override
     public LocalizationMap readLocalizationMap(@NotNull LocalizationMapRequest request) throws IOException {
-        final InputStream stream = DefaultJsonLocalizationMapReader.class.getResourceAsStream("/bc_localization/" + request.bundleName() + ".json");
+        final InputStream stream = DefaultJsonLocalizationMapReader.class.getResourceAsStream("/" + folderName + "/" + request.bundleName() + ".json");
         if (stream == null) {
             return null;
         }
