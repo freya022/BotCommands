@@ -247,6 +247,14 @@ internal object ReflectionMetadata {
     }
 
     private fun tryGetExecutable(methodInfo: MethodInfo): Executable? {
+        fun handleException(e: Throwable): Executable? {
+            return if (logger.isTraceEnabled()) {
+                logger.traceNull(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
+            } else {
+                logger.debugNull { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+            }
+        }
+
         // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
         try {
             return when {
@@ -254,11 +262,15 @@ internal object ReflectionMetadata {
                 else -> methodInfo.loadClassAndGetMethod()
             }
         } catch (e: NoClassDefFoundError) {
-            if (logger.isTraceEnabled())
-                logger.trace(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
-            else
-                logger.debug { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
-            return null
+            return handleException(e)
+        } catch(e: IllegalArgumentException) {
+            // ClassGraph wraps exceptions in an IAE
+            val cause = e.cause
+            if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
+                return handleException(cause)
+            } else {
+                throw e
+            }
         }
     }
 
