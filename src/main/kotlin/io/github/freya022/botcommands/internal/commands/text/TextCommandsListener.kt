@@ -41,6 +41,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
+    private val textPrefixSupplier: TextPrefixSupplier?,
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
@@ -178,6 +179,10 @@ internal class TextCommandsListener internal constructor(
     }
 
     private fun getPrefixes(guild: Guild): List<String> {
+        if (textPrefixSupplier != null) {
+            return textPrefixSupplier.getPrefixes(guild)
+        }
+
         context.settingsProvider?.let { settingsProvider ->
             val prefixes = settingsProvider.getPrefixes(guild)
             if (!prefixes.isNullOrEmpty()) return prefixes
