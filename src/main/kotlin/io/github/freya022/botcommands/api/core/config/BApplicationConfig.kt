@@ -210,7 +210,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * replacing the `-` (hyphen) by a `_` (underscore).
      *
      * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
-     * will, by default, read in the [`/bc_localization`][DefaultJsonLocalizationMapReader] folder:
+     * will, by default, read in the `/bc_localization` ([configurable][DefaultJsonLocalizationMapReader]) folder:
      * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
      * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
      * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
@@ -256,7 +256,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * replacing the `-` (hyphen) by a `_` (underscore).
      *
      * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
-     * will, by default, read in the [`/bc_localization`][DefaultJsonLocalizationMapReader] folder:
+     * will, by default, read in the `/bc_localization` ([configurable][DefaultJsonLocalizationMapReader]) folder:
      * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
      * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
      * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
