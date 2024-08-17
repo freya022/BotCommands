@@ -191,7 +191,10 @@ class BConfigBuilder internal constructor() : BConfig {
     fun addOwners(ownerIds: Collection<Long>) = addPredefinedOwners(ownerIds)
 
     /**
-     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
+     * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
+     * and having [hidden commands][Hidden] shown.
+     *
+     * If not set, the application owners will be used, with roles "Developer" and above.
      *
      * @param ownerIds IDs of the bot owners
      *
@@ -200,7 +203,10 @@ class BConfigBuilder internal constructor() : BConfig {
     fun addPredefinedOwners(vararg ownerIds: Long) = addPredefinedOwners(ownerIds.asList())
 
     /**
-     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
+     * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
+     * and having [hidden commands][Hidden] shown.
+     *
+     * If not set, the application owners will be used, with roles "Developer" and above.
      *
      * @param ownerIds IDs of the bot owners
      *
