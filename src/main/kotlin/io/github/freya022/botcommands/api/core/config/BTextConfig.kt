@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
@@ -24,6 +25,10 @@ interface BTextConfig {
     /**
      * Whether the bot should look for commands when it is mentioned.
      *
+     * This prefix is not always used for text command detection,
+     * as it can be overridden by [TextPrefixSupplier], but you can read this property and return it
+     * if, for example, the guild channel has no special prefix set.
+     *
      * Default: `false`
      *
      * Spring property: `botcommands.text.usePingAsPrefix`
@@ -33,6 +38,10 @@ interface BTextConfig {
 
     /**
      * Prefixes the bot should listen to.
+     *
+     * These prefixes are not always used for text command detection,
+     * as they can be overridden by [TextPrefixSupplier], but you can read this property and return them
+     * if, for example, the guild channel has no special prefix set.
      *
      * Spring property: `botcommands.text.prefixes`
      */

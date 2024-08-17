@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core;
 import io.github.freya022.botcommands.api.commands.CommandList;
 import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter;
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
+import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier;
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
@@ -11,6 +12,7 @@ import io.github.freya022.botcommands.api.localization.interaction.GuildLocalePr
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider;
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +30,10 @@ import java.util.function.Predicate;
  * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * @see InterfacedService @InterfacedService
+ *
+ * @deprecated For removal, all functions were deprecated
  */
+@Deprecated(forRemoval = true)
 @InterfacedService(acceptMultiple = false)
 public interface SettingsProvider {
     /**
@@ -36,8 +41,11 @@ public interface SettingsProvider {
      * <b>If the returned list is null or empty, the global prefixes will be used</b>
      *
      * @return The list of prefixes
+     *
+     * @deprecated Replaced by {@link TextPrefixSupplier#getPrefixes(GuildMessageChannel)}
      */
     @Nullable
+    @Deprecated
     default List<String> getPrefixes(@NotNull Guild guild) {
         return null;
     }

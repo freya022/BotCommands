@@ -15,10 +15,8 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
-import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
-import io.github.freya022.botcommands.api.core.utils.handle
-import io.github.freya022.botcommands.api.core.utils.suppressContentWarning
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
@@ -26,7 +24,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -70,10 +68,7 @@ internal class TextCommandsListener internal constructor(
 
         // Could also check mentions, but this is way easier and faster
         val msg: String = suppressContentWarning { event.message.contentRaw }
-        val content = when {
-            context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ', missingDelimiterValue = "")
-            else -> getMsgNoPrefix(msg, event.guild)
-        }
+        val content = getMsgNoPrefix(msg, event.guildChannel)
         if (content.isNullOrBlank()) return
 
         logger.trace { "Received text command: $msg" }
@@ -174,19 +169,10 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private fun getMsgNoPrefix(msg: String, guild: Guild): String? {
-        return getPrefixes(guild)
+    private fun getMsgNoPrefix(msg: String, channel: GuildMessageChannel): String? {
+        return textCommandsContext.getEffectivePrefixes(channel)
             .find { prefix -> msg.startsWith(prefix) }
-            ?.let { prefix -> msg.substring(prefix.length).trim() }
-    }
-
-    private fun getPrefixes(guild: Guild): List<String> {
-        context.settingsProvider?.let { settingsProvider ->
-            val prefixes = settingsProvider.getPrefixes(guild)
-            if (!prefixes.isNullOrEmpty()) return prefixes
-        }
-
-        return context.textConfig.prefixes
+            ?.let { prefix -> msg.substring(prefix.length).trimStart() }
     }
 
     private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo): Boolean {
@@ -270,9 +256,12 @@ internal class TextCommandsListener internal constructor(
         DISABLED,
         /** Enabled */
         ENABLED,
-        //TODO this can't disable text commands as prefixes can be given in SettingsProvider,
-        // which needs to be revisited
-        // NOTHING_SET,
+        /** No ping as prefix, no prefix, has prefix supplier */
+        USES_PREFIX_SUPPLIER,
+        /** Has prefix supplier but no content intent, with ping-as-prefix (ok) */
+        MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITH_PING,
+        /** Has prefix supplier but no content intent, without ping-as-prefix (error) */
+        MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITHOUT_PING,
         /** No prefix, with ping-as-prefix  */
         CAN_READ_PING,
         /** Uses prefix but no content intent, with ping (ok) */
@@ -282,11 +271,14 @@ internal class TextCommandsListener internal constructor(
         ;
 
         internal companion object {
-            internal fun check(config: BTextConfig, jdaService: JDAService): Status {
+            internal fun check(config: BTextConfig, jdaService: JDAService, textPrefixSupplier: TextPrefixSupplier?): Status {
                 // Priority:
                 // DISABLED
                 // MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING
                 // MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING
+                // MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITHOUT_PING
+                // MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITH_PING
+                // USES_PREFIX_SUPPLIER
                 // CAN_READ_PING
                 // ENABLED
                 if (!config.enable) return DISABLED
@@ -294,6 +286,7 @@ internal class TextCommandsListener internal constructor(
                 val hasContentIntent = GatewayIntent.MESSAGE_CONTENT in jdaService.intents
                 val usePingAsPrefix = config.usePingAsPrefix
                 val hasPrefix = config.prefixes.isNotEmpty()
+                val hasPrefixSupplier = textPrefixSupplier != null
 
                 return when {
                     hasPrefix && !hasContentIntent -> {
@@ -303,7 +296,15 @@ internal class TextCommandsListener internal constructor(
                             MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING
                         }
                     }
-                    !hasPrefix && usePingAsPrefix -> CAN_READ_PING
+                    hasPrefixSupplier && !hasContentIntent -> {
+                        if (usePingAsPrefix) {
+                            MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITH_PING
+                        } else {
+                            MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITHOUT_PING
+                        }
+                    }
+                    !hasPrefix && !usePingAsPrefix && hasPrefixSupplier -> USES_PREFIX_SUPPLIER
+                    !hasPrefix && usePingAsPrefix && !hasPrefixSupplier -> CAN_READ_PING
                     else -> ENABLED
                 }
             }
@@ -313,12 +314,18 @@ internal class TextCommandsListener internal constructor(
     internal object ActivationCondition : ConditionalServiceChecker {
         // Require either message content or mention prefix
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
-            return when (Status.check(serviceContainer.getService(), serviceContainer.getService())) {
+            fun prefixSupplierName() = serviceContainer.getService<TextPrefixSupplier>().javaClass.simpleNestedName
+            return when (Status.check(serviceContainer.getService(), serviceContainer.getService(), serviceContainer.getServiceOrNull())) {
                 DISABLED -> "Text commands needs to be enabled, see ${BTextConfig::enable.reference}"
                 ENABLED -> null
+                USES_PREFIX_SUPPLIER -> null
+                MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITH_PING -> null
+                MISSING_CONTENT_INTENT_WITH_PREFIX_SUPPLIER_WITHOUT_PING ->
+                    "Text prefixes supplied by ${prefixSupplierName()} can't be used without GatewayIntent.MESSAGE_CONTENT, and ${BTextConfig::usePingAsPrefix.reference} is disabled"
                 CAN_READ_PING -> null
                 MISSING_CONTENT_INTENT_WITH_PREFIX_WITH_PING -> null
-                MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING -> "Text prefixes can't be used without GatewayIntent.MESSAGE_CONTENT, and ${BTextConfig::usePingAsPrefix.reference} is disabled"
+                MISSING_CONTENT_INTENT_WITH_PREFIX_WITHOUT_PING ->
+                    "Text prefixes can't be used without GatewayIntent.MESSAGE_CONTENT, and ${BTextConfig::usePingAsPrefix.reference} is disabled"
             }
         }
     }
