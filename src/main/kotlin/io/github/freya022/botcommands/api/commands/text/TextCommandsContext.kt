@@ -55,6 +55,13 @@ interface TextCommandsContext {
     }
 
     /**
+     * Returns the [configured prefixes][BTextConfig.prefixes] and the [bot mention][BTextConfig.usePingAsPrefix] if enabled.
+     *
+     * Requires [JDA] to be built.
+     */
+    fun getDefaultPrefixes(): List<String>
+
+    /**
      * Returns the prefixes this bot responds to in the specified guild,
      * or an empty list if the bot shouldn't respond to anything.
      *

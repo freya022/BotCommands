@@ -10,14 +10,18 @@ import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.SettingsProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 @BService
 @RequiresTextCommands
 internal class TextCommandsContextImpl internal constructor(
+    private val serviceContainer: ServiceContainer,
     override val textConfig: BTextConfig,
     private val settingsProvider: SettingsProvider?,
     private val textPrefixSupplier: TextPrefixSupplier?,
@@ -29,6 +33,11 @@ internal class TextCommandsContextImpl internal constructor(
 
     override val rootCommands: Collection<TopLevelTextCommandInfoImpl>
         get() = textCommandMap.values.unmodifiableView()
+
+    override fun getDefaultPrefixes(): List<String> = when {
+        textConfig.usePingAsPrefix -> textConfig.prefixes + serviceContainer.getService<JDA>().selfUser.asMention
+        else -> textConfig.prefixes
+    }
 
     override fun getEffectivePrefixes(channel: GuildMessageChannel): List<String> {
         if (textPrefixSupplier != null) {
