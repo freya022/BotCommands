@@ -113,11 +113,11 @@ internal object ReflectionMetadata {
         // Get types referenced by factories so we get metadata from those as well
         val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
-            .filter { it.isService(bootstrap) }
+            .filter { bootstrap.isService(it) }
             .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
 
         fun ClassInfo.isServiceOrHasFactories(): Boolean {
-            return isService(bootstrap) || methodInfo.any { it.isService(bootstrap) }
+            return bootstrap.isService(this) || methodInfo.any { bootstrap.isService(it) }
         }
 
         return filter { classInfo ->
@@ -160,18 +160,10 @@ internal object ReflectionMetadata {
 
     private fun ClassInfo.checkFacadeFactories(bootstrap: BotCommandsBootstrap) {
         this.declaredMethodInfo.forEach { methodInfo ->
-            check(!methodInfo.isService(bootstrap)) {
+            check(!bootstrap.isService(methodInfo)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
             }
         }
-    }
-
-    private fun ClassInfo.isService(bootstrap: BotCommandsBootstrap): Boolean {
-        return bootstrap.isService(this)
-    }
-
-    private fun MethodInfo.isService(bootstrap: BotCommandsBootstrap): Boolean {
-        return bootstrap.isService(this)
     }
 
     private fun List<ClassInfo>.processClasses(bootstrap: BotCommandsBootstrap, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
@@ -181,9 +173,9 @@ internal object ReflectionMetadata {
 
                 processMethods(bootstrap, classGraphProcessors, classInfo, kClass)
 
-                classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
+                classMetadataMap_[kClass.java] = ClassMetadata(classInfo.sourceFile)
 
-                val isDefaultService = classInfo.isService(bootstrap)
+                val isDefaultService = bootstrap.isService(classInfo)
                 classGraphProcessors.forEach { it.processClass(classInfo, kClass, isDefaultService) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
@@ -228,7 +220,7 @@ internal object ReflectionMetadata {
 
             methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-            val isServiceFactory = methodInfo.isService(bootstrap)
+            val isServiceFactory = bootstrap.isService(methodInfo)
             classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
         }
     }
@@ -248,8 +240,8 @@ internal object ReflectionMetadata {
                 methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
                 else -> methodInfo.loadClassAndGetMethod()
             }
-        } catch (e: NoClassDefFoundError) {
-            return handleException(e)
+        } catch (e: NoClassDefFoundError) { // In case the return type or a parameter is unknown
+            return handleException(e) //TODO inline back in IAE handler when CG rethrows those as IAE
         } catch(e: IllegalArgumentException) {
             // ClassGraph wraps exceptions in an IAE
             val cause = e.cause
