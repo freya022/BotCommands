@@ -56,9 +56,9 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 
     fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation
 
-    fun getProviderFunction(): KFunction<*>
+    fun getProviderFunction(): KFunction<*>?
 
-    fun getProviderSignature(): String = getProviderFunction().shortSignature
+    fun getProviderSignature(): String
 
     override fun compareTo(other: ServiceProvider): Int {
         val priorityCmp = other.priority.compareTo(priority) // Reverse order
@@ -81,6 +81,8 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
         internal val nullServiceError = ErrorType.UNKNOWN.toError("Returning a sentinel service error is impossible")
     }
 }
+
+internal fun ServiceProvider.getProviderFunctionOrSignature(): Any = getProviderFunction() ?: getProviderSignature()
 
 internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
     findAnnotation<ServiceName>()?.let {
@@ -155,7 +157,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
                         // instance::checkServiceAvailability does not bind to the actual instance
                         extra = mapOf(
                             "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
-                            "For" to getProviderFunction()
+                            "For" to getProviderFunctionOrSignature()
                         )
                     )
                 }
@@ -179,7 +181,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
                         // checker::checkServiceAvailability does not bind to the actual instance
                         extra = mapOf(
                             "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
-                            "For" to getProviderFunction()
+                            "For" to getProviderFunctionOrSignature()
                         )
                     )
                 }

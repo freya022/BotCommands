@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.isObject
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwState
 import kotlin.reflect.KClass
@@ -170,6 +171,8 @@ internal class ClassServiceProvider internal constructor(
     }
 
     override fun getProviderFunction(): KFunction<*> = clazz.constructors.first()
+
+    override fun getProviderSignature(): String = getProviderFunction().shortSignature
 
     override fun toString() = providerKey
 }

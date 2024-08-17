@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -39,7 +40,10 @@ internal class ProvidedServiceProvider internal constructor(
     override val types: Set<KClass<*>> = typeAliases + primaryType
     override val isLazy get() = false
 
-    override fun getProviderFunction(): KFunction<*> = clazz.constructors.firstOrNull() ?: throwInternal("uh oh")
+    override fun getProviderFunction(): KFunction<*>? =
+        clazz.constructors.firstOrNull()
+
+    override fun getProviderSignature(): String = "<provided ${clazz.shortQualifiedName}>"
 
     override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         return null
