@@ -32,9 +32,9 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
-        if (isService) {
-            putServiceProvider(ClassServiceProvider(kClass))
-        }
+        if (!isService) return
+
+        putServiceProvider(ClassServiceProvider(kClass))
     }
 
     override fun processMethod(
@@ -44,16 +44,16 @@ internal class ServiceProviders : ClassGraphProcessor {
         kClass: KClass<*>,
         isServiceFactory: Boolean
     ) {
-        if (isServiceFactory) {
-            if (methodInfo.isConstructor)
-                throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
-            method as Method
+        if (!isServiceFactory) return
 
-            val function =
-                method.kotlinFunction
-                    ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
-                    ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
-            putServiceProvider(FunctionServiceProvider(function))
-        }
+        if (methodInfo.isConstructor)
+            throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
+        method as Method
+
+        val function =
+            method.kotlinFunction
+                ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
+                ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
+        putServiceProvider(FunctionServiceProvider(function))
     }
 }

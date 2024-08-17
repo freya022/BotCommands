@@ -13,7 +13,7 @@ interface ClassGraphProcessor {
         method: Executable,
         classInfo: ClassInfo,
         kClass: KClass<*>,
-        isServiceFactory: Boolean
+        isServiceFactory: Boolean,
     ) {}
 
     fun postProcess() {}

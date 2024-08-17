@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.classgraph.ClassInfo
+import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
@@ -12,6 +14,7 @@ import io.github.freya022.botcommands.internal.core.service.provider.ServiceProv
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.JDAInfo
+import kotlin.reflect.jvm.jvmName
 
 internal class DefaultBotCommandsBootstrap internal constructor(
     config: BConfig
@@ -57,5 +60,19 @@ internal class DefaultBotCommandsBootstrap internal constructor(
 
     internal fun clearStagingAnnotationsMap() {
         _stagingClassAnnotations = null
+    }
+
+    override fun isService(classInfo: ClassInfo): Boolean {
+        val declaredAnnotations = classInfo.annotations.directOnly()
+        @Suppress("DEPRECATION")
+        return serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
+    }
+
+    override fun isService(methodInfo: MethodInfo): Boolean {
+        val declaredAnnotations = methodInfo.annotationInfo.directOnly()
+        @Suppress("DEPRECATION")
+        return serviceConfig.serviceAnnotations.any { serviceAnnotation ->
+            declaredAnnotations.containsName(serviceAnnotation.jvmName)
+        }
     }
 }

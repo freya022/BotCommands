@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service
 
+import io.github.classgraph.ClassInfo
+import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
@@ -21,6 +23,9 @@ internal object SpringBotCommandsVersionChecker : ApplicationListener<Applicatio
     }
 }
 
+private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
+private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
+
 @Component
 internal class SpringBotCommandsBootstrap internal constructor(
     config: BConfig,
@@ -30,5 +35,13 @@ internal class SpringBotCommandsBootstrap internal constructor(
 
     init {
         init()
+    }
+
+    override fun isService(classInfo: ClassInfo): Boolean {
+        return classInfo.annotations.containsName(COMPONENT_ANNOTATION_NAME)
+    }
+
+    override fun isService(methodInfo: MethodInfo): Boolean {
+        return methodInfo.annotationInfo.containsName(BEAN_ANNOTATION_NAME)
     }
 }
