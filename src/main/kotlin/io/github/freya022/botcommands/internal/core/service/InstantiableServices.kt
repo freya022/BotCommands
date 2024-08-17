@@ -54,6 +54,8 @@ internal class SpringInstantiableServices internal constructor(
             .filter { type ->
                 if (config.packages.any { type.packageName.startsWith(it) })
                     return@filter true
+                if (type.packageName.startsWith("io.github.freya022.botcommands"))
+                    return@filter true
                 if (type in config.classes)
                     return@filter true
                 return@filter false
