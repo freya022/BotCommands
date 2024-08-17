@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProv
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
@@ -36,7 +35,7 @@ private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
 
 @Configuration
-@BConfiguration
+@BService
 internal open class BuiltInHelpCommandProvider {
     @Bean
     @BService
