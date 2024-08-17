@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import net.dv8tion.jda.api.JDA
@@ -24,11 +25,12 @@ internal class TextCommandsContextImpl internal constructor(
     private val serviceContainer: ServiceContainer,
     override val textConfig: BTextConfig,
     private val settingsProvider: SettingsProvider?,
-    private val textPrefixSupplier: TextPrefixSupplier?,
-    override val defaultEmbedSupplier: DefaultEmbedSupplier,
-    override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier,
-    override val helpBuilderConsumer: HelpBuilderConsumer?
 ) : TextCommandsContext {
+    private val textPrefixSupplier: TextPrefixSupplier? by lazy { serviceContainer.getServiceOrNull() }
+    override val helpBuilderConsumer: HelpBuilderConsumer? by lazy { serviceContainer.getServiceOrNull() }
+    override val defaultEmbedSupplier: DefaultEmbedSupplier by lazy { serviceContainer.getService() }
+    override val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier by lazy { serviceContainer.getService() }
+
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfoImpl> = hashMapOf()
 
     override val rootCommands: Collection<TopLevelTextCommandInfoImpl>
@@ -41,7 +43,7 @@ internal class TextCommandsContextImpl internal constructor(
 
     override fun getEffectivePrefixes(channel: GuildMessageChannel): List<String> {
         if (textPrefixSupplier != null) {
-            return textPrefixSupplier.getPrefixes(channel)
+            return textPrefixSupplier!!.getPrefixes(channel)
         }
 
         if (settingsProvider != null) {
@@ -58,7 +60,7 @@ internal class TextCommandsContextImpl internal constructor(
 
     override fun getPreferredPrefix(channel: GuildMessageChannel): String? {
         if (textPrefixSupplier != null) {
-            return textPrefixSupplier.getPreferredPrefix(channel)
+            return textPrefixSupplier!!.getPreferredPrefix(channel)
         }
 
         val prefixes = textConfig.prefixes
