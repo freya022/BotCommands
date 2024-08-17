@@ -31,13 +31,8 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
-    override fun processClass(
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isDefaultService: Boolean,
-        isSpringService: Boolean
-    ) {
-        if (!isDefaultService) return
+    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (!isService) return
 
         putServiceProvider(ClassServiceProvider(kClass))
     }
@@ -47,8 +42,7 @@ internal class ServiceProviders : ClassGraphProcessor {
         method: Executable,
         classInfo: ClassInfo,
         kClass: KClass<*>,
-        isServiceFactory: Boolean,
-        isBeanFactory: Boolean
+        isServiceFactory: Boolean
     ) {
         if (!isServiceFactory) return
 

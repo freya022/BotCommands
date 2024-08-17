@@ -15,13 +15,8 @@ internal class StagingClassAnnotations internal constructor(private val serviceC
     internal val processor = Processor()
 
     internal inner class Processor internal constructor() : ClassGraphProcessor {
-        override fun processClass(
-            classInfo: ClassInfo,
-            kClass: KClass<*>,
-            isDefaultService: Boolean,
-            isSpringService: Boolean
-        ) {
-            if (!isDefaultService && !isSpringService) return
+        override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+            if (!isService) return
 
             //Fill map with all the @Command, @Resolver, etc... declarations
             classInfo.annotationInfo.directOnly().forEach { annotationInfo ->

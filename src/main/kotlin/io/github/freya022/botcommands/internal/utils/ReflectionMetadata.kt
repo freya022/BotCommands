@@ -27,7 +27,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
-import kotlin.reflect.jvm.jvmName
 
 private typealias IsNullableAnnotated = Boolean
 
@@ -87,12 +86,12 @@ internal object ReflectionMetadata {
             .use { scan ->
                 val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib() }
                 libClasses
-                    .filterLibraryClasses(config)
-                    .filterClasses(config)
-                    .processClasses(config, classGraphProcessors)
+                    .filterLibraryClasses(bootstrap)
+                    .filterClasses(bootstrap)
+                    .processClasses(bootstrap, classGraphProcessors)
 
                 userClasses
-                    .filterClasses(config)
+                    .filterClasses(bootstrap)
                     .also {
                         if (userClasses.isEmpty()) {
                             logger.warn { "Found no user classes to scan, check the packages set in ${BConfigBuilder::packages.reference}" }
@@ -102,7 +101,7 @@ internal object ReflectionMetadata {
                             logger.debug { "Found ${userClasses.size} user classes" }
                         }
                     }
-                    .processClasses(config, classGraphProcessors)
+                    .processClasses(bootstrap, classGraphProcessors)
 
                 classGraphProcessors.forEach(ClassGraphProcessor::postProcess)
             }
@@ -110,26 +109,26 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    private fun List<ClassInfo>.filterLibraryClasses(config: BConfig): List<ClassInfo> {
+    private fun List<ClassInfo>.filterLibraryClasses(bootstrap: BotCommandsBootstrap): List<ClassInfo> {
         // Get types referenced by factories so we get metadata from those as well
         val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
-            .filter { it.isAnyService(config) }
+            .filter { it.isService(bootstrap) }
             .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
 
-        fun ClassInfo.isServiceOrHasFactories(config: BConfig): Boolean {
-            return isAnyService(config) || methodInfo.any { it.isAnyService(config) }
+        fun ClassInfo.isServiceOrHasFactories(): Boolean {
+            return isService(bootstrap) || methodInfo.any { it.isService(bootstrap) }
         }
 
         return filter { classInfo ->
-            if (classInfo.isServiceOrHasFactories(config)) return@filter true
+            if (classInfo.isServiceOrHasFactories()) return@filter true
 
             // Get metadata from all classes that extend a referenced type
             // As we can't know exactly what object a factory could return
             val superclasses = (classInfo.superclasses + classInfo.interfaces + classInfo).mapTo(hashSetOf()) { it.name }
             if (superclasses.containsAny(referencedTypes)) return@filter true
 
-            if (classInfo.outerClasses.any { it.isServiceOrHasFactories(config) }) return@filter true
+            if (classInfo.outerClasses.any { it.isServiceOrHasFactories() }) return@filter true
             if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
             if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
 
@@ -143,12 +142,12 @@ internal object ReflectionMetadata {
     private fun ClassInfoList.containsAny(vararg classes: Class<*>): Boolean = classes.any { containsName(it.name) }
 
     private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-    private fun List<ClassInfo>.filterClasses(config: BConfig): List<ClassInfo> = filter {
+    private fun List<ClassInfo>.filterClasses(bootstrap: BotCommandsBootstrap): List<ClassInfo> = filter {
         it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
             //Only keep classes, not others such as file facades
             val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
             if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                it.checkFacadeFactories(config)
+                it.checkFacadeFactories(bootstrap)
                 return@filter false
             } else if (kind != KotlinClassHeader.Kind.CLASS) {
                 return@filter false
@@ -159,54 +158,33 @@ internal object ReflectionMetadata {
         return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
     }
 
-    private fun ClassInfo.checkFacadeFactories(config: BConfig) {
+    private fun ClassInfo.checkFacadeFactories(bootstrap: BotCommandsBootstrap) {
         this.declaredMethodInfo.forEach { methodInfo ->
-            check(!methodInfo.isAnyService(config)) {
+            check(!methodInfo.isService(bootstrap)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
             }
         }
     }
 
-    private fun ClassInfo.isAnyService(config: BConfig): Boolean = isSpringService() || isDefaultService(config)
-
-    private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
-    private fun ClassInfo.isSpringService(): Boolean {
-        return annotations.containsName(COMPONENT_ANNOTATION_NAME)
+    private fun ClassInfo.isService(bootstrap: BotCommandsBootstrap): Boolean {
+        return bootstrap.isService(this)
     }
 
-    private fun ClassInfo.isDefaultService(config: BConfig): Boolean {
-        val declaredAnnotations = annotations.directOnly()
-        @Suppress("DEPRECATION")
-        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
+    private fun MethodInfo.isService(bootstrap: BotCommandsBootstrap): Boolean {
+        return bootstrap.isService(this)
     }
 
-    private fun MethodInfo.isAnyService(config: BConfig): Boolean = isSpringService() || isDefaultService(config)
-
-    private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
-    private fun MethodInfo.isSpringService(): Boolean {
-        return annotationInfo.containsName(BEAN_ANNOTATION_NAME)
-    }
-
-    private fun MethodInfo.isDefaultService(config: BConfig): Boolean {
-        val declaredAnnotations = annotationInfo.directOnly()
-        @Suppress("DEPRECATION")
-        return config.serviceConfig.serviceAnnotations.any { serviceAnnotation ->
-            declaredAnnotations.containsName(serviceAnnotation.jvmName)
-        }
-    }
-
-    private fun List<ClassInfo>.processClasses(config: BConfig, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
+    private fun List<ClassInfo>.processClasses(bootstrap: BotCommandsBootstrap, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
                 val kClass = tryGetClass(classInfo) ?: return@onEach
 
-                processMethods(config, classGraphProcessors, classInfo, kClass)
+                processMethods(bootstrap, classGraphProcessors, classInfo, kClass)
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
 
-                val isDefaultService = classInfo.isDefaultService(config)
-                val isSpringService = classInfo.isSpringService()
-                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isDefaultService, isSpringService) }
+                val isDefaultService = classInfo.isService(bootstrap)
+                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isDefaultService) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
@@ -233,7 +211,7 @@ internal object ReflectionMetadata {
     }
 
     private fun processMethods(
-        config: BConfig,
+        bootstrap: BotCommandsBootstrap,
         classGraphProcessors: List<ClassGraphProcessor>,
         classInfo: ClassInfo,
         kClass: KClass<out Any>,
@@ -250,9 +228,8 @@ internal object ReflectionMetadata {
 
             methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-            val isServiceFactory = methodInfo.isDefaultService(config)
-            val isBeanFactory = methodInfo.isSpringService()
-            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory, isBeanFactory) }
+            val isServiceFactory = methodInfo.isService(bootstrap)
+            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
         }
     }
 
