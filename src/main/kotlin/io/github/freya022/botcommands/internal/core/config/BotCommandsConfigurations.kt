@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.nio.file.Path
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
@@ -130,6 +131,7 @@ internal class BotCommandsApplicationConfiguration(
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
+    override val commandCachePath: Path? = null,
     override val onlineAppCommandCheckEnabled: Boolean = false,
     override val diffEngine: DiffEngine = DiffEngine.NEW,
     override val logApplicationCommandData: Boolean = false,
@@ -146,6 +148,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     slashGuildIds += configuration.slashGuildIds
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
+    commandCachePath = configuration.commandCachePath
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
     diffEngine = configuration.diffEngine
     logApplicationCommandData = configuration.logApplicationCommandData

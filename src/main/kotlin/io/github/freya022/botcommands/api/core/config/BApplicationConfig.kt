@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
+import java.nio.file.Path
 
 @InjectedService
 interface BApplicationConfig {
@@ -59,6 +60,11 @@ interface BApplicationConfig {
      */
     @ConfigurationValue(path = "botcommands.application.disableAutocompleteCache", defaultValue = "false")
     val disableAutocompleteCache: Boolean
+
+    /**
+     * Path at which the application commands cache would be saved to.
+     */
+    val commandCachePath: Path?
 
     /**
      * Enables the library to compare local commands against Discord's command,
@@ -172,6 +178,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
+    override var commandCachePath: Path? = null
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
@@ -290,6 +297,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
             override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
             override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
             override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
+            override val commandCachePath = this@BApplicationConfigBuilder.commandCachePath
             override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
             override val diffEngine = this@BApplicationConfigBuilder.diffEngine
             override val logApplicationCommandData = this@BApplicationConfigBuilder.logApplicationCommandData
