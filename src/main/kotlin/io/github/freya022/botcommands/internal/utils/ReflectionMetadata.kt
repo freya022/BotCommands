@@ -113,11 +113,11 @@ internal object ReflectionMetadata {
         // Get types referenced by factories so we get metadata from those as well
         val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
-            .filter { bootstrap.isService(it) }
+            .filter { bootstrap.isServiceFactory(it) }
             .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
 
         fun ClassInfo.isServiceOrHasFactories(): Boolean {
-            return bootstrap.isService(this) || methodInfo.any { bootstrap.isService(it) }
+            return bootstrap.isService(this) || methodInfo.any { bootstrap.isServiceFactory(it) }
         }
 
         return filter { classInfo ->
@@ -160,7 +160,7 @@ internal object ReflectionMetadata {
 
     private fun ClassInfo.checkFacadeFactories(bootstrap: BotCommandsBootstrap) {
         this.declaredMethodInfo.forEach { methodInfo ->
-            check(!bootstrap.isService(methodInfo)) {
+            check(!bootstrap.isServiceFactory(methodInfo)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
             }
         }
@@ -175,8 +175,8 @@ internal object ReflectionMetadata {
 
                 classMetadataMap_[kClass.java] = ClassMetadata(classInfo.sourceFile)
 
-                val isDefaultService = bootstrap.isService(classInfo)
-                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isDefaultService) }
+                val isService = bootstrap.isService(classInfo)
+                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
@@ -220,7 +220,7 @@ internal object ReflectionMetadata {
 
             methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
-            val isServiceFactory = bootstrap.isService(methodInfo)
+            val isServiceFactory = bootstrap.isServiceFactory(methodInfo)
             classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
         }
     }

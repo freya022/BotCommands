@@ -68,7 +68,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         return serviceConfig.serviceAnnotations.any { serviceAnnotation -> declaredAnnotations.containsName(serviceAnnotation.jvmName) }
     }
 
-    override fun isService(methodInfo: MethodInfo): Boolean {
+    override fun isServiceFactory(methodInfo: MethodInfo): Boolean {
         val declaredAnnotations = methodInfo.annotationInfo.directOnly()
         @Suppress("DEPRECATION")
         return serviceConfig.serviceAnnotations.any { serviceAnnotation ->

@@ -10,5 +10,5 @@ internal interface BotCommandsBootstrap {
     val serviceContainer: ServiceContainer
 
     fun isService(classInfo: ClassInfo): Boolean
-    fun isService(methodInfo: MethodInfo): Boolean
+    fun isServiceFactory(methodInfo: MethodInfo): Boolean
 }

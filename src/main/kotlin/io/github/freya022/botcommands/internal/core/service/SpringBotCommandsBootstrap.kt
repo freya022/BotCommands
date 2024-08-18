@@ -41,7 +41,7 @@ internal class SpringBotCommandsBootstrap internal constructor(
         return classInfo.annotations.containsName(COMPONENT_ANNOTATION_NAME)
     }
 
-    override fun isService(methodInfo: MethodInfo): Boolean {
+    override fun isServiceFactory(methodInfo: MethodInfo): Boolean {
         return methodInfo.annotationInfo.containsName(BEAN_ANNOTATION_NAME)
     }
 }

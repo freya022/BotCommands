@@ -22,7 +22,7 @@ private val logger = KotlinLogging.loggerOf<BotOwners>()
 private val notifiedRoles = enumSetOf(RoleType.OWNER, RoleType.ADMIN, RoleType.DEVELOPER)
 
 @BService
-class BotOwnersImpl internal constructor(
+internal class BotOwnersImpl internal constructor(
     config: BConfig,
 ) : BotOwners {
     private val ownerWriter = WriteOnce<TLongSet>(wait = true)
