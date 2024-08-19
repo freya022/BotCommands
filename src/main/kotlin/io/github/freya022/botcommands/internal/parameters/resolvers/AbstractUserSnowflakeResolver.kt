@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
@@ -9,20 +8,19 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.traceNull
+import io.github.freya022.botcommands.api.core.utils.retrieveMemberOrNull
+import io.github.freya022.botcommands.api.core.utils.retrieveUserOrNull
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -84,25 +82,30 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         transformEntities(event.target, event.targetMember)
 
     private suspend fun retrieveOrNull(userId: Long, message: Message): R? {
-        val guild = if (message.isFromGuild) message.guild else null
-        val memberResult = runCatching {
-            if (guild == null)
-                return@runCatching null
-            message.mentions.members.findEntity(userId) { guild.retrieveMemberById(userId).await() }.let { transformEntities(it.user, it) }
-        }
-        memberResult.getOrNull()?.let { return it }
-
-        val userResult = runCatching {
-            message.mentions.users.findEntity(userId) { message.jda.retrieveUserById(userId).await() }.let { transformEntities(it, null) }
-        }
-        if (userResult.isSuccess) return userResult.getOrThrow()
-
-        if (memberResult.isFailure) {
-            logger.trace { "Could not resolve input user in ${guild!!.name} (${guild.idLong}): ${memberResult.exceptionOrNull()!!.message} / ${userResult.exceptionOrNull()!!.message}" }
+        val guild = message.guildOrNull
+        val member = when {
+            guild != null -> {
+                message.mentions.members.findEntity(userId)
+                    ?: guild.retrieveMemberOrNull(userId)
+            }
+            else -> null
         }
 
-        return null
+        val user = member?.user
+            ?: message.mentions.users.findEntity(userId)
+            ?: message.jda.retrieveUserOrNull(userId)
+
+        if (user == null) {
+            return logger.traceNull { "Could not resolve user with ID $userId in '${guild?.name}' (${guild?.id})" }
+        }
+
+        return transformEntities(user, member)
     }
+
+    private val Message.guildOrNull get() = if (isFromGuild) guild else null
+
+    private fun <T : ISnowflake> Collection<T>.findEntity(id: Long): T? =
+        find { user -> user.idLong == id }
 
     protected abstract fun transformEntities(user: User, member: Member?): R?
 
