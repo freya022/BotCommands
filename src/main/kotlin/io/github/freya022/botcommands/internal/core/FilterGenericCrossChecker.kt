@@ -26,6 +26,11 @@ internal class FilterGenericCrossChecker internal constructor(context: BContext)
 
     private inline fun <reified F : Filter, reified H : Any> checkTypes(context: BContext) {
         val filterTypes = context.getInterfacedServiceTypes<F>()
+        if (filterTypes.isEmpty()) {
+            // Found a rejection handler but no filter
+            return
+        }
+
         val rejectionHandlerType = context.getInterfacedServiceTypes<H>().firstOrNull() ?: return
 
         val filterOutputTypes = filterTypes.map { it.superErasureAt<F>(0).jvmErasure }
