@@ -131,6 +131,7 @@ internal class BotCommandsApplicationConfiguration(
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
+    override val enableCaching: Boolean = true,
     override val commandCachePath: Path? = null,
     override val onlineAppCommandCheckEnabled: Boolean = false,
     override val diffEngine: DiffEngine = DiffEngine.NEW,
@@ -148,6 +149,7 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     slashGuildIds += configuration.slashGuildIds
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
+    enableCaching = configuration.enableCaching
     commandCachePath = configuration.commandCachePath
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
     diffEngine = configuration.diffEngine

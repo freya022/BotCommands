@@ -61,6 +61,8 @@ interface BApplicationConfig {
     @ConfigurationValue(path = "botcommands.application.disableAutocompleteCache", defaultValue = "false")
     val disableAutocompleteCache: Boolean
 
+    val enableCaching: Boolean
+
     /**
      * Path at which the application commands cache would be saved to.
      */
@@ -178,6 +180,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
+    override var enableCaching: Boolean = true
     override var commandCachePath: Path? = null
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
@@ -297,6 +300,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
             override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
             override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
             override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
+            override val enableCaching = this@BApplicationConfigBuilder.enableCaching
             override val commandCachePath = this@BApplicationConfigBuilder.commandCachePath
             override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
             override val diffEngine = this@BApplicationConfigBuilder.diffEngine

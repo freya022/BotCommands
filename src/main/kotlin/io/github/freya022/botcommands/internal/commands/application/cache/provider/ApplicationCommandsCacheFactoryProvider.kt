@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.internal.commands.application.cache.Applic
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.FileApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.MemoryApplicationCommandsCacheFactory
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.NullApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -29,6 +30,10 @@ internal open class ApplicationCommandsCacheFactoryProvider {
     @Bean
     @BService
     internal open fun applicationCommandsCacheFactory(jda: JDA, applicationConfig: BApplicationConfig): ApplicationCommandsCacheFactory {
+        if (!applicationConfig.enableCaching) {
+            return NullApplicationCommandsCacheFactory
+        }
+
         val dataDirectory = applicationConfig.commandCachePath ?: run {
             val appDataDirectory = when {
                 "Windows" in System.getProperty("os.name") -> System.getenv("appdata")
