@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
@@ -16,11 +15,14 @@ import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwState
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmName
+
+private val logger = KotlinLogging.logger { }
 
 internal class ClassServiceProvider internal constructor(
     private val clazz: KClass<*>
@@ -172,13 +174,19 @@ internal class ClassServiceProvider internal constructor(
         return ServiceResult.pass(constructor)
     }
 
-    override fun getProviderFunction(): KFunction<*>? = clazz.constructors.firstOrNull().also {
-        if (it == null) {
-            objectLogger().warn { "No constructor in ${clazz.shortQualifiedName}" }
-        }
+    override fun getProviderFunction(): KFunction<*>? {
+        if (clazz.isObject) return null
+
+        val constructor = clazz.constructors.firstOrNull()
+        if (constructor == null) logger.warn { "No constructor in ${clazz.shortQualifiedName}" }
+
+        return constructor
     }
 
-    override fun getProviderSignature(): String = getProviderFunction()?.shortSignature ?: "<no-provider>"
+    override fun getProviderSignature(): String {
+        if (clazz.isObject) return "<object ${clazz.shortQualifiedName}>"
+        return getProviderFunction()?.shortSignature ?: "<no-provider ${clazz.shortQualifiedName}>"
+    }
 
     override fun toString() = providerKey
 }
