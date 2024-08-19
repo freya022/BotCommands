@@ -38,7 +38,7 @@ import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 suspend fun Guild.retrieveMemberOrNull(userId: Long): Member? = retrieveMemberOrNull(UserSnowflake.fromId(userId))
-suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER) {
+suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
     retrieveMember(user).await()
 }
 
