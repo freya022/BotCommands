@@ -1,11 +1,13 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
@@ -170,9 +172,13 @@ internal class ClassServiceProvider internal constructor(
         return ServiceResult.pass(constructor)
     }
 
-    override fun getProviderFunction(): KFunction<*> = clazz.constructors.first()
+    override fun getProviderFunction(): KFunction<*>? = clazz.constructors.firstOrNull().also {
+        if (it == null) {
+            objectLogger().warn { "No constructor in ${clazz.shortQualifiedName}" }
+        }
+    }
 
-    override fun getProviderSignature(): String = getProviderFunction().shortSignature
+    override fun getProviderSignature(): String = getProviderFunction()?.shortSignature ?: "<no-provider>"
 
     override fun toString() = providerKey
 }
