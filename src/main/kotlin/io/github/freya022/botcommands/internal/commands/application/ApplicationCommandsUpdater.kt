@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSla
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
-import io.github.freya022.botcommands.api.core.utils.overwriteBytes
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
@@ -31,8 +31,6 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.api.utils.data.DataArray
-import java.nio.file.Files
-import kotlin.io.path.bufferedReader
 
 private val logger = KotlinLogging.logger { }
 
@@ -41,18 +39,8 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
-    private val commandsCache = context.getService<ApplicationCommandsCache>()
+    private val commandsCache = context.getService<ApplicationCommandsCacheFactory>().create(guild)
     private val onlineCheck = context.applicationConfig.onlineAppCommandCheckEnabled
-
-    private val commandsCachePath = when (guild) {
-        null -> commandsCache.globalCommandsPath
-        else -> commandsCache.getGuildCommandsPath(guild)
-    }
-
-    private val commandsMetadataCachePath = when (guild) {
-        null -> commandsCache.globalCommandsMetadataPath
-        else -> commandsCache.getGuildCommandsMetadataPath(guild)
-    }
 
     internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands.filterCommands()
     private val commandData: Collection<CommandData>
@@ -62,8 +50,6 @@ internal class ApplicationCommandsUpdater private constructor(
         private set
 
     init {
-        Files.createDirectories(commandsCachePath.parent)
-
         commandData = mapSlashCommands(manager.slashCommands) +
                 mapContextCommands(manager.userContextCommands, Command.Type.USER) +
                 mapContextCommands(manager.messageContextCommands, Command.Type.MESSAGE)
@@ -100,26 +86,26 @@ internal class ApplicationCommandsUpdater private constructor(
             .toJsonBytes()
 
         metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
-        return checkCommandJson(oldCommandBytes)
+        return checkCommandJson(oldCommandBytes.decodeToString())
     }
 
     private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
-        if (Files.notExists(commandsCachePath)) {
+        if (!commandsCache.hasCommands()) {
             logger.trace { "Updating commands because cache file does not exists" }
             return@withContext true
         }
 
-        if (Files.notExists(commandsMetadataCachePath)) {
+        if (!commandsCache.hasMetadata()) {
             logger.trace { "Updating commands metadata because cache file does not exists" }
             return@withContext true
         }
 
         val hasMissingKey = updateOnMissingKey {
-            val array = commandsMetadataCachePath.bufferedReader().use(DataArray::fromJson)
+            val array = commandsCache.readMetadata().let(DataArray::fromJson)
             metadata = readMetadata(array)
         }
 
-        hasMissingKey || checkCommandJson(Files.readAllBytes(commandsCachePath))
+        hasMissingKey || checkCommandJson(commandsCache.readCommands())
     }
 
     private inline fun updateOnMissingKey(crossinline block: () -> Unit): Boolean = try {
@@ -144,10 +130,10 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun checkCommandJson(oldBytes: ByteArray): Boolean {
+    private fun checkCommandJson(oldData: String): Boolean {
         val newBytes = commandData.toJsonBytes()
 
-        val oldCommands = DefaultObjectMapper.readList(oldBytes) as List<Map<String, *>>
+        val oldCommands = DefaultObjectMapper.readList(oldData) as List<Map<String, *>>
         val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
 
         val isSame = DiffLogger.withLogger(context, guild.asScopeString()) {
@@ -155,7 +141,7 @@ internal class ApplicationCommandsUpdater private constructor(
         }
 
         if (!isSame && context.applicationConfig.logApplicationCommandData) {
-            logger.trace { "Old commands data: ${oldBytes.decodeToString()}" }
+            logger.trace { "Old commands data: $oldData" }
             logger.trace { "New commands data: ${newBytes.decodeToString()}" }
         }
 
@@ -263,11 +249,11 @@ internal class ApplicationCommandsUpdater private constructor(
 
     private fun saveCommandData(guild: Guild?) {
         try {
-            commandsCachePath.overwriteBytes(commandData.toJsonBytes())
-            commandsMetadataCachePath.overwriteBytes(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
+            commandsCache.writeCommands(commandData.toJsonBytes())
+            commandsCache.writeMetadata(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
         } catch (e: Exception) {
             logger.error(e) {
-                "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"
+                "An exception occurred while saving ${guild.asScopeString()} commands with $commandsCache"
             }
         }
     }
