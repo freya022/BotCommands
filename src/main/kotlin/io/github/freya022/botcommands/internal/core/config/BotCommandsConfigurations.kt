@@ -4,13 +4,16 @@ package io.github.freya022.botcommands.internal.core.config
 
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.config.*
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.nio.file.Path
+import org.springframework.boot.context.properties.bind.Name
+import kotlin.io.path.Path
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
@@ -125,38 +128,91 @@ internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLo
     responseBundles += configuration.responseBundles
 }
 
-@ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = false)
+@Suppress("OVERRIDE_DEPRECATION")
+@ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = true)
 internal class BotCommandsApplicationConfiguration(
     override val enable: Boolean = true,
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
-    override val enableCaching: Boolean = true,
-    override val commandCachePath: Path? = null,
     override val onlineAppCommandCheckEnabled: Boolean = false,
     override val diffEngine: DiffEngine = DiffEngine.NEW,
     override val logApplicationCommandData: Boolean = false,
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap(),
     override val logMissingLocalizationKeys: Boolean = false,
+    @Name("cache")
+    internal val springCache: Cache = Cache(),
 ) : BApplicationConfig {
+    override val cache: Nothing get() = unusable()
+
+    class Cache(
+        val type: Type = Type.FILE,
+        val file: File = File(),
+        val database: Database = Database(),
+        val checkOnline: Boolean = false,
+        val diffEngine: DiffEngine = DiffEngine.NEW,
+        val logDataIf: ApplicationCommandsCacheConfig.LogDataIf = ApplicationCommandsCacheConfig.LogDataIf.CHANGED
+    ) {
+        enum class Type {
+            FILE,
+            DATABASE,
+            NULL
+        }
+
+        // Check those properties are checked for unknown fields
+        class File(
+            val path: String? = null
+        )
+
+        class Database(
+            // properties
+        )
+    }
+
     override val baseNameToLocalesMap = localizations
 }
 
+@Suppress("DEPRECATION")
 @OptIn(DevConfig::class)
 internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApplicationConfiguration) = apply {
     enable = configuration.enable
     slashGuildIds += configuration.slashGuildIds
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
-    enableCaching = configuration.enableCaching
-    commandCachePath = configuration.commandCachePath
+    configureCache(configuration)
     onlineAppCommandCheckEnabled = configuration.onlineAppCommandCheckEnabled
     diffEngine = configuration.diffEngine
     logApplicationCommandData = configuration.logApplicationCommandData
     forceGuildCommands = configuration.forceGuildCommands
     configuration.baseNameToLocalesMap.forEach(::addLocalizations)
     logMissingLocalizationKeys = configuration.logMissingLocalizationKeys
+}
+
+@OptIn(DevConfig::class)
+private fun BApplicationConfigBuilder.configureCache(configuration: BotCommandsApplicationConfiguration) {
+    fun ApplicationCommandsCacheConfigBuilder.applyConfig(cache: BotCommandsApplicationConfiguration.Cache) {
+        checkOnline = cache.checkOnline
+        diffEngine = cache.diffEngine
+        logDataIf = cache.logDataIf
+    }
+    when (configuration.springCache.type) {
+        BotCommandsApplicationConfiguration.Cache.Type.FILE -> {
+            val file = configuration.springCache.file
+            when {
+                file.path == null -> fileCache {
+                    applyConfig(configuration.springCache)
+                }
+                else -> fileCache(Path(file.path)) {
+                    applyConfig(configuration.springCache)
+                }
+            }
+        }
+        BotCommandsApplicationConfiguration.Cache.Type.DATABASE -> databaseCache {
+            applyConfig(configuration.springCache)
+        }
+        BotCommandsApplicationConfiguration.Cache.Type.NULL -> disableCache()
+    }
 }
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)

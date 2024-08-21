@@ -1,8 +1,14 @@
 package io.github.freya022.botcommands.api.core.config
 
+import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
+import io.github.freya022.botcommands.api.core.config.application.cache.DatabaseApplicationCommandsCacheConfigBuilder
+import io.github.freya022.botcommands.api.core.config.application.cache.FileApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
@@ -12,10 +18,12 @@ import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocali
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Path
+import kotlin.io.path.Path
 
 @InjectedService
 interface BApplicationConfig {
@@ -61,12 +69,14 @@ interface BApplicationConfig {
     @ConfigurationValue(path = "botcommands.application.disableAutocompleteCache", defaultValue = "false")
     val disableAutocompleteCache: Boolean
 
-    val enableCaching: Boolean
-
     /**
-     * Path at which the application commands cache would be saved to.
+     * Configuration of the application commands cache.
+     *
+     * Helps avoid request to Discord as commands do not need to be updated most of the time.
+     *
+     * Default: [`fileCache()`][BApplicationConfigBuilder.fileCache]
      */
-    val commandCachePath: Path?
+    val cache: ApplicationCommandsCacheConfig?
 
     /**
      * Enables the library to compare local commands against Discord's command,
@@ -87,8 +97,14 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.onlineAppCommandCheckEnabled`
      */
+    @Deprecated(
+        message = "Moved to 'checkOnline' of the 'cache' property",
+        replaceWith = ReplaceWith("cache?.checkOnline")
+    )
     @ConfigurationValue(path = "botcommands.application.onlineAppCommandCheckEnabled", defaultValue = "false")
+    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.checkOnline")
     val onlineAppCommandCheckEnabled: Boolean
+        get() = cache?.checkOnline ?: false
 
     /**
      * The diff engine to use when comparing old and new application commands,
@@ -100,8 +116,14 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.diffEngine`
      */
+    @Deprecated(
+        message = "Moved to 'diffEngine' of the 'cache' property",
+        replaceWith = ReplaceWith("cache?.diffEngine")
+    )
     @ConfigurationValue(path = "botcommands.application.diffEngine", defaultValue = "new")
+    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.diffEngine")
     val diffEngine: DiffEngine
+        get() = cache?.diffEngine ?: DiffEngine.NEW
 
     /**
      * Whether the raw JSON of the application commands should be logged when an update is required.
@@ -110,8 +132,14 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.logApplicationCommandData`
      */
+    @Deprecated(message = "Moved to 'logDataIf' of the 'cache' property", replaceWith = ReplaceWith("cache?.logDataIf"))
     @ConfigurationValue(path = "botcommands.application.logApplicationCommandData", defaultValue = "false")
+    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.logDataIf")
     val logApplicationCommandData: Boolean
+        get() = when (cache?.logDataIf) {
+            LogDataIf.CHANGED, LogDataIf.ALWAYS -> true
+            else -> false
+        }
 
     /**
      * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation.
@@ -180,14 +208,37 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
-    override var enableCaching: Boolean = true
-    override var commandCachePath: Path? = null
+
+    override var cache: ApplicationCommandsCacheConfigBuilder? = FileApplicationCommandsCacheConfigBuilder(getDefaultCachePath())
+        private set
+
+    @Deprecated("Moved to 'checkOnline' of fileCache(...)/databaseCache(...)")
     @set:DevConfig
     @set:JvmName("enableOnlineAppCommandChecks")
-    override var onlineAppCommandCheckEnabled: Boolean = false
+    override var onlineAppCommandCheckEnabled: Boolean
+        @Suppress("DEPRECATION")
+        get() = super.onlineAppCommandCheckEnabled
+        set(value) {
+            checkNotNull(cache) { "The cache is disabled" }
+            cache!!.checkOnline = value
+        }
+    @Deprecated("Moved to 'diffEngine' of fileCache(...)/databaseCache(...)")
     @set:DevConfig
-    override var diffEngine: DiffEngine = DiffEngine.NEW
-    override var logApplicationCommandData: Boolean = false
+    override var diffEngine: DiffEngine
+        @Suppress("DEPRECATION")
+        get() = super.diffEngine
+        set(value) {
+            checkNotNull(cache) { "The cache is disabled" }
+            cache!!.diffEngine = value
+        }
+    @Deprecated("Moved to 'logDataIf' of fileCache(...)/databaseCache(...)")
+    override var logApplicationCommandData: Boolean
+        @Suppress("DEPRECATION")
+        get() = super.logApplicationCommandData
+        set(value) {
+            checkNotNull(cache) { "The cache is disabled" }
+            cache!!.logDataIf = if (value) LogDataIf.CHANGED else LogDataIf.NEVER
+        }
     @set:DevConfig
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
@@ -289,22 +340,68 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
         addLocalizations(bundleName, locales.asList())
     }
 
+    /**
+     * Configures a file-based cache for application commands,
+     * which helps avoid request to Discord as commands do not need to be updated most of the time.
+     *
+     * ### Cache path
+     *
+     * The default cache folder is at:
+     * - Windows: `%AppData%/BotCommands`
+     * - Unix: `/var/tmp/BotCommands`
+     *
+     * Each application has a folder inside it, meaning you can safely share this folder with other applications.
+     *
+     * ### Docker
+     *
+     * If your app runs in a container, you will need to change the [path]
+     * to a volume (recommended) or a bind-mount.
+     *
+     * @param path The folder in which to save application commands
+     */
+    @JvmOverloads
+    fun fileCache(path: Path = getDefaultCachePath(), block: ReceiverConsumer<FileApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
+        cache = FileApplicationCommandsCacheConfigBuilder(path).apply(block)
+    }
+
+    //TODO docs once implemented
+    fun databaseCache(block: ReceiverConsumer<DatabaseApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
+        cache = DatabaseApplicationCommandsCacheConfigBuilder().apply(block)
+    }
+
+    /**
+     * Entirely disables the application commands cache,
+     * meaning the application commands will always be updated on startup.
+     *
+     * Do not use on your production bot unless **absolutely** necessary.
+     */
+    @DevConfig
+    fun disableCache() {
+        cache = null
+    }
+
+    private fun getDefaultCachePath(): Path {
+        val appDataDirectory = when {
+            "Windows" in System.getProperty("os.name") -> System.getenv("appdata")
+            else -> "/var/tmp"
+        }
+        return Path(appDataDirectory).resolve("BotCommands")
+    }
+
     @JvmSynthetic
     internal fun build(): BApplicationConfig {
         val logger = KotlinLogging.loggerOf<BApplicationConfig>()
         if (disableAutocompleteCache)
             logger.info { "Disabled autocomplete cache, except forced caches" }
+        if (cache == null)
+            logger.info { "Disabled application commands caching, this could be expensive if you have a lot of guilds!" }
 
         return object : BApplicationConfig {
             override val enable = this@BApplicationConfigBuilder.enable
             override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
             override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
             override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
-            override val enableCaching = this@BApplicationConfigBuilder.enableCaching
-            override val commandCachePath = this@BApplicationConfigBuilder.commandCachePath
-            override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
-            override val diffEngine = this@BApplicationConfigBuilder.diffEngine
-            override val logApplicationCommandData = this@BApplicationConfigBuilder.logApplicationCommandData
+            override val cache = this@BApplicationConfigBuilder.cache?.build()
             override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
             override val baseNameToLocalesMap =
                 this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
