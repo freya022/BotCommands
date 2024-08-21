@@ -56,12 +56,15 @@ object Main {
                     @OptIn(DevConfig::class)
                     disableAutocompleteCache = Environment.isDev
 
-                    // Check command updates based on Discord's commands.
-                    // This is only useful during development,
-                    // as you can develop on multiple machines (but not simultaneously!).
-                    // Using this in production is only going to waste API requests.
-                    @OptIn(DevConfig::class)
-                    onlineAppCommandCheckEnabled = Environment.isDev
+                    // Default file-based application commands cache
+                    fileCache {
+                        // Check command updates based on Discord's commands.
+                        // This is only useful during development,
+                        // as you can develop on multiple machines (but not simultaneously!).
+                        // Using this in production is only going to waste API requests.
+                        @OptIn(DevConfig::class)
+                        checkOnline = Environment.isDev
+                    }
 
                     // Guilds in which `@Test` commands will be inserted
                     testGuildIds += config.testGuildIds

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.diff
 
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
@@ -13,8 +14,8 @@ internal sealed class DiffLogger {
 
     internal companion object {
         @Suppress("DEPRECATION")
-        internal fun <R> withLogger(context: BContext, title: String, block: DiffLogger.() -> R): R {
-            val logsEnabled = when (context.applicationConfig.diffEngine) {
+        internal fun <R> withLogger(context: BContext, cacheConfig: ApplicationCommandsCacheConfig, title: String, block: DiffLogger.() -> R): R {
+            val logsEnabled = when (cacheConfig.diffEngine) {
                 DiffEngine.OLD, DiffEngine.OLD_REFACTORED -> logger.isTraceEnabled() && context.debugConfig.enableApplicationDiffsLogs
                 DiffEngine.NEW -> logger.isTraceEnabled()
             }

@@ -66,8 +66,10 @@ object Main {
                 applicationCommands {
                     enable = true
 
-                    @OptIn(DevConfig::class)
-                    onlineAppCommandCheckEnabled = true
+                    fileCache {
+                        @OptIn(DevConfig::class)
+                        checkOnline = true
+                    }
 
                     addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
                 }

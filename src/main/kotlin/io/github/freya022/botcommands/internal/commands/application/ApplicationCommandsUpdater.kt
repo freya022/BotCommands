@@ -12,8 +12,11 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcom
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
+import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
@@ -39,8 +42,14 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
-    private val commandsCache = context.getService<ApplicationCommandsCacheFactory>().create(guild)
-    private val onlineCheck = context.applicationConfig.onlineAppCommandCheckEnabled
+    private val commandsCache: ApplicationCommandsCache
+    private val cacheConfig: ApplicationCommandsCacheConfig
+
+    init {
+        val cacheFactory = context.getService<ApplicationCommandsCacheFactory>()
+        commandsCache = cacheFactory.create(guild)
+        cacheConfig = cacheFactory.cacheConfig
+    }
 
     internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands.filterCommands()
     private val commandData: Collection<CommandData>
@@ -67,7 +76,7 @@ internal class ApplicationCommandsUpdater private constructor(
             return true
         }
 
-        val needsUpdate = if (onlineCheck) {
+        val needsUpdate = if (cacheConfig.checkOnline) {
             checkOnlineCommands()
         } else {
             checkOfflineCommands()
@@ -136,11 +145,16 @@ internal class ApplicationCommandsUpdater private constructor(
         val oldCommands = DefaultObjectMapper.readList(oldData) as List<Map<String, *>>
         val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
 
-        val isSame = DiffLogger.withLogger(context, guild.asScopeString()) {
-            context.applicationConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
+        val isSame = DiffLogger.withLogger(context, cacheConfig, guild.asScopeString()) {
+            cacheConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
         }
 
-        if (!isSame && context.applicationConfig.logApplicationCommandData) {
+        val logData = when (cacheConfig.logDataIf) {
+            LogDataIf.CHANGED -> !isSame
+            LogDataIf.ALWAYS -> true
+            LogDataIf.NEVER -> false
+        }
+        if (logData) {
             logger.trace { "Old commands data: $oldData" }
             logger.trace { "New commands data: ${newBytes.decodeToString()}" }
         }
