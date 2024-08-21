@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.application.cache
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
 import net.dv8tion.jda.api.entities.Guild
 import java.nio.file.Path
-import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 
@@ -16,8 +15,6 @@ internal class FileApplicationCommandsCache internal constructor(
     private val commandsMetadataPath: Path
 
     init {
-        cachePath.createDirectories()
-
         if (guild != null) {
             val guildPath = cachePath.resolve(guild.id)
             commandsPath = guildPath.resolve("commands.json")

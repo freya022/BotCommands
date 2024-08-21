@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
+// DEV NOTE: Prefer reading these properties from [[ApplicationCommandsCacheFactory#cacheConfig]]
 interface ApplicationCommandsCacheConfig {
     enum class LogDataIf {
         CHANGED,
