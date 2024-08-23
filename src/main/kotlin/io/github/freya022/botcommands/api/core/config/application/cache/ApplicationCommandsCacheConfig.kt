@@ -49,11 +49,11 @@ interface ApplicationCommandsCacheConfig {
     /**
      * Whether the raw JSON of the application commands should be logged on `TRACE` when the condition is met.
      *
-     * Default: `LogDataIf.CHANGED`
+     * Default: `LogDataIf.NEVER`
      *
      * Spring property: `botcommands.application.cache.logDataIf`
      */
-    @ConfigurationValue(path = "botcommands.application.cache.logDataIf", defaultValue = "changed")
+    @ConfigurationValue(path = "botcommands.application.cache.logDataIf", defaultValue = "never")
     val logDataIf: LogDataIf
 }
 
@@ -63,7 +63,7 @@ sealed class ApplicationCommandsCacheConfigBuilder : ApplicationCommandsCacheCon
     override var checkOnline: Boolean = false
     @set:DevConfig
     override var diffEngine: DiffEngine = DiffEngine.NEW
-    override var logDataIf: ApplicationCommandsCacheConfig.LogDataIf = ApplicationCommandsCacheConfig.LogDataIf.CHANGED
+    override var logDataIf: ApplicationCommandsCacheConfig.LogDataIf = ApplicationCommandsCacheConfig.LogDataIf.NEVER
 
     @JvmSynthetic
     internal abstract fun build(): ApplicationCommandsCacheConfig
