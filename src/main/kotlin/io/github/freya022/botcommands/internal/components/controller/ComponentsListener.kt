@@ -128,9 +128,8 @@ internal class ComponentsListener(
                 resumeCoroutines(component, evt)
 
                 if (component.oneUse) {
-                    // This shouldn't throw timeouts,
-                    // but no timeouts will be thrown as all continuations have been consumed
-                    // Thus, this helps see if an issue arises
+                    // No timeout will be throw as all continuations have been resumed.
+                    // So, a timeout being thrown is an issue.
                     componentController.deleteComponent(component, throwTimeouts = true)
                 }
 
