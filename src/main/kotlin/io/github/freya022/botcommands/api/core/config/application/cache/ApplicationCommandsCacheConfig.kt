@@ -7,9 +7,23 @@ import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 // DEV NOTE: Prefer reading these properties from [[ApplicationCommandsCacheFactory#cacheConfig]]
 interface ApplicationCommandsCacheConfig {
+    /**
+     * Controls whether the old/new application commands data should be logged.
+     */
     enum class LogDataIf {
+        /**
+         * Only logs the old/new application commands data if they require an update.
+         */
         CHANGED,
+
+        /**
+         * Always logs the old/new application commands data.
+         */
         ALWAYS,
+
+        /**
+         * Never logs the old/new application commands data.
+         */
         NEVER
     }
 
