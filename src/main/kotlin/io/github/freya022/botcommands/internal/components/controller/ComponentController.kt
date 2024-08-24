@@ -111,7 +111,7 @@ internal class ComponentController(
             .let { id -> ComponentGroup(this, id) }
     }
 
-    suspend fun deleteComponentsById(ids: List<Int>, throwTimeouts: Boolean) {
+    suspend fun deleteComponentsById(ids: Collection<Int>, throwTimeouts: Boolean) {
         componentRepository.deleteComponentsById(ids).forEach { (componentId, ephemeralComponentHandlerId, ephemeralTimeoutHandlerId) ->
             ephemeralComponentHandlerId?.let { ephemeralComponentHandlers.remove(it) }
             ephemeralTimeoutHandlerId?.let { ephemeralTimeoutHandlers.remove(it) }

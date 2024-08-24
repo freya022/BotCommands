@@ -262,7 +262,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun deleteComponentsById(ids: List<Int>): List<DeletedComponent> = database.transactional {
+    suspend fun deleteComponentsById(ids: Collection<Int>): List<DeletedComponent> = database.transactional {
         // If the component is a group, then delete the component, and it's contained components
         // If the component is not a group, then delete the component as well as it's group
 

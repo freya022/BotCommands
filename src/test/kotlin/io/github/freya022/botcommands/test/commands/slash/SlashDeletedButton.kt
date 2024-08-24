@@ -13,14 +13,17 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 class SlashDeletedButton(private val buttons: Buttons) : ApplicationCommand() {
     @JDASlashCommand(name = "deleted_button")
     suspend fun onSlashDeletedButton(event: GuildSlashEvent) {
+        val buttonIds = arrayListOf<Int>()
         val trap = buttons.danger("DO NOT SEND").ephemeral {}
         val deleteButton = buttons.primary("Delete").ephemeral {
             bindTo {
                 it.deferEdit().queue()
                 it.hook.deleteOriginal().queue()
-                buttons.deleteComponentsByIds(listOf(it.componentId, trap.id))
+                buttons.deleteComponentsByIds(buttonIds)
             }
         }
+
+        buttonIds += listOf(trap.internalId, deleteButton.internalId)
 
         event.replyComponents(deleteButton.into()).queue()
 
