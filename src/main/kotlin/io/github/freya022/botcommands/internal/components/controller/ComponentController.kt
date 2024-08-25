@@ -23,6 +23,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -97,6 +98,11 @@ internal class ComponentController(
                 val timeout = builder.expiresAt ?: return@also
                 timeoutManager.scheduleTimeout(id, timeout)
             }
+    }
+
+    suspend fun getActiveComponent(componentId: Int): ComponentData? {
+        return componentRepository.getComponent(componentId)
+            ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
     }
 
     suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =

@@ -28,7 +28,6 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentDescr
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerContainer
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerOption
-import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
@@ -37,7 +36,6 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.datetime.Clock
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -59,7 +57,6 @@ internal class ComponentsListener(
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     filters: List<ComponentInteractionFilter<Any>>,
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
-    private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
     private val componentHandlerContainer: ComponentHandlerContainer
 ) {
@@ -85,8 +82,7 @@ internal class ComponentsListener(
                             "please only use ${classRef<Components>()} to make components or disable ${BComponentsConfigBuilder::enable.reference}" }
                 ComponentController.parseComponentId(id)
             }
-            val component = componentRepository.getComponent(componentId)
-                ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
+            val component = componentController.getActiveComponent(componentId)
                 ?: return@launch event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
             if (component !is AbstractComponentData)
@@ -103,90 +99,9 @@ internal class ComponentsListener(
             }
 
             component.withRateLimit(context, event, event.user !in context.botOwners) { cancellableRateLimit ->
-                if (!component.constraints.isAllowed(event)) {
-                    event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
-                    return@withRateLimit false
-                }
-
-                checkFilters(globalFilters, component.filters) { filter ->
-                    val handlerName = (component as? PersistentComponentData)?.handler?.handlerName
-                    val userError = filter.checkSuspend(event, handlerName)
-                    if (userError != null) {
-                        rejectionHandler!!.handleSuspend(event, handlerName, userError)
-                        if (event.isAcknowledged) {
-                            logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
-                        } else {
-                            logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
-                        }
-                        return@withRateLimit false
-                    }
-                }
-
-                // Resume coroutines before deleting the component,
-                // as it will also delete the continuations (that we already consume anyway)
-                val evt = transformEvent(event, cancellableRateLimit)
-                resumeCoroutines(component, evt)
-
-                if (component.oneUse) {
-                    // No timeout will be throw as all continuations have been resumed.
-                    // So, a timeout being thrown is an issue.
-                    componentController.deleteComponent(component, throwTimeouts = true)
-                }
-
-                when (component) {
-                    is PersistentComponentData -> {
-                        val (handlerName, userData) = component.handler ?: return@withRateLimit true
-
-                        val descriptor = when (component.componentType) {
-                            ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
-                                ?: throwArgument("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
-                            ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
-                                ?: throwArgument("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
-                            else -> throwInternal("Invalid component type being handled: ${component.componentType}")
-                        }
-
-                        if (userData.size != descriptor.optionSize) {
-                            // This is on debug as this is supposed to happen only in development
-                            // Or if a user clicked on an old incompatible button,
-                            // in which case the developer can enable debug logs if complained about
-                            logger.debug {
-                                """
-                                    Mismatch between component options and ${descriptor.function.shortSignature}
-                                    Component had ${userData.size} options, function has ${descriptor.optionSize} options
-                                    Component raw data: $userData
-                                """.trimIndent()
-                            }
-                            event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
-                            return@withRateLimit false
-                        }
-
-                        if (!handlePersistentComponent(descriptor, evt, userData.iterator())) {
-                            return@withRateLimit false
-                        }
-                    }
-                    is EphemeralComponentData -> {
-                        val ephemeralHandler = component.handler ?: return@withRateLimit true
-
-                        @Suppress("UNCHECKED_CAST")
-                        (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
-                    }
-                }
-
-                true
+                val enhancedEvent = transformEvent(event, cancellableRateLimit)
+                onComponentUse(enhancedEvent, component)
             }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun resumeCoroutines(component: AbstractComponentData, evt: GenericComponentInteractionCreateEvent) {
-        component.groupId?.let { groupId ->
-            componentController.removeContinuations(groupId).forEach {
-                (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
-            }
-        }
-
-        componentController.removeContinuations(component.internalId).forEach {
-            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
         }
     }
 
@@ -201,6 +116,101 @@ internal class ComponentsListener(
             is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit, localizableInteraction)
             else -> throwInternal("Unhandled component event: ${event::class.simpleName}")
         }
+    }
+
+    private suspend fun onComponentUse(
+        event: GenericComponentInteractionCreateEvent,
+        component: AbstractComponentData
+    ): Boolean {
+        if (!component.constraints.isAllowed(event)) {
+            event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+            return false
+        }
+
+        checkFilters(globalFilters, component.filters) { filter ->
+            val handlerName = (component as? PersistentComponentData)?.handler?.handlerName
+            val userError = filter.checkSuspend(event, handlerName)
+            if (userError != null) {
+                rejectionHandler!!.handleSuspend(event, handlerName, userError)
+                if (event.isAcknowledged) {
+                    logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
+                } else {
+                    logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
+                }
+                return false
+            }
+        }
+
+        // Resume coroutines before deleting the component,
+        // as it will also delete the continuations (that we already consume anyway)
+        resumeCoroutines(component, event)
+
+        if (component.oneUse) {
+            // No timeout will be thrown as all continuations have been resumed.
+            // So, a timeout being thrown is an issue.
+            componentController.deleteComponent(component, throwTimeouts = true)
+        }
+
+        return runHandler(component, event)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun resumeCoroutines(component: AbstractComponentData, evt: GenericComponentInteractionCreateEvent) {
+        component.group?.let { group ->
+            componentController.removeContinuations(group.internalId).forEach {
+                (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+            }
+        }
+
+        componentController.removeContinuations(component.internalId).forEach {
+            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+        }
+    }
+
+    private suspend fun runHandler(component: AbstractComponentData, event: GenericComponentInteractionCreateEvent): Boolean {
+        when (component) {
+            is PersistentComponentData -> {
+                val (handlerName, userData) = component.handler ?: return true
+
+                val descriptor = when (component.componentType) {
+                    ComponentType.BUTTON -> componentHandlerContainer.getButtonDescriptor(handlerName)
+                        ?: throwArgument("Missing ${annotationRef<JDAButtonListener>()} named '$handlerName'")
+
+                    ComponentType.SELECT_MENU -> componentHandlerContainer.getSelectMenuDescriptor(handlerName)
+                        ?: throwArgument("Missing ${annotationRef<JDASelectMenuListener>()} named '$handlerName'")
+
+                    else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                }
+
+                if (userData.size != descriptor.optionSize) {
+                    // This is on debug as this is supposed to happen only in development
+                    // Or if a user clicked on an old incompatible button,
+                    // in which case the developer can enable debug logs if complained about
+                    logger.debug {
+                        """
+                            Mismatch between component options and ${descriptor.function.shortSignature}
+                            Component had ${userData.size} options, function has ${descriptor.optionSize} options
+                            Component raw data: $userData
+                        """.trimIndent()
+                    }
+                    event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                    return false
+                }
+
+                if (!handlePersistentComponent(descriptor, event, userData.iterator())) {
+                    return false
+                }
+            }
+
+            is EphemeralComponentData -> {
+                val ephemeralHandler = component.handler ?: return true
+
+                @Suppress("UNCHECKED_CAST")
+                (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(event)
+            }
+        }
+
+        return true
     }
 
     private suspend fun handlePersistentComponent(
@@ -236,18 +246,6 @@ internal class ComponentsListener(
         }
     }
 
-    private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
-        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
-            "Message" to event.message.jumpUrl,
-            "Component" to event.component
-        ))
-        if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
-        } else {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
-        }
-    }
-
     private suspend fun tryInsertOption(
         event: GenericComponentInteractionCreateEvent,
         descriptor: ComponentDescriptor,
@@ -275,5 +273,17 @@ internal class ComponentsListener(
         }
 
         return tryInsertNullableOption(value, option, optionMap)
+    }
+
+    private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
+        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
+            "Message" to event.message.jumpUrl,
+            "Component" to event.component
+        ))
+        if (e is InsufficientPermissionException) {
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
+        } else {
+            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
+        }
     }
 }

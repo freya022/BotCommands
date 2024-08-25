@@ -7,17 +7,19 @@ import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
 
 internal sealed class AbstractComponentData(
     componentId: Int,
     componentType: ComponentType,
     lifetimeType: LifetimeType,
     expiresAt: Instant?,
+    resetTimeoutOnUseDuration: Duration?,
     filters: List<ComponentInteractionFilter<*>>,
     oneUse: Boolean,
     rateLimitGroup: String?,
     handler: ComponentHandler?,
     timeout: ComponentTimeout?,
     final override val constraints: InteractionConstraints,
-    groupId: Int?
-): ComponentData(componentId, componentType, lifetimeType, expiresAt, filters, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
+    group: ComponentGroupData?
+): ComponentData(componentId, componentType, lifetimeType, expiresAt, resetTimeoutOnUseDuration, filters, oneUse, rateLimitGroup, handler, timeout, constraints, group)

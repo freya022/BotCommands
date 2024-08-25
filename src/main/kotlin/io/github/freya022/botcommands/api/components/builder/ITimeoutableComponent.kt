@@ -44,6 +44,16 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
     val timeout: ComponentTimeout?
 
     /**
+     * When `true`, resets the timeout duration everytime this component is used.
+     */
+    var resetTimeoutOnUse: Boolean
+
+    /**
+     * When `true`, resets the timeout duration everytime this component is used.
+     */
+    fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T
+
+    /**
      * Removes the timeout from this component.
      */
     @CheckReturnValue

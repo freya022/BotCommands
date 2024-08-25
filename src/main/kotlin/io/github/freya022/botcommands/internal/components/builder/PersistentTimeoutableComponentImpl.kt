@@ -16,6 +16,12 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
     override var timeout: PersistentTimeout? = null
         private set
 
+    override var resetTimeoutOnUse: Boolean = false
+
+    override fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T = instance.also {
+        this.resetTimeoutOnUse = resetTimeoutOnUse
+    }
+
     override fun noTimeout(): T = instance.also {
         this.expiresAt = null
         this.timeout = null

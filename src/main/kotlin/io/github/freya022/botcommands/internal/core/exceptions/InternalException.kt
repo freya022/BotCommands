@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.JDAInfo
 internal class InternalException internal constructor(
     message: String,
     throwable: Throwable? = null,
-) : RuntimeException("$message, please report this to the devs. ${getDiagnosticVersions()}", throwable)
+) : RuntimeException(internalErrorMessage(message), throwable)
 
 internal fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
+
+internal fun internalErrorMessage(message: String) = "$message, please report this to the devs. ${getDiagnosticVersions()}"

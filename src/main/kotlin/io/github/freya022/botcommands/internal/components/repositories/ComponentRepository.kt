@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.internal.components.data.*
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
+import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.datetime.Instant
@@ -113,7 +114,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, expires_at, one_use, users, roles, permissions, group_id, rate_limit_group, filters
+            select lifetime_type, component_type, expires_at, reset_timeout_on_use_duration_ms, one_use, users, roles, permissions, group_id, rate_limit_group, filters
             from bc_component component
                      left join bc_component_constraints constraints using (component_id)
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
@@ -124,10 +125,11 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val expiresAt = dbResult.getKotlinInstantOrNull("expires_at")
+            val resetTimeoutOnUseDuration: Duration? = dbResult.getOrNull<Int>("reset_timeout_on_use_duration_ms")?.milliseconds
             val oneUse: Boolean = dbResult["one_use"]
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, lifetimeType, oneUse, expiresAt)
+                return@preparedStatement getGroup(id, lifetimeType, oneUse, expiresAt, resetTimeoutOnUseDuration)
             }
 
             val filters = componentFilters.getFilters(dbResult["filters"])
@@ -139,6 +141,15 @@ internal class ComponentRepository(
                 dbResult["permissions"]
             )
 
+            val group = dbResult.getOrNull<Int>("group_id")?.let {
+                val group = getComponent(it)
+                if (group == null)
+                    logger.warn { internalErrorMessage("Could not get group with id $it") }
+                else if (group !is ComponentGroupData)
+                    logger.warn { internalErrorMessage("Data with id $it was expected to be a group") }
+                group as? ComponentGroupData?
+            }
+
             when (lifetimeType) {
                 LifetimeType.PERSISTENT -> {
                     val handler = componentHandlerRepository.getPersistentHandler(id)
@@ -149,13 +160,13 @@ internal class ComponentRepository(
 
                     PersistentComponentData(
                         id, componentType, lifetimeType,
-                        expiresAt,
+                        expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
                         rateLimitGroup,
                         handler, timeout,
                         constraints,
-                        dbResult["group_id"]
+                        group
                     )
                 }
 
@@ -168,13 +179,13 @@ internal class ComponentRepository(
 
                     EphemeralComponentData(
                         id, componentType, lifetimeType,
-                        expiresAt,
+                        expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
                         rateLimitGroup,
                         handler, timeout,
                         constraints,
-                        dbResult["group_id"]
+                        group
                     )
                 }
             }
@@ -182,7 +193,13 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun getGroup(id: Int, lifetimeType: LifetimeType, oneUse: Boolean, expiresAt: Instant?): ComponentGroupData {
+    private suspend fun getGroup(
+        id: Int,
+        lifetimeType: LifetimeType,
+        oneUse: Boolean,
+        expiresAt: Instant?,
+        resetTimeoutOnUseDuration: Duration?,
+    ): ComponentGroupData {
         val timeout = when (lifetimeType) {
             LifetimeType.PERSISTENT -> componentTimeoutRepository.getPersistentTimeout(id)
             LifetimeType.EPHEMERAL -> componentTimeoutRepository.getEphemeralTimeout(id)
@@ -198,7 +215,7 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, expiresAt, timeout, componentIds)
+        return ComponentGroupData(id, oneUse, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
     }
 
     suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
@@ -243,10 +260,15 @@ internal class ComponentRepository(
     ): Int where T : IComponentBuilder,
                  T : ITimeoutableComponent<*> {
         return preparedStatement(
-            "insert into bc_component (component_type, lifetime_type, expires_at, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?)",
+            "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
-            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.expiresAt?.toSqlTimestamp(), singleUse, rateLimitGroup, filterNames)
+            val expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
+            val resetTimeoutOnUseDurationMs = builder.timeoutDuration
+                ?.takeIfFinite()
+                ?.takeIf { builder.resetTimeoutOnUse }
+                ?.inWholeMilliseconds
+            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitGroup, filterNames)
                 .read()
                 .getInt("component_id")
         }
