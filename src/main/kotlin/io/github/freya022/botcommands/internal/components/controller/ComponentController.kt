@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
@@ -107,13 +108,16 @@ internal class ComponentController(
 
     suspend fun getActiveComponent(componentId: Int): ComponentData? {
         return componentRepository.getComponent(componentId)
-            ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
+            ?.takeUnless {
+                val expiresAt = it.expiresAt
+                expiresAt != null && expiresAt <= Clock.System.now()
+            }
     }
 
     internal suspend fun tryResetTimeout(component: ComponentData) {
         // Components in groups cannot have timeouts,
         // so if there's a group, only reset the group timeout
-        val group = component.group
+        val group = (component as? ActionComponentData)?.group
         if (group != null) {
             tryResetTimeout(group)
         } else {

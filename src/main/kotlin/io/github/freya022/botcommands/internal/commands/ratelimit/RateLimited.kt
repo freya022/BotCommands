@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.text.TextCommandInfoImpl
-import io.github.freya022.botcommands.internal.components.data.ComponentData
+import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -48,7 +48,7 @@ internal suspend fun ApplicationCommandInfoImpl.withRateLimit(context: BContext,
     }
 }
 
-internal suspend fun ComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
+internal suspend fun ActionComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
     val rateLimitInfo = this.rateLimitGroup?.let { context.getService<RateLimitContainer>()[it] }
     if (isNotOwner && rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event)

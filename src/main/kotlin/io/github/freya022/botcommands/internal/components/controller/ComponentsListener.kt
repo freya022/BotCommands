@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.data.AbstractComponentData
+import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
@@ -85,7 +85,7 @@ internal class ComponentsListener(
             val component = componentController.getActiveComponent(componentId)
                 ?: return@launch event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
-            if (component !is AbstractComponentData)
+            if (component !is ActionComponentData)
                 throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
 
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
@@ -120,7 +120,7 @@ internal class ComponentsListener(
 
     private suspend fun onComponentUse(
         event: GenericComponentInteractionCreateEvent,
-        component: AbstractComponentData
+        component: ActionComponentData
     ): Boolean {
         if (!component.constraints.isAllowed(event)) {
             event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
@@ -145,7 +145,7 @@ internal class ComponentsListener(
         // as it will also delete the continuations (that we already consume anyway)
         resumeCoroutines(component, event)
 
-        if (component.oneUse) {
+        if (component.singleUse) {
             // No timeout will be thrown as all continuations have been resumed.
             // So, a timeout being thrown is an issue.
             componentController.deleteComponent(component, throwTimeouts = true)
@@ -157,7 +157,7 @@ internal class ComponentsListener(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun resumeCoroutines(component: AbstractComponentData, evt: GenericComponentInteractionCreateEvent) {
+    private fun resumeCoroutines(component: ActionComponentData, evt: GenericComponentInteractionCreateEvent) {
         component.group?.let { group ->
             componentController.removeContinuations(group.internalId).forEach {
                 (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
@@ -169,7 +169,7 @@ internal class ComponentsListener(
         }
     }
 
-    private suspend fun runHandler(component: AbstractComponentData, event: GenericComponentInteractionCreateEvent): Boolean {
+    private suspend fun runHandler(component: ActionComponentData, event: GenericComponentInteractionCreateEvent): Boolean {
         when (component) {
             is PersistentComponentData -> {
                 val (handlerName, userData) = component.handler ?: return true

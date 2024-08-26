@@ -9,16 +9,18 @@ import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
 internal class PersistentComponentData(
-    componentId: Int,
-    componentType: ComponentType,
-    lifetimeType: LifetimeType,
-    expiresAt: Instant?,
-    resetTimeoutOnUseDuration: Duration?,
-    filters: List<ComponentInteractionFilter<*>>,
-    oneUse: Boolean,
-    rateLimitGroup: String?,
+    override val internalId: Int,
+    override val componentType: ComponentType,
+    override val expiresAt: Instant?,
+    override val resetTimeoutOnUseDuration: Duration?,
+    override val filters: List<ComponentInteractionFilter<*>>,
+    override val singleUse: Boolean,
+    override val rateLimitGroup: String?,
     override val handler: PersistentHandler?,
     override val timeout: PersistentTimeout?,
-    constraints: InteractionConstraints,
-    group: ComponentGroupData?
-) : AbstractComponentData(componentId, componentType, lifetimeType, expiresAt, resetTimeoutOnUseDuration, filters, oneUse, rateLimitGroup, handler, timeout, constraints, group)
+    override val constraints: InteractionConstraints,
+    override val group: ComponentGroupData?
+) : ActionComponentData {
+    override val lifetimeType: LifetimeType
+        get() = LifetimeType.PERSISTENT
+}

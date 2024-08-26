@@ -131,12 +131,12 @@ internal class ComponentRepository(
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val expiresAt = dbResult.getKotlinInstantOrNull("expires_at")
             val resetTimeoutOnUseDuration: Duration? = dbResult.getOrNull<Int>("reset_timeout_on_use_duration_ms")?.milliseconds
-            val oneUse: Boolean = dbResult["one_use"]
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, lifetimeType, oneUse, expiresAt, resetTimeoutOnUseDuration)
+                return@preparedStatement getGroup(id, lifetimeType, expiresAt, resetTimeoutOnUseDuration)
             }
 
+            val oneUse: Boolean = dbResult["one_use"]
             val filters = componentFilters.getFilters(dbResult["filters"])
             val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
@@ -164,7 +164,7 @@ internal class ComponentRepository(
                     }
 
                     PersistentComponentData(
-                        id, componentType, lifetimeType,
+                        id, componentType,
                         expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
@@ -183,7 +183,7 @@ internal class ComponentRepository(
                     }
 
                     EphemeralComponentData(
-                        id, componentType, lifetimeType,
+                        id, componentType,
                         expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
@@ -201,7 +201,6 @@ internal class ComponentRepository(
     private suspend fun getGroup(
         id: Int,
         lifetimeType: LifetimeType,
-        oneUse: Boolean,
         expiresAt: Instant?,
         resetTimeoutOnUseDuration: Duration?,
     ): ComponentGroupData {
@@ -220,7 +219,7 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
+        return ComponentGroupData(id, lifetimeType, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
     }
 
     suspend fun insertGroup(builder: ComponentGroupBuilder<*>): ComponentGroupData = database.transactional {
