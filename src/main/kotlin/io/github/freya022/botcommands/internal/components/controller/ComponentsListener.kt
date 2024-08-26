@@ -149,6 +149,8 @@ internal class ComponentsListener(
             // No timeout will be thrown as all continuations have been resumed.
             // So, a timeout being thrown is an issue.
             componentController.deleteComponent(component, throwTimeouts = true)
+        } else {
+            componentController.tryResetTimeout(component)
         }
 
         return runHandler(component, event)

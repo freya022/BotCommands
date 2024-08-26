@@ -17,12 +17,17 @@ import io.github.freya022.botcommands.internal.components.handler.EphemeralHandl
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwArgument
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
 import java.sql.Timestamp
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 private val logger = KotlinLogging.logger { }
 
@@ -77,7 +82,7 @@ internal class ComponentRepository(
         ids.size
     }
 
-    suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
+    suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
         return database.transactional {
             // Create base component
             val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitGroup, getFilterNames(builder.filters))
@@ -103,7 +108,7 @@ internal class ComponentRepository(
             // Add timeout
             insertTimeoutData(builder, componentId)
 
-            componentId
+            getComponent(componentId) ?: throwInternal("Could not find back component with id '$componentId'")
         }
     }
 
@@ -218,7 +223,7 @@ internal class ComponentRepository(
         return ComponentGroupData(id, oneUse, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): ComponentGroupData = database.transactional {
         val groupId: Int = insertBaseComponent(builder, false, null, emptyArray())
 
         // Add timeout
@@ -248,7 +253,8 @@ internal class ComponentRepository(
             throwArgument("Cannot put components inside groups if they have a timeout set")
         }
 
-        return@transactional groupId
+        return@transactional getComponent(groupId) as? ComponentGroupData
+            ?: throwInternal("Could not find back component with id '$groupId'")
     }
 
     context(Transaction)
@@ -318,6 +324,22 @@ internal class ComponentRepository(
         logger.trace { "Deleted components: ${deletedComponentIds.joinToString()}" }
 
         return@transactional deletedComponents
+    }
+
+    internal suspend fun resetExpiration(componentId: Int): Instant? = database.transactional {
+        preparedStatement(
+            """
+                update bc_component
+                set expires_at = now() + (reset_timeout_on_use_duration_ms || 'milliseconds')::interval
+                where component_id = ?
+                returning expires_at
+            """.trimIndent(),
+            columnNames = arrayOf("expires_at")
+        ) {
+            executeReturningUpdate(componentId)
+                .read()
+                .getKotlinInstantOrNull("expires_at")
+        }
     }
 
     private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())

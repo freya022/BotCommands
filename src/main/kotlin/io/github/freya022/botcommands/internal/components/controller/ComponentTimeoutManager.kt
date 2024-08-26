@@ -152,4 +152,8 @@ internal class ComponentTimeoutManager(
             continuations.forEach { it.cancel(cancellationException) }
         }
     }
+
+    internal fun cancelTimeout(componentId: Int) {
+        timeoutMap.remove(componentId)?.cancel()
+    }
 }

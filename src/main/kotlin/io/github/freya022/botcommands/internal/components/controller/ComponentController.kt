@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.internal.components.repositories.Component
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
@@ -69,11 +70,11 @@ internal class ComponentController(
     }
 
     internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {
-        val internalId = createComponent(builder)
+        val internalId = createComponent(builder).internalId
         return block(internalId, getComponentId(internalId))
     }
 
-    private suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
+    private suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
         builder.rateLimitGroup?.let { rateLimitGroup ->
             require(rateLimitGroup in rateLimitContainer) {
                 "Rate limit group '$rateLimitGroup' was not registered using ${classRef<RateLimitProvider>()}"
@@ -93,10 +94,14 @@ internal class ComponentController(
             }
         }
 
+        if (builder.resetTimeoutOnUse && builder.timeoutDuration?.takeIfFinite() == null) {
+            logger.warn { "Using 'resetTimeoutOnUse' has no effect when no timeout is set" }
+        }
+
         return componentRepository.createComponent(builder)
-            .also { id ->
-                val timeout = builder.expiresAt ?: return@also
-                timeoutManager.scheduleTimeout(id, timeout)
+            .also { component ->
+                val expiresAt = component.expiresAt ?: return@also
+                timeoutManager.scheduleTimeout(component.internalId, expiresAt)
             }
     }
 
@@ -105,16 +110,31 @@ internal class ComponentController(
             ?.takeUnless { it.expiresAt != null && it.expiresAt <= Clock.System.now() }
     }
 
+    internal suspend fun tryResetTimeout(component: ComponentData) {
+        // Components in groups cannot have timeouts,
+        // so if there's a group, only reset the group timeout
+        val group = component.group
+        if (group != null) {
+            tryResetTimeout(group)
+        } else {
+            val newExpirationTimestamp = componentRepository.resetExpiration(component.internalId)
+            if (newExpirationTimestamp != null) {
+                timeoutManager.cancelTimeout(component.internalId)
+                timeoutManager.scheduleTimeout(component.internalId, newExpirationTimestamp)
+            }
+        }
+    }
+
     suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
         deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
-    suspend fun createGroup(group: ComponentGroupBuilder<*>): ComponentGroup {
-        return componentRepository.insertGroup(group)
-            .also { id ->
+    suspend fun createGroup(builder: ComponentGroupBuilder<*>): ComponentGroup {
+        return componentRepository.insertGroup(builder)
+            .also { group ->
                 val timeout = group.expiresAt ?: return@also
-                timeoutManager.scheduleTimeout(id, timeout)
+                timeoutManager.scheduleTimeout(group.internalId, timeout)
             }
-            .let { id -> ComponentGroup(this, id) }
+            .let { group -> ComponentGroup(this, group.internalId) }
     }
 
     suspend fun deleteComponentsById(ids: Collection<Int>, throwTimeouts: Boolean) {

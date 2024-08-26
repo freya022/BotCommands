@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
@@ -40,7 +39,7 @@ import java.time.Duration as JavaDuration
  * - If the component is inside a group, then all the group's components will also be deleted.
  */
 interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceHolder<T> {
-    val expiresAt: Instant?
+    val timeoutDuration: Duration?
     val timeout: ComponentTimeout?
 
     /**
