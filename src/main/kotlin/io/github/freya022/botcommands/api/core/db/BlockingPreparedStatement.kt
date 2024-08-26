@@ -53,6 +53,9 @@ class BlockingPreparedStatement internal constructor(preparedStatement: Prepared
      * Executes the SQL statement in this PreparedStatement object with the supplied parameters,
      * and returns a [DBResult] with the [generated keys][PreparedStatement.getGeneratedKeys].
      *
+     * Depending on which driver you use,
+     * you might need to pass the column names when creating the prepared statement.
+     *
      * The parameters are set in the order they are passed in,
      * supported types are implementation-specific,
      * see [PreparedStatement.setObject] and its implementation by your JDBC driver.
