@@ -113,9 +113,12 @@ internal class ComponentController(
         if (group != null) {
             tryResetTimeout(group)
         } else {
+            if (component.resetTimeoutOnUseDuration == null) return
+
+            // Cancel, reset in DB, schedule
+            timeoutManager.cancelTimeout(component.internalId)
             val newExpirationTimestamp = componentRepository.resetExpiration(component.internalId)
             if (newExpirationTimestamp != null) {
-                timeoutManager.cancelTimeout(component.internalId)
                 timeoutManager.scheduleTimeout(component.internalId, newExpirationTimestamp)
             }
         }
