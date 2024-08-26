@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.components.builder
 
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
-import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.time.Duration

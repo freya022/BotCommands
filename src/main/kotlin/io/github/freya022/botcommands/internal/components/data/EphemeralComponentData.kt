@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
+import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import kotlinx.datetime.Instant
 import kotlin.time.Duration

@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
-import io.github.freya022.botcommands.internal.components.data.EphemeralTimeout
-import io.github.freya022.botcommands.internal.components.data.PersistentTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
