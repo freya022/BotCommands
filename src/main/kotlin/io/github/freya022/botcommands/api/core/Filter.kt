@@ -30,6 +30,16 @@ interface Filter {
 }
 
 internal inline fun <T : Filter> checkFilters(globalFilters: List<T>, commandFilters: List<T>, block: (filter: T) -> Unit) {
-    globalFilters.forEach(block) //Inlined return statements will exit this function
-    commandFilters.forEach(block)
+    val globalFilterIterator = globalFilters.iterator()
+    val commandFilterIterator = commandFilters.iterator()
+    while (true) {
+        val filter = if (globalFilterIterator.hasNext()) {
+            globalFilterIterator.next()
+        } else if (commandFilterIterator.hasNext()) {
+            commandFilterIterator.next()
+        } else {
+            return
+        }
+        block(filter) //Inlined return statements will exit this function
+    }
 }

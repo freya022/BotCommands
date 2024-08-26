@@ -67,10 +67,11 @@ internal inline fun requireAt(value: Boolean, function: KFunction<*>? = null, la
     }
 
     if (!value) {
+        val message = lazyMessage()
         if (function != null)
-            throwArgument(function, lazyMessage())
+            throwArgument(function, message)
         else
-            throwArgument(lazyMessage())
+            throwArgument(message)
     }
 }
 
@@ -103,10 +104,11 @@ internal inline fun checkAt(value: Boolean, function: KFunction<*>? = null, lazy
     }
 
     if (!value) {
+        val message = lazyMessage()
         if (function != null)
-            throwState(lazyMessage(), function)
+            throwState(message, function)
         else
-            throwState(lazyMessage())
+            throwState(message)
     }
 }
 
