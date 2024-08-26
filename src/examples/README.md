@@ -31,6 +31,7 @@ You can then run the `Main` class.
 
 ### Components
 * [A self-destructing button](kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt)
+* [A select menu with a confirmation button, and a rescheduled timeout](kotlin/io/github/freya022/bot/commands/slash/SlashDelayedSelectMenu.kt)
 
 ### Modals
 * [A modal to format your code](kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt)
