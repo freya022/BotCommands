@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.components.builder.select
 
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
@@ -16,18 +17,46 @@ class EntitySelectMenuFactory internal constructor(
     private val componentController: ComponentController,
     private val targets: Collection<SelectTarget>
 ) {
+    /**
+     * Creates an ephemeral entity select menu builder.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun ephemeral(): EphemeralEntitySelectBuilder =
         EphemeralEntitySelectBuilder(componentController, targets, InstanceRetriever())
 
+    /**
+     * Creates an ephemeral entity select menu.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralEntitySelectBuilder.() -> Unit): EntitySelectMenu =
         ephemeral().apply(block).buildSuspend()
 
+    /**
+     * Creates a persistent entity select menu builder.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun persistent(): PersistentEntitySelectBuilder =
         PersistentEntitySelectBuilder(componentController, targets, InstanceRetriever())
 
+    /**
+     * Creates a persistent entity select menu.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentEntitySelectBuilder.() -> Unit): EntitySelectMenu =
         persistent().apply(block).buildSuspend()

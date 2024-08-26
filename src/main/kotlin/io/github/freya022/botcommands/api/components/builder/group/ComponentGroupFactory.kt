@@ -14,18 +14,46 @@ class ComponentGroupFactory internal constructor(
     private val componentController: ComponentController,
     private val components: Array<out IGroupHolder>
 ) {
+    /**
+     * Creates an ephemeral component group builder.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun ephemeral(): EphemeralComponentGroupBuilder =
         EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    /**
+     * Creates an ephemeral component group.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
         ephemeral().apply(block).buildSuspend()
 
+    /**
+     * Creates a persistent component group builder.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun persistent(): PersistentComponentGroupBuilder =
         PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
 
+    /**
+     * Creates a persistent component group.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
         persistent().apply(block).buildSuspend()

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.button
 
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -58,18 +59,46 @@ class ButtonFactory internal constructor(
         return ButtonFactory(componentController, style, label, newEmoji)
     }
 
+    /**
+     * Creates an ephemeral button builder.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun ephemeral(): EphemeralButtonBuilder =
         EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
 
+    /**
+     * Creates an ephemeral button.
+     *
+     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralButtonBuilder.() -> Unit): Button =
         ephemeral().apply(block).buildSuspend()
 
+    /**
+     * Creates a persistent button builder.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @CheckReturnValue
     fun persistent(): PersistentButtonBuilder =
         PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
 
+    /**
+     * Creates a persistent button.
+     *
+     * As a reminder, **no timeout** is set by default.
+     *
+     * @see Components
+     */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentButtonBuilder.() -> Unit): Button =
         persistent().apply(block).buildSuspend()
