@@ -226,27 +226,21 @@ internal object ReflectionMetadata {
     }
 
     private fun tryGetExecutable(methodInfo: MethodInfo): Executable? {
-        fun handleException(e: Throwable): Executable? {
-            return if (logger.isTraceEnabled()) {
-                logger.traceNull(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
-            } else {
-                logger.debugNull { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
-            }
-        }
-
         // Ignore methods with missing dependencies (such as parameters from unknown dependencies)
         try {
             return when {
                 methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
                 else -> methodInfo.loadClassAndGetMethod()
             }
-        } catch (e: NoClassDefFoundError) { // In case the return type or a parameter is unknown
-            return handleException(e) //TODO inline back in IAE handler when CG rethrows those as IAE
         } catch(e: IllegalArgumentException) {
             // ClassGraph wraps exceptions in an IAE
             val cause = e.cause
             if (cause is ClassNotFoundException || cause is NoClassDefFoundError) {
-                return handleException(cause)
+                return if (logger.isTraceEnabled()) {
+                    logger.traceNull(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
+                } else {
+                    logger.debugNull { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+                }
             } else {
                 throw e
             }
