@@ -42,7 +42,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction
-import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
@@ -57,6 +56,7 @@ internal class ComponentsListener(
     filters: List<ComponentInteractionFilter<Any>>,
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
     private val componentController: ComponentController,
+    private val continuationManager: ComponentContinuationManager,
     private val componentHandlerContainer: ComponentHandlerContainer
 ) {
     private val scope = context.coroutineScopesConfig.componentScope
@@ -142,7 +142,7 @@ internal class ComponentsListener(
 
         // Resume coroutines before deleting the component,
         // as it will also delete the continuations (that we already consume anyway)
-        resumeCoroutines(component, event)
+        continuationManager.resumeCoroutines(component, event)
 
         if (component.singleUse) {
             // No timeout will be thrown as all continuations have been resumed.
@@ -153,18 +153,6 @@ internal class ComponentsListener(
         }
 
         return runHandler(component, event)
-    }
-
-    private fun resumeCoroutines(component: ActionComponentData, evt: GenericComponentInteractionCreateEvent) {
-        component.group?.let { group ->
-            componentController.removeContinuations(group.internalId).forEach {
-                it.resume(evt)
-            }
-        }
-
-        componentController.removeContinuations(component.internalId).forEach {
-            it.resume(evt)
-        }
     }
 
     private suspend fun runHandler(component: ActionComponentData, event: GenericComponentInteractionCreateEvent): Boolean {

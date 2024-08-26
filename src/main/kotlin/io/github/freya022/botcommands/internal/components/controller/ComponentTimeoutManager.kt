@@ -37,6 +37,7 @@ private val logger = KotlinLogging.logger { }
 internal class ComponentTimeoutManager(
     private val context: BContext,
     serviceContainer: ServiceContainer,
+    private val continuationManager: ComponentContinuationManager,
     private val componentRepository: ComponentRepository,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
     private val componentTimeoutHandlers: ComponentTimeoutHandlers
@@ -140,7 +141,7 @@ internal class ComponentTimeoutManager(
         logger.trace { "Cancelled timeout for component $componentId" }
         timeoutMap.remove(componentId)?.cancel()
 
-        val continuations = componentController.removeContinuations(componentId)
+        val continuations = continuationManager.removeContinuations(componentId)
         if (continuations.isEmpty()) return
 
         // Continuations must be canceled

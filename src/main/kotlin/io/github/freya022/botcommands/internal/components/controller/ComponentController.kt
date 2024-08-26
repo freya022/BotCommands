@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.components.controller
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
@@ -22,13 +21,8 @@ import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.datetime.Clock
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 private const val PREFIX = "BotCommands-Components-"
 private const val PREFIX_LENGTH = PREFIX.length
@@ -39,6 +33,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentController(
     val context: BContext,
+    internal val continuationManager: ComponentContinuationManager,
     private val componentRepository: ComponentRepository,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,
     private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
@@ -46,9 +41,6 @@ internal class ComponentController(
 ) {
     // This service might be used in classes that use components and also declare rate limiters
     private val rateLimitContainer: RateLimitContainer by context.serviceContainer.lazy()
-
-    private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<GenericComponentInteractionCreateEvent>>>()
-    private val lock = ReentrantLock()
 
     init {
         runBlocking {
@@ -147,26 +139,6 @@ internal class ComponentController(
             ephemeralTimeoutHandlerId?.let { ephemeralTimeoutHandlers.remove(it) }
             timeoutManager.removeTimeouts(componentId, throwTimeouts)
         }
-    }
-
-    fun removeContinuations(componentId: Int): List<CancellableContinuation<GenericComponentInteractionCreateEvent>> = lock.withLock {
-        return continuationMap.remove(componentId) ?: emptyList()
-    }
-
-    private fun putContinuation(componentId: Int, cont: CancellableContinuation<GenericComponentInteractionCreateEvent>) = lock.withLock {
-        continuationMap.computeIfAbsent(componentId) { arrayListOf() }.add(cont)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    internal suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
-        return suspendCancellableCoroutine { continuation ->
-            val componentId = component.internalId
-            putContinuation(componentId, continuation)
-
-            continuation.invokeOnCancellation {
-                removeContinuations(componentId)
-            }
-        } as T
     }
 
     internal companion object {

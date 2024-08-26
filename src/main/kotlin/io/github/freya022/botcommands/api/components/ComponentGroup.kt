@@ -9,7 +9,7 @@ class ComponentGroup internal constructor(
     override val internalId: Int
 ) : IdentifiableComponent, AwaitableComponent<GenericComponentInteractionCreateEvent> {
     @JvmSynthetic
-    override suspend fun await(): GenericComponentInteractionCreateEvent = componentController.awaitComponent(this)
+    override suspend fun await(): GenericComponentInteractionCreateEvent = componentController.continuationManager.awaitComponent(this)
 }
 
 /**

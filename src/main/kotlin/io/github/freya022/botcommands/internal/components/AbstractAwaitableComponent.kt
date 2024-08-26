@@ -21,6 +21,6 @@ abstract class AbstractAwaitableComponent<T : ComponentInteraction> internal con
             "Cannot await on a component owned by a group"
         }
 
-        return componentController.awaitComponent(this)
+        return componentController.continuationManager.awaitComponent(this)
     }
 }
