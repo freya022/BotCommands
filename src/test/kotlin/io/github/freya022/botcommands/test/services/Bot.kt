@@ -17,7 +17,7 @@ import org.springframework.core.env.MapPropertySource
 @BService
 class Bot(private val config: Config, environment: ConfigurableEnvironment?) : JDAService() {
     override val intents: Set<GatewayIntent> =
-        defaultIntents + GatewayIntent.GUILD_MEMBERS + GatewayIntent.MESSAGE_CONTENT
+        defaultIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
 
     override val cacheFlags: Set<CacheFlag> =
         enumSetOf(CacheFlag.FORUM_TAGS, CacheFlag.VOICE_STATE)

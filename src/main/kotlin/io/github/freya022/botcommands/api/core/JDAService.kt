@@ -34,7 +34,8 @@ import java.util.*
  * ```kt
  * @BService
  * class Bot(private val config: Config) : JDAService() {
- *     override val intents: Set<GatewayIntent> = enumSetOf(GatewayIntent.MESSAGE_CONTENT)
+ *     // Default intents + MESSAGE_CONTENT
+ *     override val intents: Set<GatewayIntent> = defaultIntents(GatewayIntent.MESSAGE_CONTENT)
  *
  *     override val cacheFlags: Set<CacheFlag> = enumSetOf()
  *
@@ -62,7 +63,8 @@ abstract class JDAService {
     /**
      * The intents used by your bot,
      * must be passed as the entire list of intents your bot will use,
-     * i.e., JDABuilder's `create(Light/Default)` methods and similar for shard managers.
+     * i.e., JDABuilder's `create(Light/Default)` methods and similar for shard managers,
+     * do not use [JDABuilder.enableIntents].
      *
      * @see defaultIntents
      */
@@ -70,7 +72,7 @@ abstract class JDAService {
 
     /**
      * The cache flags used by your bot,
-     * must at least be a subset of the cache flags your bot will use.
+     * the provided cache flags must all be present in [JDA.getCacheFlags].
      *
      * To make sure JDA uses these flags,
      * you can pass these to [JDABuilder.enableCache] / [DefaultShardManagerBuilder.enableCache].
@@ -99,10 +101,19 @@ abstract class JDAService {
         /**
          * Returns the default JDA intents.
          *
+         * Use [defaultIntents] to combine additional intents.
+         *
          * @see GatewayIntent.DEFAULT
          */
         @JvmStatic
         val defaultIntents: EnumSet<GatewayIntent>
             get() = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
+
+        @JvmStatic
+        fun defaultIntents(vararg additionalIntents: GatewayIntent): EnumSet<GatewayIntent> {
+            val intents = defaultIntents
+            intents.addAll(additionalIntents)
+            return intents
+        }
     }
 }
