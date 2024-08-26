@@ -42,7 +42,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
@@ -156,16 +155,15 @@ internal class ComponentsListener(
         return runHandler(component, event)
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun resumeCoroutines(component: ActionComponentData, evt: GenericComponentInteractionCreateEvent) {
         component.group?.let { group ->
             componentController.removeContinuations(group.internalId).forEach {
-                (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+                it.resume(evt)
             }
         }
 
         componentController.removeContinuations(component.internalId).forEach {
-            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+            it.resume(evt)
         }
     }
 

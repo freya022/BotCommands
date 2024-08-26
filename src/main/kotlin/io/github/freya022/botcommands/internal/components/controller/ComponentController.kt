@@ -149,7 +149,7 @@ internal class ComponentController(
         }
     }
 
-    fun removeContinuations(componentId: Int): List<CancellableContinuation<*>> = lock.withLock {
+    fun removeContinuations(componentId: Int): List<CancellableContinuation<GenericComponentInteractionCreateEvent>> = lock.withLock {
         return continuationMap.remove(componentId) ?: emptyList()
     }
 
