@@ -1,12 +1,15 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupFactory
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import javax.annotation.CheckReturnValue
 
 abstract class AbstractComponentFactory internal constructor(internal val componentController: ComponentController) {
+    val context: BContext get() = componentController.context
+
     @CheckReturnValue
     fun group(vararg components: IGroupHolder): ComponentGroupFactory =
         ComponentGroupFactory(componentController, components)
