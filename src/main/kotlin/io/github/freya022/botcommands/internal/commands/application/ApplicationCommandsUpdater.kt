@@ -268,7 +268,7 @@ internal class ApplicationCommandsUpdater private constructor(
             )
         } catch (e: Exception) {
             logger.error(e) {
-                "An exception occurred while saving ${guild.asScopeString()} commands with $commandsCache"
+                "An exception occurred while saving ${guild.asScopeString().substringBefore(" scope")} commands with $commandsCache"
             }
         }
     }
