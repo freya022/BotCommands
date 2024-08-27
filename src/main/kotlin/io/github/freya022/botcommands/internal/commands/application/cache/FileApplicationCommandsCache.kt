@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.commands.application.cache
 
 import io.github.freya022.botcommands.api.core.utils.overwriteBytes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -25,28 +27,16 @@ internal class FileApplicationCommandsCache internal constructor(
         }
     }
 
-    override fun hasCommands(): Boolean {
-        return commandsPath.exists()
+    override suspend fun tryRead(): ApplicationCommandsData = withContext(Dispatchers.IO) {
+        ApplicationCommandsData(
+            if (commandsPath.exists()) commandsPath.readText() else null,
+            if (commandsMetadataPath.exists()) commandsMetadataPath.readText() else null,
+        )
     }
 
-    override fun hasMetadata(): Boolean {
-        return commandsMetadataPath.exists()
-    }
-
-    override fun readCommands(): String {
-        return commandsPath.readText()
-    }
-
-    override fun readMetadata(): String {
-        return commandsMetadataPath.readText()
-    }
-
-    override fun writeCommands(bytes: ByteArray) {
-        commandsPath.overwriteBytes(bytes)
-    }
-
-    override fun writeMetadata(bytes: ByteArray) {
-        commandsMetadataPath.overwriteBytes(bytes)
+    override suspend fun write(commandBytes: ByteArray, metadataBytes: ByteArray): Unit = withContext(Dispatchers.IO) {
+        commandsPath.overwriteBytes(commandBytes)
+        commandsMetadataPath.overwriteBytes(metadataBytes)
     }
 
     override fun toString(): String {

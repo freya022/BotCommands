@@ -25,8 +25,6 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -98,26 +96,27 @@ internal class ApplicationCommandsUpdater private constructor(
         return checkCommandJson(oldCommandBytes.decodeToString())
     }
 
-    private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
-        if (!commandsCache.hasCommands()) {
-            logger.trace { "Updating commands because cache file does not exists" }
-            return@withContext true
+    private suspend fun checkOfflineCommands(): Boolean {
+        val data = commandsCache.tryRead()
+        if (data.commands == null) {
+            logger.trace { "Updating commands because no commands are cached" }
+            return true
         }
 
-        if (!commandsCache.hasMetadata()) {
-            logger.trace { "Updating commands metadata because cache file does not exists" }
-            return@withContext true
+        if (data.metadata == null) {
+            logger.trace { "Updating commands because no metadata is cached" }
+            return true
         }
 
         val hasMissingKey = updateOnMissingKey {
-            val array = commandsCache.readMetadata().let(DataArray::fromJson)
+            val array = data.metadata.let(DataArray::fromJson)
             metadata = readMetadata(array)
         }
 
-        hasMissingKey || checkCommandJson(commandsCache.readCommands())
+        return hasMissingKey || checkCommandJson(data.commands)
     }
 
-    private inline fun updateOnMissingKey(crossinline block: () -> Unit): Boolean = try {
+    private suspend inline fun updateOnMissingKey(crossinline block: suspend () -> Unit): Boolean = try {
         block()
         false
     } catch (e: ParsingException) {
@@ -261,10 +260,12 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    private fun saveCommandData(guild: Guild?) {
+    private suspend fun saveCommandData(guild: Guild?) {
         try {
-            commandsCache.writeCommands(commandData.toJsonBytes())
-            commandsCache.writeMetadata(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
+            commandsCache.write(
+                commandData.toJsonBytes(),
+                metadata.map { it.toData() }.let(DataArray::fromCollection).toJson()
+            )
         } catch (e: Exception) {
             logger.error(e) {
                 "An exception occurred while saving ${guild.asScopeString()} commands with $commandsCache"

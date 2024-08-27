@@ -9,28 +9,16 @@ internal class MemoryApplicationCommandsCache internal constructor(
     private lateinit var commands: ByteArray
     private lateinit var metadata: ByteArray
 
-    override fun hasCommands(): Boolean {
-        return ::commands.isInitialized
+    override suspend fun tryRead(): ApplicationCommandsData {
+        return ApplicationCommandsData(
+            if (::commands.isInitialized) commands.decodeToString() else null,
+            if (::metadata.isInitialized) metadata.decodeToString() else null,
+        )
     }
 
-    override fun hasMetadata(): Boolean {
-        return ::metadata.isInitialized
-    }
-
-    override fun readCommands(): String {
-        return commands.decodeToString()
-    }
-
-    override fun readMetadata(): String {
-        return metadata.decodeToString()
-    }
-
-    override fun writeCommands(bytes: ByteArray) {
-        commands = bytes
-    }
-
-    override fun writeMetadata(bytes: ByteArray) {
-        metadata = bytes
+    override suspend fun write(commandBytes: ByteArray, metadataBytes: ByteArray) {
+        commands = commandBytes
+        metadata = metadataBytes
     }
 
     override fun toString(): String {
