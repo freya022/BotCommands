@@ -66,7 +66,7 @@ object Main {
                 applicationCommands {
                     enable = true
 
-                    fileCache {
+                    databaseCache {
                         @OptIn(DevConfig::class)
                         checkOnline = true
                     }

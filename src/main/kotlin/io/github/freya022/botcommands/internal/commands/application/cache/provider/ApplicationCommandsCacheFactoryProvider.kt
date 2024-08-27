@@ -4,14 +4,14 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.config.application.cache.DatabaseApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.FileApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.FileApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.MemoryApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.NullApplicationCommandsCacheFactory
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.*
+import io.github.freya022.botcommands.internal.core.db.InternalDatabase
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -29,7 +29,7 @@ internal open class ApplicationCommandsCacheFactoryProvider {
     @Lazy // Due to JDA requirement
     @Bean
     @BService
-    internal open fun applicationCommandsCacheFactory(jda: JDA, applicationConfig: BApplicationConfig): ApplicationCommandsCacheFactory {
+    internal open fun applicationCommandsCacheFactory(jda: JDA, applicationConfig: BApplicationConfig, database: InternalDatabase?): ApplicationCommandsCacheFactory {
         val cacheConfig = applicationConfig.cache ?: return NullApplicationCommandsCacheFactory
 
         when (cacheConfig) {
@@ -43,7 +43,14 @@ internal open class ApplicationCommandsCacheFactoryProvider {
 
                 return FileApplicationCommandsCacheFactory(cacheConfig, jda.selfUser.applicationIdLong)
             }
-            is DatabaseApplicationCommandsCacheConfig -> TODO()
+            is DatabaseApplicationCommandsCacheConfig -> {
+                if (database == null) {
+                    logger.warn { "Cannot use a database as application commands cache as no database is present, see ${classRef<ConnectionSupplier>()}" }
+                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                }
+
+                return DatabaseApplicationCommandsCacheFactory(cacheConfig, database, jda.selfUser.applicationIdLong)
+            }
             else -> throwInternal("Unsupported cache config: $cacheConfig")
         }
     }

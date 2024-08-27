@@ -13,10 +13,7 @@ import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.FileApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.MemoryApplicationCommandsCacheFactory
-import io.github.freya022.botcommands.internal.commands.application.cache.factory.NullApplicationCommandsCacheFactory
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.*
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
@@ -176,6 +173,7 @@ internal class ApplicationCommandsBuilder(
         val cache = context.getService<ApplicationCommandsCacheFactory>()
         return when (cache) {
             is FileApplicationCommandsCacheFactory -> "File check"
+            is DatabaseApplicationCommandsCacheFactory -> "Database check"
             is MemoryApplicationCommandsCacheFactory -> "In-memory check"
             NullApplicationCommandsCacheFactory -> "Always update"
         }

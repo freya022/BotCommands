@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.config.application.cache.Applicat
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.config.application.cache.DatabaseApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.config.application.cache.FileApplicationCommandsCacheConfigBuilder
+import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
@@ -344,6 +345,10 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * Configures a file-based cache for application commands,
      * which helps avoid request to Discord as commands do not need to be updated most of the time.
      *
+     * This is the default cache strategy, however,
+     * if you use a database I'd recommend using [databaseCache],
+     * as it would be more resilient to write issues.
+     *
      * ### Cache path
      *
      * The default cache folder is at:
@@ -355,16 +360,24 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * ### Docker
      *
      * If your app runs in a container, you will need to change the [path]
-     * to a volume (recommended) or a bind-mount.
+     * to a volume (recommended) or a bind-mount,
+     * you can alternatively use [databaseCache] with a separate PostgreSQL service.
      *
      * @param path The folder in which to save application commands
+     *
+     * @see databaseCache
      */
     @JvmOverloads
     fun fileCache(path: Path = getDefaultCachePath(), block: ReceiverConsumer<FileApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
         cache = FileApplicationCommandsCacheConfigBuilder(path).apply(block)
     }
 
-    //TODO docs once implemented
+    /**
+     * Configures a cache for application commands, stored in the database supplied by [ConnectionSupplier].
+     *
+     * This is recommended if you use a container (to avoid having to manage more files),
+     * or to avoid write issues.
+     */
     fun databaseCache(block: ReceiverConsumer<DatabaseApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
         cache = DatabaseApplicationCommandsCacheConfigBuilder().apply(block)
     }
