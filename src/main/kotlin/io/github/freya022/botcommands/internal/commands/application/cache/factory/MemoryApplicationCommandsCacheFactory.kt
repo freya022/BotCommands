@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.core.config.application.cache.Applicat
 import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
 import io.github.freya022.botcommands.internal.commands.application.cache.MemoryApplicationCommandsCache
 import net.dv8tion.jda.api.entities.Guild
-import okio.withLock
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 internal class MemoryApplicationCommandsCacheFactory(
     override val cacheConfig: ApplicationCommandsCacheConfig
