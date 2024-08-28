@@ -76,6 +76,10 @@ interface BApplicationConfig {
      * Helps avoid request to Discord as commands do not need to be updated most of the time.
      *
      * Default: [`fileCache()`][BApplicationConfigBuilder.fileCache]
+     *
+     * @see BApplicationConfigBuilder.fileCache
+     * @see BApplicationConfigBuilder.databaseCache
+     * @see BApplicationConfigBuilder.disableCache
      */
     val cache: ApplicationCommandsCacheConfig?
 

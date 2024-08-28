@@ -1,5 +1,3 @@
-@file:Suppress("ConfigurationProperties")
-
 package io.github.freya022.botcommands.internal.core.config
 
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
@@ -147,6 +145,16 @@ internal class BotCommandsApplicationConfiguration(
     override val cache: Nothing get() = unusable()
 
     class Cache(
+        /**
+         * Type of application commands cache.
+         *
+         * Please see the different types of cache in [BApplicationConfigBuilder].
+         *
+         * @see BApplicationConfigBuilder.fileCache
+         * @see BApplicationConfigBuilder.databaseCache
+         * @see BApplicationConfigBuilder.disableCache
+         */
+        @ConfigurationValue("botcommands.application.cache.type", defaultValue = "file")
         val type: Type = Type.FILE,
         val file: File = File(),
         val database: Database = Database(),
