@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
@@ -8,6 +9,8 @@ import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 interface BModalsConfig {
     /**
      * Whether modal interactions should be listened for.
+     *
+     * You can use [@RequiresModals][RequiresModals] to disable services when this is set to `false`.
      *
      * Default: `true`
      *
