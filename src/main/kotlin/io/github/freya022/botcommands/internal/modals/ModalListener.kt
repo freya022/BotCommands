@@ -2,11 +2,13 @@ package io.github.freya022.botcommands.internal.modals
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.config.BModalsConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
@@ -19,6 +21,7 @@ import kotlin.coroutines.resume
 private val logger = KotlinLogging.logger { }
 
 @BService
+@RequiresModals
 internal class ModalListener(
     private val context: BContextImpl,
     private val defaultMessagesFactory: DefaultMessagesFactory,
@@ -36,7 +39,7 @@ internal class ModalListener(
         scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
             if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
                 return@launch logger.error { "Received an interaction for an external modal format: '${jdaEvent.modalId}', " +
-                        "please use ${classRef<Modals>()} to make modals" }
+                        "please use ${classRef<Modals>()} to make modals or disabled them with ${BModalsConfig::enable.reference}" }
             }
 
             val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))

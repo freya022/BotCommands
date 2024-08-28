@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.modals
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
@@ -12,6 +13,7 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwArgument
 
 @BService
+@RequiresModals
 internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 

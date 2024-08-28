@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -33,6 +34,7 @@ private const val MAX_ID = Long.MAX_VALUE
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
 @BService
+@RequiresModals
 internal class ModalMaps(context: BContext) {
     private val timeoutScope = context.coroutineScopesConfig.modalTimeoutScope
     private val exceptionHandler = ExceptionHandler(context, logger)
