@@ -51,6 +51,8 @@ interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceH
 
     /**
      * When `true`, resets the timeout duration everytime this component is used.
+     *
+     * Any component inside a group resets the timeout of the entire group.
      */
     fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T
 
