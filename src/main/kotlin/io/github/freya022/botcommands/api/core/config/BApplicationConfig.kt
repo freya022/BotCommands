@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
@@ -30,6 +31,9 @@ import kotlin.io.path.Path
 interface BApplicationConfig {
     /**
      * Whether application commands should be listened for.
+     *
+     * You can use [@RequiresApplicationCommands][RequiresApplicationCommands]
+     * to disable services when this is set to `false`.
      *
      * Default: `true`
      *

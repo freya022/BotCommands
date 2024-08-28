@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
@@ -14,6 +15,9 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 interface BTextConfig {
     /**
      * Whether text commands should be listened for.
+     *
+     * You can use [@RequiresTextCommands][RequiresTextCommands]
+     * to disable services when this is set to `false`.
      *
      * Default: `true`
      *
