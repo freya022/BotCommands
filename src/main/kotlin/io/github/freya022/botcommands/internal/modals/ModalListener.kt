@@ -39,7 +39,7 @@ internal class ModalListener(
         scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
             if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
                 return@launch logger.error { "Received an interaction for an external modal format: '${jdaEvent.modalId}', " +
-                        "please use ${classRef<Modals>()} to make modals or disabled them with ${BModalsConfig::enable.reference}" }
+                        "please use ${classRef<Modals>()} to make modals or disable them with ${BModalsConfig::enable.reference}" }
             }
 
             val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))
