@@ -92,11 +92,13 @@ internal class ComponentController(
             logger.warn { "Using 'resetTimeoutOnUse' has no effect when no timeout is set" }
         }
 
-        return componentRepository.createComponent(builder)
-            .also { component ->
-                val expiresAt = component.expiresAt ?: return@also
-                timeoutManager.scheduleTimeout(component.internalId, expiresAt)
-            }
+        val component = componentRepository.createComponent(builder)
+
+        component.expiresAt?.let { expirationTimestamp ->
+            timeoutManager.scheduleTimeout(component.internalId, expirationTimestamp)
+        }
+
+        return component
     }
 
     internal suspend fun getActiveComponent(componentId: Int): ComponentData? {
@@ -128,12 +130,13 @@ internal class ComponentController(
         deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
     suspend fun createGroup(builder: ComponentGroupBuilder<*>): ComponentGroup {
-        return componentRepository.insertGroup(builder)
-            .also { group ->
-                val timeout = group.expiresAt ?: return@also
-                timeoutManager.scheduleTimeout(group.internalId, timeout)
-            }
-            .let { group -> ComponentGroup(this, group.internalId) }
+        val group = componentRepository.insertGroup(builder)
+
+        group.expiresAt?.let { expirationTimestamp ->
+            timeoutManager.scheduleTimeout(group.internalId, expirationTimestamp)
+        }
+
+        return ComponentGroup(this, group.internalId)
     }
 
     suspend fun deleteComponentsById(ids: Collection<Int>, throwTimeouts: Boolean) {
