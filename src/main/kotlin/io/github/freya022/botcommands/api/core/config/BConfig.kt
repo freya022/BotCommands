@@ -28,8 +28,10 @@ interface BConfig {
      *
      * Spring property: `botcommands.core.ownerIds`
      */
+    @Suppress("DeprecatedCallableAddReplaceWith")
     @Deprecated("Renamed into 'predefinedOwnerIds', however, use BotOwner#ownerIds to get the effective bot owners")
     val ownerIds: Set<Long>
+        get() = predefinedOwnerIds
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
