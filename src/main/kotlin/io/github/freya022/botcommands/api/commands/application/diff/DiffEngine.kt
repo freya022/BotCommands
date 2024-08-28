@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.diff
 
-import io.github.freya022.botcommands.api.core.config.BApplicationConfig
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.internal.commands.application.diff.ApplicationCommandDiffEngine
 import io.github.freya022.botcommands.internal.commands.application.diff.NewApplicationCommandDiffEngine
 import io.github.freya022.botcommands.internal.commands.application.diff.OldApplicationCommandDiffEngine
@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.commands.application.diff.OldRefa
 /**
  * Represents predefined implementation of an application command diff engine.
  *
- * @see BApplicationConfig.diffEngine
+ * @see ApplicationCommandsCacheConfig.diffEngine
  */
 enum class DiffEngine(@get:JvmSynthetic internal val instance: ApplicationCommandDiffEngine) {
     /**

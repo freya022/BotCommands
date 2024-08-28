@@ -11,7 +11,9 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.*
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
@@ -163,8 +165,19 @@ internal class ApplicationCommandsBuilder(
 
     private fun getForceString(force: Boolean): String = if (force) " force" else ""
 
-    private fun getCheckTypeString(): String =
-        if (context.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
+    private fun getCheckTypeString(): String {
+        if (context.getService<ApplicationCommandsCacheFactory>().cacheConfig.checkOnline) {
+            return "Online check"
+        }
+
+        val cache = context.getService<ApplicationCommandsCacheFactory>()
+        return when (cache) {
+            is FileApplicationCommandsCacheFactory -> "File check"
+            is DatabaseApplicationCommandsCacheFactory -> "Database check"
+            is MemoryApplicationCommandsCacheFactory -> "In-memory check"
+            NullApplicationCommandsCacheFactory -> "Always update"
+        }
+    }
 
     private inline fun updateCatching(guild: Guild?, block: () -> CommandUpdateResult) {
         runCatching(block)

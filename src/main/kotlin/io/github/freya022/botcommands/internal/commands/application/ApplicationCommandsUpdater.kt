@@ -12,9 +12,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcom
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
-import io.github.freya022.botcommands.api.core.utils.overwriteBytes
+import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
@@ -22,8 +25,6 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -31,8 +32,6 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.api.utils.data.DataArray
-import java.nio.file.Files
-import kotlin.io.path.bufferedReader
 
 private val logger = KotlinLogging.logger { }
 
@@ -41,17 +40,13 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
-    private val commandsCache = context.getService<ApplicationCommandsCache>()
-    private val onlineCheck = context.applicationConfig.onlineAppCommandCheckEnabled
+    private val commandsCache: ApplicationCommandsCache
+    private val cacheConfig: ApplicationCommandsCacheConfig
 
-    private val commandsCachePath = when (guild) {
-        null -> commandsCache.globalCommandsPath
-        else -> commandsCache.getGuildCommandsPath(guild)
-    }
-
-    private val commandsMetadataCachePath = when (guild) {
-        null -> commandsCache.globalCommandsMetadataPath
-        else -> commandsCache.getGuildCommandsMetadataPath(guild)
+    init {
+        val cacheFactory = context.getService<ApplicationCommandsCacheFactory>()
+        commandsCache = cacheFactory.create(guild)
+        cacheConfig = cacheFactory.cacheConfig
     }
 
     internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands.filterCommands()
@@ -62,8 +57,6 @@ internal class ApplicationCommandsUpdater private constructor(
         private set
 
     init {
-        Files.createDirectories(commandsCachePath.parent)
-
         commandData = mapSlashCommands(manager.slashCommands) +
                 mapContextCommands(manager.userContextCommands, Command.Type.USER) +
                 mapContextCommands(manager.messageContextCommands, Command.Type.MESSAGE)
@@ -81,7 +74,7 @@ internal class ApplicationCommandsUpdater private constructor(
             return true
         }
 
-        val needsUpdate = if (onlineCheck) {
+        val needsUpdate = if (cacheConfig.checkOnline) {
             checkOnlineCommands()
         } else {
             checkOfflineCommands()
@@ -100,29 +93,30 @@ internal class ApplicationCommandsUpdater private constructor(
             .toJsonBytes()
 
         metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
-        return checkCommandJson(oldCommandBytes)
+        return checkCommandJson(oldCommandBytes.decodeToString())
     }
 
-    private suspend fun checkOfflineCommands(): Boolean = withContext(Dispatchers.IO) {
-        if (Files.notExists(commandsCachePath)) {
-            logger.trace { "Updating commands because cache file does not exists" }
-            return@withContext true
+    private suspend fun checkOfflineCommands(): Boolean {
+        val data = commandsCache.tryRead()
+        if (data.commands == null) {
+            logger.trace { "Updating commands because no commands are cached" }
+            return true
         }
 
-        if (Files.notExists(commandsMetadataCachePath)) {
-            logger.trace { "Updating commands metadata because cache file does not exists" }
-            return@withContext true
+        if (data.metadata == null) {
+            logger.trace { "Updating commands because no metadata is cached" }
+            return true
         }
 
         val hasMissingKey = updateOnMissingKey {
-            val array = commandsMetadataCachePath.bufferedReader().use(DataArray::fromJson)
+            val array = data.metadata.let(DataArray::fromJson)
             metadata = readMetadata(array)
         }
 
-        hasMissingKey || checkCommandJson(Files.readAllBytes(commandsCachePath))
+        return hasMissingKey || checkCommandJson(data.commands)
     }
 
-    private inline fun updateOnMissingKey(crossinline block: () -> Unit): Boolean = try {
+    private suspend inline fun updateOnMissingKey(crossinline block: suspend () -> Unit): Boolean = try {
         block()
         false
     } catch (e: ParsingException) {
@@ -144,18 +138,23 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun checkCommandJson(oldBytes: ByteArray): Boolean {
+    private fun checkCommandJson(oldData: String): Boolean {
         val newBytes = commandData.toJsonBytes()
 
-        val oldCommands = DefaultObjectMapper.readList(oldBytes) as List<Map<String, *>>
+        val oldCommands = DefaultObjectMapper.readList(oldData) as List<Map<String, *>>
         val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
 
-        val isSame = DiffLogger.withLogger(context, guild.asScopeString()) {
-            context.applicationConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
+        val isSame = DiffLogger.withLogger(context, cacheConfig, guild.asScopeString()) {
+            cacheConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
         }
 
-        if (!isSame && context.applicationConfig.logApplicationCommandData) {
-            logger.trace { "Old commands data: ${oldBytes.decodeToString()}" }
+        val logData = when (cacheConfig.logDataIf) {
+            LogDataIf.CHANGED -> !isSame
+            LogDataIf.ALWAYS -> true
+            LogDataIf.NEVER -> false
+        }
+        if (logData) {
+            logger.trace { "Old commands data: $oldData" }
             logger.trace { "New commands data: ${newBytes.decodeToString()}" }
         }
 
@@ -261,13 +260,15 @@ internal class ApplicationCommandsUpdater private constructor(
         }
     }
 
-    private fun saveCommandData(guild: Guild?) {
+    private suspend fun saveCommandData(guild: Guild?) {
         try {
-            commandsCachePath.overwriteBytes(commandData.toJsonBytes())
-            commandsMetadataCachePath.overwriteBytes(metadata.map { it.toData() }.let(DataArray::fromCollection).toJson())
+            commandsCache.write(
+                commandData.toJsonBytes(),
+                metadata.map { it.toData() }.let(DataArray::fromCollection).toJson()
+            )
         } catch (e: Exception) {
             logger.error(e) {
-                "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"
+                "An exception occurred while saving ${guild.asScopeString().substringBefore(" scope")} commands with $commandsCache"
             }
         }
     }

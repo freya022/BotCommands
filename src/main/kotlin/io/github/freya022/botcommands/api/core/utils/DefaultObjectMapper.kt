@@ -32,12 +32,22 @@ object DefaultObjectMapper {
     }
 
     @JvmStatic
+    fun readMap(input: String): Map<String, *> {
+        return lock.withLock { mapper.readValue(input, mapType) }
+    }
+
+    @JvmStatic
     fun readMap(input: InputStream): Map<String, *> {
         return lock.withLock { mapper.readValue(input, mapType) }
     }
 
     @JvmStatic
     fun readList(input: ByteArray): List<*> {
+        return lock.withLock { mapper.readValue(input, listType) }
+    }
+
+    @JvmStatic
+    fun readList(input: String): List<*> {
         return lock.withLock { mapper.readValue(input, listType) }
     }
 

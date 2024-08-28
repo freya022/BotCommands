@@ -17,11 +17,13 @@ import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSla
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
-import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
+import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.entities.inputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
+import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
@@ -159,7 +161,7 @@ internal class ApplicationCommandListener internal constructor(
         handleException(IllegalArgumentException(message), event)
         printAvailableCommands(event)
         logger.warn {
-            if (context.applicationConfig.onlineAppCommandCheckEnabled) {
+            if (context.getService<ApplicationCommandsCacheFactory>().cacheConfig.checkOnline) {
                 createCommandMismatchMessage("An application command could not be recognized even though online command check was performed, an update will be forced.")
             } else {
                 createCommandMismatchMessage("An application command could not be recognized, an update will be forced.")
@@ -173,7 +175,7 @@ internal class ApplicationCommandListener internal constructor(
         $preMessage
         Please check if you have another bot instance running as it could have replaced the current command set.
         Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
-        If the problem persists, try changing the diff engine in ${BApplicationConfigBuilder::diffEngine.reference} to ${DiffEngine.OLD} and report the issue. ${getDiagnosticVersions()}
+        If the problem persists, try changing the diff engine in ${ApplicationCommandsCacheConfigBuilder::diffEngine.reference} to ${DiffEngine.OLD} and report the issue. ${getDiagnosticVersions()}
     """.trimIndent()
 
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
