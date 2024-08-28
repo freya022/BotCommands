@@ -17,6 +17,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
@@ -26,6 +27,7 @@ private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @Command
+@RequiresModals
 @RequiresComponents
 class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "modal_annotated")

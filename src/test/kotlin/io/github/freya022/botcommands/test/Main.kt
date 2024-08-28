@@ -73,6 +73,10 @@ object Main {
 
                     addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
                 }
+
+                modals {
+                    enable = true
+                }
             }
         } catch (e: Exception) {
             logger.error(e) { "Could not start the test bot" }

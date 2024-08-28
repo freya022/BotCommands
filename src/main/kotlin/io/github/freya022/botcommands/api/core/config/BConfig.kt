@@ -118,6 +118,7 @@ interface BConfig {
     val localizationConfig: BLocalizationConfig
     val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
+    val modalsConfig: BModalsConfig
     val componentsConfig: BComponentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
@@ -169,6 +170,7 @@ class BConfigBuilder internal constructor() : BConfig {
     override val localizationConfig = BLocalizationConfigBuilder()
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder()
+    override val modalsConfig = BModalsConfigBuilder()
     override val componentsConfig = BComponentsConfigBuilder()
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
@@ -310,6 +312,10 @@ class BConfigBuilder internal constructor() : BConfig {
         applicationConfig.apply(block)
     }
 
+    fun modals(block: ReceiverConsumer<BModalsConfigBuilder>) {
+        modalsConfig.apply(block)
+    }
+
     fun components(block: ReceiverConsumer<BComponentsConfigBuilder>) {
         componentsConfig.apply(block)
     }
@@ -336,6 +342,7 @@ class BConfigBuilder internal constructor() : BConfig {
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
             override val textConfig = this@BConfigBuilder.textConfig.build()
             override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
+            override val modalsConfig = this@BConfigBuilder.modalsConfig.build()
             override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
         }

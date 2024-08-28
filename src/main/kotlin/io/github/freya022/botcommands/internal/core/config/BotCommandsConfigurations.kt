@@ -35,6 +35,7 @@ internal class BotCommandsCoreConfiguration(
     override val localizationConfig: Nothing get() = unusable()
     override val textConfig: Nothing get() = unusable()
     override val applicationConfig: Nothing get() = unusable()
+    override val modalsConfig: Nothing get() = unusable()
     override val componentsConfig: Nothing get() = unusable()
     override val coroutineScopesConfig: Nothing get() = unusable()
 }
@@ -225,6 +226,17 @@ private fun BApplicationConfigBuilder.configureCache(configuration: BotCommandsA
         }
         BotCommandsApplicationConfiguration.Cache.Type.NULL -> disableCache()
     }
+}
+
+@ConfigurationProperties(prefix = "botcommands.modals", ignoreUnknownFields = true)
+internal class BotCommandsModalsConfiguration(
+    override val enable: Boolean = true,
+) : BModalsConfig {
+
+}
+
+internal fun BModalsConfigBuilder.applyConfig(configuration: BotCommandsModalsConfiguration) = apply {
+    enable = configuration.enable
 }
 
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
