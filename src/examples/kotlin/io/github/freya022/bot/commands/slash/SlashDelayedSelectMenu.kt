@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.*
 import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.builder.timeoutWith
-import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
+import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
@@ -92,9 +92,11 @@ class SlashDelayedSelectMenu(
             .queue()
     }
 
-    @ComponentTimeoutHandler
-    fun onDelayedSelectMenuTimeout(data: ComponentTimeoutData, @TimeoutData id: Long) {
+    @GroupTimeoutHandler
+    fun onDelayedSelectMenuTimeout(data: GroupTimeoutData, @TimeoutData id: Long) {
         val choices = choices.remove(id) ?: return // Bot may have restarted
-        choices.hook.editOriginalComponents().queue()
+        choices.hook.editOriginal("Timeout")
+            .setReplace(true)
+            .queue()
     }
 }
