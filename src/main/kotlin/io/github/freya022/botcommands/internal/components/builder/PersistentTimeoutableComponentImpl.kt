@@ -2,14 +2,14 @@ package io.github.freya022.botcommands.internal.components.builder
 
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
-import io.github.freya022.botcommands.internal.utils.takeIfFinite
-import io.github.freya022.botcommands.internal.utils.throwArgument
+import io.github.freya022.botcommands.internal.utils.Checks
 import kotlin.time.Duration
 
 internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponent<T> {
+
     override var timeoutDuration: Duration? = null
         private set
     override var timeout: PersistentTimeout? = null
@@ -27,12 +27,18 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
     }
 
     override fun timeout(timeout: Duration): T = instance.also {
-        this.timeoutDuration = timeout.takeIfFinite() ?: throwArgument("Timeout must be positive and finite")
+        Checks.checkFinite(timeout, "timeout")
+        Checks.checkFitInt(timeout, "timeout")
+
+        this.timeoutDuration = timeout
         this.timeout = null
     }
 
     override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
-        this.timeoutDuration = timeout.takeIfFinite() ?: throwArgument("Timeout must be positive and finite")
+        Checks.checkFinite(timeout, "timeout")
+        Checks.checkFitInt(timeout, "timeout")
+
+        this.timeoutDuration = timeout
         this.timeout = PersistentTimeout.create(handlerName, data.toList())
     }
 }

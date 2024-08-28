@@ -22,7 +22,6 @@ import io.github.freya022.botcommands.internal.components.handler.EphemeralHandl
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
-import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -275,7 +274,6 @@ internal class ComponentRepository(
         ) {
             val expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
             val resetTimeoutOnUseDurationMs = builder.timeoutDuration
-                ?.takeIfFinite()
                 ?.takeIf { builder.resetTimeoutOnUse }
                 ?.inWholeMilliseconds
             executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitGroup, filterNames)
