@@ -6,12 +6,14 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.paragraphTextInput
 
 private const val codeInputName = "SlashModal: codeInput"
 
 @Command
+@RequiresModals
 class SlashModal(private val modals: Modals) : ApplicationCommand() {
     @JDASlashCommand(name = "format", description = "Formats your code")
     suspend fun onSlashFormat(event: GuildSlashEvent) {

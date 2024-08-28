@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import net.dv8tion.jda.api.JDA
@@ -28,6 +29,7 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 @Command
+@RequiresModals
 @RequiresComponents
 class SlashServiceOption : ApplicationCommand() {
     @JDASlashCommand(name = "service_option")

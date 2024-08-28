@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.api.localization.context.localizeGuild
 import io.github.freya022.botcommands.api.localization.context.localizeUser
 import io.github.freya022.botcommands.api.localization.interaction.*
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import io.github.freya022.botcommands.api.modals.shortTextInput
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -26,6 +27,7 @@ import java.lang.management.ManagementFactory
 import kotlin.time.Duration.Companion.milliseconds
 
 @Command
+@RequiresModals
 class SlashLocalization : ApplicationCommand() {
     @JDASlashCommand(name = "localization")
     fun onSlashLocalization(
