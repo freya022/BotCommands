@@ -1,6 +1,5 @@
-package io.github.freya022.botcommands.internal.components.data
+package io.github.freya022.botcommands.internal.components.data.timeout
 
-import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import net.dv8tion.jda.api.entities.ISnowflake
 
 internal class PersistentTimeout private constructor(

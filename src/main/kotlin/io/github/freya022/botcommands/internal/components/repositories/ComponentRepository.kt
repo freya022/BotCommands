@@ -12,16 +12,26 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
-import io.github.freya022.botcommands.internal.components.data.*
+import io.github.freya022.botcommands.internal.components.data.ComponentData
+import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
+import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
+import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
+import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import io.github.freya022.botcommands.internal.core.db.InternalDatabase
+import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.throwArgument
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
 import java.sql.Timestamp
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 private val logger = KotlinLogging.logger { }
 
@@ -76,7 +86,7 @@ internal class ComponentRepository(
         ids.size
     }
 
-    suspend fun createComponent(builder: BaseComponentBuilder<*>): Int {
+    suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
         return database.transactional {
             // Create base component
             val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitGroup, getFilterNames(builder.filters))
@@ -102,7 +112,7 @@ internal class ComponentRepository(
             // Add timeout
             insertTimeoutData(builder, componentId)
 
-            componentId
+            getComponent(componentId) ?: throwInternal("Could not find back component with id '$componentId'")
         }
     }
 
@@ -113,7 +123,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, expires_at, one_use, users, roles, permissions, group_id, rate_limit_group, filters
+            select lifetime_type, component_type, expires_at, reset_timeout_on_use_duration_ms, one_use, users, roles, permissions, group_id, rate_limit_group, filters
             from bc_component component
                      left join bc_component_constraints constraints using (component_id)
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
@@ -124,12 +134,13 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val expiresAt = dbResult.getKotlinInstantOrNull("expires_at")
-            val oneUse: Boolean = dbResult["one_use"]
+            val resetTimeoutOnUseDuration: Duration? = dbResult.getOrNull<Int>("reset_timeout_on_use_duration_ms")?.milliseconds
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, lifetimeType, oneUse, expiresAt)
+                return@preparedStatement getGroup(id, lifetimeType, expiresAt, resetTimeoutOnUseDuration)
             }
 
+            val oneUse: Boolean = dbResult["one_use"]
             val filters = componentFilters.getFilters(dbResult["filters"])
             val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
@@ -138,6 +149,15 @@ internal class ComponentRepository(
                 dbResult["roles"],
                 dbResult["permissions"]
             )
+
+            val group = dbResult.getOrNull<Int>("group_id")?.let {
+                val group = getComponent(it)
+                if (group == null)
+                    logger.warn { internalErrorMessage("Could not get group with id $it") }
+                else if (group !is ComponentGroupData)
+                    logger.warn { internalErrorMessage("Data with id $it was expected to be a group") }
+                group as? ComponentGroupData?
+            }
 
             when (lifetimeType) {
                 LifetimeType.PERSISTENT -> {
@@ -148,14 +168,14 @@ internal class ComponentRepository(
                     }
 
                     PersistentComponentData(
-                        id, componentType, lifetimeType,
-                        expiresAt,
+                        id, componentType,
+                        expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
                         rateLimitGroup,
                         handler, timeout,
                         constraints,
-                        dbResult["group_id"]
+                        group
                     )
                 }
 
@@ -167,14 +187,14 @@ internal class ComponentRepository(
                     }
 
                     EphemeralComponentData(
-                        id, componentType, lifetimeType,
-                        expiresAt,
+                        id, componentType,
+                        expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
                         rateLimitGroup,
                         handler, timeout,
                         constraints,
-                        dbResult["group_id"]
+                        group
                     )
                 }
             }
@@ -182,7 +202,12 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun getGroup(id: Int, lifetimeType: LifetimeType, oneUse: Boolean, expiresAt: Instant?): ComponentGroupData {
+    private suspend fun getGroup(
+        id: Int,
+        lifetimeType: LifetimeType,
+        expiresAt: Instant?,
+        resetTimeoutOnUseDuration: Duration?,
+    ): ComponentGroupData {
         val timeout = when (lifetimeType) {
             LifetimeType.PERSISTENT -> componentTimeoutRepository.getPersistentTimeout(id)
             LifetimeType.EPHEMERAL -> componentTimeoutRepository.getEphemeralTimeout(id)
@@ -198,10 +223,10 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, expiresAt, timeout, componentIds)
+        return ComponentGroupData(id, lifetimeType, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): ComponentGroupData = database.transactional {
         val groupId: Int = insertBaseComponent(builder, false, null, emptyArray())
 
         // Add timeout
@@ -231,7 +256,8 @@ internal class ComponentRepository(
             throwArgument("Cannot put components inside groups if they have a timeout set")
         }
 
-        return@transactional groupId
+        return@transactional getComponent(groupId) as? ComponentGroupData
+            ?: throwInternal("Could not find back component with id '$groupId'")
     }
 
     context(Transaction)
@@ -243,10 +269,14 @@ internal class ComponentRepository(
     ): Int where T : IComponentBuilder,
                  T : ITimeoutableComponent<*> {
         return preparedStatement(
-            "insert into bc_component (component_type, lifetime_type, expires_at, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?)",
+            "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
-            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, builder.expiresAt?.toSqlTimestamp(), singleUse, rateLimitGroup, filterNames)
+            val expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
+            val resetTimeoutOnUseDurationMs = builder.timeoutDuration
+                ?.takeIf { builder.resetTimeoutOnUse }
+                ?.inWholeMilliseconds
+            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitGroup, filterNames)
                 .read()
                 .getInt("component_id")
         }
@@ -262,7 +292,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun deleteComponentsById(ids: List<Int>): List<DeletedComponent> = database.transactional {
+    suspend fun deleteComponentsById(ids: Collection<Int>): List<DeletedComponent> = database.transactional {
         // If the component is a group, then delete the component, and it's contained components
         // If the component is not a group, then delete the component as well as it's group
 
@@ -296,6 +326,23 @@ internal class ComponentRepository(
         logger.trace { "Deleted components: ${deletedComponentIds.joinToString()}" }
 
         return@transactional deletedComponents
+    }
+
+    internal suspend fun resetExpiration(componentId: Int): Instant? = database.transactional {
+        preparedStatement(
+            """
+                update bc_component
+                set expires_at = now() + (reset_timeout_on_use_duration_ms || 'milliseconds')::interval
+                where component_id = ?
+                returning expires_at
+            """.trimIndent(),
+            columnNames = arrayOf("expires_at")
+        ) {
+            executeReturningUpdate(componentId)
+                .read()
+                // now() + null = null
+                .getKotlinInstantOrNull("expires_at")
+        }
     }
 
     private fun Instant.toSqlTimestamp(): Timestamp = Timestamp.from(this.toJavaInstant())

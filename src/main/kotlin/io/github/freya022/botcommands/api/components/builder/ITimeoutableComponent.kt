@@ -5,16 +5,15 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
-import io.github.freya022.botcommands.api.components.data.ComponentTimeout
 import io.github.freya022.botcommands.api.components.data.ITimeoutData
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
+import io.github.freya022.botcommands.internal.components.data.timeout.ComponentTimeout
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
@@ -40,8 +39,22 @@ import java.time.Duration as JavaDuration
  * - If the component is inside a group, then all the group's components will also be deleted.
  */
 interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceHolder<T> {
-    val expiresAt: Instant?
+    val timeoutDuration: Duration?
     val timeout: ComponentTimeout?
+
+    /**
+     * When `true`, resets the timeout duration everytime this component is used.
+     *
+     * Any component inside a group resets the timeout of the entire group.
+     */
+    var resetTimeoutOnUse: Boolean
+
+    /**
+     * When `true`, resets the timeout duration everytime this component is used.
+     *
+     * Any component inside a group resets the timeout of the entire group.
+     */
+    fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T
 
     /**
      * Removes the timeout from this component.
