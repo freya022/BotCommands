@@ -45,6 +45,12 @@ interface CustomConditionChecker<A : Annotation> {
     val annotationType: Class<A>
 
     /**
+     * Checks if the given class can be instantiated,
+     * if an error message is returned, the service cannot be instantiated.
+     *
+     * Exceptions *caused by failed service retrieval* will be caught, and used as the error message,
+     * which will render the given class unusable and may or may not prevent initialization.
+     *
      * @param serviceContainer The service container for this context
      * @param checkedClass     The primary type of the service being created,
      *                         the class being instantiated for services, or the return type for service factories

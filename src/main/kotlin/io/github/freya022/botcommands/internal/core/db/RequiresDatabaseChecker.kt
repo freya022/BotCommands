@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.canCreateService
+import io.github.freya022.botcommands.api.core.service.getService
 
 internal object RequiresDatabaseChecker : CustomConditionChecker<RequiresDatabase> {
     override val annotationType: Class<RequiresDatabase> = RequiresDatabase::class.java
@@ -14,6 +14,7 @@ internal object RequiresDatabaseChecker : CustomConditionChecker<RequiresDatabas
         checkedClass: Class<*>,
         annotation: RequiresDatabase
     ): String? {
-        return serviceContainer.canCreateService<ConnectionSupplier>()?.errorMessage
+        serviceContainer.getService<ConnectionSupplier>() // May throw, will be caught
+        return null // Everything's fine
     }
 }

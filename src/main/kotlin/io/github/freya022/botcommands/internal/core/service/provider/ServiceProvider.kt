@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
@@ -150,42 +151,63 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
     findAnnotation<ConditionalService>()?.let { conditionalService ->
         conditionalService.checks.forEach {
             val instance = it.createSingleton()
-            instance.checkServiceAvailability(serviceContainer, checkedClass.java)
-                ?.let { errorMessage ->
-                    return ErrorType.FAILED_CONDITION.toError(
-                        errorMessage,
-                        // instance::checkServiceAvailability does not bind to the actual instance
-                        extra = mapOf(
-                            "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
-                            "For" to getProviderFunctionOrSignature()
-                        )
+
+            fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
+                return ErrorType.FAILED_CONDITION.toError(
+                    errorMessage,
+                    nestedError = nestedError,
+                    // instance::checkServiceAvailability does not bind to the actual instance
+                    extra = mapOf(
+                        "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
+                        "For" to getProviderFunctionOrSignature()
                     )
-                }
+                )
+            }
+
+            val errorMessage = try {
+                instance.checkServiceAvailability(serviceContainer, checkedClass.java)
+            } catch (e: ServiceException) {
+                val error = e.serviceError
+                return createError("A service required by the condition checker is missing", nestedError = error)
+            }
+
+            if (errorMessage == null) return@forEach
+
+            return createError(errorMessage)
         }
     }
 
     serviceContainer.serviceBootstrap.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
-        val annotation = customCondition.getCondition(this)
-        if (annotation != null) {
-            val checker = customCondition.checker
-            checker.checkServiceAvailability(serviceContainer, checkedClass.java, annotation)
-                ?.let { errorMessage ->
-                    val errorType = if (customCondition.conditionMetadata.fail) {
-                        ErrorType.FAILED_FATAL_CUSTOM_CONDITION
-                    } else {
-                        ErrorType.FAILED_CUSTOM_CONDITION
-                    }
+        val annotation = customCondition.getCondition(this) ?: return@forEach
+        val checker = customCondition.checker
 
-                    return errorType.toError(
-                        errorMessage,
-                        // checker::checkServiceAvailability does not bind to the actual instance
-                        extra = mapOf(
-                            "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
-                            "For" to getProviderFunctionOrSignature()
-                        )
-                    )
-                }
+        fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
+            val errorType = if (customCondition.conditionMetadata.fail) {
+                ErrorType.FAILED_FATAL_CUSTOM_CONDITION
+            } else {
+                ErrorType.FAILED_CUSTOM_CONDITION
+            }
+            return errorType.toError(
+                errorMessage,
+                nestedError = nestedError,
+                // checker::checkServiceAvailability does not bind to the actual instance
+                extra = mapOf(
+                    "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
+                    "For" to getProviderFunctionOrSignature()
+                )
+            )
         }
+
+        val errorMessage = try {
+            checker.checkServiceAvailability(serviceContainer, checkedClass.java, annotation)
+        } catch (e: ServiceException) {
+            val error = e.serviceError
+            return createError("A service required by the condition checker is missing", nestedError = error)
+        }
+
+        if (errorMessage == null) return@forEach
+
+        return createError(errorMessage)
     }
 
     //All checks passed, return no error message
