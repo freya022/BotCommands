@@ -75,7 +75,7 @@ object Main {
                 }
 
                 modals {
-                    enable = false
+                    enable = true
                 }
             }
         } catch (e: Exception) {
