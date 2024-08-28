@@ -20,6 +20,7 @@ import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeo
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -98,7 +99,7 @@ internal class ComponentController(
             }
     }
 
-    suspend fun getActiveComponent(componentId: Int): ComponentData? {
+    internal suspend fun getActiveComponent(componentId: Int): ComponentData? {
         return componentRepository.getComponent(componentId)
             ?.takeUnless {
                 val expiresAt = it.expiresAt
@@ -118,9 +119,8 @@ internal class ComponentController(
             // Cancel, reset in DB, schedule
             timeoutManager.cancelTimeout(component.internalId)
             val newExpirationTimestamp = componentRepository.resetExpiration(component.internalId)
-            if (newExpirationTimestamp != null) {
-                timeoutManager.scheduleTimeout(component.internalId, newExpirationTimestamp)
-            }
+                ?: throwInternal("New expiration timestamp is null despite ${component::resetTimeoutOnUseDuration.reference} being non-null")
+            timeoutManager.scheduleTimeout(component.internalId, newExpirationTimestamp)
         }
     }
 

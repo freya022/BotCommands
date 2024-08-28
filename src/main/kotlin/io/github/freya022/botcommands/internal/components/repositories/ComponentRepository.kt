@@ -342,6 +342,7 @@ internal class ComponentRepository(
         ) {
             executeReturningUpdate(componentId)
                 .read()
+                // now() + null = null
                 .getKotlinInstantOrNull("expires_at")
         }
     }
