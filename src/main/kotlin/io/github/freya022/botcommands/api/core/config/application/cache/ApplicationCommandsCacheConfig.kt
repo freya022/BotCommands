@@ -48,6 +48,7 @@ interface ApplicationCommandsCacheConfig {
      */
     @ConfigurationValue(path = "botcommands.application.cache.checkOnline", defaultValue = "false")
     val checkOnline: Boolean
+
     /**
      * The diff engine to use when comparing old and new application commands,
      * to determine if commands needs to be updated.
@@ -60,6 +61,7 @@ interface ApplicationCommandsCacheConfig {
      */
     @ConfigurationValue(path = "botcommands.application.cache.diffEngine", defaultValue = "new")
     val diffEngine: DiffEngine
+
     /**
      * Whether the raw JSON of the application commands should be logged on `TRACE` when the condition is met.
      *
