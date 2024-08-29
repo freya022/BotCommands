@@ -64,21 +64,9 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
         context(StringBuilder)
         abstract fun print(indent: Int = 0)
 
+        // For circular dependency string
         override fun toString(): String {
             return providerKey
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as ServiceOperation<*>
-
-            return providerKey == other.providerKey
-        }
-
-        override fun hashCode(): Int {
-            return providerKey.hashCode()
         }
     }
 
