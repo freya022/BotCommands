@@ -8,10 +8,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
-import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
-import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
-import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
+import io.github.freya022.botcommands.internal.core.service.provider.*
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -35,14 +32,13 @@ import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
-import kotlin.time.measureTimedValue
 
 internal interface ServiceCreationStack {
     operator fun contains(provider: ServiceProvider): Boolean
 
     fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError?
 
-    fun <R : Any> withServiceCreateKey(provider: ServiceProvider, block: () -> ServiceResult<R>): ServiceResult<R>
+    fun <R : Instance> withServiceCreateKey(provider: ServiceProvider, block: () -> TimedInstantiation<R>): R
 }
 
 internal class TracedServiceCreationStack : ServiceCreationStack {
@@ -75,30 +71,31 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
         context(StringBuilder)
         override fun print(indent: Int) {
+            append("  ".repeat(indent))
+
             val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
             val typeName = provider.primaryType.simpleNestedName
-
-            append("  ".repeat(indent))
             appendLine("[Check, $opDuration] $typeName ($providerKey)")
 
             children.forEach { it.print(indent + 1) }
         }
     }
 
-    private class ServiceCreateOperation(provider: ServiceProvider) : ServiceOperation<ServiceResult<*>>(provider) {
-        private var instance: Any? = null
+    private class ServiceCreateOperation(provider: ServiceProvider) : ServiceOperation<TimedInstantiation<*>>(provider) {
+        // Null if the service creation fails
+        private lateinit var instance: Instance
 
-        override fun onValue(value: ServiceResult<*>) {
-            instance = value.service
+        override fun onValue(value: TimedInstantiation<*>) {
+            instance = value.instance
         }
 
         context(StringBuilder)
         override fun print(indent: Int) {
-            val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
-            val typeName = (instance?.let { it::class } ?: provider.primaryType).simpleNestedName
-            val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-
             append("  ".repeat(indent))
+
+            val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
+            val typeName = instance::class.simpleNestedName
+            val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
             appendLine("[Create, $opDuration] $typeName as $loadedAsTypes ($providerKey)")
 
             children.forEach { it.print(indent + 1) }
@@ -117,13 +114,13 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
         })
     }
 
-    override fun <R : Any> withServiceCreateKey(
+    override fun <R : Instance> withServiceCreateKey(
         provider: ServiceProvider,
-        block: () -> ServiceResult<R>
-    ): ServiceResult<R> {
+        block: () -> TimedInstantiation<R>
+    ): R {
         return withServiceKey(provider, ::ServiceCreateOperation, block, onDuplicate = {
             throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
-        })
+        }).instance
     }
 
     private inline fun <R> withServiceKey(provider: ServiceProvider, operationSupplier: (ServiceProvider) -> ServiceOperation<R>, crossinline block: () -> R, onDuplicate: () -> Nothing): R {
@@ -134,7 +131,7 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
         // Add the new OP to the children of the current OP
         if (set.isNotEmpty())
-            set.last.children += serviceOperation
+            set.last().children += serviceOperation
 
         set.addLast(serviceOperation)
         try {
@@ -170,20 +167,20 @@ internal class DefaultServiceCreationStack : ServiceCreationStack {
         }
     }
 
-    override fun <R : Any> withServiceCreateKey(
+    override fun <R : Instance> withServiceCreateKey(
         provider: ServiceProvider,
-        block: () -> ServiceResult<R>
-    ): ServiceResult<R> {
+        block: () -> TimedInstantiation<R>
+    ): R {
         check(set.add(provider.providerKey)) {
             "Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}"
         }
         try {
-            val (value, duration) = measureTimedValue(block)
+            val (instance, duration) = block()
             logger.trace {
                 val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-                "Loaded service ${value.service!!.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
+                "Loaded service ${instance.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
             }
-            return value
+            return instance
         } finally {
             set.remove(provider.providerKey)
         }
@@ -271,26 +268,20 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         if (serviceError != null)
             return ServiceResult.fail(serviceError)
 
-        return createService(provider)
+        return ServiceResult.pass(createService(provider))
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> createService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
+    private fun <T : Any> createService(provider: ServiceProvider): T = lock.withLock {
         try {
-            return serviceCreationStack.withServiceCreateKey(provider) {
-                //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, _) = provider.createInstance(this)
-                //Doesn't really matter, the object is not used anyway
-                val result: ServiceResult<T> = anyResult as ServiceResult<T>
-                if (result.serviceError != null)
-                    return@withServiceCreateKey result
-
-                val instance = result.getOrThrow()
-                if (!provider.primaryType.isInstance(instance))
-                    throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
-
-                ServiceResult.pass(instance)
+            val instance =  serviceCreationStack.withServiceCreateKey(provider) {
+                provider.createInstance(this) as TimedInstantiation<T>
             }
+
+            if (!provider.primaryType.isInstance(instance))
+                throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
+
+            instance
         } catch (e: Exception) {
             e.rethrow("Unable to create service ${provider.primaryType.simpleNestedName}")
         }
