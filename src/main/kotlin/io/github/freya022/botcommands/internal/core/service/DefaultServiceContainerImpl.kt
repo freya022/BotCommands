@@ -46,34 +46,10 @@ internal interface ServiceCreationStack {
 }
 
 internal class TracedServiceCreationStack : ServiceCreationStack {
-    internal class SetStack<K, V> {
-        private val stack: Stack<Pair<K, V>> = Stack()
-
-        val values: List<V> get() = stack.map { it.second }
-
-        fun isEmpty(): Boolean = stack.isEmpty()
-        fun isNotEmpty(): Boolean = stack.isNotEmpty()
-
-        operator fun contains(key: K) = stack.any { it.first == key }
-
-        fun add(key: K, value: V): Boolean {
-            if (contains(key))
-                return false
-            stack.add(key to value)
-            return true
-        }
-
-        fun removeLast(): V = stack.removeLast().second
-
-        fun lastElement(): V = stack.lastElement().second
-    }
-
-    internal class ServiceOperation(val provider: ServiceProvider, val type: Type, private val mark: TimeSource.Monotonic.ValueTimeMark) {
-        internal enum class Type {
-            CHECK,
-            CREATE;
-
-            val humanName get() = name.lowercase().replaceFirstChar { it.uppercaseChar() }
+    private class ServiceOperation(val provider: ServiceProvider, val type: Type, private val mark: TimeSource.Monotonic.ValueTimeMark) {
+        enum class Type(val humanName: String) {
+            CHECK("Check"),
+            CREATE("Create"),
         }
 
         val providerKey get() = provider.providerKey
@@ -105,10 +81,10 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
         }
     }
 
-    private val localSet: ThreadLocal<SetStack<ProviderName, ServiceOperation>> = ThreadLocal.withInitial { SetStack() }
-    private val set get() = localSet.get()
+    private val localSet: ThreadLocal<LinkedList<ServiceOperation>> = ThreadLocal.withInitial { LinkedList() }
+    private val set: LinkedList<ServiceOperation> get() = localSet.get()
 
-    override fun contains(provider: ServiceProvider) = provider.providerKey in set
+    override fun contains(provider: ServiceProvider) = set.any { it.providerKey == provider.providerKey }
 
     //If services have circular dependencies during checking, consider it to not be an issue
     override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
@@ -122,20 +98,21 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
         block: () -> ServiceResult<R>
     ): ServiceResult<R> {
         return withServiceKey(provider, ServiceOperation.Type.CREATE, block, onDuplicate = {
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.values.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
         })
     }
 
-    private inline fun <R> withServiceKey(provider: ServiceProvider, operationType: ServiceOperation.Type, crossinline block: () -> R, onDuplicate: () -> Unit): R {
+    private inline fun <R> withServiceKey(provider: ServiceProvider, operationType: ServiceOperation.Type, crossinline block: () -> R, onDuplicate: () -> Nothing): R {
+        if (provider in this)
+            onDuplicate() // Does not return
+
         val serviceOperation = ServiceOperation(provider, operationType, TimeSource.Monotonic.markNow())
 
-        if (provider.providerKey in set)
-            onDuplicate()
-
+        // Add the new OP to the children of the current OP
         if (set.isNotEmpty())
-            set.lastElement().children += serviceOperation
-        set.add(provider.providerKey, serviceOperation)
+            set.last.children += serviceOperation
 
+        set.addLast(serviceOperation)
         try {
             val value = block()
             if (value is ServiceResult<*>)
@@ -148,14 +125,7 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
             if (set.isEmpty()) {
                 logger.trace {
-                    buildString {
-                        val opType = when (serviceOperation.type) {
-                            ServiceOperation.Type.CHECK -> "Checked"
-                            ServiceOperation.Type.CREATE -> "Loaded"
-                        }
-                        appendLine("$opType service ${serviceOperation.provider.primaryType.simpleNestedName}:")
-                        serviceOperation.print()
-                    }.trim()
+                    buildString { serviceOperation.print() }.trim()
                 }
             }
         }
@@ -163,15 +133,19 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
     context(StringBuilder)
     private fun ServiceOperation.print(indent: Int = 0) {
-        appendLine(buildString {
-            val processedType = instance?.let { it::class } ?: provider.primaryType
-            append("[${type.humanName}, ${elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)}] ${processedType.simpleNestedName}")
+        val line = buildString {
+            val opName = type.humanName
+            val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
+            val typeName = (instance?.let { it::class } ?: provider.primaryType).simpleNestedName
+
+            append("[$opName, $opDuration] $typeName")
             if (type == ServiceOperation.Type.CREATE) {
                 val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
                 append(" as $loadedAsTypes")
             }
             append(" (${provider.providerKey})")
-        }.prependIndent("  ".repeat(indent)))
+        }
+        appendLine(line.prependIndent("  ".repeat(indent)))
         children.forEach { it.print(indent + 1) }
     }
 }
