@@ -49,7 +49,7 @@ internal class ProvidedServiceProvider internal constructor(
         return null
     }
 
-    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): Nothing {
         throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
     }
 }

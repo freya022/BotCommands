@@ -98,7 +98,7 @@ internal class ClassServiceProvider internal constructor(
         return null
     }
 
-    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
         if (instance != null)
             throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
 
@@ -114,11 +114,11 @@ internal class ClassServiceProvider internal constructor(
         }
 
         val timedInstantiation = createInstanceNonCached(serviceContainer)
-        instance = timedInstantiation.result.getOrNull()
+        instance = timedInstantiation.instance
         return timedInstantiation
     }
 
-    private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
+    private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
         measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
             return timedInstantiation
         }

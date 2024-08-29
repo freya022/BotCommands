@@ -15,6 +15,13 @@ import kotlin.reflect.KClass
 
 @InjectedService
 interface BServiceConfig {
+    /**
+     * Enables debugging of service loading.
+     *
+     * This includes the operation type (check/create), the run time, the type of the service and where it comes from.
+     */
+    val debug: Boolean
+
     @Deprecated(message = "For removal, didn't do much in the first place")
     val serviceAnnotations: Set<KClass<out Annotation>>
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
@@ -22,6 +29,8 @@ interface BServiceConfig {
 
 @ConfigDSL
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
+    override var debug: Boolean = false
+
     @Deprecated("For removal, didn't do much in the first place")
     override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
@@ -42,6 +51,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
 
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {
+        override val debug = this@BServiceConfigBuilder.debug
         @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
         override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()

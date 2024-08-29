@@ -76,7 +76,7 @@ internal class FunctionServiceProvider(
         return null
     }
 
-    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
+    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
         if (instance != null)
             throwInternal("Tried to create an instance using ${function.shortSignatureNoSrc} when one already exists, instance should be retrieved manually beforehand")
 
@@ -92,10 +92,8 @@ internal class FunctionServiceProvider(
         }
 
         val timedInstantiation = function.callConstructingFunction(serviceContainer)
-        if (timedInstantiation.result.serviceError != null)
-            return timedInstantiation
-
-        return timedInstantiation.also { instance = it.result.getOrThrow() }
+        instance = timedInstantiation.instance
+        return timedInstantiation
     }
 
     override fun getProviderFunction(): KFunction<*> = function

@@ -9,9 +9,11 @@ import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
-import io.github.freya022.botcommands.internal.core.service.provider.ProviderName
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
+import io.github.freya022.botcommands.internal.core.service.provider.TimedInstantiation
+import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
+import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -30,35 +32,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
-import kotlin.time.DurationUnit
-
-internal class ServiceCreationStack {
-    private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
-    private val set get() = localSet.get()
-
-    internal operator fun contains(provider: ServiceProvider) = set.contains(provider.providerKey)
-
-    //If services have circular dependencies during checking, consider it to not be an issue
-    internal inline fun <R> withServiceCheckKey(provider: ServiceProvider, block: () -> R): R? {
-        if (!set.add(provider.providerKey)) return null
-        try {
-            return block()
-        } finally {
-            set.remove(provider.providerKey)
-        }
-    }
-
-    internal inline fun <R> withServiceCreateKey(provider: ServiceProvider, block: () -> R): R {
-        check(set.add(provider.providerKey)) {
-            "Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}"
-        }
-        try {
-            return block()
-        } finally {
-            set.remove(provider.providerKey)
-        }
-    }
-}
 
 private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
@@ -66,7 +39,10 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()
-    private val serviceCreationStack = ServiceCreationStack()
+    private val serviceCreationStack = when {
+        serviceConfig.debug -> TracedServiceCreationStack()
+        else -> DefaultServiceCreationStack()
+    }
 
     internal fun loadServices() {
         getService<DefaultInstantiableServices>()
@@ -141,30 +117,20 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         if (serviceError != null)
             return ServiceResult.fail(serviceError)
 
-        return createService(provider)
+        return ServiceResult.pass(createService(provider))
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> createService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
+    private fun <T : Any> createService(provider: ServiceProvider): T = lock.withLock {
         try {
-            return serviceCreationStack.withServiceCreateKey(provider) {
-                //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, duration) = provider.createInstance(this)
-                //Doesn't really matter, the object is not used anyway
-                val result: ServiceResult<T> = anyResult as ServiceResult<T>
-                if (result.serviceError != null)
-                    return result
-
-                val instance = result.getOrThrow()
-                if (!provider.primaryType.isInstance(instance))
-                    throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
-
-                logger.trace {
-                    val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-                    "Loaded service ${instance.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
-                }
-                ServiceResult.pass(instance)
+            val instance =  serviceCreationStack.withServiceCreateKey(provider) {
+                provider.createInstance(this) as TimedInstantiation<T>
             }
+
+            if (!provider.primaryType.isInstance(instance))
+                throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
+
+            instance
         } catch (e: Exception) {
             e.rethrow("Unable to create service ${provider.primaryType.simpleNestedName}")
         }

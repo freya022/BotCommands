@@ -63,6 +63,10 @@ object Main {
                     usePingAsPrefix = true
                 }
 
+                services {
+                    debug = false
+                }
+
                 applicationCommands {
                     enable = true
 

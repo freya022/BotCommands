@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
-import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
@@ -39,7 +38,10 @@ private val logger = KotlinLogging.logger { }
  */
 internal typealias ProviderName = String
 
-internal data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
+internal typealias Instance = Any
+
+// Don't use TimedValue as it is nullable
+internal data class TimedInstantiation<R : Instance>(val instance: R, val duration: Duration)
 
 internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val name: String
@@ -55,7 +57,7 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 
     fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError?
 
-    fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation
+    fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*>
 
     fun getProviderFunction(): KFunction<*>?
 
@@ -214,19 +216,16 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
     return null
 }
 
-internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedInstantiation {
+internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedInstantiation<T> {
     val (value, duration) = measureTimedValue(block)
-    return TimedInstantiation(ServiceResult.pass(value), duration)
+    return TimedInstantiation(value, duration)
 }
 
-internal inline fun <T : Any?> measureNullableTimedInstantiation(block: () -> T): TimedInstantiation? {
+internal inline fun <T : Any> measureNullableTimedInstantiation(block: () -> T?): TimedInstantiation<T>? {
     val (value, duration) = measureTimedValue(block)
     if (value == null) return null
-    return TimedInstantiation(ServiceResult.pass(value), duration)
+    return TimedInstantiation(value, duration)
 }
-
-internal fun ServiceError.toFailedTimedInstantiation(): TimedInstantiation =
-    TimedInstantiation(ServiceResult.fail<Any>(this), Duration.INFINITE)
 
 internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
@@ -295,7 +294,7 @@ internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): Se
     }
 }
 
-internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation {
+internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
     val params: MutableMap<KParameter, Any?> = hashMapOf()
     this.nonInstanceParameters.forEach {
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
@@ -303,20 +302,20 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServ
         params[it] = dependencyResult.service ?: when {
             it.type.isMarkedNullable -> null
             it.isOptional -> return@forEach
-            else -> return ErrorType.UNAVAILABLE_PARAMETER.toError(
+            else -> throw ServiceException(ErrorType.UNAVAILABLE_PARAMETER.toError(
                 "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
                 failedFunction = this,
                 nestedError = dependencyResult.serviceError
-            ).toFailedTimedInstantiation()
+            ))
         }
     }
 
     return measureTimedInstantiation {
         this.callStatic(serviceContainer, params)
-            ?: return ErrorType.PROVIDER_RETURNED_NULL.toError(
+            ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
                 errorMessage = "Service factory returned null",
                 failedFunction = this
-            ).toFailedTimedInstantiation()
+            ))
     }
 }
 

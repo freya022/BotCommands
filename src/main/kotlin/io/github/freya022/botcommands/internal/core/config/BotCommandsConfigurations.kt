@@ -69,6 +69,7 @@ internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConf
 
 @ConfigurationProperties(prefix = "botcommands.service", ignoreUnknownFields = false)
 internal class BotCommandsServiceConfiguration : BServiceConfig {
+    override val debug: Nothing get() = unusable()
     @Deprecated("For removal, didn't do much in the first place")
     override val serviceAnnotations: Nothing get() = unusable()
     override val instanceSupplierMap: Nothing get() = unusable()
