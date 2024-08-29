@@ -22,7 +22,6 @@ interface BServiceConfig {
      */
     val debug: Boolean
 
-    //TODO document - this seems to be mostly used to retain classpath elements
     @Deprecated(message = "For removal, didn't do much in the first place")
     val serviceAnnotations: Set<KClass<out Annotation>>
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
