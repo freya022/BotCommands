@@ -8,19 +8,22 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.service.provider.*
+import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
+import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
+import io.github.freya022.botcommands.internal.core.service.provider.TimedInstantiation
+import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
+import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.AnnotatedParameterizedType
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
-import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -29,163 +32,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.TimeSource
-
-internal interface ServiceCreationStack {
-    operator fun contains(provider: ServiceProvider): Boolean
-
-    fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError?
-
-    fun <R : Instance> withServiceCreateKey(provider: ServiceProvider, block: () -> TimedInstantiation<R>): R
-}
-
-internal class TracedServiceCreationStack : ServiceCreationStack {
-    private sealed class ServiceOperation<in V>(protected val provider: ServiceProvider) {
-        private val mark = TimeSource.Monotonic.markNow()
-
-        val providerKey get() = provider.providerKey
-        val children: MutableList<ServiceOperation<*>> = arrayListOf()
-
-        protected var elapsed: Duration by Delegates.notNull()
-            private set
-
-        fun setElapsedNow() {
-            elapsed = mark.elapsedNow()
-        }
-
-        abstract fun onValue(value: V)
-
-        context(StringBuilder)
-        abstract fun print(indent: Int = 0)
-
-        // For circular dependency string
-        override fun toString(): String {
-            return providerKey
-        }
-    }
-
-    private class ServiceCheckOperation(provider: ServiceProvider) : ServiceOperation<ServiceError?>(provider) {
-        override fun onValue(value: ServiceError?) {}
-
-        context(StringBuilder)
-        override fun print(indent: Int) {
-            append("  ".repeat(indent))
-
-            val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
-            val typeName = provider.primaryType.simpleNestedName
-            appendLine("[Check, $opDuration] $typeName ($providerKey)")
-
-            children.forEach { it.print(indent + 1) }
-        }
-    }
-
-    private class ServiceCreateOperation(provider: ServiceProvider) : ServiceOperation<TimedInstantiation<*>>(provider) {
-        // Null if the service creation fails
-        private lateinit var instance: Instance
-
-        override fun onValue(value: TimedInstantiation<*>) {
-            instance = value.instance
-        }
-
-        context(StringBuilder)
-        override fun print(indent: Int) {
-            append("  ".repeat(indent))
-
-            val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
-            val typeName = instance::class.simpleNestedName
-            val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-            appendLine("[Create, $opDuration] $typeName as $loadedAsTypes ($providerKey)")
-
-            children.forEach { it.print(indent + 1) }
-        }
-    }
-
-    private val localSet: ThreadLocal<LinkedList<ServiceOperation<*>>> = ThreadLocal.withInitial { LinkedList() }
-    private val set: LinkedList<ServiceOperation<*>> get() = localSet.get()
-
-    override fun contains(provider: ServiceProvider) = set.any { it.providerKey == provider.providerKey }
-
-    //If services have circular dependencies during checking, consider it to not be an issue
-    override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
-        return withServiceKey(provider, ::ServiceCheckOperation, block, onDuplicate = {
-            return null
-        })
-    }
-
-    override fun <R : Instance> withServiceCreateKey(
-        provider: ServiceProvider,
-        block: () -> TimedInstantiation<R>
-    ): R {
-        return withServiceKey(provider, ::ServiceCreateOperation, block, onDuplicate = {
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
-        }).instance
-    }
-
-    private inline fun <R> withServiceKey(provider: ServiceProvider, operationSupplier: (ServiceProvider) -> ServiceOperation<R>, crossinline block: () -> R, onDuplicate: () -> Nothing): R {
-        if (provider in this)
-            onDuplicate() // Does not return
-
-        val serviceOperation = operationSupplier(provider)
-
-        // Add the new OP to the children of the current OP
-        if (set.isNotEmpty())
-            set.last().children += serviceOperation
-
-        set.addLast(serviceOperation)
-        try {
-            val value = block()
-            serviceOperation.onValue(value)
-            return value
-        } finally {
-            serviceOperation.setElapsedNow()
-            set.removeLast()
-
-            if (set.isEmpty()) {
-                logger.trace {
-                    buildString { serviceOperation.print() }.trim()
-                }
-            }
-        }
-    }
-}
-
-internal class DefaultServiceCreationStack : ServiceCreationStack {
-    private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
-    private val set get() = localSet.get()
-
-    override fun contains(provider: ServiceProvider) = set.contains(provider.providerKey)
-
-    //If services have circular dependencies during checking, consider it to not be an issue
-    override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
-        if (!set.add(provider.providerKey)) return null
-        try {
-            return block()
-        } finally {
-            set.remove(provider.providerKey)
-        }
-    }
-
-    override fun <R : Instance> withServiceCreateKey(
-        provider: ServiceProvider,
-        block: () -> TimedInstantiation<R>
-    ): R {
-        check(set.add(provider.providerKey)) {
-            "Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}"
-        }
-        try {
-            val (instance, duration) = block()
-            logger.trace {
-                val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-                "Loaded service ${instance.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
-            }
-            return instance
-        } finally {
-            set.remove(provider.providerKey)
-        }
-    }
-}
 
 private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
