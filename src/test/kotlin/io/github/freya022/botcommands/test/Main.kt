@@ -64,7 +64,7 @@ object Main {
                 }
 
                 services {
-                    debug = true
+                    debug = false
                 }
 
                 applicationCommands {

@@ -39,7 +39,10 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()
-    private val serviceCreationStack = if (serviceConfig.debug) TracedServiceCreationStack() else DefaultServiceCreationStack()
+    private val serviceCreationStack = when {
+        serviceConfig.debug -> TracedServiceCreationStack()
+        else -> DefaultServiceCreationStack()
+    }
 
     internal fun loadServices() {
         getService<DefaultInstantiableServices>()
