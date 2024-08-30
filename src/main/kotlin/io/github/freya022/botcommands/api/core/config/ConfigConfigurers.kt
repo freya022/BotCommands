@@ -43,6 +43,11 @@ interface BTextConfigConfigurer : BConfigurer<BTextConfigBuilder>
 interface BApplicationConfigConfigurer : BConfigurer<BApplicationConfigBuilder>
 
 /**
+ * Configurer for [BModalsConfig].
+ */
+interface BModalsConfigConfigurer : BConfigurer<BModalsConfigBuilder>
+
+/**
  * Configurer for [BComponentsConfig].
  */
 interface BComponentsConfigConfigurer : BConfigurer<BComponentsConfigBuilder>

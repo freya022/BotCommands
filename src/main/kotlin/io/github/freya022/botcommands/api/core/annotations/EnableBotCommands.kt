@@ -57,6 +57,7 @@ import org.springframework.stereotype.Component
  * - [BLocalizationConfigConfigurer] ([BLocalizationConfig])
  * - [BTextConfigConfigurer] ([BTextConfig])
  * - [BApplicationConfigConfigurer] ([BApplicationConfig])
+ * - [BModalsConfigConfigurer] ([BModalsConfig])
  * - [BComponentsConfigConfigurer] ([BComponentsConfig])
  * - [BCoroutineScopesConfigConfigurer] ([BCoroutineScopesConfigConfigurer])
  *

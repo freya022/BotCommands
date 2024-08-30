@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
 internal open class ConfigProvider {
     @Bean
@@ -16,6 +15,7 @@ internal open class ConfigProvider {
         textConfiguration: BotCommandsTextConfiguration, textConfigurers: List<BTextConfigConfigurer>,
         localizationConfiguration: BotCommandsLocalizationConfiguration, localizationConfigurers: List<BLocalizationConfigConfigurer>,
         applicationConfiguration: BotCommandsApplicationConfiguration, applicationConfigurers: List<BApplicationConfigConfigurer>,
+        modalsConfiguration: BotCommandsModalsConfiguration, modalsConfigurers: List<BModalsConfigConfigurer>,
         componentsConfiguration: BotCommandsComponentsConfiguration, componentsConfigurers: List<BComponentsConfigConfigurer>,
         coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>
     ): BConfig =
@@ -26,6 +26,7 @@ internal open class ConfigProvider {
                 textConfig.applyConfig(textConfiguration).configure(textConfigurers)
                 localizationConfig.applyConfig(localizationConfiguration).configure(localizationConfigurers)
                 applicationConfig.applyConfig(applicationConfiguration).configure(applicationConfigurers)
+                modalsConfig.applyConfig(modalsConfiguration).configure(modalsConfigurers)
                 componentsConfig.applyConfig(componentsConfiguration).configure(componentsConfigurers)
                 coroutineScopesConfig.configure(coroutineConfigurers)
             }
