@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.EventDispatcher
+import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
@@ -26,13 +26,8 @@ internal data object JDAInitListener {
     fun onJDAEvent(event: Event) {
         lock.withLock {
             val exception = IllegalStateException(
-                """
-                    A JDA instance was constructed before the framework had finished initializing
-                    Possible solutions include:
-                        - (Recommended) Use a service extending JDAService
-                        - Building JDA after the BotCommands entry point has returned
-                        - Building JDA in a ${classRef<BReadyEvent>()} event listener
-                """.trimIndent()
+                "A JDA instance was constructed before the framework had finished initializing, " +
+                        "you need to start your bot in your ${classRef<JDAService>()} instance"
             )
             logger.error(exception) { "An exception occurred while initializing the framework" }
 
