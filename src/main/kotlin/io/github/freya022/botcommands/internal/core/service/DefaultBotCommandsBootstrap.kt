@@ -49,6 +49,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         serviceContainer.putServiceAs<BDatabaseConfig>(config.databaseConfig)
         serviceContainer.putServiceAs<BLocalizationConfig>(config.localizationConfig)
         serviceContainer.putServiceAs<BApplicationConfig>(config.applicationConfig)
+        serviceContainer.putServiceAs<BModalsConfig>(config.modalsConfig)
         serviceContainer.putServiceAs<BComponentsConfig>(config.componentsConfig)
         serviceContainer.putServiceAs<BCoroutineScopesConfig>(config.coroutineScopesConfig)
         @Suppress("DEPRECATION")
