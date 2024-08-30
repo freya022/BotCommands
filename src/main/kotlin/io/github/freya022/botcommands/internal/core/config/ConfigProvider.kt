@@ -12,8 +12,6 @@ internal open class ConfigProvider {
     @Primary
     internal open fun bConfig(
         coreConfiguration: BotCommandsCoreConfiguration, coreConfigurers: List<BConfigConfigurer>,
-        debugConfiguration: BotCommandsDebugConfiguration, debugConfigurers: List<BDebugConfigConfigurer>,
-        serviceConfiguration: BotCommandsServiceConfiguration, serviceConfigurers: List<BServiceConfigConfigurer>,
         databaseConfiguration: BotCommandsDatabaseConfiguration, databaseConfigurers: List<BDatabaseConfigConfigurer>,
         textConfiguration: BotCommandsTextConfiguration, textConfigurers: List<BTextConfigConfigurer>,
         localizationConfiguration: BotCommandsLocalizationConfiguration, localizationConfigurers: List<BLocalizationConfigConfigurer>,
@@ -24,8 +22,6 @@ internal open class ConfigProvider {
         BConfigBuilder()
             .applyConfig(coreConfiguration)
             .apply {
-                debugConfig.applyConfig(debugConfiguration).configure(debugConfigurers)
-                serviceConfig.applyConfig(serviceConfiguration).configure(serviceConfigurers)
                 databaseConfig.applyConfig(databaseConfiguration).configure(databaseConfigurers)
                 textConfig.applyConfig(textConfiguration).configure(textConfigurers)
                 localizationConfig.applyConfig(localizationConfiguration).configure(localizationConfigurers)

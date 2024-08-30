@@ -52,33 +52,6 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     ignoredEventIntents += configuration.ignoredEventIntents
 }
 
-@Suppress("DEPRECATION")
-@ConfigurationProperties(prefix = "botcommands.debug", ignoreUnknownFields = false)
-internal class BotCommandsDebugConfiguration(
-    @Suppress("OVERRIDE_DEPRECATION")
-    override val enableApplicationDiffsLogs: Boolean = false,
-    @Suppress("OVERRIDE_DEPRECATION")
-    override val enabledMissingLocalizationLogs: Boolean = false
-) : BDebugConfig
-
-@Suppress("DEPRECATION")
-internal fun BDebugConfigBuilder.applyConfig(configuration: BotCommandsDebugConfiguration) = apply {
-    enableApplicationDiffsLogs = configuration.enableApplicationDiffsLogs
-    enabledMissingLocalizationLogs = configuration.enabledMissingLocalizationLogs
-}
-
-@ConfigurationProperties(prefix = "botcommands.service", ignoreUnknownFields = false)
-internal class BotCommandsServiceConfiguration : BServiceConfig {
-    override val debug: Nothing get() = unusable()
-    @Deprecated("For removal, didn't do much in the first place")
-    override val serviceAnnotations: Nothing get() = unusable()
-    override val instanceSupplierMap: Nothing get() = unusable()
-}
-
-internal fun BServiceConfigBuilder.applyConfig(configuration: BotCommandsServiceConfiguration) = apply {
-
-}
-
 @ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
 internal class BotCommandsDatabaseConfiguration(
     override val dumpLongTransactions: Boolean = false,

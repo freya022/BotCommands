@@ -13,11 +13,13 @@ interface BConfigConfigurer : BConfigurer<BConfigBuilder>
  * Configurer for [BConfig].
  */
 @Suppress("DEPRECATION")
+@Deprecated("For removal")
 interface BDebugConfigConfigurer : BConfigurer<BDebugConfigBuilder>
 
 /**
  * Configurer for [BServiceConfig].
  */
+@Deprecated("For removal")
 interface BServiceConfigConfigurer : BConfigurer<BServiceConfigBuilder>
 
 /**

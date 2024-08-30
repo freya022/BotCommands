@@ -53,8 +53,6 @@ import org.springframework.stereotype.Component
  * If you want to do it using code, or need to configure something not available using properties,
  * you can use the configurer interfaces:
  * - [BConfigConfigurer] ([BConfig])
- * - [BDebugConfigConfigurer] ([BDebugConfig])
- * - [BServiceConfigConfigurer] ([BServiceConfig])
  * - [BDatabaseConfigConfigurer] ([BDatabaseConfig])
  * - [BLocalizationConfigConfigurer] ([BLocalizationConfig])
  * - [BTextConfigConfigurer] ([BTextConfig])
