@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
+import io.github.freya022.botcommands.internal.core.reflection.buildParameters
 import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
@@ -46,7 +47,7 @@ context(ExecutableMixin)
 internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
-) = buildMap(eventFunction.parametersSize) {
+) = buildParameters(eventFunction.kFunction) {
     this[eventFunction.instanceParameter] = instance
     this[eventFunction.firstParameter] = firstParam
 
