@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.api.core.conditions
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
-import io.github.freya022.botcommands.internal.conditions.RequiredIntentsChecker
-import io.github.freya022.botcommands.internal.conditions.SpringRequiredIntentsChecker
+import io.github.freya022.botcommands.internal.core.conditions.RequiredIntentsChecker
+import io.github.freya022.botcommands.internal.core.conditions.SpringRequiredIntentsChecker
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.context.annotation.Conditional
 

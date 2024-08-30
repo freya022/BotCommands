@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.conditions
+package io.github.freya022.botcommands.internal.core.conditions
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
