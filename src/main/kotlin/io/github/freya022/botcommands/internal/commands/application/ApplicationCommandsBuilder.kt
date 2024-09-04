@@ -30,6 +30,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -49,7 +50,9 @@ internal class ApplicationCommandsBuilder(
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
 
     // Whatever, there will be no code running on it at all, apart from resuming the coroutine
-    private val updateRateLimitScheduler = Executors.newSingleThreadScheduledExecutor()
+    private val updateRateLimitScheduler = Executors.newSingleThreadScheduledExecutor {
+        thread(name = "Command update RateLimiter", start = false, isDaemon = true) {}
+    }
     // 10/s
     private val updateBucket = Bucket.builder()
         .addLimit(
