@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import io.github.bucket4j.Bandwidth
-import io.github.bucket4j.Bucket
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateException
 import io.github.freya022.botcommands.api.commands.application.CommandUpdateResult
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
@@ -12,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GuildApp
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
+import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -24,45 +23,28 @@ import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
-import java.util.concurrent.Executors
-import kotlin.concurrent.thread
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 @BService
 @RequiresApplicationCommands
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
     private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
-    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
+    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>,
+    updateRateLimiter: LazyService<ApplicationCommandsUpdateRateLimiter>,
 ) {
     private val logger = KotlinLogging.logger {  }
 
     private val applicationCommandsContext = context.applicationCommandsContext
 
+    private val updateRateLimiter: ApplicationCommandsUpdateRateLimiter by updateRateLimiter
+
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
-
-    // Whatever, there will be no code running on it at all, apart from resuming the coroutine
-    private val updateRateLimitScheduler = Executors.newSingleThreadScheduledExecutor {
-        thread(name = "Command update RateLimiter", start = false, isDaemon = true) {}
-    }
-    // 10/s
-    private val updateBucket = Bucket.builder()
-        .addLimit(
-            Bandwidth.builder()
-                .capacity(10)
-                .refillIntervally(10, 1.seconds.toJavaDuration())
-                .build()
-        )
-        .build()
-        .asScheduler()
 
     private var firstGlobalUpdate = true
     private val firstGuildUpdates = hashSetOf<Long>()
@@ -100,7 +82,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult {
-        updateBucket.consume(1, updateRateLimitScheduler).await()
+        updateRateLimiter.awaitToken()
 
         globalUpdateMutex.withLock {
             val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
@@ -143,7 +125,7 @@ internal class ApplicationCommandsBuilder(
             }
         }
 
-        updateBucket.consume(1, updateRateLimitScheduler).await()
+        updateRateLimiter.awaitToken()
 
         guildUpdateGlobalMutex.withLock {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
