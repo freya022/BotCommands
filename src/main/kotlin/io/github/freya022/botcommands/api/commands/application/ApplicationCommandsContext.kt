@@ -10,10 +10,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.future.asDeferred
+import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import kotlin.reflect.KFunction
 
 /**
@@ -94,8 +94,7 @@ interface ApplicationCommandsContext {
      *
      * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
      *
-     * @see CompletableFuture.asDeferred
-     * @see Deferred.await
+     * @see CompletionStage.await
      */
     fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult>
 
@@ -110,8 +109,7 @@ interface ApplicationCommandsContext {
      *
      * @return A [CompletableFuture]&lt;[CommandUpdateResult]&gt;
      *
-     * @see CompletableFuture.asDeferred
-     * @see Deferred.await
+     * @see CompletionStage.await
      */
     fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult>
 
