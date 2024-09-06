@@ -73,7 +73,7 @@ internal class ApplicationCommandsBuilder(
     // Added to set when the first push succeeded
     internal fun hasPushedGuildOnceSuccessfully(guild: Guild): Boolean = guild.idLong !in firstGuildUpdates
 
-    @BEventListener
+    @BEventListener(async = true)
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         try {
             updateCatching(null) { updateGlobalCommands() }
@@ -82,7 +82,7 @@ internal class ApplicationCommandsBuilder(
         }
     }
 
-    @BEventListener
+    @BEventListener(async = true)
     internal suspend fun onGuildReady(event: GuildReadyEvent) {
         val guild = event.guild
 
