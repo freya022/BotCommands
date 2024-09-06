@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -18,6 +19,7 @@ import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.RestRateLimiter
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @InjectedService
@@ -109,6 +111,18 @@ interface BConfig {
     @ConfigurationValue(path = "botcommands.core.ignoredEventIntents", type = "java.util.Set<java.lang.Class<net.dv8tion.jda.api.events.Event>>")
     val ignoredEventIntents: Set<Class<out Event>>
 
+    /**
+     * Suppresses warnings about the default [RestRateLimiter] being used for large bots.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.core.ignoreRestRateLimiter`
+     *
+     * @see PriorityGlobalRestRateLimiter
+     */
+    @ConfigurationValue("botcommands.core.ignoreRestRateLimiter")
+    val ignoreRestRateLimiter: Boolean
+
     val classGraphProcessors: List<ClassGraphProcessor>
 
     @Suppress("DEPRECATION")
@@ -160,6 +174,8 @@ class BConfigBuilder internal constructor() : BConfig {
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
     override val ignoredEventIntents: MutableSet<Class<out Event>> = hashSetOf()
+
+    override var ignoreRestRateLimiter: Boolean = false
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
@@ -335,6 +351,7 @@ class BConfigBuilder internal constructor() : BConfig {
             override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
             override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
+            override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter
             override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
             override val debugConfig = this@BConfigBuilder.debugConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()

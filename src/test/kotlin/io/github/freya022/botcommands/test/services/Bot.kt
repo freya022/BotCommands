@@ -2,12 +2,16 @@ package io.github.freya022.botcommands.test.services
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
+import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.test.config.Config
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.RestConfig
+import net.dv8tion.jda.api.requests.RestRateLimiter.RateLimitConfig
+import net.dv8tion.jda.api.requests.SequentialRestRateLimiter
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -40,6 +44,11 @@ class Bot(private val config: Config, environment: ConfigurableEnvironment?) : J
                 setShardsTotal(2)
                 setShards(0, 1)
             }
+            val restConfig = RestConfig()
+                .setRateLimiterFactory { rlConfig: RateLimitConfig ->
+                    PriorityGlobalRestRateLimiter(SequentialRestRateLimiter(rlConfig))
+                }
+            setRestConfig(restConfig)
         }.build()
     }
 }
