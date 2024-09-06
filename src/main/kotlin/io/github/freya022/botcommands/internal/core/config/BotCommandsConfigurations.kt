@@ -27,6 +27,7 @@ internal class BotCommandsCoreConfiguration(
     internal val _disableAutocompleteCache: Boolean? = null,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
+    override val ignoreRestRateLimiter: Boolean = false,
 ) : BConfig {
     override val classGraphProcessors: Nothing get() = unusable()
     override val debugConfig: Nothing get() = unusable()
@@ -50,6 +51,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     configuration._disableAutocompleteCache?.let { disableAutocompleteCache = it }
     ignoredIntents += configuration.ignoredIntents
     ignoredEventIntents += configuration.ignoredEventIntents
+    ignoreRestRateLimiter = configuration.ignoreRestRateLimiter
 }
 
 @ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
