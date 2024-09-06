@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.commands.application.provider.GuildApp
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
-import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -33,14 +32,11 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
     private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
-    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>,
-    updateRateLimiter: LazyService<ApplicationCommandsUpdateRateLimiter>,
+    private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
 ) {
     private val logger = KotlinLogging.logger {  }
 
     private val applicationCommandsContext = context.applicationCommandsContext
-
-    private val updateRateLimiter: ApplicationCommandsUpdateRateLimiter by updateRateLimiter
 
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()
@@ -81,38 +77,34 @@ internal class ApplicationCommandsBuilder(
         logger.error(t) { "Encountered an exception while updating commands for guild '${guild.name}' (${guild.id})" }
     }
 
-    internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult {
-        updateRateLimiter.awaitToken()
+    internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult = globalUpdateMutex.withLock {
+        val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
-        globalUpdateMutex.withLock {
-            val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
-
-            val manager = GlobalApplicationCommandManager(context)
-            globalApplicationCommandProviders.forEach { globalApplicationCommandProvider ->
-                runCatching {
-                    globalApplicationCommandProvider.declareGlobalApplicationCommands(manager)
-                }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandProvider::declareGlobalApplicationCommands.resolveBestReference(), it)) }
-            }
-
-            if (failedDeclarations.isNotEmpty() && firstGlobalUpdate) {
-                logger.error { "An exception occurred while updating global commands on startup, aborting any update" }
-                return CommandUpdateResult(null, false, failedDeclarations)
-            }
-
-            val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
-            val hasUpdated = globalUpdater.tryUpdateCommands(force)
-            if (hasUpdated) {
-                logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
-            } else {
-                logger.debug { "Global commands does not have to be updated, ${globalUpdater.commandsCount} were kept (${getCheckTypeString()})" }
-            }
-
-            setMetadata(globalUpdater)
-            applicationCommandsContext.putApplicationCommands(globalUpdater.applicationCommands)
-
-            firstGlobalUpdate = false
-            return CommandUpdateResult(null, hasUpdated, failedDeclarations)
+        val manager = GlobalApplicationCommandManager(context)
+        globalApplicationCommandProviders.forEach { globalApplicationCommandProvider ->
+            runCatching {
+                globalApplicationCommandProvider.declareGlobalApplicationCommands(manager)
+            }.onFailure { failedDeclarations.add(CommandUpdateException(globalApplicationCommandProvider::declareGlobalApplicationCommands.resolveBestReference(), it)) }
         }
+
+        if (failedDeclarations.isNotEmpty() && firstGlobalUpdate) {
+            logger.error { "An exception occurred while updating global commands on startup, aborting any update" }
+            return CommandUpdateResult(null, false, failedDeclarations)
+        }
+
+        val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
+        val hasUpdated = globalUpdater.tryUpdateCommands(force)
+        if (hasUpdated) {
+            logger.debug { "Global commands were${getForceString(force)} updated (${getCheckTypeString()})" }
+        } else {
+            logger.debug { "Global commands does not have to be updated, ${globalUpdater.commandsCount} were kept (${getCheckTypeString()})" }
+        }
+
+        setMetadata(globalUpdater)
+        applicationCommandsContext.putApplicationCommands(globalUpdater.applicationCommands)
+
+        firstGlobalUpdate = false
+        return CommandUpdateResult(null, hasUpdated, failedDeclarations)
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
@@ -124,8 +116,6 @@ internal class ApplicationCommandsBuilder(
                 return CommandUpdateResult(guild, false, listOf())
             }
         }
-
-        updateRateLimiter.awaitToken()
 
         guildUpdateGlobalMutex.withLock {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }

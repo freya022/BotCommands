@@ -19,6 +19,11 @@ internal interface ApplicationCommandsUpdateRateLimiter {
     suspend fun awaitToken()
 }
 
+internal suspend inline fun <R> ApplicationCommandsUpdateRateLimiter.withToken(block: () -> R): R {
+    awaitToken()
+    return block()
+}
+
 private object NullApplicationCommandsUpdateRateLimiter : ApplicationCommandsUpdateRateLimiter {
     override suspend fun awaitToken() {}
 }

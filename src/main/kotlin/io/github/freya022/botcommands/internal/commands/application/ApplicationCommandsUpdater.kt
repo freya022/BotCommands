@@ -40,6 +40,8 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
+    private val updateRateLimiter: ApplicationCommandsUpdateRateLimiter = context.getService()
+
     private val commandsCache: ApplicationCommandsCache
     private val cacheConfig: ApplicationCommandsCacheConfig
 
@@ -87,13 +89,21 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private suspend fun checkOnlineCommands(): Boolean {
-        val oldCommands = (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true)).await()
+        val oldCommands = retrieveCommands()
         val oldCommandBytes = oldCommands
             .map(CommandData::fromCommand)
             .toJsonBytes()
 
         metadata = oldCommands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
         return checkCommandJson(oldCommandBytes.decodeToString())
+    }
+
+    private suspend fun retrieveCommands(): List<Command> = updateRateLimiter.withToken {
+        val action = when {
+            guild != null -> guild.retrieveCommands(true)
+            else -> context.jda.retrieveCommands(true)
+        }
+        action.await()
     }
 
     private suspend fun checkOfflineCommands(): Boolean {
@@ -162,15 +172,20 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private suspend fun updateCommands() {
-        val updateAction = guild?.updateCommands() ?: context.jda.updateCommands()
-        val commands = updateAction
-            .addCommands(commandData)
-            .await()
+        val commands = pushCommands()
 
         metadata = commands.map { TopLevelApplicationCommandMetadataImpl.fromCommand(guild, it) }
 
         saveCommandData(guild)
         printPushedCommandData(commands, guild)
+    }
+
+    private suspend fun pushCommands(): List<Command> = updateRateLimiter.withToken {
+        val action = when {
+            guild != null -> guild.updateCommands()
+            else -> context.jda.updateCommands()
+        }
+        action.addCommands(commandData).await()
     }
 
     private fun mapSlashCommands(commands: Collection<TopLevelSlashCommandInfo>): List<SlashCommandData> =
