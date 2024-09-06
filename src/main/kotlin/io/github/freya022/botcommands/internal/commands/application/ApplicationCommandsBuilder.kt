@@ -148,6 +148,12 @@ internal class ApplicationCommandsBuilder(
         guildUpdateGlobalMutex.withLock {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
         }.withLock {
+            // In case the bot left the guild before a lock was acquired
+            if (guild.jda.getGuildById(guild.idLong) == null) {
+                logger.trace { "Skipping application commands update in ${guild.name} (${guild.id}) as the bot no longer is in it" }
+                return CommandUpdateResult(guild, false, listOf())
+            }
+
             val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
             val manager = GuildApplicationCommandManager(context, guild)
