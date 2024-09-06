@@ -18,7 +18,8 @@ import kotlin.reflect.KType
  *
  * A factory determines if a given parameter is supported, if so, a parameter resolver will be created.
  *
- * **Note:** If multiple factories return `true` in [isResolvable] for a given type, an exception is thrown.
+ * If multiple factories return `true` in [isResolvable] for a given type,
+ * the factory with the best [priority] is taken, if two with the same top priority exists, an exception is thrown.
  *
  * ### Use cases
  *
