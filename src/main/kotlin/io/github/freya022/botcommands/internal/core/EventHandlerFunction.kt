@@ -27,6 +27,9 @@ internal class EventHandlerFunction(
     }
 
     companion object {
-        val priorityComparator: Comparator<EventHandlerFunction> = Comparator.comparingInt<EventHandlerFunction> { it.priority }.reversed()
+        val priorityComparator: Comparator<EventHandlerFunction> = Comparator
+            .comparingInt<EventHandlerFunction> { it.priority }
+            .thenComparing<Boolean> { it.isAsync }
+            .reversed()
     }
 }
