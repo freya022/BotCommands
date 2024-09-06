@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.core.requests
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.Bucket
 import io.github.freya022.botcommands.api.core.errorNull
+import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.requests.RestRateLimiter
 import net.dv8tion.jda.api.requests.Route
@@ -86,7 +87,7 @@ class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : Res
         }
     }
 
-    private fun pollWorkQueue(submittedTask: RestRateLimiter.Work): RestRateLimiter.Work? {
+    private fun pollWorkQueue(submittedTask: RestRateLimiter.Work): RestRateLimiter.Work? = lock.withLock {
         return queue.poll()?.task ?: return logger.errorNull {
             """
                 Queue is empty! Task that may or may not have been processed earlier:
@@ -94,6 +95,7 @@ class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : Res
                 Is done: ${submittedTask.isDone}
                 Is skipped: ${submittedTask.isSkipped}
                 Is cancelled: ${submittedTask.isCancelled}
+                Version: ${getDiagnosticVersions()}
             """
         }
     }
@@ -116,6 +118,6 @@ class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : Res
         queue.removeAll(toBeCancelled)
         toBeCancelled.forEach { it.task.cancel() }
 
-        return delegate.cancelRequests()
+        return toBeCancelled.size + delegate.cancelRequests()
     }
 }
