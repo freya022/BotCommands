@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 
@@ -35,6 +36,8 @@ internal class FileApplicationCommandsCache internal constructor(
     }
 
     override suspend fun write(commandBytes: ByteArray, metadataBytes: ByteArray): Unit = withContext(Dispatchers.IO) {
+        commandsPath.parent.createDirectories()
+
         commandsPath.overwriteBytes(commandBytes)
         commandsMetadataPath.overwriteBytes(metadataBytes)
     }
