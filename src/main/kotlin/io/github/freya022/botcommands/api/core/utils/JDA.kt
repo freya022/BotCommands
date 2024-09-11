@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.Route
@@ -340,3 +341,8 @@ fun <T> Task<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.to
  */
 fun <T> GatewayTask<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
 //endregion
+
+/**
+ * The minimum and maximum amount of values a user can select.
+ */
+fun <B : SelectMenu.Builder<*, B>> SelectMenu.Builder<*, B>.setRequiredRange(range: IntRange): B = setRequiredRange(range.first, range.last)

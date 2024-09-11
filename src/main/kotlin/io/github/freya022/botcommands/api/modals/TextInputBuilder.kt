@@ -29,6 +29,12 @@ abstract class TextInputBuilder internal constructor(
 
     override fun setMaxLength(maxLength: Int): TextInputBuilder = this.apply { super.setMaxLength(maxLength) }
 
+    /**
+     * Sets the minimum and maximum required length on this TextInput component.
+     */
+    @JvmSynthetic
+    fun setRequiredRange(range: IntRange) = setRequiredRange(range.first, range.last)
+
     override fun setRequiredRange(min: Int, max: Int): TextInputBuilder = this.apply { super.setRequiredRange(min, max) }
 
     override fun setValue(value: String?): TextInputBuilder = this.apply { super.setValue(value) }
