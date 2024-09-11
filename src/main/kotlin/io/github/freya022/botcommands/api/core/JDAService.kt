@@ -165,7 +165,7 @@ abstract class JDAService {
     }
 
     /**
-     * Creates a [JDABuilder with caches inferred from intents][JDABuilder.createDefault].
+     * Creates a [JDABuilder with caches inferred from intents][JDABuilder.create].
      *
      * In addition to the profile settings:
      * - The event manager is set to the (optional) [CoroutineEventManager]
@@ -228,7 +228,7 @@ abstract class JDAService {
     }
 
     /**
-     * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.createDefault].
+     * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.create].
      *
      * In addition to the DefaultShardManagerBuilder profile settings:
      * - The event manager is set to the (optional) [CoroutineEventManager]
@@ -353,7 +353,7 @@ inline fun JDAService.default(
 }
 
 /**
- * Creates a [JDABuilder with caches inferred from intents][JDABuilder.createDefault].
+ * Creates a [JDABuilder with caches inferred from intents][JDABuilder.create].
  *
  * In addition to the profile settings:
  * - The event manager is set to the (optional) [CoroutineEventManager]
@@ -457,7 +457,7 @@ inline fun JDAService.defaultSharded(
 }
 
 /**
- * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.createDefault].
+ * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.create].
  *
  * In addition to the DefaultShardManagerBuilder profile settings:
  * - The event manager is set to the (optional) [CoroutineEventManager]
