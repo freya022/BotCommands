@@ -233,8 +233,6 @@ inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResu
 
     if (value !is RestResult.FatalFailure) return this
 
-    // Problem, IntelliJ?
-    @Suppress("NON_PUBLIC_CALL_FROM_PUBLIC_INLINE")
     val it = value.exception
     return if (predicate(it)) {
         RestResult(RestResult.IgnoredFailure(it))
