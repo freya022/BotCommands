@@ -134,6 +134,8 @@ abstract class JDAService {
      * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
      *
      * You must not change intents, cache flags nor event manager using the builder.
+     *
+     * If you plan on growing your bot, prefer using [lightSharded] instead.
      */
     @CheckReturnValue
     fun light(token: String): JDABuilder {
@@ -152,6 +154,8 @@ abstract class JDAService {
      * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
      *
      * You must not change intents, cache flags nor event manager using the builder.
+     *
+     * If you plan on growing your bot, prefer using [defaultSharded] instead.
      */
     @CheckReturnValue
     fun default(token: String): JDABuilder {
@@ -170,6 +174,8 @@ abstract class JDAService {
      * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
      *
      * You must not change intents, cache flags nor event manager using the builder.
+     *
+     * If you plan on growing your bot, prefer using [createSharded] instead.
      */
     @CheckReturnValue
     fun create(token: String): JDABuilder {
@@ -258,6 +264,11 @@ abstract class JDAService {
         val defaultIntents: EnumSet<GatewayIntent>
             get() = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
 
+        /**
+         * Returns the default JDA intents, in addition to the provided intents.
+         *
+         * @see GatewayIntent.DEFAULT
+         */
         @JvmStatic
         fun defaultIntents(vararg additionalIntents: GatewayIntent): EnumSet<GatewayIntent> {
             val intents = defaultIntents
@@ -265,11 +276,17 @@ abstract class JDAService {
             return intents
         }
 
+        /**
+         * Returns a [RestConfig] which uses the [default REST rate limiter][getDefaultRestRateLimiter].
+         */
         @JvmStatic
         fun getDefaultRestConfig(): RestConfig {
             return RestConfig().setRateLimiterFactory(::getDefaultRestRateLimiter)
         }
 
+        /**
+         * Returns a [PriorityGlobalRestRateLimiter] using a [SequentialRestRateLimiter] as its [delegate][PriorityGlobalRestRateLimiter.delegate]
+         */
         @JvmStatic
         fun getDefaultRestRateLimiter(rlConfig: RateLimitConfig): RestRateLimiter {
             return PriorityGlobalRestRateLimiter(SequentialRestRateLimiter(rlConfig))
@@ -287,6 +304,8 @@ abstract class JDAService {
  * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
  *
  * You must not change intents, cache flags nor event manager using the builder.
+ *
+ * If you plan on growing your bot, prefer using [lightSharded] instead.
  */
 @JvmSynthetic
 inline fun JDAService.light(
@@ -314,6 +333,8 @@ inline fun JDAService.light(
  * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
  *
  * You must not change intents, cache flags nor event manager using the builder.
+ *
+ * If you plan on growing your bot, prefer using [defaultSharded] instead.
  */
 @JvmSynthetic
 inline fun JDAService.default(
@@ -341,6 +362,8 @@ inline fun JDAService.default(
  * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
  *
  * You must not change intents, cache flags nor event manager using the builder.
+ *
+ * If you plan on growing your bot, prefer using [createSharded] instead.
  */
 @JvmSynthetic
 inline fun JDAService.create(
