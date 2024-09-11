@@ -18,6 +18,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import kotlin.io.path.exists
 import kotlin.io.path.isWritable
 import kotlin.io.path.pathString
 
@@ -35,9 +36,13 @@ internal open class ApplicationCommandsCacheFactoryProvider {
         when (cacheConfig) {
             is FileApplicationCommandsCacheConfig -> {
                 val dataDirectory = cacheConfig.path
-                if (!dataDirectory.isWritable()) {
+                if (dataDirectory.exists() && !dataDirectory.isWritable()) {
                     // Don't use absolutePathString in case it also produces an exception
                     logger.warn { "Cannot write to '${dataDirectory.pathString}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
+                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                } else if (!dataDirectory.parent.isWritable()) {
+                    // Don't use absolutePathString in case it also produces an exception
+                    logger.warn { "Cannot create directory at '${dataDirectory.pathString}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 }
 
