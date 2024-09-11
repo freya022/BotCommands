@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
+import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestConfig
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
@@ -51,11 +52,10 @@ import javax.annotation.CheckReturnValue
  *     override val cacheFlags: Set<CacheFlag> = enumSetOf()
  *
  *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
- *         DefaultShardManagerBuilder.createLight(config.token, intents).apply {
- *             setEventManagerProvider { eventManager }
- *             enableCache(cacheFlags)
+ *         // Read the docs on what this does
+ *         lightSharded(config.token, ...) {
  *             ...
- *         }.build()
+ *         }
  *     }
  * }
  * ```
@@ -107,8 +107,11 @@ abstract class JDAService {
      * After a shard is started, a JDA instance will be picked up automatically (assuming you set the event manager),
      * added to the IoC container, and an [InjectedJDAEvent] will be fired.
      *
+     * ### Custom event manager
+     * You can provide your own [CoroutineEventManager] by using a service factory.
+     *
      * @param event        The framework's ready event
-     * @param eventManager The event manager passed to [BotCommands.create]
+     * @param eventManager The event manager from the (optional) [CoroutineEventManager] provider
      *
      */
     protected abstract fun createJDA(event: BReadyEvent, eventManager: IEventManager)
@@ -121,6 +124,17 @@ abstract class JDAService {
         createJDA(event, eventManager)
     }
 
+    /**
+     * Creates a [JDABuilder with low memory profile settings][JDABuilder.createLight].
+     *
+     * In addition to the profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun light(token: String): JDABuilder {
         return JDABuilder.createLight(token, intents)
@@ -128,6 +142,17 @@ abstract class JDAService {
             .setRestConfig(getDefaultRestConfig())
     }
 
+    /**
+     * Creates a [JDABuilder with recommended default settings][JDABuilder.createDefault].
+     *
+     * In addition to the profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun default(token: String): JDABuilder {
         return JDABuilder.createDefault(token, intents)
@@ -135,6 +160,17 @@ abstract class JDAService {
             .setRestConfig(getDefaultRestConfig())
     }
 
+    /**
+     * Creates a [JDABuilder with caches inferred from intents][JDABuilder.createDefault].
+     *
+     * In addition to the profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun create(token: String): JDABuilder {
         return JDABuilder.create(token, intents)
@@ -149,6 +185,17 @@ abstract class JDAService {
         enableCache(cacheFlags)
     }
 
+    /**
+     * Creates a [DefaultShardManagerBuilder with low memory profile settings][DefaultShardManagerBuilder.createLight].
+     *
+     * In addition to the profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun lightSharded(token: String): DefaultShardManagerBuilder {
         return DefaultShardManagerBuilder.createLight(token, intents)
@@ -156,6 +203,17 @@ abstract class JDAService {
             .setRestConfig(getDefaultRestConfig())
     }
 
+    /**
+     * Creates a [DefaultShardManagerBuilder with recommended default settings][DefaultShardManagerBuilder.createDefault].
+     *
+     * In addition to the profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun defaultSharded(token: String): DefaultShardManagerBuilder {
         return DefaultShardManagerBuilder.createDefault(token, intents)
@@ -163,6 +221,17 @@ abstract class JDAService {
             .setRestConfig(getDefaultRestConfig())
     }
 
+    /**
+     * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.createDefault].
+     *
+     * In addition to the DefaultShardManagerBuilder profile settings:
+     * - The event manager is set to the (optional) [CoroutineEventManager]
+     * - The intents are set to [JDAService.intents].
+     * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+     * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+     *
+     * You must not change intents, cache flags nor event manager using the builder.
+     */
     @CheckReturnValue
     fun createSharded(token: String): DefaultShardManagerBuilder {
         return DefaultShardManagerBuilder.create(token, intents)
@@ -208,6 +277,17 @@ abstract class JDAService {
     }
 }
 
+/**
+ * Creates a [JDABuilder with low memory profile settings][JDABuilder.createLight].
+ *
+ * In addition to the profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.light(
     token: String,
@@ -224,6 +304,17 @@ inline fun JDAService.light(
         .build()
 }
 
+/**
+ * Creates a [JDABuilder with recommended default settings][JDABuilder.createDefault].
+ *
+ * In addition to the profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.default(
     token: String,
@@ -240,6 +331,17 @@ inline fun JDAService.default(
         .build()
 }
 
+/**
+ * Creates a [JDABuilder with caches inferred from intents][JDABuilder.createDefault].
+ *
+ * In addition to the profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][JDABuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.create(
     token: String,
@@ -271,6 +373,17 @@ internal fun JDABuilder.configure(
     if (restConfig != null) setRestConfig(restConfig)
 }
 
+/**
+ * Creates a [DefaultShardManagerBuilder with low memory profile settings][DefaultShardManagerBuilder.createLight].
+ *
+ * In addition to the profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.lightSharded(
     token: String,
@@ -290,6 +403,17 @@ inline fun JDAService.lightSharded(
         .build(login)
 }
 
+/**
+ * Creates a [DefaultShardManagerBuilder with recommended default settings][DefaultShardManagerBuilder.createDefault].
+ *
+ * In addition to the profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.defaultSharded(
     token: String,
@@ -309,6 +433,17 @@ inline fun JDAService.defaultSharded(
         .build(login)
 }
 
+/**
+ * Creates a [DefaultShardManagerBuilder with caches inferred from intents][DefaultShardManagerBuilder.createDefault].
+ *
+ * In addition to the DefaultShardManagerBuilder profile settings:
+ * - The event manager is set to the (optional) [CoroutineEventManager]
+ * - The intents are set to [JDAService.intents].
+ * - In addition to the default-configured cache flags, [JDAService.cacheFlags] are added.
+ * - The [REST Config][DefaultShardManagerBuilder.setRestConfig] is set to [getDefaultRestConfig].
+ *
+ * You must not change intents, cache flags nor event manager using the builder.
+ */
 @JvmSynthetic
 inline fun JDAService.createSharded(
     token: String,
