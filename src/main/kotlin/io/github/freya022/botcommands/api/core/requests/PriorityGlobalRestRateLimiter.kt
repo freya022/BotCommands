@@ -52,9 +52,12 @@ class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : Res
         // Natural order
         // * Note: this can technically go in an IdentityHashMap as the routes are constants
         private val RestRateLimiter.Work.priority: Int get() = when (this.route.baseRoute) {
-            // Do command updates last
-            Route.Interactions.UPDATE_COMMANDS -> 1
-            Route.Interactions.UPDATE_GUILD_COMMANDS -> 2
+            // Retrieve first as they can avoid work if no update is necessary
+            Route.Interactions.GET_COMMANDS -> 1
+            Route.Interactions.UPDATE_COMMANDS -> 2
+            // Do guild requests last
+            Route.Interactions.GET_GUILD_COMMANDS -> 3
+            Route.Interactions.UPDATE_GUILD_COMMANDS -> 4
             else -> 0
         }
     }
