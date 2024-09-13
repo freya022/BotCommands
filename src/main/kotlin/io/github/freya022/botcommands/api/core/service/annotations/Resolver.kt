@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @Bean
 @Component
+@BService
 annotation class Resolver(
     /**
      * The priority of this resolver (then wrapped as a resolver factory).

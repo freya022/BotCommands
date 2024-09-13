@@ -26,4 +26,5 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @Bean
 @Component
+@BService
 annotation class Handler
