@@ -117,7 +117,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class BService(
     /**
      * The unique name of this service.

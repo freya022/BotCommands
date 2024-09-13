@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.bestName
+import io.github.freya022.botcommands.api.core.utils.flatMapTo
 import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
@@ -23,8 +24,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.allSuperclasses
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -88,13 +87,13 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 internal fun ServiceProvider.getProviderFunctionOrSignature(): Any = getProviderFunction() ?: getProviderSignature()
 
 internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
-    findAnnotation<ServiceName>()?.let {
+    findAnnotationRecursive<ServiceName>()?.let {
         if (it.value.isNotBlank()) {
             return it.value
         }
     }
 
-    findAnnotation<BService>()?.let {
+    findAnnotationRecursive<BService>()?.let {
         if (it.name.isNotBlank()) {
             return it.name
         }
@@ -104,11 +103,11 @@ internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
 }
 
 internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
-    findAnnotation<ServicePriority>()?.let {
+    findAnnotationRecursive<ServicePriority>()?.let {
         return it.value
     }
 
-    findAnnotation<BService>()?.let {
+    findAnnotationRecursive<BService>()?.let {
         return it.priority
     }
 
@@ -117,32 +116,31 @@ internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
 }
 
 internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
-    val explicitTypes = when (val serviceType = findAnnotation<ServiceType>()) {
-        null -> setOf(primaryType)
-        else -> buildSet(serviceType.types.size + 1) {
+    val explicitTypes = findAllAnnotations<ServiceType>().flatMapTo(hashSetOf()) { it.types }
+    val ignoredTypes = findAllAnnotations<IgnoreServiceTypes>().flatMapTo(hashSetOf()) { it.types }
+    // TODO can't this be replaced with @Inherited?
+    val interfacedServiceTypes = primaryType.allSuperclasses.filterTo(hashSetOf()) { it.hasAnnotationRecursive<InterfacedService>() }
+    val additionalTypes = interfacedServiceTypes + explicitTypes - ignoredTypes
+
+    val effectiveTypes = when {
+        additionalTypes.isEmpty() -> setOf(primaryType)
+        else -> buildSet(additionalTypes.size + 1) {
             this += primaryType
-            this += serviceType.types.onEach {
+            this += additionalTypes.onEach {
                 require(it.isAssignableFrom(primaryType)) {
                     "${it.simpleNestedName} is not a supertype of service ${primaryType.simpleNestedName}"
                 }
             }
         }
     }
-    val removedTypes = findAnnotation<IgnoreServiceTypes>()?.types?.toSet() ?: emptySet()
 
-    val interfacedServiceTypes = primaryType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
-    val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes) - removedTypes
-    if (existingServiceTypes.isNotEmpty()) {
-        logger.warn { "Instance of ${primaryType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
-    }
-
-    return (explicitTypes + interfacedServiceTypes) - removedTypes
+    return effectiveTypes
 }
 
 context(ServiceProvider)
 internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
-    findAnnotation<Dependencies>()?.value?.let { dependencies ->
-        dependencies.forEach { dependency ->
+    findAllAnnotations<Dependencies>().forEach { dependencies ->
+        dependencies.value.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
             }
@@ -150,7 +148,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
     }
 
     // Services can be conditional
-    findAnnotation<ConditionalService>()?.let { conditionalService ->
+    findAllAnnotations<ConditionalService>().forEach { conditionalService ->
         conditionalService.checks.forEach {
             val instance = it.createSingleton()
 
@@ -277,7 +275,7 @@ internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): Se
         return null //Might be empty if no service were available, which is ok
     }
 
-    val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
+    val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
         canCreateService(requestedMandatoryName, type.jvmErasure)
     } else {

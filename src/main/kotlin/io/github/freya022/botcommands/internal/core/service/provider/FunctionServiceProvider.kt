@@ -6,13 +6,14 @@ import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.utils.getAllAnnotations
+import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
@@ -24,10 +25,10 @@ internal class FunctionServiceProvider(
     override val providerKey = function.getSignature(source = false, qualifiedClass = true, qualifiedTypes = true)
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(primaryType)
-    override val isPrimary = function.hasAnnotation<Primary>()
-    override val isLazy = function.hasAnnotation<Lazy>()
+    override val isPrimary = function.hasAnnotationRecursive<Primary>()
+    override val isLazy = function.hasAnnotationRecursive<Lazy>()
     override val priority = function.getAnnotatedServicePriority()
-    override val annotations get() = function.annotations
+    override val annotations get() = function.getAllAnnotations()
 
     /**
      * If not the sentinel value, the service was attempted to be created.

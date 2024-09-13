@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
+import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 
 /**
@@ -14,8 +15,9 @@ import kotlin.reflect.KClass
  * @see InjectedService @InjectedService
  * @see ConditionalService @ConditionalService
  */
+@Inherited
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class ServiceType(
     /**
      * The additional types to register this service as, must be supertypes of this service

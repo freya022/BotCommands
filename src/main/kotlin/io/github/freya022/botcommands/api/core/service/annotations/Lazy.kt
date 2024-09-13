@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Lazy as SpringLazy
  * @see BService @BService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @SpringLazy
 annotation class Lazy

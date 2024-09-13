@@ -5,6 +5,8 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.Event
+import java.lang.annotation.Inherited
+import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -218,4 +220,103 @@ internal fun KType.typeOfAtOrNullOnStar(index: Int, targetType: KClass<*>): KTyp
 internal fun <T : Any> Class<T>.safeCast(instance: Any?): T? = when {
     isInstance(instance) -> cast(instance)
     else -> null
+}
+
+internal inline fun <reified A : Annotation> KAnnotatedElement.hasAnnotationRecursive(): Boolean =
+    hasAnnotationRecursive(A::class)
+
+internal fun <A : Annotation> KAnnotatedElement.hasAnnotationRecursive(annotationType: KClass<A>): Boolean =
+    findAnnotationRecursive(annotationType) != null
+
+internal fun <A : Annotation> AnnotatedElement.hasAnnotationRecursive(annotationType: KClass<A>): Boolean =
+    findAnnotationRecursive(annotationType) != null
+
+/**
+ * Finds a single annotation from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal inline fun <reified A : Annotation> KAnnotatedElement.findAnnotationRecursive(): A? =
+    findAnnotationRecursive(A::class)
+
+//TODO use BFS
+/**
+ * Finds a single annotation from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? =
+    findAnnotationRecursive(annotationType, hashSetOf())
+
+private fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>, visited: MutableSet<KAnnotatedElement>): A? {
+    if (!visited.add(this)) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return annotations.firstOrNull { annotationType.isInstance(it) } as A?
+        ?: annotations.firstNotNullOfOrNull { it.annotationClass.findAnnotationRecursive(annotationType, visited) }
+}
+
+/**
+ * Finds a single annotation from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal fun <A : Annotation> AnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? =
+    findAnnotationRecursive(annotationType, hashSetOf())
+
+private fun <A : Annotation> AnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>, visited: MutableSet<AnnotatedElement>): A? {
+    if (!visited.add(this)) return null
+
+    @Suppress("UNCHECKED_CAST")
+    return annotations.firstOrNull { annotationType.isInstance(it) } as A?
+        ?: annotations.firstNotNullOfOrNull { (it as java.lang.annotation.Annotation).annotationType().findAnnotationRecursive(annotationType, visited) }
+}
+
+/**
+ * Finds all annotations from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(): List<A> =
+    findAllAnnotations(A::class)
+
+//TODO use BFS (common code with findAnnotationRecursive)
+/**
+ * Finds all annotations from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>): List<A> =
+    findAllAnnotations(annotationType, hashSetOf())
+
+private fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, visited: MutableSet<KAnnotatedElement>): List<A> {
+    if (!visited.add(this)) return emptyList()
+
+    val topAnnotations = annotations.filterIsInstance<A>(annotationType.java)
+    return topAnnotations + topAnnotations.flatMap { findAllAnnotations(it.annotationClass, visited) }
+}
+
+internal fun KAnnotatedElement.getAllAnnotations(): List<Annotation> = getAllAnnotations(hashSetOf())
+
+//TODO use BFS (common code with findAnnotationRecursive)
+private fun KAnnotatedElement.getAllAnnotations(visited: MutableSet<KAnnotatedElement>): List<Annotation> {
+    if (!visited.add(this)) return emptyList()
+
+    val topAnnotations = annotations
+    return topAnnotations + topAnnotations.flatMap { getAllAnnotations(visited) }
 }

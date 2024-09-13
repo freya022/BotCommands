@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 @Inherited
 @MustBeDocumented
 @HardcodedCondition
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class Dependencies(
     /**
      * An array of services required by this service.
