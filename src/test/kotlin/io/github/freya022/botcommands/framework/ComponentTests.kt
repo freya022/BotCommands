@@ -46,6 +46,10 @@ object ComponentTests {
             applicationCommands {
                 enable = false
             }
+
+            modals {
+                enable = false
+            }
         }
     }
 
