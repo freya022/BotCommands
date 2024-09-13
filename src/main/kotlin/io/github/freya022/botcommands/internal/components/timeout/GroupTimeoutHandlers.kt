@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunc
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
-import kotlin.reflect.full.findAnnotation
+import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 
 @BService
 @RequiresComponents
@@ -21,7 +21,7 @@ internal class GroupTimeoutHandlers(context: BContextImpl, functionAnnotationsMa
             .requiredFilter(FunctionFilter.firstArg(GroupTimeoutData::class))
             .associate {
                 val function = it.function
-                val annotation = function.findAnnotation<GroupTimeoutHandler>()!!
+                val annotation = function.findAnnotationRecursive<GroupTimeoutHandler>()!!
                 annotation.getEffectiveName(function) to TimeoutDescriptor(context, it.toMemberParamFunction<GroupTimeoutData>(), GroupTimeoutData::class)
             }
 

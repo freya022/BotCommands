@@ -29,7 +29,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
@@ -467,7 +466,7 @@ internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Bool
 
         elementType.jvmErasure to isNullable
     } else {
-        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotation<Optional>()
+        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotationRecursive<Optional>()
         elementType.jvmErasure to isNullable
     }
 }

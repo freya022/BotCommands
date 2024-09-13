@@ -270,6 +270,9 @@ private fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotatio
  *
  * **Note:** only "repeatable" annotations should be inheritable
  */
+internal inline fun <reified A : Annotation> AnnotatedElement.findAnnotationRecursive(): A? =
+    findAnnotationRecursive(A::class)
+
 internal fun <A : Annotation> AnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? =
     findAnnotationRecursive(annotationType, hashSetOf())
 

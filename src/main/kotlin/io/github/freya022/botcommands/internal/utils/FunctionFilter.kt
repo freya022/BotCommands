@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.withNullability
@@ -97,7 +96,7 @@ internal abstract class FunctionFilter {
             override val errorMessage: String
                 get() = "Function must be annotated with ${annotationRef<A>()}"
 
-            override fun filter(function: Function): Boolean = function.hasAnnotation<A>()
+            override fun filter(function: Function): Boolean = function.hasAnnotationRecursive<A>()
         }
     }
 }

@@ -36,8 +36,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -72,7 +70,7 @@ internal class TextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDATextCommandVariation>() ?: throwInternal("${annotationRef<JDATextCommandVariation>()} should be present")
+                val annotation = func.findAnnotationRecursive<JDATextCommandVariation>() ?: throwInternal("${annotationRef<JDATextCommandVariation>()} should be present")
                 val path = CommandPath.of(annotation.path.asList())
 
                 TextFunctionMetadata(it, annotation, path)
@@ -94,7 +92,7 @@ internal class TextCommandAutoBuilder(
 
         // Assign user-generated extra data
         functions.forEach { textFunctionMetadata ->
-            textFunctionMetadata.func.findAnnotation<TextCommandData>()?.let { annotation ->
+            textFunctionMetadata.func.findAnnotationRecursive<TextCommandData>()?.let { annotation ->
                 // If the path is not specified (empty array), use the path of the variation
                 val path = when {
                     annotation.path.isNotEmpty() -> CommandPath.of(annotation.path.asList())
@@ -114,7 +112,7 @@ internal class TextCommandAutoBuilder(
                 // Cannot reassign extra data
                 check(!container.hasExtraData) {
                     val refs = functions
-                        .filter { it.func.findAnnotation<TextCommandData>()?.path contentEquals annotation.path }
+                        .filter { it.func.findAnnotationRecursive<TextCommandData>()?.path contentEquals annotation.path }
                         .joinAsList { it.func.shortSignature }
                     "Cannot have multiple ${annotationRef<TextCommandData>()} assigned on '$path':\n$refs"
                 }
@@ -139,7 +137,7 @@ internal class TextCommandAutoBuilder(
         manager.textCommand(container.name) {
             container.metadata?.let { metadata ->
                 try {
-                    metadata.instance::class.findAnnotation<Category>()?.let { category = it.value }
+                    metadata.instance.javaClass.findAnnotationRecursive<Category>()?.let { category = it.value }
 
                     processBuilder(container, metadata)
                 } catch (e: Exception) {
@@ -222,7 +220,7 @@ internal class TextCommandAutoBuilder(
         fun textOption(kParameter: KParameter, declaredName: String, optionAnnotation: TextOption) {
             fun TextOptionRegistry.addOption(valueName: String) {
                 val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
-                val varArgs = kParameter.findAnnotation<VarArgs>()
+                val varArgs = kParameter.findAnnotationRecursive<VarArgs>()
                 if (varArgs != null) {
                     optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
                         configureOption(kParameter, optionAnnotation)
@@ -246,10 +244,10 @@ internal class TextCommandAutoBuilder(
 
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotation<TextOption>()
+            val optionAnnotation = kParameter.findAnnotationRecursive<TextOption>()
             if (optionAnnotation != null) {
                 textOption(kParameter, declaredName, optionAnnotation)
-            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
                 generatedOption(
                     declaredName, instance.getGeneratedValueSupplier(
                         path,
@@ -268,6 +266,6 @@ internal class TextCommandAutoBuilder(
 
     private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
         helpExample = optionAnnotation.example.nullIfBlank()
-        isId = kParameter.hasAnnotation<ID>()
+        isId = kParameter.hasAnnotationRecursive<ID>()
     }
 }

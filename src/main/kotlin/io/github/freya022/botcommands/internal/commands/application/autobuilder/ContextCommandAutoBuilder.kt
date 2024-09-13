@@ -20,13 +20,13 @@ import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoB
 import io.github.freya022.botcommands.internal.commands.autobuilder.requireServiceOptionOrOptional
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.findOptionName
+import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 internal sealed class ContextCommandAutoBuilder(
@@ -48,7 +48,7 @@ internal sealed class ContextCommandAutoBuilder(
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotation<ContextOption>()
+            val optionAnnotation = kParameter.findAnnotationRecursive<ContextOption>()
             if (optionAnnotation != null) {
                 fun ApplicationOptionRegistry<*>.addOption(valueName: String) {
                     when (this) {
@@ -65,7 +65,7 @@ internal sealed class ContextCommandAutoBuilder(
                 } else {
                     addOption(declaredName)
                 }
-            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
                 generatedOption(
                     declaredName, instance.getGeneratedValueSupplier(
                         guild,

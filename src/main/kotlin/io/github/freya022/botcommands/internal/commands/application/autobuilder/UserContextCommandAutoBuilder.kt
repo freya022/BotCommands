@@ -21,10 +21,10 @@ import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsM
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 private val logger = KotlinLogging.logger { }
@@ -48,9 +48,9 @@ internal class UserContextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("${annotationRef<JDAUserCommand>()} should be present")
+                val annotation = func.findAnnotationRecursive<JDAUserCommand>() ?: throwInternal("${annotationRef<JDAUserCommand>()} should be present")
                 val path = CommandPath.ofName(annotation.name)
-                val commandId = func.findAnnotation<CommandId>()?.value
+                val commandId = func.findAnnotationRecursive<CommandId>()?.value
 
                 UserContextFunctionMetadata(it, annotation, path, commandId)
             }

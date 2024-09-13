@@ -28,7 +28,6 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -186,7 +185,7 @@ class EventDispatcher internal constructor(
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->
             val function = classPathFunc.function
-            val annotation = function.findAnnotation<BEventListener>()
+            val annotation = function.findAnnotationRecursive<BEventListener>()
                 ?: throwInternal(function, "Function was asserted to have BEventListener but it was not found")
 
             val parameters = function.nonInstanceParameters

@@ -14,9 +14,9 @@ import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import kotlin.reflect.KClass
-import kotlin.reflect.full.hasAnnotation
 
 internal class TimeoutDescriptor<T : Any> internal constructor(
     context: BContextImpl,
@@ -29,7 +29,7 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
-                if (parameter.hasAnnotation<TimeoutData>()) {
+                if (parameter.hasAnnotationRecursive<TimeoutData>()) {
                     TimeoutHandlerOptionBuilderImpl(optionParameter)
                 } else if (/* TODO remove */ context.serviceContainer.canCreateWrappedService(parameter) != null) {
                     // Fallback to timeout data if no service is found

@@ -12,10 +12,10 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
+import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent
-import kotlin.reflect.full.findAnnotation
 
 @BService
 @RequiresComponents
@@ -28,7 +28,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ButtonEvent::class))
             .forEach {
-                val handlerName = it.function.findAnnotation<JDAButtonListener>()!!.getEffectiveName(it.function)
+                val handlerName = it.function.findAnnotationRecursive<JDAButtonListener>()!!.getEffectiveName(it.function)
 
                 val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.function, ButtonEvent::class))
                 if (oldDescriptor != null) {
@@ -40,7 +40,7 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(StringSelectEvent::class, EntitySelectEvent::class))
             .forEach {
-                val handlerName = it.function.findAnnotation<JDASelectMenuListener>()!!.getEffectiveName(it.function)
+                val handlerName = it.function.findAnnotationRecursive<JDASelectMenuListener>()!!.getEffectiveName(it.function)
 
                 val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.function, GenericSelectMenuInteractionEvent::class))
                 if (oldDescriptor != null) {

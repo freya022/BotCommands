@@ -6,10 +6,10 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.requireAt
 import java.time.Duration
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.findAnnotation
 import io.github.bucket4j.Bandwidth as BucketBandwidth
 
 private fun Bandwidth.toRealBandwidth(): BucketBandwidth =
@@ -25,8 +25,8 @@ private fun Bandwidth.toRealBandwidth(): BucketBandwidth =
         .build()
 
 internal fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
-    val rateLimitAnnotation = findAnnotation<RateLimit>() ?: this.declaringClass.findAnnotation<RateLimit>()
-    val cooldownAnnotation = findAnnotation<Cooldown>() ?: this.declaringClass.findAnnotation<Cooldown>()
+    val rateLimitAnnotation = findAnnotationRecursive<RateLimit>() ?: this.declaringClass.findAnnotationRecursive<RateLimit>()
+    val cooldownAnnotation = findAnnotationRecursive<Cooldown>() ?: this.declaringClass.findAnnotationRecursive<Cooldown>()
     requireAt(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
         "Cannot use both ${annotationRef<Cooldown>()} and ${annotationRef<RateLimit>()}"
     }

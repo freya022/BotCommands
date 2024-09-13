@@ -4,9 +4,9 @@ import io.github.classgraph.ClassInfo
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.annotations.HardcodedCondition
+import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.isObject
 import kotlin.reflect.KClass
-import kotlin.reflect.full.hasAnnotation
 
 internal object ConditionalObjectChecker : ClassGraphProcessor {
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
@@ -18,7 +18,7 @@ internal object ConditionalObjectChecker : ClassGraphProcessor {
         kClass.annotations.forEach { rootAnnotation ->
             val set: MutableSet<KClass<out Annotation>> = hashSetOf()
             fun KClass<out Annotation>.checkHasCondition(rootAnnotation: KClass<out Annotation>) {
-                check(!hasAnnotation<HardcodedCondition>()) {
+                check(!hasAnnotationRecursive<HardcodedCondition>()) {
                     "Singleton ${kClass.simpleNestedName} cannot use @${rootAnnotation.simpleNestedName} as the object always gets initialized"
                 }
 
