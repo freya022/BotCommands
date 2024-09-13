@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.text
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
@@ -19,8 +18,7 @@ import java.util.*
  * This returns [Guild.getLocale] by default.
  *
  * ### Usage
- * Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * Register your instance as a service with [@BService][BService].
  *
  * @see LocalizableTextCommand
  */

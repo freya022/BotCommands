@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.CommandList;
 import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter;
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier;
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.DefaultMessages;
@@ -26,8 +25,7 @@ import java.util.function.Predicate;
  * Interface for settings requested by the framework, such as prefixes, guild locale or guild commands whitelist.
  *
  * <p>
- * <b>Usage</b>: Register your instance as a service with {@link BService}
- * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}.
  *
  * @see InterfacedService @InterfacedService
  *

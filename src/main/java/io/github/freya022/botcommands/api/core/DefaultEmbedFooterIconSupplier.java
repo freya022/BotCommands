@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core;
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker;
 import io.github.freya022.botcommands.api.core.service.ServiceContainer;
 import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration;
@@ -22,8 +21,7 @@ import java.io.InputStream;
  * <p>Returns {@code null} by default.
  *
  * <p>
- * <b>Usage</b>: Register your instance as a service with {@link BService}
- * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}.
  *
  * @see InterfacedService @InterfacedService
  */

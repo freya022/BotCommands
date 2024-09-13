@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.application
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -10,8 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * Processes application command rejections returned by [application command filters][ApplicationCommandFilter].
  *
  * ### Requirements
- * - Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Register your instance as a service with [@BService][BService].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
  * - Acknowledge the interaction when it is rejected.
  *

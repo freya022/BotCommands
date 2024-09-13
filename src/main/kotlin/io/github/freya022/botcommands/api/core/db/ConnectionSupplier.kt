@@ -1,9 +1,7 @@
 package io.github.freya022.botcommands.api.core.db
 
-import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
@@ -33,8 +31,7 @@ import java.time.Duration
  * the PostgreSQL driver has a far superior quality, larger feature set and has full syntax support.
  *
  * ## Usage
- * First, register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * First, register your instance as a service with [@BService][BService].
  *
  * ### With Flyway (Recommended)
  * You can run this code after initializing your service:

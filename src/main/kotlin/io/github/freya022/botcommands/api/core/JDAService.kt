@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestConfig
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.config.JDAConfiguration
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
@@ -39,8 +38,7 @@ import javax.annotation.CheckReturnValue
  * - Starting JDA when every other service is ready
  *
  * ### Usage
- * Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * Register your instance as a service with [@BService][BService].
  *
  * Example:
  * ```kt

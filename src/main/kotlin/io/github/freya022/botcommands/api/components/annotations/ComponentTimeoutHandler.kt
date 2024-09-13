@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.components.annotations
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -15,8 +14,7 @@ import kotlin.reflect.KFunction
  * Declares this function as a component timeout handler with the given name.
  *
  * ### Requirements
- * - The declaring class must be annotated with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - The declaring class must be annotated with [@BService][BService].
  * - The annotation value to have same name as the one given to [IPersistentTimeoutableComponent.timeout], however,
  * it can be omitted if you use the type-safe [timeoutWith] extensions.
  * - First parameter must be [ComponentTimeoutData].

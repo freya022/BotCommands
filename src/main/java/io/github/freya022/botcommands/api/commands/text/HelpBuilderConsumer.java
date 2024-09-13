@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.text;
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -12,8 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>That embed can be for the command list as well as individual commands.
  *
  * <p>
- * <b>Usage</b>: Register your instance as a service with {@link BService}
- * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}.
  *
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
  * @see InterfacedService @InterfacedService

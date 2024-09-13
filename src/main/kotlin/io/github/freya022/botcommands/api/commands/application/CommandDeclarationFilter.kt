@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.application
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import net.dv8tion.jda.api.entities.Guild
 
@@ -12,8 +11,7 @@ import net.dv8tion.jda.api.entities.Guild
  *
  * Needs to be referenced by a [@DeclarationFilter][DeclarationFilter].
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * @see DeclarationFilter @DeclarationFilter
  */

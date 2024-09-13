@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.components
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.core.Filter
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -38,8 +37,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * ```
  *
  * ### Requirements
- * - Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Register your instance as a service with [@BService][BService].
  * - Have exactly one instance of [ComponentInteractionRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a component-specific filter by disabling [global].
