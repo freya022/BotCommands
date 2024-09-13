@@ -3,8 +3,6 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
-import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
-import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 
 @Deprecated("For removal")
 @InjectedService
@@ -19,8 +17,6 @@ interface BDebugConfig {
      * Spring property: `botcommands.debug.enableApplicationDiffsLogs`
      */
     @Deprecated(message = "Always on with the default diff engine")
-    @ConfigurationValue(path = "botcommands.debug.enableApplicationDiffsLogs", defaultValue = "false")
-    @DeprecatedValue(reason = "Always on with the default diff engine")
     val enableApplicationDiffsLogs: Boolean
 
     /**
@@ -31,8 +27,6 @@ interface BDebugConfig {
      * Spring property: `botcommands.debug.enabledMissingLocalizationLogs`
      */
     @Deprecated("Moved to BApplicationConfig#logMissingLocalizationKeys")
-    @ConfigurationValue(path = "botcommands.debug.enabledMissingLocalizationLogs", defaultValue = "false")
-    @DeprecatedValue(reason = "Moved to BApplicationConfig#logMissingLocalizationKeys", replacement = "botcommands.application.logMissingLocalizationKeys")
     val enabledMissingLocalizationLogs: Boolean
 }
 
