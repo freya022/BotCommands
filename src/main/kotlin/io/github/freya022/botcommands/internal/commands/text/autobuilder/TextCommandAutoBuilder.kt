@@ -137,7 +137,7 @@ internal class TextCommandAutoBuilder(
         manager.textCommand(container.name) {
             container.metadata?.let { metadata ->
                 try {
-                    metadata.instance.javaClass.findAnnotationRecursive<Category>()?.let { category = it.value }
+                    metadata.instance::class.findAnnotationRecursive<Category>()?.let { category = it.value }
 
                     processBuilder(container, metadata)
                 } catch (e: Exception) {
