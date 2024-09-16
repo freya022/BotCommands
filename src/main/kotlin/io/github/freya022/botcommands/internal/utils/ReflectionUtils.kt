@@ -229,7 +229,7 @@ internal fun <A : Annotation> KAnnotatedElement.hasAnnotationRecursive(annotatio
     findAnnotationRecursive(annotationType) != null
 
 /**
- * Finds a single annotation from the annotated element.
+ * Finds a single annotation of the specified type, from the annotated element.
  *
  * The search is breadth-first, and only considers annotations, not superclasses,
  * which should be handled by [Inherited].
@@ -240,7 +240,7 @@ internal inline fun <reified A : Annotation> KAnnotatedElement.findAnnotationRec
     findAnnotationRecursive(A::class)
 
 /**
- * Finds a single annotation from the annotated element.
+ * Finds a single annotation of the specified type, from the annotated element.
  *
  * The search is breadth-first, and only considers annotations, not superclasses,
  * which should be handled by [Inherited].
@@ -262,7 +262,7 @@ internal fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotati
 }
 
 /**
- * Finds all annotations from the annotated element.
+ * Finds all annotations of the specified type, from the annotated element.
  *
  * The search is breadth-first, and only considers annotations, not superclasses,
  * which should be handled by [Inherited].
@@ -273,7 +273,7 @@ internal inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotation
     findAllAnnotations(A::class)
 
 /**
- * Finds all annotations from the annotated element.
+ * Finds all annotations of the specified type, from the annotated element.
  *
  * The search is breadth-first, and only considers annotations, not superclasses,
  * which should be handled by [Inherited].
@@ -289,6 +289,14 @@ internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationTyp
     }
 }
 
+/**
+ * Finds all annotations from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
 internal fun KAnnotatedElement.getAllAnnotations(): List<Annotation> = buildList {
     bfs(this@getAllAnnotations) {
         this += it
