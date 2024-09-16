@@ -321,5 +321,5 @@ private fun KAnnotatedElement.getAllAnnotations(visited: MutableSet<KAnnotatedEl
     if (!visited.add(this)) return emptyList()
 
     val topAnnotations = annotations
-    return topAnnotations + topAnnotations.flatMap { getAllAnnotations(visited) }
+    return topAnnotations + topAnnotations.flatMap { it.annotationClass.getAllAnnotations(visited) }
 }
