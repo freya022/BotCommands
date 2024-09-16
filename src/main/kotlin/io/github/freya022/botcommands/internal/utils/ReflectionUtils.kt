@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.Event
 import java.lang.annotation.Inherited
 import java.lang.reflect.Method
+import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
@@ -238,8 +239,6 @@ internal fun <A : Annotation> KAnnotatedElement.hasAnnotationRecursive(annotatio
 internal inline fun <reified A : Annotation> KAnnotatedElement.findAnnotationRecursive(): A? =
     findAnnotationRecursive(A::class)
 
-//TODO use BFS
-//TODO optimize away hashSetOf as the annotation is on the element in most cases
 /**
  * Finds a single annotation from the annotated element.
  *
@@ -248,15 +247,13 @@ internal inline fun <reified A : Annotation> KAnnotatedElement.findAnnotationRec
  *
  * **Note:** only "repeatable" annotations should be inheritable
  */
-internal fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? =
-    findAnnotationRecursive(annotationType, hashSetOf())
-
-private fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>, visited: MutableSet<KAnnotatedElement>): A? {
-    if (!visited.add(this)) return null
-
-    @Suppress("UNCHECKED_CAST")
-    return annotations.firstOrNull { annotationType.isInstance(it) } as A?
-        ?: annotations.firstNotNullOfOrNull { it.annotationClass.findAnnotationRecursive(annotationType, visited) }
+internal fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? {
+    bfs(this) {
+        val annotation = annotationType.safeCast(it)
+        if (annotation != null)
+            return annotation
+    }
+    return null
 }
 
 /**
@@ -270,7 +267,6 @@ private fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotatio
 internal inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(): List<A> =
     findAllAnnotations(A::class)
 
-//TODO use BFS (common code with findAnnotationRecursive)
 /**
  * Finds all annotations from the annotated element.
  *
@@ -279,22 +275,32 @@ internal inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotation
  *
  * **Note:** only "repeatable" annotations should be inheritable
  */
-internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>): List<A> =
-    findAllAnnotations(annotationType, hashSetOf())
-
-private fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, visited: MutableSet<KAnnotatedElement>): List<A> {
-    if (!visited.add(this)) return emptyList()
-
-    val topAnnotations = annotations.filterIsInstance(annotationType.java)
-    return topAnnotations + topAnnotations.flatMap { findAllAnnotations(it.annotationClass, visited) }
+internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>): List<A> = buildList {
+    bfs(this@findAllAnnotations) {
+        val annotation = annotationType.safeCast(it)
+        if (annotation != null)
+            this += annotation
+    }
 }
 
-internal fun KAnnotatedElement.getAllAnnotations(): List<Annotation> = getAllAnnotations(hashSetOf())
+internal fun KAnnotatedElement.getAllAnnotations(): List<Annotation> = buildList {
+    bfs(this@getAllAnnotations) {
+        this += it
+    }
+}
 
-//TODO use BFS (common code with findAnnotationRecursive)
-private fun KAnnotatedElement.getAllAnnotations(visited: MutableSet<KAnnotatedElement>): List<Annotation> {
-    if (!visited.add(this)) return emptyList()
+private inline fun bfs(root: KAnnotatedElement, block: (annotation: Annotation) -> Unit) {
+    val visited = hashSetOf<KAnnotatedElement>()
+    val toVisit = ArrayDeque<KAnnotatedElement>()
 
-    val topAnnotations = annotations
-    return topAnnotations + topAnnotations.flatMap { it.annotationClass.getAllAnnotations(visited) }
+    toVisit.addLast(root)
+    while (toVisit.isNotEmpty()) {
+        val element = toVisit.removeFirst()
+        if (!visited.add(element)) continue
+
+        element.annotations.forEach {
+            toVisit.addLast(it.annotationClass)
+            block(it)
+        }
+    }
 }
