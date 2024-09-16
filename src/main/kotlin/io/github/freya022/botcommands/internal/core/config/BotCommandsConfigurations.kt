@@ -79,9 +79,9 @@ internal class BotCommandsTextConfiguration(
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
     override val showSuggestions: Boolean = true,
-    dmClosedEmoji: String? = null
+    internal val dmClosedEmojiString: String? = null
 ) : BTextConfig {
-    override val dmClosedEmoji = EmojiUtils.resolveJDAEmoji(dmClosedEmoji ?: "mailbox_closed")
+    override val dmClosedEmoji: Nothing get() = unusable()
 }
 
 internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
@@ -90,7 +90,7 @@ internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfig
     prefixes += configuration.prefixes
     isHelpDisabled = configuration.isHelpDisabled
     showSuggestions = configuration.showSuggestions
-    dmClosedEmoji = configuration.dmClosedEmoji
+    configuration.dmClosedEmojiString?.let { dmClosedEmojiSupplier = { EmojiUtils.resolveJDAEmoji(it) } }
 }
 
 @ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)
