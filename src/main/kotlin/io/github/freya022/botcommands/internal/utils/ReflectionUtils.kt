@@ -248,12 +248,17 @@ internal inline fun <reified A : Annotation> KAnnotatedElement.findAnnotationRec
  * **Note:** only "repeatable" annotations should be inheritable
  */
 internal fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: KClass<A>): A? {
+    var foundAnnotation: A? = null
     bfs(this) {
         val annotation = annotationType.safeCast(it)
-        if (annotation != null)
-            return annotation
+        if (annotation != null) {
+            foundAnnotation = annotation
+            false
+        } else {
+            true
+        }
     }
-    return null
+    return foundAnnotation
 }
 
 /**
@@ -280,27 +285,39 @@ internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationTyp
         val annotation = annotationType.safeCast(it)
         if (annotation != null)
             this += annotation
+        true
     }
 }
 
 internal fun KAnnotatedElement.getAllAnnotations(): List<Annotation> = buildList {
     bfs(this@getAllAnnotations) {
         this += it
+        true
     }
 }
 
-private inline fun bfs(root: KAnnotatedElement, block: (annotation: Annotation) -> Unit) {
+private fun bfs(root: KAnnotatedElement, block: (annotation: Annotation) -> Boolean) {
+    // The annotation is most likely on the root element, avoid hashSetOf/ArrayDeque allocation
+    root.annotations.forEach {
+        if (!block(it)) return
+    }
+
+    // Block hasn't returned, we need to search deeper
+    deepBfs(root, block)
+}
+
+private fun deepBfs(root: KAnnotatedElement, block: (annotation: Annotation) -> Boolean) {
     val visited = hashSetOf<KAnnotatedElement>()
     val toVisit = ArrayDeque<KAnnotatedElement>()
+    root.annotations.forEach { toVisit.addLast(it.annotationClass) }
 
-    toVisit.addLast(root)
     while (toVisit.isNotEmpty()) {
         val element = toVisit.removeFirst()
         if (!visited.add(element)) continue
 
         element.annotations.forEach {
             toVisit.addLast(it.annotationClass)
-            block(it)
+            if (!block(it)) return
         }
     }
 }
