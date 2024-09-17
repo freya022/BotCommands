@@ -19,7 +19,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.collections.set
-import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -84,16 +83,32 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     }
 }
 
+internal fun ServiceProvider.hasAnnotation(annotationType: KClass<out Annotation>): Boolean =
+    annotations.any { it.annotationClass == annotationType }
+internal inline fun <reified A : Annotation> ServiceProvider.hasAnnotation(): Boolean =
+    hasAnnotation(A::class)
+
+@Suppress("UNCHECKED_CAST")
+internal fun <A : Annotation> ServiceProvider.findAnnotation(annotationType: KClass<A>): A? =
+    annotations.firstOrNull { it.annotationClass == annotationType } as A?
+internal inline fun <reified A : Annotation> ServiceProvider.findAnnotation(): A? =
+    findAnnotation(A::class)
+
+internal fun <A : Annotation> ServiceProvider.findAnnotations(annotationType: KClass<A>): List<A> =
+    annotations.filterIsInstance(annotationType.java)
+internal inline fun <reified A : Annotation> ServiceProvider.findAnnotations(): List<A> =
+    annotations.filterIsInstance(A::class.java)
+
 internal fun ServiceProvider.getProviderFunctionOrSignature(): Any = getProviderFunction() ?: getProviderSignature()
 
-internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
-    findAnnotationRecursive<ServiceName>()?.let {
+internal fun ServiceProvider.getAnnotatedServiceName(): String? {
+    findAnnotation<ServiceName>()?.let {
         if (it.value.isNotBlank()) {
             return it.value
         }
     }
 
-    findAnnotationRecursive<BService>()?.let {
+    findAnnotation<BService>()?.let {
         if (it.name.isNotBlank()) {
             return it.name
         }
@@ -102,12 +117,12 @@ internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
     return null
 }
 
-internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
-    findAnnotationRecursive<ServicePriority>()?.let {
+internal fun ServiceProvider.getAnnotatedServicePriority(): Int {
+    findAnnotation<ServicePriority>()?.let {
         return it.value
     }
 
-    findAnnotationRecursive<BService>()?.let {
+    findAnnotation<BService>()?.let {
         return it.priority
     }
 
@@ -115,9 +130,9 @@ internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
     return 0
 }
 
-internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
-    val explicitTypes = findAllAnnotations<ServiceType>().flatMapTo(hashSetOf()) { it.types }
-    val ignoredTypes = findAllAnnotations<IgnoreServiceTypes>().flatMapTo(hashSetOf()) { it.types }
+internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
+    val explicitTypes = findAnnotations<ServiceType>().flatMapTo(hashSetOf()) { it.types }
+    val ignoredTypes = findAnnotations<IgnoreServiceTypes>().flatMapTo(hashSetOf()) { it.types }
     // TODO can't this be replaced with @Inherited?
     val interfacedServiceTypes = primaryType.allSuperclasses.filterTo(hashSetOf()) { it.hasAnnotationRecursive<InterfacedService>() }
     val additionalTypes = interfacedServiceTypes + explicitTypes - ignoredTypes
@@ -137,9 +152,8 @@ internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KCla
     return effectiveTypes
 }
 
-context(ServiceProvider)
-internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
-    findAllAnnotations<Dependencies>().forEach { dependencies ->
+internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
+    findAnnotations<Dependencies>().forEach { dependencies ->
         dependencies.value.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
@@ -148,7 +162,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
     }
 
     // Services can be conditional
-    findAllAnnotations<ConditionalService>().forEach { conditionalService ->
+    findAnnotations<ConditionalService>().forEach { conditionalService ->
         conditionalService.checks.forEach {
             val instance = it.createSingleton()
 
@@ -177,6 +191,8 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
         }
     }
 
+    //TODO this doesn't allow multiple same-type conditions with different values
+    // Get all annotations and check each with the registered custom conditions
     serviceContainer.serviceBootstrap.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
         val annotation = customCondition.getCondition(this) ?: return@forEach
         val checker = customCondition.checker

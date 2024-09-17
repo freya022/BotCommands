@@ -6,12 +6,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
-import io.github.freya022.botcommands.internal.utils.getAllAnnotations
-import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
-import io.github.freya022.botcommands.internal.utils.isObject
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.instanceParameter
@@ -21,14 +16,14 @@ internal class FunctionServiceProvider(
     private val function: KFunction<*>,
     override var instance: Any? = null
 ) : ServiceProvider {
-    override val name = function.getServiceName()
+    override val annotations = function.getAllAnnotations()
+    override val name = getServiceName(function)
     override val providerKey = function.getSignature(source = false, qualifiedClass = true, qualifiedTypes = true)
     override val primaryType get() = function.returnType.jvmErasure
-    override val types = function.getServiceTypes(primaryType)
-    override val isPrimary = function.hasAnnotationRecursive<Primary>()
-    override val isLazy = function.hasAnnotationRecursive<Lazy>()
-    override val priority = function.getAnnotatedServicePriority()
-    override val annotations get() = function.getAllAnnotations()
+    override val types = getServiceTypes(primaryType)
+    override val isPrimary = hasAnnotation<Primary>()
+    override val isLazy = hasAnnotation<Lazy>()
+    override val priority = getAnnotatedServicePriority()
 
     /**
      * If not the sentinel value, the service was attempted to be created.
@@ -51,7 +46,7 @@ internal class FunctionServiceProvider(
     }
 
     private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
-        function.commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
+        commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         function.instanceParameter?.let { instanceParameter ->
@@ -104,7 +99,7 @@ internal class FunctionServiceProvider(
     override fun toString() = providerKey
 }
 
-internal fun KFunction<*>.getServiceName(): String =
+internal fun ServiceProvider.getServiceName(kFunction: KFunction<*>): String =
     getAnnotatedServiceName()
-        ?: (this as? KProperty.Getter<*>)?.property?.name
-        ?: this.name
+        ?: (kFunction as? KProperty.Getter<*>)?.property?.name
+        ?: kFunction.name

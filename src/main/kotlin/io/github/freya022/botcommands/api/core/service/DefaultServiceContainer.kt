@@ -1,13 +1,12 @@
 package io.github.freya022.botcommands.api.core.service
 
-import io.github.freya022.botcommands.internal.core.service.provider.getServiceName
 import kotlin.reflect.KClass
 
 interface DefaultServiceContainer : ServiceContainer {
     fun <T : Any> putService(
         t: T,
         clazz: KClass<out T>,
-        name: String = clazz.getServiceName(),
+        name: String? = null,
         isPrimary: Boolean = false,
         priority: Int = 0,
         annotations: Collection<Annotation> = emptySet(),
@@ -23,7 +22,7 @@ interface DefaultServiceContainer : ServiceContainer {
 
 inline fun <reified T : Any> DefaultServiceContainer.putServiceAs(
     t: T,
-    name: String = T::class.getServiceName(),
+    name: String? = null,
     isPrimary: Boolean = false,
     priority: Int = 0,
     typeAliases: Set<KClass<*>> = emptySet(),
@@ -32,7 +31,7 @@ inline fun <reified T : Any> DefaultServiceContainer.putServiceAs(
 
 inline fun <reified A : Any> DefaultServiceContainer.putServiceWithTypeAlias(
     t: Any,
-    name: String = t::class.getServiceName(),
+    name: String? = null,
     isPrimary: Boolean = false,
     priority: Int = 0,
     annotations: Collection<Annotation> = emptySet(),

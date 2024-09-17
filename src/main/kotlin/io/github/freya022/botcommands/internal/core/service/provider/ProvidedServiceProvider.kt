@@ -13,7 +13,7 @@ import kotlin.reflect.jvm.jvmName
 internal class ProvidedServiceProvider internal constructor(
     override val instance: Any,
     override val primaryType: KClass<*>,
-    override val name: String,
+    name: String?,
     override val isPrimary: Boolean,
     override val priority: Int,
     override val annotations: Collection<Annotation>,
@@ -35,6 +35,8 @@ internal class ProvidedServiceProvider internal constructor(
     }
 
     private val clazz = instance::class
+
+    override val name: String = name ?: getServiceName(clazz)
 
     override val providerKey = clazz.jvmName
     override val types: Set<KClass<*>> = typeAliases + primaryType
