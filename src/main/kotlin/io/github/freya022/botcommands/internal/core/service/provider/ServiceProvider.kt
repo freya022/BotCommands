@@ -5,10 +5,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
-import io.github.freya022.botcommands.api.core.utils.bestName
-import io.github.freya022.botcommands.api.core.utils.flatMapTo
-import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
@@ -22,7 +19,6 @@ import kotlin.collections.set
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -133,8 +129,9 @@ internal fun ServiceProvider.getAnnotatedServicePriority(): Int {
 internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
     val explicitTypes = findAnnotations<ServiceType>().flatMapTo(hashSetOf()) { it.types }
     val ignoredTypes = findAnnotations<IgnoreServiceTypes>().flatMapTo(hashSetOf()) { it.types }
-    // TODO can't this be replaced with @Inherited?
-    val interfacedServiceTypes = primaryType.allSuperclasses.filterTo(hashSetOf()) { it.hasAnnotationRecursive<InterfacedService>() }
+    val interfacedServiceTypes = primaryType.java.allSuperclassesAndInterfaces
+        .filter { it != primaryType.java && it.isAnnotationPresent(InterfacedService::class.java) }
+        .mapTo(hashSetOf()) { it.kotlin }
     val additionalTypes = interfacedServiceTypes + explicitTypes - ignoredTypes
 
     val effectiveTypes = when {
