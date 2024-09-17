@@ -299,14 +299,14 @@ fun Member.timeoutFor(duration: Duration): AuditableRestAction<Void> = timeoutFo
 /**
  * @see Member.ban
  */
-fun Member.ban(duration: Duration): AuditableRestAction<Void> =
-    ban(duration.inWholeSeconds.toInt(), TimeUnit.SECONDS)
+fun Member.ban(deletionTimeframe: Duration): AuditableRestAction<Void> =
+    ban(deletionTimeframe.inWholeSeconds.toInt(), TimeUnit.SECONDS)
 
 /**
  * @see Guild.ban
  */
-fun Guild.ban(user: UserSnowflake, duration: Duration): AuditableRestAction<Void> =
-    ban(user, duration.inWholeSeconds.toInt(), TimeUnit.SECONDS)
+fun Guild.ban(user: UserSnowflake, deletionTimeframe: Duration): AuditableRestAction<Void> =
+    ban(user, deletionTimeframe.inWholeSeconds.toInt(), TimeUnit.SECONDS)
 
 /**
  * See [bulk ban from JDA](https://docs.jda.wiki/net/dv8tion/jda/api/entities/Guild.html#ban(java.util.Collection,java.time.Duration))
