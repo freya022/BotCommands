@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.test.config.db.PostgresDatabaseSource
 import org.springframework.context.annotation.ConditionContext
 import org.springframework.context.annotation.Conditional
 import org.springframework.core.type.AnnotatedTypeMetadata
+import java.nio.file.NoSuchFileException
 import org.springframework.context.annotation.Condition as SpringCondition
 
 object TestDatabaseChecker : CustomConditionChecker<TestDatabase>, SpringCondition {
@@ -62,7 +63,11 @@ object TestDatabaseChecker : CustomConditionChecker<TestDatabase>, SpringConditi
     }
 
     private fun hasPostgresCredentials(): Boolean {
-        val databaseConfig = Config.instance.databaseConfig
+        val databaseConfig = runCatching { Config.instance.databaseConfig }
+            .onFailure {
+                if (it is NoSuchFileException) return false
+            }
+            .getOrThrow()
         return databaseConfig.name.isNotBlank() && databaseConfig.user.isNotBlank() && databaseConfig.password.isNotBlank()
     }
 }
