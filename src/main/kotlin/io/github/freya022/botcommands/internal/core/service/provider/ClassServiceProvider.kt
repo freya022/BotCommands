@@ -60,7 +60,7 @@ internal class ClassServiceProvider internal constructor(
     }
 
     private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
-        commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
+        commonCanInstantiate(serviceContainer, clazz, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
         if (clazz.isObject) return null

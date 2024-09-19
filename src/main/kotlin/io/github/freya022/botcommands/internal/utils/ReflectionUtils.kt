@@ -168,23 +168,6 @@ internal fun KParameter.findOptionName(): String =
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
-
-private val singletonCache = hashMapOf<KClass<*>, Any>()
-
-@Suppress("UNCHECKED_CAST")
-internal fun <T : Any> KClass<T>.createSingleton(): T = singletonCache.computeIfAbsent(this) {
-    val instance = this.objectInstance
-    if (instance != null)
-        return@computeIfAbsent instance
-    val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
-        ?: throwArgument("Class $simpleNestedName must either be an object, or have a no-arg constructor (or have only default parameters)")
-    check(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
-        "Constructor of ${this.simpleNestedName} must be effectively public (internal is allowed)"
-    }
-
-    constructor.callBy(mapOf())
-} as T
-
 @PublishedApi
 internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
 
@@ -285,6 +268,43 @@ internal fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationTyp
         val annotation = annotationType.safeCast(it)
         if (annotation != null)
             this += annotation
+        true
+    }
+}
+
+internal data class MetaAnnotatedClass<A : Annotation>(val metaAnnotatedElement: Annotation, val metaAnnotation: A)
+
+/**
+ * Finds all annotations meta-annotated with [A], from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+internal inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotationsWith(): List<MetaAnnotatedClass<A>> =
+    findAllAnnotationsWith(A::class)
+
+/**
+ * Finds all annotations meta-annotated with [annotationType], from the annotated element.
+ *
+ * The search is breadth-first, and only considers annotations, not superclasses,
+ * which should be handled by [Inherited].
+ *
+ * **Note:** only "repeatable" annotations should be inheritable
+ */
+@Suppress("UNCHECKED_CAST")
+internal fun <A : Annotation> KAnnotatedElement.findAllAnnotationsWith(annotationType: KClass<A>): List<MetaAnnotatedClass<A>> = buildList {
+    bfs(this@findAllAnnotationsWith) {
+        bfs(it.annotationClass) { metaAnnotation ->
+            if (metaAnnotation.annotationClass == annotationType) {
+                this += MetaAnnotatedClass(it, metaAnnotation as A)
+                false
+            } else {
+                true
+            }
+        }
+
         true
     }
 }

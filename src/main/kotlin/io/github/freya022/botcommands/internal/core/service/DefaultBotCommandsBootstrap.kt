@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.putServiceAs
 import io.github.freya022.botcommands.api.core.service.putServiceWithTypeAlias
 import io.github.freya022.botcommands.internal.core.Version
-import io.github.freya022.botcommands.internal.core.service.condition.CustomConditionsContainer
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import net.dv8tion.jda.api.JDAInfo
 
@@ -22,9 +21,8 @@ internal class DefaultBotCommandsBootstrap internal constructor(
 
     internal val serviceProviders = ServiceProviders()
     override val serviceContainer = DefaultServiceContainerImpl(this)
-    internal val customConditionsContainer = CustomConditionsContainer()
     override val classGraphProcessors: Set<ClassGraphProcessor> =
-        setOf(ConditionalObjectChecker, serviceProviders, customConditionsContainer)
+        setOf(ConditionalObjectChecker, serviceProviders)
 
     init {
         logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }

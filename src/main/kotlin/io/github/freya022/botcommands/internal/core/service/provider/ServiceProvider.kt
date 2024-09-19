@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
@@ -8,6 +9,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.Singletons
 import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.*
@@ -16,6 +18,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.collections.set
+import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -149,7 +152,7 @@ internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass
     return effectiveTypes
 }
 
-internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
+internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
     findAnnotations<Dependencies>().forEach { dependencies ->
         dependencies.value.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
@@ -161,7 +164,7 @@ internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServi
     // Services can be conditional
     findAnnotations<ConditionalService>().forEach { conditionalService ->
         conditionalService.checks.forEach {
-            val instance = it.createSingleton()
+            val instance = Singletons[it]
 
             fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
                 return ErrorType.FAILED_CONDITION.toError(
@@ -188,14 +191,27 @@ internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServi
         }
     }
 
-    //TODO this doesn't allow multiple same-type conditions with different values
-    // Get all annotations and check each with the registered custom conditions
-    serviceContainer.serviceBootstrap.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
-        val annotation = customCondition.getCondition(this) ?: return@forEach
-        val checker = customCondition.checker
+    annotatedElement.findAllAnnotationsWith<Condition>().forEach { (userCondition, metadataAnnotation) ->
+        val checkerType = metadataAnnotation.type
+        @Suppress("UNCHECKED_CAST")
+        val checker = Singletons[checkerType] as CustomConditionChecker<Annotation>
+
+        // Check the checker processes the annotation we just found
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        val expectedCondition = (userCondition as java.lang.annotation.Annotation).annotationType()
+        val actualCondition = checker.annotationType
+        require(expectedCondition == actualCondition) {
+            val conditionName = expectedCondition.simpleNestedName
+            val checkerName = checkerType.simpleNestedName
+
+            val requiredSuperclassName = CustomConditionChecker::class.simpleNestedName
+            val requiredCheckerTypeArgument = expectedCondition.simpleNestedName
+
+            "Custom condition checker $checkerName must implement $requiredSuperclassName<$requiredCheckerTypeArgument> to be usable in @$conditionName"
+        }
 
         fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
-            val errorType = if (customCondition.conditionMetadata.fail) {
+            val errorType = if (metadataAnnotation.fail) {
                 ErrorType.FAILED_FATAL_CUSTOM_CONDITION
             } else {
                 ErrorType.FAILED_CUSTOM_CONDITION
@@ -212,7 +228,7 @@ internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServi
         }
 
         val errorMessage = try {
-            checker.checkServiceAvailability(serviceContainer, checkedClass.java, annotation)
+            checker.checkServiceAvailability(serviceContainer, checkedClass.java, userCondition)
         } catch (e: ServiceException) {
             val error = e.serviceError
             return createError("A service required by the condition checker is missing", nestedError = error)

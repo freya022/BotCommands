@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.internal.core.service.annotations.HardcodedCondition
 import kotlin.reflect.KClass
@@ -9,11 +8,11 @@ import kotlin.reflect.KClass
 /**
  * Meta-annotation for [custom conditions][CustomConditionChecker].
  *
- * The annotated annotation need to be in the [search path][BConfigBuilder.addSearchPath]
+ * **Note:** This annotation needs to be **directly** used.
  *
  * Example:
  * ```kt
- * @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+ * @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
  * @Condition(ProfileChecker::class, fail = false)
  * annotation class RequireProfile(val profile: Profile)
  * ```

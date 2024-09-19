@@ -46,7 +46,7 @@ internal class FunctionServiceProvider(
     }
 
     private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
-        commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
+        commonCanInstantiate(serviceContainer, function, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         function.instanceParameter?.let { instanceParameter ->
