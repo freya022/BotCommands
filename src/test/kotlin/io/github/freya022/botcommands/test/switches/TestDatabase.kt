@@ -3,7 +3,9 @@ package io.github.freya022.botcommands.test.switches
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
+import io.github.freya022.botcommands.api.core.service.canCreateService
 import io.github.freya022.botcommands.test.config.Config
+import io.github.freya022.botcommands.test.config.db.PostgresDatabaseSource
 import org.springframework.context.annotation.ConditionContext
 import org.springframework.context.annotation.Conditional
 import org.springframework.core.type.AnnotatedTypeMetadata
@@ -17,13 +19,17 @@ object TestDatabaseChecker : CustomConditionChecker<TestDatabase>, SpringConditi
     override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>, annotation: TestDatabase): String? {
         val implDatabaseType = annotation.databaseType
 
-        if (databaseType == TestDatabase.DatabaseType.POSTGRESQL && !hasPostgresCredentials()) {
-            // Fallback to H2 if that's what we're scanning
-            if (implDatabaseType == TestDatabase.DatabaseType.H2) {
-                return null
+        // If the database that needs to be used is PostgreSQL, we need to check that it has its requirements met.
+        // If one of the requirements fails, we need to fall back to H2
+        if (databaseType == TestDatabase.DatabaseType.POSTGRESQL) {
+            if (!hasPostgresCredentials()) {
+                return fallbackToH2Or(implDatabaseType, "No PostgreSQL database name, or user, or password is set, falling back to H2.")
+            } else {
+                val serviceError = serviceContainer.canCreateService<PostgresDatabaseSource>()
+                if (serviceError != null) {
+                    return fallbackToH2Or(implDatabaseType, "No PostgreSQL database available, falling back to H2.")
+                }
             }
-
-            return "No PostgreSQL database name, or user, or password is set, falling back to H2."
         }
 
         if (databaseType != implDatabaseType) {
@@ -31,6 +37,15 @@ object TestDatabaseChecker : CustomConditionChecker<TestDatabase>, SpringConditi
         }
 
         return null
+    }
+
+    private fun fallbackToH2Or(implDatabaseType: TestDatabase.DatabaseType, message: String): String? {
+        // Fallback to H2 if that's what we're scanning
+        if (implDatabaseType == TestDatabase.DatabaseType.H2) {
+            return null
+        }
+
+        return message
     }
 
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
