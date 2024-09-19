@@ -73,6 +73,8 @@ object ResolverCheckTests {
             enable = false
         }
 
+        addClass<FakeBot>()
+
         block()
     }
 }
