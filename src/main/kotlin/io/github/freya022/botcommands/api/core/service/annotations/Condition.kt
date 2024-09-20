@@ -8,7 +8,8 @@ import kotlin.reflect.KClass
 /**
  * Meta-annotation for [custom conditions][CustomConditionChecker].
  *
- * **Note:** This annotation needs to be **directly** used.
+ * **Note:** This annotation needs to be **directly** used,
+ * and can be used multiple times by using [@Repeatable][Repeatable].
  *
  * Example:
  * ```kt
