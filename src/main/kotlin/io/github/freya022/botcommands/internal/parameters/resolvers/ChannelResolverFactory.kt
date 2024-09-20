@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
-import io.github.freya022.botcommands.api.core.reflect.findAnnotation
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.function
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.getService
@@ -179,11 +179,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
 
         request.checkGuildOnly(erasure)
 
-        val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
-            null -> channelTypesFrom(erasure.java)
-            else -> enumSetOf(*annotation.value)
-        }
-
+        val channelTypes = parameter.getChannelTypes(erasure)
         channelTypes.forEach { channelType ->
             require(erasure.isAssignableFrom(channelType.`interface`)) {
                 val paramName = parameter.name
@@ -214,11 +210,14 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
     override fun get(request: ResolverRequest): ChannelResolver {
         val parameter = request.parameter
         val erasure = parameter.erasure as KClass<out GuildChannel>
-        val channelTypes = when (val annotation = parameter.findAnnotation<ChannelTypes>()) {
-            null -> channelTypesFrom(erasure.java)
-            else -> enumSetOf(*annotation.value)
-        }
+        val channelTypes = parameter.getChannelTypes(erasure)
         return ChannelResolver(context, erasure.java, channelTypes)
+    }
+
+    private fun ParameterWrapper.getChannelTypes(erasure: KClass<out GuildChannel>): EnumSet<ChannelType> {
+        return parameter.findAllAnnotations<ChannelTypes>()
+            .flatMapTo(enumSetOf()) { it.value }
+            .ifEmpty { channelTypesFrom(erasure.java) }
     }
 
     private fun channelTypesFrom(clazz: Class<out GuildChannel>): EnumSet<ChannelType> {
