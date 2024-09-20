@@ -10,6 +10,6 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuild
  *
  * @see TextCommandBuilder.ownerRequired DSL equivalent
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RequireOwner

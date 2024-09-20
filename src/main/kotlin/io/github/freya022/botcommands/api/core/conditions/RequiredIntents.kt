@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Conditional
  *
  * @see JDAService
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Condition(RequiredIntentsChecker::class, fail = false)
 @Conditional(SpringRequiredIntentsChecker::class)
 annotation class RequiredIntents(@get:JvmName("value") vararg val intents: GatewayIntent)
