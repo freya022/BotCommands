@@ -79,6 +79,7 @@ internal class BotCommandsTextConfiguration(
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
     override val showSuggestions: Boolean = true,
+    @Name("dmClosedEmoji")
     internal val dmClosedEmojiString: String? = null
 ) : BTextConfig {
     override val dmClosedEmoji: Nothing get() = unusable()
