@@ -91,9 +91,12 @@ fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: K
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
+ *
+ * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
  */
-fun <A : Annotation> findAllAnnotations(element: AnnotatedElement, annotationType: Class<A>): List<A> =
-    element.toKAnnotatedElement().findAllAnnotations(annotationType.kotlin)
+@JvmOverloads
+fun <A : Annotation> findAllAnnotations(element: AnnotatedElement, annotationType: Class<A>, rootOverride: Boolean = true): List<A> =
+    element.toKAnnotatedElement().findAllAnnotations(annotationType.kotlin, rootOverride)
 
 /**
  * Finds all annotations of type [A] from the annotated element.
@@ -102,10 +105,12 @@ fun <A : Annotation> findAllAnnotations(element: AnnotatedElement, annotationTyp
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
+ *
+ * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
  */
 @JvmSynthetic
-inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(): List<A> =
-    findAllAnnotations(A::class)
+inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(rootOverride: Boolean = true): List<A> =
+    findAllAnnotations(A::class, rootOverride)
 
 /**
  * Finds all annotations of type [A] from the annotated element.
@@ -114,14 +119,24 @@ inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(): List
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
+ *
+ * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
  */
 @JvmSynthetic
-fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>): List<A> = buildList {
-    bfs(this@findAllAnnotations) {
-        val annotation = annotationType.safeCast(it)
-        if (annotation != null)
-            this += annotation
-        true
+fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, rootOverride: Boolean = true): List<A> {
+    if (rootOverride) {
+        val directAnnotations = annotations.filterIsInstance(annotationType.java)
+        if (directAnnotations.isNotEmpty())
+            return directAnnotations
+    }
+
+    return buildList {
+        bfs(this@findAllAnnotations) {
+            val annotation = annotationType.safeCast(it)
+            if (annotation != null)
+                this += annotation
+            true
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.framework
 
 import io.github.freya022.botcommands.api.core.utils.findAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.flatMap
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Disabled
@@ -40,6 +41,21 @@ private object FindAllAnnotations {
     class MyClass
 }
 
+private object OverrideIndirectAnnotations {
+    @Repeatable
+    annotation class RepeatableAnnotationWithValues(vararg val values: Int)
+    annotation class AnnotationWithValues(vararg val values: Int)
+
+    @AnnotationWithValues(3)
+    annotation class MetaAnnotationWithValues
+
+    @RepeatableAnnotationWithValues(1)
+    @RepeatableAnnotationWithValues(2)
+    @MetaAnnotationWithValues
+    @AnnotationWithValues(4)
+    class MultipleValuesAnnotated
+}
+
 private object InheritedAnnotations {
     @Inherited
     annotation class InheritedAnnotation
@@ -67,6 +83,34 @@ object RecursiveAnnotationTests {
             ),
             allAnnotations.map { it.name }
         )
+    }
+
+    @Test
+    fun `Override indirect annotations with direct annotation`() {
+        val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
+            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(rootOverride = true)
+            .flatMap { it.values.toTypedArray() }
+
+        assertEquals(listOf(4), values)
+    }
+
+    @Test
+    fun `Override indirect annotations with direct repeatable annotation`() {
+        val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
+            .findAllAnnotations<OverrideIndirectAnnotations.RepeatableAnnotationWithValues>(rootOverride = true)
+            .flatMap { it.values.toTypedArray() }
+
+        assertEquals(listOf(1, 2), values)
+    }
+
+    @Test
+    fun `Merge annotations`() {
+        val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
+            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(rootOverride = false)
+            .flatMap { it.values.toTypedArray() }
+
+        // BFS order!
+        assertEquals(listOf(4, 3), values)
     }
 
     @Disabled("Not implemented yet")
