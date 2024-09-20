@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.internal.modals
 import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler

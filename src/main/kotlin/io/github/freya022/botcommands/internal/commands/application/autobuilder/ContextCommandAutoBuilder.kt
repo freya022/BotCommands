@@ -15,15 +15,15 @@ import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggreg
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.autobuilder.requireServiceOptionOrOptional
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.findOptionName
-import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

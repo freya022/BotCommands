@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.modals.options
 
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerInputOptionBuilderImpl
-import io.github.freya022.botcommands.internal.utils.findAnnotationRecursive
 
 internal class ModalHandlerInputOption(
     optionBuilder: ModalHandlerInputOptionBuilderImpl,

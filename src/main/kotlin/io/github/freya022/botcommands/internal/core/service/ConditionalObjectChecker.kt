@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.internal.core.service
 
 import io.github.classgraph.ClassInfo
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.annotations.HardcodedCondition
-import io.github.freya022.botcommands.internal.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.isObject
 import kotlin.reflect.KClass
 
