@@ -23,8 +23,8 @@ import javax.annotation.CheckReturnValue
 
 private val logger = KotlinLogging.loggerOf<BaseCommandEvent>()
 
-private val SUCCESS = EmojiUtils.resolveJDAEmoji("white_check_mark")
-private val ERROR = EmojiUtils.resolveJDAEmoji("x")
+private val SUCCESS by lazy { EmojiUtils.resolveJDAEmoji("white_check_mark") }
+private val ERROR by lazy { EmojiUtils.resolveJDAEmoji("x") }
 
 internal open class BaseCommandEventImpl(
     private val context: BContext,

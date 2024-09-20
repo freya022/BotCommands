@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.Paginators
+import io.github.freya022.botcommands.internal.utils.lazyWritable
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
@@ -44,23 +45,23 @@ class Paginator internal constructor(
 
         /** @see PaginatorBuilder.setFirstContent */
         @JvmStatic
-        var firstPageButtonContent: ButtonContent = ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "rewind")
+        var firstPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "rewind") }
 
         /** @see PaginatorBuilder.setPreviousContent */
         @JvmStatic
-        var previousPageButtonContent: ButtonContent = ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_backward")
+        var previousPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_backward") }
 
         /** @see PaginatorBuilder.setNextContent */
         @JvmStatic
-        var nextPageButtonContent: ButtonContent = ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_forward")
+        var nextPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_forward") }
 
         /** @see PaginatorBuilder.setLastContent */
         @JvmStatic
-        var lastPageButtonContent: ButtonContent = ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "fast_forward")
+        var lastPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "fast_forward") }
 
         /** @see PaginatorBuilder.setDeleteContent */
         @JvmStatic
-        var deleteButtonContent: ButtonContent = ButtonContent.fromShortcode(ButtonStyle.DANGER, "wastebasket")
+        var deleteButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.DANGER, "wastebasket") }
 
         /** @see PaginatorBuilder.useDeleteButton */
         @JvmStatic
