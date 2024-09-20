@@ -31,6 +31,6 @@ import kotlin.reflect.KClass
  * @see ApplicationCommandBuilder.filter DSL equivalent (application commands)
  * @see TextCommandVariationBuilder.filter DSL equivalent (text commands)
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Filter(@get:JvmName("value") vararg val classes: KClass<out Filter>)

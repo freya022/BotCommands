@@ -67,11 +67,8 @@ internal object AnnotationUtils {
 
     @Suppress("UNCHECKED_CAST")
     internal fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
-        val filterTypes = hashSetOf<KClass<out Filter>>()
-        func.declaringClass.findAllAnnotations<FilterAnnotation>().forEach { filterTypes += it.classes }
-        func.findAllAnnotations<FilterAnnotation>().forEach { filterTypes += it.classes }
-
-        return filterTypes
+        return func.findAllAnnotations<FilterAnnotation>()
+            .flatMap { it.classes }
             .onEach {
                 require(it.isSubclassOf(filterType)) {
                     "Filter ${it.simpleNestedName} must implement ${filterType.simpleNestedName}"
