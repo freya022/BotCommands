@@ -10,6 +10,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
  *
  * You can alternatively use a specific channel type,
  * such as [TextChannel] to automatically restrict the channel type.
+ *
+ * ### Merging
+ * This annotation can be merged if found with other meta-annotations.
+ * Keep in mind that a *direct* annotation overrides all meta-annotations.
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

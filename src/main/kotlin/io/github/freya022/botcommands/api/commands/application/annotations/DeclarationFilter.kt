@@ -9,6 +9,10 @@ import kotlin.reflect.KClass
  *
  * Only works on [guild][CommandScope.GUILD] commands.
  *
+ * ### Merging
+ * This annotation can be merged if found with other meta-annotations.
+ * Keep in mind that a *direct* annotation overrides all meta-annotations.
+ *
  * @see CommandDeclarationFilter
  */
 @Target(AnnotationTarget.FUNCTION)
