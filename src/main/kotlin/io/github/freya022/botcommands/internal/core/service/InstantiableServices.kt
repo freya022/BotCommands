@@ -18,29 +18,22 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
-import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
 
 private val logger = KotlinLogging.logger { }
 
 // Don't use InterfacedService, having it sealed + ServiceType is enough, saves unnecessary checks and logs
 internal sealed interface InstantiableServices {
-    val availablePrimaryTypes: Set<KClass<*>>
-
-    val allAvailableTypes: Set<KClass<*>>
+    fun getAllPrimaryTypes(): Set<KClass<*>>
 }
 
 @Service
 internal class SpringInstantiableServices internal constructor(
-        config: BConfig,
-        applicationContext: ApplicationContext
+    private val config: BConfig,
+    private val applicationContext: ApplicationContext
 ) : InstantiableServices {
-    override val availablePrimaryTypes: Set<KClass<*>>
-
-    override val allAvailableTypes: Set<KClass<*>>
-
-    init {
-        val allBeans = applicationContext.beanDefinitionNames
+    override fun getAllPrimaryTypes(): Set<KClass<*>> {
+        return applicationContext.beanDefinitionNames
             .asSequence()
             .map { beanName ->
                 val type = applicationContext.getType(beanName)
@@ -61,8 +54,6 @@ internal class SpringInstantiableServices internal constructor(
                 return@filter false
             }
             .mapTo(hashSetOf()) { it.kotlin }
-        availablePrimaryTypes = allBeans
-        allAvailableTypes = allBeans + allBeans.flatMapTo(hashSetOf()) { it.allSuperclasses }
     }
 }
 
@@ -123,10 +114,6 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
         }
     }
 
-    override val availablePrimaryTypes: Set<KClass<*>> = availableProviders.mapTo(hashSetOf()) { it.primaryType }
-
-    override val allAvailableTypes: Set<KClass<*>> = availableProviders.flatMapTo(hashSetOf()) { it.types }
-
     init {
         class InterfacedType(val clazz: KClass<*>, annotation: InterfacedService) {
             val acceptMultiple = annotation.acceptMultiple
@@ -177,6 +164,10 @@ internal class DefaultInstantiableServices internal constructor(serviceProviders
         typeToImplementations.forEach { (interfacedType, providers) ->
             logger.trace { "Found implementations of ${interfacedType.clazz.simpleNestedName} in ${providers.joinToString { it.primaryType.simpleNestedName }}" }
         }
+    }
+
+    override fun getAllPrimaryTypes(): Set<KClass<*>> {
+        return availableProviders.mapTo(hashSetOf()) { it.primaryType }
     }
 }
 

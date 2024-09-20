@@ -17,10 +17,7 @@ internal class FunctionAnnotationsMap(
 
     init {
         instantiableServices
-            // This cannot use "availableServices" as they contain types that would point to the same instance,
-            // under a supertype,
-            // thus having the same annotated function be returned more than once
-            .availablePrimaryTypes
+            .getAllPrimaryTypes()
             .forEach { kClass ->
                 // The main difference with the kotlin-reflect version
                 // is that the Java methods target their declaring class.

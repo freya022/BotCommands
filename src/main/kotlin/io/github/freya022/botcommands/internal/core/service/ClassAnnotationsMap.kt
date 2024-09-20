@@ -27,15 +27,15 @@ internal inline fun <reified A : Annotation> ClassAnnotationsMap.get(): Set<KCla
 @ServiceType(ClassAnnotationsMap::class)
 @RequiresDefaultInjection
 internal class DefaultClassAnnotationsMap(
-    instantiableServices: InstantiableServices
+    instantiableServices: DefaultInstantiableServices
 ) : ClassAnnotationsMap {
     private val instantiableAnnotatedClasses: Map<KClass<out Annotation>, Set<KClass<*>>> = buildMap {
         instantiableServices
-            // Cannot use "availableServices" as they contain types that would point to the same instance
-            .availablePrimaryTypes
-            .forEach { kClass ->
-                kClass.annotations.forEach { annotation ->
-                    (getOrPut(annotation.annotationClass) { hashSetOf() } as MutableSet<KClass<*>>).add(kClass)
+            .availableProviders
+            .forEach { provider ->
+                val primaryType = provider.primaryType
+                provider.annotations.forEach { annotation ->
+                    (getOrPut(annotation.annotationClass) { hashSetOf() } as MutableSet<KClass<*>>).add(primaryType)
                 }
             }
     }
