@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
-import io.github.freya022.botcommands.api.core.events.BEvent
+import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -183,7 +183,7 @@ class EventDispatcher internal constructor(
 
     private fun Collection<ClassPathFunction>.addAsEventListeners() = this
         .requiredFilter(FunctionFilter.nonStatic())
-        .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
+        .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BGenericEvent::class))
         .forEach { classPathFunc ->
             val function = classPathFunc.function
             val annotation = function.findAnnotationRecursive<BEventListener>()
