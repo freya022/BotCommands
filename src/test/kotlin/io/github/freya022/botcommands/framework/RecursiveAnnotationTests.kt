@@ -1,8 +1,12 @@
 package io.github.freya022.botcommands.framework
 
-import io.github.freya022.botcommands.internal.utils.findAllAnnotations
+import io.github.freya022.botcommands.api.core.utils.findAllAnnotations
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import java.lang.annotation.Inherited
 
 private object FindAllAnnotations {
     annotation class MyAnnotation(val name: String)
@@ -36,6 +40,16 @@ private object FindAllAnnotations {
     class MyClass
 }
 
+private object InheritedAnnotations {
+    @Inherited
+    annotation class InheritedAnnotation
+
+    @InheritedAnnotation
+    abstract class MyAbstractClass
+
+    class MyClass : MyAbstractClass()
+}
+
 object RecursiveAnnotationTests {
     @Test
     fun `Find all annotations in order`() {
@@ -53,5 +67,11 @@ object RecursiveAnnotationTests {
             ),
             allAnnotations.map { it.name }
         )
+    }
+
+    @Disabled("Not implemented yet")
+    @Test
+    fun `Inherited annotations`() {
+        assertNotNull(InheritedAnnotations.MyClass::class.findAnnotationRecursive<InheritedAnnotations.InheritedAnnotation>())
     }
 }
