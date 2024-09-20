@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test
 
 import ch.qos.logback.classic.ClassicConstants
-import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
+import dev.reformator.stacktracedecoroutinator.jvm.DecoroutinatorJvmApi
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.test.config.Environment
@@ -23,7 +23,7 @@ object Main {
             System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
             logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
-            // I use hotswap agent in order to update my code without restarting the bot
+            // I use hotswap agent to update my code without restarting the bot
             // Of course this only supports modifying existing code
             // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
 
@@ -33,7 +33,7 @@ object Main {
             } else if ("--no-decoroutinator" in args) {
                 logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
             } else {
-                DecoroutinatorRuntime.load()
+                DecoroutinatorJvmApi.install()
             }
 
             BotCommands.create {

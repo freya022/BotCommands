@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.spring.test
 
-import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
+import dev.reformator.stacktracedecoroutinator.jvm.DecoroutinatorJvmApi
 import io.github.freya022.botcommands.test.config.Environment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
     System.setProperty("logging.config", Environment.logbackConfigPath.absolutePathString())
     logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
-    // I use hotswap agent in order to update my code without restarting the bot
+    // I use hotswap agent to update my code without restarting the bot
     // Of course this only supports modifying existing code
     // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
 
@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
     } else if ("--no-decoroutinator" in args) {
         logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
     } else {
-        DecoroutinatorRuntime.load()
+        DecoroutinatorJvmApi.install()
     }
 
     // Set the configuration file to use, avoids having to put the file in project root

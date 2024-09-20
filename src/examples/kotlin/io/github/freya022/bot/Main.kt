@@ -1,6 +1,6 @@
 package io.github.freya022.bot
 
-import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
+import dev.reformator.stacktracedecoroutinator.jvm.DecoroutinatorJvmApi
 import io.github.freya022.bot.config.Config
 import io.github.freya022.bot.config.Environment
 import io.github.freya022.botcommands.api.core.BotCommands
@@ -34,7 +34,7 @@ object Main {
             } else if ("--no-decoroutinator" in args) {
                 logger.info { "Skipping stacktrace-decoroutinator as --no-decoroutinator is specified" }
             } else {
-                DecoroutinatorRuntime.load()
+                DecoroutinatorJvmApi.install()
             }
 
             val config = Config.instance
