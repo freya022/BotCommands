@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -27,7 +28,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 import kotlin.reflect.*
-import kotlin.reflect.full.findAnnotation
 
 /**
  * Allows components to have handlers bound to them.
@@ -1301,8 +1301,8 @@ private fun <C : IPersistentActionableComponent<C>> C.bindWithClassCallable(func
 }
 
 private fun findHandlerName(func: KFunction<*>): String {
-    val buttonAnnotation = func.findAnnotation<JDAButtonListener>()
-    val selectMenuAnnotation = func.findAnnotation<JDASelectMenuListener>()
+    val buttonAnnotation = func.findAnnotationRecursive<JDAButtonListener>()
+    val selectMenuAnnotation = func.findAnnotationRecursive<JDASelectMenuListener>()
 
     if (buttonAnnotation != null && selectMenuAnnotation != null)
         throwArgument(func, "Cannot have the same function with the two annotation")

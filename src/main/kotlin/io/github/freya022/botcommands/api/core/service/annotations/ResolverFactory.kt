@@ -16,8 +16,9 @@ import org.springframework.stereotype.Component
  *
  * @see ParameterResolverFactory
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Bean
 @Component
+@BService
 annotation class ResolverFactory

@@ -27,6 +27,10 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
  * If the list's element type is a concrete entity type (such as [Member]), no mention types can be added.
  *
  * If the list's element type is [IMentionable], mention types can be set, if none are, all mentions are passed.
+ *
+ * ### Merging
+ * This annotation can be merged if found with other meta-annotations.
+ * Keep in mind that a *direct* annotation overrides all meta-annotations.
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

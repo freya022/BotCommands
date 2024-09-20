@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
@@ -25,8 +24,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 /**
  * Marker annotation on interfaces intended to be implemented by a service.
  *
- * If you implement such an interface, your implementation class will need to use [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * If you implement such an interface, your implementation class will need to use [@BService][BService].
  *
  * Implementors of this interface will automatically be registered with the interface's type,
  * in addition to their own type and the ones in [@ServiceType][ServiceType].

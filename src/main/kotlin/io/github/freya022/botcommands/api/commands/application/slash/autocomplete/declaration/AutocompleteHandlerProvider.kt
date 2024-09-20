@@ -2,15 +2,13 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 
 /**
  * Interface to declare autocomplete handlers, ran once at startup.
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * @see AutocompleteHandler @AutocompleteHandler
  * @see AutocompleteTransformer

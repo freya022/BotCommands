@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.text
 
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.core.Filter
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -22,8 +21,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Filters can be combined with [`and`][and]/[`or`][or] (static methods for Java users).
  *
  * ### Requirements
- * - Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Register your instance as a service with [@BService][BService].
  * This is not required if you pass the instance directly to the command builder.
  * - Have exactly one instance of [TextCommandRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).

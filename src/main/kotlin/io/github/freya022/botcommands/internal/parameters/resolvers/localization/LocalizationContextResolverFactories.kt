@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOfAny
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -22,7 +23,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
@@ -62,7 +62,7 @@ internal class TextLocalizationContextResolverFactory(
 internal object LocalizationContextResolverFactories {
     fun getBaseLocalizationContext(localizationService: LocalizationService, parameter: KParameter, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
         val parameterFunction = parameter.function
-        val annotation = parameter.findAnnotation<LocalizationBundle>()
+        val annotation = parameter.findAnnotationRecursive<LocalizationBundle>()
             ?: throwArgument(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with ${annotationRef<LocalizationBundle>()}")
 
         val firstParamErasure = parameterFunction.valueParameters.first().type.jvmErasure

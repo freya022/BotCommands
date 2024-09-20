@@ -14,5 +14,5 @@ package io.github.freya022.botcommands.api.core.service.annotations
  * @see BService.priority
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class ServicePriority(val value: Int)

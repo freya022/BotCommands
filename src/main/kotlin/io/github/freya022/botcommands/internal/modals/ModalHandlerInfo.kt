@@ -3,6 +3,8 @@ package io.github.freya022.botcommands.internal.modals
 import gnu.trove.map.TObjectLongMap
 import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -23,8 +25,6 @@ import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
@@ -40,16 +40,16 @@ internal class ModalHandlerInfo internal constructor(
     internal val handlerName: String
 
     init {
-        val annotation = function.findAnnotation<ModalHandler>()!!
+        val annotation = function.findAnnotationRecursive<ModalHandler>()!!
         handlerName = annotation.name
 
         val resolverContainer = context.serviceContainer.getService<ResolverContainer>()
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
-                if (parameter.hasAnnotation<ModalInput>()) {
+                if (parameter.hasAnnotationRecursive<ModalInput>()) {
                     ModalHandlerInputOptionBuilderImpl(optionParameter)
-                } else if (parameter.hasAnnotation<ModalDataAnnotation>()) {
+                } else if (parameter.hasAnnotationRecursive<ModalDataAnnotation>()) {
                     ModalHandlerDataOptionBuilderImpl(optionParameter)
                 } else {
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)

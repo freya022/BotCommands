@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GuildApp
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
@@ -24,7 +25,6 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 private val logger = KotlinLogging.logger { }
@@ -48,9 +48,9 @@ internal class MessageContextCommandAutoBuilder(
             .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
             .map {
                 val func = it.function
-                val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("${annotationRef<JDAMessageCommand>()} should be present")
+                val annotation = func.findAnnotationRecursive<JDAMessageCommand>() ?: throwInternal("${annotationRef<JDAMessageCommand>()} should be present")
                 val path = CommandPath.ofName(annotation.name)
-                val commandId = func.findAnnotation<CommandId>()?.value
+                val commandId = func.findAnnotationRecursive<CommandId>()?.value
 
                 MessageContextFunctionMetadata(it, annotation, path, commandId)
             }

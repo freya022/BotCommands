@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.service
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.ReflectionUtils
@@ -9,8 +8,7 @@ import kotlin.reflect.KClass
 /**
  * Interface to supply services of the requested type.
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * @see InterfacedService @InterfacedService
  */

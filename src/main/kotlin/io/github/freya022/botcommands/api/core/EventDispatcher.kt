@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.events.BEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.*
@@ -28,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -186,7 +186,7 @@ class EventDispatcher internal constructor(
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->
             val function = classPathFunc.function
-            val annotation = function.findAnnotation<BEventListener>()
+            val annotation = function.findAnnotationRecursive<BEventListener>()
                 ?: throwInternal(function, "Function was asserted to have BEventListener but it was not found")
 
             val parameters = function.nonInstanceParameters

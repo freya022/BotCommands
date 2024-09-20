@@ -8,22 +8,19 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
 import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterAnnotation
 
 internal object AnnotationUtils {
     internal fun getEffectiveTestGuildIds(context: BContext, func: KFunction<*>): TLongSet {
         val set = TLongHashSet(context.applicationConfig.testGuildIds)
-        val annotation = func.findAnnotation<Test>() ?: return set
+        val annotation = func.findAnnotationRecursive<Test>() ?: return set
 
         val methodValue = annotation.guildIds
         set.addAll(methodValue)
@@ -32,7 +29,7 @@ internal object AnnotationUtils {
             return set
         }
 
-        val classValue: LongArray = func.declaringClass.findAnnotation<Test>()?.guildIds ?: LongArray(0)
+        val classValue: LongArray = func.declaringClass.findAnnotationRecursive<Test>()?.guildIds ?: LongArray(0)
         set.addAll(classValue)
 
         return set
@@ -40,13 +37,13 @@ internal object AnnotationUtils {
 
     internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
         val set: EnumSet<Permission> = enumSetOf()
-        val annotation = func.findAnnotation<UserPermissions>() ?: return set
+        val annotation = func.findAnnotationRecursive<UserPermissions>() ?: return set
 
         val methodPermissions = annotation.permissions
         set += methodPermissions
 
         if (annotation.append) {
-            val classPermissions = func.declaringClass.findAnnotation<UserPermissions>()?.permissions ?: emptyArray()
+            val classPermissions = func.declaringClass.findAnnotationRecursive<UserPermissions>()?.permissions ?: emptyArray()
             set += classPermissions
         }
 
@@ -55,13 +52,13 @@ internal object AnnotationUtils {
 
     internal fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
         val set: EnumSet<Permission> = enumSetOf()
-        val annotation = func.findAnnotation<BotPermissions>() ?: return set
+        val annotation = func.findAnnotationRecursive<BotPermissions>() ?: return set
 
         val methodPermissions = annotation.permissions
         set += methodPermissions
 
         if (annotation.append) {
-            val classPermissions = func.declaringClass.findAnnotation<BotPermissions>()?.permissions ?: emptyArray()
+            val classPermissions = func.declaringClass.findAnnotationRecursive<BotPermissions>()?.permissions ?: emptyArray()
             set += classPermissions
         }
 
@@ -70,11 +67,8 @@ internal object AnnotationUtils {
 
     @Suppress("UNCHECKED_CAST")
     internal fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
-        val filterTypes = hashSetOf<KClass<out Filter>>()
-        func.declaringClass.findAnnotation<FilterAnnotation>()?.let { filterTypes += it.classes }
-        func.findAnnotation<FilterAnnotation>()?.let { filterTypes += it.classes }
-
-        return filterTypes
+        return func.findAllAnnotations<FilterAnnotation>()
+            .flatMap { it.classes }
             .onEach {
                 require(it.isSubclassOf(filterType)) {
                     "Filter ${it.simpleNestedName} must implement ${filterType.simpleNestedName}"

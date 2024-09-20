@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
@@ -12,8 +11,7 @@ import java.util.*
 /**
  * Factory for [DefaultMessages] instances, using locales from various sources.
  *
- * **Usage:** Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage:** Register your instance as a service with [@BService][BService].
  *
  * @see InterfacedService @InterfacedService
  */

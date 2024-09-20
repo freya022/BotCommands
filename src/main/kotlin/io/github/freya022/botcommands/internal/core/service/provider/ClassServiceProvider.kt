@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantia
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
+import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
@@ -19,7 +20,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.logger { }
@@ -39,14 +39,14 @@ internal class ClassServiceProvider internal constructor(
      */
     private var serviceError: ServiceError? = ServiceProvider.nullServiceError
 
-    override val name = clazz.getServiceName()
+    override val annotations = clazz.getAllAnnotations()
+    override val name = getServiceName(clazz)
     override val providerKey = clazz.jvmName
     override val primaryType get() = clazz
-    override val types = clazz.getServiceTypes(primaryType)
-    override val isPrimary = clazz.hasAnnotation<Primary>()
-    override val isLazy = clazz.hasAnnotation<Lazy>()
-    override val priority = clazz.getAnnotatedServicePriority()
-    override val annotations get() = clazz.annotations
+    override val types = getServiceTypes(primaryType)
+    override val isPrimary = hasAnnotation<Primary>()
+    override val isLazy = hasAnnotation<Lazy>()
+    override val priority = getAnnotatedServicePriority()
 
     override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
@@ -64,7 +64,7 @@ internal class ClassServiceProvider internal constructor(
     }
 
     private fun checkInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
-        clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
+        commonCanInstantiate(serviceContainer, clazz, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
         if (clazz.isObject) return null
@@ -192,4 +192,5 @@ internal class ClassServiceProvider internal constructor(
 }
 
 @PublishedApi
-internal fun KClass<*>.getServiceName() = getAnnotatedServiceName() ?: this.simpleNestedName.replaceFirstChar { it.lowercase() }
+internal fun ServiceProvider.getServiceName(clazz: KClass<*>) =
+    getAnnotatedServiceName() ?: clazz.simpleNestedName.replaceFirstChar { it.lowercase() }

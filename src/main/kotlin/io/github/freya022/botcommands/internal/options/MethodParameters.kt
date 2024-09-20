@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionBuilderImpl
@@ -17,7 +18,6 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -44,7 +44,7 @@ internal fun <R : MethodParameterMixin> Function<*>.transformParameters(
 ): List<R> = kFunction.nonInstanceParameters.drop(1).associate { parameter ->
     val declaredName = parameter.findDeclarationName()
     declaredName to when {
-        parameter.hasAnnotation<Aggregate>() -> {
+        parameter.hasAnnotationRecursive<Aggregate>() -> {
             val constructor = parameter.type.jvmErasure.primaryConstructor
                 ?: throwArgument(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
             BasicOptionAggregateBuilderImpl(AggregatorParameter.fromUserAggregate(constructor, declaredName), constructor).apply {

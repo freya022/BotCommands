@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.text
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -10,8 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Processes text command rejections returned by [text command filters][TextCommandFilter].
  *
  * ### Requirements
- * - Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * - Register your instance as a service with [@BService][BService].
  * - Implement either [handle] (Java) or [handleSuspend] (Kotlin).
  *
  * ### Example - Replying the error string returned by the [TextCommandFilter] example

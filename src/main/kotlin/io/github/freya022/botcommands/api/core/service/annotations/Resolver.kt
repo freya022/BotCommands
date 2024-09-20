@@ -18,10 +18,11 @@ import org.springframework.stereotype.Component
  *
  * @see ClassParameterResolver
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Bean
 @Component
+@BService
 annotation class Resolver(
     /**
      * The priority of this resolver (then wrapped as a resolver factory).

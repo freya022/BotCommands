@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.api.core.reflect
 
 import io.github.freya022.botcommands.api.core.utils.bestName
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.contracts.ExperimentalContracts
@@ -20,13 +23,20 @@ class ParameterWrapper private constructor(
 ) {
     val erasure: KClass<*> = type.jvmErasure
     val javaErasure: Class<*> get() = erasure.java
-    val annotations: List<Annotation> get() = parameter.annotations
+    val annotations: List<Annotation> get() = parameter.getAllAnnotations()
     val isRequired get() = !parameter.isNullable && !parameter.isOptional
 
     internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 
-    fun hasAnnotation(clazz: Class<out Annotation>): Boolean = getAnnotation(clazz) != null
-    fun <A : Annotation> getAnnotation(clazz: Class<out A>): A? = parameter.annotations.filterIsInstance(clazz).firstOrNull()
+    /**
+     * @see hasAnnotationRecursive
+     */
+    fun hasAnnotation(clazz: Class<out Annotation>): Boolean = parameter.hasAnnotationRecursive(clazz.kotlin)
+
+    /**
+     * @see findAnnotationRecursive
+     */
+    fun <A : Annotation> getAnnotation(clazz: Class<out A>): A? = parameter.findAnnotationRecursive(clazz.kotlin)
 
     @JvmSynthetic
     internal fun toListElementType() = when (type.jvmErasure) {
@@ -64,7 +74,14 @@ class ParameterWrapper private constructor(
 
 internal val ParameterWrapper.function get() = parameter.function
 
+/**
+ * @see hasAnnotationRecursive
+ */
 inline fun <reified A : Annotation> ParameterWrapper.hasAnnotation(): Boolean = hasAnnotation(A::class.java)
+
+/**
+ * @see findAnnotationRecursive
+ */
 inline fun <reified A : Annotation> ParameterWrapper.findAnnotation(): A? = getAnnotation(A::class.java)
 
 @OptIn(ExperimentalContracts::class)

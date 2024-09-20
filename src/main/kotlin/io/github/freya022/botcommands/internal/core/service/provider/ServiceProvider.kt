@@ -1,15 +1,15 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
-import io.github.freya022.botcommands.api.core.utils.bestName
-import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.Singletons
 import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.*
@@ -22,9 +22,6 @@ import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.allSuperclasses
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -85,9 +82,25 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     }
 }
 
+internal fun ServiceProvider.hasAnnotation(annotationType: KClass<out Annotation>): Boolean =
+    annotations.any { it.annotationClass == annotationType }
+internal inline fun <reified A : Annotation> ServiceProvider.hasAnnotation(): Boolean =
+    hasAnnotation(A::class)
+
+@Suppress("UNCHECKED_CAST")
+internal fun <A : Annotation> ServiceProvider.findAnnotation(annotationType: KClass<A>): A? =
+    annotations.firstOrNull { it.annotationClass == annotationType } as A?
+internal inline fun <reified A : Annotation> ServiceProvider.findAnnotation(): A? =
+    findAnnotation(A::class)
+
+internal fun <A : Annotation> ServiceProvider.findAnnotations(annotationType: KClass<A>): List<A> =
+    annotations.filterIsInstance(annotationType.java)
+internal inline fun <reified A : Annotation> ServiceProvider.findAnnotations(): List<A> =
+    annotations.filterIsInstance(A::class.java)
+
 internal fun ServiceProvider.getProviderFunctionOrSignature(): Any = getProviderFunction() ?: getProviderSignature()
 
-internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
+internal fun ServiceProvider.getAnnotatedServiceName(): String? {
     findAnnotation<ServiceName>()?.let {
         if (it.value.isNotBlank()) {
             return it.value
@@ -103,7 +116,7 @@ internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
     return null
 }
 
-internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
+internal fun ServiceProvider.getAnnotatedServicePriority(): Int {
     findAnnotation<ServicePriority>()?.let {
         return it.value
     }
@@ -116,33 +129,32 @@ internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
     return 0
 }
 
-internal fun KAnnotatedElement.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
-    val explicitTypes = when (val serviceType = findAnnotation<ServiceType>()) {
-        null -> setOf(primaryType)
-        else -> buildSet(serviceType.types.size + 1) {
+internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass<*>> {
+    val explicitTypes = findAnnotations<ServiceType>().flatMapTo(hashSetOf()) { it.types }
+    val ignoredTypes = findAnnotations<IgnoreServiceTypes>().flatMapTo(hashSetOf()) { it.types }
+    val interfacedServiceTypes = primaryType.java.allSuperclassesAndInterfaces
+        .filter { it != primaryType.java && it.isAnnotationPresent(InterfacedService::class.java) }
+        .mapTo(hashSetOf()) { it.kotlin }
+    val additionalTypes = interfacedServiceTypes + explicitTypes - ignoredTypes
+
+    val effectiveTypes = when {
+        additionalTypes.isEmpty() -> setOf(primaryType)
+        else -> buildSet(additionalTypes.size + 1) {
             this += primaryType
-            this += serviceType.types.onEach {
+            this += additionalTypes.onEach {
                 require(it.isAssignableFrom(primaryType)) {
                     "${it.simpleNestedName} is not a supertype of service ${primaryType.simpleNestedName}"
                 }
             }
         }
     }
-    val removedTypes = findAnnotation<IgnoreServiceTypes>()?.types?.toSet() ?: emptySet()
 
-    val interfacedServiceTypes = primaryType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
-    val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes) - removedTypes
-    if (existingServiceTypes.isNotEmpty()) {
-        logger.warn { "Instance of ${primaryType.simpleNestedName} should not have their implemented interfaced services (${existingServiceTypes.joinToString { it.simpleNestedName }}) in ${annotationRef<ServiceType>()}, source: $this" }
-    }
-
-    return (explicitTypes + interfacedServiceTypes) - removedTypes
+    return effectiveTypes
 }
 
-context(ServiceProvider)
-internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
-    findAnnotation<Dependencies>()?.value?.let { dependencies ->
-        dependencies.forEach { dependency ->
+internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
+    findAnnotations<Dependencies>().forEach { dependencies ->
+        dependencies.value.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
             }
@@ -150,9 +162,9 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
     }
 
     // Services can be conditional
-    findAnnotation<ConditionalService>()?.let { conditionalService ->
+    findAnnotations<ConditionalService>().forEach { conditionalService ->
         conditionalService.checks.forEach {
-            val instance = it.createSingleton()
+            val instance = Singletons[it]
 
             fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
                 return ErrorType.FAILED_CONDITION.toError(
@@ -179,12 +191,27 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
         }
     }
 
-    serviceContainer.serviceBootstrap.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
-        val annotation = customCondition.getCondition(this) ?: return@forEach
-        val checker = customCondition.checker
+    annotatedElement.findAllAnnotationsWith<Condition>().forEach { (userCondition, metadataAnnotation) ->
+        val checkerType = metadataAnnotation.type
+        @Suppress("UNCHECKED_CAST")
+        val checker = Singletons[checkerType] as CustomConditionChecker<Annotation>
+
+        // Check the checker processes the annotation we just found
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        val expectedCondition = (userCondition as java.lang.annotation.Annotation).annotationType()
+        val actualCondition = checker.annotationType
+        require(expectedCondition == actualCondition) {
+            val conditionName = expectedCondition.simpleNestedName
+            val checkerName = checkerType.simpleNestedName
+
+            val requiredSuperclassName = CustomConditionChecker::class.simpleNestedName
+            val requiredCheckerTypeArgument = expectedCondition.simpleNestedName
+
+            "Custom condition checker $checkerName must implement $requiredSuperclassName<$requiredCheckerTypeArgument> to be usable in @$conditionName"
+        }
 
         fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
-            val errorType = if (customCondition.conditionMetadata.fail) {
+            val errorType = if (metadataAnnotation.fail) {
                 ErrorType.FAILED_FATAL_CUSTOM_CONDITION
             } else {
                 ErrorType.FAILED_CUSTOM_CONDITION
@@ -201,7 +228,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: DefaultSer
         }
 
         val errorMessage = try {
-            checker.checkServiceAvailability(serviceContainer, checkedClass.java, annotation)
+            checker.checkServiceAvailability(serviceContainer, checkedClass.java, userCondition)
         } catch (e: ServiceException) {
             val error = e.serviceError
             return createError("A service required by the condition checker is missing", nestedError = error)
@@ -277,7 +304,7 @@ internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): Se
         return null //Might be empty if no service were available, which is ok
     }
 
-    val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
+    val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
         canCreateService(requestedMandatoryName, type.jvmErasure)
     } else {

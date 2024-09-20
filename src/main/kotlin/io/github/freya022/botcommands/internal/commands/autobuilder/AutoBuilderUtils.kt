@@ -15,9 +15,7 @@ import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
-import io.github.freya022.botcommands.api.core.utils.bestName
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
@@ -28,8 +26,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullab
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
 internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
@@ -96,7 +92,7 @@ internal fun checkDeclarationFilter(
     path: CommandPath,
     commandId: String?,
 ): Boolean {
-    func.findAnnotation<DeclarationFilter>()?.let { declarationFilter ->
+    func.findAllAnnotations<DeclarationFilter>().forEach { declarationFilter ->
         checkAt(manager is GuildApplicationCommandManager, func) {
             "${annotationRef<DeclarationFilter>()} can only be used on guild commands"
         }
@@ -132,7 +128,7 @@ internal enum class TestState {
 }
 
 internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContext): TestState {
-    if (func.hasAnnotation<Test>()) {
+    if (func.hasAnnotationRecursive<Test>()) {
         requireAt(scope == CommandScope.GUILD, func) {
             "Test commands must have their scope set to GUILD"
         }
@@ -188,7 +184,7 @@ internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresen
 
 context(CommandBuilder)
 internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
-    return singleValueOfVariants(annotationRef<A>()) { it.findAnnotation<A>() }
+    return singleValueOfVariants(annotationRef<A>()) { it.findAnnotationRecursive<A>() }
 }
 
 context(CommandBuilder)
@@ -209,7 +205,7 @@ internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>) {
     filters += AnnotationUtils.getFilters(context, func, ApplicationCommandFilter::class)
 
-    if (func.hasAnnotation<NSFW>()) {
+    if (func.hasAnnotationRecursive<NSFW>()) {
         throwArgument(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
 }

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.core.service.annotations
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Component
 
 /**
  * Marks this class as a service, or this function as a service factory.
+ * Can be added on your own annotation.
  *
  * Service factories must be static, or declared in a service class, or an `object`.
  *
@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component
  *
  * ### Service retrieval
  *
- * Classes annotated with [service annotations][BServiceConfigBuilder.serviceAnnotations]
- * can be injected into other service classes.
+ * Classes annotated with [@BService][BService] (either directly or via an intermediary annotation) can be retrieved.
  *
  * In most cases, the services you retrieve will be type-matched, however, here is how they are looked up:
  * - If [@ServiceName][ServiceName] is used: Finds a service with the same name and satisfying type.
@@ -117,7 +116,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class BService(
     /**
      * The unique name of this service.

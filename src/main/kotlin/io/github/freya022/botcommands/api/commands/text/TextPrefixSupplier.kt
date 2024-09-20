@@ -1,10 +1,8 @@
 package io.github.freya022.botcommands.api.commands.text
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 /**
@@ -12,8 +10,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
  *
  * This overrides any other configured prefixes.
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * @see getPrefixes
  * @see InterfacedService @InterfacedService

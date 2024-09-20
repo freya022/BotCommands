@@ -166,23 +166,6 @@ internal fun KParameter.findOptionName(): String =
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
-
-private val singletonCache = hashMapOf<KClass<*>, Any>()
-
-@Suppress("UNCHECKED_CAST")
-internal fun <T : Any> KClass<T>.createSingleton(): T = singletonCache.computeIfAbsent(this) {
-    val instance = this.objectInstance
-    if (instance != null)
-        return@computeIfAbsent instance
-    val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
-        ?: throwArgument("Class $simpleNestedName must either be an object, or have a no-arg constructor (or have only default parameters)")
-    check(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
-        "Constructor of ${this.simpleNestedName} must be effectively public (internal is allowed)"
-    }
-
-    constructor.callBy(mapOf())
-} as T
-
 @PublishedApi
 internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
 

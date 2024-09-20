@@ -1,15 +1,13 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.declaration
 
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 
 /**
  * Interface to declare rate limits, ran once at startup.
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * ### Example
  * ```java

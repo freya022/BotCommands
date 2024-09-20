@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerParameterImpl
@@ -23,7 +24,6 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.hasAnnotation
 
 internal class ComponentDescriptor internal constructor(
     context: BContextImpl,
@@ -38,7 +38,7 @@ internal class ComponentDescriptor internal constructor(
         parameters = eventFunction.transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
-                if (parameter.hasAnnotation<ComponentData>()) {
+                if (parameter.hasAnnotationRecursive<ComponentData>()) {
                     ComponentHandlerOptionBuilderImpl(optionParameter)
                 } else if (/* TODO remove */ context.serviceContainer.canCreateWrappedService(parameter) != null) {
                     // Fallback to component data if no service is found

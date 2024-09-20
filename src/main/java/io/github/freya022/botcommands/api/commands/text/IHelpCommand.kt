@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.text
 
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 
@@ -11,8 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  *
  * This lets the framework use the command to also display help about specific commands.
  *
- * **Usage**: Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * @see InterfacedService @InterfacedService
  */

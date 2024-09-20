@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHan
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.ITimeoutData
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
@@ -19,7 +20,6 @@ import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
 import javax.annotation.CheckReturnValue
 import kotlin.reflect.*
-import kotlin.reflect.full.findAnnotation
 import kotlin.time.*
 import java.time.Duration as JavaDuration
 
@@ -2125,8 +2125,8 @@ private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithClassCallable(
 }
 
 private fun findHandlerName(func: KFunction<*>): String {
-    val componentTimeoutAnnotation = func.findAnnotation<ComponentTimeoutHandler>()
-    val groupTimeoutAnnotation = func.findAnnotation<GroupTimeoutHandler>()
+    val componentTimeoutAnnotation = func.findAnnotationRecursive<ComponentTimeoutHandler>()
+    val groupTimeoutAnnotation = func.findAnnotationRecursive<GroupTimeoutHandler>()
 
     if (componentTimeoutAnnotation != null && groupTimeoutAnnotation != null)
         throwArgument(func, "Cannot have the same function with the two annotation")

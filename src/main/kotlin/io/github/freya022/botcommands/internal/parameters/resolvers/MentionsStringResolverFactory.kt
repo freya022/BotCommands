@@ -4,19 +4,20 @@ import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.api.core.reflect.findAnnotation
+import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
+import io.github.freya022.botcommands.api.core.reflect.hasAnnotation
 import io.github.freya022.botcommands.api.core.reflect.requireUser
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
-import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
-import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.annotationRef
+import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.findErasureOfAt
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message.MentionType
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.safeCast
@@ -68,7 +70,9 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
 
     override fun isResolvable(request: ResolverRequest): Boolean {
         val parameter = request.parameter
-        val annotation = parameter.findAnnotation<MentionsString>() ?: return false
+        if (!parameter.hasAnnotation<MentionsString>())
+            return false
+
         // Must be a List
         parameter.requireUser(parameter.erasure.isSubclassOf<List<*>>()) {
             "Parameter '${parameter.name}' annotated with ${annotationRef<MentionsString>()} must be a ${classRef<List<*>>()} subtype"
@@ -83,7 +87,7 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
         // If they are not mentionable, the annotation must not have any mention type
         if (elementType != IMentionable::class) {
             // If this is a concrete type, do not allow types
-            parameter.requireUser(annotation.types.isEmpty()) {
+            parameter.requireUser(parameter.getMentionTypes().isEmpty()) {
                 "Parameter '${parameter.name}' annotated with ${annotationRef<MentionsString>()} cannot have mention types on a concrete list element type (${elementType.simpleNestedName})"
             }
         }
@@ -94,12 +98,11 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
     @Suppress("UNCHECKED_CAST")
     override fun get(request: ResolverRequest): MentionsStringResolver {
         val parameter = request.parameter
-        val annotation = parameter.findAnnotation<MentionsString>()
-            ?: throwInternal("Missing ${annotationRef<MentionsString>()}")
+        val mentionTypes = parameter.getMentionTypes()
 
         val elementErasure = parameter.type.findErasureOfAt<List<*>>(0).jvmErasure as KClass<out IMentionable>
         return if (elementErasure == IMentionable::class) {
-            MentionsStringResolver.ofMentionable(annotation.types.ifEmpty { MentionType.entries.toTypedArray() })
+            MentionsStringResolver.ofMentionable(mentionTypes.ifEmpty { enumSetOfAll() }.toTypedArray())
         } else if (elementErasure == User::class) {
             MentionsStringResolver.ofEntity(MentionType.USER) {
                 when (it) {
@@ -132,5 +135,9 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
         } else {
             throwArgument("Unsupported element type: ${elementErasure.shortQualifiedName}")
         }
+    }
+
+    private fun ParameterWrapper.getMentionTypes(): EnumSet<MentionType> {
+        return parameter.findAllAnnotations<MentionsString>().flatMapTo(enumSetOf()) { it.types }
     }
 }

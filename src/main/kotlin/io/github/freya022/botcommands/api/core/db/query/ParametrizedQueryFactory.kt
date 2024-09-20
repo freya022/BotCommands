@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core.db.query
 
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
-import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import java.sql.Connection
@@ -17,8 +16,7 @@ import java.sql.PreparedStatement
  * - [BDatabaseConfig.queryLogThreshold] is configured
  *
  * ### Usage
- * Register your instance as a service with [@BService][BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ * Register your instance as a service with [@BService][BService].
  *
  * ### Built-in RDBMS support
  * - PostgreSQL

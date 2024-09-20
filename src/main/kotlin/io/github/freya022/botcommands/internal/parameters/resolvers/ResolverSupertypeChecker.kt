@@ -8,6 +8,10 @@ import io.github.freya022.botcommands.api.core.service.annotations.ResolverFacto
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverAnnotation
+import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactoryAnnotation
+import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactorySuperclass
+import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverSuperclass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.typeOfAtOrNullOnStar
@@ -28,7 +32,11 @@ private val logger = KotlinLogging.logger { }
 internal class ResolverSupertypeChecker internal constructor(): ClassGraphProcessor {
     private val tasks: MutableList<() -> Unit> = arrayListOf()
     private val ignoredClasses: MutableSet<Class<*>> = hashSetOf()
-    private val errorMessages: MutableList<String> = arrayListOf()
+
+    private val missingResolverAnnotationMessages: MutableList<String> = arrayListOf()
+    private val missingResolverSuperclassMessages: MutableList<String> = arrayListOf()
+    private val missingResolverFactoryAnnotationMessages: MutableList<String> = arrayListOf()
+    private val missingResolverFactorySuperclassMessages: MutableList<String> = arrayListOf()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
         if (classInfo.isAbstract) return
@@ -60,13 +68,13 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 // Skip if a factory references the resolver or one of its subtypes
                 if (ignoredClasses.any { it.isAssignableFrom(kClass.java) }) return@task
 
-                errorMessages += "Resolver ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<Resolver>()}"
+                missingResolverAnnotationMessages += "Resolver ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<Resolver>()}"
             } else if (missingResolverSuperClass) {
-                errorMessages += "Resolver ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolver<*, *>>()}"
+                missingResolverSuperclassMessages += "Resolver ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolver<*, *>>()}"
             } else if (missingResolverFactoryAnnotation) {
-                errorMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<ResolverFactory>()}"
+                missingResolverFactoryAnnotationMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to be annotated with ${annotationRef<ResolverFactory>()}"
             } else if (missingResolverFactorySuperClass) {
-                errorMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
+                missingResolverFactorySuperclassMessages += "Resolver factory ${classInfo.shortQualifiedName} needs to extend ${classRef<ParameterResolverFactory<*>>()}"
             }
         }
     }
@@ -104,13 +112,13 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
                 // Skip if a factory references the resolver or one of its subtypes
                 if (ignoredClasses.any { it.isAssignableFrom(method.returnType) }) return@task
 
-                errorMessages += "Resolver ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<Resolver>()}"
+                missingResolverAnnotationMessages += "Resolver ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<Resolver>()}"
             } else if (missingResolverSuperClass) {
-                errorMessages += "Resolver ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolver<*, *>>()}"
+                missingResolverSuperclassMessages += "Resolver ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolver<*, *>>()}"
             } else if (missingResolverFactoryAnnotation) {
-                errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<ResolverFactory>()}"
+                missingResolverFactoryAnnotationMessages += "Resolver factory ${methodInfo.shortSignature} needs to be annotated with ${annotationRef<ResolverFactory>()}"
             } else if (missingResolverFactorySuperClass) {
-                errorMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*>>()}"
+                missingResolverFactorySuperclassMessages += "Resolver factory ${methodInfo.shortSignature} needs to return a subclass of ${classRef<ParameterResolverFactory<*>>()}"
             }
         }
     }
@@ -145,8 +153,14 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     override fun postProcess() {
         tasks.forEach { it.invoke() }
 
-        check(errorMessages.isEmpty()) {
-            '\n' + errorMessages.joinAsList()
+        if (missingResolverAnnotationMessages.isNotEmpty()) {
+            throw MissingResolverAnnotation('\n' + missingResolverAnnotationMessages.joinAsList())
+        } else if (missingResolverFactoryAnnotationMessages.isNotEmpty()) {
+            throw MissingResolverFactoryAnnotation('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
+        } else if (missingResolverSuperclassMessages.isNotEmpty()) {
+            throw MissingResolverSuperclass('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
+        } else if (missingResolverFactorySuperclassMessages.isNotEmpty()) {
+            throw MissingResolverFactorySuperclass('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
         }
     }
 }

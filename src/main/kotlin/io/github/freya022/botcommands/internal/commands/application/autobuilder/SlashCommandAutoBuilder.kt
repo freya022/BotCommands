@@ -25,6 +25,8 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
@@ -42,8 +44,6 @@ import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 
@@ -91,7 +91,7 @@ internal class SlashCommandAutoBuilder(
                 .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
                 .map {
                     val func = it.function
-                    val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("${annotationRef<JDASlashCommand>()} should be present")
+                    val annotation = func.findAnnotationRecursive<JDASlashCommand>() ?: throwInternal("${annotationRef<JDASlashCommand>()} should be present")
                     if (annotation.group.isNotBlank()) {
                         requireAt(annotation.subcommand.isNotBlank(), func) {
                             "Slash commands with groups need to have their subcommand name set"
@@ -99,7 +99,7 @@ internal class SlashCommandAutoBuilder(
                     }
 
                     val path = CommandPath.of(annotation.name, annotation.group.nullIfBlank(), annotation.subcommand.nullIfBlank())
-                    val commandId = func.findAnnotation<CommandId>()?.value
+                    val commandId = func.findAnnotationRecursive<CommandId>()?.value
 
                     SlashFunctionMetadata(it, annotation, path, commandId)
                 }
@@ -131,12 +131,12 @@ internal class SlashCommandAutoBuilder(
 
         // Create all top level metadata
         functions.forEach { slashFunctionMetadata ->
-            slashFunctionMetadata.func.findAnnotation<TopLevelSlashCommandData>()?.let { annotation ->
+            slashFunctionMetadata.func.findAnnotationRecursive<TopLevelSlashCommandData>()?.let { annotation ->
                 // Remove all slash commands with the top level name
                 val name = slashFunctionMetadata.path.name
                 check(name in missingTopLevels) {
                     val refs = functions
-                        .filter { it.path.name == name && it.func.hasAnnotation<TopLevelSlashCommandData>() }
+                        .filter { it.path.name == name && it.func.hasAnnotationRecursive<TopLevelSlashCommandData>() }
                         .joinAsList { it.func.shortSignature }
                     "Cannot have multiple ${annotationRef<TopLevelSlashCommandData>()} on a same top-level command '$name':\n$refs"
                 }
@@ -193,11 +193,11 @@ internal class SlashCommandAutoBuilder(
             topLevelSlashCommandMetadata.subcommandGroups.values.forEach { slashSubcommandGroupMetadata ->
                 val groupSubcommands = slashSubcommandGroupMetadata.subcommands.values.flatten()
                 val annotation = groupSubcommands
-                    .mapNotNull { metadata -> metadata.func.findAnnotation<SlashCommandGroupData>() }
+                    .mapNotNull { metadata -> metadata.func.findAnnotationRecursive<SlashCommandGroupData>() }
                     .also { annotations ->
                         check(annotations.size <= 1) {
                             val refs = groupSubcommands
-                                .filter { it.func.hasAnnotation<SlashCommandGroupData>() }
+                                .filter { it.func.hasAnnotationRecursive<SlashCommandGroupData>() }
                                 .joinAsList { it.func.shortSignature }
                             "Cannot have multiple ${annotationRef<SlashCommandGroupData>()} on a same subcommand group '${topLevelSlashCommandMetadata.name} ${slashSubcommandGroupMetadata.name}':\n$refs"
                         }
@@ -329,7 +329,7 @@ internal class SlashCommandAutoBuilder(
         fun slashOption(kParameter: KParameter, declaredName: String, optionAnnotation: SlashOption) {
             fun SlashOptionRegistry.addOption(valueName: String) {
                 val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
-                val varArgs = kParameter.findAnnotation<VarArgs>()
+                val varArgs = kParameter.findAnnotationRecursive<VarArgs>()
                 if (varArgs != null) {
                     optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
                         configureOption(guild, instance, kParameter, optionAnnotation)
@@ -353,10 +353,10 @@ internal class SlashCommandAutoBuilder(
 
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotation<SlashOption>()
+            val optionAnnotation = kParameter.findAnnotationRecursive<SlashOption>()
             if (optionAnnotation != null) {
                 slashOption(kParameter, declaredName, optionAnnotation)
-            } else if (kParameter.hasAnnotation<GeneratedOption>()) {
+            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
                 generatedOption(
                     declaredName, instance.getGeneratedValueSupplier(
                         guild,
@@ -379,9 +379,9 @@ internal class SlashCommandAutoBuilder(
     private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: SlashOption) {
         description = optionAnnotation.description.nullIfBlank()
 
-        kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
-        kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
-        kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
+        kParameter.findAnnotationRecursive<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
+        kParameter.findAnnotationRecursive<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
+        kParameter.findAnnotationRecursive<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
 
         processAutocomplete(optionAnnotation)
 

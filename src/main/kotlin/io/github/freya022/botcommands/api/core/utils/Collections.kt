@@ -62,3 +62,15 @@ fun <K, V> MutableMap<K, V>.putIfAbsentOrNull(key: K, value: V): V? {
     }
     return null
 }
+
+inline fun <T, R> Iterable<T>.flatMap(transform: (T) -> Array<R>): List<R> {
+    return flatMapTo(ArrayList<R>(), transform)
+}
+
+inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.flatMapTo(destination: C, transform: (T) -> Array<R>): C {
+    for (element in this) {
+        val list = transform(element)
+        destination.addAll(list)
+    }
+    return destination
+}

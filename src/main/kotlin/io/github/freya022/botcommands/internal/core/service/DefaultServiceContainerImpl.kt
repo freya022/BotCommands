@@ -29,7 +29,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
@@ -200,7 +199,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     override fun <T : Any> putService(
         t: T,
         clazz: KClass<out T>,
-        name: String,
+        name: String?,
         isPrimary: Boolean,
         priority: Int,
         annotations: Collection<Annotation>,
@@ -400,7 +399,7 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         return ServiceResult.pass(ImplicitNamedLazyServiceImpl(this, elementErasure, parameter.name))
     }
 
-    val requestedMandatoryName = parameter.findAnnotation<ServiceName>()?.value
+    val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
         require(type.jvmErasure != List::class) {
             "Cannot use ${annotationRef<ServiceName>()} on a list of interfaced services, on '${parameter.bestName}' of ${parameter.function.shortSignature}"
@@ -467,7 +466,7 @@ internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Bool
 
         elementType.jvmErasure to isNullable
     } else {
-        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotation<Optional>()
+        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotationRecursive<Optional>()
         elementType.jvmErasure to isNullable
     }
 }

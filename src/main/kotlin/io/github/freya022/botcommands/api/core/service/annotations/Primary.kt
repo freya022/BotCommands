@@ -13,6 +13,6 @@ import org.springframework.context.annotation.Primary as SpringPrimary
  * @see BService @BService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @SpringPrimary
 annotation class Primary
