@@ -26,7 +26,7 @@ import java.time.temporal.ChronoUnit
 annotation class Cooldown(
     /**
      * Cooldown time [in the specified unit][unit]
-     * before the command can be used again in the scope specified by [rateLimitScope].
+     * before the command can be used again in the scope specified by [scope].
      *
      * @return Cooldown time [in the specified unit][unit]
      */
@@ -42,7 +42,7 @@ annotation class Cooldown(
      *
      * @see RateLimitScope
      */
-    val rateLimitScope: RateLimitScope = RateLimitScope.USER,
+    val scope: RateLimitScope = RateLimitScope.USER,
 
     /**
      * Whether the cooldown message should be deleted after the cooldown has expired.

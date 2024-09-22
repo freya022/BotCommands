@@ -36,7 +36,7 @@ internal fun KFunction<*>.readRateLimit(): RateLimiter? {
         RateLimiter.createDefault(rateLimitAnnotation.scope, bucketConfigurationSupplier, rateLimitAnnotation.deleteOnRefill)
     } else if (cooldownAnnotation != null) {
         val bucketConfigurationSupplier = Buckets.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)).toSupplier()
-        RateLimiter.createDefault(cooldownAnnotation.rateLimitScope, bucketConfigurationSupplier, cooldownAnnotation.deleteOnRefill)
+        RateLimiter.createDefault(cooldownAnnotation.scope, bucketConfigurationSupplier, cooldownAnnotation.deleteOnRefill)
     } else {
         null
     }
