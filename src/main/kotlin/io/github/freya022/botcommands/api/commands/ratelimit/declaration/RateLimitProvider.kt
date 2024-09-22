@@ -23,13 +23,16 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  *
  *     @Override
  *     public void declareRateLimit(@NotNull RateLimitManager manager) {
- *         final var bucketFactory = BucketFactory.spikeProtected(
+ *         final var bucketFactory = Buckets.spikeProtected(
  *                 /* Capacity */ 5,
  *                 /* Duration */ Duration.ofMinutes(1),
  *                 /* Spike capacity */ 2,
  *                 /* Spike duration */ Duration.ofSeconds(5)
  *         );
- *         manager.rateLimit(SKIP_RATE_LIMIT_NAME, bucketFactory);
+ *         manager.rateLimit(
+ *                 SKIP_RATE_LIMIT_NAME,
+ *                 RateLimiter.createDefault(RateLimitScope.USER, BucketConfigurationSupplier.constant(bucketFactory), /* deleteOnRefill */ true)
+ *         );
  *     }
  * }
  * ```

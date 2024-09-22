@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.util.ref
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
@@ -44,7 +43,6 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
  * @param scope          Scope of the rate limit, see [RateLimitScope] values.
  * @param deleteOnRefill Whether the rate limit message should be deleted after the [refill delay][ConsumptionProbe.nanosToWaitForRefill].
  *
- * @see DefaultRateLimiter
  * @see RateLimitScope
  */
 class DefaultRateLimitHandler(

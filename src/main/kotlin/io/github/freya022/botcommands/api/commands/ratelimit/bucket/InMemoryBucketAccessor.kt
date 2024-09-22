@@ -1,8 +1,9 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.bucket
 
 import io.github.bucket4j.Bucket
+import io.github.bucket4j.BucketConfiguration
+import io.github.bucket4j.local.LocalBucket
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
@@ -13,21 +14,24 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import java.util.concurrent.ConcurrentHashMap
 
 private val logger = KotlinLogging.logger { }
 
 /**
- * Default [BucketAccessor] implementation based on [rate limit scopes][RateLimitScope].
+ * Default in-memory [BucketAccessor] implementation using [RateLimitScope].
  *
  * **Note:** The rate limit scopes using guilds or channels are limited to guild-only events,
  * a user rate limit is applied if the limitation is violated.
  *
- * @see DefaultRateLimiter
+ * @param scope                 Scope of the rate limit, see [RateLimitScope] values.
+ * @param configurationSupplier A supplier of [BucketConfiguration], describing the rate limits
  */
-class DefaultBucketAccessor(
+class InMemoryBucketAccessor(
     private val scope: RateLimitScope,
-    private val bucketFactory: BucketFactory
+    private val configurationSupplier: BucketConfigurationSupplier
 ) : BucketAccessor {
+
     @JvmRecord
     private data class RateLimitKey(private val placeId: Long?, private val userId: Long?) {
         init {
@@ -36,10 +40,12 @@ class DefaultBucketAccessor(
         }
     }
 
-    private val map: MutableMap<RateLimitKey, Bucket> = hashMapOf()
+    private val map: MutableMap<RateLimitKey, Bucket> = ConcurrentHashMap()
 
     override suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+        return map.computeIfAbsent(event.toRateLimitKey()) {
+            configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
+        }
     }
 
     private fun MessageReceivedEvent.toRateLimitKey(): RateLimitKey {
@@ -54,11 +60,21 @@ class DefaultBucketAccessor(
     }
 
     override suspend fun getBucket(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+        return map.computeIfAbsent(event.toRateLimitKey()) {
+            configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
+        }
     }
 
     override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+        return map.computeIfAbsent(event.toRateLimitKey()) {
+            configurationSupplier.getConfiguration(context, event).toBucket()
+        }
+    }
+
+    private fun BucketConfiguration.toBucket(): LocalBucket {
+        return Bucket.builder()
+            .apply { bandwidths.forEach(::addLimit) }
+            .build()
     }
 
     private fun GenericInteractionCreateEvent.toRateLimitKey(): RateLimitKey {

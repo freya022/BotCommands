@@ -8,8 +8,12 @@ import io.github.freya022.botcommands.api.commands.annotations.RateLimitReferenc
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
-import io.github.freya022.botcommands.api.commands.ratelimit.*
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import kotlin.time.Duration
@@ -26,8 +30,7 @@ abstract class RateLimitManager internal constructor() {
 
     protected abstract fun createRateLimit(
         group: String,
-        bucketFactory: BucketFactory,
-        limiterFactory: RateLimiterFactory,
+        rateLimiter: RateLimiter,
         block: RateLimitBuilder.() -> Unit
     ): RateLimitInfo
 
@@ -36,21 +39,19 @@ abstract class RateLimitManager internal constructor() {
      *
      * The created rate limiter can be used in [CommandBuilder.rateLimitReference] and [@RateLimitReference][RateLimitReference].
      *
-     * @param group          The name of the rate limiter
-     * @param bucketFactory  The bucket factory to use in [RateLimiterFactory]
-     * @param limiterFactory The [RateLimiter] factory in charge of handling buckets and rate limits
-     * @param block          Further configures the [RateLimitBuilder]
+     * @param group       The name of the rate limiter
+     * @param rateLimiter The [RateLimiter] in charge of retrieving buckets and handling rate limits
+     * @param block       Further configures the [RateLimitBuilder]
      *
      * @throws IllegalStateException If a rate limiter with the same group exists
      */
     @JvmOverloads
     fun rateLimit(
         group: String,
-        bucketFactory: BucketFactory,
-        limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
+        rateLimiter: RateLimiter,
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ): RateLimitInfo {
-        return createRateLimit(group, bucketFactory, limiterFactory, block)
+        return createRateLimit(group, rateLimiter, block)
     }
 
     /**
@@ -75,7 +76,7 @@ abstract class RateLimitManager internal constructor() {
         deleteOnRefill: Boolean = true,
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ): RateLimitInfo {
-        return rateLimit(group, BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope, deleteOnRefill), block)
+        return rateLimit(group, RateLimiter.createDefault(scope, Buckets.ofCooldown(duration).toSupplier(), deleteOnRefill), block)
     }
 }
 
@@ -101,5 +102,5 @@ fun RateLimitManager.cooldown(
     deleteOnRefill: Boolean = true,
     block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
 ): RateLimitInfo {
-    return rateLimit(group, BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope, deleteOnRefill), block)
+    return rateLimit(group, RateLimiter.createDefault(scope, Buckets.ofCooldown(duration).toSupplier(), deleteOnRefill), block)
 }

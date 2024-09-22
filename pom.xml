@@ -29,7 +29,7 @@
         <kotlin.version>2.0.0</kotlin.version>
         <kotlin.coroutine.version>1.8.1</kotlin.coroutine.version>
         <flyway.version>10.12.0</flyway.version>
-        <bucket4j.version>8.12.0</bucket4j.version>
+        <bucket4j.version>8.14.0</bucket4j.version>
 
         <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
         <kotlin.compiler.apiVersion>2.0</kotlin.compiler.apiVersion>
@@ -556,6 +556,12 @@
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j_jdk17-core</artifactId>
             <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-postgresql</artifactId>
+            <version>${bucket4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>dev.reformator.stacktracedecoroutinator</groupId>

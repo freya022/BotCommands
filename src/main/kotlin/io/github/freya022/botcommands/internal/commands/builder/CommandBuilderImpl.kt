@@ -5,8 +5,7 @@ import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.service.getService
@@ -34,11 +33,10 @@ internal abstract class CommandBuilderImpl internal constructor(
         private set
 
     final override fun rateLimit(
-        bucketFactory: BucketFactory,
-        limiterFactory: RateLimiterFactory,
+        rateLimiter: RateLimiter,
         block: RateLimitBuilder.() -> Unit
     ) {
-        rateLimitInfo = RateLimitBuilderImpl("$type: ${path.fullPath}", bucketFactory, limiterFactory)
+        rateLimitInfo = RateLimitBuilderImpl("$type: ${path.fullPath}", rateLimiter)
             .setCallerAsDeclarationSite()
             .apply(block)
             .build()

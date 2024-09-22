@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.bucket
 
-import io.github.bucket4j.Bucket
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
@@ -9,15 +8,14 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 /**
- * Retrieves rate limit buckets given the execution context.
+ * Retrieves the bucket key given the execution context.
  *
- * @see InMemoryBucketAccessor
- * @see ProxyBucketAccessor
+ * You can use the provided parameters to create the key.
  */
-interface BucketAccessor {
-    suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket
+interface BucketKeySupplier<K> {
+    fun getKey(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): K
 
-    suspend fun getBucket(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Bucket
+    fun getKey(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): K
 
-    suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket
+    fun getKey(context: BContext, event: GenericComponentInteractionCreateEvent): K
 }

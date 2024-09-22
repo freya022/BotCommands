@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.api.commands.ratelimit;
 
 /**
- * Provides rate limit scopes for the {@link DefaultRateLimiter default rate limit implementation}.
+ * Provides rate limit scopes for the default rate limit implementations.
+ *
+ * @see RateLimiter
  */
 public enum RateLimitScope {
     /** Limits the usage rate by the users, regardless of the execution guild/channel. */
