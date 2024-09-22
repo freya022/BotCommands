@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 /**
  * A supplier for [BucketConfiguration], called when a bucket is about to get created by a [BucketAccessor].
+ *
+ * @see Buckets
  */
 interface BucketConfigurationSupplier {
     fun getConfiguration(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): BucketConfiguration

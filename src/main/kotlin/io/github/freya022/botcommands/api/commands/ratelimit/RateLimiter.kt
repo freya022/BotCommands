@@ -5,10 +5,7 @@ import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefault
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefaultProxied
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.InMemoryBucketAccessor
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.ProxyBucketAccessor
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.*
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultProxyRateLimiter
@@ -20,6 +17,10 @@ import java.math.BigDecimal
  *
  * You can also make your own implementation by either implementing this interface directly
  * or by delegating both interfaces.
+ *
+ * ### Persistent bucket storage
+ * Since [createDefault] stores buckets in-memory, the rate limits applied will be lost upon restart,
+ * however you can use [createDefaultProxied], and then pass a [ProxyManager] which stores your buckets in persistent storage.
  *
  * @see createDefault
  * @see createDefaultProxied
@@ -36,7 +37,9 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * @see DefaultRateLimitHandler
          * @see InMemoryBucketAccessor
+         *
          * @see RateLimitScope
+         * @see Buckets
          */
         @JvmStatic
         fun createDefault(scope: RateLimitScope, configurationSupplier: BucketConfigurationSupplier, deleteOnRefill: Boolean = true): RateLimiter =
@@ -53,7 +56,9 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * @see DefaultRateLimitHandler
          * @see ProxyBucketAccessor
+         *
          * @see RateLimitScope
+         * @see Buckets
          */
         @JvmStatic
         fun createDefaultProxied(

@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -40,6 +41,8 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
     /**
      * Sets an anonymous rate limiter on this command.
      * This rate limiter cannot be referenced anywhere else as it is not registered.
+     *
+     * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
      *
      * ### Rate limit cancellation
      * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.

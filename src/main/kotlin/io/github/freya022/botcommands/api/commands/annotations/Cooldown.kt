@@ -5,10 +5,13 @@ import io.github.freya022.botcommands.api.commands.builder.cooldown
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
+import io.github.freya022.botcommands.api.core.BotOwners
 import java.time.temporal.ChronoUnit
 
 /**
  * Add a simple rate limit-based cooldown of this text / application command and components.
+ *
+ * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
  *
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.

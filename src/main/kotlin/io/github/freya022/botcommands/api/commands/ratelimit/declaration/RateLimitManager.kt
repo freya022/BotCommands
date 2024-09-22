@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import kotlin.time.Duration
 import java.time.Duration as JavaDuration
@@ -39,6 +40,8 @@ abstract class RateLimitManager internal constructor() {
      *
      * The created rate limiter can be used in [CommandBuilder.rateLimitReference] and [@RateLimitReference][RateLimitReference].
      *
+     * **Note:** The rate limiter won't apply if you are a [bot owner][BotOwners.isOwner].
+     *
      * @param group       The name of the rate limiter
      * @param rateLimiter The [RateLimiter] in charge of retrieving buckets and handling rate limits
      * @param block       Further configures the [RateLimitBuilder]
@@ -56,6 +59,8 @@ abstract class RateLimitManager internal constructor() {
 
     /**
      * Creates a rate limit-based cooldown.
+     *
+     * **Note:** The cooldown won't apply if you are a [bot owner][BotOwners.isOwner].
      *
      * ### Cooldown cancellation
      * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.

@@ -2,11 +2,15 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
+import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.ratelimit.AnnotatedRateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
+import io.github.freya022.botcommands.api.core.BotOwners
 import java.time.temporal.ChronoUnit
 
 /**
@@ -69,8 +73,16 @@ annotation class Refill(
 /**
  * Defines a rate limit for a command / component handler.
  *
+ * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
+ *
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.
+ *
+ * ### Persistent bucket storage
+ * Since this annotation stores buckets in-memory by default, the rate limits applied will be lost upon restart,
+ * however you can implement [AnnotatedRateLimiterFactory] in a service,
+ * and then uses your own [ProxyManager] which stores your buckets in persistent storage,
+ * alongside [RateLimiter.createDefaultProxied].
  *
  * ### Rate limit cancellation
  * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
