@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.db
 
 import com.zaxxer.hikari.HikariDataSource
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration
@@ -10,6 +11,7 @@ import java.time.Duration
  *
  * @see ConnectionSupplier
  */
+@InterfacedService(acceptMultiple = false)
 interface HikariSourceSupplier : ConnectionSupplier {
     val source: HikariDataSource
 
