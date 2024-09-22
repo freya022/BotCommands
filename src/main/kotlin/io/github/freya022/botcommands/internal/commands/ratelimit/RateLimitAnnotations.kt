@@ -1,9 +1,12 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit
 
 import io.github.freya022.botcommands.api.commands.annotations.*
+import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
+import io.github.freya022.botcommands.api.commands.ratelimit.AnnotatedRateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
@@ -24,19 +27,21 @@ private fun Bandwidth.toRealBandwidth(): BucketBandwidth =
         }
         .build()
 
-internal fun KFunction<*>.readRateLimit(): RateLimiter? {
-    val rateLimitAnnotation = findAnnotationRecursive<RateLimit>() ?: this.declaringClass.findAnnotationRecursive<RateLimit>()
-    val cooldownAnnotation = findAnnotationRecursive<Cooldown>() ?: this.declaringClass.findAnnotationRecursive<Cooldown>()
-    requireAt(cooldownAnnotation == null || rateLimitAnnotation == null, this) {
+internal fun CommandBuilder.readRateLimit(func: KFunction<*>): RateLimiter? {
+    val rateLimitAnnotation = func.findAnnotationRecursive<RateLimit>() ?: func.declaringClass.findAnnotationRecursive<RateLimit>()
+    val cooldownAnnotation = func.findAnnotationRecursive<Cooldown>() ?: func.declaringClass.findAnnotationRecursive<Cooldown>()
+    requireAt(cooldownAnnotation == null || rateLimitAnnotation == null, func) {
         "Cannot use both ${annotationRef<Cooldown>()} and ${annotationRef<RateLimit>()}"
     }
 
     return if (rateLimitAnnotation != null) {
         val bucketConfigurationSupplier = Buckets.custom(rateLimitAnnotation.bandwidths.map { it.toRealBandwidth() }).toSupplier()
-        RateLimiter.createDefault(rateLimitAnnotation.scope, bucketConfigurationSupplier, rateLimitAnnotation.deleteOnRefill)
+        val annotatedRateLimiterFactory = context.getService<AnnotatedRateLimiterFactory>()
+        annotatedRateLimiterFactory.create(rateLimitAnnotation.scope, bucketConfigurationSupplier, rateLimitAnnotation.deleteOnRefill)
     } else if (cooldownAnnotation != null) {
         val bucketConfigurationSupplier = Buckets.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)).toSupplier()
-        RateLimiter.createDefault(cooldownAnnotation.scope, bucketConfigurationSupplier, cooldownAnnotation.deleteOnRefill)
+        val annotatedRateLimiterFactory = context.getService<AnnotatedRateLimiterFactory>()
+        annotatedRateLimiterFactory.create(cooldownAnnotation.scope, bucketConfigurationSupplier, cooldownAnnotation.deleteOnRefill)
     } else {
         null
     }

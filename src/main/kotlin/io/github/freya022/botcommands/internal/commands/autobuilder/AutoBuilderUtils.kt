@@ -147,7 +147,7 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 internal fun CommandBuilder.fillCommandBuilder(functions: List<KFunction<*>>) {
     declarationSite = functions.first().let(DeclarationSite::fromFunctionSignature)
 
-    val rateLimiter = functions.singleValueOfVariants("their rate limit specification") { it.readRateLimit() }
+    val rateLimiter = functions.singleValueOfVariants("their rate limit specification") { readRateLimit(it) }
     val rateLimitRef = functions.singleAnnotationOfVariants<RateLimitReference>()
 
     // A single one of them can be used - One of them needs to be null
