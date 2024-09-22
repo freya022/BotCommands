@@ -18,6 +18,9 @@ class H2DatabaseSource : HikariSourceSupplier {
     override val source = HikariDataSource(HikariConfig().apply {
         jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
 
+        // idk bucket4j is confused without it
+        schema = "public"
+
         maximumPoolSize = 2
         leakDetectionThreshold = 10.seconds.inWholeMilliseconds
     })
