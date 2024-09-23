@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.ratelimit
 
+import com.zaxxer.hikari.HikariDataSource
 import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
@@ -71,6 +72,27 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
         /**
          * Creates a [RateLimiter] implementation which retrieves its buckets using [proxyManager],
          * see [DefaultRateLimitHandler] and [ProxyBucketAccessor] for details.
+         *
+         * ### Requirements
+         * The proxy requires a [BigDecimal] to store the bucket key.
+         *
+         * #### Using a database
+         * First, install the [PostgreSQL module for Bucket4J](https://bucket4j.com/8.14.0/toc.html#bucket4j-postgresql) (recommended, Bucket4J supports other RDBMs),
+         * then, use the following DDL to create the tables storing the buckets,
+         * I recommend you put this in a migration script, using Flyway:
+         * ```sql
+         * CREATE TABLE bucket(id NUMERIC(38) PRIMARY KEY, state BYTEA, expires_at BIGINT);
+         * ```
+         *
+         * **Note:**
+         * - You can use any RDBMs supported by Bucket4J, as you are passing the DataSource directly.
+         * - The `id` column is an at-most 38 digit integer.
+         * - You may need to set the [default schema on your DataSource][HikariDataSource.schema] to `public`,
+         * or the schema you store the table in.
+         *
+         * #### Anything else
+         * You can also use anything that accepts a BigDecimal as your bucket key, such as JCache and Redis,
+         * see the [Bucket4J docs](https://bucket4j.com/8.14.0/toc.html#distributed-facilities) for more details.
          *
          * ### Example
          *
