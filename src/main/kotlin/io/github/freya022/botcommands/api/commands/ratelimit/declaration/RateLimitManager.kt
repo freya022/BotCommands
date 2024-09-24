@@ -60,6 +60,9 @@ abstract class RateLimitManager internal constructor() {
     /**
      * Creates a rate limit-based cooldown.
      *
+     * As this is a convenience method, any cooldown applied will be lost on restart.
+     * To persist the cooldowns, use [rateLimit] with [RateLimiter.createDefaultProxied] and a [Buckets.ofCooldown].
+     *
      * **Note:** The cooldown won't apply if you are a [bot owner][BotOwners.isOwner].
      *
      * ### Cooldown cancellation
@@ -88,13 +91,18 @@ abstract class RateLimitManager internal constructor() {
 /**
  * Creates a rate limit-based cooldown.
  *
+ * As this is a convenience method, any cooldown applied will be lost on restart.
+ * To persist the cooldowns, use [rateLimit][RateLimitManager.rateLimit] with [RateLimiter.createDefaultProxied] and a [Buckets.ofCooldown].
+ *
+ * **Note:** The cooldown won't apply if you are a [bot owner][BotOwners.isOwner].
+ *
  * ### Cooldown cancellation
  * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
  * @param group          The name of the underlying rate limiter
  * @param scope          The scope of the cooldown
  * @param duration       The duration before the cooldown expires
- * @param deleteOnRefill Whether the cooldown messages should be deleted after the cooldown expires
+ * @param deleteOnRefill Whether the cooldown message should be deleted after the cooldown expires
  * @param block          Further configures the [RateLimitBuilder]
  *
  * @see Cooldown @Cooldown

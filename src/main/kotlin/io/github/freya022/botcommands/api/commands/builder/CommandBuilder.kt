@@ -98,7 +98,7 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
  *
  * @param duration       The duration before the cooldown expires
  * @param scope          The scope of the cooldown
- * @param deleteOnRefill Whether the cooldown messages should be deleted after the cooldown expires
+ * @param deleteOnRefill Whether the cooldown message should be deleted after the cooldown expires
  * @param block          Further configures the [RateLimitBuilder]
  *
  * @see Cooldown @Cooldown

@@ -41,7 +41,7 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
  * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
  *
  * @param scope          Scope of the rate limit, see [RateLimitScope] values.
- * @param deleteOnRefill Whether the rate limit message should be deleted after the [refill delay][ConsumptionProbe.nanosToWaitForRefill].
+ * @param deleteOnRefill Whether the rate limit message should be deleted after expiring
  *
  * @see RateLimitScope
  */

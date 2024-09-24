@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.ratelimit;
 
 /**
- * Provides rate limit scopes for the default rate limit implementations.
+ * Scope on which a rate limit applies.
  *
  * @see RateLimiter
  */

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.ratelimit
 
 import com.zaxxer.hikari.HikariDataSource
 import io.github.bucket4j.BucketConfiguration
-import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefault
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefaultProxied
@@ -57,7 +56,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * @param scope                 Scope of the rate limit, see [RateLimitScope] values.
          * @param configurationSupplier A supplier of [BucketConfiguration], describing the rate limits
-         * @param deleteOnRefill        Whether the rate limit message should be deleted after the [refill delay][ConsumptionProbe.nanosToWaitForRefill].
+         * @param deleteOnRefill        Whether the rate limit message should be deleted after expiring
          *
          * @see DefaultRateLimitHandler
          * @see InMemoryBucketAccessor
@@ -97,10 +96,8 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          * ### Example
          *
          * ```kt
-         * @Configuration
          * @BService
-         * open class ProxyManagerProvider {
-         *     @Bean
+         * class ProxyManagerProvider {
          *     @BService
          *     open fun proxyManager(hikariSourceSupplier: HikariSourceSupplier): ProxyManager<BigDecimal> {
          *         // Create a proxy to manager buckets, persisting with PostgreSQL,
@@ -140,7 +137,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          * @param scope                 Scope of the rate limit, see [RateLimitScope] values.
          * @param proxyManager          The proxy supplying buckets from a key, based on the [scope]
          * @param configurationSupplier A supplier of [BucketConfiguration], describing the rate limits
-         * @param deleteOnRefill        Whether the rate limit message should be deleted after the [refill delay][ConsumptionProbe.nanosToWaitForRefill].
+         * @param deleteOnRefill        Whether the rate limit message should be deleted after expiring
          *
          * @see DefaultRateLimitHandler
          * @see ProxyBucketAccessor
