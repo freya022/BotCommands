@@ -30,6 +30,8 @@ class H2DatabaseSource : HikariSourceSupplier {
         createFlyway("bc", "bc_database_scripts").migrate()
 
         //You can use the same function for your database, you just have to change the schema and scripts location
+        //Migrate BC test tables
+        createFlyway("public", "bc_test_database_scripts").migrate()
 
         logger.info { "Created database source" }
     }
