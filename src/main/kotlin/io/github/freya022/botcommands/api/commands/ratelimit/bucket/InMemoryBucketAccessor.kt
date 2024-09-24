@@ -35,15 +35,16 @@ class InMemoryBucketAccessor(
     private val configurationSupplier: BucketConfigurationSupplier
 ) : BucketAccessor {
 
-    @JvmRecord
-    private data class RateLimitKey(private val identifier: String, private val placeId: Long?, private val userId: Long?) {
-        init {
-            if (placeId == null && userId == null)
-                throwInternal("Rate limiting cannot be done on an empty key")
-        }
+    private sealed interface Key {
+        override fun equals(other: Any?): Boolean
+        override fun hashCode(): Int
     }
 
-    private val map: MutableMap<RateLimitKey, Bucket> = ConcurrentHashMap()
+    private data class UserKey(private val identifier: String, private val id: Long) : Key
+    private data class PlaceKey(private val identifier: String, private val id: Long) : Key
+    private data class UserAtPlaceKey(private val identifier: String, private val placeId: Long, private val userId: Long) : Key
+
+    private val map: MutableMap<Key, Bucket> = ConcurrentHashMap()
 
     override suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket {
         return map.computeIfAbsent(commandInfo.getRateLimitKey(event)) {
@@ -51,14 +52,14 @@ class InMemoryBucketAccessor(
         }
     }
 
-    private fun TextCommandInfo.getRateLimitKey(event: MessageReceivedEvent): RateLimitKey {
+    private fun TextCommandInfo.getRateLimitKey(event: MessageReceivedEvent): Key {
         if (!event.isFromGuild) throwInternal("Invalid rate limit scope for text commands")
         return when (scope) {
-            USER -> RateLimitKey(path.fullPath, null, event.author.idLong)
-            USER_PER_GUILD -> RateLimitKey(path.fullPath, event.guild.idLong, event.author.idLong)
-            USER_PER_CHANNEL -> RateLimitKey(path.fullPath, event.channel.idLong, event.author.idLong)
-            GUILD -> RateLimitKey(path.fullPath, event.guild.idLong, null)
-            CHANNEL -> RateLimitKey(path.fullPath, event.channel.idLong, null)
+            USER -> UserKey(path.fullPath, event.author.idLong)
+            USER_PER_GUILD -> UserAtPlaceKey(path.fullPath, event.guild.idLong, event.author.idLong)
+            USER_PER_CHANNEL -> UserAtPlaceKey(path.fullPath, event.channel.idLong, event.author.idLong)
+            GUILD -> PlaceKey(path.fullPath, event.guild.idLong)
+            CHANNEL -> PlaceKey(path.fullPath, event.channel.idLong)
         }
     }
 
@@ -80,32 +81,32 @@ class InMemoryBucketAccessor(
             .build()
     }
 
-    private fun getRateLimitKey(event: CommandInteraction): RateLimitKey {
+    private fun getRateLimitKey(event: CommandInteraction): Key {
         return getRateLimitKey(event, event.uniqueCommandPath)
     }
 
-    private fun getRateLimitKey(event: ComponentInteraction): RateLimitKey {
+    private fun getRateLimitKey(event: ComponentInteraction): Key {
         return getRateLimitKey(event, TODO())
     }
 
-    private fun getRateLimitKey(event: Interaction, identifier: String): RateLimitKey {
+    private fun getRateLimitKey(event: Interaction, identifier: String): Key {
         if (scope.isGuild && !event.isFromGuild) {
             logger.warn { "Cannot get a bucket with the $scope scope outside of a guild, using the user ID instead." }
-            return RateLimitKey(identifier, null, event.user.idLong)
+            return UserKey(identifier, event.user.idLong)
         }
 
         return when (scope) {
-            USER -> RateLimitKey(identifier, null, event.user.idLong)
+            USER -> UserKey(identifier, event.user.idLong)
             USER_PER_GUILD -> {
                 val guild = event.guild ?: throwInternal("Guild should be present")
-                RateLimitKey(identifier, guild.idLong, event.user.idLong)
+                UserAtPlaceKey(identifier, guild.idLong, event.user.idLong)
             }
-            USER_PER_CHANNEL -> RateLimitKey(identifier, event.channelIdLong, event.user.idLong)
+            USER_PER_CHANNEL -> UserAtPlaceKey(identifier, event.channelIdLong, event.user.idLong)
             GUILD -> {
                 val guild = event.guild ?: throwInternal("Guild should be present")
-                RateLimitKey(identifier, guild.idLong, null)
+                PlaceKey(identifier, guild.idLong)
             }
-            CHANNEL -> RateLimitKey(identifier, event.channelIdLong, null)
+            CHANNEL -> PlaceKey(identifier, event.channelIdLong)
         }
     }
 }
