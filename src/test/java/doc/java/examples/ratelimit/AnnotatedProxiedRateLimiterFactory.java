@@ -8,13 +8,11 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
-
 @BService
 public class AnnotatedProxiedRateLimiterFactory implements AnnotatedRateLimiterFactory {
-    private final ProxyManager<BigDecimal> proxyManager;
+    private final ProxyManager<String> proxyManager;
 
-    public AnnotatedProxiedRateLimiterFactory(ProxyManager<BigDecimal> proxyManager) {
+    public AnnotatedProxiedRateLimiterFactory(ProxyManager<String> proxyManager) {
         this.proxyManager = proxyManager;
     }
 

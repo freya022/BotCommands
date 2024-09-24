@@ -11,11 +11,10 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
-import java.math.BigDecimal
 import kotlin.time.Duration.Companion.hours
 
 @Command
-class SlashPersistentRateLimit(private val proxyManager: ProxyManager<BigDecimal>) : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : ApplicationCommand(), GlobalApplicationCommandProvider {
     fun onSlashPersistentRateLimit(event: GuildSlashEvent) {
         event.reply_("Hi", ephemeral = true).queue()
     }

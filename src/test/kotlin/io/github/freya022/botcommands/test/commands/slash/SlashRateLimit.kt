@@ -37,7 +37,7 @@ class SlashRateLimit(
 ) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
     private val proxyManager = Bucket4jPostgreSQL.selectForUpdateBasedBuilder(hikariSourceSupplier.source)
         .expirationAfterWrite(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(1.minutes.toJavaDuration()))
-        .primaryKeyMapper(PreparedStatement::setBigDecimal)
+        .primaryKeyMapper(PreparedStatement::setString)
         .build()
 
     @JDASlashCommand(name = "rate_limit_annotated")

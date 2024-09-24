@@ -14,15 +14,15 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * @BConfiguration
  * public class ProxyManagerProvider {
  *     @BService
- *     public static ProxyManager<BigDecimal> proxyManager(HikariSourceSupplier hikariSourceSupplier) {
+ *     public static ProxyManager<String> proxyManager(HikariSourceSupplier hikariSourceSupplier) {
  *         // Create a proxy to manager buckets, persisting with PostgreSQL,
  *         // see https://bucket4j.com/8.14.0/toc.html#postgresqlselectforupdatebasedproxymanager
  *         return Bucket4jPostgreSQL.selectForUpdateBasedBuilder(hikariSourceSupplier.getSource())
  *                 // Bucket expiration, needs to be triggered manually,
  *                 // see https://bucket4j.com/8.14.0/toc.html#expiration-policy
  *                 .expirationAfterWrite(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofMinutes(1)))
- *                 // RateLimiter#createDefaultProxied uses a BigDecimal key
- *                 .primaryKeyMapper(PreparedStatement::setBigDecimal)
+ *                 // RateLimiter#createDefaultProxied uses a String key
+ *                 .primaryKeyMapper(PreparedStatement::setString)
  *                 .build();
  *     }
  * }
@@ -31,9 +31,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * ```java
  * @BService
  * public class AnnotatedProxiedRateLimiterFactory implements AnnotatedRateLimiterFactory {
- *     private final ProxyManager<BigDecimal> proxyManager;
+ *     private final ProxyManager<String> proxyManager;
  *
- *     public AnnotatedProxiedRateLimiterFactory(ProxyManager<BigDecimal> proxyManager) {
+ *     public AnnotatedProxiedRateLimiterFactory(ProxyManager<String> proxyManager) {
  *         this.proxyManager = proxyManager;
  *     }
  *

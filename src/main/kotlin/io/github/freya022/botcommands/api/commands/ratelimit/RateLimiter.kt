@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRate
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultProxyRateLimiter
 import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultRateLimiter
-import java.math.BigDecimal
 
 /**
  * Retrieves rate limit buckets and handles rate limits by combining [BucketAccessor] and [RateLimitHandler].
@@ -73,24 +72,23 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          * see [DefaultRateLimitHandler] and [ProxyBucketAccessor] for details.
          *
          * ### Requirements
-         * The proxy requires a [BigDecimal] to store the bucket key.
+         * The proxy requires a [String] to store the bucket key.
          *
          * #### Using a database
          * First, install the [PostgreSQL module for Bucket4J](https://bucket4j.com/8.14.0/toc.html#bucket4j-postgresql) (recommended, Bucket4J supports other RDBMs),
          * then, use the following DDL to create the tables storing the buckets,
          * I recommend you put this in a migration script, using Flyway:
          * ```sql
-         * CREATE TABLE bucket(id NUMERIC(38) PRIMARY KEY, state BYTEA, expires_at BIGINT);
+         * CREATE TABLE bucket(id TEXT PRIMARY KEY, state BYTEA, expires_at BIGINT);
          * ```
          *
          * **Note:**
          * - You can use any RDBMs supported by Bucket4J, as you are passing the DataSource directly.
-         * - The `id` column is an at-most 38 digit integer.
          * - You may need to set the [default schema on your DataSource][HikariDataSource.schema] to `public`,
          * or the schema you store the table in.
          *
          * #### Anything else
-         * You can also use anything that accepts a BigDecimal as your bucket key, such as JCache and Redis,
+         * You can also use anything that accepts a String as your bucket key, such as JCache and Redis,
          * see the [Bucket4J docs](https://bucket4j.com/8.14.0/toc.html#distributed-facilities) for more details.
          *
          * ### Example
@@ -99,15 +97,15 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          * @BService
          * class ProxyManagerProvider {
          *     @BService
-         *     open fun proxyManager(hikariSourceSupplier: HikariSourceSupplier): ProxyManager<BigDecimal> {
+         *     open fun proxyManager(hikariSourceSupplier: HikariSourceSupplier): ProxyManager<String> {
          *         // Create a proxy to manager buckets, persisting with PostgreSQL,
          *         // see https://bucket4j.com/8.14.0/toc.html#postgresqlselectforupdatebasedproxymanager
          *         return Bucket4jPostgreSQL.selectForUpdateBasedBuilder(hikariSourceSupplier.source)
          *             // Bucket expiration, needs to be triggered manually,
          *             // see https://bucket4j.com/8.14.0/toc.html#expiration-policy
          *             .expirationAfterWrite(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(1.minutes.toJavaDuration()))
-         *             // RateLimiter#createDefaultProxied uses a BigDecimal key
-         *             .primaryKeyMapper(PreparedStatement::setBigDecimal)
+         *             // RateLimiter#createDefaultProxied uses a String key
+         *             .primaryKeyMapper(PreparedStatement::setString)
          *             .build()
          *     }
          * }
@@ -115,7 +113,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * ```kt
          * @Command
-         * class SlashPersistentRateLimit(private val proxyManager: ProxyManager<BigDecimal>) : ApplicationCommand(), GlobalApplicationCommandProvider {
+         * class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : ApplicationCommand(), GlobalApplicationCommandProvider {
          *     fun onSlashPersistentRateLimit(event: GuildSlashEvent) {
          *         event.reply_("Hi", ephemeral = true).queue()
          *     }
@@ -148,7 +146,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
         @JvmStatic
         fun createDefaultProxied(
             scope: RateLimitScope,
-            proxyManager: ProxyManager<BigDecimal>,
+            proxyManager: ProxyManager<String>,
             configurationSupplier: BucketConfigurationSupplier,
             deleteOnRefill: Boolean = true,
         ): RateLimiter =

@@ -5,15 +5,18 @@ import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.local.LocalBucket
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope.*
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.Interaction
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 import java.util.concurrent.ConcurrentHashMap
 
 private val logger = KotlinLogging.logger { }
@@ -33,7 +36,7 @@ class InMemoryBucketAccessor(
 ) : BucketAccessor {
 
     @JvmRecord
-    private data class RateLimitKey(private val placeId: Long?, private val userId: Long?) {
+    private data class RateLimitKey(private val identifier: String, private val placeId: Long?, private val userId: Long?) {
         init {
             if (placeId == null && userId == null)
                 throwInternal("Rate limiting cannot be done on an empty key")
@@ -43,30 +46,30 @@ class InMemoryBucketAccessor(
     private val map: MutableMap<RateLimitKey, Bucket> = ConcurrentHashMap()
 
     override suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) {
+        return map.computeIfAbsent(commandInfo.getRateLimitKey(event)) {
             configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
         }
     }
 
-    private fun MessageReceivedEvent.toRateLimitKey(): RateLimitKey {
-        if (!isFromGuild) throwInternal("Invalid rate limit scope for text commands")
+    private fun TextCommandInfo.getRateLimitKey(event: MessageReceivedEvent): RateLimitKey {
+        if (!event.isFromGuild) throwInternal("Invalid rate limit scope for text commands")
         return when (scope) {
-            RateLimitScope.USER -> RateLimitKey(null, author.idLong)
-            RateLimitScope.USER_PER_GUILD -> RateLimitKey(guild.idLong, author.idLong)
-            RateLimitScope.USER_PER_CHANNEL -> RateLimitKey(channel.idLong, author.idLong)
-            RateLimitScope.GUILD -> RateLimitKey(guild.idLong, null)
-            RateLimitScope.CHANNEL -> RateLimitKey(channel.idLong, null)
+            USER -> RateLimitKey(path.fullPath, null, event.author.idLong)
+            USER_PER_GUILD -> RateLimitKey(path.fullPath, event.guild.idLong, event.author.idLong)
+            USER_PER_CHANNEL -> RateLimitKey(path.fullPath, event.channel.idLong, event.author.idLong)
+            GUILD -> RateLimitKey(path.fullPath, event.guild.idLong, null)
+            CHANNEL -> RateLimitKey(path.fullPath, event.channel.idLong, null)
         }
     }
 
     override suspend fun getBucket(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) {
+        return map.computeIfAbsent(getRateLimitKey(event)) {
             configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
         }
     }
 
     override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket {
-        return map.computeIfAbsent(event.toRateLimitKey()) {
+        return map.computeIfAbsent(getRateLimitKey(event)) {
             configurationSupplier.getConfiguration(context, event).toBucket()
         }
     }
@@ -77,31 +80,32 @@ class InMemoryBucketAccessor(
             .build()
     }
 
-    private fun GenericInteractionCreateEvent.toRateLimitKey(): RateLimitKey {
-        return when (scope) {
-            RateLimitScope.USER -> RateLimitKey(null, user.idLong)
-            RateLimitScope.USER_PER_GUILD -> {
-                val guild = guild ?: return fallbackUserKey(user)
-                RateLimitKey(guild.idLong, user.idLong)
-            }
-            RateLimitScope.USER_PER_CHANNEL -> {
-                if (isFromGuild) RateLimitKey(guildChannel.idLong, user.idLong) else fallbackUserKey(user)
-            }
-            RateLimitScope.GUILD -> {
-                val guild = guild ?: return fallbackUserKey(user)
-                RateLimitKey(guild.idLong, null)
-            }
-            RateLimitScope.CHANNEL -> {
-                if (isFromGuild) RateLimitKey(guildChannel.idLong, null) else fallbackUserKey(user)
-            }
-        }
+    private fun getRateLimitKey(event: CommandInteraction): RateLimitKey {
+        return getRateLimitKey(event, event.uniqueCommandPath)
     }
 
-    private fun fallbackUserKey(user: UserSnowflake): RateLimitKey {
-        logger.warn {
-            "Tried to get an invalid rate limit bucket, rate limiters outside of guilds must only use the ${RateLimitScope.USER} scope. " +
-                    "Returning an user bucket instead."
+    private fun getRateLimitKey(event: ComponentInteraction): RateLimitKey {
+        return getRateLimitKey(event, TODO())
+    }
+
+    private fun getRateLimitKey(event: Interaction, identifier: String): RateLimitKey {
+        if (scope.isGuild && !event.isFromGuild) {
+            logger.warn { "Cannot get a bucket with the $scope scope outside of a guild, using the user ID instead." }
+            return RateLimitKey(identifier, null, event.user.idLong)
         }
-        return RateLimitKey(null, user.idLong)
+
+        return when (scope) {
+            USER -> RateLimitKey(identifier, null, event.user.idLong)
+            USER_PER_GUILD -> {
+                val guild = event.guild ?: throwInternal("Guild should be present")
+                RateLimitKey(identifier, guild.idLong, event.user.idLong)
+            }
+            USER_PER_CHANNEL -> RateLimitKey(identifier, event.channelIdLong, event.user.idLong)
+            GUILD -> {
+                val guild = event.guild ?: throwInternal("Guild should be present")
+                RateLimitKey(identifier, guild.idLong, null)
+            }
+            CHANNEL -> RateLimitKey(identifier, event.channelIdLong, null)
+        }
     }
 }
