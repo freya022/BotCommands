@@ -120,7 +120,7 @@ interface BConfig {
      *
      * @see PriorityGlobalRestRateLimiter
      */
-    @ConfigurationValue("botcommands.core.ignoreRestRateLimiter")
+    @ConfigurationValue("botcommands.core.ignoreRestRateLimiter", defaultValue = "false")
     val ignoreRestRateLimiter: Boolean
 
     val classGraphProcessors: List<ClassGraphProcessor>
