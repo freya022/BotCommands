@@ -14,8 +14,9 @@ import kotlin.time.toJavaDuration
 
 @Configuration
 @BService
+@TestLanguage(TestLanguage.Language.KOTLIN)
 open class ProxyManagerProvider {
-    @TestLanguage(TestLanguage.Language.KOTLIN)
+    @TestLanguage(TestLanguage.Language.KOTLIN) //TODO this should be redundant by the class annotation
     @Bean
     @BService
     open fun proxyManager(hikariSourceSupplier: HikariSourceSupplier): ProxyManager<String> {

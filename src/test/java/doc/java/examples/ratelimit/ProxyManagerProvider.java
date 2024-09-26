@@ -15,8 +15,9 @@ import java.time.Duration;
 
 @Configuration
 @BConfiguration
+@TestLanguage(TestLanguage.Language.JAVA)
 public class ProxyManagerProvider {
-    @TestLanguage(TestLanguage.Language.JAVA)
+    @TestLanguage(TestLanguage.Language.JAVA) //TODO this should be redundant by the class annotation
     @Bean
     @BService
     public static ProxyManager<String> proxyManager(HikariSourceSupplier hikariSourceSupplier) {
