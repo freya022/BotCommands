@@ -56,3 +56,14 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
     }
 }
+
+/**
+ * Registers a supplier lazily returning an instance of the specified class,
+ * the instance is then made available via dependency injection.
+ *
+ * **Note:** The class still needs to be in the search path,
+ * either using [BConfigBuilder.addSearchPath] or [BConfigBuilder.addClass].
+ */
+inline fun <reified T : Any> BServiceConfigBuilder.registerInstanceSupplier(instanceSupplier: InstanceSupplier<T>) {
+    return registerInstanceSupplier(T::class.java, instanceSupplier)
+}
