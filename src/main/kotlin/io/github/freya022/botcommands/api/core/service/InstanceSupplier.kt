@@ -10,6 +10,6 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
  *
  * @see BServiceConfigBuilder.registerInstanceSupplier
  */
-interface InstanceSupplier<T> {
+fun interface InstanceSupplier<T : Any> {
     fun supply(context: BContext): T
 }
