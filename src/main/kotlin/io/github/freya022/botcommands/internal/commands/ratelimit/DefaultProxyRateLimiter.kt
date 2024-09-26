@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.ProxyBucketA
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
@@ -38,8 +39,8 @@ private class DefaultBucketKeySupplier(private val scope: RateLimitScope) : Buck
     override fun getKey(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo) =
         getRateLimitKey(event, event.uniqueCommandPath)
 
-    override fun getKey(context: BContext, event: GenericComponentInteractionCreateEvent) =
-        getRateLimitKey(event, TODO())
+    override fun getKey(context: BContext, event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference) =
+        getRateLimitKey(event, rateLimitReference.toBucketKey())
 
     private fun getRateLimitKey(event: Interaction, identifier: String): String {
         if (scope.isGuild && !event.isFromGuild) {
@@ -47,7 +48,7 @@ private class DefaultBucketKeySupplier(private val scope: RateLimitScope) : Buck
             return "$identifier ${event.user.id}"
         }
 
-        return identifier + when (scope) {
+        return "$identifier " + when (scope) {
             USER -> event.user.id
             USER_PER_GUILD -> {
                 val guild = event.guild ?: throwInternal("Guild should be present")

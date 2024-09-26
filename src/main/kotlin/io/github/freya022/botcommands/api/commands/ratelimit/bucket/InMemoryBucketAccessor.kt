@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope.*
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
@@ -69,8 +70,8 @@ class InMemoryBucketAccessor(
         }
     }
 
-    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket {
-        return map.computeIfAbsent(getRateLimitKey(event)) {
+    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference): Bucket {
+        return map.computeIfAbsent(getRateLimitKey(event, rateLimitReference)) {
             configurationSupplier.getConfiguration(context, event).toBucket()
         }
     }
@@ -85,8 +86,8 @@ class InMemoryBucketAccessor(
         return getRateLimitKey(event, event.uniqueCommandPath)
     }
 
-    private fun getRateLimitKey(event: ComponentInteraction): Key {
-        return getRateLimitKey(event, TODO())
+    private fun getRateLimitKey(event: ComponentInteraction, reference: ComponentRateLimitReference): Key {
+        return getRateLimitKey(event, reference.toBucketKey())
     }
 
     private fun getRateLimitKey(event: Interaction, identifier: String): Key {

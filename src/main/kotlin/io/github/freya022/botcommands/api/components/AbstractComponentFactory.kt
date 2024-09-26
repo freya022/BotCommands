@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.components
 
+import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupFactory
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
@@ -51,5 +53,31 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
     @JvmSynthetic
     suspend fun deleteComponentsByIds(ids: Collection<Int>) {
         componentController.deleteComponentsById(ids, throwTimeouts = false)
+    }
+
+    /**
+     * Creates a reference to a rate limiter previously declared by a [RateLimitProvider],
+     * alongside a discriminator which differentiates this component from others under the same [group].
+     *
+     * Each rate limit reference is unique, the uniqueness can be qualified as a
+     * composite primary key with both the [group] and [discriminator].
+     *
+     * @param group         The name of the rate limiter declared by a [RateLimitProvider]
+     * @param discriminator Differentiates this component from others using the same [group], must be unique within the [group]
+     *
+     * @throws IllegalStateException If a reference already exists with the same [group] and [discriminator]
+     */
+    fun createRateLimitReference(group: String, discriminator: String): ComponentRateLimitReference {
+        return componentController.createRateLimitReference(group, discriminator)
+    }
+
+    /**
+     * Gets an existing reference to a [ComponentRateLimitReference].
+     *
+     * @param group         The name of the rate limiter declared by a [RateLimitProvider]
+     * @param discriminator Differentiates this component from others using the same [group], must be unique within the [group]
+     */
+    fun getRateLimitReference(group: String, discriminator: String): ComponentRateLimitReference? {
+        return componentController.getRateLimitReference(group, discriminator)
     }
 }

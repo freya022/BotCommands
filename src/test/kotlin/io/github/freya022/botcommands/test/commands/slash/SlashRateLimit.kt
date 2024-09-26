@@ -27,7 +27,6 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 private const val commandRateLimitGroup = "SlashRateLimit: my_rate_limit"
-private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
 @RequiresComponents
@@ -40,6 +39,8 @@ class SlashRateLimit(
         .primaryKeyMapper(PreparedStatement::setString)
         .build()
 
+    private val retryRateLimitRef = buttons.createRateLimitReference("SlashRateLimit", "rl_retry")
+
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(
 //        scope = RateLimitScope.USER,
@@ -49,7 +50,7 @@ class SlashRateLimit(
     @RateLimitReference(commandRateLimitGroup)
     suspend fun onSlashRateLimit(event: GuildSlashEvent) {
         val button = buttons.primary("Retry (5 clicks in 1 minute)").ephemeral {
-            rateLimitReference(retryRateLimitGroup)
+            rateLimitReference(retryRateLimitRef)
             bindTo { event ->
                 if (Math.random() > 0.5) {
                     event.cancelRateLimit()
@@ -86,6 +87,6 @@ class SlashRateLimit(
         )
 
         manager.rateLimit(commandRateLimitGroup, commandRateLimiter)
-        manager.rateLimit(retryRateLimitGroup, retryRateLimiter)
+        manager.rateLimit(retryRateLimitRef.group, retryRateLimiter)
     }
 }

@@ -6,6 +6,7 @@ import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -43,8 +44,8 @@ class ProxyBucketAccessor<K>(
         return proxyManager.getProxy(key) { configurationSupplier.getConfiguration(context, event, commandInfo) }
     }
 
-    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket {
-        val key = keySupplier.getKey(context, event)
+    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference): Bucket {
+        val key = keySupplier.getKey(context, event, rateLimitReference)
         return proxyManager.getProxy(key) { configurationSupplier.getConfiguration(context, event) }
     }
 }

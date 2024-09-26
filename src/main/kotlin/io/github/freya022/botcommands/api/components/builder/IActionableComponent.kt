@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
@@ -49,17 +50,17 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      */
     val filters: MutableList<ComponentInteractionFilter<*>>
 
-    val rateLimitGroup: String?
+    val rateLimitReference: ComponentRateLimitReference?
 
     /**
-     * Sets the rate limiter of this component to one declared by [RateLimitProvider].
+     * Sets the rate limiter of this component to one declared by a [RateLimitProvider].
      *
-     * An exception will be thrown when constructing the button if the group is invalid.
+     * An exception will be thrown when constructing the button if the [group][ComponentRateLimitReference.group] is invalid.
      *
      * @see RateLimitReference @RateLimitReference
      */
     @CheckReturnValue
-    fun rateLimitReference(group: String): T
+    fun rateLimitReference(reference: ComponentRateLimitReference): T
 
     /**
      * Applies a filter to this component.

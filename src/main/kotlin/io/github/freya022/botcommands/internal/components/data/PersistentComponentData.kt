@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.components.data
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
@@ -16,7 +17,7 @@ internal class PersistentComponentData(
     override val resetTimeoutOnUseDuration: Duration?,
     override val filters: List<ComponentInteractionFilter<*>>,
     override val singleUse: Boolean,
-    override val rateLimitGroup: String?,
+    override val rateLimitReference: ComponentRateLimitReference?,
     override val handler: PersistentHandler?,
     override val timeout: PersistentTimeout?,
     override val constraints: InteractionConstraints,

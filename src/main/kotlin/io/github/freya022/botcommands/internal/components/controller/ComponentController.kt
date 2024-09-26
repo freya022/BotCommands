@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -42,6 +43,7 @@ internal class ComponentController(
 ) {
     // This service might be used in classes that use components and also declare rate limiters
     private val rateLimitContainer: RateLimitContainer by context.serviceContainer.lazy()
+    private val rateLimitReferences: MutableSet<ComponentRateLimitReference> = hashSetOf()
 
     init {
         runBlocking {
@@ -69,9 +71,9 @@ internal class ComponentController(
     }
 
     private suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
-        builder.rateLimitGroup?.let { rateLimitGroup ->
-            require(rateLimitGroup in rateLimitContainer) {
-                "Rate limit group '$rateLimitGroup' was not registered using ${classRef<RateLimitProvider>()}"
+        builder.rateLimitReference?.let { rateLimitReference ->
+            require(rateLimitReference.group in rateLimitContainer) {
+                "Rate limit group '${rateLimitReference.group}' was not registered using ${classRef<RateLimitProvider>()}"
             }
         }
 
@@ -145,6 +147,20 @@ internal class ComponentController(
             ephemeralTimeoutHandlerId?.let { ephemeralTimeoutHandlers.remove(it) }
             timeoutManager.removeTimeouts(componentId, throwTimeouts)
         }
+    }
+
+    internal fun createRateLimitReference(group: String, discriminator: String): ComponentRateLimitReference {
+        val ref = ComponentRateLimitReference(group, discriminator)
+        check(rateLimitReferences.add(ref)) {
+            "A component rate limit reference already exists with such group and discriminator. " +
+                    "As a reminder, each component must use a different discriminator."
+        }
+        return ref
+    }
+
+    internal fun getRateLimitReference(group: String, discriminator: String): ComponentRateLimitReference? {
+        val ref = ComponentRateLimitReference(group, discriminator)
+        return ref.takeIf { ref in rateLimitReferences }
     }
 
     internal companion object {
