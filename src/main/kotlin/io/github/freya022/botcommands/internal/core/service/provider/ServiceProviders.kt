@@ -2,7 +2,10 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
+import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Executable
@@ -14,7 +17,7 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinFunction
 
-internal class ServiceProviders : ClassGraphProcessor {
+internal class ServiceProviders(private val serviceConfig: BServiceConfig) : ClassGraphProcessor {
     private val nameMap: MutableMap<String, MutableSet<ServiceProvider>> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
@@ -32,6 +35,12 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
     override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        val instanceSupplier = serviceConfig.instanceSupplierMap[kClass]
+        if (instanceSupplier != null) {
+            putServiceProvider(SuppliedServiceProvider(kClass, instanceSupplier))
+            return
+        }
+
         if (!isService) return
 
         putServiceProvider(ClassServiceProvider(kClass))
@@ -55,5 +64,12 @@ internal class ServiceProviders : ClassGraphProcessor {
                 ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
                 ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
         putServiceProvider(FunctionServiceProvider(function))
+    }
+
+    override fun postProcess() {
+        val missingSuppliedProviders = serviceConfig.instanceSupplierMap.keys - typeMap.keys
+        check(missingSuppliedProviders.isEmpty()) {
+            "Some instance suppliers were registered but their class were not in the search path:\n${missingSuppliedProviders.joinAsList { it.shortQualifiedName } }"
+        }
     }
 }

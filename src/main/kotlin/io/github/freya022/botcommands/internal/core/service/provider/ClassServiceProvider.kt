@@ -1,17 +1,17 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.*
+import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
+import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
+import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
+import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -135,22 +135,6 @@ internal class ClassServiceProvider internal constructor(
 
                 //Found a supplier, return instance
                 InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz, name) }
-            }
-        }
-
-        //The command object has to be created either by the instance supplier
-        // or by the **only** constructor a class has
-        // It must resolve all parameter types with the registered parameter suppliers
-        val instanceSupplier = serviceContainer.serviceConfig.instanceSupplierMap[clazz]
-        if (instanceSupplier != null) {
-            return measureTimedInstantiation {
-                instanceSupplier.supply(serviceContainer.getService<BContext>())
-                    ?: throw ServiceException(
-                        ErrorType.PROVIDER_RETURNED_NULL.toError(
-                            errorMessage = "Supplier function in class '${instanceSupplier.javaClass.simpleNestedName}' returned null",
-                            failedFunction = instanceSupplier::supply.resolveBestReference()
-                        )
-                    )
             }
         }
 
