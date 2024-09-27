@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.components.builder.select.persistent
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.internal.components.ComponentType
+import io.github.freya022.botcommands.internal.components.EntitySelectMenuImpl
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -53,7 +54,7 @@ class PersistentEntitySelectBuilder internal constructor(
 
         componentController.withNewComponent(this) { internalId, componentId ->
             super.setId(componentId)
-            return EntitySelectMenu(componentController, internalId, super.build())
+            return EntitySelectMenuImpl(componentController, internalId, super.build())
         }
     }
 }

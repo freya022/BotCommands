@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.button
 
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.builder.AbstractComponentBuilder
+import io.github.freya022.botcommands.internal.components.ButtonImpl
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -32,7 +33,7 @@ sealed class AbstractButtonBuilder<T : AbstractButtonBuilder<T>>(
         built = true
 
         return componentController.withNewComponent(this) { internalId, componentId ->
-            Button(
+            ButtonImpl(
                 componentController,
                 internalId,
                 JDAButton.of(style, componentId, label, emoji)

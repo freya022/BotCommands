@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
+import io.github.freya022.botcommands.internal.components.StringSelectMenuImpl
 import io.github.freya022.botcommands.internal.components.builder.*
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -51,7 +52,7 @@ class PersistentStringSelectBuilder internal constructor(
 
         componentController.withNewComponent(this) { internalId, componentId ->
             super.setId(componentId)
-            return StringSelectMenu(componentController, internalId, super.build())
+            return StringSelectMenuImpl(componentController, internalId, super.build())
         }
     }
 }
