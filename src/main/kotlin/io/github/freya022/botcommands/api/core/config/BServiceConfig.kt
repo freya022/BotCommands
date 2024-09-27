@@ -3,10 +3,7 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.InstanceSupplier
-import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.service.annotations.Resolver
-import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
@@ -38,12 +35,17 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> = _instanceSupplierMap.unmodifiableView()
 
     /**
-     * Registers a supplier returning an instance of the specified class.
+     * Registers a supplier lazily returning an instance of the specified class,
+     * the instance is then made available via dependency injection.
      *
-     * The specified class still needs to be annotated with a compatible service annotation.
+     * The class it is **registered as** ([T]) is searched for the usual annotations
+     * such as [@Primary][Primary], [@InterfacedService][InterfacedService] and [@Lazy][Lazy].
      *
-     * The difference is that instead of using the constructor of the class,
-     * the provided instance supplier is used.
+     * **Note:** The class still needs to be in the search path,
+     * either using [BConfigBuilder.addSearchPath] or [BConfigBuilder.addClass].
+     *
+     * @param clazz            The primary type as which the service is registered as, other types may be registered with the usual annotations
+     * @param instanceSupplier Supplier for the service instance, ran at startup, unless [clazz] is annotated with [@Lazy][Lazy]
      */
     fun <T : Any> registerInstanceSupplier(clazz: Class<T>, instanceSupplier: InstanceSupplier<T>) {
         _instanceSupplierMap[clazz.kotlin] = instanceSupplier
@@ -56,4 +58,21 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
         override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
     }
+}
+
+/**
+ * Registers a supplier lazily returning an instance of the specified class,
+ * the instance is then made available via dependency injection.
+ *
+ * The class it is **registered as** ([T]) is searched for the usual annotations
+ * such as [@Primary][Primary], [@InterfacedService][InterfacedService] and [@Lazy][Lazy].
+ *
+ * **Note:** The class still needs to be in the search path,
+ * either using [BConfigBuilder.addSearchPath] or [BConfigBuilder.addClass].
+ *
+ * @param T                The primary type as which the service is registered as, other types may be registered with the usual annotations
+ * @param instanceSupplier Supplier for the service instance, ran at startup, unless [T] is annotated with [@Lazy][Lazy]
+ */
+inline fun <reified T : Any> BServiceConfigBuilder.registerInstanceSupplier(instanceSupplier: InstanceSupplier<T>) {
+    return registerInstanceSupplier(T::class.java, instanceSupplier)
 }

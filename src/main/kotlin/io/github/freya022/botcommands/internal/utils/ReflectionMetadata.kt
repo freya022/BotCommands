@@ -260,6 +260,12 @@ internal object ReflectionMetadata {
         }
     }
 
+    internal val Class<*>.hasMetadata: Boolean
+        get() = this in classMetadataMap
+
+    internal val KClass<*>.hasMetadata: Boolean
+        inline get() = java.hasMetadata
+
     internal val Class<*>.sourceFile: String
         get() = (classMetadataMap[this]
             ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
