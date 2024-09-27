@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS bucket(id TEXT PRIMARY KEY, state BYTEA, expires_at BIGINT);

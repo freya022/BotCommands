@@ -21,6 +21,9 @@ class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
         username = config.databaseConfig.user
         password = config.databaseConfig.password
 
+        // idk bucket4j is confused without it
+        schema = "public"
+
         maximumPoolSize = 2
         leakDetectionThreshold = 10.seconds.inWholeMilliseconds
     })
@@ -30,6 +33,8 @@ class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
         createFlyway("bc", "bc_database_scripts").migrate()
 
         //You can use the same function for your database, you just have to change the schema and scripts location
+        //Migrate BC test tables
+        createFlyway("public", "bc_test_database_scripts").migrate()
 
         logger.info { "Created database source" }
     }

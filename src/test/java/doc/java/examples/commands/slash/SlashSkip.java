@@ -4,7 +4,10 @@ import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory;
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope;
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter;
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier;
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
@@ -26,12 +29,15 @@ public class SlashSkip implements RateLimitProvider {
 
     @Override
     public void declareRateLimit(@NotNull RateLimitManager manager) {
-        final var bucketFactory = BucketFactory.spikeProtected(
+        final var bucketFactory = Buckets.spikeProtected(
                 /* Capacity */ 5,
                 /* Duration */ Duration.ofMinutes(1),
                 /* Spike capacity */ 2,
                 /* Spike duration */ Duration.ofSeconds(5)
         );
-        manager.rateLimit(SKIP_RATE_LIMIT_NAME, bucketFactory);
+        manager.rateLimit(
+                SKIP_RATE_LIMIT_NAME,
+                RateLimiter.createDefault(RateLimitScope.USER, BucketConfigurationSupplier.constant(bucketFactory), /* deleteOnRefill */ true)
+        );
     }
 }

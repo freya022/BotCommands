@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 
 /**
- * Defines the behavior when a rate limited is triggered.
+ * Defines the behavior when a rate limit is triggered.
  */
 interface RateLimitHandler {
     suspend fun onRateLimit(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo, probe: ConsumptionProbe)

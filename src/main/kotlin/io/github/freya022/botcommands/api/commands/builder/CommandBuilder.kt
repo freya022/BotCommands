@@ -9,10 +9,11 @@ import io.github.freya022.botcommands.api.commands.annotations.RateLimitReferenc
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiterFactory
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.internal.commands.CommandDSL
@@ -41,6 +42,8 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
      * Sets an anonymous rate limiter on this command.
      * This rate limiter cannot be referenced anywhere else as it is not registered.
      *
+     * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
+     *
      * ### Rate limit cancellation
      * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
      *
@@ -55,32 +58,26 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
      *
      *     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
      *         manager.slashCommand("skip", function = ::onSlashSkip) {
-     *             val bucketFactory = BucketFactory.spikeProtected(
+     *             val bucketConfiguration = Buckets.spikeProtected(
      *                 capacity = 5,
      *                 duration = 1.minutes,
      *                 spikeCapacity = 2,
      *                 spikeDuration = 5.seconds
      *             )
      *
-     *             // Defaults to the USER rate limit scope
-     *             rateLimit(bucketFactory)
+     *             rateLimit(RateLimiter.createDefault(RateLimitScope.USER, bucketConfiguration.toSupplier(), deleteOnRefill = true))
      *         }
      *     }
      * }
      * ```
      *
-     * @param bucketFactory  The bucket factory to use in [RateLimiterFactory]
-     * @param limiterFactory The [RateLimiter] factory in charge of handling buckets and rate limits
-     * @param block          Further configures the [RateLimitBuilder]
+     * @param rateLimiter The [RateLimiter] in charge of retrieving buckets and handling rate limits
+     * @param block       Further configures the [RateLimitBuilder]
      *
      * @see RateLimit @RateLimit
      * @see RateLimitProvider
      */
-    fun rateLimit(
-        bucketFactory: BucketFactory,
-        limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
-        block: RateLimitBuilder.() -> Unit = {}
-    )
+    fun rateLimit(rateLimiter: RateLimiter, block: RateLimitBuilder.() -> Unit = {})
 
     /**
      * Sets the rate limiter of this command to one declared by a [RateLimitProvider].
@@ -101,7 +98,7 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
  *
  * @param duration       The duration before the cooldown expires
  * @param scope          The scope of the cooldown
- * @param deleteOnRefill Whether the cooldown messages should be deleted after the cooldown expires
+ * @param deleteOnRefill Whether the cooldown message should be deleted after the cooldown expires
  * @param block          Further configures the [RateLimitBuilder]
  *
  * @see Cooldown @Cooldown
@@ -112,4 +109,4 @@ fun CommandBuilder.cooldown(
     scope: RateLimitScope = RateLimitScope.USER,
     deleteOnRefill: Boolean = true,
     block: RateLimitBuilder.() -> Unit = {}
-) = rateLimit(BucketFactory.ofCooldown(duration), RateLimiter.defaultFactory(scope, deleteOnRefill), block)
+) = rateLimit(RateLimiter.createDefault(scope, Buckets.ofCooldown(duration).toSupplier(), deleteOnRefill), block)

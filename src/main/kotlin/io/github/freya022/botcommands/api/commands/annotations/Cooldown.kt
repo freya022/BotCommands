@@ -1,17 +1,29 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
+import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.cooldown
+import io.github.freya022.botcommands.api.commands.ratelimit.AnnotatedRateLimiterFactory
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
+import io.github.freya022.botcommands.api.core.BotOwners
 import java.time.temporal.ChronoUnit
 
 /**
  * Add a simple rate limit-based cooldown of this text / application command and components.
  *
+ * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
+ *
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.
+ *
+ * ### Persistent bucket storage
+ * Since this annotation stores buckets in-memory by default, the rate limits applied will be lost upon restart,
+ * however you can implement [AnnotatedRateLimiterFactory] in a service,
+ * and then uses your own [ProxyManager] which stores your buckets in persistent storage,
+ * alongside [RateLimiter.createDefaultProxied].
  *
  * ### Cooldown cancellation
  * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
@@ -26,7 +38,7 @@ import java.time.temporal.ChronoUnit
 annotation class Cooldown(
     /**
      * Cooldown time [in the specified unit][unit]
-     * before the command can be used again in the scope specified by [rateLimitScope].
+     * before the command can be used again in the scope specified by [scope].
      *
      * @return Cooldown time [in the specified unit][unit]
      */
@@ -42,7 +54,7 @@ annotation class Cooldown(
      *
      * @see RateLimitScope
      */
-    val rateLimitScope: RateLimitScope = RateLimitScope.USER,
+    val scope: RateLimitScope = RateLimitScope.USER,
 
     /**
      * Whether the cooldown message should be deleted after the cooldown has expired.

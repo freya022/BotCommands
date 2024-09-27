@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.test.commands.slash
 
 import dev.minn.jda.ktx.messages.into
 import dev.minn.jda.ktx.messages.reply_
+import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
+import io.github.bucket4j.postgresql.Bucket4jPostgreSQL
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -9,24 +11,36 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketFactory
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
+import java.sql.PreparedStatement
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-
-private val commandBucketFactory = BucketFactory.spikeProtected(5, 1.minutes, 2, 5.seconds)
-private val retryBucketFactory = BucketFactory.spikeProtected(5, 1.hours, 1, 5.seconds)
+import kotlin.time.toJavaDuration
 
 private const val commandRateLimitGroup = "SlashRateLimit: my_rate_limit"
-private const val retryRateLimitGroup = "SlashRateLimit: my_retry_rate_limit"
 
 @Command
 @RequiresComponents
-class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
+class SlashRateLimit(
+    private val buttons: Buttons,
+    hikariSourceSupplier: HikariSourceSupplier
+) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
+    private val proxyManager = Bucket4jPostgreSQL.selectForUpdateBasedBuilder(hikariSourceSupplier.source)
+        .expirationAfterWrite(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(1.minutes.toJavaDuration()))
+        .primaryKeyMapper(PreparedStatement::setString)
+        .build()
+
+    private val retryRateLimitRef = buttons.createRateLimitReference("SlashRateLimit", "rl_retry")
+
     @JDASlashCommand(name = "rate_limit_annotated")
 //    @RateLimit(
 //        scope = RateLimitScope.USER,
@@ -36,7 +50,7 @@ class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), Globa
     @RateLimitReference(commandRateLimitGroup)
     suspend fun onSlashRateLimit(event: GuildSlashEvent) {
         val button = buttons.primary("Retry (5 clicks in 1 minute)").ephemeral {
-            rateLimitReference(retryRateLimitGroup)
+            rateLimitReference(retryRateLimitRef)
             bindTo { event ->
                 if (Math.random() > 0.5) {
                     event.cancelRateLimit()
@@ -57,7 +71,22 @@ class SlashRateLimit(private val buttons: Buttons) : ApplicationCommand(), Globa
     }
 
     override fun declareRateLimit(manager: RateLimitManager) {
-        manager.rateLimit(commandRateLimitGroup, commandBucketFactory)
-        manager.rateLimit(retryRateLimitGroup, retryBucketFactory)
+        val commandBucketConfiguration = Buckets.ofCooldown(1.hours)
+        val commandRateLimiter = RateLimiter.createDefault(
+            RateLimitScope.USER,
+            configurationSupplier = BucketConfigurationSupplier.constant(commandBucketConfiguration),
+            deleteOnRefill = true
+        )
+
+        val retryBucketConfiguration = Buckets.spikeProtected(5, 1.hours, 1, 5.seconds)
+        val retryRateLimiter = RateLimiter.createDefaultProxied(
+            RateLimitScope.USER,
+            proxyManager,
+            configurationSupplier = BucketConfigurationSupplier.constant(retryBucketConfiguration),
+            deleteOnRefill = true
+        )
+
+        manager.rateLimit(commandRateLimitGroup, commandRateLimiter)
+        manager.rateLimit(retryRateLimitRef.group, retryRateLimiter)
     }
 }

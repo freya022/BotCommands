@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 @Command
 class SlashCooldown : GlobalApplicationCommandProvider, ApplicationCommand() {
     @JDASlashCommand(name = "cooldown_annotated")
-    @Cooldown(cooldown = 5, unit = ChronoUnit.SECONDS, rateLimitScope = RateLimitScope.GUILD)
+    @Cooldown(cooldown = 5, unit = ChronoUnit.SECONDS, scope = RateLimitScope.GUILD)
     fun onSlashCooldown(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }

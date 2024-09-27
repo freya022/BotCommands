@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.builder.IComponentBuilder
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.db.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -89,7 +90,7 @@ internal class ComponentRepository(
     suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
         return database.transactional {
             // Create base component
-            val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitGroup, getFilterNames(builder.filters))
+            val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitReference, getFilterNames(builder.filters))
 
             // Add constraints
             preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
@@ -123,7 +124,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, expires_at, reset_timeout_on_use_duration_ms, one_use, users, roles, permissions, group_id, rate_limit_group, filters
+            select lifetime_type, component_type, expires_at, reset_timeout_on_use_duration_ms, one_use, users, roles, permissions, group_id, rate_limit_group, rate_limit_discriminator, filters
             from bc_component component
                      left join bc_component_constraints constraints using (component_id)
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
@@ -142,7 +143,9 @@ internal class ComponentRepository(
 
             val oneUse: Boolean = dbResult["one_use"]
             val filters = componentFilters.getFilters(dbResult["filters"])
-            val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
+            val rateLimitReference: ComponentRateLimitReference? = dbResult.getString("rate_limit_group")?.let {
+                ComponentRateLimitReference(it, dbResult.getString("rate_limit_discriminator"))
+            }
 
             val constraints = InteractionConstraints.of(
                 dbResult["users"],
@@ -172,7 +175,7 @@ internal class ComponentRepository(
                         expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
-                        rateLimitGroup,
+                        rateLimitReference,
                         handler, timeout,
                         constraints,
                         group
@@ -191,7 +194,7 @@ internal class ComponentRepository(
                         expiresAt, resetTimeoutOnUseDuration,
                         filters,
                         oneUse,
-                        rateLimitGroup,
+                        rateLimitReference,
                         handler, timeout,
                         constraints,
                         group
@@ -264,19 +267,19 @@ internal class ComponentRepository(
     private suspend fun <T> insertBaseComponent(
         builder: T,
         singleUse: Boolean,
-        rateLimitGroup: String?,
+        rateLimitReference: ComponentRateLimitReference?,
         filterNames: Array<out String>
     ): Int where T : IComponentBuilder,
                  T : ITimeoutableComponent<*> {
         return preparedStatement(
-            "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, filters) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, rate_limit_discriminator, filters) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
             val expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
             val resetTimeoutOnUseDurationMs = builder.timeoutDuration
                 ?.takeIf { builder.resetTimeoutOnUse }
                 ?.inWholeMilliseconds
-            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitGroup, filterNames)
+            executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitReference?.group, rateLimitReference?.discriminator, filterNames)
                 .read()
                 .getInt("component_id")
         }

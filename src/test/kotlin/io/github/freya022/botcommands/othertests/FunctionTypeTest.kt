@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.components.builder.IPersistentActionab
 import io.github.freya022.botcommands.api.components.builder.PersistentHandlerBuilder
 import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import java.util.concurrent.TimeUnit
@@ -27,9 +28,11 @@ object FunctionTypeTest {
             get() = null
         override val filters: MutableList<ComponentInteractionFilter<*>>
             get() = arrayListOf()
-        override val rateLimitGroup: String? = null
+        override val rateLimitReference: ComponentRateLimitReference? = null
 
-        override fun rateLimitReference(group: String): FakeActionableComponent { throw NotImplementedError() }
+        override fun rateLimitReference(reference: ComponentRateLimitReference): FakeActionableComponent {
+            TODO("Not yet implemented")
+        }
 
         override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): FakeActionableComponent {
             println("ok")
