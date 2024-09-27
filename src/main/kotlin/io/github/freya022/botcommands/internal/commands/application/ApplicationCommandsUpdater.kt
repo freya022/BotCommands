@@ -22,12 +22,14 @@ import io.github.freya022.botcommands.internal.commands.application.diff.DiffLog
 import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.asScopeString
 import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.exceptions.ParsingException
 import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.Command.Type.*
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -60,8 +62,8 @@ internal class ApplicationCommandsUpdater private constructor(
 
     init {
         commandData = mapSlashCommands(manager.slashCommands) +
-                mapContextCommands(manager.userContextCommands, Command.Type.USER) +
-                mapContextCommands(manager.messageContextCommands, Command.Type.MESSAGE)
+                mapContextCommands(manager.userContextCommands, USER) +
+                mapContextCommands(manager.messageContextCommands, MESSAGE)
 
         //Apply localization
         val localizationFunction: LocalizationFunction = BCLocalizationFunction(context)
@@ -89,7 +91,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private suspend fun checkOnlineCommands(): Boolean {
-        val oldCommands = retrieveCommands()
+        val oldCommands = retrieveCommands().filterActualCommands()
         val oldCommandBytes = oldCommands
             .map(CommandData::fromCommand)
             .toJsonBytes()
@@ -185,7 +187,21 @@ internal class ApplicationCommandsUpdater private constructor(
             guild != null -> guild.updateCommands()
             else -> context.jda.updateCommands()
         }
-        action.addCommands(commandData).await()
+        action.addCommands(commandData).await().filterActualCommands()
+    }
+
+    private fun List<Command>.filterActualCommands() = filter {
+        when (it.type) {
+            SLASH, USER, MESSAGE -> true
+            UNKNOWN -> {
+                logger.warn { "Ignoring unknown command type, id: ${it.id}, name: ${it.name}" }
+                false // Discard, users can't create unknown commands
+            }
+            else -> {
+                logger.warn { internalErrorMessage("JDA seems to have added a new command type, id: ${it.id}, name: ${it.name}") }
+                true // Keep it, the user seems to actively use it
+            }
+        }
     }
 
     private fun mapSlashCommands(commands: Collection<TopLevelSlashCommandInfo>): List<SlashCommandData> =
