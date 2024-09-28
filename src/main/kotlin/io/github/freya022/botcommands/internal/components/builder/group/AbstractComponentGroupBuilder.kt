@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.IGroupHolderMixin
-import io.github.freya022.botcommands.internal.components.builder.IComponentBuilderMixin
-import io.github.freya022.botcommands.internal.components.builder.ITimeoutableComponentMixin
+import io.github.freya022.botcommands.internal.components.builder.mixin.IComponentBuilderMixin
+import io.github.freya022.botcommands.internal.components.builder.mixin.ITimeoutableComponentMixin
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
 

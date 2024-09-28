@@ -1,7 +1,10 @@
-package io.github.freya022.botcommands.internal.components.builder
+package io.github.freya022.botcommands.internal.components.builder.mixin.impl
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IEphemeralTimeoutableComponent
+import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolderImpl
+import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.mixin.IEphemeralTimeoutableComponentMixin
 import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.utils.Checks
 import io.github.freya022.botcommands.internal.utils.takeIfFinite

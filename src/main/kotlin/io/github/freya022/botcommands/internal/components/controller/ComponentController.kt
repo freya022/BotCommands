@@ -11,8 +11,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
-import io.github.freya022.botcommands.internal.components.builder.BaseComponentBuilderMixin
 import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
+import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers

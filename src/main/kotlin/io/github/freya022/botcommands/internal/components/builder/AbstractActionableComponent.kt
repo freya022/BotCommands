@@ -4,8 +4,9 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.builder.IActionableComponent
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.components.builder.mixin.IActionableComponentMixin
 
-internal sealed class AbstractActionableComponent<T : IActionableComponent<T>>(
+internal abstract class AbstractActionableComponent<T : IActionableComponent<T>>(
     override val context: BContext,
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),

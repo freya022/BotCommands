@@ -3,9 +3,9 @@ package io.github.freya022.botcommands.internal.components.builder.group
 import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.api.components.builder.group.PersistentComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.builder.IPersistentTimeoutableComponentMixin
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
-import io.github.freya022.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.mixin.IPersistentTimeoutableComponentMixin
+import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentTimeoutableComponentImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 
 internal class PersistentComponentGroupBuilderImpl internal constructor(

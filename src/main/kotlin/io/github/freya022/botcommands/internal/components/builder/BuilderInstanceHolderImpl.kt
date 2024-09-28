@@ -13,9 +13,14 @@ package io.github.freya022.botcommands.internal.components.builder
  * To work around this, we introduce [InstanceRetriever], which will hold our instance,
  * and will only be filled in the implementation's constructor, and so, the instance will be available post-construct.
  */
-internal sealed class BuilderInstanceHolderImpl<T : Any> : BuilderInstanceHolder<T> {
+internal abstract class BuilderInstanceHolderImpl<T : Any> : BuilderInstanceHolder<T> {
     protected abstract val instanceRetriever: InstanceRetriever<T>
 
     override val instance: T
         get() = instanceRetriever.instance
+
+    internal inline fun applyInstance(block: () -> Unit): T {
+        block() // No need to give the instance
+        return instance
+    }
 }

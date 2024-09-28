@@ -1,8 +1,11 @@
-package io.github.freya022.botcommands.internal.components.builder
+package io.github.freya022.botcommands.internal.components.builder.mixin.impl
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.components.builder.IConstrainableComponent
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
+import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolderImpl
+import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.mixin.IConstrainableComponentMixin
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake

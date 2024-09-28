@@ -4,7 +4,12 @@ import io.github.freya022.botcommands.api.components.builder.select.persistent.P
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.EntitySelectMenuImpl
 import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.builder.*
+import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.mixin.*
+import io.github.freya022.botcommands.internal.components.builder.mixin.impl.ConstrainableComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentActionableComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentTimeoutableComponentImpl
+import io.github.freya022.botcommands.internal.components.builder.mixin.impl.UniqueComponentImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking

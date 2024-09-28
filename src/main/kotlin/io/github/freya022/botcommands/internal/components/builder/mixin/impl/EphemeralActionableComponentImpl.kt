@@ -1,11 +1,14 @@
 @file:Suppress("DEPRECATION")
 
-package io.github.freya022.botcommands.internal.components.builder
+package io.github.freya022.botcommands.internal.components.builder.mixin.impl
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.components.builder.EphemeralHandlerBuilder
 import io.github.freya022.botcommands.api.components.builder.IEphemeralActionableComponent
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.components.builder.AbstractActionableComponent
+import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.mixin.IEphemeralActionableComponentMixin
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
