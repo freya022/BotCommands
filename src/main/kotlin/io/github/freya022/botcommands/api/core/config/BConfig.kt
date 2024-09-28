@@ -74,6 +74,18 @@ interface BConfig {
     val disableExceptionsInDMs: Boolean
 
     /**
+     * Enables *bot* owners to bypass certain limits.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.core.enableOwnerBypass`
+     *
+     * @see BotOwners
+     */
+    @ConfigurationValue(path = "botcommands.core.enableOwnerBypass", defaultValue = "false")
+    val enableOwnerBypass: Boolean
+
+    /**
      * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
      *
      * This could be useful when testing methods that use autocomplete caching while using hotswap.
@@ -159,6 +171,8 @@ class BConfigBuilder internal constructor() : BConfig {
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+    @set:JvmName("enableOwnerBypass")
+    override var enableOwnerBypass = false
     @Deprecated(
         message = "Moved to BApplicationConfig",
         replaceWith = ReplaceWith("applicationConfig.disableAutocompleteCache")
@@ -349,6 +363,7 @@ class BConfigBuilder internal constructor() : BConfig {
             override val packages = this@BConfigBuilder.packages.toImmutableSet()
             override val classes = this@BConfigBuilder.classes.toImmutableSet()
             override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
+            override val enableOwnerBypass = this@BConfigBuilder.enableOwnerBypass
             override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
             override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter

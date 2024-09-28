@@ -23,9 +23,14 @@ internal interface RateLimited {
     val rateLimitInfo: RateLimitInfo?
 }
 
-internal suspend fun TextCommandInfoImpl.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
+internal suspend fun TextCommandInfoImpl.withRateLimit(context: BContext, event: MessageReceivedEvent, block: suspend (CancellableRateLimit) -> Boolean) {
+    if (context.config.enableOwnerBypass && event.author in context.botOwners) {
+        block(NullCancellableRateLimit)
+        return
+    }
+
     val rateLimitInfo = rateLimitInfo
-    if (isNotOwner && rateLimitInfo != null) {
+    if (rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
         val probe = bucket.tryConsumeAndReturnRemaining(1)
         if (probe.isConsumed) {
@@ -38,9 +43,14 @@ internal suspend fun TextCommandInfoImpl.withRateLimit(context: BContext, event:
     }
 }
 
-internal suspend fun ApplicationCommandInfoImpl.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
+internal suspend fun ApplicationCommandInfoImpl.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, block: suspend (CancellableRateLimit) -> Boolean) {
+    if (context.config.enableOwnerBypass && event.user in context.botOwners) {
+        block(NullCancellableRateLimit)
+        return
+    }
+
     val rateLimitInfo = rateLimitInfo
-    if (isNotOwner && rateLimitInfo != null) {
+    if (rateLimitInfo != null) {
         val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
         val probe = bucket.tryConsumeAndReturnRemaining(1)
         if (probe.isConsumed) {
@@ -53,8 +63,8 @@ internal suspend fun ApplicationCommandInfoImpl.withRateLimit(context: BContext,
     }
 }
 
-internal suspend fun ActionComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, isOwner: Boolean, block: suspend (CancellableRateLimit) -> Boolean) {
-    if (isOwner) {
+internal suspend fun ActionComponentData.withRateLimit(context: BContext, event: GenericComponentInteractionCreateEvent, block: suspend (CancellableRateLimit) -> Boolean) {
+    if (context.config.enableOwnerBypass && event.user in context.botOwners) {
         block(NullCancellableRateLimit)
         return
     }

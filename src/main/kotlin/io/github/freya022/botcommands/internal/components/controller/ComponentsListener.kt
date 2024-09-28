@@ -83,7 +83,7 @@ internal class ComponentsListener(
                 }
             }
 
-            component.withRateLimit(context, event, event.user in context.botOwners) { cancellableRateLimit ->
+            component.withRateLimit(context, event) { cancellableRateLimit ->
                 val enhancedEvent = transformEvent(event, cancellableRateLimit)
                 onComponentUse(enhancedEvent, component)
             }

@@ -22,6 +22,7 @@ internal class BotCommandsCoreConfiguration(
     override val packages: Set<String> = emptySet(),
     override val classes: Set<Class<*>> = emptySet(),
     override val disableExceptionsInDMs: Boolean = false,
+    override val enableOwnerBypass: Boolean = false,
     @Name("disableAutocompleteCache")
     @Suppress("PropertyName")
     internal val _disableAutocompleteCache: Boolean? = null,
@@ -47,6 +48,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     packages += configuration.packages
     classes += configuration.classes
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
+    enableOwnerBypass = configuration.enableOwnerBypass
     @Suppress("DEPRECATION")
     configuration._disableAutocompleteCache?.let { disableAutocompleteCache = it }
     ignoredIntents += configuration.ignoredIntents

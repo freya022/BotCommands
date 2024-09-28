@@ -74,9 +74,7 @@ internal class TextCommandsListener internal constructor(
         logger.trace { "Received text command: $msg" }
 
         scope.launchCatching({ handleException(event, it, msg) }) launch@{
-            val member = event.member ?: throwInternal("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?")
-            val isNotOwner = member !in context.botOwners
-
+            val isNotOwner = event.author !in context.botOwners
             val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
                 // At this point no top level command was found,
                 // if a subcommand wasn't matched, it would simply appear in the args
@@ -86,7 +84,7 @@ internal class TextCommandsListener internal constructor(
 
             logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
 
-            commandInfo.withRateLimit(context, event, isNotOwner) { cancellableRateLimit ->
+            commandInfo.withRateLimit(context, event) { cancellableRateLimit ->
                 if (!canRun(event, commandInfo)) {
                     false
                 } else {
