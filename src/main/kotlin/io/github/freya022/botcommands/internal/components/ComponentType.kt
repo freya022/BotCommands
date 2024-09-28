@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.components
 
 import io.github.freya022.botcommands.internal.utils.throwArgument
 
-enum class ComponentType(val key: Int) {
+internal enum class ComponentType(val key: Int) {
     GROUP(0),
     BUTTON(1),
     SELECT_MENU(2);
