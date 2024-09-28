@@ -4,8 +4,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLim
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
-import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
@@ -13,6 +11,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
+import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
@@ -65,12 +65,12 @@ internal class ComponentController(
             }
     }
 
-    internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilder<*>, block: (internalId: Int, componentId: String) -> R): R {
+    internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilderMixin<*>, block: (internalId: Int, componentId: String) -> R): R {
         val internalId = createComponent(builder).internalId
         return block(internalId, getComponentId(internalId))
     }
 
-    private suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
+    private suspend fun createComponent(builder: BaseComponentBuilderMixin<*>): ComponentData {
         builder.rateLimitReference?.let { rateLimitReference ->
             require(rateLimitReference.group in rateLimitContainer) {
                 "Rate limit group '${rateLimitReference.group}' was not registered using ${classRef<RateLimitProvider>()}"
@@ -131,7 +131,7 @@ internal class ComponentController(
     suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
         deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
-    suspend fun createGroup(builder: ComponentGroupBuilder<*>): ComponentGroup {
+    suspend fun createGroup(builder: AbstractComponentGroupBuilder<*>): ComponentGroup {
         val group = componentRepository.insertGroup(builder)
 
         group.expiresAt?.let { expirationTimestamp ->

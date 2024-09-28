@@ -5,8 +5,7 @@ import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction
 
-//TODO hide component internals properly
-abstract class AbstractAwaitableComponent<T : ComponentInteraction> internal constructor(
+internal abstract class AbstractAwaitableComponentImpl<T : ComponentInteraction> internal constructor(
     @get:JvmSynthetic
     internal val componentController: ComponentController
 ) : AwaitableComponent<T>,

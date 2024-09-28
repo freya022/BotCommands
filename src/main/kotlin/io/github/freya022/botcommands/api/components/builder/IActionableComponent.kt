@@ -19,7 +19,6 @@ import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
-import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -33,10 +32,8 @@ import kotlin.reflect.*
 /**
  * Allows components to have handlers bound to them.
  */
-interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHolder<T> {
+interface IActionableComponent<T : IActionableComponent<T>> {
     val context: BContext
-
-    val handler: ComponentHandler?
 
     /**
      * List of filters applied to this component.
@@ -49,8 +46,6 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      * @see ComponentInteractionRejectionHandler
      */
     val filters: MutableList<ComponentInteractionFilter<*>>
-
-    val rateLimitReference: ComponentRateLimitReference?
 
     /**
      * Sets the rate limiter of this component to one declared by a [RateLimitProvider].
@@ -72,9 +67,7 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      * @see ComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filter: ComponentInteractionFilter<*>): T = instance.also {
-        filters += filter
-    }
+    fun addFilter(filter: ComponentInteractionFilter<*>): T
 
     /**
      * Applies a filter to this component.
@@ -86,7 +79,7 @@ interface IActionableComponent<T : IActionableComponent<T>> : BuilderInstanceHol
      * @see ComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T = addFilter(context.getService(filterType))
+    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T
 }
 
 /**

@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.components
 
 import io.github.freya022.botcommands.internal.utils.throwArgument
 
-enum class LifetimeType(val key: Int) {
+internal enum class LifetimeType(val key: Int) {
     PERSISTENT(0),
     EPHEMERAL(1);
 

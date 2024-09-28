@@ -12,16 +12,14 @@ import javax.annotation.CheckReturnValue
  *
  * @see InteractionConstraints
  */
-interface IConstrainableComponent<T : IConstrainableComponent<T>> : BuilderInstanceHolder<T> {
+interface IConstrainableComponent<T : IConstrainableComponent<T>> {
     var constraints: InteractionConstraints
 
     /**
      * Replaces the current interaction constraints with the given ones.
      */
     @CheckReturnValue
-    fun constraints(constraints: InteractionConstraints): T = instance.also {
-        this.constraints = constraints
-    }
+    fun constraints(constraints: InteractionConstraints): T
 
     /** Adds user IDs to the constraints */
     @CheckReturnValue

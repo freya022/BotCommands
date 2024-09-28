@@ -11,7 +11,7 @@ import javax.annotation.CheckReturnValue
  *
  * This will also cause cancellation of any associated timeout.
  */
-interface IUniqueComponent<T : IUniqueComponent<T>> : BuilderInstanceHolder<T> {
+interface IUniqueComponent<T : IUniqueComponent<T>> {
     /**
      * Sets this component as being usable once.
      *
@@ -50,9 +50,7 @@ interface IUniqueComponent<T : IUniqueComponent<T>> : BuilderInstanceHolder<T> {
      */
     @Deprecated(message = "Renamed to 'singleUse'", ReplaceWith("singleUse(oneUse)"))
     @CheckReturnValue
-    fun oneUse(oneUse: Boolean): T = instance.also {
-        this.singleUse = oneUse
-    }
+    fun oneUse(oneUse: Boolean): T = singleUse(oneUse)
 
     /**
      * Sets this component as being usable once.
@@ -64,7 +62,5 @@ interface IUniqueComponent<T : IUniqueComponent<T>> : BuilderInstanceHolder<T> {
      * This will also cause cancellation of any associated timeout.
      */
     @CheckReturnValue
-    fun singleUse(singleUse: Boolean): T = instance.also {
-        this.singleUse = singleUse
-    }
+    fun singleUse(singleUse: Boolean): T
 }

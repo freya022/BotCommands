@@ -4,6 +4,8 @@ import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.IGroupHolder
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.group.EphemeralComponentGroupBuilderImpl
+import io.github.freya022.botcommands.internal.components.builder.group.PersistentComponentGroupBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import javax.annotation.CheckReturnValue
 
@@ -23,7 +25,7 @@ class ComponentGroupFactory internal constructor(
      */
     @CheckReturnValue
     fun ephemeral(): EphemeralComponentGroupBuilder =
-        EphemeralComponentGroupBuilder(componentController, components, InstanceRetriever())
+        EphemeralComponentGroupBuilderImpl(componentController, components, InstanceRetriever())
 
     /**
      * Creates an ephemeral component group.
@@ -34,7 +36,7 @@ class ComponentGroupFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
-        ephemeral().apply(block).buildSuspend()
+        (ephemeral().apply(block) as EphemeralComponentGroupBuilderImpl).buildSuspend()
 
     /**
      * Creates a persistent component group builder.
@@ -45,7 +47,7 @@ class ComponentGroupFactory internal constructor(
      */
     @CheckReturnValue
     fun persistent(): PersistentComponentGroupBuilder =
-        PersistentComponentGroupBuilder(componentController, components, InstanceRetriever())
+        PersistentComponentGroupBuilderImpl(componentController, components, InstanceRetriever())
 
     /**
      * Creates a persistent component group.
@@ -56,5 +58,5 @@ class ComponentGroupFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
-        persistent().apply(block).buildSuspend()
+        (persistent().apply(block) as PersistentComponentGroupBuilderImpl).buildSuspend()
 }
