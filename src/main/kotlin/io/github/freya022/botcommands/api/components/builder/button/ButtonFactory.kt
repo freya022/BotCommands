@@ -5,6 +5,8 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.button.EphemeralButtonBuilderImpl
+import io.github.freya022.botcommands.internal.components.builder.button.PersistentButtonBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -68,7 +70,7 @@ class ButtonFactory internal constructor(
      */
     @CheckReturnValue
     fun ephemeral(): EphemeralButtonBuilder =
-        EphemeralButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
+        EphemeralButtonBuilderImpl(componentController, style, label, emoji, InstanceRetriever())
 
     /**
      * Creates an ephemeral button.
@@ -79,7 +81,7 @@ class ButtonFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralButtonBuilder.() -> Unit): Button =
-        ephemeral().apply(block).buildSuspend()
+        (ephemeral().apply(block) as EphemeralButtonBuilderImpl).buildSuspend()
 
     /**
      * Creates a persistent button builder.
@@ -90,7 +92,7 @@ class ButtonFactory internal constructor(
      */
     @CheckReturnValue
     fun persistent(): PersistentButtonBuilder =
-        PersistentButtonBuilder(componentController, style, label, emoji, InstanceRetriever())
+        PersistentButtonBuilderImpl(componentController, style, label, emoji, InstanceRetriever())
 
     /**
      * Creates a persistent button.
@@ -101,5 +103,5 @@ class ButtonFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentButtonBuilder.() -> Unit): Button =
-        persistent().apply(block).buildSuspend()
+        (persistent().apply(block) as PersistentButtonBuilderImpl).buildSuspend()
 }

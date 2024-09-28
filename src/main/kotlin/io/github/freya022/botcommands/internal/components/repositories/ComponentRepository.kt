@@ -2,16 +2,16 @@ package io.github.freya022.botcommands.internal.components.repositories
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.components.builder.BaseComponentBuilder
-import io.github.freya022.botcommands.api.components.builder.IComponentBuilder
-import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
-import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupBuilder
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.db.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
+import io.github.freya022.botcommands.internal.components.builder.BaseComponentBuilderMixin
+import io.github.freya022.botcommands.internal.components.builder.IComponentBuilderMixin
+import io.github.freya022.botcommands.internal.components.builder.ITimeoutableComponentMixin
+import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.controller.ComponentFilters
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
@@ -87,7 +87,7 @@ internal class ComponentRepository(
         ids.size
     }
 
-    suspend fun createComponent(builder: BaseComponentBuilder<*>): ComponentData {
+    suspend fun createComponent(builder: BaseComponentBuilderMixin<*>): ComponentData {
         return database.transactional {
             // Create base component
             val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitReference, getFilterNames(builder.filters))
@@ -229,7 +229,7 @@ internal class ComponentRepository(
         return ComponentGroupData(id, lifetimeType, expiresAt, resetTimeoutOnUseDuration, timeout, componentIds)
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilder<*>): ComponentGroupData = database.transactional {
+    suspend fun insertGroup(builder: AbstractComponentGroupBuilder<*>): ComponentGroupData = database.transactional {
         val groupId: Int = insertBaseComponent(builder, false, null, emptyArray())
 
         // Add timeout
@@ -264,21 +264,28 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun <T> insertBaseComponent(
-        builder: T,
+    private suspend fun insertBaseComponent(
+        builder: IComponentBuilderMixin<*>,
         singleUse: Boolean,
         rateLimitReference: ComponentRateLimitReference?,
         filterNames: Array<out String>
-    ): Int where T : IComponentBuilder,
-                 T : ITimeoutableComponent<*> {
+    ): Int {
+        val expiresAt: Instant?
+        val resetTimeoutOnUseDurationMs: Long?
+        if (builder is ITimeoutableComponentMixin<*>) {
+            expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
+            resetTimeoutOnUseDurationMs = builder.timeoutDuration
+                ?.takeIf { builder.resetTimeoutOnUse }
+                ?.inWholeMilliseconds
+        } else {
+            expiresAt = null
+            resetTimeoutOnUseDurationMs = null
+        }
+
         return preparedStatement(
             "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, rate_limit_discriminator, filters) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
-            val expiresAt = builder.timeoutDuration?.let { Clock.System.now() + it }
-            val resetTimeoutOnUseDurationMs = builder.timeoutDuration
-                ?.takeIf { builder.resetTimeoutOnUse }
-                ?.inWholeMilliseconds
             executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitReference?.group, rateLimitReference?.discriminator, filterNames)
                 .read()
                 .getInt("component_id")
@@ -286,7 +293,7 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent<*>, componentId: Int) {
+    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponentMixin<*>, componentId: Int) {
         val timeout = timeoutableComponentBuilder.timeout
         if (timeout is EphemeralTimeout) {
             componentTimeoutRepository.insertEphemeralTimeout(componentId, timeout)

@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
+import io.github.freya022.botcommands.internal.components.builder.select.ephemeral.EphemeralStringSelectBuilderImpl
+import io.github.freya022.botcommands.internal.components.builder.select.persistent.PersistentStringSelectBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import javax.annotation.CheckReturnValue
 
@@ -24,7 +26,7 @@ class StringSelectMenuFactory internal constructor(
      */
     @CheckReturnValue
     fun ephemeral(): EphemeralStringSelectBuilder =
-        EphemeralStringSelectBuilder(componentController, InstanceRetriever())
+        EphemeralStringSelectBuilderImpl(componentController, InstanceRetriever())
 
     /**
      * Creates an ephemeral string select menu.
@@ -35,7 +37,7 @@ class StringSelectMenuFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun ephemeral(block: EphemeralStringSelectBuilder.() -> Unit): StringSelectMenu =
-        ephemeral().apply(block).buildSuspend()
+        (ephemeral().apply(block) as EphemeralStringSelectBuilderImpl).buildSuspend()
 
     /**
      * Creates a persistent string select menu builder.
@@ -46,7 +48,7 @@ class StringSelectMenuFactory internal constructor(
      */
     @CheckReturnValue
     fun persistent(): PersistentStringSelectBuilder =
-        PersistentStringSelectBuilder(componentController, InstanceRetriever())
+        PersistentStringSelectBuilderImpl(componentController, InstanceRetriever())
 
     /**
      * Creates a persistent string select menu.
@@ -57,5 +59,5 @@ class StringSelectMenuFactory internal constructor(
      */
     @JvmSynthetic
     suspend inline fun persistent(block: PersistentStringSelectBuilder.() -> Unit): StringSelectMenu =
-        persistent().apply(block).buildSuspend()
+        (persistent().apply(block) as PersistentStringSelectBuilderImpl).buildSuspend()
 }

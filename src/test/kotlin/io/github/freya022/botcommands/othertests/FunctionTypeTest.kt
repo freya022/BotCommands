@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.components.builder.bindTo
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
 import java.util.concurrent.TimeUnit
 
 object FunctionTypeTest {
@@ -21,18 +20,19 @@ object FunctionTypeTest {
     }
 
     private object FakeActionableComponent : IPersistentActionableComponent<FakeActionableComponent> {
-        override val instance: FakeActionableComponent = this
         override val context: BContext
             get() = throw UnsupportedOperationException()
-        override val handler: ComponentHandler?
-            get() = null
         override val filters: MutableList<ComponentInteractionFilter<*>>
             get() = arrayListOf()
-        override val rateLimitReference: ComponentRateLimitReference? = null
 
-        override fun rateLimitReference(reference: ComponentRateLimitReference): FakeActionableComponent {
-            TODO("Not yet implemented")
-        }
+        override fun rateLimitReference(reference: ComponentRateLimitReference): FakeActionableComponent =
+            throw UnsupportedOperationException()
+
+        override fun addFilter(filter: ComponentInteractionFilter<*>): FakeActionableComponent =
+            throw UnsupportedOperationException()
+
+        override fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): FakeActionableComponent =
+            throw UnsupportedOperationException()
 
         override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): FakeActionableComponent {
             println("ok")

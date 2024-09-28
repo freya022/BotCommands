@@ -13,13 +13,13 @@ internal class EphemeralActionableComponentImpl<T : IEphemeralActionableComponen
     context: BContext,
     instanceRetriever: InstanceRetriever<T>
 ) : AbstractActionableComponent<T>(context, instanceRetriever),
-    IEphemeralActionableComponent<T, E> {
+    IEphemeralActionableComponentMixin<T, E> {
 
     override var handler: EphemeralHandler<*>? = null
         private set
 
     @Deprecated("Nothing to be configured, will be removed", replaceWith = ReplaceWith("bindTo(handler)"))
-    override fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = instance.also {
+    override fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>): T = applyInstance {
         this.handler = EphemeralHandlerBuilder(handler).apply(block).build()
     }
 }

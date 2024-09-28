@@ -3,57 +3,23 @@ package io.github.freya022.botcommands.api.components.builder.select.ephemeral
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
-import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.LifetimeType
-import io.github.freya022.botcommands.internal.components.StringSelectMenuImpl
-import io.github.freya022.botcommands.internal.components.builder.*
-import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import io.github.freya022.botcommands.internal.utils.throwArgument
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
-class EphemeralStringSelectBuilder internal constructor(
-    private val componentController: ComponentController,
-    instanceRetriever: InstanceRetriever<EphemeralStringSelectBuilder>
-) : JDAStringSelectMenu.Builder(""),
-    IConstrainableComponent<EphemeralStringSelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
-    IUniqueComponent<EphemeralStringSelectBuilder> by UniqueComponentImpl(instanceRetriever),
-    BaseComponentBuilder<EphemeralStringSelectBuilder>,
-    IEphemeralActionableComponent<EphemeralStringSelectBuilder, StringSelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
-    IEphemeralTimeoutableComponent<EphemeralStringSelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
-
-    override val componentType: ComponentType get() = ComponentType.SELECT_MENU
-    override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
-    override val instance: EphemeralStringSelectBuilder get() = this
-
-    private var built = false
-
-    init {
-        instanceRetriever.instance = this
-    }
+abstract class EphemeralStringSelectBuilder :
+        JDAStringSelectMenu.Builder(""),
+        BaseComponentBuilder<EphemeralStringSelectBuilder>,
+        IConstrainableComponent<EphemeralStringSelectBuilder>,
+        IUniqueComponent<EphemeralStringSelectBuilder>,
+        IEphemeralActionableComponent<EphemeralStringSelectBuilder, StringSelectEvent>,
+        IEphemeralTimeoutableComponent<EphemeralStringSelectBuilder> {
 
     @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun getId(): Nothing {
-        throwArgument("Cannot set an ID on components managed by the framework")
-    }
+    abstract override fun getId(): Nothing
 
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun setId(customId: String): JDAStringSelectMenu.Builder {
-        if (customId.isEmpty()) return this //Empty ID is set by super constructor
-        throwArgument("Cannot set an ID on components managed by the framework")
-    }
+    abstract override fun setId(customId: String): JDAStringSelectMenu.Builder
 
-    override fun build(): StringSelectMenu = runBlocking { buildSuspend() }
+    abstract override fun build(): StringSelectMenu
 
-    @JvmSynthetic
-    @PublishedApi
-    internal suspend fun buildSuspend(): StringSelectMenu {
-        check(!built) { "Cannot build components more than once" }
-        built = true
-
-        componentController.withNewComponent(this) { internalId, componentId ->
-            super.setId(componentId)
-            return StringSelectMenuImpl(componentController, internalId, super.build())
-        }
-    }
+    protected fun jdaBuild(): JDAStringSelectMenu = super.build()
 }

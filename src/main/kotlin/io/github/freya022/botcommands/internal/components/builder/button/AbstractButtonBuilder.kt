@@ -1,32 +1,32 @@
-package io.github.freya022.botcommands.api.components.builder.button
+package io.github.freya022.botcommands.internal.components.builder.button
 
 import io.github.freya022.botcommands.api.components.Button
-import io.github.freya022.botcommands.api.components.builder.AbstractComponentBuilder
+import io.github.freya022.botcommands.api.components.builder.button.ButtonBuilder
 import io.github.freya022.botcommands.internal.components.ButtonImpl
 import io.github.freya022.botcommands.internal.components.ComponentType
+import io.github.freya022.botcommands.internal.components.builder.AbstractComponentBuilder
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import javax.annotation.CheckReturnValue
-import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
-sealed class AbstractButtonBuilder<T : AbstractButtonBuilder<T>>(
+@PublishedApi
+internal sealed class AbstractButtonBuilder<T : ButtonBuilder<T>>(
     private val componentController: ComponentController,
     private val style: ButtonStyle,
     private val label: String?,
     private val emoji: Emoji?,
     instanceRetriever: InstanceRetriever<T>
-) : AbstractComponentBuilder<T>(instanceRetriever) {
+) : AbstractComponentBuilder<T>(instanceRetriever),
+    ButtonBuilder<T> {
+
     final override val componentType: ComponentType = ComponentType.BUTTON
 
     private var built = false
 
-    @CheckReturnValue
-    fun build(): Button = runBlocking { buildSuspend() }
+    override fun build(): Button = runBlocking { buildSuspend() }
 
-    @JvmSynthetic
     @PublishedApi
     internal suspend fun buildSuspend(): Button {
         check(!built) { "Cannot build components more than once" }
@@ -36,7 +36,7 @@ sealed class AbstractButtonBuilder<T : AbstractButtonBuilder<T>>(
             ButtonImpl(
                 componentController,
                 internalId,
-                JDAButton.of(style, componentId, label, emoji)
+                net.dv8tion.jda.api.interactions.components.buttons.Button.of(style, componentId, label, emoji)
             )
         }
     }

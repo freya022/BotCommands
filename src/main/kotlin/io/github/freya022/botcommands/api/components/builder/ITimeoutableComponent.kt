@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
-import io.github.freya022.botcommands.internal.components.data.timeout.ComponentTimeout
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -38,10 +37,7 @@ import java.time.Duration as JavaDuration
  * - If the component is a group, then all of its owned components will also be deleted.
  * - If the component is inside a group, then all the group's components will also be deleted.
  */
-interface ITimeoutableComponent<T : ITimeoutableComponent<T>> : BuilderInstanceHolder<T> {
-    val timeoutDuration: Duration?
-    val timeout: ComponentTimeout?
-
+interface ITimeoutableComponent<T : ITimeoutableComponent<T>> {
     /**
      * When `true`, resets the timeout duration everytime this component is used.
      *

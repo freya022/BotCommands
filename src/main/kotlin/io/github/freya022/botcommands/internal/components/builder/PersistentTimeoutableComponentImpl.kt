@@ -8,7 +8,7 @@ import kotlin.time.Duration
 internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),
-    IPersistentTimeoutableComponent<T> {
+    IPersistentTimeoutableComponentMixin<T> {
 
     override var timeoutDuration: Duration? = null
         private set
@@ -17,16 +17,16 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
 
     override var resetTimeoutOnUse: Boolean = false
 
-    override fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T = instance.also {
+    override fun resetTimeoutOnUse(resetTimeoutOnUse: Boolean): T = applyInstance {
         this.resetTimeoutOnUse = resetTimeoutOnUse
     }
 
-    override fun noTimeout(): T = instance.also {
+    override fun noTimeout(): T = applyInstance {
         this.timeoutDuration = null
         this.timeout = null
     }
 
-    override fun timeout(timeout: Duration): T = instance.also {
+    override fun timeout(timeout: Duration): T = applyInstance {
         Checks.checkFinite(timeout, "timeout")
         Checks.checkFitInt(timeout, "timeout")
 
@@ -34,7 +34,7 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
         this.timeout = null
     }
 
-    override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = instance.also {
+    override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = applyInstance {
         Checks.checkFinite(timeout, "timeout")
         Checks.checkFitInt(timeout, "timeout")
 

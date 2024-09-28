@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.internal.components.builder
 
-import io.github.freya022.botcommands.api.components.builder.BuilderInstanceHolder
-
 /**
  * Since the instances must be returned to provide a builder-like experience for JVM users,
  * we need to get the instance from the implementation itself
@@ -15,7 +13,7 @@ import io.github.freya022.botcommands.api.components.builder.BuilderInstanceHold
  * To work around this, we introduce [InstanceRetriever], which will hold our instance,
  * and will only be filled in the implementation's constructor, and so, the instance will be available post-construct.
  */
-internal sealed class BuilderInstanceHolderImpl<T : BuilderInstanceHolder<T>> : BuilderInstanceHolder<T> {
+internal sealed class BuilderInstanceHolderImpl<T : Any> : BuilderInstanceHolder<T> {
     protected abstract val instanceRetriever: InstanceRetriever<T>
 
     override val instance: T
