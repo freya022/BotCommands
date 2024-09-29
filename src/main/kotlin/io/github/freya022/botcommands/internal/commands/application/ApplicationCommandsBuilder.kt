@@ -159,7 +159,7 @@ internal class ApplicationCommandsBuilder(
 
     private fun setMetadata(updater: ApplicationCommandsUpdater) {
         updater.metadata.forEach { metadata ->
-            val command = updater.applicationCommands.find { it.name == metadata.name }
+            val command = updater.applicationCommands.find { it.type == metadata.type && it.name == metadata.name }
                 ?: throwInternal("Could not match JDA command '${metadata.name}'")
 
             val accessor = command as? TopLevelApplicationCommandInfoMixin
