@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
+import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerExecutor
@@ -39,6 +39,7 @@ internal class ComponentsListener(
     private val context: BContext,
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
+    private val rateLimitHandler: RateLimitHandler,
     filters: List<ComponentInteractionFilter<Any>>,
     rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
     private val componentController: ComponentController,
@@ -83,7 +84,7 @@ internal class ComponentsListener(
                 }
             }
 
-            component.withRateLimit(context, event) { cancellableRateLimit ->
+            rateLimitHandler.tryRun(component, event) { cancellableRateLimit ->
                 val enhancedEvent = transformEvent(event, cancellableRateLimit)
                 onComponentUse(enhancedEvent, component)
             }

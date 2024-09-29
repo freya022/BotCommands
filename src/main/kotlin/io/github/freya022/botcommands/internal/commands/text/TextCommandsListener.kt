@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
+import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
@@ -42,6 +42,7 @@ internal class TextCommandsListener internal constructor(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
+    private val rateLimitHandler: RateLimitHandler,
     filters: List<TextCommandFilter<Any>>,
     rejectionHandler: TextCommandRejectionHandler<Any>?,
     private val suggestionSupplier: TextSuggestionSupplier,
@@ -84,7 +85,7 @@ internal class TextCommandsListener internal constructor(
 
             logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
 
-            commandInfo.withRateLimit(context, event) { cancellableRateLimit ->
+            rateLimitHandler.tryRun(commandInfo, event) { cancellableRateLimit ->
                 if (!canRun(event, commandInfo)) {
                     false
                 } else {

@@ -28,7 +28,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.mess
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
-import io.github.freya022.botcommands.internal.commands.ratelimit.withRateLimit
+import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
@@ -51,6 +51,7 @@ internal class ApplicationCommandListener internal constructor(
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
+    private val rateLimitHandler: RateLimitHandler,
     filters: List<ApplicationCommandFilter<Any>>,
     rejectionHandler: ApplicationCommandRejectionHandler<Any>?
 ) {
@@ -74,7 +75,7 @@ internal class ApplicationCommandListener internal constructor(
                 .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
                 ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
 
-            slashCommand.withRateLimit(context, event) { cancellableRateLimit ->
+            rateLimitHandler.tryRun(slashCommand, event) { cancellableRateLimit ->
                 if (!canRun(event, slashCommand)) {
                     false
                 } else {
@@ -98,7 +99,7 @@ internal class ApplicationCommandListener internal constructor(
                 .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
                 ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
 
-            userCommand.withRateLimit(context, event) { cancellableRateLimit ->
+            rateLimitHandler.tryRun(userCommand, event) { cancellableRateLimit ->
                 if (!canRun(event, userCommand)) {
                     false
                 } else {
@@ -122,7 +123,7 @@ internal class ApplicationCommandListener internal constructor(
                 .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
                 ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
 
-            messageCommand.withRateLimit(context, event) { cancellableRateLimit ->
+            rateLimitHandler.tryRun(messageCommand, event) { cancellableRateLimit ->
                 if (!canRun(event, messageCommand)) {
                     false
                 } else {
