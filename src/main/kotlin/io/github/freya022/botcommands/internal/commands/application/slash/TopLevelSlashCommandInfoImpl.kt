@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.TopLevelSlashCommandBuilderImpl
+import net.dv8tion.jda.api.interactions.commands.Command
 
 internal class TopLevelSlashCommandInfoImpl internal constructor(
     context: BContext,
@@ -21,6 +22,7 @@ internal class TopLevelSlashCommandInfoImpl internal constructor(
     override lateinit var metadata: TopLevelApplicationCommandMetadata
 
     override val scope: CommandScope = builder.scope
+    override val type: Command.Type get() = Command.Type.SLASH
     override val isDefaultLocked: Boolean = builder.isDefaultLocked
     override val isGuildOnly: Boolean = scope.isGuildOnly
     override val nsfw: Boolean = builder.nsfw

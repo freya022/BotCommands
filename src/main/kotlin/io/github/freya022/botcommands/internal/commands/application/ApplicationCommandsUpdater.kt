@@ -132,6 +132,7 @@ internal class ApplicationCommandsUpdater private constructor(
         block()
         false
     } catch (e: ParsingException) {
+        logger.debug(e) { "Considering commands to be outdated because of an error during deserialization" }
         true
     }
 
