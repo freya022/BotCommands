@@ -21,6 +21,7 @@ import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
+import net.dv8tion.jda.api.interactions.commands.Command
 import kotlin.reflect.full.callSuspendBy
 
 internal class MessageCommandInfoImpl internal constructor(
@@ -36,6 +37,7 @@ internal class MessageCommandInfoImpl internal constructor(
     override val parentInstance get() = null
 
     override val scope: CommandScope = builder.scope
+    override val type: Command.Type get() = Command.Type.MESSAGE
     override val isDefaultLocked: Boolean = builder.isDefaultLocked
     override val isGuildOnly: Boolean = scope.isGuildOnly
     override val nsfw: Boolean = builder.nsfw
