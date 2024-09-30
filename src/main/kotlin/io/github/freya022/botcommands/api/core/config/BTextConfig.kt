@@ -101,13 +101,8 @@ class BTextConfigBuilder internal constructor() : BTextConfig {
     @set:JvmName("showSuggestions")
     override var showSuggestions: Boolean = true
 
-    override var dmClosedEmoji: Emoji
-        get() = dmClosedEmojiSupplier()
-        @Deprecated("Set dmClosedEmojiSupplier instead, retrieve with dmClosedEmoji")
-        set(value) {
-            dmClosedEmojiSupplier = { value }
-        }
     var dmClosedEmojiSupplier: () -> Emoji = { EmojiUtils.resolveJDAEmoji("mailbox_closed") }
+    override val dmClosedEmoji: Emoji get() = dmClosedEmojiSupplier()
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {

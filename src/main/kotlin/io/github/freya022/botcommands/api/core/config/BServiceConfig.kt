@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.api.core.config
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.InstanceSupplier
-import io.github.freya022.botcommands.api.core.service.annotations.*
+import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy
+import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
-import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import kotlin.reflect.KClass
@@ -19,17 +19,12 @@ interface BServiceConfig {
      */
     val debug: Boolean
 
-    @Deprecated(message = "For removal, didn't do much in the first place")
-    val serviceAnnotations: Set<KClass<out Annotation>>
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
 }
 
 @ConfigDSL
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override var debug: Boolean = false
-
-    @Deprecated("For removal, didn't do much in the first place")
-    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
     private val _instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> = _instanceSupplierMap.unmodifiableView()
@@ -54,8 +49,6 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {
         override val debug = this@BServiceConfigBuilder.debug
-        @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
-        override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
     }
 }

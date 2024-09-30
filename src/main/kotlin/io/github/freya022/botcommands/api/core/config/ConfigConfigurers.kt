@@ -15,23 +15,6 @@ sealed interface BConfigurer<T : Any> {
 interface BConfigConfigurer : BConfigurer<BConfigBuilder>
 
 /**
- * Configurer for [BDebugConfig].
- *
- * Only usable with Spring.
- */
-@Suppress("DEPRECATION")
-@Deprecated("For removal")
-interface BDebugConfigConfigurer : BConfigurer<BDebugConfigBuilder>
-
-/**
- * Configurer for [BServiceConfig].
- *
- * Only usable with Spring.
- */
-@Deprecated("For removal")
-interface BServiceConfigConfigurer : BConfigurer<BServiceConfigBuilder>
-
-/**
  * Configurer for [BDatabaseConfig].
  *
  * Only usable with Spring.
