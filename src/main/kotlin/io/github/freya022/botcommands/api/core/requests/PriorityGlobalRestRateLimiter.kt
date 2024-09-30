@@ -2,13 +2,14 @@ package io.github.freya022.botcommands.api.core.requests
 
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.Bucket
+import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.errorNull
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.requests.RestRateLimiter
 import net.dv8tion.jda.api.requests.Route
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import java.util.PriorityQueue
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread
@@ -19,7 +20,7 @@ import kotlin.time.toJavaDuration
 private val logger = KotlinLogging.logger { }
 
 /**
- * An implementation of [RestRateLimiter] which handles the global rate limit (50/s),
+ * An implementation of [RestRateLimiter] which handles the global rate limit,
  * and in which low-priority requests are queued last to the [delegate] (such as application command updates).
  *
  * While JDA already reads the global rate limit headers, it does not prevent doing 50+ requests on different buckets.
@@ -32,7 +33,8 @@ private val logger = KotlinLogging.logger { }
  *
  * ### Usage
  *
- * You will need to configure the RestConfig on your [DefaultShardManagerBuilder][DefaultShardManagerBuilder.setRestConfig].
+ * You will need to configure the RestConfig on your [DefaultShardManagerBuilder][DefaultShardManagerBuilder.setRestConfig],
+ * you don't need to do this if you used a factory from [JDAService] (light/default/create/lightSharded/defaultSharded/createSharded).
  *
  * **Example:**
  * ```kt
@@ -42,8 +44,14 @@ private val logger = KotlinLogging.logger { }
  *     }
  * setRestConfig(restConfig)
  * ```
+ *
+ * @param tokens   The maximum amount of permitted requests per second
+ * @param delegate The [RestRateLimiter] to use when submitting a request
  */
-class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : RestRateLimiter {
+class PriorityGlobalRestRateLimiter(
+    tokens: Long,
+    private val delegate: RestRateLimiter
+) : RestRateLimiter {
     private class PriorityWork(val task: RestRateLimiter.Work) : Comparable<PriorityWork> {
         override fun compareTo(other: PriorityWork): Int {
             return task.priority.compareTo(other.task.priority)
@@ -62,12 +70,12 @@ class PriorityGlobalRestRateLimiter(private val delegate: RestRateLimiter) : Res
         }
     }
 
-    // 50/s
+    // {tokens}/s
     private val bucket = Bucket.builder()
         .addLimit(
             Bandwidth.builder()
-                .capacity(50)
-                .refillIntervally(50, 1.seconds.toJavaDuration())
+                .capacity(tokens)
+                .refillIntervally(tokens, 1.seconds.toJavaDuration())
                 .build()
         )
         .build()

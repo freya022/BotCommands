@@ -283,11 +283,12 @@ abstract class JDAService {
         }
 
         /**
-         * Returns a [PriorityGlobalRestRateLimiter] using a [SequentialRestRateLimiter] as its [delegate][PriorityGlobalRestRateLimiter.delegate]
+         * Returns a [PriorityGlobalRestRateLimiter] with 50 requests/s,
+         * using a [SequentialRestRateLimiter] as its [delegate][PriorityGlobalRestRateLimiter.delegate].
          */
         @JvmStatic
         fun getDefaultRestRateLimiter(rlConfig: RateLimitConfig): RestRateLimiter {
-            return PriorityGlobalRestRateLimiter(SequentialRestRateLimiter(rlConfig))
+            return PriorityGlobalRestRateLimiter(tokens = 50, SequentialRestRateLimiter(rlConfig))
         }
     }
 }
