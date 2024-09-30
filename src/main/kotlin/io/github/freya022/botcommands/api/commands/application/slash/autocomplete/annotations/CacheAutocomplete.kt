@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
@@ -24,13 +24,13 @@ import net.dv8tion.jda.api.entities.channel.Channel
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CacheAutocomplete(
     /**
-     * Whether the cache should be used even if [autocomplete cache is disabled][BConfigBuilder.disableAutocompleteCache].
+     * Whether the cache should be used even if [autocomplete cache is disabled][BApplicationConfig.disableAutocompleteCache].
      *
      * This could be useful if your autocomplete is heavy even in a development environment.
      *
      * @return `true` if the autocomplete results should be cached anyway
      *
-     * @see BConfigBuilder.disableAutocompleteCache
+     * @see BApplicationConfig.disableAutocompleteCache
      * @see AutocompleteCacheInfoBuilder.forceCache
      */
     val forceCache: Boolean = false,

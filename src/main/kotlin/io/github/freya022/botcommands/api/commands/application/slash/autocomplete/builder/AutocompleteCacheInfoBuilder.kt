@@ -1,16 +1,15 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 
 interface AutocompleteCacheInfoBuilder {
     /**
-     * Whether the cache should be used even if [autocomplete cache is disabled][BConfig.disableAutocompleteCache].
+     * Whether the cache should be used even if [autocomplete cache is disabled][BApplicationConfig.disableAutocompleteCache].
      *
      * This could be useful if your autocomplete is heavy even in a development environment.
      *
-     * @see BConfigBuilder.disableAutocompleteCache
+     * @see BApplicationConfig.disableAutocompleteCache
      * @see CacheAutocomplete.forceCache
      */
     var forceCache: Boolean
