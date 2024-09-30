@@ -10,13 +10,10 @@ import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.Singletons
-import io.github.freya022.botcommands.internal.core.service.getLazyElementErasure
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
-import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
-import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.collections.set
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -26,9 +23,6 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
-import kotlin.Lazy as KotlinLazy
-
-private val logger = KotlinLogging.logger { }
 
 /**
  * Either a class nested simple name, or a function signature for factories
@@ -272,44 +266,24 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultSer
     return null
 }
 
-private val warnedLazy = hashSetOf<KParameter>()
-
 /**
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
 internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
-    val type = parameter.type
-    //TODO remove
-    if (type.jvmErasure == KotlinLazy::class) {
-        if (warnedLazy.add(parameter)) {
-            logger.warn {
-                buildString {
-                    val (_, isNullable) = getLazyElementErasure(parameter)
-                    if (isNullable) {
-                        appendLine("Injection of nullable kotlin.Lazy will be removed in a future release, consider replacing your Lazy#value/Lazy#getValue call with ServiceContainer#getServiceOrNull")
-                    } else {
-                        appendLine("Injection of kotlin.Lazy will be removed in a future release and has been replaced with ${classRef<LazyService<*>>()}")
-                    }
-                    appendLine("Parameter: ${parameter.bestName} (#${parameter.index})")
-                    appendLine("Function: ${parameter.function.shortSignature}")
-                }
-            }
-        }
-    }
-
-    if (type.jvmErasure == KotlinLazy::class || type.jvmErasure == LazyService::class) {
+    val typeErasure = parameter.type.jvmErasure
+    if (typeErasure == LazyService::class) {
         return null //Lazy exception
-    } else if (type.jvmErasure == List::class) {
+    } else if (typeErasure == List::class) {
         return null //Might be empty if no service were available, which is ok
     }
 
     val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
     return if (requestedMandatoryName != null) {
-        canCreateService(requestedMandatoryName, type.jvmErasure)
+        canCreateService(requestedMandatoryName, typeErasure)
     } else {
         val serviceErrorByParameterName = parameter.name?.let { parameterName ->
-            canCreateService(parameterName, type.jvmErasure)
+            canCreateService(parameterName, typeErasure)
         }
 
         // Try to get a service with the parameter name
@@ -317,7 +291,7 @@ internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): Se
             return null
 
         // If no service by parameter name was found, try by type
-        canCreateService(type.jvmErasure)
+        canCreateService(typeErasure)
     }
 }
 

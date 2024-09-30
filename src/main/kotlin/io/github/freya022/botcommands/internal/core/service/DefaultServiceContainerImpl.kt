@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.*
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType.*
@@ -15,15 +14,12 @@ import io.github.freya022.botcommands.internal.core.service.provider.TimedInstan
 import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
 import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.lang.reflect.AnnotatedParameterizedType
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -370,24 +366,12 @@ internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KCl
     }
 }
 
-//TODO remove Lazy support
 /**
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
 internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): ServiceResult<*> {
     val type = parameter.type
-
-    fun getExplicitNamedKotlinLazyService(name: String?): ServiceResult<Lazy<*>> {
-        val (elementErasure, isNullable) = getLazyElementErasure(parameter)
-        return ServiceResult.pass(if (isNullable) lazyOrNull(elementErasure, name) else lazy(elementErasure, name))
-    }
-
-    fun getImplicitNamedKotlinLazyService(): ServiceResult<Lazy<*>> = ServiceResult.pass(lazy {
-        val (elementErasure, isNullable) = getLazyElementErasure(parameter)
-        val result = tryGetService(elementErasure, parameter.name).orElse { tryGetService(elementErasure) }
-        if (isNullable) result.getOrNull() else result.getOrThrow()
-    })
 
     fun getExplicitNamedLazyService(name: String): ServiceResult<LazyService<*>> {
         val elementErasure = type.findErasureOfAt<LazyService<*>>(0).jvmErasure
@@ -406,7 +390,7 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         }
 
         when (type.jvmErasure) {
-            Lazy::class -> getExplicitNamedKotlinLazyService(requestedMandatoryName)
+            Lazy::class -> throw UnsupportedOperationException("kotlin.Lazy is unsupported, please use LazyService instead")
             LazyService::class -> getExplicitNamedLazyService(requestedMandatoryName)
             else -> tryGetService(requestedMandatoryName, type.jvmErasure)
         }
@@ -414,8 +398,8 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
         // We need to try with the implicit name, and type-only
         when (type.jvmErasure) {
             List::class -> ServiceResult.pass(getInterfacedServices(type.findErasureOfAt<List<*>>(0).jvmErasure))
+            Lazy::class -> throw UnsupportedOperationException("kotlin.Lazy is unsupported, please use LazyService instead")
             // Implicit name then type-only
-            Lazy::class -> getImplicitNamedKotlinLazyService()
             LazyService::class -> getImplicitNamedLazyService()
             else -> tryGetService(type.jvmErasure, parameter.name).orElse { tryGetService(type.jvmErasure) }
         }
@@ -427,46 +411,7 @@ private inline fun <T : Any> ServiceResult<T>.orElse(crossinline block: () -> Se
     else -> block()
 }
 
-private fun <T : Any> ServiceContainer.lazy(type: KClass<T>, name: String?): Lazy<T> = when (name) {
-    null -> lazy(type)
-    else -> lazy(name, type)
-}
-
-@Suppress("DEPRECATION")
-private fun <T : Any> ServiceContainer.lazyOrNull(type: KClass<T>, name: String?): Lazy<T?> = when (name) {
-    null -> lazyOrNull(type)
-    else -> lazyOrNull(name, type)
-}
-
 private fun <T : Any> ServiceContainer.tryGetService(type: KClass<T>, name: String?): ServiceResult<T> = when (name) {
     null -> tryGetService(type)
     else -> tryGetService(name, type)
-}
-
-internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Boolean> {
-    // TODO Simplify then https://youtrack.jetbrains.com/issue/KT-63929 is fixed
-
-    // Due to https://youtrack.jetbrains.com/issue/KT-63929
-    // we need to get the annotations from the java type as they are not read by kotlin-reflect
-    val elementType = kParameter.type.arguments[0].type
-        ?: throwArgument("Star projections cannot be used in lazily injected service")
-    val function = kParameter.function
-    return if (!function.declaringClass.sourceFile.endsWith(".kt")) {
-        if (function is CallableReference)
-            throwInternal("Cannot find lazy element nullability on a callable reference")
-
-        val parameter = function.javaMethodOrConstructor.parameters[kParameter.index - 1] // -1 for instance parameter
-        val lazyType = parameter.annotatedType as? AnnotatedParameterizedType
-            ?: throwInternal("Unknown annotated type ${parameter.annotatedType.javaClass}")
-        val annotatedElementType = lazyType.annotatedActualTypeArguments.singleOrNull()
-            ?: throwInternal("No single argument in annotated type $lazyType: ${lazyType.annotatedActualTypeArguments.contentToString()}")
-        val annotations = annotatedElementType.annotations
-        val isNullable = annotations.any { it.annotationClass.jvmName.endsWith("Nullable") }
-                || annotations.any { it.annotationClass == Optional::class }
-
-        elementType.jvmErasure to isNullable
-    } else {
-        val isNullable = elementType.isMarkedNullable || elementType.hasAnnotationRecursive<Optional>()
-        elementType.jvmErasure to isNullable
-    }
 }
