@@ -3,7 +3,7 @@
 [bc-jitpack-shield]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [bc-jitpack-link]: https://jitpack.io/#freya022/BotCommands
 [bc-releases]: #getting-the-library
-[jda-version]: https://img.shields.io/badge/JDA%20Version-5.0.0+-important
+[jda-version]: https://img.shields.io/badge/JDA%20Version-5.1.1+-important
 [jda-releases]: https://github.com/discord-jda/JDA/releases
 [discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
 [discord-invite]: https://discord.gg/frpCcQfvTz
