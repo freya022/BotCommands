@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption

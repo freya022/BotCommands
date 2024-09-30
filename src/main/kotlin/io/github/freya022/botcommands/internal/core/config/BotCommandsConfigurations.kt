@@ -149,7 +149,6 @@ internal class BotCommandsApplicationConfiguration(
     override val baseNameToLocalesMap = localizations
 }
 
-@Suppress("DEPRECATION")
 @OptIn(DevConfig::class)
 internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApplicationConfiguration) = apply {
     enable = configuration.enable

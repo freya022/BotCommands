@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.api.components.builder
 
 import dev.minn.jda.ktx.util.ref

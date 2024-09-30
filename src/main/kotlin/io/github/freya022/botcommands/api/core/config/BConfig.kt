@@ -265,7 +265,6 @@ class BConfigBuilder internal constructor() : BConfig {
         componentsConfig.apply(block)
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
     @JvmSynthetic
     internal fun build(): BConfig {
         val logger = KotlinLogging.loggerOf<BConfig>()
