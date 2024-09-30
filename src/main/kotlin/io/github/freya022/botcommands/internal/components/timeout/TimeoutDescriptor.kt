@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
-import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerParameter
@@ -13,7 +12,6 @@ import io.github.freya022.botcommands.internal.core.reflection.MemberParamFuncti
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import kotlin.reflect.KClass
@@ -30,12 +28,6 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
             builderBlock = { function, parameter, declaredName ->
                 val optionParameter = OptionParameter.fromSelfAggregate(function, declaredName)
                 if (parameter.hasAnnotationRecursive<TimeoutData>()) {
-                    TimeoutHandlerOptionBuilderImpl(optionParameter)
-                } else if (/* TODO remove */ context.serviceContainer.canCreateWrappedService(parameter) != null) {
-                    // Fallback to timeout data if no service is found
-                    function.declaringClass.java.toUnwrappedLogger()
-                        .warn { "Timeout data parameter '$declaredName' must be annotated with ${annotationRef<TimeoutData>()}, it will be enforced in a later release, in ${function.shortSignature}" }
-
                     TimeoutHandlerOptionBuilderImpl(optionParameter)
                 } else {
                     val serviceError = context.serviceContainer.canCreateWrappedService(parameter)
