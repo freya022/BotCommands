@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.db
 
+import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -53,7 +54,7 @@ import java.time.Duration
  * in chronological order.
  *
  * @see InterfacedService @InterfacedService
- * @see BComponentsConfigBuilder.useComponents
+ * @see BComponentsConfigBuilder.enable
  * @see HikariSourceSupplier
  * @see Database
  * @see BlockingDatabase
