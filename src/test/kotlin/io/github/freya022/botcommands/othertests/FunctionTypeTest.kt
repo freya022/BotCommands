@@ -2,12 +2,10 @@
 
 package io.github.freya022.botcommands.othertests
 
-import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
-import io.github.freya022.botcommands.api.components.builder.PersistentHandlerBuilder
-import io.github.freya022.botcommands.api.components.builder.bindTo
+import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
@@ -34,7 +32,7 @@ object FunctionTypeTest {
         override fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): FakeActionableComponent =
             throw UnsupportedOperationException()
 
-        override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): FakeActionableComponent {
+        override fun bindTo(handlerName: String, data: List<Any?>): FakeActionableComponent {
             println("ok")
             return this
         }
@@ -46,7 +44,7 @@ object FunctionTypeTest {
     fun main(args: Array<String>) {
         val y: suspend (ButtonEvent, TimeUnit) -> String = { x, y -> "" }
 
-        x.bindTo(::handler, TimeUnit.MINUTES)
+        x.bindWith(::handler, TimeUnit.MINUTES)
 
         for (i in 2..10) {
             val types = (2..i).joinToString { "T$it" }
