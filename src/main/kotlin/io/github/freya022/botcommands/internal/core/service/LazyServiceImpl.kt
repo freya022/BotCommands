@@ -8,6 +8,7 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 private sealed class AbstractLazyService<out T : Any> : LazyService<T> {
+
     private val lock = ReentrantLock()
     private lateinit var service: T
 
@@ -39,85 +40,60 @@ private sealed class AbstractLazyService<out T : Any> : LazyService<T> {
     final override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
 }
 
-@PublishedApi
-internal class ImplicitNamedLazyServiceImpl<out T : Any>(
+private class ImplicitNamedLazyServiceImpl<out T : Any>(
     private val serviceContainer: ServiceContainer,
     private val type: KClass<T>,
     private val name: String?, // Null if the parameter has no name :(
-) : LazyService<T> {
-    private val lock = ReentrantLock()
-    private lateinit var service: T
+) : AbstractLazyService<T>() {
 
-    override fun canCreateService(): Boolean = getServiceError() == null
-
-    override fun getServiceError(): ServiceError? = lock.withLock {
-        // If the named service has no error, then return no error
-        if (name != null && serviceContainer.canCreateService(name, type) == null)
-            return@withLock null
-        else
-            serviceContainer.canCreateService(type)
-    }
-
-    override val value: T
-        get() = lock.withLock {
-            if (::service.isInitialized.not()) {
-                // Try to get the (implicitly) named service
-                if (name != null) {
-                    val namedServiceResult = serviceContainer.tryGetService(name, type)
-                    if (namedServiceResult.service != null) {
-                        service = namedServiceResult.service
-                        return@withLock service
-                    }
-                }
-
-                // Get the typed service, throw its exception otherwise, without the implicitly named one
-                val serviceResult = serviceContainer.tryGetService(type)
-                service = serviceResult.getOrThrow()
+    override fun retrieveServiceError(): ServiceError? {
+        // Try getting an implicitly named service, if it has no error, all good
+        if (name != null) {
+            val namedError = serviceContainer.canCreateService(name, type)
+            if (namedError == null) {
+                return null
             }
-
-            service
         }
 
-    override fun isInitialized(): Boolean = ::service.isInitialized
+        // Type only
+        return serviceContainer.canCreateService(type)
+    }
 
-    override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
+    override fun retrieveService(): T {
+        // Try to get the (implicitly) named service
+        if (name != null) {
+            val namedServiceResult = serviceContainer.tryGetService(name, type)
+            if (namedServiceResult.service != null) {
+                return namedServiceResult.service
+            }
+        }
+
+        // Get the typed service, throw its exception otherwise, without the implicitly named one
+        return serviceContainer.tryGetService(type).getOrThrow()
+    }
 }
 
-@PublishedApi
-internal class LazyServiceImpl<out T : Any>(
+private class LazyServiceImpl<out T : Any>(
     private val serviceContainer: ServiceContainer,
     private val type: KClass<T>,
     private val name: String?,
-) : LazyService<T> {
-    private val lock = ReentrantLock()
-    private lateinit var service: T
+) : AbstractLazyService<T>() {
 
-    override fun canCreateService(): Boolean = getServiceError() == null
-
-    override fun getServiceError(): ServiceError? = lock.withLock {
-        if (name != null) {
+    override fun retrieveServiceError(): ServiceError? {
+        return if (name != null) {
             serviceContainer.canCreateService(name, type)
         } else {
             serviceContainer.canCreateService(type)
         }
     }
 
-    override val value: T
-        get() = lock.withLock {
-            if (::service.isInitialized.not()) {
-                service = if (name != null) {
-                    serviceContainer.getService(name, type)
-                } else {
-                    serviceContainer.getService(type)
-                }
-            }
-
-            service
+    override fun retrieveService(): T {
+        return if (name != null) {
+            serviceContainer.getService(name, type)
+        } else {
+            serviceContainer.getService(type)
         }
-
-    override fun isInitialized(): Boolean = ::service.isInitialized
-
-    override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
+    }
 }
 
 private class FallbackLazyServiceImpl<out T : Any>(
@@ -142,6 +118,9 @@ private class FallbackLazyServiceImpl<out T : Any>(
         return service
     }
 }
+
+internal fun <T : Any> ServiceContainer.implicitlyNamedLazyService(clazz: KClass<T>, name: String?): LazyService<T> =
+    ImplicitNamedLazyServiceImpl(this, clazz, name)
 
 @PublishedApi
 internal fun <T : Any> ServiceContainer.lazyService(clazz: KClass<T>, name: String?): LazyService<T> =

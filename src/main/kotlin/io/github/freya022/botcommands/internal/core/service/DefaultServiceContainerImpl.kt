@@ -409,7 +409,7 @@ internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): Servi
 
     fun getImplicitNamedLazyService(): ServiceResult<LazyService<*>> {
         val elementErasure = type.findErasureOfAt<LazyService<*>>(0).jvmErasure
-        return ServiceResult.pass(ImplicitNamedLazyServiceImpl(this, elementErasure, parameter.name))
+        return ServiceResult.pass(implicitlyNamedLazyService(elementErasure, parameter.name))
     }
 
     val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
