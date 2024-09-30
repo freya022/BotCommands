@@ -17,44 +17,6 @@ interface TextCommandsContext {
     val rootCommands: Collection<TopLevelTextCommandInfo>
 
     /**
-     * Returns the full list of prefixes used to trigger the bot.
-     *
-     * This does not include ping-as-prefix.
-     *
-     * @return Full list of prefixes
-     */
-    @Deprecated(
-        message = "Read directly on BTextConfig if necessary, this property doesn't mean the bot always responds to these prefixes",
-        replaceWith = ReplaceWith(expression = "textConfig.prefixes")
-    )
-    val prefixes: List<String>
-        get() = textConfig.prefixes
-
-    /**
-     * @return `true` if the bot responds to its own mention.
-     */
-    @Deprecated(
-        message = "Read directly on BTextConfig if necessary, this property doesn't mean the bot always responds to pings",
-        replaceWith = ReplaceWith(expression = "textConfig.usePingAsPrefix")
-    )
-    val isPingAsPrefix: Boolean
-        get() = textConfig.usePingAsPrefix
-
-    /**
-     * Returns the preferred prefix for triggering this bot,
-     * or `null` if [BTextConfig.usePingAsPrefix] is disabled and no prefix was added in [BTextConfig.prefixes].
-     */
-    @Deprecated(
-        message = "Now requires a GuildMessageChannel",
-        replaceWith = ReplaceWith(expression = "this.getPreferredPrefix(channel)")
-    )
-    @Suppress("DEPRECATION")
-    fun getPreferredPrefix(jda: JDA): String? = when {
-        isPingAsPrefix -> jda.selfUser.asMention + " "
-        else -> prefixes.firstOrNull()
-    }
-
-    /**
      * Returns the [configured prefixes][BTextConfig.prefixes] and the [bot mention][BTextConfig.usePingAsPrefix] if enabled.
      *
      * Requires [JDA] to be built.
