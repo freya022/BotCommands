@@ -7,6 +7,38 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
+private sealed class AbstractLazyService<out T : Any> : LazyService<T> {
+    private val lock = ReentrantLock()
+    private lateinit var service: T
+
+    final override fun canCreateService(): Boolean = getServiceError() == null
+
+    final override fun getServiceError(): ServiceError? = lock.withLock {
+        retrieveServiceError()
+    }
+
+    abstract fun retrieveServiceError(): ServiceError?
+
+    final override val value: T
+        get() {
+            if (::service.isInitialized)
+                return service
+
+            return lock.withLock {
+                if (::service.isInitialized.not())
+                    service = retrieveService()
+
+                service
+            }
+        }
+
+    abstract fun retrieveService(): T
+
+    final override fun isInitialized(): Boolean = ::service.isInitialized
+
+    final override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
+}
+
 @PublishedApi
 internal class ImplicitNamedLazyServiceImpl<out T : Any>(
     private val serviceContainer: ServiceContainer,
@@ -87,3 +119,34 @@ internal class LazyServiceImpl<out T : Any>(
 
     override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
 }
+
+private class FallbackLazyServiceImpl<out T : Any>(
+    private val serviceContainer: ServiceContainer,
+    private val type: KClass<T>,
+    private val name: String?,
+    fallbackSupplier: () -> T,
+) : AbstractLazyService<T>() {
+    private var fallbackSupplier: (() -> T)? = fallbackSupplier
+
+    override fun retrieveServiceError(): ServiceError? = null
+
+    override fun retrieveService(): T {
+        val service = if (name != null) {
+            serviceContainer.getServiceOrNull(name, type)
+        } else {
+            serviceContainer.getServiceOrNull(type)
+        } ?: fallbackSupplier!!()
+
+        fallbackSupplier = null
+
+        return service
+    }
+}
+
+@PublishedApi
+internal fun <T : Any> ServiceContainer.lazyService(clazz: KClass<T>, name: String?): LazyService<T> =
+    LazyServiceImpl(this, clazz, name)
+
+@PublishedApi
+internal fun <T : Any, R : T> ServiceContainer.lazyServiceOrElse(clazz: KClass<T>, name: String?, block: () -> R): LazyService<T> =
+    FallbackLazyServiceImpl(this, clazz, name, block)
