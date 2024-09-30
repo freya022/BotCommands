@@ -23,15 +23,11 @@ internal class BotCommandsCoreConfiguration(
     override val classes: Set<Class<*>> = emptySet(),
     override val disableExceptionsInDMs: Boolean = false,
     override val enableOwnerBypass: Boolean = false,
-    @Name("disableAutocompleteCache")
-    @Suppress("PropertyName")
-    internal val _disableAutocompleteCache: Boolean? = null,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
     override val ignoreRestRateLimiter: Boolean = false,
 ) : BConfig {
     override val classGraphProcessors: Nothing get() = unusable()
-    override val debugConfig: Nothing get() = unusable()
     override val serviceConfig: Nothing get() = unusable()
     override val databaseConfig: Nothing get() = unusable()
     override val localizationConfig: Nothing get() = unusable()
@@ -43,15 +39,12 @@ internal class BotCommandsCoreConfiguration(
     override val coroutineScopesConfig: Nothing get() = unusable()
 }
 
-@OptIn(DevConfig::class)
 internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfiguration) = apply {
     predefinedOwnerIds += configuration.predefinedOwnerIds
     packages += configuration.packages
     classes += configuration.classes
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
     enableOwnerBypass = configuration.enableOwnerBypass
-    @Suppress("DEPRECATION")
-    configuration._disableAutocompleteCache?.let { disableAutocompleteCache = it }
     ignoredIntents += configuration.ignoredIntents
     ignoredEventIntents += configuration.ignoredEventIntents
     ignoreRestRateLimiter = configuration.ignoreRestRateLimiter
@@ -125,15 +118,6 @@ internal class BotCommandsApplicationConfiguration(
     override val slashGuildIds: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
-    @Name("onlineAppCommandCheckEnabled")
-    @Suppress("PropertyName")
-    internal val _onlineAppCommandCheckEnabled: Boolean? = null,
-    @Name("diffEngine")
-    @Suppress("PropertyName")
-    internal val _diffEngine: DiffEngine? = null,
-    @Name("logApplicationCommandData")
-    @Suppress("PropertyName")
-    internal val _logApplicationCommandData: Boolean? = null,
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap(),
     override val logMissingLocalizationKeys: Boolean = false,
@@ -187,9 +171,6 @@ internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApp
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
     configureCache(configuration)
-    configuration._onlineAppCommandCheckEnabled?.let { onlineAppCommandCheckEnabled = it }
-    configuration._diffEngine?.let { diffEngine = it }
-    configuration._logApplicationCommandData?.let { logApplicationCommandData = it }
     forceGuildCommands = configuration.forceGuildCommands
     configuration.baseNameToLocalesMap.forEach(::addLocalizations)
     logMissingLocalizationKeys = configuration.logMissingLocalizationKeys
