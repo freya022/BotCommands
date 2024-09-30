@@ -46,11 +46,6 @@ internal class TextCommandsContextImpl internal constructor(
             return textPrefixSupplier!!.getPrefixes(channel)
         }
 
-        if (settingsProvider != null) {
-            val prefixes = settingsProvider.getPrefixes(channel.guild)
-            if (!prefixes.isNullOrEmpty()) return prefixes
-        }
-
         val prefixes = textConfig.prefixes
         return when (textConfig.usePingAsPrefix) {
             false -> prefixes
