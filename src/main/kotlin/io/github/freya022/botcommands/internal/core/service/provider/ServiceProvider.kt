@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
-import io.github.freya022.botcommands.api.core.service.LazyService
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
@@ -10,6 +8,7 @@ import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.Singletons
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
@@ -264,35 +263,6 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultSer
     }
 
     return null
-}
-
-/**
- * NOTE: Lazy services do not get checked if they can be instantiated,
- * this aligns with the behavior of a user using `ServiceContainer.lazy`.
- */
-internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
-    val typeErasure = parameter.type.jvmErasure
-    if (typeErasure == LazyService::class) {
-        return null //Lazy exception
-    } else if (typeErasure == List::class) {
-        return null //Might be empty if no service were available, which is ok
-    }
-
-    val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
-    return if (requestedMandatoryName != null) {
-        canCreateService(requestedMandatoryName, typeErasure)
-    } else {
-        val serviceErrorByParameterName = parameter.name?.let { parameterName ->
-            canCreateService(parameterName, typeErasure)
-        }
-
-        // Try to get a service with the parameter name
-        if (serviceErrorByParameterName == null)
-            return null
-
-        // If no service by parameter name was found, try by type
-        canCreateService(typeErasure)
-    }
 }
 
 internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {

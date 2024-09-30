@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.internal.commands.application.autobuilder.
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
