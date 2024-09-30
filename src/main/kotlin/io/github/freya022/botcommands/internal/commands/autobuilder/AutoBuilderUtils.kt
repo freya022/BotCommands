@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
@@ -72,9 +71,6 @@ internal fun runFiltered(
     if (!checkDeclarationFilter(manager, func, path, commandId))
         return // Already logged
 
-    if (commandId != null && !checkCommandId(manager, instance, commandId, path))
-        return skip(path, "Guild does not support that command ID")
-
     val testState = checkTestCommand(manager, func, scope, manager.context)
     if (scope.isGlobal && testState != TestState.NO_ANNOTATION)
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
@@ -105,19 +101,6 @@ internal fun checkDeclarationFilter(
             }
         }
     }
-    return true
-}
-
-@Suppress("DEPRECATION")
-internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
-    if (manager is GuildApplicationCommandManager) {
-        val guildIds = instance.getGuildsForCommandId(commandId, path) ?: return true
-
-        if (manager.guild.idLong !in guildIds) {
-            return false //Don't push command if it isn't allowed
-        }
-    }
-
     return true
 }
 
