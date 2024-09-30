@@ -42,6 +42,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: AbstractApplicationCommandManager
 ) {
+
     private val updateRateLimiter: ApplicationCommandsUpdateRateLimiter = context.getService()
 
     private val commandsCache: ApplicationCommandsCache
@@ -53,7 +54,7 @@ internal class ApplicationCommandsUpdater private constructor(
         cacheConfig = cacheFactory.cacheConfig
     }
 
-    internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands.filterCommands()
+    internal val applicationCommands: Collection<TopLevelApplicationCommandInfo> = manager.allApplicationCommands
     private val commandData: Collection<CommandData>
     internal inline val commandsCount: Int get() = commandData.size
 
@@ -206,21 +207,19 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun mapSlashCommands(commands: Collection<TopLevelSlashCommandInfo>): List<SlashCommandData> =
-        commands
-            .filterCommands()
-            .mapCommands { info: TopLevelSlashCommandInfo ->
-                val topLevelData = Commands.slash(info.name, info.description).configureTopLevel(info)
-                if (info.isTopLevelCommandOnly) {
-                    topLevelData.addOptions(info.getDiscordOptions(guild))
-                } else {
-                    topLevelData.addSubcommandGroups(
-                        info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData()
-                    )
-                    topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
-                }
-
-                topLevelData
+        commands.mapCommands { info: TopLevelSlashCommandInfo ->
+            val topLevelData = Commands.slash(info.name, info.description).configureTopLevel(info)
+            if (info.isTopLevelCommandOnly) {
+                topLevelData.addOptions(info.getDiscordOptions(guild))
+            } else {
+                topLevelData.addSubcommandGroups(
+                    info.subcommandGroups.values.mapToSubcommandGroupData()
+                )
+                topLevelData.addSubcommands(info.subcommands.values.mapToSubcommandData())
             }
+
+            topLevelData
+        }
 
     private fun Collection<SlashSubcommandGroupInfo>.mapToSubcommandGroupData() =
         this.mapCommands { subcommandGroupInfo ->
@@ -239,11 +238,9 @@ internal class ApplicationCommandsUpdater private constructor(
         commands: Collection<TopLevelApplicationCommandInfo>,
         type: Command.Type
     ): List<CommandData> {
-        return commands
-            .filterCommands()
-            .mapCommands { info: TopLevelApplicationCommandInfo ->
-                Commands.context(type, info.name).configureTopLevel(info)
-            }
+        return commands.mapCommands { info: TopLevelApplicationCommandInfo ->
+            Commands.context(type, info.name).configureTopLevel(info)
+        }
     }
 
     private inline fun <T, R> Collection<T>.mapCommands(
@@ -259,17 +256,6 @@ internal class ApplicationCommandsUpdater private constructor(
                 e.rethrowAt(::ApplicationCommandUpdateException, "An exception occurred while pushing '${it.path}'", it.declarationSite)
             }
         }
-    }
-
-    private fun <T : INamedCommand> Collection<T>.filterCommands() = filter { info ->
-        context.settingsProvider?.let { settings ->
-            guild?.let { guild ->
-                @Suppress("DEPRECATION")
-                return@filter settings.getGuildCommands(guild).filter.test(info.path)
-            }
-        }
-
-        return@filter true
     }
 
     private fun <D : CommandData> D.configureTopLevel(info: TopLevelApplicationCommandInfo): D = apply {
