@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core
 
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -43,22 +42,6 @@ object BotCommands {
     @JvmName("create")
     fun createJava(configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
         return create(configConsumer = configConsumer)
-    }
-
-    /**
-     * Creates a new instance of the framework.
-     *
-     * @return The context for the newly created framework instance,
-     * while this is returned, using it *usually* is not a good idea,
-     * your architecture should rely on [dependency injection](https://bc.freya02.dev/3.X/using-botcommands/dependency-injection/)
-     * and events instead.
-     *
-     * @see BotCommands
-     */
-    @Deprecated("Event manager is set by a service implementing ICoroutineEventManagerSupplier")
-    @JvmSynthetic
-    fun create(manager: CoroutineEventManager, configConsumer: ReceiverConsumer<BConfigBuilder>): BContext {
-        return build(BConfigBuilder().apply(configConsumer).build())
     }
 
     /**
