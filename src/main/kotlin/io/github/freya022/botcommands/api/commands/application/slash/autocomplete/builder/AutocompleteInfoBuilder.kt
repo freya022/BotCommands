@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
