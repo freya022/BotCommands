@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.events.*
@@ -10,15 +8,8 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.localization.DefaultMessages
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.DiscordLocale
-import net.dv8tion.jda.api.interactions.Interaction
-import kotlin.reflect.KFunction
 
 /**
  * Main context for BotCommands framework.
@@ -64,10 +55,6 @@ interface BContext {
         get() = config.componentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
         get() = config.coroutineScopesConfig
-    @Suppress("DEPRECATION")
-    @Deprecated("For removal", replaceWith = ReplaceWith(""))
-    val debugConfig: BDebugConfig
-        get() = config.debugConfig
     val serviceConfig: BServiceConfig
         get() = config.serviceConfig
     val textConfig: BTextConfig
@@ -121,104 +108,12 @@ interface BContext {
     val botOwners: BotOwners
 
     /**
-     * Returns the IDs of the bot owners.
-     *
-     * @see BotOwners.ownerIds
-     */
-    @Deprecated(
-        message = "Get from BotOwners directly",
-        replaceWith = ReplaceWith("botOwners.ownerIds")
-    )
-    val ownerIds: Collection<Long> get() = botOwners.ownerIds
-
-    /**
-     * Returns the [SettingsProvider] service, or `null` if none exists.
-     *
-     * @see SettingsProvider
-     */
-    @Suppress("removal", "DEPRECATION")
-    val settingsProvider: SettingsProvider?
-
-    /**
      * Returns the [global exception handler][GlobalExceptionHandler],
      * used to handle errors caught by the framework, or `null` if none exists.
      *
      * @see GlobalExceptionHandler
      */
     val globalExceptionHandler: GlobalExceptionHandler?
-
-    /**
-     * Tells whether this user is an owner or not.
-     *
-     * @param userId ID of the user
-     *
-     * @return `true` if the user is an owner
-     */
-    @Deprecated(
-        message = "Prefer using BotOwners#isOwner/contains",
-        replaceWith = ReplaceWith(
-            expression = "UserSnowflake.fromId(userId) in botOwners",
-            imports = ["net.dv8tion.jda.api.entities.UserSnowflake"]
-        )
-    )
-    fun isOwner(userId: Long): Boolean = UserSnowflake.fromId(userId) in botOwners
-
-    /**
-     * Returns the [DefaultMessages] instance for the provided Discord locale.
-     *
-     * @param locale The locale to get the messages in
-     */
-    @Deprecated(
-        message = "Get from DefaultMessagesFactory",
-        replaceWith = ReplaceWith(
-            expression = "this.getService<DefaultMessagesFactory>().get(locale.toLocale())",
-            imports = [
-                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
-                "io.github.freya022.botcommands.api.core.service.getService"
-            ]
-        )
-    )
-    fun getDefaultMessages(locale: DiscordLocale): DefaultMessages =
-        getService<DefaultMessagesFactory>().get(locale.toLocale())
-
-    /**
-     * Returns the [DefaultMessages] instance for this Guild's locale
-     *
-     * @param guild The Guild to take the locale from
-     */
-    @Deprecated(
-        message = "Get from DefaultMessagesFactory, using the message event",
-        replaceWith = ReplaceWith(
-            expression = "this.getService<DefaultMessagesFactory>().get(event)",
-            imports = [
-                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
-                "io.github.freya022.botcommands.api.core.service.getService"
-            ]
-        )
-    )
-    @Suppress("DEPRECATION")
-    fun getDefaultMessages(guild: Guild?): DefaultMessages {
-        return getService<DefaultMessagesFactory>().get(getEffectiveLocale(guild).toLocale())
-    }
-
-    /**
-     * Returns the [DefaultMessages] instance for this user's locale
-     *
-     * @param interaction The Interaction to take the user's locale from
-     */
-    @Deprecated(
-        message = "Get from DefaultMessagesFactory",
-        replaceWith = ReplaceWith(
-            expression = "this.getService<DefaultMessagesFactory>().get(interaction)",
-            imports = [
-                "io.github.freya022.botcommands.api.localization.DefaultMessagesFactory",
-                "io.github.freya022.botcommands.api.core.service.getService"
-            ]
-        )
-    )
-    fun getDefaultMessages(interaction: Interaction): DefaultMessages {
-        return getService<DefaultMessagesFactory>().get(interaction)
-    }
 
     /**
      * Sends an exception message to the [bot owners][BotOwners].
@@ -247,69 +142,16 @@ interface BContext {
     fun getExceptionContent(message: String, t: Throwable?, extraContext: Map<String, Any?>): String
 
     /**
-     * Returns the [DiscordLocale] for the specified [Guild]
-     *
-     * @param guild The [Guild] in which to take the [DiscordLocale] from
-     *
-     * @return The [DiscordLocale] of the [Guild]
-     */
-    @Suppress("DEPRECATION")
-    @Deprecated("Replaced with TextCommandLocaleProvider")
-    fun getEffectiveLocale(guild: Guild?): DiscordLocale {
-        if (guild != null && guild.features.contains("COMMUNITY")) {
-            return guild.locale
-        }
-
-        return settingsProvider?.getLocale(guild)
-            //Discord default
-            ?: return DiscordLocale.ENGLISH_US
-    }
-
-    //region Text commands
-    /**
      * Returns the [TextCommandsContext] service.
      *
      * @see TextCommandsContext
      */
     val textCommandsContext: TextCommandsContext
-    //endregion
 
-    //region Application commands
     /**
      * Returns the application commands context, this is for user/message/slash commands and related methods
      *
      * @return The [ApplicationCommandsContext] object
      */
     val applicationCommandsContext: ApplicationCommandsContext
-
-    /**
-     * Invalidates the autocomplete cache of the specified autocomplete handler.
-     *
-     * This means that the cache of this autocomplete handler will be fully cleared.
-     *
-     * @param autocompleteHandlerName The name of the autocomplete handler,
-     * supplied at [AutocompleteHandler.name] or [AutocompleteManager.autocomplete]
-     */
-    @Deprecated(
-        message = "Moved to ApplicationCommandsContext",
-        replaceWith = ReplaceWith(expression = "applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandlerName)")
-    )
-    fun invalidateAutocompleteCache(autocompleteHandlerName: String) =
-        applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandlerName)
-
-    /**
-     * Invalidates the autocomplete cache of the specified autocomplete handler.
-     *
-     * This means that the cache of this autocomplete handler will be fully cleared.
-     *
-     * @param autocompleteHandler The autocomplete handler, supplied at [AutocompleteManager.autocomplete]
-     */
-    @Deprecated(
-        message = "Moved to ApplicationCommandsContext",
-        replaceWith = ReplaceWith(expression = "applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)")
-    )
-    @JvmSynthetic
-    fun invalidateAutocompleteCache(autocompleteHandler: KFunction<Collection<Any>>) =
-        applicationCommandsContext.invalidateAutocompleteCache(autocompleteHandler)
-    //endregion
 }

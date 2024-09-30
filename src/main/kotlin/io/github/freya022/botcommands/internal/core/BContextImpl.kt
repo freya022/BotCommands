@@ -1,8 +1,11 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.core.*
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BContext.Status
+import io.github.freya022.botcommands.api.core.BotOwners
+import io.github.freya022.botcommands.api.core.EventDispatcher
+import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -32,8 +35,6 @@ internal class BContextImpl internal constructor(
     override var status: Status = Status.PRE_LOAD
         private set
 
-    @Suppress("removal", "DEPRECATION")
-    override val settingsProvider: SettingsProvider? by lazy { serviceContainer.getServiceOrNull() }
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
     override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
