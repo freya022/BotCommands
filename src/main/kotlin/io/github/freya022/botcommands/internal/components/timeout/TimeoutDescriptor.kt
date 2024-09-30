@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.options.builder.ServiceOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.MemberParamFunction
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass

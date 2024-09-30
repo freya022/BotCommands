@@ -370,6 +370,35 @@ internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KCl
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
+internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
+    val typeErasure = parameter.type.jvmErasure
+    if (typeErasure == LazyService::class) {
+        return null //Lazy exception
+    } else if (typeErasure == List::class) {
+        return null //Might be empty if no service were available, which is ok
+    }
+
+    val requestedMandatoryName = parameter.findAnnotationRecursive<ServiceName>()?.value
+    return if (requestedMandatoryName != null) {
+        canCreateService(requestedMandatoryName, typeErasure)
+    } else {
+        val serviceErrorByParameterName = parameter.name?.let { parameterName ->
+            canCreateService(parameterName, typeErasure)
+        }
+
+        // Try to get a service with the parameter name
+        if (serviceErrorByParameterName == null)
+            return null
+
+        // If no service by parameter name was found, try by type
+        canCreateService(typeErasure)
+    }
+}
+
+/**
+ * NOTE: Lazy services do not get checked if they can be instantiated,
+ * this aligns with the behavior of a user using `ServiceContainer.lazy`.
+ */
 internal fun ServiceContainer.tryGetWrappedService(parameter: KParameter): ServiceResult<*> {
     val type = parameter.type
 

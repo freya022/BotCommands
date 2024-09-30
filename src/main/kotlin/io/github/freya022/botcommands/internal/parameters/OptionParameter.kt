@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.core.options.builder.CustomOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.ServiceOptionBuilderImpl
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.findDeclarationName

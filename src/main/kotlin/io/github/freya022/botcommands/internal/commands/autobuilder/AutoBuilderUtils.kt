@@ -20,7 +20,7 @@ import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KClass

@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBu
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
-import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
