@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.core
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
-import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.events.*
@@ -273,64 +272,6 @@ interface BContext {
      * @see TextCommandsContext
      */
     val textCommandsContext: TextCommandsContext
-
-    /**
-     * Returns the full list of prefixes used to trigger the bot.
-     *
-     * This does not include ping-as-prefix.
-     *
-     * @return Full list of prefixes
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.prefixes"))
-    val prefixes: List<String>
-        @Suppress("DEPRECATION")
-        get() = textCommandsContext.prefixes
-
-    /**
-     * @return `true` if the bot responds to its own mention.
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.isPingAsPrefix"))
-    val isPingAsPrefix: Boolean
-        @Suppress("DEPRECATION")
-        get() = textCommandsContext.isPingAsPrefix
-
-    /**
-     * Returns the preferred prefix for triggering this bot,
-     * or `null` if [BTextConfig.usePingAsPrefix] is disabled and no prefix was added in [BTextConfig.prefixes].
-     *
-     * @return The preferred prefix
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.getPreferredPrefix(jda)"))
-    val prefix: String?
-        @Suppress("DEPRECATION")
-        get() = textCommandsContext.getPreferredPrefix(jda)
-
-    /**
-     * Returns the [DefaultEmbedSupplier] service.
-     *
-     * @see DefaultEmbedSupplier
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.defaultEmbedSupplier"))
-    val defaultEmbedSupplier: DefaultEmbedSupplier
-        get() = textCommandsContext.defaultEmbedSupplier
-
-    /**
-     * Returns the [DefaultEmbedFooterIconSupplier] service.
-     *
-     * @see DefaultEmbedFooterIconSupplier
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.defaultEmbedFooterIconSupplier"))
-    val defaultEmbedFooterIconSupplier: DefaultEmbedFooterIconSupplier
-        get() = textCommandsContext.defaultEmbedFooterIconSupplier
-
-    /**
-     * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it
-     *
-     * @return The help builder consumer
-     */
-    @Deprecated("Moved to TextCommandsContext", ReplaceWith("textCommandsContext.helpBuilderConsumer"))
-    val helpBuilderConsumer: HelpBuilderConsumer?
-        get() = textCommandsContext.helpBuilderConsumer
     //endregion
 
     //region Application commands
