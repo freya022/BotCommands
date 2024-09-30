@@ -22,6 +22,13 @@ interface OptionAggregateBuilderContainer<T : OptionAggregateBuilder<T>> {
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit = {})
 }
 
+/**
+ * Declares an aggregate creating an instance of the specified [inline class][clazz],
+ * which can only accept a single option.
+ *
+ * @param declaredName Name of the declared parameter which receives the value class
+ * @param clazz        The inline class type
+ */
 fun <T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
     declaredName: String,
     clazz: KClass<*>,
@@ -34,4 +41,18 @@ fun <T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineCla
             ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
         block(parameterName)
     }
+}
+
+/**
+ * Declares an aggregate creating an instance of the specified [inline class][T],
+ * which can only accept a single option.
+ *
+ * @param T            The inline class type
+ * @param declaredName Name of the declared parameter which receives the value class
+ */
+inline fun <reified T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
+    declaredName: String,
+    noinline block: T.(valueName: String) -> Unit = {},
+) {
+    return inlineClassAggregate(declaredName, T::class, block)
 }
