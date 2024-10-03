@@ -3,8 +3,6 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.Event
-import kotlin.reflect.KParameter
-import kotlin.reflect.KType
 
 /**
  * Parameter resolver for any command/handler parameters which aren't resolvable by other resolvers.
@@ -21,8 +19,10 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns an object.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler will throw.
+     * The behavior when this returns `null` is the same as the "input" resolvers,
+     * for example, [TextParameterResolver][TextParameterResolver.resolve],
+     * [SlashParameterResolver][SlashParameterResolver.resolve] or
+     * [ComponentParameterResolver][ComponentParameterResolver.resolve].
      *
      * @param executable Basic information about the function using this resolver,
      * may be any application command, text command, etc...
@@ -34,8 +34,10 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns an object.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
-     * or [optional][KParameter.isOptional], then the handler will throw.
+     * The behavior when this returns `null` is the same as the "input" resolvers,
+     * for example, [TextParameterResolver][TextParameterResolver.resolveSuspend],
+     * [SlashParameterResolver][SlashParameterResolver.resolveSuspend] or
+     * [ComponentParameterResolver][ComponentParameterResolver.resolveSuspend].
      *
      * @param executable Basic information about the function using this resolver
      * @param event      The event this resolver is called from
