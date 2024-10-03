@@ -64,7 +64,7 @@ class ButtonFactory internal constructor(
     /**
      * Creates an ephemeral button builder.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -75,7 +75,7 @@ class ButtonFactory internal constructor(
     /**
      * Creates an ephemeral button.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -86,7 +86,7 @@ class ButtonFactory internal constructor(
     /**
      * Creates a persistent button builder.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */
@@ -97,7 +97,7 @@ class ButtonFactory internal constructor(
     /**
      * Creates a persistent button.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */

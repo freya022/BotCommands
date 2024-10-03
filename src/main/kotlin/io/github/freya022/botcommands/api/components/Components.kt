@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.components
 
-import io.github.freya022.botcommands.api.components.Components.Companion.defaultTimeout
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -16,7 +15,7 @@ import java.time.Duration as JavaDuration
  *
  * Every component can either be persistent or ephemeral, all components can be configured to:
  *  - Be used once
- *  - Have timeouts, [a default timeout][defaultTimeout] is set **on ephemeral components**,
+ *  - Have timeouts, a default timeout can be configured,
  *  which can be overridden, or set by the `timeout` methods.
  *  - Have handlers
  *  - Have constraints (checks before the button can be used)
@@ -50,24 +49,89 @@ import java.time.Duration as JavaDuration
 class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     companion object {
         /**
-         * The default timeout for components and component groups.
+         * The default timeout for *ephemeral* components and component groups.
          *
-         * Non-positive and infinite durations are considered as a disabled timeout.
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
          */
-        @JvmSynthetic
-        var defaultTimeout: Duration = 15.minutes
-
-        @JvmStatic
-        fun getDefaultTimeout(): JavaDuration = defaultTimeout.toJavaDuration()
+        @Deprecated("Renamed to defaultEphemeralTimeout", ReplaceWith("defaultEphemeralTimeout"))
+        var defaultTimeout: Duration
+            @JvmSynthetic
+            get() = defaultEphemeralTimeout!!
+            @JvmSynthetic
+            set(value) {
+                defaultEphemeralTimeout = value
+            }
 
         /**
-         * Sets the default timeout for components and component groups.
+         * The default timeout for *ephemeral* components and component groups.
          *
-         * Non-positive and infinite durations are considered as a disabled timeout.
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
          */
         @JvmStatic
-        fun setDefaultTimeout(defaultTimeout: JavaDuration) {
-            this.defaultTimeout = defaultTimeout.toKotlinDuration()
+        @Deprecated("Renamed to getDefaultTimeout", ReplaceWith("getDefaultTimeout()"))
+        fun getDefaultTimeout(): JavaDuration = defaultEphemeralTimeout!!.toJavaDuration()
+
+        /**
+         * Sets the default timeout for *ephemeral* components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmStatic
+        @Deprecated("Renamed to setDefaultTimeout", ReplaceWith("setDefaultTimeout(timeout)"))
+        fun setDefaultTimeout(timeout: JavaDuration) {
+            defaultEphemeralTimeout = timeout.toKotlinDuration()
+        }
+
+        /**
+         * The default timeout for ephemeral components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmSynthetic
+        var defaultEphemeralTimeout: Duration? = 15.minutes
+
+        /**
+         * The default timeout for ephemeral components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmStatic
+        fun getDefaultEphemeralTimeout(): JavaDuration? = defaultEphemeralTimeout?.toJavaDuration()
+
+        /**
+         * Sets the default timeout for ephemeral components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmStatic
+        fun setDefaultEphemeralTimeout(timeout: JavaDuration?) {
+            defaultEphemeralTimeout = timeout?.toKotlinDuration()
+        }
+
+        /**
+         * The default timeout for persistent components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmSynthetic
+        var defaultPersistentTimeout: Duration? = null
+
+        /**
+         * The default timeout for persistent components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmStatic
+        fun getDefaultPersistentTimeout(): JavaDuration? = defaultPersistentTimeout?.toJavaDuration()
+
+        /**
+         * Sets the default timeout for persistent components and component groups.
+         *
+         * `null`, non-positive and infinite durations are considered as a disabled timeout.
+         */
+        @JvmStatic
+        fun setDefaultPersistentTimeout(timeout: JavaDuration?) {
+            defaultPersistentTimeout = timeout?.toKotlinDuration()
         }
     }
 }

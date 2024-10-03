@@ -19,7 +19,7 @@ class ComponentGroupFactory internal constructor(
     /**
      * Creates an ephemeral component group builder.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -30,7 +30,7 @@ class ComponentGroupFactory internal constructor(
     /**
      * Creates an ephemeral component group.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -41,7 +41,7 @@ class ComponentGroupFactory internal constructor(
     /**
      * Creates a persistent component group builder.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */
@@ -52,7 +52,7 @@ class ComponentGroupFactory internal constructor(
     /**
      * Creates a persistent component group.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */

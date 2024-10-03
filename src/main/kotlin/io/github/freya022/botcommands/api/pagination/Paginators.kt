@@ -36,7 +36,7 @@ import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
  *
  * ### Timeout
  *
- * Paginators have a default timeout set to [Components.defaultTimeout],
+ * Paginators have a default timeout set to [Components.defaultEphemeralTimeout],
  * which can be modified using [AbstractPaginationBuilder.setTimeout].
  *
  * You can also disable the timeout using [AbstractPaginationBuilder.noTimeout],

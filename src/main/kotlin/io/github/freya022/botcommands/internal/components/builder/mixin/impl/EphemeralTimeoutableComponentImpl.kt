@@ -15,9 +15,8 @@ internal class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableCompon
 ) : BuilderInstanceHolderImpl<T>(),
     IEphemeralTimeoutableComponentMixin<T> {
 
-    override var timeoutDuration: Duration? = Components.defaultTimeout.takeIfFinite()
+    override var timeoutDuration: Duration? = Components.defaultEphemeralTimeout?.takeIfFinite()
     override var timeout: EphemeralTimeout? = null
-        private set
 
     override var resetTimeoutOnUse: Boolean = false
 

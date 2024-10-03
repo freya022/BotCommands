@@ -22,7 +22,7 @@ class EntitySelectMenuFactory internal constructor(
     /**
      * Creates an ephemeral entity select menu builder.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -33,7 +33,7 @@ class EntitySelectMenuFactory internal constructor(
     /**
      * Creates an ephemeral entity select menu.
      *
-     * As a reminder, a [default timeout][Components.defaultTimeout] is set by default.
+     * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.
      *
      * @see Components
      */
@@ -44,7 +44,7 @@ class EntitySelectMenuFactory internal constructor(
     /**
      * Creates a persistent entity select menu builder.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */
@@ -55,7 +55,7 @@ class EntitySelectMenuFactory internal constructor(
     /**
      * Creates a persistent entity select menu.
      *
-     * As a reminder, **no timeout** is set by default.
+     * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
      * @see Components
      */

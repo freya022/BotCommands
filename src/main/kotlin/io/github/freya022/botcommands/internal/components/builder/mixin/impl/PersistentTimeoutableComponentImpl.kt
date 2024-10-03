@@ -1,11 +1,13 @@
 package io.github.freya022.botcommands.internal.components.builder.mixin.impl
 
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolderImpl
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.builder.mixin.IPersistentTimeoutableComponentMixin
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.utils.Checks
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import kotlin.time.Duration
 
 internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
@@ -13,10 +15,8 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponentMixin<T> {
 
-    override var timeoutDuration: Duration? = null
-        private set
+    override var timeoutDuration: Duration? = Components.defaultPersistentTimeout?.takeIfFinite()
     override var timeout: PersistentTimeout? = null
-        private set
 
     override var resetTimeoutOnUse: Boolean = false
 

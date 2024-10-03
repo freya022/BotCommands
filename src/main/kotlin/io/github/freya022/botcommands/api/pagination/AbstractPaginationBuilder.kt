@@ -27,7 +27,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
         private set
     var constraints: InteractionConstraints = empty()
         private set
-    var timeout: TimeoutInfo<R>? = Components.defaultTimeout.takeIfFinite()?.let { TimeoutInfo(it, onTimeout = null) }
+    var timeout: TimeoutInfo<R>? = Components.defaultEphemeralTimeout?.takeIfFinite()?.let { TimeoutInfo(it, onTimeout = null) }
         private set
 
     @JvmSynthetic
@@ -55,7 +55,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      *
      * See [AbstractPagination.message] to get the message in the timeout consumer.
      *
-     * The default timeout is set to [Components.defaultTimeout].
+     * The default timeout is set to [Components.defaultEphemeralTimeout].
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
@@ -73,7 +73,7 @@ abstract class AbstractPaginationBuilder<T : AbstractPaginationBuilder<T, R>, R 
      *
      * See [AbstractPagination.message] to get the message in the timeout consumer.
      *
-     * The default timeout is set to [Components.defaultTimeout].
+     * The default timeout is set to [Components.defaultEphemeralTimeout].
      *
      * @param timeout     Duration before the pagination expires
      * @param onTimeout   The consumer fired on timeout, long operations should not run here
