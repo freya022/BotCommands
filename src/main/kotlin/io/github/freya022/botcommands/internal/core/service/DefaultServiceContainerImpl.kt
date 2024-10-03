@@ -136,7 +136,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     }
 
     override fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): Collection<String> {
-        return serviceProviders.allProviders
+        return getService<DefaultInstantiableServices>().availableProviders
             .filter { it.annotations.any { a -> a.annotationClass == annotationType } }
             .map { it.name }
             .unmodifiableView()
