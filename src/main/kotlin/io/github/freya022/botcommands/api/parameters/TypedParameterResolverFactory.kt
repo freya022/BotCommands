@@ -22,14 +22,14 @@ import kotlin.reflect.full.withNullability
  * @param type         Type of the objects returned by the parameter resolver
  * @param T            Type of the returned parameter resolver
  */
-abstract class TypedParameterResolverFactory<T : IParameterResolver<T>>(
+abstract class TypedParameterResolverFactory<out T : IParameterResolver<T>>(
     resolverType: KClass<out T>,
     val type: KType
 ) : ParameterResolverFactory<T>(resolverType) {
     override val supportedTypesStr: List<String> = listOf(type.simpleNestedName)
 
-    constructor(resolverType: KClass<T>, type: KClass<*>) : this(resolverType, type.starProjectedType)
-    constructor(resolverType: Class<T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
+    constructor(resolverType: KClass<out T>, type: KClass<*>) : this(resolverType, type.starProjectedType)
+    constructor(resolverType: Class<out T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
 
     init {
         require(!type.isMarkedNullable) {
