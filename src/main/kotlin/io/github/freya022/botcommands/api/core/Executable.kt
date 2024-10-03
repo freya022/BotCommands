@@ -23,6 +23,12 @@ interface Executable {
     val parameters: List<AggregatedParameter>
 
     /**
+     * All options from this executable, including from its [aggregates][parameters].
+     */
+    val allOptions: List<Option>
+        get() = parameters.flatMap { it.allOptions }
+
+    /**
      * Returns the aggregated parameter with the supplied *declared name* (i.e., name of the method parameter),
      * or `null` if not found.
      */
