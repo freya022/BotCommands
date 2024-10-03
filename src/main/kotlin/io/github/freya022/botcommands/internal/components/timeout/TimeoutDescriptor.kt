@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.components.timeout
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerParameter
 import io.github.freya022.botcommands.internal.components.timeout.options.builder.TimeoutHandlerOptionBuilderImpl
@@ -51,4 +52,7 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
     }
 
     internal val optionSize = parameters.sumOf { p -> p.allOptions.count { o -> o.optionType == OptionType.OPTION } }
+
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 }

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import kotlin.reflect.KFunction
 
@@ -20,4 +21,17 @@ interface Executable {
      * @see AggregatedParameter
      */
     val parameters: List<AggregatedParameter>
+
+    /**
+     * Returns the aggregated parameter with the supplied *declared name* (i.e., name of the method parameter),
+     * or `null` if not found.
+     */
+    fun getParameter(declaredName: String): AggregatedParameter?
+
+    /**
+     * Returns the option with the supplied *declared name* (i.e., name of the method parameter),
+     * or `null` if not found.
+     */
+    fun getOptionByDeclaredName(name: String): Option? =
+        parameters.flatMap { it.allOptions }.find { it.declaredName == name }
 }
