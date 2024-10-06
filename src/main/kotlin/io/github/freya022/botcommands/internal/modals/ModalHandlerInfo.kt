@@ -30,7 +30,7 @@ import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 internal class ModalHandlerInfo internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
 ) : ExecutableMixin {
     override val parameters: List<ModalHandlerParameterImpl>

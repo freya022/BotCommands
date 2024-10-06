@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.IFilterContainer
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandParameter
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 
@@ -16,10 +15,6 @@ import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 interface TextCommandVariation : Executable, IDeclarationSiteHolder,
                                  ICommandParameterContainer, ICommandOptionContainer,
                                  IFilterContainer {
-    /**
-     * The main context.
-     */
-    val context: BContext
 
     /**
      * The text command this variation is from,

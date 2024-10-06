@@ -9,6 +9,11 @@ import kotlin.reflect.KFunction
  */
 interface Executable {
     /**
+     * The main context.
+     */
+    val context: BContext
+
+    /**
      * The target function of this executable.
      *
      * This is strictly for introspection purposes, do not call this function manually.

@@ -20,7 +20,7 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import kotlin.reflect.KClass
 
 internal class TimeoutDescriptor<T : Any> internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     override val eventFunction: MemberParamFunction<T, *>,
     aggregatorFirstParamType: KClass<T>
 ) : ExecutableMixin {

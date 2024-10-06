@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 internal class ComponentDescriptor internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     handler: KFunction<*>,
     eventType: KClass<out GenericComponentInteractionCreateEvent>
 ) : ExecutableMixin {

@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
@@ -45,6 +46,10 @@ internal class AutocompleteHandler(
     private val autocompleteInfo: AutocompleteInfoImpl,
     builder: SlashCommandBuilderImpl
 ) : ExecutableMixin {
+
+    override val context: BContext
+        get() = slashCommandInfo.context
+
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameterImpl>
 
