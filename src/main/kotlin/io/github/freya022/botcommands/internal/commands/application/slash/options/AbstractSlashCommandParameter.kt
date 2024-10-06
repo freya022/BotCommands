@@ -21,6 +21,7 @@ internal abstract class AbstractSlashCommandParameter internal constructor(
 ) : ApplicationCommandParameterImpl(context, optionAggregateBuilder, GlobalSlashEvent::class) {
     final override val options = CommandOptions.transform<SlashCommandOptionBuilderImpl, SlashParameterResolver<*, *>>(
         context,
+        command,
         ApplicationCommandResolverData(builder),
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver ->

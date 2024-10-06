@@ -27,6 +27,7 @@ internal class MessageContextCommandParameterImpl internal constructor(
 
     override val options = CommandOptions.transform<MessageCommandOptionBuilderImpl, MessageContextParameterResolver<*, *>>(
         context,
+        command,
         ApplicationCommandResolverData(builder),
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver -> MessageContextCommandOptionImpl(context, command, optionBuilder, resolver) }

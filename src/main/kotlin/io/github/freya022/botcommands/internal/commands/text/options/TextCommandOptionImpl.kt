@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.internal.commands.text.options.builder.Tex
 
 internal class TextCommandOptionImpl internal constructor(
     override val context: BContext,
-    override val command: TextCommandVariation,
+    override val executable: TextCommandVariation,
     optionBuilder: TextCommandOptionBuilderImpl,
     internal val resolver: TextParameterResolver<*, *>
 ) : CommandOptionImpl(optionBuilder),

@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.opti
 
 internal class MessageContextCommandOptionImpl internal constructor(
     override val context: BContext,
-    override val command: MessageCommandInfoImpl,
+    override val executable: MessageCommandInfoImpl,
     optionBuilder: MessageCommandOptionBuilderImpl,
     val resolver: MessageContextParameterResolver<*, *>
 ) : ContextCommandOptionImpl(optionBuilder),

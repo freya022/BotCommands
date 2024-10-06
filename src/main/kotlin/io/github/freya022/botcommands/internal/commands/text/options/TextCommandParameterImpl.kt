@@ -24,6 +24,7 @@ internal class TextCommandParameterImpl internal constructor(
 
     override val options = CommandOptions.transform<TextCommandOptionBuilderImpl, TextParameterResolver<*, *>>(
         context,
+        command,
         null,
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver -> TextCommandOptionImpl(context, command, optionBuilder, resolver) }

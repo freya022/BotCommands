@@ -47,7 +47,7 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
                     ServiceOptionBuilderImpl(optionParameter)
                 }
             },
-            aggregateBlock = { TimeoutHandlerParameter(context, it, aggregatorFirstParamType) }
+            aggregateBlock = { TimeoutHandlerParameter(context, this, it, aggregatorFirstParamType) }
         )
     }
 

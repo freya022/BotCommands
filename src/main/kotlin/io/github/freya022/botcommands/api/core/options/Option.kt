@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.options
 
+import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -8,6 +9,11 @@ import kotlin.reflect.KType
  * One of the actual values in an [aggregated parameter][AggregatedParameter].
  */
 interface Option {
+    /**
+     * The executable this option is from.
+     */
+    val executable: Executable
+
     /**
      * A parameter from either the command function, or from an aggregation function.
      *

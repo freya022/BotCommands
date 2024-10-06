@@ -16,5 +16,7 @@ interface CommandOption : Option {
     /**
      * The executable command this parameter is from.
      */
+    @Deprecated("Renamed to 'executable'", ReplaceWith("executable"))
     val command: Executable
+        get() = executable
 }

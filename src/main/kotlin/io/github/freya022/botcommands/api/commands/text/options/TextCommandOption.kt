@@ -9,7 +9,10 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
  * Represents a Discord input of a text command.
  */
 interface TextCommandOption : CommandOption {
-    override val command: TextCommandVariation
+
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command get() = executable
+    override val executable: TextCommandVariation
 
     /**
      * Name of the text command option,

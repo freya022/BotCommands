@@ -1,5 +1,8 @@
 package io.github.freya022.botcommands.internal.components.timeout.options
 
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
+import io.github.freya022.botcommands.internal.components.timeout.options.builder.TimeoutHandlerOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
@@ -11,6 +14,7 @@ import kotlin.reflect.KClass
 
 internal class TimeoutHandlerParameter internal constructor(
     context: BContextImpl,
+    executable: TimeoutDescriptor<*>,
     aggregateBuilder: OptionAggregateBuilderImpl<*>,
     aggregatorFirstParamType: KClass<*>
 ) : AbstractMethodParameter(aggregateBuilder.parameter),
@@ -19,13 +23,14 @@ internal class TimeoutHandlerParameter internal constructor(
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, aggregatorFirstParamType)
 
     override val nestedAggregatedParameters = aggregateBuilder.optionAggregateBuilders.transform {
-        TimeoutHandlerParameter(context, it as OptionAggregateBuilderImpl<*>, aggregatorFirstParamType)
+        TimeoutHandlerParameter(context, executable, it as OptionAggregateBuilderImpl<*>, aggregatorFirstParamType)
     }
 
-    override val options = CommandOptions.transform(
+    override val options = CommandOptions.transform<TimeoutHandlerOptionBuilderImpl, TimeoutParameterResolver<*, *>>(
         context,
+        executable,
         null,
         aggregateBuilder,
-        optionFinalizer = ::TimeoutHandlerOption
+        optionFinalizer = { optionBuilder, resolver -> TimeoutHandlerOption(executable, optionBuilder, resolver) }
     )
 }

@@ -7,5 +7,8 @@ import io.github.freya022.botcommands.api.commands.application.context.user.User
  * Represents a Discord input option of a user context command.
  */
 interface UserContextCommandOption : ContextCommandOption {
-    override val command: UserCommandInfo
+
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command get() = executable
+    override val executable: UserCommandInfo
 }

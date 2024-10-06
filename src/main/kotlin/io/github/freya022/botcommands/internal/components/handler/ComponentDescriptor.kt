@@ -55,7 +55,7 @@ internal class ComponentDescriptor internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ComponentHandlerParameterImpl(context, it, eventType) }
+            aggregateBlock = { ComponentHandlerParameterImpl(context, this, it, eventType) }
         )
     }
 

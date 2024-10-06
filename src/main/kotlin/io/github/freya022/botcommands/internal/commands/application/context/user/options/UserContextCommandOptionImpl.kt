@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 
 internal class UserContextCommandOptionImpl internal constructor(
     override val context: BContext,
-    override val command: UserCommandInfoImpl,
+    override val executable: UserCommandInfoImpl,
     optionBuilder: UserCommandOptionBuilderImpl,
     val resolver: UserContextParameterResolver<*, *>
 ) : ContextCommandOptionImpl(optionBuilder),

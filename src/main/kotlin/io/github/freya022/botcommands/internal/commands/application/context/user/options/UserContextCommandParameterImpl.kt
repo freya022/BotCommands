@@ -27,6 +27,7 @@ internal class UserContextCommandParameterImpl internal constructor(
 
     override val options = CommandOptions.transform<UserCommandOptionBuilderImpl, UserContextParameterResolver<*, *>>(
         context,
+        command,
         ApplicationCommandResolverData(builder),
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver -> UserContextCommandOptionImpl(context, command, optionBuilder, resolver) }

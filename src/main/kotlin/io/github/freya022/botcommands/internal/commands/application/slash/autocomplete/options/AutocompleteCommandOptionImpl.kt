@@ -20,7 +20,7 @@ private val unsupportedTypes = enumSetOf(
 
 internal class AutocompleteCommandOptionImpl(
     override val context: BContext,
-    override val command: SlashCommandInfoImpl,
+    override val executable: SlashCommandInfoImpl,
     optionBuilder: SlashCommandOptionBuilderImpl,
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {

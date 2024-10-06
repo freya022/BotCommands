@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 
 internal class SlashCommandOptionImpl internal constructor(
     override val context: BContext,
-    override val command: SlashCommandInfoImpl,
+    override val executable: SlashCommandInfoImpl,
     builder: SlashCommandBuilderImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilderImpl,
@@ -31,7 +31,7 @@ internal class SlashCommandOptionImpl internal constructor(
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
             null -> null
-            else -> AutocompleteHandler(command, optionAggregateBuilders, autocompleteInfo, builder)
+            else -> AutocompleteHandler(executable, optionAggregateBuilders, autocompleteInfo, builder)
         }
     }
 
@@ -47,7 +47,7 @@ internal class SlashCommandOptionImpl internal constructor(
             }
         }
 
-        description = LocalizationUtils.getOptionDescription(command.context, optionBuilder)
+        description = LocalizationUtils.getOptionDescription(executable.context, optionBuilder)
 
         if (range != null) {
             check(resolver.optionType == OptionType.NUMBER || resolver.optionType == OptionType.INTEGER) {
