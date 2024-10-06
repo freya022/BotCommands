@@ -27,6 +27,6 @@ internal class TextCommandParameterImpl internal constructor(
         command,
         null,
         optionAggregateBuilder,
-        optionFinalizer = { optionBuilder, resolver -> TextCommandOptionImpl(context, command, optionBuilder, resolver) }
+        optionFinalizer = { optionBuilder, resolver -> TextCommandOptionImpl(command, optionBuilder, resolver) }
     )
 }

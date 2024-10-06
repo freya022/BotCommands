@@ -49,11 +49,10 @@ internal class AutocompleteCommandParameterImpl internal constructor(
     }
 
     override fun constructOption(
-        context: BContext,
         command: SlashCommandInfoImpl,
         builder: SlashCommandBuilderImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilderImpl,
         resolver: SlashParameterResolver<*, *>
-    ) = AutocompleteCommandOptionImpl(context, command, optionBuilder, resolver)
+    ) = AutocompleteCommandOptionImpl(command, optionBuilder, resolver)
 }

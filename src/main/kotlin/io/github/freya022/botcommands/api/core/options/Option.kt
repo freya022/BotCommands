@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.options
 
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import kotlin.reflect.KParameter
@@ -9,6 +10,12 @@ import kotlin.reflect.KType
  * One of the actual values in an [aggregated parameter][AggregatedParameter].
  */
 interface Option {
+    /**
+     * The main context.
+     */
+    val context: BContext
+        get() = executable.context
+
     /**
      * The executable this option is from.
      */

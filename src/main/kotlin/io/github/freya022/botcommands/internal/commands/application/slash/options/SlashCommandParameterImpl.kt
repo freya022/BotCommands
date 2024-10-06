@@ -24,11 +24,10 @@ internal class SlashCommandParameterImpl internal constructor(
     }
 
     override fun constructOption(
-        context: BContext,
         command: SlashCommandInfoImpl,
         builder: SlashCommandBuilderImpl,
         optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilderImpl,
         resolver: SlashParameterResolver<*, *>
-    ) = SlashCommandOptionImpl(context, command, builder, optionAggregateBuilders, optionBuilder, resolver)
+    ) = SlashCommandOptionImpl(command, builder, optionAggregateBuilders, optionBuilder, resolver)
 }

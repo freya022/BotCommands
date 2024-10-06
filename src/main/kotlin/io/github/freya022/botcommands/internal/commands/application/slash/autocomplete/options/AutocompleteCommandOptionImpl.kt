@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options
 
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
@@ -19,7 +18,6 @@ private val unsupportedTypes = enumSetOf(
 )
 
 internal class AutocompleteCommandOptionImpl(
-    override val context: BContext,
     override val executable: SlashCommandInfoImpl,
     optionBuilder: SlashCommandOptionBuilderImpl,
     resolver: SlashParameterResolver<*, *>

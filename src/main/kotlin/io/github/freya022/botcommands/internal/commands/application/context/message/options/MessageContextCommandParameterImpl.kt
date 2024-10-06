@@ -30,6 +30,6 @@ internal class MessageContextCommandParameterImpl internal constructor(
         command,
         ApplicationCommandResolverData(builder),
         optionAggregateBuilder,
-        optionFinalizer = { optionBuilder, resolver -> MessageContextCommandOptionImpl(context, command, optionBuilder, resolver) }
+        optionFinalizer = { optionBuilder, resolver -> MessageContextCommandOptionImpl(command, optionBuilder, resolver) }
     )
 }

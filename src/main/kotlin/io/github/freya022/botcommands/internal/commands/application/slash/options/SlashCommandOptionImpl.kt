@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
@@ -17,7 +16,6 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 internal class SlashCommandOptionImpl internal constructor(
-    override val context: BContext,
     override val executable: SlashCommandInfoImpl,
     builder: SlashCommandBuilderImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
