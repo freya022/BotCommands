@@ -81,7 +81,6 @@ internal object ReflectionMetadata {
             .enableMethodInfo()
             .enableAnnotationInfo()
             .disableModuleScanning()
-            .disableNestedJarScanning()
             .scan()
             .use { scan ->
                 val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib() }
