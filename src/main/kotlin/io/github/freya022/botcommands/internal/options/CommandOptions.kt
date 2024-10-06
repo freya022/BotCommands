@@ -1,10 +1,9 @@
 package io.github.freya022.botcommands.internal.options
 
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.api.parameters.ResolverData
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
@@ -21,13 +20,13 @@ import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 internal object CommandOptions {
-    internal inline fun <reified T : OptionBuilderImpl, reified R : IParameterResolver<R>> transform(
-        context: BContext,
-        executable: Executable,
+    internal inline fun <reified T : OptionBuilderImpl, reified R : IParameterResolver<R>, P : AggregatedParameter> transform(
+        parent: P,
         resolverData: ResolverData?,
         aggregateBuilder: OptionAggregateBuilderImpl<*>,
-        optionFinalizer: (optionBuilder: T, resolver: R) -> OptionImpl
+        optionFinalizer: (parent: P, optionBuilder: T, resolver: R) -> OptionImpl
     ): List<OptionImpl> {
+        val context = parent.context
         val aggregator = aggregateBuilder.aggregator
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
@@ -44,15 +43,15 @@ internal object CommandOptions {
                     val parameter = optionBuilder.innerWrappedParameter
 
                     val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
-                    optionFinalizer(optionBuilder, resolver)
+                    optionFinalizer(parent, optionBuilder, resolver)
                 }
-                is AbstractGeneratedOptionBuilderImpl -> optionBuilder.toGeneratedOption(executable)
-                is ServiceOptionBuilderImpl -> ServiceMethodOption(executable, optionBuilder.optionParameter, context.serviceContainer)
+                is AbstractGeneratedOptionBuilderImpl -> optionBuilder.toGeneratedOption(parent)
+                is ServiceOptionBuilderImpl -> ServiceMethodOption(parent, optionBuilder.optionParameter, context.serviceContainer)
                 is CustomOptionBuilderImpl -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
                     val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(ResolverRequest(parameter, resolverData))
-                    CustomMethodOption(executable, optionBuilder.optionParameter, resolver)
+                    CustomMethodOption(parent, optionBuilder.optionParameter, resolver)
                 }
                 else -> throwInternal("Unsupported option builder: $optionBuilder")
             }

@@ -59,7 +59,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
+            AutocompleteCommandParameterImpl(context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
@@ -80,7 +80,7 @@ internal class AutocompleteHandler(
                 generateSupplierFromStrings(autocompleteInfo.mode)
             collectionElementType.isSubclassOf<Command.Choice>() -> ChoiceSupplierChoices(maxChoices)
             else -> {
-                val transformer = slashCommandInfo.context.serviceContainer
+                val transformer = context.serviceContainer
                     .getInterfacedServices<AutocompleteTransformer<Any>>()
                     .firstOrNull { it.elementType == collectionElementType.java }
                     ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +

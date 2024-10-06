@@ -1,16 +1,19 @@
 package io.github.freya022.botcommands.internal.parameters
 
-import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 
 internal class ServiceMethodOption internal constructor(
-    override val executable: Executable,
+    override val parent: AggregatedParameter,
     optionParameter: OptionParameter,
     private val serviceContainer: ServiceContainer,
 ) : OptionImpl(optionParameter, OptionType.SERVICE) {
+
+    override val executable get() = parent.executable
+
     private lateinit var cachedService: Any
 
     // Caches the service if:

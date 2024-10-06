@@ -13,13 +13,17 @@ interface Option {
     /**
      * The main context.
      */
-    val context: BContext
-        get() = executable.context
+    val context: BContext get() = parent.context
 
     /**
      * The executable this option is from.
      */
-    val executable: Executable
+    val executable: Executable get() = parent.executable
+
+    /**
+     * The aggregated parameter this option is from.
+     */
+    val parent: AggregatedParameter
 
     /**
      * A parameter from either the command function, or from an aggregation function.

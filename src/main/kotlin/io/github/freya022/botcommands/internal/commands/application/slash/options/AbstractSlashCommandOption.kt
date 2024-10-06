@@ -9,6 +9,7 @@ internal abstract class AbstractSlashCommandOption internal constructor(
     optionBuilder: SlashCommandOptionBuilderImpl,
     internal val resolver: SlashParameterResolver<*, *>
 ) : ApplicationCommandOptionImpl(optionBuilder) {
+
     abstract override val executable: SlashCommandInfo
 
     val discordName = optionBuilder.optionName

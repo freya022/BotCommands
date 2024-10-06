@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.internal.components.timeout.options
 
-import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
-import io.github.freya022.botcommands.internal.components.timeout.options.builder.TimeoutHandlerOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.options.CommandOptions
@@ -24,11 +22,10 @@ internal class TimeoutHandlerParameter internal constructor(
         TimeoutHandlerParameter(executable, it as OptionAggregateBuilderImpl<*>, aggregatorFirstParamType)
     }
 
-    override val options = CommandOptions.transform<TimeoutHandlerOptionBuilderImpl, TimeoutParameterResolver<*, *>>(
-        context,
-        executable,
+    override val options = CommandOptions.transform(
+        this,
         null,
         aggregateBuilder,
-        optionFinalizer = { optionBuilder, resolver -> TimeoutHandlerOption(executable, optionBuilder, resolver) }
+        optionFinalizer = ::TimeoutHandlerOption
     )
 }

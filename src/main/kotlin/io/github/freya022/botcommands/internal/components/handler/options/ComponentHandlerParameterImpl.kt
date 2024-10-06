@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.internal.components.handler.options
 
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
-import io.github.freya022.botcommands.internal.components.handler.options.builder.ComponentHandlerOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.options.CommandOptions
@@ -25,11 +23,10 @@ internal class ComponentHandlerParameterImpl internal constructor(
         ComponentHandlerParameterImpl(executable, it as OptionAggregateBuilderImpl<*>, eventType)
     }
 
-    override val options = CommandOptions.transform<ComponentHandlerOptionBuilderImpl, ComponentParameterResolver<*, *>>(
-        context,
-        executable,
+    override val options = CommandOptions.transform(
+        this,
         null,
         aggregateBuilder,
-        optionFinalizer = { optionBuilder, resolver -> ComponentHandlerOption(executable, optionBuilder, resolver) }
+        optionFinalizer = ::ComponentHandlerOption
     )
 }

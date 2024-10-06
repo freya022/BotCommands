@@ -1,11 +1,9 @@
 package io.github.freya022.botcommands.internal.modals.options
 
 import io.github.freya022.botcommands.api.modals.ModalEvent
-import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.modals.ModalHandlerInfo
-import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerInputOptionBuilderImpl
 import io.github.freya022.botcommands.internal.options.CommandOptions
 import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.AbstractMethodParameter
@@ -23,11 +21,10 @@ internal class ModalHandlerParameterImpl internal constructor(
         ModalHandlerParameterImpl(executable, it as OptionAggregateBuilderImpl<*>)
     }
 
-    override val options = CommandOptions.transform<ModalHandlerInputOptionBuilderImpl, ModalParameterResolver<*, *>>(
-        context,
-        executable,
+    override val options = CommandOptions.transform(
+        this,
         null,
         aggregateBuilder,
-        optionFinalizer = { optionBuilder, resolver -> ModalHandlerInputOption(executable, optionBuilder, resolver) }
+        optionFinalizer = ::ModalHandlerInputOption
     )
 }
