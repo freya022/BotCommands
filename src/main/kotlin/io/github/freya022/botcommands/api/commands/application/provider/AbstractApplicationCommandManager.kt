@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.provider
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -18,6 +18,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.builder.MessageCommandBuilderImpl
@@ -28,6 +30,8 @@ import io.github.freya022.botcommands.internal.commands.application.slash.builde
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.KFunction
 
 sealed class AbstractApplicationCommandManager(val context: BContext) {
@@ -45,9 +49,16 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
 
     internal abstract val defaultScope: CommandScope
 
-    internal abstract fun isValidScope(scope: CommandScope): Boolean
-
-    protected abstract fun checkScope(scope: CommandScope)
+    internal abstract val supportedContexts: Set<InteractionContextType>
+    internal abstract val supportedIntegrationTypes: Set<IntegrationType>
+    /**
+     * Default value of [TopLevelApplicationCommandBuilder.contexts].
+     */
+    abstract val defaultContexts: Set<InteractionContextType>
+    /**
+     * Default value of [TopLevelApplicationCommandBuilder.integrationTypes].
+     */
+    abstract val defaultIntegrationTypes: Set<IntegrationType>
 
     /**
      * Declares the supplied function as a slash command.
@@ -55,23 +66,31 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
      * on which paths are allowed.
      *
-     * ### Requirements
-     * - The declaring class must be annotated with [@Command][Command].
-     * - First parameter must be [GlobalSlashEvent] for [global][CommandScope.GLOBAL] commands, or,
-     * [GuildSlashEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
+     * The default allowed [interaction contexts][InteractionContextType] and [integration types][IntegrationType]
+     * can be redefined in the corresponding command manager.
      *
-     * @see Command @Command
+     * ### Requirements
+     * The first parameter must be:
+     * - [GuildSlashEvent] if the interaction context only contains [InteractionContextType.GUILD].
+     * - [GlobalSlashEvent] in other cases.
      *
      * @see JDASlashCommand @JDASlashCommand
      */
-    fun slashCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
-        checkScope(scope)
-
-        TopLevelSlashCommandBuilderImpl(context, name, function, scope)
+    fun slashCommand(name: String, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+        TopLevelSlashCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(slashCommandMap::putNewCommand)
+    }
+
+    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
+    fun slashCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+        return slashCommand(name, function) {
+            contexts = scope.toInteractionContexts()
+
+            builder()
+        }
     }
 
     /**
@@ -81,25 +100,37 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      * with the only accepted [options][UserCommandBuilder.option] being [Member], [User] and [InputUser],
      * which will be the *targeted* entity.
      *
-     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
+     * ### Requirements
+     * The first parameter must be:
+     * - [GuildUserEvent] if the interaction context only contains [InteractionContextType.GUILD].
+     * - [GlobalUserEvent] in other cases.
      *
-     * **Requirement:** The declaring class must be annotated with [@Command][Command].
+     * The default allowed [interaction contexts][InteractionContextType] and [integration types][IntegrationType]
+     * can be redefined in the corresponding command manager.
+     *
+     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands)
+     * for more details.
      *
      * @see GlobalUserEvent.getTarget
      * @see GlobalUserEvent.getTargetMember
      *
-     * @see Command @Command
-     *
      * @see JDAUserCommand @JDAUserCommand
      */
-    fun userCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
-        checkScope(scope)
-
-        UserCommandBuilderImpl(context, name, function, scope)
+    fun userCommand(name: String, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
+        UserCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(userContextCommandMap::putNewCommand)
+    }
+
+    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
+    fun userCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
+        return userCommand(name, function) {
+            contexts = scope.toInteractionContexts()
+
+            builder()
+        }
     }
 
     /**
@@ -109,23 +140,65 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      * with the only accepted [option][MessageCommandBuilder.option] being [Message],
      * which will be the *targeted* message.
      *
-     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands) for more details.
+     * ### Requirements
+     * The first parameter must be:
+     * - [GuildMessageEvent] if the interaction context only contains [InteractionContextType.GUILD].
+     * - [GlobalMessageEvent] in other cases.
      *
-     * **Requirement:** The declaring class must be annotated with [@Command][Command].
+     * The default allowed [interaction contexts][InteractionContextType] and [integration types][IntegrationType]
+     * can be redefined in the corresponding command manager.
+     *
+     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands)
+     * for more details.
      *
      * @see GlobalMessageEvent.getTarget
      *
-     * @see Command @Command
-     *
      * @see JDAMessageCommand
      */
-    fun messageCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
-        checkScope(scope)
-
-        MessageCommandBuilderImpl(context, name, function, scope)
+    fun messageCommand(name: String, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
+        MessageCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()
             .apply(builder)
             .build()
             .also(messageContextCommandMap::putNewCommand)
+    }
+
+    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
+    fun messageCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
+        return messageCommand(name, function) {
+            contexts = scope.toInteractionContexts()
+
+            builder()
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun CommandScope.toInteractionContexts(): Set<InteractionContextType> = when (this) {
+        CommandScope.GUILD, CommandScope.GLOBAL_NO_DM -> enumSetOf(InteractionContextType.GUILD)
+        CommandScope.GLOBAL -> enumSetOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+    }
+
+    private fun areContextsValid(contexts: Set<InteractionContextType>): Boolean =
+        contexts.all { it in supportedContexts }
+
+    internal fun checkContexts(contexts: Set<InteractionContextType>) {
+        require(contexts.isNotEmpty()) {
+            "Contexts cannot be empty"
+        }
+        require(areContextsValid(contexts)) {
+            "${this.javaClass.simpleNestedName} only accepts the following interaction contexts $supportedContexts"
+        }
+    }
+
+    private fun areIntegrationsValid(integrationTypes: Set<IntegrationType>): Boolean =
+        integrationTypes.all { it in supportedIntegrationTypes }
+
+    internal fun checkIntegrations(integrationTypes: Set<IntegrationType>) {
+        require(integrationTypes.isNotEmpty()) {
+            "Contexts cannot be empty"
+        }
+        require(areIntegrationsValid(integrationTypes)) {
+            "${this.javaClass.simpleNestedName} only accepts the following integration types $supportedIntegrationTypes"
+        }
     }
 }

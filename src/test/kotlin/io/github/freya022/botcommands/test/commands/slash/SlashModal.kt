@@ -79,7 +79,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     private fun handleButton(event: ButtonEvent) {
         event.deferEdit().queue()
 
-        println(event.message.interaction?.user?.asMention)
+        println(event.message.interactionMetadata?.user?.asMention)
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
