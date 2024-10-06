@@ -17,7 +17,6 @@ internal class EventTreeService internal constructor() {
         .acceptPackages(GenericEvent::class.java.packageName, BGenericEvent::class.java.packageName)
         .disableRuntimeInvisibleAnnotations()
         .disableModuleScanning()
-        .disableNestedJarScanning()
         .enableClassInfo()
         .scan().use { scanResult ->
             (scanResult.getClassesImplementing(GenericEvent::class.java) + scanResult.getClassesImplementing(BGenericEvent::class.java)).associate { info ->
