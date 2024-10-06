@@ -10,5 +10,7 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 interface TextCommandParameter : CommandParameter {
     override val nestedAggregatedParameters: List<TextCommandParameter>
 
-    override val command: TextCommandVariation
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command: TextCommandVariation get() = executable
+    override val executable: TextCommandVariation
 }

@@ -56,7 +56,7 @@ internal class ModalHandlerInfo internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ModalHandlerParameterImpl(context, this, it) }
+            aggregateBlock = { ModalHandlerParameterImpl(this, it) }
         )
 
         val options = parameters.flatMap { it.allOptions }

@@ -10,5 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.User
 interface UserContextCommandParameter : ContextCommandParameter {
     override val nestedAggregatedParameters: List<UserContextCommandParameter>
 
-    override val command: UserCommandInfo
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command: UserCommandInfo get() = executable
+    override val executable: UserCommandInfo
 }

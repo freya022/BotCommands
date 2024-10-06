@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.parameters
 
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -10,6 +11,17 @@ import kotlin.reflect.KType
  * @see AggregatedParameter
  */
 interface MethodParameter {
+    /**
+     * The main context.
+     */
+    val context: BContext
+        get() = executable.context
+
+    /**
+     * The executable this parameter is from.
+     */
+    val executable: Executable
+
     /**
      * The parameter of the function.
      */

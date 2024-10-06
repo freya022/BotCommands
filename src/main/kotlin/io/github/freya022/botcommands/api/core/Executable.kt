@@ -6,6 +6,8 @@ import kotlin.reflect.KFunction
 
 /**
  * Base class for any executable method (commands, components, modals...).
+ *
+ * This never represents an aggregator.
  */
 interface Executable {
     /**

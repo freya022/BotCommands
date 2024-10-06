@@ -10,5 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 interface SlashCommandParameter : ApplicationCommandParameter {
     override val nestedAggregatedParameters: List<SlashCommandParameter>
 
-    override val command: SlashCommandInfo
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command: SlashCommandInfo get() = executable
+    override val executable: SlashCommandInfo
 }

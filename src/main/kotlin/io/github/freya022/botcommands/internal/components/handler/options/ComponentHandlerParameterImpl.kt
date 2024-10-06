@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.components.handler.options
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
 import io.github.freya022.botcommands.internal.components.handler.options.builder.ComponentHandlerOptionBuilderImpl
-import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.options.CommandOptions
@@ -14,8 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import kotlin.reflect.KClass
 
 internal class ComponentHandlerParameterImpl internal constructor(
-    context: BContextImpl,
-    executable: ComponentDescriptor,
+    override val executable: ComponentDescriptor,
     aggregateBuilder: OptionAggregateBuilderImpl<*>,
     eventType: KClass<out GenericComponentInteractionCreateEvent>
 ) : AbstractMethodParameter(aggregateBuilder.parameter),
@@ -24,7 +22,7 @@ internal class ComponentHandlerParameterImpl internal constructor(
     override val aggregator = aggregateBuilder.aggregator.toAggregatorFunction(context, eventType)
 
     override val nestedAggregatedParameters = aggregateBuilder.optionAggregateBuilders.transform {
-        ComponentHandlerParameterImpl(context, executable, it as OptionAggregateBuilderImpl<*>, eventType)
+        ComponentHandlerParameterImpl(executable, it as OptionAggregateBuilderImpl<*>, eventType)
     }
 
     override val options = CommandOptions.transform<ComponentHandlerOptionBuilderImpl, ComponentParameterResolver<*, *>>(

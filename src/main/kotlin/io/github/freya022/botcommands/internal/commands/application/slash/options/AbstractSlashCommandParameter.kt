@@ -13,19 +13,19 @@ import io.github.freya022.botcommands.internal.commands.application.slash.option
 import io.github.freya022.botcommands.internal.options.CommandOptions
 
 internal abstract class AbstractSlashCommandParameter internal constructor(
-    final override val context: BContext,
-    final override val command: SlashCommandInfoImpl,
+    context: BContext,
+    final override val executable: SlashCommandInfoImpl,
     builder: SlashCommandBuilderImpl,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilderImpl
 ) : ApplicationCommandParameterImpl(context, optionAggregateBuilder, GlobalSlashEvent::class) {
     final override val options = CommandOptions.transform<SlashCommandOptionBuilderImpl, SlashParameterResolver<*, *>>(
         context,
-        command,
+        executable,
         ApplicationCommandResolverData(builder),
         optionAggregateBuilder,
         optionFinalizer = { optionBuilder, resolver ->
-            constructOption(command, builder, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
+            constructOption(executable, builder, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
         }
     )
 
