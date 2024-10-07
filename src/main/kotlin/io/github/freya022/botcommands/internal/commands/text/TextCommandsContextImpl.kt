@@ -36,8 +36,15 @@ internal class TextCommandsContextImpl internal constructor(
     override val rootCommands: Collection<TopLevelTextCommandInfoImpl>
         get() = textCommandMap.values.unmodifiableView()
 
+    private val mentionAsPrefix: String by lazy {
+        // space is part of the prefix,
+        // technically fixes built-in help content,
+        // doesn't change anything for parsing
+        serviceContainer.getService<JDA>().selfUser.asMention + " "
+    }
+
     override fun getDefaultPrefixes(): List<String> = when {
-        textConfig.usePingAsPrefix -> textConfig.prefixes + serviceContainer.getService<JDA>().selfUser.asMention
+        textConfig.usePingAsPrefix -> textConfig.prefixes + mentionAsPrefix
         else -> textConfig.prefixes
     }
 
@@ -54,7 +61,7 @@ internal class TextCommandsContextImpl internal constructor(
         val prefixes = textConfig.prefixes
         return when (textConfig.usePingAsPrefix) {
             false -> prefixes
-            true -> prefixes + channel.jda.selfUser.asMention
+            true -> prefixes + mentionAsPrefix
         }
     }
 
@@ -65,7 +72,7 @@ internal class TextCommandsContextImpl internal constructor(
 
         val prefixes = textConfig.prefixes
         return when (textConfig.usePingAsPrefix) {
-            true -> channel.jda.selfUser.asMention
+            true -> mentionAsPrefix
             false -> prefixes.firstOrNull()
         }
     }
