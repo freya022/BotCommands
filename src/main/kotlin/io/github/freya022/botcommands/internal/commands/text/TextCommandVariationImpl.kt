@@ -131,6 +131,10 @@ internal class TextCommandVariationImpl internal constructor(
             OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
+        // If value is null and required, go to next variation
+        if (value == null && !option.isOptionalOrNullable)
+            return InsertOptionResult.ABORT
+
         return tryInsertNullableOption(value, option, optionMap)
     }
 }
