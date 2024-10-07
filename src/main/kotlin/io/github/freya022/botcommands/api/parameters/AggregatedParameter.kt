@@ -36,6 +36,8 @@ interface AggregatedParameter : MethodParameter {
      * This does not take into account [nested aggregations][nestedAggregatedParameters],
      * use [getNestedOptionByDeclaredName] instead.
      */
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, prefer using collection operations on 'options' instead, make an extension or an utility method")
     fun getOptionByDeclaredName(name: String): Option? =
         options.find { it.declaredName == name }
 
@@ -45,6 +47,9 @@ interface AggregatedParameter : MethodParameter {
      *
      * Takes into account [nested aggregations][nestedAggregatedParameters].
      */
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, there can be one or more options with the provided name, " +
+            "prefer using collection operations on 'allOptions' instead, make an extension or an utility method")
     fun getNestedOptionByDeclaredName(name: String): Option? =
         allOptions.find { it.declaredName == name }
 }

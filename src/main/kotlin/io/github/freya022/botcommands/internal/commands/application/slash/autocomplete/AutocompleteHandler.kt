@@ -90,6 +90,8 @@ internal class AutocompleteHandler(
         }
     }
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     override fun getParameter(declaredName: String): AggregatedParameter? =
         parameters.find { it.name == declaredName }
 

@@ -16,6 +16,8 @@ interface MessageCommandInfo : TopLevelApplicationCommandInfo, ApplicationComman
     override val discordOptions: List<MessageContextCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<MessageContextCommandOption>()
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     override fun getParameter(declaredName: String): MessageContextCommandParameter? =
         parameters.find { it.name == declaredName }
 }

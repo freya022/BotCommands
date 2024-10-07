@@ -29,6 +29,8 @@ interface SlashCommandInfo : ApplicationCommandInfo {
      */
     val asMention: String get() = "</$fullCommandName:${topLevelInstance.id}>"
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     override fun getParameter(declaredName: String): SlashCommandParameter? =
         parameters.find { it.name == declaredName }
 

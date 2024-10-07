@@ -39,12 +39,17 @@ interface Executable {
      * Returns the aggregated parameter with the supplied *declared name* (i.e., name of the method parameter),
      * or `null` if not found.
      */
+    @Deprecated("For removal, confusing on whether it searches nested parameters, " +
+            "prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     fun getParameter(declaredName: String): AggregatedParameter?
 
     /**
      * Returns the option with the supplied *declared name* (i.e., name of the method parameter),
      * or `null` if not found.
      */
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, there can be one or more options with the provided name, " +
+            "prefer using collection operations on 'allOptions' instead, make an extension or an utility method")
     fun getOptionByDeclaredName(name: String): Option? =
-        parameters.flatMap { it.allOptions }.find { it.declaredName == name }
+        allOptions.find { it.declaredName == name }
 }
