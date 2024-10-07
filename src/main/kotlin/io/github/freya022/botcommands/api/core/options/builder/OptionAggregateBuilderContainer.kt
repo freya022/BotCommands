@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 
 interface OptionAggregateBuilderContainer<T : OptionAggregateBuilder<T>> {
@@ -29,17 +30,32 @@ interface OptionAggregateBuilderContainer<T : OptionAggregateBuilder<T>> {
  * @param declaredName Name of the declared parameter which receives the value class
  * @param clazz        The inline class type
  */
+inline fun <T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
+    declaredName: String,
+    clazz: KClass<*>,
+    crossinline block: T.(valueName: String) -> Unit,
+) {
+    inlineClassAggregate(declaredName, clazz) { _, valueName -> block(valueName) }
+}
+
+/**
+ * Declares an aggregate creating an instance of the specified [inline class][clazz],
+ * which can only accept a single option.
+ *
+ * @param declaredName Name of the declared parameter which receives the value class
+ * @param clazz        The inline class type
+ */
 fun <T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
     declaredName: String,
     clazz: KClass<*>,
-    block: T.(valueName: String) -> Unit = {},
+    block: T.(valueParameter: KParameter, valueName: String) -> Unit,
 ) {
     val aggregatorConstructor = clazz.primaryConstructor
         ?: throwArgument("Found no public constructor for class ${clazz.simpleNestedName}")
     aggregate(declaredName, aggregatorConstructor) {
-        val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+        val valueParameter = aggregatorConstructor.parameters.singleOrNull()
             ?: throwArgument(aggregatorConstructor, "Constructor must only have one parameter")
-        block(parameterName)
+        block(valueParameter, valueParameter.findDeclarationName())
     }
 }
 
@@ -52,7 +68,21 @@ fun <T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineCla
  */
 inline fun <reified T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
     declaredName: String,
-    noinline block: T.(valueName: String) -> Unit = {},
+    noinline block: T.(valueName: String) -> Unit,
+) {
+    return inlineClassAggregate(declaredName, T::class, block)
+}
+
+/**
+ * Declares an aggregate creating an instance of the specified [inline class][T],
+ * which can only accept a single option.
+ *
+ * @param T            The inline class type
+ * @param declaredName Name of the declared parameter which receives the value class
+ */
+inline fun <reified T : OptionAggregateBuilder<T>> OptionAggregateBuilderContainer<T>.inlineClassAggregate(
+    declaredName: String,
+    noinline block: T.(valueParameter: KParameter, valueName: String) -> Unit,
 ) {
     return inlineClassAggregate(declaredName, T::class, block)
 }
