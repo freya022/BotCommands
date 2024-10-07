@@ -160,9 +160,6 @@ internal val KClass<*>.isObject: Boolean
 internal fun KParameter.findDeclarationName(): String =
     name ?: throwArgument("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 
-internal fun KParameter.findOptionName(): String =
-    name?.toDiscordString() ?: throwArgument("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
-
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 

@@ -18,14 +18,13 @@ import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.core.service.provider.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
 internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
@@ -212,14 +211,14 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
     }
 }
 
-internal fun CommandAutoBuilder.requireServiceOptionOrOptional(func: KFunction<*>, kParameter: KParameter, commandAnnotation: KClass<out Annotation>) {
-    val isOptional = kParameter.isNullable || kParameter.isOptional
-    if (isOptional) return
+internal fun CommandAutoBuilder.requireServiceOptionOrOptional(func: KFunction<*>, parameterAdapter: ParameterAdapter, commandAnnotation: KClass<out Annotation>) {
+    if (parameterAdapter.isOptionalOrNullable) return
 
-    val serviceError = serviceContainer.canCreateWrappedService(kParameter) ?: return
+    val serviceError = serviceContainer.canCreateWrappedService(parameterAdapter.valueParameter) ?: return
+    val originalParameter = parameterAdapter.originalParameter
     throwArgument(
         func,
-        "Cannot determine usage of option '${kParameter.bestName}' (${kParameter.type.simpleNestedName}) and service loading failed, " +
+        "Cannot determine usage of option '${originalParameter.bestName}' (${originalParameter.type.simpleNestedName}) and service loading failed, " +
                 "if this is a Discord option, use @${optionAnnotation.simpleNestedName}, check @${commandAnnotation.simpleNestedName} for more details\n" +
                 serviceError.toDetailedString()
     )

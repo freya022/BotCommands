@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
@@ -16,15 +15,14 @@ import io.github.freya022.botcommands.api.commands.text.provider.TextCommandMana
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
-import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.components
@@ -36,8 +34,6 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -190,7 +186,7 @@ internal class TextCommandAutoBuilder(
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
         declarationSite = DeclarationSite.fromFunctionSignature(metadata.func)
-        processOptions(metadata.func, metadata.instance, metadata.path)
+        processOptions(metadata)
 
         filters += AnnotationUtils.getFilters(context, metadata.func, TextCommandFilter::class)
 
@@ -218,56 +214,51 @@ internal class TextCommandAutoBuilder(
         detailedDescription = instance.detailedDescription
     }
 
-    private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
-        fun textOption(kParameter: KParameter, declaredName: String, optionAnnotation: TextOption) {
-            fun TextOptionRegistry.addOption(valueName: String) {
-                val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
-                val varArgs = kParameter.findAnnotationRecursive<VarArgs>()
-                if (varArgs != null) {
-                    optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                        configureOption(kParameter, optionAnnotation)
-                    }
-                } else {
-                    option(valueName, optionName) {
-                        configureOption(kParameter, optionAnnotation)
-                    }
-                }
-            }
-
+    private fun TextCommandVariationBuilder.processOptions(metadata: TextFunctionMetadata) {
+        metadata.func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val paramType = kParameter.type.jvmErasure
             if (paramType.isValue) {
-                inlineClassAggregate(declaredName, paramType) { valueName ->
-                    addOption(valueName)
+                inlineClassAggregate(kParameter.findDeclarationName(), paramType) { valueParameter, _ ->
+                    addOption(this@inlineClassAggregate, metadata, ParameterAdapter(kParameter, valueParameter))
                 }
             } else {
-                addOption(declaredName)
-            }
-        }
-
-        func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotationRecursive<TextOption>()
-            if (optionAnnotation != null) {
-                textOption(kParameter, declaredName, optionAnnotation)
-            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
-                generatedOption(
-                    declaredName, instance.getGeneratedValueSupplier(
-                        path,
-                        kParameter.findOptionName(),
-                        ParameterType.ofType(kParameter.type)
-                    )
-                )
-            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                customOption(declaredName)
-            } else {
-                requireServiceOptionOrOptional(func, kParameter, JDATextCommandVariation::class)
-                serviceOption(declaredName)
+                addOption(this@processOptions, metadata, ParameterAdapter(kParameter, kParameter))
             }
         }
     }
 
-    private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
+    private fun addOption(registry: TextOptionRegistry, metadata: TextFunctionMetadata, parameter: ParameterAdapter) {
+        val instance = metadata.instance
+        val path = metadata.path
+        val func = metadata.func
+
+        val parameterName = parameter.declaredName
+        val optionAnnotation = parameter.findAnnotation<TextOption>()
+        if (optionAnnotation != null) {
+            val optionName = optionAnnotation.name.ifBlank { parameter.discordName }
+            val varArgs = parameter.findAnnotation<VarArgs>()
+            if (varArgs != null) {
+                registry.optionVararg(parameterName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                    configureOption(parameter, optionAnnotation)
+                }
+            } else {
+                registry.option(parameterName, optionName) {
+                    configureOption(parameter, optionAnnotation)
+                }
+            }
+        } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            val valueSupplier = instance.getGeneratedValueSupplier(path, parameter.discordName, parameter.actualType)
+            registry.generatedOption(parameterName, valueSupplier)
+        } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {
+            registry.customOption(parameterName)
+        } else {
+            requireServiceOptionOrOptional(func, parameter, JDATextCommandVariation::class)
+            registry.serviceOption(parameterName)
+        }
+    }
+
+    private fun TextCommandOptionBuilder.configureOption(parameter: ParameterAdapter, optionAnnotation: TextOption) {
         helpExample = optionAnnotation.example.nullIfBlank()
-        isId = kParameter.hasAnnotationRecursive<ID>()
+        isId = parameter.hasAnnotation<ID>()
     }
 }

@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
@@ -21,7 +20,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.bui
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashOptionRegistry
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
-import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -32,6 +30,7 @@ import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
 import io.github.freya022.botcommands.internal.core.requiredFilter
@@ -43,7 +42,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 
@@ -322,71 +320,59 @@ internal class SlashCommandAutoBuilder(
     }
 
     private fun SlashCommandBuilder.processOptions(guild: Guild?, metadata: SlashFunctionMetadata) {
-        val instance = metadata.instance
-        val func = metadata.func
-        val path = metadata.path
-
-        fun slashOption(kParameter: KParameter, declaredName: String, optionAnnotation: SlashOption) {
-            fun SlashOptionRegistry.addOption(valueName: String) {
-                val optionName = optionAnnotation.name.ifBlank { declaredName.toDiscordString() }
-                val varArgs = kParameter.findAnnotationRecursive<VarArgs>()
-                if (varArgs != null) {
-                    optionVararg(valueName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                        configureOption(guild, instance, kParameter, optionAnnotation)
-                    }
-                } else {
-                    option(valueName, optionName) {
-                        configureOption(guild, instance, kParameter, optionAnnotation)
-                    }
-                }
-            }
-
+        metadata.func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val paramType = kParameter.type.jvmErasure
             if (paramType.isValue) {
-                inlineClassAggregate(declaredName, paramType) { valueName ->
-                    addOption(valueName)
+                inlineClassAggregate(kParameter.findDeclarationName(), paramType) { valueParameter, _ ->
+                    addOption(this@inlineClassAggregate, metadata, guild, ParameterAdapter(kParameter, valueParameter))
                 }
             } else {
-                addOption(declaredName)
-            }
-        }
-
-        func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotationRecursive<SlashOption>()
-            if (optionAnnotation != null) {
-                slashOption(kParameter, declaredName, optionAnnotation)
-            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
-                generatedOption(
-                    declaredName, instance.getGeneratedValueSupplier(
-                        guild,
-                        metadata.commandId,
-                        path,
-                        kParameter.findOptionName(),
-                        ParameterType.ofType(kParameter.type)
-                    )
-                )
-            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                customOption(declaredName)
-            } else {
-                requireServiceOptionOrOptional(func, kParameter, JDASlashCommand::class)
-                serviceOption(declaredName)
+                addOption(this@processOptions, metadata, guild, ParameterAdapter(kParameter, kParameter))
             }
         }
     }
 
-    context(SlashCommandBuilder)
-    private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: SlashOption) {
+    private fun addOption(registry: SlashOptionRegistry, metadata: SlashFunctionMetadata, guild: Guild?, parameter: ParameterAdapter) {
+        val instance = metadata.instance
+        val path = metadata.path
+        val func = metadata.func
+        val commandId = metadata.commandId
+
+        val optionAnnotation = parameter.findAnnotation<SlashOption>()
+        if (optionAnnotation != null) {
+            val optionName = optionAnnotation.name.ifBlank { parameter.discordName }
+            val varArgs = parameter.findAnnotation<VarArgs>()
+            if (varArgs != null) {
+                registry.optionVararg(parameter.declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                    configureOption(metadata, guild, parameter, optionAnnotation)
+                }
+            } else {
+                registry.option(parameter.declaredName, optionName) {
+                    configureOption(metadata, guild, parameter, optionAnnotation)
+                }
+            }
+        } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            val valueSupplier = instance.getGeneratedValueSupplier(guild, commandId, path, parameter.discordName, parameter.actualType)
+            registry.generatedOption(parameter.declaredName, valueSupplier)
+        } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {
+            registry.customOption(parameter.declaredName)
+        } else {
+            requireServiceOptionOrOptional(func, parameter, JDASlashCommand::class)
+            registry.serviceOption(parameter.declaredName)
+        }
+    }
+
+    private fun SlashCommandOptionBuilder.configureOption(metadata: SlashFunctionMetadata, guild: Guild?, parameter: ParameterAdapter, optionAnnotation: SlashOption) {
         description = optionAnnotation.description.nullIfBlank()
 
-        kParameter.findAnnotationRecursive<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
-        kParameter.findAnnotationRecursive<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
-        kParameter.findAnnotationRecursive<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
+        parameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
+        parameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
+        parameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
 
         processAutocomplete(optionAnnotation)
 
         usePredefinedChoices = optionAnnotation.usePredefinedChoices
-        val optionChoices = instance.getOptionChoices(guild, this@SlashCommandBuilder.path, optionName)
+        val optionChoices = metadata.instance.getOptionChoices(guild, metadata.path, optionName)
         if (optionChoices.isNotEmpty())
             choices = optionChoices
     }

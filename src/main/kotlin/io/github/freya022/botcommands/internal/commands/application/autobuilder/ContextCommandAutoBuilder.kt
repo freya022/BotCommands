@@ -12,18 +12,15 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
-import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.autobuilder.requireServiceOptionOrOptional
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.findOptionName
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -47,40 +44,40 @@ internal sealed class ContextCommandAutoBuilder(
         commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            val declaredName = kParameter.findDeclarationName()
-            val optionAnnotation = kParameter.findAnnotationRecursive<ContextOption>()
-            if (optionAnnotation != null) {
-                fun ApplicationOptionRegistry<*>.addOption(valueName: String) {
-                    when (this) {
-                        is UserCommandOptionRegistry -> option(valueName)
-                        is MessageCommandOptionRegistry -> option(valueName)
-                    }
+            val paramType = kParameter.type.jvmErasure
+            if (paramType.isValue) {
+                inlineClassAggregate(kParameter.findDeclarationName(), paramType) { valueParameter, _ ->
+                    addOption(this@inlineClassAggregate, guild, func, instance, path, commandId, ParameterAdapter(kParameter, valueParameter))
                 }
-
-                val paramType = kParameter.type.jvmErasure
-                if (paramType.isValue) {
-                    inlineClassAggregate(declaredName, paramType) { valueName ->
-                        addOption(valueName)
-                    }
-                } else {
-                    addOption(declaredName)
-                }
-            } else if (kParameter.hasAnnotationRecursive<GeneratedOption>()) {
-                generatedOption(
-                    declaredName, instance.getGeneratedValueSupplier(
-                        guild,
-                        commandId,
-                        CommandPath.ofName(name),
-                        kParameter.findOptionName(),
-                        ParameterType.ofType(kParameter.type)
-                    )
-                )
-            } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(kParameter.wrap())) {
-                customOption(declaredName)
             } else {
-                requireServiceOptionOrOptional(func, kParameter, commandAnnotation)
-                serviceOption(declaredName)
+                addOption(this@processOptions, guild, func, instance, path, commandId, ParameterAdapter(kParameter, kParameter))
             }
+        }
+    }
+
+    private fun addOption(
+        registry: ApplicationOptionRegistry<*>,
+        guild: Guild?,
+        func: KFunction<*>,
+        instance: ApplicationCommand,
+        path: CommandPath,
+        commandId: String?,
+        parameter: ParameterAdapter
+    ) {
+        val optionAnnotation = parameter.findAnnotation<ContextOption>()
+        if (optionAnnotation != null) {
+            when (registry) {
+                is UserCommandOptionRegistry -> registry.option(parameter.declaredName)
+                is MessageCommandOptionRegistry -> registry.option(parameter.declaredName)
+            }
+        } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            val valueSupplier = instance.getGeneratedValueSupplier(guild, commandId, path, parameter.discordName, parameter.actualType)
+            registry.generatedOption(parameter.declaredName, valueSupplier)
+        } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {
+            registry.customOption(parameter.declaredName)
+        } else {
+            requireServiceOptionOrOptional(func, parameter, commandAnnotation)
+            registry.serviceOption(parameter.declaredName)
         }
     }
 }
