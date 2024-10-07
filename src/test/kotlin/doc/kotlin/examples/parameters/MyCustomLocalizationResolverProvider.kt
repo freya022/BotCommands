@@ -1,6 +1,6 @@
 package doc.kotlin.examples.parameters
 
-import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.reflect.findAnnotation
 import io.github.freya022.botcommands.api.core.service.annotations.BConfiguration
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -51,7 +51,7 @@ object MyCustomLocalizationResolverProvider {
         ICustomResolver<MyCustomLocalizationResolver, MyCustomLocalization> {
 
         // Called when a command is used
-        override suspend fun resolveSuspend(executable: Executable, event: Event): MyCustomLocalization {
+        override suspend fun resolveSuspend(option: Option, event: Event): MyCustomLocalization {
             return if (event is Interaction) {
                 val guild = event.guild
                     ?: throw IllegalStateException("Cannot get localization outside of guilds")
@@ -71,10 +71,10 @@ object MyCustomLocalizationResolverProvider {
     // The returned factory is used on each command/handler parameter of type "MyCustomLocalization",
     // which is the same type as what MyCustomLocalizationResolver returns
     @ResolverFactory
-    fun myCustomLocalizationResolverProvider(localizationService: LocalizationService, guildSettingsService: GuildSettingsService) = resolverFactory { parameter ->
+    fun myCustomLocalizationResolverProvider(localizationService: LocalizationService, guildSettingsService: GuildSettingsService) = resolverFactory { request ->
         // Find @LocalizationBundle on the parameter
-        val bundle = parameter.parameter.findAnnotation<LocalizationBundle>()
-            ?: throw IllegalArgumentException("Parameter ${parameter.parameter} must be annotated with LocalizationBundle")
+        val bundle = request.parameter.findAnnotation<LocalizationBundle>()
+            ?: throw IllegalArgumentException("Parameter ${request.parameter} must be annotated with LocalizationBundle")
 
         // Return our resolver for that parameter
         MyCustomLocalizationResolver(localizationService, guildSettingsService, bundle.value, bundle.prefix.nullIfBlank())

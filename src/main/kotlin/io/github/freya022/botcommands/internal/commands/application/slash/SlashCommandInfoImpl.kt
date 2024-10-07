@@ -123,7 +123,7 @@ internal sealed class SlashCommandInfoImpl(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption

@@ -128,7 +128,7 @@ internal class ComponentHandlerExecutor internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(descriptor, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
             OptionType.GENERATED, OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")

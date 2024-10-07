@@ -143,7 +143,7 @@ internal class ModalHandlerInfo internal constructor(
 
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
