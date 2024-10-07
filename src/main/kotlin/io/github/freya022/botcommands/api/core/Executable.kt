@@ -31,9 +31,18 @@ interface Executable {
 
     /**
      * All options from this executable, including from its [aggregates][parameters].
+     *
+     * These options have no specific order of appearance, use [allOptionsOrdered] instead.
      */
     val allOptions: List<Option>
         get() = parameters.flatMap { it.allOptions }
+
+    /**
+     * All options from this executable, including from its [aggregates][parameters],
+     * sorted by order of appearance in this function.
+     */
+    val allOptionsOrdered: List<Option>
+        get() = parameters.flatMap { it.allOptionsOrdered }
 
     /**
      * Returns the aggregated parameter with the supplied *declared name* (i.e., name of the method parameter),

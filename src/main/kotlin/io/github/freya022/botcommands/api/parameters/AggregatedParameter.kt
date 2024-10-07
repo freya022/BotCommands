@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.options.Option
+import io.github.freya022.botcommands.internal.utils.throwInternal
 
 /**
  * Parameter which has its value computed by an aggregation function, from one or more options.
@@ -25,9 +26,34 @@ interface AggregatedParameter : MethodParameter {
 
     /**
      * Options from this parameter and also [nested aggregated parameters][nestedAggregatedParameters].
+     *
+     * These options have no specific order of appearance, use [allOptionsOrdered] instead.
      */
     val allOptions: List<Option>
         get() = options + nestedAggregatedParameters.flatMap { it.allOptions }
+
+    /**
+     * Options from this parameter and also [nested aggregated parameters][nestedAggregatedParameters],
+     * sorted by order of appearance in this function.
+     */
+    val allOptionsOrdered: List<Option>
+        get() = buildList {
+            val sorted = (options + nestedAggregatedParameters).sortedBy {
+                when (it) {
+                    is Option -> it.index
+                    is AggregatedParameter -> it.index
+                    else -> throwInternal("Unhandled type ${it.javaClass.name}")
+                }
+            }
+
+            for (any in sorted) {
+                when (any) {
+                    is Option -> add(any)
+                    is AggregatedParameter -> addAll(any.allOptionsOrdered)
+                    else -> throwInternal("Unhandled type ${any.javaClass.name}")
+                }
+            }
+        }
 
     /**
      * Returns the option with the supplied *declared name* (i.e., name of the method parameter),
