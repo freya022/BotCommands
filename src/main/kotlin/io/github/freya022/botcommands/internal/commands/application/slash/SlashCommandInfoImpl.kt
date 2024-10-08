@@ -84,7 +84,6 @@ internal sealed class SlashCommandInfoImpl(
         return true
     }
 
-    context(ExecutableMixin)
     internal suspend fun <T> getSlashOptions(
         event: T,
         parameters: List<AggregatedParameterMixin>
