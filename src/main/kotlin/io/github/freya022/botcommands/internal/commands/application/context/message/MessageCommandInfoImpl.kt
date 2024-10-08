@@ -77,7 +77,7 @@ internal class MessageCommandInfoImpl internal constructor(
             OptionType.OPTION -> {
                 option as MessageContextCommandOptionImpl
 
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
