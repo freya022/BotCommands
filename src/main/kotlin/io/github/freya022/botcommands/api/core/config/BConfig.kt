@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.RestRateLimiter
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import org.intellij.lang.annotations.Language
 
 @InjectedService
 interface BConfig {
@@ -289,7 +290,7 @@ class BConfigBuilder internal constructor() : BConfig {
      *
      * @see addClass
      */
-    fun addSearchPath(packageName: String) {
+    fun addSearchPath(@Language("Java", prefix = "/** @see ", suffix = " */") packageName: String) {
         packages.add(packageName)
     }
 
