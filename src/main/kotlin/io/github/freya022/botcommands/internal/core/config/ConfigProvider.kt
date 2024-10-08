@@ -35,15 +35,6 @@ internal open class ConfigProvider {
 
     @Bean
     @Primary
-    @Suppress("DEPRECATION")
-    internal open fun bDebugConfig(config: BConfig): BDebugConfig = config.debugConfig
-
-    @Bean
-    @Primary
-    internal open fun bServiceConfig(config: BConfig): BServiceConfig = config.serviceConfig
-
-    @Bean
-    @Primary
     internal open fun bDatabaseConfig(config: BConfig): BDatabaseConfig = config.databaseConfig
 
     @Bean

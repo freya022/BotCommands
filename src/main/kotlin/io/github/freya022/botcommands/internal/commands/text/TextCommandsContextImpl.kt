@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
-import io.github.freya022.botcommands.api.core.SettingsProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -24,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 internal class TextCommandsContextImpl internal constructor(
     private val serviceContainer: ServiceContainer,
     override val textConfig: BTextConfig,
-    private val settingsProvider: SettingsProvider?,
 ) : TextCommandsContext {
     private val textPrefixSupplier: TextPrefixSupplier? by lazy { serviceContainer.getServiceOrNull() }
     override val helpBuilderConsumer: HelpBuilderConsumer? by lazy { serviceContainer.getServiceOrNull() }
@@ -51,11 +49,6 @@ internal class TextCommandsContextImpl internal constructor(
     override fun getEffectivePrefixes(channel: GuildMessageChannel): List<String> {
         if (textPrefixSupplier != null) {
             return textPrefixSupplier!!.getPrefixes(channel)
-        }
-
-        if (settingsProvider != null) {
-            val prefixes = settingsProvider.getPrefixes(channel.guild)
-            if (!prefixes.isNullOrEmpty()) return prefixes
         }
 
         val prefixes = textConfig.prefixes

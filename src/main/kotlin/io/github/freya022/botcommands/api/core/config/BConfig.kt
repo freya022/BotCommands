@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
@@ -15,7 +14,6 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
-import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -24,17 +22,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @InjectedService
 interface BConfig {
-    /**
-     * User IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
-     * and having [hidden commands][Hidden] shown.
-     *
-     * Spring property: `botcommands.core.ownerIds`
-     */
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("Renamed into 'predefinedOwnerIds', however, use BotOwner#ownerIds to get the effective bot owners")
-    val ownerIds: Set<Long>
-        get() = predefinedOwnerIds
-
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
      * and having [hidden commands][Hidden] shown.
@@ -86,24 +73,6 @@ interface BConfig {
     val enableOwnerBypass: Boolean
 
     /**
-     * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
-     *
-     * This could be useful when testing methods that use autocomplete caching while using hotswap.
-     *
-     * Default: `false`
-     *
-     * Spring property: `botcommands.core.disableAutocompleteCache`
-     */
-    @Deprecated(
-        message = "Moved to BApplicationConfig",
-        replaceWith = ReplaceWith(expression = "applicationConfig.disableAutocompleteCache")
-    )
-    @ConfigurationValue(path = "botcommands.core.disableAutocompleteCache", defaultValue = "false")
-    @DeprecatedValue(reason = "Moved to BApplicationConfig", replacement = "botcommands.application.disableAutocompleteCache")
-    val disableAutocompleteCache: Boolean
-        get() = applicationConfig.disableAutocompleteCache
-
-    /**
      * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
      *
      * Spring property: `botcommands.core.ignoredIntents`
@@ -137,8 +106,6 @@ interface BConfig {
 
     val classGraphProcessors: List<ClassGraphProcessor>
 
-    @Suppress("DEPRECATION")
-    val debugConfig: BDebugConfig
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
@@ -147,17 +114,6 @@ interface BConfig {
     val modalsConfig: BModalsConfig
     val componentsConfig: BComponentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
-
-    /**
-     * Whether this user is one of the [bot owners][predefinedOwnerIds].
-     *
-     * @param userId ID of the user
-     *
-     * @return `true` if the user is an owner
-     */
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated(message = "Prefer using BotOwners#isOwner(UserSnowflake), get the service, or from BContext#botOwners")
-    fun isOwner(userId: Long): Boolean = userId in predefinedOwnerIds
 }
 
 @ConfigDSL
@@ -165,25 +121,12 @@ class BConfigBuilder internal constructor() : BConfig {
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
 
-    @Suppress("OVERRIDE_DEPRECATION")
-    override val ownerIds: MutableSet<Long> get() = predefinedOwnerIds
     override val predefinedOwnerIds: MutableSet<Long> = HashSet()
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
     @set:JvmName("enableOwnerBypass")
     override var enableOwnerBypass = false
-    @Deprecated(
-        message = "Moved to BApplicationConfig",
-        replaceWith = ReplaceWith("applicationConfig.disableAutocompleteCache")
-    )
-    @set:DevConfig
-    @set:JvmName("disableAutocompleteCache")
-    override var disableAutocompleteCache
-        get() = applicationConfig.disableAutocompleteCache
-        set(value) {
-            applicationConfig.disableAutocompleteCache = value
-        }
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
@@ -193,8 +136,6 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
-    @Suppress("DEPRECATION")
-    override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
     override val databaseConfig = BDatabaseConfigBuilder()
     override val localizationConfig = BLocalizationConfigBuilder()
@@ -203,26 +144,6 @@ class BConfigBuilder internal constructor() : BConfig {
     override val modalsConfig = BModalsConfigBuilder()
     override val componentsConfig = BComponentsConfigBuilder()
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
-
-    /**
-     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
-     *
-     * @param ownerIds IDs of the bot owners
-     *
-     * @see BotOwners
-     */
-    @Deprecated("Renamed to addPredefinedOwners", ReplaceWith("addPredefinedOwners(*ownerIds)"))
-    fun addOwners(vararg ownerIds: Long) = addPredefinedOwners(*ownerIds)
-
-    /**
-     * Adds predefined owner IDs, disabling automatic bot owners retrieval.
-     *
-     * @param ownerIds IDs of the bot owners
-     *
-     * @see BotOwners
-     */
-    @Deprecated("Renamed to addPredefinedOwners", ReplaceWith("addPredefinedOwners(ownerIds)"))
-    fun addOwners(ownerIds: Collection<Long>) = addPredefinedOwners(ownerIds)
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
@@ -324,12 +245,6 @@ class BConfigBuilder internal constructor() : BConfig {
         databaseConfig.apply(block)
     }
 
-    @Suppress("DEPRECATION")
-    @Deprecated("For removal", ReplaceWith(""))
-    fun debug(block: ReceiverConsumer<BDebugConfigBuilder>) {
-        debugConfig.apply(block)
-    }
-
     fun localization(block: ReceiverConsumer<BLocalizationConfigBuilder>) {
         localizationConfig.apply(block)
     }
@@ -350,7 +265,6 @@ class BConfigBuilder internal constructor() : BConfig {
         componentsConfig.apply(block)
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
     @JvmSynthetic
     internal fun build(): BConfig {
         val logger = KotlinLogging.loggerOf<BConfig>()
@@ -358,7 +272,6 @@ class BConfigBuilder internal constructor() : BConfig {
             logger.info { "Disabled sending exception in bot owners DMs" }
 
         return object : BConfig {
-            override val ownerIds: Set<Long> get() = predefinedOwnerIds
             override val predefinedOwnerIds = this@BConfigBuilder.predefinedOwnerIds.toImmutableSet()
             override val packages = this@BConfigBuilder.packages.toImmutableSet()
             override val classes = this@BConfigBuilder.classes.toImmutableSet()
@@ -368,7 +281,6 @@ class BConfigBuilder internal constructor() : BConfig {
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
             override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter
             override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
-            override val debugConfig = this@BConfigBuilder.debugConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()

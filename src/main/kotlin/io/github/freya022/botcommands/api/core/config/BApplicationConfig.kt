@@ -3,10 +3,8 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
-import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
-import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.config.application.cache.DatabaseApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.config.application.cache.FileApplicationCommandsCacheConfigBuilder
@@ -20,7 +18,6 @@ import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocali
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
-import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -86,69 +83,6 @@ interface BApplicationConfig {
      * @see BApplicationConfigBuilder.disableCache
      */
     val cache: ApplicationCommandsCacheConfig?
-
-    /**
-     * Enables the library to compare local commands against Discord's command,
-     * to check if application commands need to be updated.
-     *
-     * The default behavior is to compare the command data to what has been locally saved,
-     * as it does not require any request, and is therefore way faster.
-     *
-     * The issue with local checks is that you could update commands on another machine,
-     * while the other machine is not aware of it.
-     *
-     * Which is why you should use online checks during development,
-     * but local checks in production, as they avoid requests and aren't run on multiple machines.
-     *
-     * **Note**: This does not enable you to run two instances simultaneously.
-     *
-     * Default: `false`
-     *
-     * Spring property: `botcommands.application.onlineAppCommandCheckEnabled`
-     */
-    @Deprecated(
-        message = "Moved to 'checkOnline' of the 'cache' property",
-        replaceWith = ReplaceWith("cache?.checkOnline")
-    )
-    @ConfigurationValue(path = "botcommands.application.onlineAppCommandCheckEnabled", defaultValue = "false")
-    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.checkOnline")
-    val onlineAppCommandCheckEnabled: Boolean
-        get() = cache?.checkOnline ?: false
-
-    /**
-     * The diff engine to use when comparing old and new application commands,
-     * to determine if commands needs to be updated.
-     *
-     * Only change this if necessary.
-     *
-     * Default: [DiffEngine.NEW]
-     *
-     * Spring property: `botcommands.application.diffEngine`
-     */
-    @Deprecated(
-        message = "Moved to 'diffEngine' of the 'cache' property",
-        replaceWith = ReplaceWith("cache?.diffEngine")
-    )
-    @ConfigurationValue(path = "botcommands.application.diffEngine", defaultValue = "new")
-    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.diffEngine")
-    val diffEngine: DiffEngine
-        get() = cache?.diffEngine ?: DiffEngine.NEW
-
-    /**
-     * Whether the raw JSON of the application commands should be logged when an update is required.
-     *
-     * Default: `false`
-     *
-     * Spring property: `botcommands.application.logApplicationCommandData`
-     */
-    @Deprecated(message = "Moved to 'logDataIf' of the 'cache' property", replaceWith = ReplaceWith("cache?.logDataIf"))
-    @ConfigurationValue(path = "botcommands.application.logApplicationCommandData", defaultValue = "false")
-    @DeprecatedValue("Moved to the 'cache' prefix", replacement = "botcommands.application.cache.logDataIf")
-    val logApplicationCommandData: Boolean
-        get() = when (cache?.logDataIf) {
-            LogDataIf.CHANGED, LogDataIf.ALWAYS -> true
-            else -> false
-        }
 
     /**
      * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation.
@@ -221,33 +155,6 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     override var cache: ApplicationCommandsCacheConfigBuilder? = FileApplicationCommandsCacheConfigBuilder(getDefaultCachePath())
         private set
 
-    @Deprecated("Moved to 'checkOnline' of fileCache(...)/databaseCache(...)")
-    @set:DevConfig
-    @set:JvmName("enableOnlineAppCommandChecks")
-    override var onlineAppCommandCheckEnabled: Boolean
-        @Suppress("DEPRECATION")
-        get() = super.onlineAppCommandCheckEnabled
-        set(value) {
-            checkNotNull(cache) { "The cache is disabled" }
-            cache!!.checkOnline = value
-        }
-    @Deprecated("Moved to 'diffEngine' of fileCache(...)/databaseCache(...)")
-    @set:DevConfig
-    override var diffEngine: DiffEngine
-        @Suppress("DEPRECATION")
-        get() = super.diffEngine
-        set(value) {
-            checkNotNull(cache) { "The cache is disabled" }
-            cache!!.diffEngine = value
-        }
-    @Deprecated("Moved to 'logDataIf' of fileCache(...)/databaseCache(...)")
-    override var logApplicationCommandData: Boolean
-        @Suppress("DEPRECATION")
-        get() = super.logApplicationCommandData
-        set(value) {
-            checkNotNull(cache) { "The cache is disabled" }
-            cache!!.logDataIf = if (value) LogDataIf.CHANGED else LogDataIf.NEVER
-        }
     @set:DevConfig
     @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false

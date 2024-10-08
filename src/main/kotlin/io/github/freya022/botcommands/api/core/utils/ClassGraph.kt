@@ -26,7 +26,3 @@ val MethodInfo.shortSignature: String
         val source = if (minLineNum != 0) "$sourceFile:$minLineNum" else sourceFile
         return "$shortSignatureNoSrc: $returnType ($source)"
     }
-
-@Deprecated("Replaced by shortQualifiedName", ReplaceWith("shortQualifiedName"))
-val ClassInfo.shortQualifiedReference: String
-    inline get() = shortQualifiedName

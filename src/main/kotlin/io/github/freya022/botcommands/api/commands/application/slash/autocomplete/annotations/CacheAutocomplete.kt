@@ -1,12 +1,9 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.Channel
@@ -14,7 +11,7 @@ import net.dv8tion.jda.api.entities.channel.Channel
 /**
  * Enables autocomplete caching.
  *
- * By default, this will cache results by key, which is the input of the focused option.<br>
+ * This will cache results by key, which is the input of the focused option.<br>
  * However, you can use composite keys if you want to cache based off multiple option values,
  * see [compositeKeys] for more details.
  *
@@ -27,23 +24,13 @@ import net.dv8tion.jda.api.entities.channel.Channel
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CacheAutocomplete(
     /**
-     * Sets the [autocomplete cache mode][AutocompleteCacheMode].
-     *
-     * Tip: You can mark app options your autocomplete depends on as composite keys,
-     * this would be useful to make an autocomplete result depend on multiple options,
-     * instead of only the focused one.
-     */
-    @Deprecated("Only had one mode ever, that always has been and will still be the default", ReplaceWith("cache(block)"))
-    val cacheMode: AutocompleteCacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY,
-
-    /**
-     * Whether the cache should be used even if [autocomplete cache is disabled][BConfigBuilder.disableAutocompleteCache].
+     * Whether the cache should be used even if [autocomplete cache is disabled][BApplicationConfig.disableAutocompleteCache].
      *
      * This could be useful if your autocomplete is heavy even in a development environment.
      *
      * @return `true` if the autocomplete results should be cached anyway
      *
-     * @see BConfigBuilder.disableAutocompleteCache
+     * @see BApplicationConfig.disableAutocompleteCache
      * @see AutocompleteCacheInfoBuilder.forceCache
      */
     val forceCache: Boolean = false,
