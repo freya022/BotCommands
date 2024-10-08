@@ -10,5 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.context.options.C
 interface MessageContextCommandParameter : ContextCommandParameter {
     override val nestedAggregatedParameters: List<MessageContextCommandParameter>
 
-    override val command: MessageCommandInfo
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command: MessageCommandInfo get() = executable
+    override val executable: MessageCommandInfo
 }

@@ -2,14 +2,17 @@ package io.github.freya022.botcommands.api.commands.text.options
 
 import io.github.freya022.botcommands.api.commands.options.CommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 
 /**
  * Represents a Discord input of a text command.
  */
 interface TextCommandOption : CommandOption {
-    override val command: TextCommandVariation
+
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command get() = executable
+    override val executable get() = parent.executable
+    override val parent: TextCommandParameter
 
     /**
      * Name of the text command option,

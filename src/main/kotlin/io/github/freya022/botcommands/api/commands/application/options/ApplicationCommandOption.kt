@@ -1,11 +1,14 @@
 package io.github.freya022.botcommands.api.commands.application.options
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.options.CommandOption
 
 /**
  * Represents a Discord input option of an application command.
  */
 interface ApplicationCommandOption : CommandOption {
-    override val command: ApplicationCommandInfo
+
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command get() = executable
+    override val executable get() = parent.executable
+    override val parent: ApplicationCommandParameter
 }

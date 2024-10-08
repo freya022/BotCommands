@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.components.timeout
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerParameter
 import io.github.freya022.botcommands.internal.components.timeout.options.builder.TimeoutHandlerOptionBuilderImpl
@@ -19,7 +20,7 @@ import io.github.freya022.botcommands.internal.utils.shortSignature
 import kotlin.reflect.KClass
 
 internal class TimeoutDescriptor<T : Any> internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     override val eventFunction: MemberParamFunction<T, *>,
     aggregatorFirstParamType: KClass<T>
 ) : ExecutableMixin {
@@ -46,9 +47,14 @@ internal class TimeoutDescriptor<T : Any> internal constructor(
                     ServiceOptionBuilderImpl(optionParameter)
                 }
             },
-            aggregateBlock = { TimeoutHandlerParameter(context, it, aggregatorFirstParamType) }
+            aggregateBlock = { TimeoutHandlerParameter(this, it, aggregatorFirstParamType) }
         )
     }
 
     internal val optionSize = parameters.sumOf { p -> p.allOptions.count { o -> o.optionType == OptionType.OPTION } }
+
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 }

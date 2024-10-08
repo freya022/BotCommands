@@ -1,16 +1,17 @@
 package io.github.freya022.botcommands.internal.commands.application.context.message.options
 
 import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandOption
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandParameter
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.message.options.builder.MessageCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.options.ContextCommandOptionImpl
 
 internal class MessageContextCommandOptionImpl internal constructor(
-    override val context: BContext,
-    override val command: MessageCommandInfoImpl,
+    override val parent: MessageContextCommandParameter,
     optionBuilder: MessageCommandOptionBuilderImpl,
     val resolver: MessageContextParameterResolver<*, *>
 ) : ContextCommandOptionImpl(optionBuilder),
-    MessageContextCommandOption
+    MessageContextCommandOption {
+
+    override val executable get() = parent.executable
+}

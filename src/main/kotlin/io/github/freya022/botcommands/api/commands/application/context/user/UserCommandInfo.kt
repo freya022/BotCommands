@@ -16,6 +16,8 @@ interface UserCommandInfo : TopLevelApplicationCommandInfo, ApplicationCommandIn
     override val discordOptions: List<UserContextCommandOption>
         get() = parameters.flatMap { it.allOptions }.filterIsInstance<UserContextCommandOption>()
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     override fun getParameter(declaredName: String): UserContextCommandParameter? =
         parameters.find { it.name == declaredName }
 }

@@ -5,10 +5,12 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options.AutocompleteCommandParameterImpl
@@ -44,6 +46,10 @@ internal class AutocompleteHandler(
     private val autocompleteInfo: AutocompleteInfoImpl,
     builder: SlashCommandBuilderImpl
 ) : ExecutableMixin {
+
+    override val context: BContext
+        get() = slashCommandInfo.context
+
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameterImpl>
 
@@ -53,7 +59,7 @@ internal class AutocompleteHandler(
 
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameterImpl(slashCommandInfo.context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
+            AutocompleteCommandParameterImpl(context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
         }
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
@@ -74,7 +80,7 @@ internal class AutocompleteHandler(
                 generateSupplierFromStrings(autocompleteInfo.mode)
             collectionElementType.isSubclassOf<Command.Choice>() -> ChoiceSupplierChoices(maxChoices)
             else -> {
-                val transformer = slashCommandInfo.context.serviceContainer
+                val transformer = context.serviceContainer
                     .getInterfacedServices<AutocompleteTransformer<Any>>()
                     .firstOrNull { it.elementType == collectionElementType.java }
                     ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
@@ -83,6 +89,11 @@ internal class AutocompleteHandler(
             }
         }
     }
+
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 
     internal fun invalidate() {
         autocompleteInfo.invalidate()

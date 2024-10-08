@@ -4,10 +4,8 @@ import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
@@ -17,8 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 internal class SlashCommandOptionImpl internal constructor(
-    override val context: BContext,
-    override val command: SlashCommandInfoImpl,
+    override val parent: SlashCommandParameterImpl,
     builder: SlashCommandBuilderImpl,
     optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilderImpl,
@@ -26,12 +23,14 @@ internal class SlashCommandOptionImpl internal constructor(
 ) : AbstractSlashCommandOption(optionBuilder, resolver),
     SlashCommandOption {
 
+    override val executable get() = parent.executable
+
     override val description: String
 
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
             null -> null
-            else -> AutocompleteHandler(command, optionAggregateBuilders, autocompleteInfo, builder)
+            else -> AutocompleteHandler(parent.executable, optionAggregateBuilders, autocompleteInfo, builder)
         }
     }
 
@@ -47,7 +46,7 @@ internal class SlashCommandOptionImpl internal constructor(
             }
         }
 
-        description = LocalizationUtils.getOptionDescription(command.context, optionBuilder)
+        description = LocalizationUtils.getOptionDescription(executable.context, optionBuilder)
 
         if (range != null) {
             check(resolver.optionType == OptionType.NUMBER || resolver.optionType == OptionType.INTEGER) {

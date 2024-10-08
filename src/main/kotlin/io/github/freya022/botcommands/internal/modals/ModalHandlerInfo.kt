@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -29,7 +30,7 @@ import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 internal class ModalHandlerInfo internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     override val eventFunction: MemberParamFunction<ModalEvent, *>
 ) : ExecutableMixin {
     override val parameters: List<ModalHandlerParameterImpl>
@@ -55,13 +56,18 @@ internal class ModalHandlerInfo internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ModalHandlerParameterImpl(context, it) }
+            aggregateBlock = { ModalHandlerParameterImpl(this, it) }
         )
 
         val options = parameters.flatMap { it.allOptions }
         expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
+
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 
     internal suspend fun execute(modalData: ModalData, event: ModalEvent) {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")

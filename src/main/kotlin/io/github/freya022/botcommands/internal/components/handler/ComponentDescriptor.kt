@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerParameterImpl
@@ -26,7 +27,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 internal class ComponentDescriptor internal constructor(
-    context: BContextImpl,
+    override val context: BContextImpl,
     handler: KFunction<*>,
     eventType: KClass<out GenericComponentInteractionCreateEvent>
 ) : ExecutableMixin {
@@ -54,9 +55,14 @@ internal class ComponentDescriptor internal constructor(
                     optionParameter.toFallbackOptionBuilder(context.serviceContainer, resolverContainer)
                 }
             },
-            aggregateBlock = { ComponentHandlerParameterImpl(context, it, eventType) }
+            aggregateBlock = { ComponentHandlerParameterImpl(this, it, eventType) }
         )
     }
 
     internal val optionSize = parameters.sumOf { p -> p.allOptions.count { o -> o.optionType == OptionType.OPTION } }
+
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 }

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.options
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.options.ApplicationCommandOption
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -12,7 +11,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  * Represents a Discord input option of a slash command.
  */
 interface SlashCommandOption : ApplicationCommandOption {
-    override val command: SlashCommandInfo
+
+    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
+    override val command get() = executable
+    override val executable get() = parent.executable
+    override val parent: SlashCommandParameter
 
     /**
      * The name of this option as shown on Discord.

@@ -6,6 +6,10 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 
 internal class ComponentHandlerOption internal constructor(
+    override val parent: ComponentHandlerParameterImpl,
     optionBuilder: ComponentHandlerOptionBuilderImpl,
     internal val resolver: ComponentParameterResolver<*, *>
-) : OptionImpl(optionBuilder.optionParameter, OptionType.OPTION)
+) : OptionImpl(optionBuilder.optionParameter, OptionType.OPTION) {
+
+    override val executable get() = parent.executable
+}

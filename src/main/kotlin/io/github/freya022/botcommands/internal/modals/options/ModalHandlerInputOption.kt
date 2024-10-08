@@ -6,8 +6,12 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
 import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerInputOptionBuilderImpl
 
 internal class ModalHandlerInputOption(
+    override val parent: ModalHandlerParameterImpl,
     optionBuilder: ModalHandlerInputOptionBuilderImpl,
     val resolver: ModalParameterResolver<*, *>
 ) : ModalHandlerOption(optionBuilder) {
+
+    override val executable get() = parent.executable
+
     val inputName: String = kParameter.findAnnotationRecursive<ModalInput>()!!.name
 }

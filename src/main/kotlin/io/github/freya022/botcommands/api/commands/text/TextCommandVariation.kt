@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.IFilterContainer
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandParameter
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Executable
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 
@@ -16,10 +15,6 @@ import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 interface TextCommandVariation : Executable, IDeclarationSiteHolder,
                                  ICommandParameterContainer, ICommandOptionContainer,
                                  IFilterContainer {
-    /**
-     * The main context.
-     */
-    val context: BContext
 
     /**
      * The text command this variation is from,
@@ -67,6 +62,8 @@ interface TextCommandVariation : Executable, IDeclarationSiteHolder,
      */
     val completePattern: Regex?
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
     override fun getParameter(declaredName: String): TextCommandParameter? =
         parameters.find { it.name == declaredName }
 
