@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandParameter
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandParameterImpl
 import io.github.freya022.botcommands.internal.parameters.AbstractMethodParameter
@@ -10,8 +11,17 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findParameterByName
+
+private val unsupportedTypes = enumSetOf(
+    OptionType.ATTACHMENT,
+    OptionType.ROLE,
+    OptionType.USER,
+    OptionType.CHANNEL,
+    OptionType.MENTIONABLE,
+)
 
 internal class AutocompleteCommandParameterImpl internal constructor(
     private val parameter: SlashCommandParameterImpl,
@@ -45,11 +55,11 @@ internal class AutocompleteCommandParameterImpl internal constructor(
         AutocompleteCommandParameterImpl(it, it.executableParameter.function)
     }
 
-    override val options = parameter.options.map {
+    override val options = parameter.options.onEach {
         if (it is SlashCommandOptionImpl) {
-            AutocompleteCommandOptionImpl(this, it)
-        } else {
-            it
+            requireAt(it.resolver.optionType !in unsupportedTypes, executable.function) {
+                "Autocomplete parameters does not support option type ${it.resolver.optionType} as Discord does not send them"
+            }
         }
     }
 }
