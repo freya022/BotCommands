@@ -24,38 +24,38 @@ private val unsupportedTypes = enumSetOf(
 )
 
 internal class AutocompleteCommandParameterImpl internal constructor(
-    private val parameter: SlashCommandParameterImpl,
+    private val slashParameter: SlashCommandParameterImpl,
     autocompleteFunction: KFunction<*>
-) : AbstractMethodParameter(parameter.kParameter),
+) : AbstractMethodParameter(slashParameter.kParameter),
     AggregatedParameterMixin,
     SlashCommandParameter {
 
-    override val executable get() = parameter.executable
-    override val aggregator get() = parameter.aggregator
+    override val executable get() = slashParameter.executable
+    override val aggregator get() = slashParameter.aggregator
 
     override val executableParameter =
         autocompleteFunction.findParameterByName(name)
             ?: throwInternal(
-                "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${parameter.executable.function.shortSignature}"
+                "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashParameter.executable.function.shortSignature}"
             )
 
     init {
-        requireAt(executableParameter.isNullable == kParameter.isNullable, autocompleteFunction) {
+        require(executableParameter.isNullable == kParameter.isNullable) {
             """
                 Parameter '${kParameter.name}' from autocomplete function should have same nullability as on slash command
                 Autocomplete function: ${autocompleteFunction.shortSignature}
-                Slash command function: ${parameter.executable.function.shortSignature}
+                Slash command function: ${slashParameter.executable.function.shortSignature}
             """.trimIndent()
         }
     }
 
-    override val nestedAggregatedParameters = parameter.nestedAggregatedParameters.map {
+    override val nestedAggregatedParameters = slashParameter.nestedAggregatedParameters.map {
         // Would be better if we could just ask the original parameter to compute the value
         // but this works too I guess
         AutocompleteCommandParameterImpl(it, it.executableParameter.function)
     }
 
-    override val options = parameter.options.onEach {
+    override val options = slashParameter.options.onEach {
         if (it is SlashCommandOptionImpl) {
             requireAt(it.resolver.optionType !in unsupportedTypes, executable.function) {
                 "Autocomplete parameters does not support option type ${it.resolver.optionType} as Discord does not send them"
