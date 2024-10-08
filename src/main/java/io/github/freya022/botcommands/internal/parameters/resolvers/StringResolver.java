@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
 import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
@@ -35,7 +34,7 @@ public class StringResolver
 
     @Nullable
     @Override
-    public String resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+    public String resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
         return args[0];
     }
 

@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.BContext
@@ -54,7 +53,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     final override val optionType: OptionType = OptionType.USER
 
     final override suspend fun resolveSuspend(
-        variation: TextCommandVariation,
+        option: TextCommandOption,
         event: MessageReceivedEvent,
         args: Array<String?>
     ): R? {

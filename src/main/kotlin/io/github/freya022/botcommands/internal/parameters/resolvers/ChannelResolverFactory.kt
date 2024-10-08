@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.BContext
@@ -72,7 +71,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             event.channel.asMention
 
         override suspend fun resolveSuspend(
-            variation: TextCommandVariation,
+            option: TextCommandOption,
             event: MessageReceivedEvent,
             args: Array<String?>
         ): GuildChannel? {

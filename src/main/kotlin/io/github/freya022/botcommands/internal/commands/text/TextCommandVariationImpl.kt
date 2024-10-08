@@ -111,7 +111,7 @@ internal class TextCommandVariationImpl internal constructor(
                 option as TextCommandOptionImpl
 
                 val groups: Array<String?> = Array(option.groupCount) { groupsIterator.next()?.value }
-                option.resolver.resolveSuspend(this, event, groups)
+                option.resolver.resolveSuspend(option, event, groups)
             }
 
             OptionType.CUSTOM -> {

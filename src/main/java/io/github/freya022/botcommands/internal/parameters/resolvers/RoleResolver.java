@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.parameters.resolvers;
 
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
 import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
@@ -39,7 +38,7 @@ public class RoleResolver
 
     @Nullable
     @Override
-    public Role resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @Nullable String @NotNull [] args) {
+    public Role resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @Nullable String @NotNull [] args) {
         final var id = args[0] != null ? args[0] : args[1];
         if (id == null) {
             ExceptionsKt.throwInternal("How can it not have either");
