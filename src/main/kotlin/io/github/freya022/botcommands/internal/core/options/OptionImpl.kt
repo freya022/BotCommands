@@ -20,6 +20,7 @@ internal abstract class OptionImpl private constructor(
     /** @see CommandOptionBuilderImpl.isOptional */
     optional: Boolean?
 ) : Option {
+    internal constructor(optionImpl: OptionImpl) : this(optionImpl.optionParameter, optionImpl.optionType, optionImpl.isOptional)
     internal constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
 
     internal constructor(commandOptionBuilder: CommandOptionBuilderImpl) : this(

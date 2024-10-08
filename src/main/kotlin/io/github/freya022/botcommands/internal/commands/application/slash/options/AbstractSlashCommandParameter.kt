@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash.optio
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandResolverData
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandParameter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationCommandParameterImpl
@@ -16,7 +17,11 @@ internal abstract class AbstractSlashCommandParameter internal constructor(
     context: BContext,
     final override val executable: SlashCommandInfoImpl,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilderImpl
-) : ApplicationCommandParameterImpl(context, optionAggregateBuilder, GlobalSlashEvent::class) {
+) : ApplicationCommandParameterImpl(context, optionAggregateBuilder, GlobalSlashEvent::class),
+    SlashCommandParameter {
+
+    abstract override val nestedAggregatedParameters: List<AbstractSlashCommandParameter>
+
     protected fun <P : AbstractSlashCommandParameter> transformOptions(
         parent: P,
         builder: SlashCommandBuilderImpl,

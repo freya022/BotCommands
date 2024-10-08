@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
-import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
@@ -15,9 +14,6 @@ import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options.AutocompleteCommandParameterImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
-import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
@@ -28,8 +24,8 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
@@ -42,15 +38,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
  */
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfoImpl,
-    slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
-    private val autocompleteInfo: AutocompleteInfoImpl,
-    builder: SlashCommandBuilderImpl
+    private val autocompleteInfo: AutocompleteInfoImpl
 ) : ExecutableMixin {
 
     override val context: BContext
         get() = slashCommandInfo.context
 
     override val eventFunction = autocompleteInfo.eventFunction
+    override val function: KFunction<Collection<*>> get() = eventFunction.kFunction
     override val parameters: List<AutocompleteCommandParameterImpl>
 
     //accommodate for user input
@@ -58,21 +53,23 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
-            AutocompleteCommandParameterImpl(context, slashCommandInfo, builder, slashCmdOptionAggregateBuilders, it as SlashCommandOptionAggregateBuilderImpl, function)
-        }
-
-        val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
+        val autocompleteParameters = function.nonEventParameters
+        val unmappedParameters = autocompleteParameters.map { it.findDeclarationName() } - slashCommandInfo.parameters.mapTo(hashSetOf()) { it.name }
         require(unmappedParameters.isEmpty()) {
             val autocompleteSignature = function.getSignature(parameterNames = unmappedParameters)
             """
-                Could not find options declared as $unmappedParameters
+                Could not find parameters declared as $unmappedParameters
                 Required by autocomplete function $autocompleteSignature
                 From slash command ${slashCommandInfo.function.shortSignature}
             """.trimIndent()
         }
 
-        val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
+        this.parameters = autocompleteParameters.map { autocompleteParameter ->
+            val rootSlashParameter = slashCommandInfo.parameters.single { it.name == autocompleteParameter.name }
+            AutocompleteCommandParameterImpl(rootSlashParameter, function)
+        }
+
+        val collectionElementType = function.returnType.collectionElementType?.jvmErasure
             ?: throwUser("Unable to determine return type, it should inherit Collection")
 
         choiceSupplier = when {

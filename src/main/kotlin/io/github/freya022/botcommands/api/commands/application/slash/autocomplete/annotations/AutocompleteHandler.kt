@@ -41,9 +41,9 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  * meaning you can get what the user has inserted in other options.
  *
  * The requirements are as follows:
- *  - The parameters must be named the same as in the original slash command.
- *  - The parameters of the same name must have the same type as the original slash command.
- *  - The parameters can be in any order, include custom parameters or omit options.
+ *  - The parameters can only be the event + parameters present on the slash command
+ *  - They must be of the same name, type and nullability as the original slash command
+ *  - They can only include parameters from the slash command itself, not from nested parameters (aka aggregates)
  *
  * **Note:** Parameters refers to method parameters, not Discord options.
  *
