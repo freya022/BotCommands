@@ -65,7 +65,6 @@ internal sealed class SlashCommandInfoImpl(
 
         parameters = builder.optionAggregateBuilders.transform {
             SlashCommandParameterImpl(
-                context,
                 this@SlashCommandInfoImpl,
                 builder,
                 it as SlashCommandOptionAggregateBuilderImpl
