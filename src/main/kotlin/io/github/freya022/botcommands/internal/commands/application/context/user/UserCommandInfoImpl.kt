@@ -77,7 +77,7 @@ internal class UserCommandInfoImpl internal constructor(
             OptionType.OPTION -> {
                 option as UserContextCommandOptionImpl
 
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption

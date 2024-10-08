@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
@@ -79,7 +79,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         return entity
     }
 
-    final override fun resolve(info: UserCommandInfo, event: UserContextInteractionEvent): R? =
+    final override fun resolve(option: UserContextCommandOption, event: UserContextInteractionEvent): R? =
         transformEntities(event.target, event.targetMember)
 
     private suspend fun retrieveOrNull(userId: Long, message: Message): R? {

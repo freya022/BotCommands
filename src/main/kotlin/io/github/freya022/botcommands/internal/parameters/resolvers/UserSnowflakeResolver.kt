@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
@@ -58,6 +58,6 @@ internal object UserSnowflakeResolver :
         return UserSnowflake.fromId(id)
     }
 
-    override suspend fun resolveSuspend(info: UserCommandInfo, event: UserContextInteractionEvent): UserSnowflake =
+    override suspend fun resolveSuspend(option: UserContextCommandOption, event: UserContextInteractionEvent): UserSnowflake =
         event.target
 }
