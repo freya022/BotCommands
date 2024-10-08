@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
@@ -77,7 +78,7 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     //endregion
 
     //region Component
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): E? =
+    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): E? =
         getEnumValueOrNull(arg)
     //endregion
 

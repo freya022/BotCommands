@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.modals.ModalEvent;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
@@ -76,7 +77,7 @@ public class StringResolver
 
     @Nullable
     @Override
-    public String resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public String resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
         return arg;
     }
 

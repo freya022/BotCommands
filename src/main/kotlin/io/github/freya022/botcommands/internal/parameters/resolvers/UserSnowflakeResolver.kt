@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -37,7 +38,7 @@ internal object UserSnowflakeResolver :
         return event.member.asMention
     }
 
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): UserSnowflake =
+    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): UserSnowflake =
         UserSnowflake.fromId(arg)
 
     override suspend fun resolveSuspend(

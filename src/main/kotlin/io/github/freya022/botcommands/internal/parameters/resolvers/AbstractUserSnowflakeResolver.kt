@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
@@ -69,7 +70,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         optionMapping: OptionMapping
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
-    final override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): R? {
+    final override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): R? {
         val id = arg.toLongOrNull() ?: throwArgument("Invalid user id: $arg")
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -78,7 +79,7 @@ public class DoubleResolver
 
     @Nullable
     @Override
-    public Double resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public Double resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
         return Double.valueOf(arg);
     }
 

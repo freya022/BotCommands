@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
@@ -106,7 +107,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
+        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): GuildChannel? {
             val guild = event.guild ?: throwArgument("Cannot resolve a channel outside of a guild")
             val channelId = arg.toLong()
             val channel = guild.getChannelById(type, channelId)

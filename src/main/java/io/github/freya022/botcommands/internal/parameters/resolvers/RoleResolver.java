@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
@@ -84,7 +85,7 @@ public class RoleResolver
 
     @Nullable
     @Override
-    public Role resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public Role resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
         Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
 
         return event.getGuild().getRoleById(arg);

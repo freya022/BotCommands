@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
@@ -17,9 +18,11 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
+@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : ComponentParameterResolver<T, R> {
+
     /**
      * Returns a resolved object from this component interaction.
      *
@@ -27,9 +30,14 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param event      The corresponding event
-     * @param arg        One of the data passed by the user in [IPersistentActionableComponent.bindTo]
+     * @param event  The corresponding event
+     * @param option The option currently being resolved
+     * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
+    fun resolve(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): R? =
+        resolve(event, arg)
+
+    @Deprecated("Added a ComponentOption parameter")
     fun resolve(event: GenericComponentInteractionCreateEvent, arg: String): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
@@ -40,9 +48,15 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param event      The corresponding event
-     * @param arg        One of the data passed by the user in [IPersistentActionableComponent.bindTo]
+     * @param event  The corresponding event
+     * @param option The option currently being resolved
+     * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
+    @JvmSynthetic
+    suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String) =
+        resolveSuspend(event, arg)
+
+    @Deprecated("Added a ComponentOption parameter")
     @JvmSynthetic
     suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String) =
         resolve(event, arg)
