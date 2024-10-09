@@ -70,7 +70,7 @@ public class GuildResolver
 
     @Nullable
     @Override
-    public Guild resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Guild resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return resolveGuild(event.getJDA(), arg);
     }
 

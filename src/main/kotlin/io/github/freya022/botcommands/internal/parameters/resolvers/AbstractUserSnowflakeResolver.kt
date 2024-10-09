@@ -69,7 +69,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         optionMapping: OptionMapping
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
-    final override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): R? {
+    final override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): R? {
         val id = arg.toLongOrNull() ?: throwArgument("Invalid user id: $arg")
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)

@@ -79,7 +79,7 @@ public class LongResolver
 
     @Nullable
     @Override
-    public Long resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Long resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return Long.valueOf(arg);
     }
 

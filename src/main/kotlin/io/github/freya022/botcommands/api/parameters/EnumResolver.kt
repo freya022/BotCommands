@@ -78,7 +78,7 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     //endregion
 
     //region Component
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): E? =
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): E? =
         getEnumValueOrNull(arg)
     //endregion
 

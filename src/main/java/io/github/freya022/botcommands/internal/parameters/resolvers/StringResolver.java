@@ -78,7 +78,7 @@ public class StringResolver
 
     @Nullable
     @Override
-    public String resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public String resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return arg;
     }
 

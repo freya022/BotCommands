@@ -84,7 +84,7 @@ public class RoleResolver
 
     @Nullable
     @Override
-    public Role resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Role resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
 
         return event.getGuild().getRoleById(arg);

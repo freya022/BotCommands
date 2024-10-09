@@ -79,7 +79,7 @@ public class DoubleResolver
 
     @Nullable
     @Override
-    public Double resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Double resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return Double.valueOf(arg);
     }
 

@@ -106,7 +106,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): GuildChannel? {
+        override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
             val guild = event.guild ?: throwArgument("Cannot resolve a channel outside of a guild")
             val channelId = arg.toLong()
             val channel = guild.getChannelById(type, channelId)

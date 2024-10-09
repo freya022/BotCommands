@@ -118,7 +118,7 @@ internal class ComponentHandlerExecutor internal constructor(
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(event, option, it) }
+                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(option, event, it) }
                 if (obj == null && option.isRequired && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 

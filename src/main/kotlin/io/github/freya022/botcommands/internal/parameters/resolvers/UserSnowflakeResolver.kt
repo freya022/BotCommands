@@ -37,7 +37,7 @@ internal object UserSnowflakeResolver :
         return event.member.asMention
     }
 
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): UserSnowflake =
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): UserSnowflake =
         UserSnowflake.fromId(arg)
 
     override suspend fun resolveSuspend(

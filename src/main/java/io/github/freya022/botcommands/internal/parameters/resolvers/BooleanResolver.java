@@ -71,7 +71,7 @@ public class BooleanResolver
 
     @Nullable
     @Override
-    public Boolean resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Boolean resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return parseBoolean(arg);
     }
 

@@ -76,7 +76,7 @@ public class EmojiResolver
 
     @Nullable
     @Override
-    public Emoji resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Emoji resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return getEmoji(arg);
     }
 

@@ -30,11 +30,11 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param event  The corresponding event
      * @param option The option currently being resolved
+     * @param event  The corresponding event
      * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
-    fun resolve(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String): R? =
+    fun resolve(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): R? =
         resolve(event, arg)
 
     @Deprecated("Added a ComponentOption parameter")
@@ -48,13 +48,13 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
-     * @param event  The corresponding event
      * @param option The option currently being resolved
+     * @param event  The corresponding event
      * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String) =
-        resolve(event, option, arg)
+    suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String) =
+        resolve(option, event, arg)
 
     @Deprecated("Added a ComponentOption parameter")
     @JvmSynthetic

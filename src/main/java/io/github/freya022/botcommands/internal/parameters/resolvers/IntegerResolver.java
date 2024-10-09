@@ -79,7 +79,7 @@ public class IntegerResolver
 
     @Nullable
     @Override
-    public Integer resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull ComponentOption option, @NotNull String arg) {
+    public Integer resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return Integer.valueOf(arg);
     }
 
