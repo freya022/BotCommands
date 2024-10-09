@@ -2,12 +2,10 @@ package io.github.freya022.botcommands.internal.commands.application.slash.optio
 
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
-import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.options.ApplicationCommandOptionImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
-import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -16,12 +14,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 
 internal class SlashCommandOptionImpl internal constructor(
     override val parent: SlashCommandParameterImpl,
-    builder: SlashCommandBuilderImpl,
-    optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilderImpl,
-    resolver: SlashParameterResolver<*, *>
-) : AbstractSlashCommandOption(optionBuilder, resolver),
-    SlashCommandOption {
+    override val resolver: SlashParameterResolver<*, *>
+) : ApplicationCommandOptionImpl(optionBuilder),
+    SlashCommandOptionMixin {
 
     override val executable get() = parent.executable
 
@@ -30,10 +26,11 @@ internal class SlashCommandOptionImpl internal constructor(
     internal val autocompleteHandler by lazy {
         when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
             null -> null
-            else -> AutocompleteHandler(parent.executable, optionAggregateBuilders, autocompleteInfo, builder)
+            else -> AutocompleteHandler(parent.executable, autocompleteInfo)
         }
     }
 
+    override val discordName = optionBuilder.optionName
     override val usePredefinedChoices = optionBuilder.usePredefinedChoices
     override val choices: List<Command.Choice>? = optionBuilder.choices
     override val range: ValueRange? = optionBuilder.valueRange

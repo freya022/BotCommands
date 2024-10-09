@@ -15,15 +15,13 @@ import io.github.freya022.botcommands.internal.commands.application.options.Appl
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
-import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandOption
-import io.github.freya022.botcommands.internal.commands.application.slash.options.AbstractSlashCommandParameter
-import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandParameterImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.options.*
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.options.transform
+import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
@@ -67,10 +65,8 @@ internal sealed class SlashCommandInfoImpl(
 
         parameters = builder.optionAggregateBuilders.transform {
             SlashCommandParameterImpl(
-                context,
                 this@SlashCommandInfoImpl,
                 builder,
-                builder.optionAggregateBuilders,
                 it as SlashCommandOptionAggregateBuilderImpl
             )
         }
@@ -88,10 +84,9 @@ internal sealed class SlashCommandInfoImpl(
         return true
     }
 
-    context(ExecutableMixin)
     internal suspend fun <T> getSlashOptions(
         event: T,
-        parameters: List<AbstractSlashCommandParameter>
+        parameters: List<AggregatedParameterMixin>
     ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
         val optionValues = parameters.mapOptions { option ->
             if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
@@ -109,7 +104,7 @@ internal sealed class SlashCommandInfoImpl(
                                 T : Event {
         val value = when (option.optionType) {
             OptionType.OPTION -> {
-                option as AbstractSlashCommandOption
+                option as SlashCommandOptionMixin
 
                 val optionName = option.discordName
                 val optionMapping = event.getOption(optionName)
@@ -143,7 +138,7 @@ internal sealed class SlashCommandInfoImpl(
     }
 
     private fun onUnresolvableOption(
-        option: AbstractSlashCommandOption,
+        option: SlashCommandOptionMixin,
         optionMapping: OptionMapping,
         event: Interaction,
     ): InsertOptionResult {
