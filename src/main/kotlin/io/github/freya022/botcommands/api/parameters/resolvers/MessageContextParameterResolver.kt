@@ -48,7 +48,7 @@ interface MessageContextParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: MessageContextCommandOption, event: MessageContextInteractionEvent) =
-        resolveSuspend(option.executable, event)
+        resolve(option, event)
 
     @Deprecated("Replaced MessageCommandInfo with MessageContextCommandOption")
     @JvmSynthetic

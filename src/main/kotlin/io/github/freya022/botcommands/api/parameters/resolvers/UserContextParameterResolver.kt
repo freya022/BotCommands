@@ -48,7 +48,7 @@ interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: UserContextCommandOption, event: UserContextInteractionEvent) =
-        resolveSuspend(option.executable, event)
+        resolve(option, event)
 
     @Deprecated("Replaced UserCommandInfo with UserContextCommandOption")
     @JvmSynthetic

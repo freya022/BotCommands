@@ -56,7 +56,7 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: TextCommandOption, event: MessageReceivedEvent, args: Array<String?>) =
-        resolveSuspend(option.executable, event, args)
+        resolve(option, event, args)
 
     @Deprecated("Replaced TextCommandVariation with TextCommandOption")
     @JvmSynthetic

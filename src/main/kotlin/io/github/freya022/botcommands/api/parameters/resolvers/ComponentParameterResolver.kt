@@ -54,7 +54,7 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, option: ComponentOption, arg: String) =
-        resolveSuspend(event, arg)
+        resolve(event, option, arg)
 
     @Deprecated("Added a ComponentOption parameter")
     @JvmSynthetic

@@ -49,7 +49,7 @@ interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: ModalOption, event: ModalEvent, modalMapping: ModalMapping) =
-        resolveSuspend(event, modalMapping)
+        resolve(option, event, modalMapping)
 
     @JvmSynthetic
     @Deprecated("Added a TimeoutOption parameter")

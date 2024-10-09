@@ -88,7 +88,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: SlashCommandOption, event: CommandInteractionPayload, optionMapping: OptionMapping) =
-        resolveSuspend(option.executable, event, optionMapping)
+        resolve(option, event, optionMapping)
 
     @JvmSynthetic
     @Deprecated("Replaced SlashCommandInfo with SlashCommandOption")

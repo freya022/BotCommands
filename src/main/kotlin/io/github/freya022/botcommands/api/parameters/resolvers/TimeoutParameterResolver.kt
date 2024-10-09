@@ -47,7 +47,7 @@ interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>
      */
     @JvmSynthetic
     suspend fun resolveSuspend(option: TimeoutOption, arg: String): R? =
-        resolveSuspend(arg)
+        resolve(option, arg)
 
     @JvmSynthetic
     @Deprecated("Added a TimeoutOption parameter")
