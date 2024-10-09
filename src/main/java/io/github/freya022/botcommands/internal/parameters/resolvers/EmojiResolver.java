@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
 import io.github.freya022.botcommands.api.components.options.ComponentOption;
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -81,7 +82,7 @@ public class EmojiResolver
 
     @Nullable
     @Override
-    public Emoji resolve(@NotNull String arg) {
+    public Emoji resolve(@NotNull TimeoutOption option, @NotNull String arg) {
         return getEmoji(arg);
     }
 

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
 import io.github.freya022.botcommands.api.components.options.ComponentOption;
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.modals.ModalEvent;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
@@ -88,7 +89,7 @@ public class StringResolver
 
     @NotNull
     @Override
-    public String resolve(@NotNull String arg) {
+    public String resolve(@NotNull TimeoutOption option, @NotNull String arg) {
         return arg;
     }
 }

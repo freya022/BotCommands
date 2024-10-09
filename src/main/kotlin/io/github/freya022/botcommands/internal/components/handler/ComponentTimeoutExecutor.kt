@@ -92,7 +92,7 @@ internal class ComponentTimeoutExecutor internal constructor(
             OptionType.OPTION -> {
                 option as TimeoutHandlerOption
 
-                userDataIterator.next()?.let { option.resolver.resolveSuspend(it) }
+                userDataIterator.next()?.let { option.resolver.resolveSuspend(option, it) }
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
