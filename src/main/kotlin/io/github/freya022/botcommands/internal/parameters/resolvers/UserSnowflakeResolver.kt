@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
@@ -41,7 +41,7 @@ internal object UserSnowflakeResolver :
         UserSnowflake.fromId(arg)
 
     override suspend fun resolveSuspend(
-        info: SlashCommandInfo,
+        option: SlashCommandOption,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping,
     ): UserSnowflake = optionMapping.asUser

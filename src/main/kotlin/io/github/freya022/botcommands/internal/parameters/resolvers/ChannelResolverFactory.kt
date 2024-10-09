@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
@@ -92,7 +92,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         override val optionType: OptionType = OptionType.CHANNEL
 
         override suspend fun resolveSuspend(
-            info: SlashCommandInfo,
+            option: SlashCommandOption,
             event: CommandInteractionPayload,
             optionMapping: OptionMapping
         ): GuildChannel {

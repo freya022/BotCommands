@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
 import io.github.freya022.botcommands.api.components.options.ComponentOption;
@@ -78,7 +78,7 @@ public class RoleResolver
 
     @Nullable
     @Override
-    public Role resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    public Role resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
         return optionMapping.getAsRole();
     }
 
