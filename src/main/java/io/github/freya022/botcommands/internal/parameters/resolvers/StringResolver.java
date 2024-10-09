@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.modals.ModalEvent;
+import io.github.freya022.botcommands.api.modals.options.ModalOption;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.*;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -83,7 +84,7 @@ public class StringResolver
 
     @Nullable
     @Override
-    public String resolve(@NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
+    public String resolve(@NotNull ModalOption option, @NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
         return modalMapping.getAsString();
     }
 
