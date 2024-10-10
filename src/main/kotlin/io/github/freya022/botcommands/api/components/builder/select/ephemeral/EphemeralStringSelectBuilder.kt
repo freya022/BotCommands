@@ -21,5 +21,8 @@ abstract class EphemeralStringSelectBuilder :
 
     abstract override fun build(): StringSelectMenu
 
-    protected fun jdaBuild(): JDAStringSelectMenu = super.build()
+    protected fun jdaBuild(id: String): JDAStringSelectMenu {
+        super.setId(id)
+        return super.build()
+    }
 }

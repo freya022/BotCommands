@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.builder.select.ephemeral
 
+import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -14,7 +15,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 @PublishedApi
 internal class EphemeralStringSelectBuilderImpl internal constructor(
@@ -24,13 +25,8 @@ internal class EphemeralStringSelectBuilderImpl internal constructor(
     BaseComponentBuilderMixin<EphemeralStringSelectBuilder>,
     IConstrainableComponentMixin<EphemeralStringSelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
     IUniqueComponentMixin<EphemeralStringSelectBuilder> by UniqueComponentImpl(instanceRetriever),
-    IEphemeralActionableComponentMixin<EphemeralStringSelectBuilder, StringSelectEvent> by EphemeralActionableComponentImpl(
-        componentController.context,
-        instanceRetriever
-    ),
-    IEphemeralTimeoutableComponentMixin<EphemeralStringSelectBuilder> by EphemeralTimeoutableComponentImpl(
-        instanceRetriever
-    ) {
+    IEphemeralActionableComponentMixin<EphemeralStringSelectBuilder, StringSelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
+    IEphemeralTimeoutableComponentMixin<EphemeralStringSelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
@@ -48,22 +44,20 @@ internal class EphemeralStringSelectBuilderImpl internal constructor(
     }
 
     @Suppress("OVERRIDE_DEPRECATION") // yup
-    override fun setId(customId: String): StringSelectMenu.Builder {
+    override fun setId(customId: String): JDAStringSelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
-    override fun build(): io.github.freya022.botcommands.api.components.StringSelectMenu =
-        runBlocking { buildSuspend() }
+    override fun build(): StringSelectMenu = runBlocking { buildSuspend() }
 
     @PublishedApi
-    internal suspend fun buildSuspend(): io.github.freya022.botcommands.api.components.StringSelectMenu {
+    internal suspend fun buildSuspend(): StringSelectMenu {
         check(!built) { "Cannot build components more than once" }
         built = true
 
         componentController.withNewComponent(this) { internalId, componentId ->
-            setId(componentId)
-            return StringSelectMenuImpl(componentController, internalId, jdaBuild())
+            return StringSelectMenuImpl(componentController, internalId, jdaBuild(componentId))
         }
     }
 }

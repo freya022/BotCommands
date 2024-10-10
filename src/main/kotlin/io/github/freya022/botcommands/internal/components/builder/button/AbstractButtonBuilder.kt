@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
 @PublishedApi
 internal sealed class AbstractButtonBuilder<T : ButtonBuilder<T>>(
@@ -36,7 +37,7 @@ internal sealed class AbstractButtonBuilder<T : ButtonBuilder<T>>(
             ButtonImpl(
                 componentController,
                 internalId,
-                net.dv8tion.jda.api.interactions.components.buttons.Button.of(style, componentId, label, emoji)
+                JDAButton.of(style, componentId, label, emoji)
             )
         }
     }

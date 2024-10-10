@@ -21,5 +21,8 @@ abstract class EphemeralEntitySelectBuilder :
 
     abstract override fun build(): EntitySelectMenu
 
-    protected fun jdaBuild(): JDAEntitySelectMenu = super.build()
+    protected fun jdaBuild(id: String): JDAEntitySelectMenu {
+        super.setId(id)
+        return super.build()
+    }
 }

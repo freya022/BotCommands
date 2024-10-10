@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.builder.select.persistent
 
+import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
@@ -13,7 +14,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 @PublishedApi
 internal class PersistentStringSelectBuilderImpl internal constructor(
@@ -23,13 +24,8 @@ internal class PersistentStringSelectBuilderImpl internal constructor(
     BaseComponentBuilderMixin<PersistentStringSelectBuilder>,
     IConstrainableComponentMixin<PersistentStringSelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
     IUniqueComponentMixin<PersistentStringSelectBuilder> by UniqueComponentImpl(instanceRetriever),
-    IPersistentActionableComponentMixin<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(
-        componentController.context,
-        instanceRetriever
-    ),
-    IPersistentTimeoutableComponentMixin<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(
-        instanceRetriever
-    ) {
+    IPersistentActionableComponentMixin<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
+    IPersistentTimeoutableComponentMixin<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
@@ -47,23 +43,20 @@ internal class PersistentStringSelectBuilderImpl internal constructor(
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
-    override fun setId(customId: String): StringSelectMenu.Builder {
+    override fun setId(customId: String): JDAStringSelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
-    override fun build(): io.github.freya022.botcommands.api.components.StringSelectMenu =
-        runBlocking { buildSuspend() }
+    override fun build(): StringSelectMenu = runBlocking { buildSuspend() }
 
-    @JvmSynthetic
     @PublishedApi
-    internal suspend fun buildSuspend(): io.github.freya022.botcommands.api.components.StringSelectMenu {
+    internal suspend fun buildSuspend(): StringSelectMenu {
         check(!built) { "Cannot build components more than once" }
         built = true
 
         componentController.withNewComponent(this) { internalId, componentId ->
-            setId(componentId)
-            return StringSelectMenuImpl(componentController, internalId, jdaBuild())
+            return StringSelectMenuImpl(componentController, internalId, jdaBuild(componentId))
         }
     }
 }

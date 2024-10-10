@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.builder.select.ephemeral
 
+import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.builder.select.ephemeral.EphemeralEntitySelectBuilder
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -14,24 +15,19 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 @PublishedApi
 internal class EphemeralEntitySelectBuilderImpl internal constructor(
     private val componentController: ComponentController,
-    targets: Collection<EntitySelectMenu.SelectTarget>,
+    targets: Collection<JDAEntitySelectMenu.SelectTarget>,
     instanceRetriever: InstanceRetriever<EphemeralEntitySelectBuilder>
 ) : EphemeralEntitySelectBuilder(),
     BaseComponentBuilderMixin<EphemeralEntitySelectBuilder>,
     IConstrainableComponentMixin<EphemeralEntitySelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
     IUniqueComponentMixin<EphemeralEntitySelectBuilder> by UniqueComponentImpl(instanceRetriever),
-    IEphemeralActionableComponentMixin<EphemeralEntitySelectBuilder, EntitySelectEvent> by EphemeralActionableComponentImpl(
-        componentController.context,
-        instanceRetriever
-    ),
-    IEphemeralTimeoutableComponentMixin<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl(
-        instanceRetriever
-    ) {
+    IEphemeralActionableComponentMixin<EphemeralEntitySelectBuilder, EntitySelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
+    IEphemeralTimeoutableComponentMixin<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
@@ -50,22 +46,20 @@ internal class EphemeralEntitySelectBuilderImpl internal constructor(
     }
 
     @Suppress("OVERRIDE_DEPRECATION") // yup
-    override fun setId(customId: String): EntitySelectMenu.Builder {
+    override fun setId(customId: String): JDAEntitySelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
-    override fun build(): io.github.freya022.botcommands.api.components.EntitySelectMenu =
-        runBlocking { buildSuspend() }
+    override fun build(): EntitySelectMenu = runBlocking { buildSuspend() }
 
     @PublishedApi
-    internal suspend fun buildSuspend(): io.github.freya022.botcommands.api.components.EntitySelectMenu {
+    internal suspend fun buildSuspend(): EntitySelectMenu {
         check(!built) { "Cannot build components more than once" }
         built = true
 
         componentController.withNewComponent(this) { internalId, componentId ->
-            setId(componentId)
-            return EntitySelectMenuImpl(componentController, internalId, jdaBuild())
+            return EntitySelectMenuImpl(componentController, internalId, jdaBuild(componentId))
         }
     }
 }
