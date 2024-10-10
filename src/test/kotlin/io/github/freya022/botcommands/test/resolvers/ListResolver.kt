@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
@@ -18,7 +18,7 @@ object ListResolver :
     override val optionType: OptionType = OptionType.NUMBER
 
     override suspend fun resolveSuspend(
-        info: SlashCommandInfo,
+        option: SlashCommandOption,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
     ): List<Double> = listOf(optionMapping.asDouble * 2)

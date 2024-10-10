@@ -2,11 +2,11 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
@@ -71,7 +71,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             event.channel.asMention
 
         override suspend fun resolveSuspend(
-            variation: TextCommandVariation,
+            option: TextCommandOption,
             event: MessageReceivedEvent,
             args: Array<String?>
         ): GuildChannel? {
@@ -92,7 +92,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         override val optionType: OptionType = OptionType.CHANNEL
 
         override suspend fun resolveSuspend(
-            info: SlashCommandInfo,
+            option: SlashCommandOption,
             event: CommandInteractionPayload,
             optionMapping: OptionMapping
         ): GuildChannel {
@@ -106,7 +106,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
+        override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
             val guild = event.guild ?: throwArgument("Cannot resolve a channel outside of a guild")
             val channelId = arg.toLong()
             val channel = guild.getChannelById(type, channelId)

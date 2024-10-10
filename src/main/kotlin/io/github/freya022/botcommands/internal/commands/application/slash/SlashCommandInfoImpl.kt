@@ -110,7 +110,7 @@ internal sealed class SlashCommandInfoImpl(
                 val optionMapping = event.getOption(optionName)
 
                 if (optionMapping != null) {
-                    option.resolver.resolveSuspend(this, event, optionMapping)
+                    option.resolver.resolveSuspend(option, event, optionMapping)
                         ?: return onUnresolvableOption(option, optionMapping, event)
                 } else if (option.isRequired && event is CommandAutoCompleteInteractionEvent) {
                     return InsertOptionResult.ABORT
@@ -123,7 +123,7 @@ internal sealed class SlashCommandInfoImpl(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedOption

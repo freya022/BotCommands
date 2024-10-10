@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.application.context.message.MessageCommandInfo;
+import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver;
@@ -20,7 +20,7 @@ public class MessageResolver
 
     @Nullable
     @Override
-    public Message resolve(@NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
+    public Message resolve(@NotNull MessageContextCommandOption option, @NotNull MessageContextInteractionEvent event) {
         return event.getTarget();
     }
 }

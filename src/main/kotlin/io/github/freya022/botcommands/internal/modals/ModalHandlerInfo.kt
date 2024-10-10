@@ -117,7 +117,7 @@ internal class ModalHandlerInfo internal constructor(
                 val modalMapping = event.getValue(ModalMaps.getInputId(inputId))
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                option.resolver.resolveSuspend(event, modalMapping).also { obj ->
+                option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
                     // Technically not required, but provides additional info
                     requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
@@ -143,7 +143,7 @@ internal class ModalHandlerInfo internal constructor(
 
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
-                option.resolver.resolveSuspend(this, event)
+                option.resolver.resolveSuspend(option, event)
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()

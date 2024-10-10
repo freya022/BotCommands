@@ -1,8 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -36,7 +35,7 @@ internal object IMentionableResolver : ClassParameterResolver<IMentionableResolv
     }
 
     override suspend fun resolveSuspend(
-        variation: TextCommandVariation,
+        option: TextCommandOption,
         event: MessageReceivedEvent,
         args: Array<String?>
     ): IMentionable? {
@@ -75,7 +74,7 @@ internal object IMentionableResolver : ClassParameterResolver<IMentionableResolv
     override val optionType: OptionType = OptionType.MENTIONABLE
 
     override suspend fun resolveSuspend(
-        info: SlashCommandInfo,
+        option: SlashCommandOption,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
     ): IMentionable = optionMapping.asMentionable

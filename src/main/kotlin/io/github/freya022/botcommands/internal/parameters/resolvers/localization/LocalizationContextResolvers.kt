@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
-import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
@@ -22,7 +22,7 @@ internal class AppLocalizationContextResolver(
 ) : ClassParameterResolver<AppLocalizationContextResolver, AppLocalizationContext>(AppLocalizationContext::class),
     ICustomResolver<AppLocalizationContextResolver, AppLocalizationContext> {
 
-    override suspend fun resolveSuspend(executable: Executable, event: Event): AppLocalizationContext {
+    override suspend fun resolveSuspend(option: Option, event: Event): AppLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
             //MessageReceivedEvent does not provide user locale
@@ -39,7 +39,7 @@ internal class TextLocalizationContextResolver(
 ) : ClassParameterResolver<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContext::class),
     ICustomResolver<TextLocalizationContextResolver, TextLocalizationContext> {
 
-    override suspend fun resolveSuspend(executable: Executable, event: Event): TextLocalizationContext {
+    override suspend fun resolveSuspend(option: Option, event: Event): TextLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
             is MessageReceivedEvent -> when {

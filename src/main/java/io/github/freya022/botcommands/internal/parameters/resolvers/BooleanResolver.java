@@ -1,9 +1,10 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -34,7 +35,7 @@ public class BooleanResolver
 
     @Nullable
     @Override
-    public Boolean resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+    public Boolean resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
         return parseBoolean(args[0]);
     }
 
@@ -64,19 +65,19 @@ public class BooleanResolver
 
     @Nullable
     @Override
-    public Boolean resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    public Boolean resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
         return optionMapping.getAsBoolean();
     }
 
     @Nullable
     @Override
-    public Boolean resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public Boolean resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return parseBoolean(arg);
     }
 
     @Nullable
     @Override
-    public Boolean resolve(@NotNull String arg) {
+    public Boolean resolve(@NotNull TimeoutOption option, @NotNull String arg) {
         return parseBoolean(arg);
     }
 

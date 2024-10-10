@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
@@ -18,7 +18,7 @@ sealed class MapResolver<R : Map<*, *>>(
     ICustomResolver<MapResolver<R>, R>
 
 object StringDoubleMapResolver : MapResolver<Map<String, Double>>(typeOf<Map<String, Double>>()) {
-    override suspend fun resolveSuspend(executable: Executable, event: Event): Map<String, Double> =
+    override suspend fun resolveSuspend(option: Option, event: Event): Map<String, Double> =
         mapOf("lol" to 3.14159)
 }
 

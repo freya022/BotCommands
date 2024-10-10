@@ -84,7 +84,7 @@ internal class ComponentHandlerExecutor internal constructor(
 
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
-                if (tryInsertOption(event, descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
+                if (tryInsertOption(event, option, this, userDataIterator) == InsertOptionResult.ABORT)
                     return false
             }
 
@@ -110,7 +110,6 @@ internal class ComponentHandlerExecutor internal constructor(
 
     private suspend fun tryInsertOption(
         event: GenericComponentInteractionCreateEvent,
-        descriptor: ComponentDescriptor,
         option: OptionImpl,
         optionMap: MutableMap<OptionImpl, Any?>,
         userDataIterator: Iterator<String?>
@@ -119,7 +118,7 @@ internal class ComponentHandlerExecutor internal constructor(
             OptionType.OPTION -> {
                 option as ComponentHandlerOption
 
-                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(event, it) }
+                val obj = userDataIterator.next()?.let { option.resolver.resolveSuspend(option, event, it) }
                 if (obj == null && option.isRequired && event.isAcknowledged)
                     return InsertOptionResult.ABORT
 
@@ -128,7 +127,7 @@ internal class ComponentHandlerExecutor internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(descriptor, event)
+                option.resolver.resolveSuspend(option, event)
             }
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
             OptionType.GENERATED, OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")

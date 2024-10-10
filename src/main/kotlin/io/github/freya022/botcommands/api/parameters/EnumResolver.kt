@@ -1,9 +1,10 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
@@ -34,7 +35,7 @@ internal class TextEnumResolver<E : Enum<E>> internal constructor(
     override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String = testExample
 
     override suspend fun resolveSuspend(
-        variation: TextCommandVariation,
+        option: TextCommandOption,
         event: MessageReceivedEvent,
         args: Array<String?>,
     ): E? = getEnumValueOrNull(args[0]!!)
@@ -70,19 +71,19 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     }
 
     override suspend fun resolveSuspend(
-        info: SlashCommandInfo,
+        option: SlashCommandOption,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
     ): E = getEnumValue(optionMapping.asString)
     //endregion
 
     //region Component
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): E? =
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): E? =
         getEnumValueOrNull(arg)
     //endregion
 
     //region Timeout
-    override suspend fun resolveSuspend(arg: String): E = getEnumValue(arg)
+    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): E = getEnumValue(arg)
     //endregion
 
     override fun toString(): String {

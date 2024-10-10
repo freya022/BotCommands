@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
+import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -37,17 +37,17 @@ internal object UserSnowflakeResolver :
         return event.member.asMention
     }
 
-    override suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String): UserSnowflake =
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): UserSnowflake =
         UserSnowflake.fromId(arg)
 
     override suspend fun resolveSuspend(
-        info: SlashCommandInfo,
+        option: SlashCommandOption,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping,
     ): UserSnowflake = optionMapping.asUser
 
     override suspend fun resolveSuspend(
-        variation: TextCommandVariation,
+        option: TextCommandOption,
         event: MessageReceivedEvent,
         args: Array<String?>,
     ): UserSnowflake {
@@ -57,6 +57,6 @@ internal object UserSnowflakeResolver :
         return UserSnowflake.fromId(id)
     }
 
-    override suspend fun resolveSuspend(info: UserCommandInfo, event: UserContextInteractionEvent): UserSnowflake =
+    override suspend fun resolveSuspend(option: UserContextCommandOption, event: UserContextInteractionEvent): UserSnowflake =
         event.target
 }

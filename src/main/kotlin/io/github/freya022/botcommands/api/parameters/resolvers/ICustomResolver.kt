@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.Event
 
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.events.Event
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
+@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface ICustomResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : ICustomResolver<T, R> {
@@ -24,10 +26,13 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
      * [SlashParameterResolver][SlashParameterResolver.resolve] or
      * [ComponentParameterResolver][ComponentParameterResolver.resolve].
      *
-     * @param executable Basic information about the function using this resolver,
-     * may be any application command, text command, etc...
-     * @param event      The event this resolver is called from
+     * @param option The option currently being resolved, may be from an application command, text command, etc...
+     * @param event  The event triggering this resolver
      */
+    fun resolve(option: Option, event: Event): R? =
+        resolve(option.executable, event)
+
+    @Deprecated("First parameter was replaced with Option")
     fun resolve(executable: Executable, event: Event): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
@@ -39,10 +44,15 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>
      * [SlashParameterResolver][SlashParameterResolver.resolveSuspend] or
      * [ComponentParameterResolver][ComponentParameterResolver.resolveSuspend].
      *
-     * @param executable Basic information about the function using this resolver
-     * @param event      The event this resolver is called from
+     * @param option The option currently being resolved, may be from an application command, text command, etc...
+     * @param event  The event triggering this resolver
      */
     @JvmSynthetic
+    suspend fun resolveSuspend(option: Option, event: Event) =
+        resolveSuspend(option.executable, event)
+
+    @JvmSynthetic
+    @Deprecated("First parameter was replaced with Option")
     suspend fun resolveSuspend(executable: Executable, event: Event) =
         resolve(executable, event)
 }

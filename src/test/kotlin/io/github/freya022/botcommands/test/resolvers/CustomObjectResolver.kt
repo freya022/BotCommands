@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test.resolvers
 
-import io.github.freya022.botcommands.api.core.Executable
+import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
@@ -12,7 +12,7 @@ class CustomObjectResolver :
     ClassParameterResolver<CustomObjectResolver, CustomObject>(CustomObject::class),
     ICustomResolver<CustomObjectResolver, CustomObject> {
 
-    override suspend fun resolveSuspend(executable: Executable, event: Event): CustomObject {
+    override suspend fun resolveSuspend(option: Option, event: Event): CustomObject {
         return CustomObject()
     }
 }

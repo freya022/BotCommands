@@ -1,9 +1,10 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -34,7 +35,7 @@ public class IntegerResolver
 
     @Nullable
     @Override
-    public Integer resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+    public Integer resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
         try {
             return Integer.valueOf(args[0]);
         } catch (NumberFormatException e) {
@@ -68,7 +69,7 @@ public class IntegerResolver
 
     @Nullable
     @Override
-    public Integer resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    public Integer resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
         try {
             return optionMapping.getAsInt();
         } catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
@@ -78,13 +79,13 @@ public class IntegerResolver
 
     @Nullable
     @Override
-    public Integer resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public Integer resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return Integer.valueOf(arg);
     }
 
     @Nullable
     @Override
-    public Integer resolve(@NotNull String arg) {
+    public Integer resolve(@NotNull TimeoutOption option, @NotNull String arg) {
         return Integer.valueOf(arg);
     }
 }

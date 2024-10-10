@@ -18,9 +18,11 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
+@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : TextParameterResolver<T, R> {
+
     /**
      * Returns a resolved object from this text command.
      *
@@ -29,10 +31,14 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      *
      * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.
      *
-     * @param variation The text command variation being executed
-     * @param event     The corresponding event
-     * @param args      The arguments of this parameter, extracted with [pattern]
+     * @param option The option currently being resolved
+     * @param event  The corresponding event
+     * @param args   The arguments of this parameter, extracted with [pattern]
      */
+    fun resolve(option: TextCommandOption, event: MessageReceivedEvent, args: Array<String?>): R? =
+        resolve(option.executable, event, args)
+
+    @Deprecated("Replaced TextCommandVariation with TextCommandOption")
     fun resolve(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
@@ -44,10 +50,15 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      *
      * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.
      *
-     * @param variation The text command variation being executed
-     * @param event     The corresponding event
-     * @param args      The arguments of this parameter, extracted with [pattern]
+     * @param option The option currently being resolved
+     * @param event  The corresponding event
+     * @param args   The arguments of this parameter, extracted with [pattern]
      */
+    @JvmSynthetic
+    suspend fun resolveSuspend(option: TextCommandOption, event: MessageReceivedEvent, args: Array<String?>) =
+        resolve(option, event, args)
+
+    @Deprecated("Replaced TextCommandVariation with TextCommandOption")
     @JvmSynthetic
     suspend fun resolveSuspend(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>) =
         resolve(variation, event, args)

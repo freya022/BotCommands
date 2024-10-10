@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -26,9 +27,11 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
+@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : SlashParameterResolver<T, R> {
+
     /**
      * Returns the corresponding [OptionType] for this slash command parameter.
      */
@@ -58,10 +61,14 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * If the interaction is not replied to,
      * the handler sends an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
      *
-     * @param info          The data of the command being executed
+     * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]
      * @param optionMapping The [OptionMapping] to be resolved
      */
+    fun resolve(option: SlashCommandOption, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
+        resolve(option.executable, event, optionMapping)
+
+    @Deprecated("Replaced SlashCommandInfo with SlashCommandOption")
     fun resolve(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
@@ -75,11 +82,16 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * If the interaction is not replied to,
      * the handler sends an [unresolvable option error message][DefaultMessages.getSlashCommandUnresolvableOptionMsg].
      *
-     * @param info          The data of the command being executed
+     * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]
      * @param optionMapping The [OptionMapping] to be resolved
      */
     @JvmSynthetic
+    suspend fun resolveSuspend(option: SlashCommandOption, event: CommandInteractionPayload, optionMapping: OptionMapping) =
+        resolve(option, event, optionMapping)
+
+    @JvmSynthetic
+    @Deprecated("Replaced SlashCommandInfo with SlashCommandOption")
     suspend fun resolveSuspend(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping) =
         resolve(info, event, optionMapping)
 }

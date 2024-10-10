@@ -38,7 +38,7 @@ import kotlin.reflect.KType
  * @see ParameterResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolverFactory<T : IParameterResolver<T>>(val resolverType: KClass<out T>) {
+abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resolverType: KClass<out T>) {
     constructor(resolverType: Class<out T>) : this(resolverType.kotlin)
 
     /**

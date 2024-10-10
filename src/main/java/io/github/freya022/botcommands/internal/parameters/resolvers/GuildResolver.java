@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers;
 
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
+import io.github.freya022.botcommands.api.components.options.ComponentOption;
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
@@ -34,7 +34,7 @@ public class GuildResolver
 
     @Nullable
     @Override
-    public Guild resolve(@NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+    public Guild resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
         return resolveGuild(event.getJDA(), args[0]);
     }
 
@@ -64,13 +64,13 @@ public class GuildResolver
 
     @Nullable
     @Override
-    public Guild resolve(@NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+    public Guild resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
         return resolveGuild(event.getJDA(), optionMapping.getAsString());
     }
 
     @Nullable
     @Override
-    public Guild resolve(@NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+    public Guild resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
         return resolveGuild(event.getJDA(), arg);
     }
 
