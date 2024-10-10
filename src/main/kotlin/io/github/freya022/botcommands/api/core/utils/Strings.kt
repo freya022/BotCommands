@@ -1,3 +1,5 @@
+@file:JvmName("StringUtils")
+
 package io.github.freya022.botcommands.api.core.utils
 
 fun String.nullIfEmpty(): String? = when {

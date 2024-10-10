@@ -1,3 +1,5 @@
+@file:JvmName("CollectionUtils")
+
 package io.github.freya022.botcommands.api.core.utils
 
 import java.util.*

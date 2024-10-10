@@ -1,3 +1,5 @@
+@file:JvmName("Utils")
+
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.events.getDefaultScope

@@ -1,3 +1,5 @@
+@file:JvmName("ClassGraphUtils")
+
 package io.github.freya022.botcommands.api.core.utils
 
 import io.github.classgraph.ClassInfo
