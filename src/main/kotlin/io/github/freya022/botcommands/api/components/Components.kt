@@ -53,7 +53,7 @@ class Components internal constructor(componentController: ComponentController) 
          *
          * `null`, non-positive and infinite durations are considered as a disabled timeout.
          */
-        @Deprecated("Renamed to defaultEphemeralTimeout", ReplaceWith("defaultEphemeralTimeout"))
+        @Deprecated("Renamed to defaultEphemeralTimeout", ReplaceWith("this.defaultEphemeralTimeout"))
         var defaultTimeout: Duration
             @JvmSynthetic
             get() = defaultEphemeralTimeout!!
@@ -68,7 +68,7 @@ class Components internal constructor(componentController: ComponentController) 
          * `null`, non-positive and infinite durations are considered as a disabled timeout.
          */
         @JvmStatic
-        @Deprecated("Renamed to getDefaultTimeout", ReplaceWith("getDefaultTimeout()"))
+        @Deprecated("Renamed to getDefaultTimeout", ReplaceWith("this.getDefaultTimeout()"))
         fun getDefaultTimeout(): JavaDuration = defaultEphemeralTimeout!!.toJavaDuration()
 
         /**
@@ -77,7 +77,7 @@ class Components internal constructor(componentController: ComponentController) 
          * `null`, non-positive and infinite durations are considered as a disabled timeout.
          */
         @JvmStatic
-        @Deprecated("Renamed to setDefaultTimeout", ReplaceWith("setDefaultTimeout(timeout)"))
+        @Deprecated("Renamed to setDefaultTimeout", ReplaceWith("this.setDefaultTimeout(timeout)"))
         fun setDefaultTimeout(timeout: JavaDuration) {
             defaultEphemeralTimeout = timeout.toKotlinDuration()
         }
