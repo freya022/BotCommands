@@ -46,8 +46,6 @@ internal sealed class SlashCommandInfoImpl(
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
 
-    private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
-
     override val topLevelInstance: TopLevelSlashCommandInfoImpl
         get() = _topLevelInstance ?: throwInternal("This should have been overridden or not been null")
     override val parentInstance: INamedCommand?
@@ -83,83 +81,84 @@ internal sealed class SlashCommandInfoImpl(
 
         return true
     }
+}
 
-    internal suspend fun <T> getSlashOptions(
-        event: T,
-        parameters: List<AggregatedParameterMixin>
-    ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
-        val optionValues = parameters.mapOptions { option ->
-            if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
-                return null
-        }
-
-        return parameters.mapFinalParameters(event, optionValues)
+internal suspend fun <T> ExecutableMixin.getSlashOptions(
+    event: T,
+    parameters: List<AggregatedParameterMixin>
+): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
+    val optionValues = parameters.mapOptions { option ->
+        if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
+            return null
     }
 
-    private suspend fun <T> tryInsertOption(
-        event: T,
-        optionMap: MutableMap<OptionImpl, Any?>,
-        option: OptionImpl
-    ): InsertOptionResult where T : CommandInteractionPayload,
-                                T : Event {
-        val value = when (option.optionType) {
-            OptionType.OPTION -> {
-                option as SlashCommandOptionMixin
+    return parameters.mapFinalParameters(event, optionValues)
+}
 
-                val optionName = option.discordName
-                val optionMapping = event.getOption(optionName)
+private suspend fun <T> tryInsertOption(
+    event: T,
+    optionMap: MutableMap<OptionImpl, Any?>,
+    option: OptionImpl
+): InsertOptionResult where T : CommandInteractionPayload,
+                            T : Event {
+    val value = when (option.optionType) {
+        OptionType.OPTION -> {
+            option as SlashCommandOptionMixin
 
-                if (optionMapping != null) {
-                    option.resolver.resolveSuspend(option, event, optionMapping)
-                        ?: return onUnresolvableOption(option, optionMapping, event)
-                } else if (option.isRequired && event is CommandAutoCompleteInteractionEvent) {
-                    return InsertOptionResult.ABORT
-                } else if (option.isRequired) {
-                    throw OptionNotFoundException("Option '$optionName' was not found")
-                } else {
-                    null
-                }
+            val optionName = option.discordName
+            val optionMapping = event.getOption(optionName)
+
+            if (optionMapping != null) {
+                option.resolver.resolveSuspend(option, event, optionMapping)
+                    ?: return onUnresolvableOption(option, optionMapping, event)
+            } else if (option.isRequired && event is CommandAutoCompleteInteractionEvent) {
+                return InsertOptionResult.ABORT
+            } else if (option.isRequired) {
+                throw OptionNotFoundException("Option '$optionName' was not found")
+            } else {
+                null
             }
-            OptionType.CUSTOM -> {
-                option as CustomMethodOption
-
-                option.resolver.resolveSuspend(option, event)
-            }
-            OptionType.GENERATED -> {
-                option as ApplicationGeneratedOption
-
-                option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
-            }
-            OptionType.SERVICE -> (option as ServiceMethodOption).getService()
-            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
+        OptionType.CUSTOM -> {
+            option as CustomMethodOption
 
-        return tryInsertNullableOption(value, option, optionMap)
+            option.resolver.resolveSuspend(option, event)
+        }
+        OptionType.GENERATED -> {
+            option as ApplicationGeneratedOption
+
+            option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
+        }
+        OptionType.SERVICE -> (option as ServiceMethodOption).getService()
+        OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
     }
 
-    private fun onUnresolvableOption(
-        option: SlashCommandOptionMixin,
-        optionMapping: OptionMapping,
-        event: Interaction,
-    ): InsertOptionResult {
-        //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-        logger.trace {
-            "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
-        }
+    return tryInsertNullableOption(value, option, optionMap)
+}
 
-        return when {
-            option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
-            else -> {
-                //Only use the generic message if the user didn't handle this situation
-                if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                    event.reply_(
-                        defaultMessagesFactory.get(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
-                        ephemeral = true
-                    ).queue()
-                }
+private fun onUnresolvableOption(
+    option: SlashCommandOptionMixin,
+    optionMapping: OptionMapping,
+    event: Interaction,
+): InsertOptionResult {
+    //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+    logger.trace {
+        "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
+    }
 
-                InsertOptionResult.ABORT
+    return when {
+        option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
+        else -> {
+            //Only use the generic message if the user didn't handle this situation
+            if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
+                val defaultMessages = option.context.getService<DefaultMessagesFactory>().get(event)
+                event.reply_(
+                    defaultMessages.getSlashCommandUnresolvableOptionMsg(option.discordName),
+                    ephemeral = true
+                ).queue()
             }
+
+            InsertOptionResult.ABORT
         }
     }
 }

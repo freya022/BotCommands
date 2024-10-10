@@ -9,9 +9,13 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.parameters.AggregatedParameter
+import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options.AutocompleteCommandParameterImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
+import io.github.freya022.botcommands.internal.commands.application.slash.getSlashOptions
+import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.classRef
@@ -21,7 +25,6 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
@@ -36,13 +39,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfoImpl,
     private val autocompleteInfo: AutocompleteInfoImpl
-) {
+) : ExecutableMixin {
 
-    private val context: BContext get() = slashCommandInfo.context
+    override val context: BContext get() = slashCommandInfo.context
 
-    private val eventFunction get() = autocompleteInfo.eventFunction
-    private val function: KFunction<Collection<*>> get() = eventFunction.kFunction
-    private val parameters: List<AutocompleteCommandParameterImpl>
+    override val eventFunction = autocompleteInfo.eventFunction
+    override val parameters: List<AutocompleteCommandParameterImpl>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
@@ -66,7 +68,7 @@ internal class AutocompleteHandler(
         }
 
         val collectionElementType = function.returnType.collectionElementType?.jvmErasure
-            ?: throwArgument(function, "Unable to determine return type, it should inherit Collection")
+            ?: throwUser("Unable to determine return type, it should inherit Collection")
 
         choiceSupplier = when {
             collectionElementType in listOf(String::class, Long::class, Double::class) ->
@@ -76,12 +78,17 @@ internal class AutocompleteHandler(
                 val transformer = context.serviceContainer
                     .getInterfacedServices<AutocompleteTransformer<Any>>()
                     .firstOrNull { it.elementType == collectionElementType.java }
-                    ?: throwArgument(function, "No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
+                    ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
                             "you may also check the docs for ${classRef<AutocompleteHandler>()} and ${classRef<AutocompleteTransformer<*>>()}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
     }
+
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
+    override fun getParameter(declaredName: String): AggregatedParameter? =
+        parameters.find { it.name == declaredName }
 
     internal fun invalidate() {
         autocompleteInfo.invalidate()
@@ -92,7 +99,7 @@ internal class AutocompleteHandler(
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        val objects = slashCommandInfo.getSlashOptions(event, parameters)
+        val objects = getSlashOptions(event, parameters)
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
