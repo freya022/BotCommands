@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.internal.utils.deferredRestAction
+import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
@@ -239,16 +240,22 @@ fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Messa
  *
  * **Note:** This delays the rest action by the given delay.
  */
-fun <R> RestAction<R>.deleteDelayed(hook: InteractionHook, delay: Duration): RestAction<R> =
-    delay(delay).onSuccess { hook.deleteOriginal() }
+fun <R> RestAction<R>.deleteDelayed(hook: InteractionHook, delay: Duration?): RestAction<R> {
+    return withFiniteDelayOrSelf(delay) { finiteDelay ->
+        delay(finiteDelay).flatMapOriginal { hook.deleteOriginal() }
+    }
+}
 
 /**
  * Deletes the original message using the hook after the specified delay.
  *
  * **Note:** This delays the rest action by the given delay.
  */
-fun RestAction<InteractionHook>.deleteDelayed(delay: Duration): RestAction<InteractionHook> =
-    delay(delay).onSuccess(InteractionHook::deleteOriginal)
+fun RestAction<InteractionHook>.deleteDelayed(delay: Duration?): RestAction<InteractionHook> {
+    return withFiniteDelayOrSelf(delay) { finiteDelay ->
+        delay(finiteDelay).flatMapOriginal(InteractionHook::deleteOriginal)
+    }
+}
 
 /**
  * Deletes the message after the specified delay.
@@ -256,8 +263,11 @@ fun RestAction<InteractionHook>.deleteDelayed(delay: Duration): RestAction<Inter
  * **Note:** This delays the rest action by the given delay.
  */
 @JvmName("deleteDelayedMessage")
-fun RestAction<Message>.deleteDelayed(delay: Duration): RestAction<Message> =
-    delay(delay).onSuccess(Message::delete)
+fun RestAction<Message>.deleteDelayed(delay: Duration?): RestAction<Message> {
+    return withFiniteDelayOrSelf(delay) { finiteDelay ->
+        delay(finiteDelay).flatMapOriginal(Message::delete)
+    }
+}
 
 // NOTE: Extensions of other RestAction execution methods using Kotlin Duration are omitted
 //       as coroutines already enable the same behavior using `delay`
@@ -274,6 +284,15 @@ fun <T> RestAction<T>.delay(duration: Duration): RestAction<T> =
  */
 fun <T> RestAction<T>.delay(duration: Duration, scheduler: ScheduledExecutorService): RestAction<T> =
     delay(duration.toJavaDuration(), scheduler)
+
+private inline fun <R : RestAction<*>> R.withFiniteDelayOrSelf(delay: Duration?, block: (finiteDelay: Duration) -> R): R {
+    val finiteDelay = delay?.takeIfFinite() ?: return this
+    return block(finiteDelay)
+}
+
+private fun <T> RestAction<T>.flatMapOriginal(block: (T) -> RestAction<*>): RestAction<T> {
+    return flatMap { original -> block(original).map { original } }
+}
 
 /**
  * @see RestAction.timeout
