@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Requi
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
@@ -21,6 +22,9 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
+import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
+import io.github.freya022.botcommands.internal.utils.lazyWritable
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -218,7 +222,8 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
 
-    override var cache: ApplicationCommandsCacheConfigBuilder? = FileApplicationCommandsCacheConfigBuilder(getDefaultCachePath())
+    // Prevent possible warnings if the default cache isn't used
+    override var cache: ApplicationCommandsCacheConfigBuilder? by lazyWritable { FileApplicationCommandsCacheConfigBuilder(getDefaultCachePath()) }
         private set
 
     @Deprecated("Moved to 'checkOnline' of fileCache(...)/databaseCache(...)")
@@ -402,11 +407,27 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     }
 
     private fun getDefaultCachePath(): Path {
-        val appDataDirectory = when {
-            "Windows" in System.getProperty("os.name") -> System.getenv("appdata")
-            else -> "/var/tmp"
+        val osName = System.getProperty("os.name")
+        fun envPath(name: String, fallbackName: String? = null): Path {
+            val envValue = System.getenv(name)
+                ?: fallbackName?.let(System::getenv)
+                ?: throwInternal("Absent environment variable '$name' (fallback '$fallbackName') in OS '$osName'")
+            return Path(envValue)
         }
-        return Path(appDataDirectory).resolve("BotCommands")
+
+        return when {
+            osName.startsWith("Windows") -> envPath("appdata").resolve("BotCommands")
+            // https://specifications.freedesktop.org/basedir-spec/latest/
+            osName.startsWith("Linux") -> envPath("XDG_DATA_HOME", "HOME").resolve(".local/share/BotCommands")
+            // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/MacOSXDirectories/MacOSXDirectories.html
+            // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW1
+            osName.startsWith("Mac") || osName.startsWith("Darwin") -> Path("~/Library/Application Support/io.github.freya022.BotCommands")
+            else -> {
+                Logging.currentLogger().warn { internalErrorMessage("Unsupported OS '$osName' for file-based application commands cache, using fallback") }
+
+                Path("/var/tmp/BotCommands")
+            }
+        }
     }
 
     @JvmSynthetic

@@ -10,7 +10,9 @@ interface FileApplicationCommandsCacheConfig : ApplicationCommandsCacheConfig {
      *
      * Each application has a folder inside it, meaning you can safely share this folder with other applications.
      *
-     * Default: `%AppData%/BotCommands` on Windows, `/var/tmp/BotCommands` on Unix
+     * Default: `%AppData%/BotCommands` on Windows,
+     *          `$XDG_DATA_HOME/BotCommands` (fallbacks to `$HOME/.local/share/BotCommands`) on Linux,
+     *          and `~/Library/Application Support/io.github.freya022.BotCommands` on macOS
      *
      * Spring property: `botcommands.application.cache.file.path`
      */
