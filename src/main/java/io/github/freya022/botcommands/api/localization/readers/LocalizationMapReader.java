@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.localization.LocalizationMapRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -29,7 +30,8 @@ public interface LocalizationMapReader {
      *
      * @return The new path
      */
-    default String appendPath(String path, String other) {
+    @Nonnull
+    default String appendPath(@Nonnull String path, @Nonnull String other) {
         if (path.isBlank()) return other;
 
         return path + '.' + other;
