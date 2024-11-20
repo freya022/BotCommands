@@ -33,19 +33,24 @@ class SlashIntegrationOwners(private val buttons: Buttons) : GlobalApplicationCo
     }
 
     private suspend fun run(event: GlobalSlashEvent) {
-        println("Is user-installed interaction only: " + event.isUserInstalledInteractionOnly)
-        println("User integration: " + event.integrationOwners.userIntegration)
-        println("Guild integration: " + event.integrationOwners.guildIntegration)
+        println("Is user-installed interaction only: " + !event.integrationOwners.isGuildIntegration)
+        println("User integration: " + event.integrationOwners.authorizingUserId)
+        println("Guild integration: " + event.integrationOwners.authorizingGuildId)
 
         val button = buttons.primary("click me").ephemeral {
             bindTo {
-                println("Is user-installed interaction only: " + event.isUserInstalledInteractionOnly)
-                println("User integration: " + event.integrationOwners.userIntegration)
-                println("Guild integration: " + event.integrationOwners.guildIntegration)
-                it.deferEdit().await()
+                println("Is user-installed interaction only: " + !event.integrationOwners.isGuildIntegration)
+                println("User integration: " + event.integrationOwners.authorizingUserId)
+                println("Guild integration: " + event.integrationOwners.authorizingGuildId)
+                it.reply("Clicked").await()
+
+                println(event)
+                println(it)
             }
         }
-        event.replyComponents(button.into()).setEphemeral(true).await()
+        event.replyComponents(button.into())
+//            .setEphemeral(true)
+            .await()
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
