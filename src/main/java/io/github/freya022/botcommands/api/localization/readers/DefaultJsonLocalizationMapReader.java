@@ -18,7 +18,8 @@ import java.util.ResourceBundle;
  * <h3>Default behavior</h3>
  * Localization templates are loaded from the {@code /bc_localization} folder (i.e., the {@code bc_localization} in your jar's root)
  * <br>Your localization bundle must be a valid JSON file and use the {@code .json} extension.
- * <br>The localization bundle can use any name, but <b>must</b> be suffixed with the same locale formatting as {@link ResourceBundle} would use, such as {@code _fr} or {@code _en_US}.
+ * <br>The localization bundle can use any name, but <b>must</b> be suffixed with the same locale formatting as {@link ResourceBundle.Control#toBundleName(String, Locale)},
+ * typically {@code _fr} ({@code _language}) or {@code _en_US} ({@code _language_COUNTRY}).
  *
  * <p>The JSON content root must be an object, where the keys must either be delimited by dots, or by using nested objects.
  * <h3>Example</h3>
