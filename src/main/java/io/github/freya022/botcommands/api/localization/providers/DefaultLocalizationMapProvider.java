@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.localization.providers;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapKt;
-import io.github.freya022.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
+import io.github.freya022.botcommands.api.localization.readers.JsonLocalizationMapReader;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ import java.util.Locale;
  * <p>Additionally, this reads bundles with a {@code -default} postfix on the base name,
  * such as {@code DefaultMessage-default_fr_FR}.
  *
- * @see DefaultJsonLocalizationMapReader
+ * @see JsonLocalizationMapReader
  */
 @BService
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {

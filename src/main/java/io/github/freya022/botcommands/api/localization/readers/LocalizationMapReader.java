@@ -17,7 +17,7 @@ import java.io.IOException;
  * <p>
  * <b>Usage</b>: Register your instance as a service with {@link BService}.
  *
- * @see DefaultJsonLocalizationMapReader
+ * @see JsonLocalizationMapReader
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
