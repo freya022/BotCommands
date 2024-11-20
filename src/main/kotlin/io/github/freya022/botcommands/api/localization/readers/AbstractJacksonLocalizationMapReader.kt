@@ -17,15 +17,24 @@ import java.io.InputStream
  * You may supply a [LocalizationTemplateFunction] to customize the templates being filled,
  * if the [default provider][LocalizationTemplateFunction.createDefault] is not enough.
  *
- * @param context          Main framework context
  * @param objectMapper     Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
  */
-abstract class AbstractJacksonLocalizationMapReader @JvmOverloads constructor(
-    private val context: BContext,
+abstract class AbstractJacksonLocalizationMapReader(
     private val objectMapper: ObjectMapper,
-    private val templateFunction: LocalizationTemplateFunction = LocalizationTemplateFunction.createDefault(context),
+    private val templateFunction: LocalizationTemplateFunction,
 ) : LocalizationMapReader {
+
+    /**
+     * Constructs a [AbstractJacksonLocalizationMapReader] with the default [LocalizationTemplateFunction].
+     *
+     * @param context      Main framework context
+     * @param objectMapper Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
+     */
+    constructor(
+        context: BContext,
+        objectMapper: ObjectMapper,
+    ) : this(objectMapper, LocalizationTemplateFunction.createDefault(context))
 
     /**
      * Retrieves the [InputStream] from the requested localization map,

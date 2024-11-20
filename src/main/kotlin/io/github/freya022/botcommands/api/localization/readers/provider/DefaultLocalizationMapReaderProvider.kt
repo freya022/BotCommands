@@ -12,6 +12,6 @@ internal open class DefaultLocalizationMapReaderProvider {
     @Bean("builtinJsonLocalizationMapReader")
     @BService(name = "builtinJsonLocalizationMapReader")
     open fun defaultJsonLocalizationMapReader(context: BContext): JsonLocalizationMapReader {
-        return JsonLocalizationMapReader(context, "bc_localization")
+        return JsonLocalizationMapReader(context)
     }
 }

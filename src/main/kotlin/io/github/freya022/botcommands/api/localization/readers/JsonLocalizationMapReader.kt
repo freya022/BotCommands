@@ -55,18 +55,28 @@ import java.util.*
  * }
  * ```
  *
- * @param folderName       Path where the files can be found, this is not read recursively
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
+ * @param folderName       Path where the files can be found, this is not read recursively
  */
 class JsonLocalizationMapReader @JvmOverloads constructor(
-    context: BContext,
+    templateFunction: LocalizationTemplateFunction,
     private val folderName: String = "/bc_localization",
-    templateFunction: LocalizationTemplateFunction = LocalizationTemplateFunction.createDefault(context),
 ) : AbstractJacksonLocalizationMapReader(
-    context,
     ObjectMapper(),
     templateFunction
 ) {
+
+    /**
+     * Constructs a [JsonLocalizationMapReader] with the default [LocalizationTemplateFunction].
+     *
+     * @param context    Main framework context
+     * @param folderName Path where the files can be found, this is not read recursively
+     */
+    @JvmOverloads
+    constructor(
+        context: BContext,
+        folderName: String = "/bc_localization",
+    ) : this(LocalizationTemplateFunction.createDefault(context), folderName)
 
     override fun getInputStream(request: LocalizationMapRequest): InputStream? {
         return this.javaClass.getResourceAsStream("/$folderName/${request.bundleName}.json")
