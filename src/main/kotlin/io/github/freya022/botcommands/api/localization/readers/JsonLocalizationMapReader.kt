@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.localization.LocalizationMapRequest
 import io.github.freya022.botcommands.api.localization.LocalizationTemplate
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.InputStream
 import java.util.*
+
+private val logger = KotlinLogging.logger { }
 
 /**
  * Reads localization bundles in a JSON format and extracts the [LocalizationTemplates][LocalizationTemplate].
@@ -80,7 +83,19 @@ class JsonLocalizationMapReader @JvmOverloads constructor(
         classLoader: ClassLoader = JsonLocalizationMapReader::class.java.classLoader,
     ) : this(LocalizationTemplateFunction.createDefault(context), folderName, classLoader)
 
+    private val notFounds = hashSetOf<String>()
+
     override fun getInputStream(request: LocalizationMapRequest): InputStream? {
-        return classLoader.getResourceAsStream("/$folderName/${request.bundleName}.json")
+        val path = "$folderName/${request.bundleName}.json"
+        if (path in notFounds)
+            return null
+
+        val stream = classLoader.getResourceAsStream(path)
+        if (stream == null) {
+            notFounds.add(path)
+            logger.trace { "Found no bundle at '$path' in class loader named '${classLoader.name}' ($classLoader)" }
+        }
+
+        return stream
     }
 }
