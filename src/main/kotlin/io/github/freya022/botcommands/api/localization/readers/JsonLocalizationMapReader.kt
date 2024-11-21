@@ -13,8 +13,8 @@ private val logger = KotlinLogging.logger { }
 /**
  * Reads localization bundles in a JSON format and extracts the [LocalizationTemplates][LocalizationTemplate].
  *
- * The bundles are read from the specified [folderName], and must be valid, use the `.json` extension,
- * and be a standard **JSON object**.
+ * The bundles are read from the specified [folderName] and [classLoader] (see [ClassLoader.getResourceAsStream]),
+ * and must be valid, use the `.json` extension, and be a standard **JSON object**.
  *
  * The name of the files must end with locale, as specified by [ResourceBundle.Control.toBundleName],
  * typically `_fr` (`_language`) or `_en_US` (`_language_COUNTRY`).
@@ -62,6 +62,7 @@ private val logger = KotlinLogging.logger { }
  *
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
  * @param folderName       Path where the files can be found, this is not read recursively
+ * @param classLoader      Where to load the resources from, useful if the bundles are in a different module
  */
 class JsonLocalizationMapReader @JvmOverloads constructor(
     templateFunction: LocalizationTemplateFunction,
@@ -75,8 +76,9 @@ class JsonLocalizationMapReader @JvmOverloads constructor(
     /**
      * Constructs a [JsonLocalizationMapReader] with the default [LocalizationTemplateFunction].
      *
-     * @param context    Main framework context
-     * @param folderName Path where the files can be found, this is not read recursively
+     * @param context     Main framework context
+     * @param folderName  Path where the files can be found, this is not read recursively
+     * @param classLoader Where to load the resources from, useful if the bundles are in a different module
      */
     @JvmOverloads
     constructor(
