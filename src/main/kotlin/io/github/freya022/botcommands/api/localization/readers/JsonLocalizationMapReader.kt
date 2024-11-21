@@ -60,7 +60,7 @@ import java.util.*
  */
 class JsonLocalizationMapReader @JvmOverloads constructor(
     templateFunction: LocalizationTemplateFunction,
-    private val folderName: String = "/bc_localization",
+    private val folderName: String = "bc_localization",
     private val classLoader: ClassLoader = JsonLocalizationMapReader::class.java.classLoader,
 ) : AbstractJacksonLocalizationMapReader(
     ObjectMapper(),
@@ -76,7 +76,7 @@ class JsonLocalizationMapReader @JvmOverloads constructor(
     @JvmOverloads
     constructor(
         context: BContext,
-        folderName: String = "/bc_localization",
+        folderName: String = "bc_localization",
         classLoader: ClassLoader = JsonLocalizationMapReader::class.java.classLoader,
     ) : this(LocalizationTemplateFunction.createDefault(context), folderName, classLoader)
 
