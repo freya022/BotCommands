@@ -85,6 +85,12 @@ class JsonLocalizationMapReader @JvmOverloads constructor(
 
     private val notFounds = hashSetOf<String>()
 
+    init {
+        require(!folderName.startsWith("/")) {
+            "The folder name cannot start with /"
+        }
+    }
+
     override fun getInputStream(request: LocalizationMapRequest): InputStream? {
         val path = "$folderName/${request.bundleName}.json"
         if (path in notFounds)
