@@ -17,6 +17,49 @@ import java.io.InputStream
  * You may supply a [LocalizationTemplateFunction] to customize the templates being filled,
  * if the [default provider][LocalizationTemplateFunction.createDefault] is not enough.
  *
+ * ### Example - YAML reader
+ * You must add the [jackson-dataformat-yaml](https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml)
+ * dependency, make sure to match the version that JDA uses to avoid incompatibilities.
+ *
+ * #### Kotlin
+ * ```kotlin
+ * class YamlLocalizationMapReader(
+ *     localizationTemplateFunction: LocalizationTemplateFunction,
+ *     private val folderName: String,
+ * ) : AbstractJacksonLocalizationMapReader(
+ *     ObjectMapper(YAMLFactory()), // Give it a YAMLFactory instead of the default JSONFactory
+ *     localizationTemplateFunction,
+ * ) {
+ *
+ *     override fun getInputStream(request: LocalizationMapRequest): InputStream? {
+ *         return this.javaClass.getResourceAsStream("/$folderName/${request.bundleName}.yml")
+ *             ?: this.javaClass.getResourceAsStream("/$folderName/${request.bundleName}.yaml")
+ *     }
+ * }
+ * ```
+ *
+ * #### Java
+ * ```java
+ * public class YamlLocalizationMapReader extends AbstractJacksonLocalizationMapReader {
+ *
+ *     private final String folderName;
+ *
+ *     public YamlLocalizationMapReader(@NotNull LocalizationTemplateFunction templateFunction, @NotNull String folderName) {
+ *         super(new ObjectMapper(new YAMLFactory()), templateFunction);
+ *         this.folderName = folderName;
+ *     }
+ *
+ *     @Nullable
+ *     @Override
+ *     public InputStream getInputStream(@NotNull LocalizationMapRequest request) {
+ *         final InputStream stream = getClass().getResourceAsStream("/%s/%s.yml".formatted(folderName, request.bundleName()));
+ *         if (stream != null) return stream;
+ *
+ *         return getClass().getResourceAsStream("/%s/%s.yaml".formatted(folderName, request.bundleName()));
+ *     }
+ * }
+ * ```
+ *
  * @param objectMapper     Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
  */

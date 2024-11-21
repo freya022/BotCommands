@@ -39,7 +39,8 @@ private val logger = KotlinLogging.logger { }
  * #### Example - Kotlin
  * ```kotlin
  * @BConfiguration
- * object LocalizationProviders {
+ * object LocalizationMapReaderProvider {
+ *
  *     @BService // Creates a new LocalizationMapReader which finds its JSON files in the "doxxy" folder
  *     fun doxxyLocalizationReader(context: BContext): LocalizationMapReader {
  *         return JsonLocalizationMapReader(context, "doxxy")
@@ -50,9 +51,10 @@ private val logger = KotlinLogging.logger { }
  * #### Example - Java
  * ```java
  * @BConfiguration
- * public class LocalizationProviders {
+ * public class LocalizationMapReaderProvider {
+ *
  *     @BService // Creates a new LocalizationMapReader which finds its JSON files in the "doxxy" folder
- *     public LocalizationMapReader doxxyLocalizationReader(BContext context) {
+ *     public static LocalizationMapReader doxxyLocalizationReader(BContext context) {
  *         return new JsonLocalizationMapReader(context, "doxxy");
  *     }
  * }
