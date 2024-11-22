@@ -17,6 +17,8 @@ import java.io.InputStream
  * You may supply a [LocalizationTemplateFunction] to customize the templates being filled,
  * if the [default provider][LocalizationTemplateFunction.createDefault] is not enough.
  *
+ * **Note:** For most cases, using [JacksonLocalizationMapReader] is more than enough.
+ *
  * ### Example - YAML reader
  * You must add the [jackson-dataformat-yaml](https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml)
  * dependency, make sure to match the version that JDA uses to avoid incompatibilities.
@@ -62,6 +64,8 @@ import java.io.InputStream
  *
  * @param objectMapper     Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
+ *
+ * @see JacksonLocalizationMapReader
  */
 abstract class AbstractJacksonLocalizationMapReader(
     private val objectMapper: ObjectMapper,

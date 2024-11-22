@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InjectedServi
 import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteraction
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
-import io.github.freya022.botcommands.api.localization.readers.JsonLocalizationMapReader
+import io.github.freya022.botcommands.api.localization.readers.JacksonLocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
@@ -15,12 +15,12 @@ interface BLocalizationConfig {
      * not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations].
      *
      * As a reminder, the localization bundles are in `bc_localization` by default,
-     * see [customization][JsonLocalizationMapReader].
+     * see [JacksonLocalizationMapReader].
      *
      * For example: `MyCommandResponses` will, by default,
      * find bundles similar to `/bc_localization/MyCommands_<locale>.json`.
      *
-     * See [DefaultLocalizationMapProvider] and [JsonLocalizationMapReader] for default implementation details.
+     * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * Spring property: `botcommands.localization.responseBundles`
      *
@@ -43,7 +43,7 @@ class BLocalizationConfigBuilder internal constructor() : BLocalizationConfig {
      * For example: `MyCommandResponses` will, by default,
      * find bundles similar to `/bc_localization/MyCommands_<locale>.json`.
      *
-     * See [DefaultLocalizationMapProvider] and [JsonLocalizationMapReader] for default implementation details.
+     * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * Spring property: `botcommands.localization.responseBundles`
      *

@@ -17,7 +17,7 @@ import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.providers.DefaultLocalizationMapProvider
-import io.github.freya022.botcommands.api.localization.readers.JsonLocalizationMapReader
+import io.github.freya022.botcommands.api.localization.readers.JacksonLocalizationMapReader
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
@@ -173,8 +173,7 @@ interface BApplicationConfig {
      * Mappings between the base bundle name and the locales it supports.
      *
      * The file can be anywhere and of any extension,
-     * as long as it can be read by a [LocalizationMapReader],
-     * see the [default implementation][JsonLocalizationMapReader].
+     * as long as it can be read by a [LocalizationMapReader].
      *
      * To know the final name of your file,
      * which in most cases is `<name>_<language>_<country>.<extension>`,
@@ -182,7 +181,7 @@ interface BApplicationConfig {
      * replacing the `-` (hyphen) by a `_` (underscore).
      *
      * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
-     * will, by default, read in the [`/bc_localization`][JsonLocalizationMapReader] folder:
+     * will, by default, read in the [`/bc_localization`][JacksonLocalizationMapReader] folder:
      * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
      * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
      * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
@@ -192,7 +191,7 @@ interface BApplicationConfig {
      * for example, `botcommands.application.localizations.MyBundle=english_us,german,french`.
      *
      * @see DefaultLocalizationMapProvider
-     * @see JsonLocalizationMapReader
+     * @see JacksonLocalizationMapReader
      */
     @ConfigurationValue(path = "botcommands.application.localizations")
     val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
@@ -277,7 +276,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      *
      * The file can be anywhere and of any extension,
      * as long as it can be read by a [LocalizationMapReader],
-     * see the [default implementation][JsonLocalizationMapReader].
+     * see the [default implementation][JacksonLocalizationMapReader].
      *
      * To know the final name of your file,
      * which in most cases is `<name>_<language>_<country>.<extension>`,
@@ -285,12 +284,12 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * replacing the `-` (hyphen) by a `_` (underscore).
      *
      * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
-     * will, by default, read in the `/bc_localization` ([configurable][JsonLocalizationMapReader]) folder:
+     * will, by default, read in the `/bc_localization` folder:
      * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
      * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
      * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
      *
-     * See [DefaultLocalizationMapProvider] and [JsonLocalizationMapReader] for default implementation details.
+     * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * ### Spring property
      * The property `botcommands.application.localizations` is suffixed with the bundle name to the key,
@@ -301,7 +300,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
-     * @see JsonLocalizationMapReader
+     * @see JacksonLocalizationMapReader
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
@@ -323,7 +322,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      *
      * The file can be anywhere and of any extension,
      * as long as it can be read by a [LocalizationMapReader],
-     * see the [default implementation][JsonLocalizationMapReader].
+     * see the [default implementation][JacksonLocalizationMapReader].
      *
      * To know the final name of your file,
      * which in most cases is `<name>_<language>_<country>.<extension>`,
@@ -331,12 +330,12 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * replacing the `-` (hyphen) by a `_` (underscore).
      *
      * For example, `MyCommands` -> `[DiscordLocale.GERMAN, DiscordLocale.FRENCH, DiscordLocale.SPANISH]`
-     * will, by default, read in the `/bc_localization` ([configurable][JsonLocalizationMapReader]) folder:
+     * will, by default, read in the `/bc_localization` ([configurable][JacksonLocalizationMapReader]) folder:
      * - `DiscordLocale.GERMAN` -> `de` -> `MyCommands_de.json`
      * - `DiscordLocale.FRENCH` -> `fr` -> `MyCommands_fr.json`
      * - `DiscordLocale.SPANISH` -> `es-ES` -> `es_ES` -> `MyCommand_es_ES.json`
      *
-     * See [DefaultLocalizationMapProvider] and [JsonLocalizationMapReader] for default implementation details.
+     * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * ### Spring property
      * The property `botcommands.application.localizations` is suffixed with the bundle name to the key,
@@ -347,7 +346,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
-     * @see JsonLocalizationMapReader
+     * @see JacksonLocalizationMapReader
      * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, vararg locales: DiscordLocale) {
