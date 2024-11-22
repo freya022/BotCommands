@@ -62,7 +62,7 @@ import java.io.InputStream
  * }
  * ```
  *
- * @param objectMapper     Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
+ * @param objectMapper     Object mapper with support for any [data format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
  * @param templateFunction Function returning a [LocalizationTemplate] from the template string and locale
  *
  * @see JacksonLocalizationMapReader
@@ -76,7 +76,7 @@ abstract class AbstractJacksonLocalizationMapReader(
      * Constructs a [AbstractJacksonLocalizationMapReader] with the default [LocalizationTemplateFunction].
      *
      * @param context      Main framework context
-     * @param objectMapper Object mapper with support for any [object format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
+     * @param objectMapper Object mapper with support for any [data format](https://github.com/FasterXML/jackson?tab=readme-ov-file#data-format-modules) (such as JSON, YAML and TOML)
      */
     constructor(
         context: BContext,

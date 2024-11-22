@@ -14,8 +14,7 @@ interface BLocalizationConfig {
      * Localization bundles available for localizing interaction responses, with [LocalizableInteraction],
      * not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations].
      *
-     * As a reminder, the localization bundles are in `bc_localization` by default,
-     * see [JacksonLocalizationMapReader].
+     * As a reminder, the localization bundles are in `bc_localization` by default.
      *
      * For example: `MyCommandResponses` will, by default,
      * find bundles similar to `/bc_localization/MyCommands_<locale>.json`.
