@@ -22,7 +22,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
     internal val serviceProviders = ServiceProviders(serviceConfig)
     override val serviceContainer = DefaultServiceContainerImpl(this)
     override val classGraphProcessors: Set<ClassGraphProcessor> =
-        setOf(ConditionalObjectChecker, serviceProviders)
+        setOf(ConditionalObjectChecker(), serviceProviders)
 
     init {
         logger.debug { "Loading BotCommands ${BCInfo.VERSION} (${BCInfo.BUILD_TIME}) ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}" }
