@@ -36,10 +36,6 @@ fun main(args: Array<String>) {
         DecoroutinatorJvmApi.install()
     }
 
-    // Set the configuration file to use, avoids having to put the file in project root
-    // https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-external-config.html#boot-features-external-config-profile-specific-properties
-    System.setProperty("spring.config.location", Environment.folder.resolve("application-test.properties").absolutePathString())
-
     try {
         runApplication<SpringMain>(*args)
     } catch (e: Exception) {
