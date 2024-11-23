@@ -15,7 +15,6 @@ import io.github.freya022.botcommands.internal.core.service.provider.TimedInstan
 import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
 import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging

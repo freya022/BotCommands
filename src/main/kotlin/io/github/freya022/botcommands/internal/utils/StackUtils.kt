@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFileOrNull
 import java.lang.StackWalker.StackFrame
 
 @RequiresOptIn("Make sure internal classes are ignored", level = RequiresOptIn.Level.WARNING)

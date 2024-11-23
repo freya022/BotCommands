@@ -10,18 +10,16 @@ import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.traceNull
-import io.github.freya022.botcommands.api.core.utils.containsAny
-import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
-import io.github.freya022.botcommands.api.core.utils.shortSignature
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
 import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.ClassMetadata
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.MethodMetadata
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
-import java.util.*
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -30,45 +28,78 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 
 private typealias IsNullableAnnotated = Boolean
 
-internal object ReflectionMetadata {
-    private val logger = KotlinLogging.logger { }
+private val logger = KotlinLogging.logger { }
 
-    private class ClassMetadata(val sourceFile: String)
-    private class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
+internal class ReflectionMetadata(
+    private val classMetadataMap: Map<Class<*>, ClassMetadata>,
+    private val methodMetadataMap: Map<Executable, MethodMetadata>,
+) {
 
-    private var scannedParams: Boolean = false
+    internal class ClassMetadata(val sourceFile: String)
+    internal class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
 
-    private val classMetadataMap_: MutableMap<Class<*>, ClassMetadata> = hashMapOf()
-    private val classMetadataMap: Map<Class<*>, ClassMetadata> by lazy {
-        if (!scannedParams)
-            throwInternal("Tried to access class metadata but they haven't been scanned yet")
-
-        Collections.unmodifiableMap(classMetadataMap_)
+    internal fun getClassMetadata(clazz: Class<*>): ClassMetadata {
+        return classMetadataMap[clazz]
+            ?: throwArgument("Tried to access a Class which hasn't been scanned: $this, the class must be accessible and in the search path")
     }
 
-    private val methodMetadataMap_: MutableMap<Executable, MethodMetadata> = hashMapOf()
-    private val methodMetadataMap: Map<Executable, MethodMetadata> by lazy {
-        if (!scannedParams)
-            throwInternal("Tried to access method metadata but they haven't been scanned yet")
-
-        Collections.unmodifiableMap(methodMetadataMap_)
+    internal fun getClassMetadataOrNull(clazz: Class<*>): ClassMetadata? {
+        return classMetadataMap[clazz]
     }
 
-    internal fun runScan(config: BConfig, bootstrap: BotCommandsBootstrap) {
+    internal fun getMethodMetadata(executable: Executable): MethodMetadata {
+        return methodMetadataMap[executable]
+            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
+    }
+
+    internal fun getMethodMetadataOrNull(executable: Executable): MethodMetadata? {
+        return methodMetadataMap[executable]
+    }
+
+    internal companion object {
+
+        private var _instance: ReflectionMetadata? = null
+        internal val instance: ReflectionMetadata
+            get() = _instance ?: throwInternal("Tried to access reflection metadata but they haven't been scanned yet")
+
+        internal fun runScan(config: BConfig, bootstrap: BotCommandsBootstrap) {
+            _instance = ReflectionMetadataScanner.scan(config, bootstrap)
+        }
+    }
+}
+
+private fun ReflectionMetadata.getMethodMetadata(function: KFunction<*>): MethodMetadata {
+    return getMethodMetadata(function.javaMethodOrConstructor)
+}
+
+private fun ReflectionMetadata.getMethodMetadataOrNull(function: KFunction<*>): MethodMetadata? {
+    return getMethodMetadataOrNull(function.javaMethodOrConstructor)
+}
+
+private class ReflectionMetadataScanner private constructor(
+    private val config: BConfig,
+    private val bootstrap: BotCommandsBootstrap
+) {
+
+    private val classGraphProcessors: List<ClassGraphProcessor> =
+        config.classGraphProcessors +
+                bootstrap.classGraphProcessors +
+                listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
+
+    private val classMetadataMap: MutableMap<Class<*>, ClassMetadata> = hashMapOf()
+    private val methodMetadataMap: MutableMap<Executable, MethodMetadata> = hashMapOf()
+
+    private fun scan() {
         val packages = config.packages
         val classes = config.classes
         require(packages.isNotEmpty() || classes.isNotEmpty()) {
-            throwArgument("You must specify at least 1 package or class to scan from")
+            "You must specify at least 1 package or class to scan from"
         }
 
         if (packages.isNotEmpty())
             logger.debug { "Scanning packages: ${packages.joinToString()}" }
         if (classes.isNotEmpty())
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
-
-        val classGraphProcessors = config.classGraphProcessors +
-                bootstrap.classGraphProcessors +
-                listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
 
         ClassGraph()
             .acceptPackages(
@@ -85,12 +116,12 @@ internal object ReflectionMetadata {
             .use { scan ->
                 val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib() }
                 libClasses
-                    .filterLibraryClasses(bootstrap)
-                    .filterClasses(bootstrap)
-                    .processClasses(bootstrap, classGraphProcessors)
+                    .filterLibraryClasses()
+                    .filterClasses()
+                    .processClasses()
 
                 userClasses
-                    .filterClasses(bootstrap)
+                    .filterClasses()
                     .also {
                         if (userClasses.isEmpty()) {
                             logger.warn { "Found no user classes to scan, check the packages set in ${BConfigBuilder::packages.reference}" }
@@ -100,15 +131,16 @@ internal object ReflectionMetadata {
                             logger.debug { "Found ${userClasses.size} user classes" }
                         }
                     }
-                    .processClasses(bootstrap, classGraphProcessors)
+                    .processClasses()
 
                 classGraphProcessors.forEach(ClassGraphProcessor::postProcess)
             }
-
-        scannedParams = true
     }
 
-    private fun List<ClassInfo>.filterLibraryClasses(bootstrap: BotCommandsBootstrap): List<ClassInfo> {
+    private fun ClassInfo.isFromLib() =
+        packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
+
+    private fun List<ClassInfo>.filterLibraryClasses(): List<ClassInfo> {
         // Get types referenced by factories so we get metadata from those as well
         val referencedTypes = asSequence()
             .flatMap { it.methodInfo }
@@ -135,18 +167,15 @@ internal object ReflectionMetadata {
         }
     }
 
-    private fun ClassInfo.isFromLib() =
-        packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
-
     private fun ClassInfoList.containsAny(vararg classes: Class<*>): Boolean = classes.any { containsName(it.name) }
 
     private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-    private fun List<ClassInfo>.filterClasses(bootstrap: BotCommandsBootstrap): List<ClassInfo> = filter {
+    private fun List<ClassInfo>.filterClasses(): List<ClassInfo> = filter {
         it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
             //Only keep classes, not others such as file facades
             val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
             if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                it.checkFacadeFactories(bootstrap)
+                it.checkFacadeFactories()
                 return@filter false
             } else if (kind != KotlinClassHeader.Kind.CLASS) {
                 return@filter false
@@ -157,7 +186,7 @@ internal object ReflectionMetadata {
         return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
     }
 
-    private fun ClassInfo.checkFacadeFactories(bootstrap: BotCommandsBootstrap) {
+    private fun ClassInfo.checkFacadeFactories() {
         this.declaredMethodInfo.forEach { methodInfo ->
             check(!bootstrap.isServiceFactory(methodInfo)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
@@ -165,14 +194,14 @@ internal object ReflectionMetadata {
         }
     }
 
-    private fun List<ClassInfo>.processClasses(bootstrap: BotCommandsBootstrap, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
+    private fun List<ClassInfo>.processClasses(): List<ClassInfo> {
         return onEach { classInfo ->
             try {
                 val kClass = tryGetClass(classInfo) ?: return@onEach
 
-                processMethods(bootstrap, classGraphProcessors, classInfo, kClass)
+                processMethods(classInfo, kClass)
 
-                classMetadataMap_[kClass.java] = ClassMetadata(classInfo.sourceFile)
+                classMetadataMap[kClass.java] = ClassMetadata(classInfo.sourceFile)
 
                 val isService = bootstrap.isService(classInfo)
                 classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
@@ -202,8 +231,6 @@ internal object ReflectionMetadata {
     }
 
     private fun processMethods(
-        bootstrap: BotCommandsBootstrap,
-        classGraphProcessors: List<ClassGraphProcessor>,
         classInfo: ClassInfo,
         kClass: KClass<out Any>,
     ) {
@@ -217,7 +244,7 @@ internal object ReflectionMetadata {
             val method: Executable = tryGetExecutable(methodInfo) ?: continue
             val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
-            methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
+            methodMetadataMap[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
             val isServiceFactory = bootstrap.isServiceFactory(methodInfo)
             classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
@@ -259,42 +286,44 @@ internal object ReflectionMetadata {
         }
     }
 
-    internal val Class<*>.hasMetadata: Boolean
-        get() = this in classMetadataMap
-
-    internal val KClass<*>.hasMetadata: Boolean
-        inline get() = java.hasMetadata
-
-    internal val Class<*>.sourceFile: String
-        get() = (classMetadataMap[this]
-            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
-
-    internal val Class<*>.sourceFileOrNull: String?
-        get() = classMetadataMap[this]?.sourceFile
-
-    internal val KClass<*>.sourceFile: String
-        get() = this.java.sourceFile
-
-    internal val KClass<*>.sourceFileOrNull: String?
-        get() = this.java.sourceFileOrNull
-
-    internal val KParameter.isNullable: Boolean
-        get() {
-            val metadata = methodMetadataMap[function.javaMethodOrConstructor]
-                ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
-            val isNullableAnnotated =
-                metadata.nullabilities[index]
-
-            return isNullableAnnotated || type.isMarkedNullable
-        }
-
-    internal val KFunction<*>.lineNumber: Int
-        get() = lineNumberOrNull
-            ?: throwArgument("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
-
-    internal val KFunction<*>.lineNumberOrNull: Int?
-        get() = methodMetadataMap[this.javaMethodOrConstructor]?.line
-
     private val Executable.isSuspend: Boolean
         get() = parameters.any { it.type == Continuation::class.java }
+
+    companion object {
+        fun scan(
+            config: BConfig,
+            bootstrap: BotCommandsBootstrap,
+        ): ReflectionMetadata {
+            val scanner = ReflectionMetadataScanner(config, bootstrap)
+            scanner.scan()
+            return ReflectionMetadata(
+                scanner.classMetadataMap.toImmutableMap(),
+                scanner.methodMetadataMap.toImmutableMap(),
+            )
+        }
+    }
 }
+
+internal val Class<*>.sourceFile: String
+    get() = ReflectionMetadata.instance.getClassMetadata(this).sourceFile
+
+internal val Class<*>.sourceFileOrNull: String?
+    get() = ReflectionMetadata.instance.getClassMetadataOrNull(this)?.sourceFile
+
+internal val KClass<*>.sourceFile: String
+    get() = this.java.sourceFile
+
+internal val KClass<*>.sourceFileOrNull: String?
+    get() = this.java.sourceFileOrNull
+
+internal val KParameter.isNullable: Boolean
+    get() {
+        val isNullableAnnotated = ReflectionMetadata.instance.getMethodMetadata(function).nullabilities[index]
+        return isNullableAnnotated || type.isMarkedNullable
+    }
+
+internal val KFunction<*>.lineNumber: Int
+    get() = ReflectionMetadata.instance.getMethodMetadata(this).line
+
+internal val KFunction<*>.lineNumberOrNull: Int?
+    get() = ReflectionMetadata.instance.getMethodMetadataOrNull(this)?.line

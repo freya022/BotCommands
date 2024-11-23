@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.isNullable
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

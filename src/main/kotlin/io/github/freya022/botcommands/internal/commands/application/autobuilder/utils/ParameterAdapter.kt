@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.isNullable
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KParameter
 

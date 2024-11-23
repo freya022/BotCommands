@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.parameters
 
 import io.github.freya022.botcommands.api.parameters.MethodParameter
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
+import io.github.freya022.botcommands.internal.utils.isNullable
 import kotlin.reflect.KParameter
 
 internal interface MethodParameterMixin : MethodParameter {

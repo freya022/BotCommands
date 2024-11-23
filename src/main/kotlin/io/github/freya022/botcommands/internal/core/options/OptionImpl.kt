@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.commands.options.builder.CommandO
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
+import io.github.freya022.botcommands.internal.utils.isNullable
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

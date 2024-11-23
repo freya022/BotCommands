@@ -6,8 +6,8 @@ import io.github.freya022.botcommands.internal.commands.application.slash.option
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandParameterImpl
 import io.github.freya022.botcommands.internal.parameters.AbstractMethodParameter
 import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.isNullable
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.isNullable
 import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal

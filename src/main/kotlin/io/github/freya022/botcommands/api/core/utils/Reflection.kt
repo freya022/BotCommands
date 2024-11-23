@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.core.utils
 
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.lineNumberOrNull
-import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.sourceFileOrNull
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
+import io.github.freya022.botcommands.internal.utils.lineNumberOrNull
+import io.github.freya022.botcommands.internal.utils.sourceFileOrNull
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Executable
 import java.lang.reflect.Modifier
