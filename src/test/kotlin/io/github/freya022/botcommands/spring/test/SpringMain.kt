@@ -43,6 +43,10 @@ fun main(args: Array<String>) {
     try {
         runApplication<SpringMain>(*args)
     } catch (e: Exception) {
+        // Don't handle the exception sent by DevTools
+        if (e.javaClass.name == "org.springframework.boot.devtools.restart.SilentExitExceptionHandler\$SilentExitException")
+            return
+
         logger.catching(e)
         exitProcess(1)
     }
