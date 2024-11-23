@@ -28,6 +28,7 @@
 
         <kotlin.version>2.0.0</kotlin.version>
         <kotlin.coroutine.version>1.9.0</kotlin.coroutine.version>
+        <spring-boot.version>3.2.2</spring-boot.version>
         <flyway.version>10.12.0</flyway.version>
         <bucket4j.version>8.14.0</bucket4j.version>
 
@@ -452,7 +453,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>3.2.2</version>
+            <version>${spring-boot.version}</version>
             <optional>true</optional>
         </dependency>
 
@@ -567,6 +568,12 @@
             <groupId>dev.reformator.stacktracedecoroutinator</groupId>
             <artifactId>stacktrace-decoroutinator-jvm</artifactId>
             <version>2.4.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
