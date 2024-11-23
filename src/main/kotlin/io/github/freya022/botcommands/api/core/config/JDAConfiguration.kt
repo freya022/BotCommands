@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Name
+import org.springframework.context.event.ContextClosedEvent
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 import java.time.Duration as JavaDuration
@@ -43,6 +44,17 @@ class JDAConfiguration internal constructor(
 ) {
 
     class DevTools internal constructor(
+        /**
+         * When Spring devtools are enabled,
+         * enables shutting down JDA when the IoC container [closes][ContextClosedEvent].
+         *
+         * If you disable this, you must shut down JDA manually,
+         * not doing so will let old instances run, receive events and cause unwanted behavior.
+         *
+         * Default: `true`
+         */
+        @ConfigurationValue("jda.devtools.enabled", defaultValue = "true")
+        val enabled: Boolean = true,
         shutdownTimeout: JavaDuration = JavaDuration.ofSeconds(10),
     ) {
         /**

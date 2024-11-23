@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.utils.awaitShutdown
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import org.springframework.beans.factory.getBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.event.ContextClosedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 private val logger = KotlinLogging.logger { }
 
 @Component
+@ConditionalOnProperty(value = ["spring.devtools.restart.enabled", "jda.devtools.enabled"], havingValue = "true", matchIfMissing = true)
 internal class SpringJDARestartListener(
     private val jdaConfiguration: JDAConfiguration,
 ) {
@@ -29,7 +31,7 @@ internal class SpringJDARestartListener(
             jda.shutdownNow()
             jda.awaitShutdown()
         } else {
-            logger.info { "JDA was gracefully shut down" }
+            logger.info { "JDA has gracefully shut down" }
         }
     }
 }
