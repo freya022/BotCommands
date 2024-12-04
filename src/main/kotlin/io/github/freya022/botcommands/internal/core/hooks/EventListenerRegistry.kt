@@ -20,6 +20,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -30,33 +31,48 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-internal class SortedList<T>(private val comparator: Comparator<T>) {
+internal class EventListenerList {
 
     // Only protect modification operations, traversal is fine
     private val lock = ReentrantLock()
-    private var list: List<T> = emptyList()
+    private var map: Map<RunMode, MutableList<EventHandlerFunction>> = emptyMap()
 
-    fun isEmpty() = list.isEmpty()
-    fun isNotEmpty() = !isEmpty()
+    operator fun get(mode: RunMode): List<EventHandlerFunction>? = map[mode]
 
-    fun add(t: T): Unit = lock.withLock {
-        val newList = list + t
-        this.list = newList.sortedWith(comparator)
+    inline fun <R> map(block: (EventHandlerFunction) -> R): List<R> = map.values.flatten().map(block)
+
+    fun add(t: EventHandlerFunction): Unit = lock.withLock {
+        val newMap = newMap()
+        newMap.getOrPut(t.runMode) { arrayListOf() }.add(t)
+
+        for (handlers in newMap.values) {
+            handlers.sortWith(EventHandlerFunction.priorityComparator)
+        }
+
+        this.map = newMap
     }
 
-    inline fun <R> map(block: (T) -> R): List<R> = list.map(block)
+    fun removeAll(removedList: EventListenerList): Boolean = lock.withLock {
+        val newMap = newMap()
 
-    fun removeAll(removedList: SortedList<T>): Boolean = lock.withLock {
-        val newList = list.toMutableList()
-        return newList.removeAll(removedList.list).also {
-            this.list = newList
+        var removedAny = false
+        removedList.map.forEach { (mode, handlers) ->
+            val newHandlers = newMap[mode] ?: return@forEach
+            removedAny = removedAny || newHandlers.removeAll(handlers)
+        }
+
+        this.map = newMap
+        return removedAny
+    }
+
+    private fun newMap() = EnumMap<RunMode, MutableList<EventHandlerFunction>>(RunMode::class.java).apply {
+        map.forEach { (mode, handlers) ->
+            put(mode, handlers.toMutableList() /* copy */)
         }
     }
-
-    inline fun forEach(block: (T) -> Unit) = list.forEach(block)
 }
 
-private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFunction>>
+private typealias EventMap = MutableMap<KClass<*>, EventListenerList>
 
 private val logger = KotlinLogging.logger { }
 
@@ -80,8 +96,7 @@ internal class EventListenerRegistry internal constructor(
             .addAsEventListeners()
     }
 
-    //TODO return SortedList which separates modes (rename class)
-    internal operator fun get(eventType: KClass<*>): SortedList<EventHandlerFunction>? {
+    internal operator fun get(eventType: KClass<*>): EventListenerList? {
         return map[eventType]
     }
 
@@ -152,12 +167,12 @@ internal class EventListenerRegistry internal constructor(
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.computeIfAbsent(it) { SortedList(EventHandlerFunction.priorityComparator) }.add(eventHandlerFunction)
+                    instanceMap.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
                 }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.computeIfAbsent(it) { SortedList(EventHandlerFunction.priorityComparator) }.add(eventHandlerFunction)
+                map.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
             }
         }
 

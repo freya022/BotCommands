@@ -31,24 +31,25 @@ internal class EventDispatcherImpl internal constructor(
         val handlers = eventListenerRegistry[event::class] ?: return
 
         // Run blocking handlers first
-        if (handlers.isNotEmpty()) {
+        handlers[RunMode.BLOCKING]?.let { eventHandlers ->
             runBlocking {
-                handlers.forEach { eventHandler ->
-                    if (eventHandler.runMode == RunMode.BLOCKING) {
-                        runEventHandler(eventHandler, event)
-                    }
+                eventHandlers.forEach { eventHandler ->
+                    runEventHandler(eventHandler, event)
                 }
             }
         }
 
-        // Stick to what JDA-KTX does, 1 coroutine per event for all listeners
-        inheritedCoroutineScope.launch {
-            handlers.forEach { eventHandler ->
-                if (eventHandler.runMode == RunMode.ASYNC) {
-                    asyncCoroutineScope.launch {
-                        runEventHandler(eventHandler, event)
-                    }
-                } else if (eventHandler.runMode == RunMode.INHERIT) {
+        // When the listener requests to run async
+        handlers[RunMode.ASYNC]?.forEach { eventHandler ->
+            asyncCoroutineScope.launch {
+                runEventHandler(eventHandler, event)
+            }
+        }
+
+        handlers[RunMode.INHERIT]?.let { eventHandlers ->
+            // Stick to what JDA-KTX does, 1 coroutine per event for all listeners
+            inheritedCoroutineScope.launch {
+                eventHandlers.forEach { eventHandler ->
                     runEventHandler(eventHandler, event)
                 }
             }
@@ -64,22 +65,20 @@ internal class EventDispatcherImpl internal constructor(
         val handlers = eventListenerRegistry[event::class] ?: return
 
         // Run blocking handlers first
-        if (handlers.isNotEmpty()) {
-            handlers.forEach { eventHandler ->
-                if (eventHandler.runMode == RunMode.BLOCKING) {
-                    runEventHandler(eventHandler, event)
-                }
+        handlers[RunMode.BLOCKING]?.forEach { eventHandler ->
+            runEventHandler(eventHandler, event)
+        }
+
+        // When the listener requests to run async
+        handlers[RunMode.ASYNC]?.forEach { eventHandler ->
+            asyncCoroutineScope.launch {
+                runEventHandler(eventHandler, event)
             }
         }
 
-        handlers.forEach { eventHandler ->
-            if (eventHandler.runMode == RunMode.ASYNC) {
-                asyncCoroutineScope.launch {
-                    runEventHandler(eventHandler, event)
-                }
-            } else if (eventHandler.runMode == RunMode.INHERIT) {
-                runEventHandler(eventHandler, event)
-            }
+        // Stick to what JDA-KTX does, 1 coroutine per event for all listeners
+        handlers[RunMode.INHERIT]?.forEach { eventHandler ->
+            runEventHandler(eventHandler, event)
         }
     }
 
