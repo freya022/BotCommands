@@ -34,13 +34,21 @@ internal open class EventHooksProvider(
     @Bean
     @BService
     fun eventDispatcher(
-        config: BConfig,
         coroutineScopesConfig: BCoroutineScopesConfig,
+        eventListenerRegistry: EventListenerRegistry,
+    ): EventDispatcherImpl {
+        return EventDispatcherImpl(coroutineScopesConfig, originalCoroutineEventManager, eventListenerRegistry)
+    }
+
+    @Bean
+    @BService
+    fun eventListenerRegistry(
+        config: BConfig,
         serviceContainer: ServiceContainer,
         eventTreeService: EventTreeService,
         jdaService: JDAService,
         functionAnnotationsMap: FunctionAnnotationsMap,
-    ): EventDispatcherImpl {
-        return EventDispatcherImpl(config, coroutineScopesConfig, serviceContainer, originalCoroutineEventManager, eventTreeService, jdaService, functionAnnotationsMap)
+    ): EventListenerRegistry {
+        return EventListenerRegistry(config, serviceContainer, originalCoroutineEventManager, eventTreeService, jdaService, functionAnnotationsMap)
     }
 }
