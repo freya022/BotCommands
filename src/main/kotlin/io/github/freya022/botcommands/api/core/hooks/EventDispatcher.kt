@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.core
+package io.github.freya022.botcommands.api.core.hooks
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService

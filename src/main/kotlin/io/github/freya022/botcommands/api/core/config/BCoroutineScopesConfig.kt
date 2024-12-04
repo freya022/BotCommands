@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
-import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL

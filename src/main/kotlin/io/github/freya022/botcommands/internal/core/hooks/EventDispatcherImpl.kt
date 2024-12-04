@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
+import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.unwrap

@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
+import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.internal.utils.classRef

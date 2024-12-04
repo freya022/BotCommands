@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.core.annotations
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
+import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import java.util.concurrent.TimeUnit
 
 @Target(AnnotationTarget.FUNCTION)
