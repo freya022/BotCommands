@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.internal.core.EventHandlerFunction
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

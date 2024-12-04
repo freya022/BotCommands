@@ -1,12 +1,13 @@
-package io.github.freya022.botcommands.internal.core
+package io.github.freya022.botcommands.internal.core.hooks
 
-import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import kotlin.time.Duration
 
 internal class EventHandlerFunction(
     val classPathFunction: ClassPathFunction,
     val priority: Int,
-    val runMode: RunMode,
+    val runMode: BEventListener.RunMode,
     val timeout: Duration,
     private val parametersBlock: () -> Array<Any>
 ) {

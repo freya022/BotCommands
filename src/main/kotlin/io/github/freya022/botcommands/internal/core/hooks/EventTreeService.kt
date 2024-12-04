@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core
+package io.github.freya022.botcommands.internal.core.hooks
 
 import io.github.classgraph.ClassGraph
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
