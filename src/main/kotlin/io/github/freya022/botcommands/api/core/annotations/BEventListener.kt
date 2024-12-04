@@ -63,8 +63,10 @@ annotation class BEventListener(
         INHERIT(order = 3),
 
         /**
-         * Runs this listener on the same thread as JDA's websocket read thread,
-         * based on the [priority].
+         * Runs this listener on the same thread as they were fired in, based on the [priority].
+         *
+         * For JDA events, this will most likely run on JDA's websocket read thread,
+         * blocking it for too long will make the bot unresponsive.
          *
          * These always run first, and should be used **only when necessary**.
          *
