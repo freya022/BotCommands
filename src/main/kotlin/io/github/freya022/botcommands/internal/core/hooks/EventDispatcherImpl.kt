@@ -144,11 +144,9 @@ internal class EventDispatcherImpl internal constructor(
 
         // Run blocking handlers first
         if (handlers.isNotEmpty()) {
-            runBlocking {
-                handlers.forEach { eventHandler ->
-                    if (eventHandler.runMode == RunMode.BLOCKING) {
-                        runEventHandler(eventHandler, event)
-                    }
+            handlers.forEach { eventHandler ->
+                if (eventHandler.runMode == RunMode.BLOCKING) {
+                    runEventHandler(eventHandler, event)
                 }
             }
         }
