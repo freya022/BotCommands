@@ -1,6 +1,7 @@
 package io.github.freya022.bot
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
@@ -27,7 +28,7 @@ class ReadyListener {
     }
 
     // Executes after the above listener, but doesn't prevent the listener below from running
-    @BEventListener(priority = 0, async = true)
+    @BEventListener(priority = 0, mode = RunMode.ASYNC)
     suspend fun onReadyAsync(event: ReadyEvent) {
         logger.info { "(Before) Async handling of ReadyEvent" }
         delay(200.milliseconds)

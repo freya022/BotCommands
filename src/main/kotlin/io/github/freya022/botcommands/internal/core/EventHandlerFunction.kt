@@ -1,11 +1,12 @@
 package io.github.freya022.botcommands.internal.core
 
+import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import kotlin.time.Duration
 
 internal class EventHandlerFunction(
     val classPathFunction: ClassPathFunction,
     val priority: Int,
-    val isAsync: Boolean,
+    val runMode: RunMode,
     val timeout: Duration,
     private val parametersBlock: () -> Array<Any>
 ) {
@@ -29,7 +30,7 @@ internal class EventHandlerFunction(
     companion object {
         val priorityComparator: Comparator<EventHandlerFunction> = Comparator
             .comparingInt<EventHandlerFunction> { it.priority }
-            .thenComparing<Boolean> { it.isAsync }
+            .thenComparingInt { it.runMode.order }
             .reversed()
     }
 }

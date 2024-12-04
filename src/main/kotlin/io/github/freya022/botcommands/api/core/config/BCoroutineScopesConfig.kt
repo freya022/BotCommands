@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.config
 
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.EventDispatcher
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
@@ -14,7 +13,8 @@ import java.util.concurrent.Executor
 interface BCoroutineScopesConfig {
     val commandUpdateScope: CoroutineScope          //Not used much
     /**
-     * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync], including if [BEventListener.async] is enabled, all JDA events are executed sequentially on the same scope as the supplied [CoroutineEventManager]
+     * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync],
+     * and for [ASYNC][BEventListener.RunMode.ASYNC] run modes.
      */
     val eventDispatcherScope: CoroutineScope        //Only used by EventDispatcher#dispatchEventAsync
     val textCommandsScope: CoroutineScope           //Should not be long-running

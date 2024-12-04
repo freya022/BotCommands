@@ -2,12 +2,14 @@ package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -22,7 +24,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.springframework.context.annotation.Bean
+import org.springframework.stereotype.Component
 import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
@@ -38,7 +43,10 @@ import kotlin.time.toDurationUnit
 internal class SortedList<T>(private val comparator: Comparator<T>) {
     // Only protect modification operations, traversal is fine
     private val lock = ReentrantLock()
-    private var list: List<T> = arrayListOf()
+    private var list: List<T> = emptyList()
+
+    fun isEmpty() = list.isEmpty()
+    fun isNotEmpty() = !isEmpty()
 
     fun add(t: T): Unit = lock.withLock {
         val newList = list + t
@@ -68,19 +76,63 @@ private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFuncti
 
 private val logger = KotlinLogging.logger { }
 
+@BService // Cannot be a BConfiguration as the function below needs an instance
+@Component
+internal open class EventHooksProvider(
+    eventManagerSupplier: ICoroutineEventManagerSupplier,
+) {
+    private val originalCoroutineEventManager = eventManagerSupplier.get()
+
+    @Bean
+    @BService
+    @ServiceType(IEventManager::class)
+    internal open fun coroutineEventManager(
+        eventDispatcher: EventDispatcher,
+    ): CoroutineEventManager {
+        return DispatcherAwareCoroutineEventManager(originalCoroutineEventManager, eventDispatcher)
+    }
+
+    @Bean
+    @BService
+    fun eventDispatcher(
+        config: BConfig,
+        coroutineScopesConfig: BCoroutineScopesConfig,
+        serviceContainer: ServiceContainer,
+        eventTreeService: EventTreeService,
+        jdaService: JDAService,
+        functionAnnotationsMap: FunctionAnnotationsMap,
+    ): EventDispatcher {
+        return EventDispatcher(config, coroutineScopesConfig, serviceContainer, originalCoroutineEventManager, eventTreeService, jdaService, functionAnnotationsMap)
+    }
+}
+
+internal class DispatcherAwareCoroutineEventManager internal constructor(
+    originalCoroutineEventManager: CoroutineEventManager,
+    private val eventDispatcher: EventDispatcher,
+) : CoroutineEventManager(originalCoroutineEventManager, originalCoroutineEventManager.timeout) {
+
+    override fun handle(event: GenericEvent) {
+        eventDispatcher.onEvent(event)
+        super.handle(event) // Still let users use their own registered event listeners
+    }
+}
+
 /**
  * Dispatches JDA and BC events to [@BEventListener][BEventListener] methods.
  */
-@BService
 class EventDispatcher internal constructor(
     private val config: BConfig,
     private val coroutineScopesConfig: BCoroutineScopesConfig,
     private val serviceContainer: ServiceContainer,
-    private val eventManager: CoroutineEventManager,
+    originalCoroutineEventManager: CoroutineEventManager,
     private val eventTreeService: EventTreeService,
     private val jdaService: JDAService,
-    functionAnnotationsMap: FunctionAnnotationsMap
+    functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
+
+    private val eventCoroutineScope: CoroutineScope = originalCoroutineEventManager
+    private val eventTimeout: Duration = originalCoroutineEventManager.timeout
+
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
 
@@ -88,11 +140,34 @@ class EventDispatcher internal constructor(
         functionAnnotationsMap
             .get<BEventListener>()
             .addAsEventListeners()
+    }
 
-        //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
-        // as jda-ktx takes this group of listeners as only being one.
-        eventManager.listener<Event>(timeout = Duration.INFINITE) {
-            dispatchEvent(it)
+    internal fun onEvent(event: GenericEvent) {
+        // No need to check for `event` type as if it's in the map, then it's recognized
+        val handlers = map[event::class] ?: return
+
+        // Run blocking handlers first
+        if (handlers.isNotEmpty()) {
+            runBlocking {
+                handlers.forEach { eventHandler ->
+                    if (eventHandler.runMode == RunMode.BLOCKING) {
+                        runEventHandler(eventHandler, event)
+                    }
+                }
+            }
+        }
+
+        // Stick to what JDA-KTX does, 1 coroutine per event for all listeners
+        eventCoroutineScope.launch {
+            handlers.forEach { eventHandler ->
+                if (eventHandler.runMode == RunMode.ASYNC) {
+                    coroutineScopesConfig.eventDispatcherScope.launch {
+                        runEventHandler(eventHandler, event)
+                    }
+                } else if (eventHandler.runMode == RunMode.INHERIT) {
+                    runEventHandler(eventHandler, event)
+                }
+            }
         }
     }
 
@@ -121,12 +196,23 @@ class EventDispatcher internal constructor(
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
+        // Run blocking handlers first
+        if (handlers.isNotEmpty()) {
+            runBlocking {
+                handlers.forEach { eventHandler ->
+                    if (eventHandler.runMode == RunMode.BLOCKING) {
+                        runEventHandler(eventHandler, event)
+                    }
+                }
+            }
+        }
+
         handlers.forEach { eventHandler ->
-            if (eventHandler.isAsync) {
+            if (eventHandler.runMode == RunMode.ASYNC) {
                 coroutineScopesConfig.eventDispatcherScope.launch {
                     runEventHandler(eventHandler, event)
                 }
-            } else {
+            } else if (eventHandler.runMode == RunMode.INHERIT) {
                 runEventHandler(eventHandler, event)
             }
         }
@@ -214,8 +300,9 @@ class EventDispatcher internal constructor(
                         )
                     }
                 }
+            @Suppress("DEPRECATION")
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
-                isAsync = annotation.async,
+                runMode = if (annotation.async) RunMode.ASYNC else annotation.mode,
                 timeout = getTimeout(annotation),
                 priority = annotation.priority,
                 parametersBlock = {
@@ -242,7 +329,7 @@ class EventDispatcher internal constructor(
         return annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
             when {
                 it.isPositive() && it.isFinite() -> it
-                else -> eventManager.timeout
+                else -> eventTimeout // Inherit from the (possibly user-provided) CoroutineEventManager
             }
         }
     }

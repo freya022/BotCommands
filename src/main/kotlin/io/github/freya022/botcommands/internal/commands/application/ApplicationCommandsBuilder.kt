@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -51,7 +52,7 @@ internal class ApplicationCommandsBuilder(
     // Added to set when the first push succeeded
     internal fun hasPushedGuildOnceSuccessfully(guild: Guild): Boolean = guild.idLong !in firstGuildUpdates
 
-    @BEventListener(async = true)
+    @BEventListener(mode = RunMode.ASYNC)
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         try {
             updateCatching(null) { updateGlobalCommands() }
@@ -60,7 +61,7 @@ internal class ApplicationCommandsBuilder(
         }
     }
 
-    @BEventListener(async = true)
+    @BEventListener(mode = RunMode.ASYNC)
     internal suspend fun onGuildReady(event: GuildReadyEvent) {
         val guild = event.guild
 
