@@ -46,7 +46,7 @@ annotation class BEventListener(
     /**
      * Represents how the event listener will run
      */
-    enum class RunMode(val order: Int) {
+    enum class RunMode(@get:JvmSynthetic internal val order: Int) {
 
         /**
          * Runs this listener in a coroutine from the [CoroutineEventManager],
