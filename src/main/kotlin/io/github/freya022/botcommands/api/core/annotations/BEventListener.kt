@@ -4,9 +4,21 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
+import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
+import net.dv8tion.jda.api.events.GenericEvent
 import java.util.concurrent.TimeUnit
 
+/**
+ * Annotates a function as an event listener for a JDA or BC event.
+ *
+ * Remember to always check the requirements of the events you're listening to!
+ *
+ * ### Requirements
+ * - The declaring class must be a service
+ * - The function must not be static
+ * - The first argument must be a subclass of [GenericEvent] or [BGenericEvent]
+ */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class BEventListener(
