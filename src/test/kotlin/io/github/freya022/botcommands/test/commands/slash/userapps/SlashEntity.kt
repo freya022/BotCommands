@@ -23,16 +23,16 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 @Command
 class SlashEntity(private val buttons: Buttons, private val modals: Modals, private val selectMenus: SelectMenus) : GlobalApplicationCommandProvider {
     data class AllEntities(
-        val user: User,
-        val member: Member,
-        val role: Role,
-        val textChannel: TextChannel,
-        val newsChannel: NewsChannel,
-        val stageChannel: StageChannel,
-        val voiceChannel: VoiceChannel,
-        val category: Category,
-        val forumChannel: ForumChannel,
-        val threadChannel: ThreadChannel
+        val user: User?,
+        val member: Member?,
+        val role: Role?,
+        val textChannel: TextChannel?,
+        val newsChannel: NewsChannel?,
+        val stageChannel: StageChannel?,
+        val voiceChannel: VoiceChannel?,
+        val category: Category?,
+        val forumChannel: ForumChannel?,
+        val threadChannel: ThreadChannel?
 //        val mediaChannel: MediaChannel
     )
 
