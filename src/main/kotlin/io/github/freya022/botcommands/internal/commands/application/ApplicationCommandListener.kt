@@ -52,17 +52,19 @@ internal class ApplicationCommandListener internal constructor(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<ApplicationCommandFilter<Any>>,
-    rejectionHandler: ApplicationCommandRejectionHandler<Any>?
+    filters: List<ApplicationCommandFilter<*>>,
+    rejectionHandler: ApplicationCommandRejectionHandler<*>?
 ) {
     private val scope = context.coroutineScopesConfig.applicationCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<ApplicationCommandFilter<Any>> = filters.filter { it.global }
-    private val rejectionHandler: ApplicationCommandRejectionHandler<Any>? = when {
+    @Suppress("UNCHECKED_CAST")
+    private val globalFilters = filters.filter { it.global } as List<ApplicationCommandFilter<Any>>
+    @Suppress("UNCHECKED_CAST")
+    private val rejectionHandler = when {
         filters.isEmpty() -> null
-        else -> rejectionHandler
+        else -> rejectionHandler as ApplicationCommandRejectionHandler<Any>?
             ?: throwState("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
     }
 

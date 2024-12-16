@@ -43,8 +43,8 @@ internal class TextCommandsListener internal constructor(
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<TextCommandFilter<Any>>,
-    rejectionHandler: TextCommandRejectionHandler<Any>?,
+    filters: List<TextCommandFilter<*>>,
+    rejectionHandler: TextCommandRejectionHandler<*>?,
     private val suggestionSupplier: TextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
@@ -54,10 +54,12 @@ internal class TextCommandsListener internal constructor(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<TextCommandFilter<Any>> = filters.filter { it.global }
-    private val rejectionHandler: TextCommandRejectionHandler<Any>? = when {
+    @Suppress("UNCHECKED_CAST")
+    private val globalFilters = filters.filter { it.global } as List<TextCommandFilter<Any>>
+    @Suppress("UNCHECKED_CAST")
+    private val rejectionHandler = when {
         globalFilters.isEmpty() -> null
-        else -> rejectionHandler
+        else -> rejectionHandler as TextCommandRejectionHandler<Any>?
             ?: throwState("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
     }
 

@@ -40,8 +40,8 @@ internal class ComponentsListener(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<ComponentInteractionFilter<Any>>,
-    rejectionHandler: ComponentInteractionRejectionHandler<Any>?,
+    filters: List<ComponentInteractionFilter<*>>,
+    rejectionHandler: ComponentInteractionRejectionHandler<*>?,
     private val componentController: ComponentController,
     private val continuationManager: ComponentContinuationManager,
     private val componentHandlerExecutor: ComponentHandlerExecutor,
@@ -50,10 +50,12 @@ internal class ComponentsListener(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     // Types are crosschecked anyway
-    private val globalFilters: List<ComponentInteractionFilter<Any>> = filters.filter { it.global }
-    private val rejectionHandler: ComponentInteractionRejectionHandler<Any>? = when {
+    @Suppress("UNCHECKED_CAST")
+    private val globalFilters = filters.filter { it.global } as List<ComponentInteractionFilter<Any>>
+    @Suppress("UNCHECKED_CAST")
+    private val rejectionHandler = when {
         globalFilters.isEmpty() -> null
-        else -> rejectionHandler
+        else -> rejectionHandler as ComponentInteractionRejectionHandler<Any>?
             ?: throwState("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
     }
 
