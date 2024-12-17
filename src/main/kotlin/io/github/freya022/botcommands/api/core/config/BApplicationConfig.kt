@@ -364,8 +364,9 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
      * ### Cache path
      *
      * The default cache folder is at:
-     * - Windows: `%AppData%/BotCommands`
-     * - Unix: `/var/tmp/BotCommands`
+     * - Windows: `%AppData%/BotCommands`,
+     * - Linux: `$XDG_DATA_HOME/BotCommands` (fallbacks to `$HOME/.local/share/BotCommands`),
+     * - macOS: `$HOME/Library/Application Support/io.github.freya022.BotCommands`
      *
      * Each application has a folder inside it, meaning you can safely share this folder with other applications.
      *
