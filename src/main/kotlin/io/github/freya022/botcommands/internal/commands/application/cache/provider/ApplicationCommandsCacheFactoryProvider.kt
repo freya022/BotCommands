@@ -18,6 +18,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 import kotlin.io.path.isWritable
 import kotlin.io.path.pathString
@@ -36,18 +38,27 @@ internal open class ApplicationCommandsCacheFactoryProvider {
 
         when (cacheConfig) {
             is FileApplicationCommandsCacheConfig -> {
+                fun Path.absolutePathStringOrFallback(): String {
+                    return runCatching {
+                        absolutePathString()
+                    }.getOrElse {
+                        logger.warn(it) { "Unable to resolve absolute path of '$pathString'" }
+                        pathString
+                    }
+                }
+
                 val dataDirectory = cacheConfig.path
                 if (dataDirectory.exists() && !dataDirectory.isWritable()) {
                     // Don't use absolutePathString in case it also produces an exception
-                    logger.warn { "Cannot write to '${dataDirectory.pathString}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
+                    logger.warn { "Cannot write to '${dataDirectory.absolutePathStringOrFallback()}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 } else if (!dataDirectory.parent.isWritable()) {
                     // Don't use absolutePathString in case it also produces an exception
-                    logger.warn { "Cannot create directory at '${dataDirectory.pathString}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
+                    logger.warn { "Cannot create directory at '${dataDirectory.absolutePathStringOrFallback()}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 }
 
-                logger.debug { "Using file-based application commands cache @ ${dataDirectory.pathString}" }
+                logger.debug { "Using file-based application commands cache @ ${dataDirectory.absolutePathStringOrFallback()}" }
                 return FileApplicationCommandsCacheFactory(cacheConfig, jda.selfUser.applicationIdLong)
             }
             is DatabaseApplicationCommandsCacheConfig -> {
