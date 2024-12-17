@@ -420,7 +420,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
             osName.startsWith("Linux") -> envPath("XDG_DATA_HOME", "HOME").resolve(".local/share/BotCommands")
             // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/MacOSXDirectories/MacOSXDirectories.html
             // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW1
-            osName.startsWith("Mac") || osName.startsWith("Darwin") -> Path("~/Library/Application Support/io.github.freya022.BotCommands")
+            osName.startsWith("Mac") || osName.startsWith("Darwin") -> envPath("HOME").resolve("Library/Application Support/io.github.freya022.BotCommands")
             else -> {
                 Logging.currentLogger().warn { internalErrorMessage("Unsupported OS '$osName' for file-based application commands cache, using fallback") }
 
