@@ -19,6 +19,8 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringCl
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.AnnotatedParameterizedType
+import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -454,7 +456,12 @@ internal fun getLazyElementErasure(kParameter: KParameter): Pair<KClass<*>, Bool
         if (function is CallableReference)
             throwInternal("Cannot find lazy element nullability on a callable reference")
 
-        val parameter = function.javaMethodOrConstructor.parameters[kParameter.index - 1] // -1 for instance parameter
+        val parameter = run {
+            when (val executable = function.javaMethodOrConstructor) {
+                is Method -> executable.parameters[kParameter.index - 1] // -1 for instance parameter
+                is Constructor<*> -> executable.parameters[kParameter.index]
+            }
+        }
         val lazyType = parameter.annotatedType as? AnnotatedParameterizedType
             ?: throwInternal("Unknown annotated type ${parameter.annotatedType.javaClass}")
         val annotatedElementType = lazyType.annotatedActualTypeArguments.singleOrNull()
