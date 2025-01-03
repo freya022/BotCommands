@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
+import io.github.freya022.botcommands.internal.core.service.lazyService
 import io.github.freya022.botcommands.internal.utils.currentFrame
 import io.github.freya022.botcommands.internal.utils.toSignature
 import io.github.oshai.kotlinlogging.KotlinLogging

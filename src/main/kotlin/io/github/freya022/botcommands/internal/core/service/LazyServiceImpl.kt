@@ -87,3 +87,10 @@ internal class LazyServiceImpl<out T : Any>(
 
     override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
 }
+
+@PublishedApi
+internal inline fun <reified T : Any> ServiceContainer.lazyService(name: String? = null): LazyService<T> =
+    LazyServiceImpl(this, T::class, name)
+@PublishedApi
+internal fun <T : Any> ServiceContainer.lazyService(clazz: KClass<T>, name: String? = null): LazyService<T> =
+    LazyServiceImpl(this, clazz, name)
