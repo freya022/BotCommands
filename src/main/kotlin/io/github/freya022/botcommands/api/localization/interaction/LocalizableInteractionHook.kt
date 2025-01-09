@@ -230,20 +230,202 @@ interface LocalizableInteractionHook : InteractionHook {
     fun editLocalized(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message>
 }
 
+/**
+ * Sends a follow-up with the localized message at the following [path][localizationPath],
+ * using the user's locale and provided parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * ### Configuring the user locale source
+ * The user locale is retrieved from the interaction by default,
+ * but can be changed by implementing your own [UserLocaleProvider] service.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.sendUser(localizationPath: String, vararg entries: PairEntry) =
     sendUser(localizationPath, *entries.mapToEntries())
 
+/**
+ * Sends a follow-up with the localized message at the following [path][localizationPath],
+ * using the guild's locale and provided parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * ### Configuring the guild locale source
+ * The guild locale is retrieved from the interaction by default,
+ * but can be changed by implementing your own [GuildLocaleProvider] service.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.sendGuild(localizationPath: String, vararg entries: PairEntry) =
     sendGuild(localizationPath, *entries.mapToEntries())
 
+/**
+ * Sends a follow-up with the localized message at the following [path][localizationPath],
+ * using the provided locale and parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.sendLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     sendLocalized(locale, localizationPath, *entries.mapToEntries())
 
+/**
+ * Sends a follow-up with the localized message at the following [path][localizationPath],
+ * using the provided locale and parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
+fun LocalizableInteractionHook.sendLocalized(locale: Locale, localizationPath: String, vararg entries: PairEntry) =
+    sendLocalized(locale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Edits the original message with the localized message at the following [path][localizationPath],
+ * using the user's locale and provided parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * ### Configuring the user locale source
+ * The user locale is retrieved from the interaction by default,
+ * but can be changed by implementing your own [UserLocaleProvider] service.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.editUser(localizationPath: String, vararg entries: PairEntry) =
     editUser(localizationPath, *entries.mapToEntries())
 
+/**
+ * Edits the original message with the localized message at the following [path][localizationPath],
+ * using the guild's locale and provided parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * ### Configuring the guild locale source
+ * The guild locale is retrieved from the interaction by default,
+ * but can be changed by implementing your own [GuildLocaleProvider] service.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.editGuild(localizationPath: String, vararg entries: PairEntry) =
     editGuild(localizationPath, *entries.mapToEntries())
 
+/**
+ * Edits the original message with the localized message at the following [path][localizationPath],
+ * using the provided locale and parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
 fun LocalizableInteractionHook.editLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
+    editLocalized(locale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Edits the original message with the localized message at the following [path][localizationPath],
+ * using the provided locale and parameters.
+ *
+ * ### Bundle resolution
+ * The bundle used is either the [defined bundle][LocalizableInteraction.localizationBundle]
+ * or one of the [registered bundles][BLocalizationConfig.responseBundles].
+ *
+ * The locale of the bundle is the best available,
+ * for example, if `fr_FR` is not available, then `fr` will be used,
+ * and otherwise, the root bundle (without any suffix) will be used.
+ *
+ * @param localizationPath The path of the message to translate, will be prefixed with [LocalizableInteraction.localizationPrefix]
+ * @param entries          The values replacing arguments of the localization template
+ *
+ * @throws IllegalArgumentException If:
+ * - [LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
+ * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
+ * - If the template requires an argument that was not passed to [entries]
+ */
+fun LocalizableInteractionHook.editLocalized(locale: Locale, localizationPath: String, vararg entries: PairEntry) =
     editLocalized(locale, localizationPath, *entries.mapToEntries())
