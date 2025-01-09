@@ -34,6 +34,10 @@ interface LocalizableEditCallback {
      * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
      *
+     * ### Configuring the user locale source
+     * The user locale is retrieved from the interaction by default,
+     * but can be changed by implementing your own [UserLocaleProvider] service.
+     *
      * @throws IllegalArgumentException If:
      * - [localizationBundle][LocalizableInteraction.localizationBundle] is set, but the bundle doesn't exist
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
@@ -53,6 +57,10 @@ interface LocalizableEditCallback {
      * The locale of the bundle is the best available,
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
+     *
+     * ### Configuring the guild locale source
+     * The guild locale is retrieved from the interaction by default,
+     * but can be changed by implementing your own [GuildLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]

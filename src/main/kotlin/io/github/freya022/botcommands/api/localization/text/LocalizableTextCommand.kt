@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import java.util.*
@@ -44,6 +45,10 @@ interface LocalizableTextCommand : LocalizableAction {
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
      *
+     * ### Configuring the guild locale source
+     * The locale is retrieved from the [guild][Guild.getLocale] by default,
+     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+     *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
      * @param entries          The values replacing arguments of the localization template
@@ -66,6 +71,10 @@ interface LocalizableTextCommand : LocalizableAction {
      * The locale of the bundle is the best available,
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
+     *
+     * ### Configuring the guild locale source
+     * The locale is retrieved from the [guild][Guild.getLocale] by default,
+     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -90,6 +99,10 @@ interface LocalizableTextCommand : LocalizableAction {
      * The locale of the bundle is the best available,
      * for example, if `fr_FR` is not available, then `fr` will be used,
      * and otherwise, the root bundle (without any suffix) will be used.
+     *
+     * ### Configuring the guild locale source
+     * The locale is retrieved from the [guild][Guild.getLocale] by default,
+     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
