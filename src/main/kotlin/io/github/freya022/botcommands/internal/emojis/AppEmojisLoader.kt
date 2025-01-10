@@ -17,6 +17,7 @@ import io.github.freya022.botcommands.api.emojis.annotations.RequiresAppEmojis
 import io.github.freya022.botcommands.api.emojis.exceptions.EmojiAlreadyExistsException
 import io.github.freya022.botcommands.api.emojis.exceptions.NoEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.NonUniqueEmojiResourceException
+import io.github.freya022.botcommands.api.emojis.exceptions.OutOfAppEmojisException
 import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader.Companion.register
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrowInternal
@@ -29,6 +30,7 @@ import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
 import net.dv8tion.jda.internal.utils.Checks
 import org.jetbrains.annotations.TestOnly
 import kotlin.collections.set
+import kotlin.math.abs
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.staticProperties
@@ -145,6 +147,11 @@ internal class AppEmojisLoader internal constructor(
             logger.debug { "Application emojis loaded, none were created" }
             loaded = true
             return
+        }
+
+        val remainingSlots = ApplicationEmoji.APPLICATION_EMOJI_CAP - missingRequests.size - applicationEmojis.size
+        requireThrowing(remainingSlots >= 0, ::OutOfAppEmojisException) {
+            "Not enough slots to push new application emojis, existing: ${applicationEmojis.size}, registered: ${toLoad.size}, missing slots: ${abs(remainingSlots)}"
         }
 
         logger.info { "${missingRequests.size} application emojis are missing, this may take a while." }
