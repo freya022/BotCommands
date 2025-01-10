@@ -77,7 +77,7 @@ internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDataba
 
 @ConfigurationProperties(prefix = "botcommands.app.emojis", ignoreUnknownFields = false)
 internal class BotCommandsAppEmojisConfiguration(
-    override val enable: Boolean = true,
+    override val enable: Boolean = false,
 ) : BAppEmojisConfig {
 
 }
