@@ -95,7 +95,11 @@ internal class AppEmojisLoader internal constructor(
                 "Cannot mix lazy and eager properties in '${clazz.simpleNestedName}', eager properties: ${eagerProperties.joinToString { it.name }}"
             }
 
+            val oldCount = toLoad.size
             clazz.objectInstance // Force initialization (and thus registration)
+            if (oldCount == toLoad.size) {
+                logger.info { "No emojis were registered by ${clazz.simpleNestedName}" }
+            }
             return
         }
 
