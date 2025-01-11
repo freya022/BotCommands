@@ -8,23 +8,26 @@ import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
 import io.github.freya022.botcommands.api.emojis.exceptions.EmojiAlreadyExistsException
 import io.github.freya022.botcommands.api.emojis.exceptions.NoEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.NonUniqueEmojiResourceException
+import io.github.freya022.botcommands.api.emojis.exceptions.OutOfAppEmojisException
 import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader
 import io.mockk.*
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 private const val EXAMPLE_BASE_PATH = "/my_emojis"
 private const val EXAMPLE_BASE_PATH_2 = "/my_other_emojis"
 private const val EXAMPLE_ASSET_PATTERN = "my_asset.**"
 private const val EXAMPLE_EMOJI_NAME = "my_emoji-1"
+private const val EXAMPLE_EMOJI_NAME_2 = "my_emoji-2"
 private const val TEST_IDENTIFIER = "ident"
 
 abstract class AbstractAppEmojisTest {
@@ -191,6 +194,124 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         assertDoesNotThrow {
             loader.loadEmojis(jda)
         }
+    }
+
+    @Test
+    fun `Cannot exceed app emoji limit`() {
+        mockkObject(AppEmojisLoader.Companion) {
+            every { AppEmojisLoader.maxAppEmojis } returns 1
+
+            AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME, TEST_IDENTIFIER)
+            assertThrows<OutOfAppEmojisException> {
+                AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME_2, TEST_IDENTIFIER)
+            }
+        }
+    }
+
+    @AppEmojiContainer
+    object SingleAnnotatedCandidate {
+        val kotlin: ApplicationEmoji by AppEmojisRegistry
+    }
+
+    @Test
+    fun `Must delete old, unmanaged app emojis`() {
+        val context = light {
+            addClass<SingleAnnotatedCandidate>()
+
+            appEmojis {
+                deleteOnOutOfSlots = true
+            }
+        }
+        val loader = context.getService<AppEmojisLoader>()
+
+        val existingEmoji = mockk<ApplicationEmoji> {
+            every { name } returns "existing-emoji"
+            every { timeCreated } returns OffsetDateTime.of(LocalDate.now(), LocalTime.of(0, 0), ZoneOffset.UTC)
+            every { delete().complete() } returns mockk()
+        }
+        val jda = mockk<JDA> {
+            every { retrieveApplicationEmojis().complete() } returns listOf(existingEmoji)
+            every { createApplicationEmoji(any(), any()).complete() } returns mockk()
+        }
+
+        mockkObject(AppEmojisLoader.Companion) {
+            every { AppEmojisLoader.maxAppEmojis } returns 1
+
+            assertDoesNotThrow { loader.loadEmojis(jda) }
+        }
+
+        // Make sure the emoji was attempted to be deleted
+        verify(exactly = 1) { existingEmoji.delete() }
+    }
+
+    @Test
+    fun `Must delete old, unmanaged app emojis, oldest first`() {
+        val context = light {
+            addClass<SingleAnnotatedCandidate>()
+
+            appEmojis {
+                deleteOnOutOfSlots = true
+            }
+        }
+        val loader = context.getService<AppEmojisLoader>()
+
+        val oldestEmoji = mockk<ApplicationEmoji> {
+            every { name } returns "existing-emoji-2"
+            every { timeCreated } returns OffsetDateTime.of(LocalDate.now(), LocalTime.of(0, 0), ZoneOffset.UTC)
+            every { delete().complete() } returns mockk()
+        }
+
+        val keptEmoji = mockk<ApplicationEmoji> {
+            every { name } returns "existing-emoji"
+            every { timeCreated } returns oldestEmoji.timeCreated.plusHours(1)
+            every { delete().complete() } answers { fail("Emoji should be kept") }
+        }
+
+        val jda = mockk<JDA> {
+            // Make two emojis, the oldest one as the last in the list just to make sure
+            every { retrieveApplicationEmojis().complete() } returns listOf(
+                keptEmoji,
+                oldestEmoji
+            )
+            every { createApplicationEmoji(any(), any()).complete() } returns mockk()
+        }
+
+        mockkObject(AppEmojisLoader.Companion) {
+            every { AppEmojisLoader.maxAppEmojis } returns 2
+
+            assertDoesNotThrow { loader.loadEmojis(jda) }
+        }
+
+        // Make sure only the oldest one is deleted
+        verify(exactly = 0) { keptEmoji.delete() }
+        verify(exactly = 1) { oldestEmoji.delete() }
+    }
+
+    @Test
+    fun `Must delete old, unmanaged app emojis, but not configured to`() {
+        val context = light {
+            addClass<SingleAnnotatedCandidate>()
+        }
+        val loader = spyk(context.getService<AppEmojisLoader>())
+
+        val existingEmoji = mockk<ApplicationEmoji> {
+            every { name } returns "existing-emoji"
+        }
+
+        val jda = mockk<JDA> {
+            every { retrieveApplicationEmojis().complete() } returns listOf(existingEmoji)
+            every { createApplicationEmoji(any(), any()).complete() } returns mockk()
+        }
+
+        mockkObject(AppEmojisLoader.Companion) {
+            every { AppEmojisLoader.maxAppEmojis } returns 1
+
+            assertThrows<OutOfAppEmojisException> { loader.loadEmojis(jda) }
+        }
+
+        // Make sure no emojis were attempted to be deleted
+        verify(exactly = 0) { loader.getDeletableEmojis(any(), any()) }
+        verify(exactly = 0) { existingEmoji.delete() }
     }
 }
 

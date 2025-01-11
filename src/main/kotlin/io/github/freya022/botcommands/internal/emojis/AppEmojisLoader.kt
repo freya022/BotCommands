@@ -4,6 +4,7 @@ import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
+import io.github.freya022.botcommands.api.core.config.BAppEmojisConfig
 import io.github.freya022.botcommands.api.core.events.PreFirstGatewayConnectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
@@ -19,10 +20,7 @@ import io.github.freya022.botcommands.api.emojis.exceptions.NoEmojiResourceExcep
 import io.github.freya022.botcommands.api.emojis.exceptions.NonUniqueEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.OutOfAppEmojisException
 import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader.Companion.register
-import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrowInternal
-import io.github.freya022.botcommands.internal.utils.requireThrowing
-import io.github.freya022.botcommands.internal.utils.toDiscordString
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Icon
@@ -58,7 +56,7 @@ private val logger = KotlinLogging.logger { }
 @BService
 @RequiresAppEmojis
 internal class AppEmojisLoader internal constructor(
-
+    private val appEmojisConfig: BAppEmojisConfig,
 ) {
 
     private val packages: List<String>
@@ -153,12 +151,7 @@ internal class AppEmojisLoader internal constructor(
             return
         }
 
-        val remainingSlots = ApplicationEmoji.APPLICATION_EMOJI_CAP - missingRequests.size - applicationEmojis.size
-        requireThrowing(remainingSlots >= 0, ::OutOfAppEmojisException) {
-            "Not enough slots to push new application emojis, existing: ${applicationEmojis.size}, registered: ${toLoad.size}, missing slots: ${abs(remainingSlots)}"
-        }
-
-        logger.info { "${missingRequests.size} application emojis are missing, this may take a while." }
+        checkRemainingSlots(missingRequests, applicationEmojis)
 
         withScannedResources(packages) { scan ->
             for ((basePath, assetPattern, emojiName, identifier) in missingRequests) {
@@ -180,6 +173,44 @@ internal class AppEmojisLoader internal constructor(
 
         logger.info { "Application emojis loaded, ${missingRequests.size} were created" }
         loaded = true
+    }
+
+    private fun checkRemainingSlots(missingRequests: List<LoadRequest>, applicationEmojis: List<ApplicationEmoji>) {
+        val remainingSlots = maxAppEmojis - missingRequests.size - applicationEmojis.size
+        if (remainingSlots < 0) {
+            val amountToDelete = abs(remainingSlots)
+
+            if (appEmojisConfig.deleteOnOutOfSlots) {
+                val deletableEmojis = getDeletableEmojis(applicationEmojis, amountToDelete)
+                // If we couldn't take enough emojis to delete, throw
+                if (deletableEmojis.size == amountToDelete) {
+                    logger.info { "${missingRequests.size} application emojis are missing, $amountToDelete app emojis will be removed to free necessary slots, this may take a while." }
+                    deletableEmojis.forEach { it.delete().complete() }
+                    return
+                }
+            }
+
+            throw OutOfAppEmojisException(
+                """
+                    Not enough slots to push new application emojis
+                    Existing: ${applicationEmojis.size}
+                    Registered: ${toLoad.size}
+                    Missing slots: $amountToDelete
+                    Hint: You can set ${BAppEmojisConfig::deleteOnOutOfSlots.reference} to delete the oldest emojis required to push the app emojis
+               """.trimIndent()
+            )
+        } else {
+            logger.info { "${missingRequests.size} application emojis are missing, this may take a while." }
+        }
+    }
+
+    internal fun getDeletableEmojis(applicationEmojis: List<ApplicationEmoji>, amountToDelete: Int): List<ApplicationEmoji> {
+        return applicationEmojis
+            // Don't delete our app's emojis
+            .filter { existingEmoji -> existingEmoji.name !in toLoadEmojiNames }
+            // Delete oldest ones first
+            .sortedBy { it.timeCreated }
+            .take(amountToDelete)
     }
 
     private inline fun withScannedResources(packages: Collection<String>, action: (ScanResult) -> Unit) {
