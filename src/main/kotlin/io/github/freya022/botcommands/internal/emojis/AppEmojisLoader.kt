@@ -135,44 +135,27 @@ internal class AppEmojisLoader internal constructor(
 
         val applicationEmojis = jda.retrieveApplicationEmojis().complete()
 
-        val missingRequests = arrayListOf<LoadRequest>()
+        val missingRequests = getMissingEmojis(applicationEmojis)
+        if (missingRequests.isEmpty()) {
+            logger.debug { "Application emojis loaded, none were created" }
+        } else {
+            checkRemainingSlots(missingRequests, applicationEmojis)
+            uploadEmojis(missingRequests, jda)
+            logger.info { "Application emojis loaded, ${missingRequests.size} were created" }
+        }
+
+        loaded = true
+    }
+
+    private fun getMissingEmojis(applicationEmojis: MutableList<ApplicationEmoji>): List<LoadRequest> = buildList {
         toLoad.forEach { request ->
             val appEmoji = applicationEmojis.find { it.name == request.emojiName }
             if (appEmoji != null) {
                 loadedEmojis[request.identifier] = appEmoji
             } else {
-                missingRequests += request
+                add(request)
             }
         }
-
-        if (missingRequests.isEmpty()) {
-            logger.debug { "Application emojis loaded, none were created" }
-            loaded = true
-            return
-        }
-
-        checkRemainingSlots(missingRequests, applicationEmojis)
-
-        withScannedResources(packages) { scan ->
-            for ((basePath, assetPattern, emojiName, identifier) in missingRequests) {
-                // CG doesn't need / as root
-                val wildcardString = "${basePath.drop(1)}/$assetPattern"
-                val resources = scan.getResourcesMatchingWildcard(wildcardString)
-                requireThrowing(resources.isNotEmpty(), ::NoEmojiResourceException) {
-                    "Found no resources for '$identifier', matching '$wildcardString'"
-                }
-                requireThrowing(resources.size == 1, ::NonUniqueEmojiResourceException) {
-                    "Found multiple resources for '$identifier': ${resources.joinToString { it.pathRelativeToClasspathElement }}"
-                }
-
-                val icon = resources.single().open().use(Icon::from)
-                val applicationEmoji = jda.createApplicationEmoji(emojiName, icon).complete()
-                loadedEmojis.putIfAbsentOrThrowInternal(identifier, applicationEmoji)
-            }
-        }
-
-        logger.info { "Application emojis loaded, ${missingRequests.size} were created" }
-        loaded = true
     }
 
     private fun checkRemainingSlots(missingRequests: List<LoadRequest>, applicationEmojis: List<ApplicationEmoji>) {
@@ -211,6 +194,26 @@ internal class AppEmojisLoader internal constructor(
             // Delete oldest ones first
             .sortedBy { it.timeCreated }
             .take(amountToDelete)
+    }
+
+    private fun uploadEmojis(missingRequests: List<LoadRequest>, jda: JDA) {
+        withScannedResources(packages) { scan ->
+            for ((basePath, assetPattern, emojiName, identifier) in missingRequests) {
+                // CG doesn't need / as root
+                val wildcardString = "${basePath.drop(1)}/$assetPattern"
+                val resources = scan.getResourcesMatchingWildcard(wildcardString)
+                requireThrowing(resources.isNotEmpty(), ::NoEmojiResourceException) {
+                    "Found no resources for '$identifier', matching '$wildcardString'"
+                }
+                requireThrowing(resources.size == 1, ::NonUniqueEmojiResourceException) {
+                    "Found multiple resources for '$identifier': ${resources.joinToString { it.pathRelativeToClasspathElement }}"
+                }
+
+                val icon = resources.single().open().use(Icon::from)
+                val applicationEmoji = jda.createApplicationEmoji(emojiName, icon).complete()
+                loadedEmojis.putIfAbsentOrThrowInternal(identifier, applicationEmoji)
+            }
+        }
     }
 
     private inline fun withScannedResources(packages: Collection<String>, action: (ScanResult) -> Unit) {
