@@ -20,31 +20,43 @@ import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterA
 internal object AnnotationUtils {
     internal fun getEffectiveTestGuildIds(context: BContext, func: KFunction<*>): TLongSet {
         val set = TLongHashSet(context.applicationConfig.testGuildIds)
-        val annotation = func.findAnnotationRecursive<Test>() ?: return set
 
-        val methodValue = annotation.guildIds
-        set.addAll(methodValue)
+        // Always add class values
+        func.declaringClass.findAnnotationRecursive<Test>()
+            ?.guildIds
+            ?.let(set::addAll)
 
-        if (!annotation.append && methodValue.isNotEmpty()) {
-            return set
+        // Add function values if present
+        val functionAnnotation = func.findAnnotationRecursive<Test>()
+        if (functionAnnotation != null) {
+            if (functionAnnotation.append) {
+                set.addAll(functionAnnotation.guildIds)
+            } else {
+                set.clear()
+                set.addAll(functionAnnotation.guildIds)
+            }
         }
-
-        val classValue: LongArray = func.declaringClass.findAnnotationRecursive<Test>()?.guildIds ?: LongArray(0)
-        set.addAll(classValue)
 
         return set
     }
 
     internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
         val set: EnumSet<Permission> = enumSetOf()
-        val annotation = func.findAnnotationRecursive<UserPermissions>() ?: return set
 
-        val methodPermissions = annotation.permissions
-        set += methodPermissions
+        // Always add class values
+        func.declaringClass.findAnnotationRecursive<UserPermissions>()
+            ?.permissions
+            ?.let(set::addAll)
 
-        if (annotation.append) {
-            val classPermissions = func.declaringClass.findAnnotationRecursive<UserPermissions>()?.permissions ?: emptyArray()
-            set += classPermissions
+        // Add function values if present
+        val functionAnnotation = func.findAnnotationRecursive<UserPermissions>()
+        if (functionAnnotation != null) {
+            if (functionAnnotation.append) {
+                set += functionAnnotation.permissions
+            } else {
+                set.clear()
+                set += functionAnnotation.permissions
+            }
         }
 
         return set
@@ -52,14 +64,21 @@ internal object AnnotationUtils {
 
     internal fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
         val set: EnumSet<Permission> = enumSetOf()
-        val annotation = func.findAnnotationRecursive<BotPermissions>() ?: return set
 
-        val methodPermissions = annotation.permissions
-        set += methodPermissions
+        // Always add class values
+        func.declaringClass.findAnnotationRecursive<BotPermissions>()
+            ?.permissions
+            ?.let(set::addAll)
 
-        if (annotation.append) {
-            val classPermissions = func.declaringClass.findAnnotationRecursive<BotPermissions>()?.permissions ?: emptyArray()
-            set += classPermissions
+        // Add function values if present
+        val functionAnnotation = func.findAnnotationRecursive<BotPermissions>()
+        if (functionAnnotation != null) {
+            if (functionAnnotation.append) {
+                set += functionAnnotation.permissions
+            } else {
+                set.clear()
+                set += functionAnnotation.permissions
+            }
         }
 
         return set
