@@ -145,6 +145,7 @@ object AppEmojisRegistry {
      * @throws IllegalArgumentException    If [emojiName] has invalid characters
      * @throws EmojiAlreadyExistsException If an emoji with the same name was already registered
      * @throws IllegalStateException       If the emojis were already loaded
+     * @throws IllegalStateException       If the [baseline] was already passed, remember to pass the property this is used on
      */
     @JvmSynthetic
     fun lazy(
@@ -162,7 +163,7 @@ object AppEmojisRegistry {
         AppEmojisLoader.registerFromProperty(baseline, effectiveBasePath, assetPattern, emojiName, identifier)
         return lazy {
             AppEmojisLoader.getByIdentifierOrNull(identifier)
-                ?: throwInternal("Could not get back emoji '$emojiName' from UUID")
+                ?: throwInternal("Could not get back emoji '$emojiName' from $identifier")
         }
     }
 }

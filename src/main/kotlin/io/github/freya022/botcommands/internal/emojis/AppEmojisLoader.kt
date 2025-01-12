@@ -235,6 +235,7 @@ internal class AppEmojisLoader internal constructor(
         internal var loaded = false
             private set
         private val toLoadEmojiNames = hashSetOf<String>()
+        private val toLoadIdentifiers = hashSetOf<String>()
         private val toLoad = arrayListOf<LoadRequest>()
         private val loadedEmojis = hashMapOf<String, ApplicationEmoji>()
 
@@ -242,6 +243,7 @@ internal class AppEmojisLoader internal constructor(
         internal fun clear() {
             loaded = false
             toLoadEmojiNames.clear()
+            toLoadIdentifiers.clear()
             toLoad.clear()
             loadedEmojis.clear()
 
@@ -277,6 +279,10 @@ internal class AppEmojisLoader internal constructor(
 
             requireThrowing(toLoadEmojiNames.add(emojiName), ::EmojiAlreadyExistsException) {
                 "The emoji name '$emojiName' is already in use."
+            }
+
+            check(toLoadIdentifiers.add(identifier)) {
+                "The identifier '$identifier' is already in use."
             }
 
             toLoad += LoadRequest(basePath, assetPattern, emojiName, identifier)

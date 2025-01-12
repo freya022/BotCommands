@@ -130,9 +130,15 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     }
 
     @Test
-    fun `Can't register multiple emojis of same name`() {
+    fun `Can't register same emoji name twice`() {
         assertDoesNotThrow { AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME, TEST_IDENTIFIER) }
         assertThrows<EmojiAlreadyExistsException> { AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME, TEST_IDENTIFIER) }
+    }
+
+    @Test
+    fun `Can't register same identifier twice`() {
+        assertDoesNotThrow { AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME, TEST_IDENTIFIER) }
+        assertThrows<IllegalStateException> { AppEmojisLoader.register(EXAMPLE_BASE_PATH, EXAMPLE_ASSET_PATTERN, EXAMPLE_EMOJI_NAME_2, TEST_IDENTIFIER) }
     }
 
     @AppEmojiContainer
