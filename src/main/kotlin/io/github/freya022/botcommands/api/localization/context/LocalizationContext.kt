@@ -7,10 +7,14 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext.Companion.create
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
+import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
@@ -179,6 +183,41 @@ interface LocalizationContext {
                 localizationPrefix,
                 guildLocale,
                 userLocale
+            )
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        fun fromLocaleProviders(
+            context: BContext,
+            event: Interaction,
+            localizationBundle: String,
+            localizationPrefix: String? = null
+        ): AppLocalizationContext {
+            return LocalizationContextImpl(
+                context.getService<LocalizationService>(),
+                localizationBundle,
+                localizationPrefix,
+                context.getService<GuildLocaleProvider>().getDiscordLocale(event),
+                context.getService<UserLocaleProvider>().getDiscordLocale(event),
+            )
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        fun fromLocaleProviders(
+            context: BContext,
+            event: MessageReceivedEvent,
+            localizationBundle: String,
+            localizationPrefix: String? = null,
+            userLocale: DiscordLocale? = null,
+        ): TextLocalizationContext {
+            return LocalizationContextImpl(
+                context.getService<LocalizationService>(),
+                localizationBundle,
+                localizationPrefix,
+                context.getService<TextCommandLocaleProvider>().getDiscordLocale(event),
+                userLocale,
             )
         }
     }
