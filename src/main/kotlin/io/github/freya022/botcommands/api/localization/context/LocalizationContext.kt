@@ -116,7 +116,8 @@ interface LocalizationContext {
      * Localizes the provided path, with the provided locale.
      *
      * @param locale           The [DiscordLocale] to use when fetching the localization bundle
-     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
@@ -125,7 +126,8 @@ interface LocalizationContext {
      * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
      *
      * @param locale           The [DiscordLocale] to use when fetching the localization bundle
-     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
     fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String?
@@ -133,7 +135,8 @@ interface LocalizationContext {
     /**
      * Localizes the provided path, with the [best locale][effectiveLocale] available.
      *
-     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
     fun localize(localizationPath: String, vararg entries: Localization.Entry): String =
@@ -143,7 +146,8 @@ interface LocalizationContext {
      * Localizes the provided path, with the [best locale][effectiveLocale] available,
      * or returns `null` if the path does not exist.
      *
-     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
     fun localizeOrNull(localizationPath: String, vararg entries: Localization.Entry): String? =
@@ -231,7 +235,8 @@ internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
  * Localizes the provided path, with the provided locale.
  *
  * @param locale           The [DiscordLocale] to use when fetching the localization bundle
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
@@ -241,7 +246,8 @@ fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String
  * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
  *
  * @param locale           The [DiscordLocale] to use when fetching the localization bundle
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String? =
@@ -250,7 +256,8 @@ fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: 
 /**
  * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localize(localizationPath: String, vararg entries: PairEntry): String =
@@ -260,7 +267,8 @@ fun LocalizationContext.localize(localizationPath: String, vararg entries: PairE
  * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available,
  * or returns `null` if the path does not exist.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries: PairEntry): String? =
@@ -270,7 +278,8 @@ fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries:
 /**
  * Sends a localized message to this channel.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  * 
  * @see MessageChannel.sendMessage
@@ -281,7 +290,8 @@ fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath:
 /**
  * Sends a localized message to the event's channel.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see MessageChannel.sendMessage
@@ -292,7 +302,8 @@ fun BaseCommandEvent.respondLocalized(context: LocalizationContext, localization
 /**
  * Replies a localized message to the user's command.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  * 
  * @see MessageChannel.sendMessage
@@ -303,7 +314,8 @@ fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPa
 /**
  * Replies a localized message to this interaction and acknowledges it.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see IReplyCallback.reply
@@ -314,7 +326,8 @@ fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath
 /**
  * Replies a localized ephemeral message to this interaction and acknowledges it.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see IReplyCallback.reply
@@ -328,7 +341,8 @@ fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localiz
  * If the interaction was originally [deferred][IReplyCallback.deferReply],
  * then the ephemeral-ness of this message depends on what was passed there.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see InteractionHook.sendMessage
@@ -342,7 +356,8 @@ fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath
  * If the interaction was originally [deferred][IReplyCallback.deferReply],
  * then the ephemeral-ness of this message depends on what was passed there.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see InteractionHook.sendMessage
@@ -355,7 +370,8 @@ fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localiz
 /**
  * Edits the text content of the original message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see IMessageEditCallback.editMessage
@@ -366,7 +382,8 @@ fun IMessageEditCallback.editLocalized(context: LocalizationContext, localizatio
 /**
  * Replaces the entire original message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see IMessageEditCallback.editMessage
@@ -377,7 +394,8 @@ fun IMessageEditCallback.replaceLocalized(context: LocalizationContext, localiza
 /**
  * Edits the text content of the original message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see InteractionHook.editOriginal
@@ -388,7 +406,8 @@ fun InteractionHook.editLocalized(context: LocalizationContext, localizationPath
 /**
  * Replaces the entire original message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see InteractionHook.editOriginal
@@ -399,7 +418,8 @@ fun InteractionHook.replaceLocalized(context: LocalizationContext, localizationP
 /**
  * Edits the text content of the message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see Message.editMessage
@@ -410,7 +430,8 @@ fun Message.editLocalized(context: LocalizationContext, localizationPath: String
 /**
  * Replaces the entire message with a localized message.
  *
- * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  *
  * @see Message.editMessage

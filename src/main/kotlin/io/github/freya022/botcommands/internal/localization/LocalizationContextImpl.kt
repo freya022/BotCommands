@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
+import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.interactions.DiscordLocale
@@ -62,7 +63,7 @@ internal class LocalizationContextImpl(
 
     override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
         val localization = getLocalization(locale)
-        val effectivePath = getEffectivePath(localizationPath)
+        val effectivePath = LocalizationUtils.getEffectivePath(localizationPrefix, localizationPath)
         val template = localization[effectivePath]
             ?: throwArgument("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${localization.effectiveLocale}')")
 
@@ -71,7 +72,7 @@ internal class LocalizationContextImpl(
 
     override fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String? {
         val localization = getLocalization(locale)
-        val effectivePath = getEffectivePath(localizationPath)
+        val effectivePath = LocalizationUtils.getEffectivePath(localizationPrefix, localizationPath)
         val template = localization[effectivePath] ?: return null
 
         return template.localize(*entries)
@@ -80,11 +81,6 @@ internal class LocalizationContextImpl(
     private fun getLocalization(discordLocale: DiscordLocale) =
         localizationService.getInstance(localizationBundle, discordLocale.toLocale())
             ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$discordLocale', the root bundle should have been checked")
-
-    private fun getEffectivePath(localizationPath: String) = when (localizationPrefix) {
-        null -> localizationPath
-        else -> "$localizationPrefix.$localizationPath"
-    }
 
     override fun hasGuildLocale(): Boolean {
         return _guildLocale != null

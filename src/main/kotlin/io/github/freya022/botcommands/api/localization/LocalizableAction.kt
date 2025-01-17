@@ -59,7 +59,7 @@ interface LocalizableAction {
      *
      * @param locale           The locale to translate the message to
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][localizationPrefix]
+     * will be prefixed with [localizationPrefix][localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -83,7 +83,7 @@ interface LocalizableAction {
      *
      * @param locale           The locale to translate the message to
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][localizationPrefix]
+     * will be prefixed with [localizationPrefix][localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:

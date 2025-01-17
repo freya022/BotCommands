@@ -11,6 +11,15 @@ import java.util.*
 internal object LocalizationUtils {
     private val logger = KotlinLogging.logger { }
 
+    internal fun getEffectivePath(localizationPrefix: String?, localizationPath: String): String {
+        if (localizationPath.startsWith('/')) return localizationPath.substring(1)
+
+        return when (localizationPrefix) {
+            null -> localizationPath
+            else -> "$localizationPrefix.$localizationPath"
+        }
+    }
+
     internal fun getCommandDescription(context: BContext, builder: INamedCommand, builderDescription: String?): String {
         val rootDescription = getCommandRootDescription(context, builder)
         return if (builderDescription != null) {

@@ -54,7 +54,7 @@ interface LocalizableInteraction : LocalizableAction {
      * but can be changed by implementing your own [UserLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -81,7 +81,7 @@ interface LocalizableInteraction : LocalizableAction {
      * but can be changed by implementing your own [GuildLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -109,7 +109,7 @@ interface LocalizableInteraction : LocalizableAction {
  * but can be changed by implementing your own [UserLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * @throws IllegalArgumentException If:
@@ -137,7 +137,7 @@ fun LocalizableInteraction.getUserMessage(localizationPath: String, vararg entri
  * but can be changed by implementing your own [GuildLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * @throws IllegalArgumentException If:

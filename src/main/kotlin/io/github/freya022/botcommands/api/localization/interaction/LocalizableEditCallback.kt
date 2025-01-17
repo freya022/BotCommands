@@ -31,7 +31,7 @@ interface LocalizableEditCallback {
      * and otherwise, the root bundle (without any suffix) will be used.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * ### Configuring the user locale source
@@ -63,7 +63,7 @@ interface LocalizableEditCallback {
      * but can be changed by implementing your own [GuildLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -87,7 +87,7 @@ interface LocalizableEditCallback {
      * and otherwise, the root bundle (without any suffix) will be used.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -112,7 +112,7 @@ interface LocalizableEditCallback {
      * and otherwise, the root bundle (without any suffix) will be used.
      *
      * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+     * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
      * @param entries          The values replacing arguments of the localization template
      *
      * @throws IllegalArgumentException If:
@@ -137,7 +137,7 @@ interface LocalizableEditCallback {
  * and otherwise, the root bundle (without any suffix) will be used.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * ### Configuring the user locale source
@@ -169,7 +169,7 @@ fun LocalizableEditCallback.editUser(localizationPath: String, vararg entries: P
  * but can be changed by implementing your own [GuildLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * @throws IllegalArgumentException If:
@@ -193,7 +193,7 @@ fun LocalizableEditCallback.editGuild(localizationPath: String, vararg entries: 
  * and otherwise, the root bundle (without any suffix) will be used.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * @throws IllegalArgumentException If:
@@ -217,7 +217,7 @@ fun LocalizableEditCallback.editLocalized(locale: DiscordLocale, localizationPat
  * and otherwise, the root bundle (without any suffix) will be used.
  *
  * @param localizationPath The path of the message to translate,
- * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix]
+ * will be prefixed with [localizationPrefix][LocalizableInteraction.localizationPrefix] unless starting with `/`
  * @param entries          The values replacing arguments of the localization template
  *
  * @throws IllegalArgumentException If:
