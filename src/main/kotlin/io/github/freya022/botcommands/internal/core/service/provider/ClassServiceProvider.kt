@@ -69,10 +69,6 @@ internal class ClassServiceProvider internal constructor(
         //Is a singleton
         if (clazz.isObject) return null
 
-        //Check if an instance supplier exists
-        if (serviceContainer.serviceConfig.instanceSupplierMap[clazz] != null)
-            return null
-
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(clazz, name)
