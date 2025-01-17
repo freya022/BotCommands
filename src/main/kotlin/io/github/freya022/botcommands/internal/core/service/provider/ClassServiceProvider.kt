@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.core.service.provider
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
+import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
@@ -137,4 +138,4 @@ internal class ClassServiceProvider internal constructor(
 
 @PublishedApi
 internal fun ServiceProvider.getServiceName(clazz: KClass<*>) =
-    getAnnotatedServiceName() ?: clazz.simpleNestedName.replaceFirstChar { it.lowercase() }
+    getAnnotatedServiceName() ?: ServiceSupplier.defaultName(clazz)

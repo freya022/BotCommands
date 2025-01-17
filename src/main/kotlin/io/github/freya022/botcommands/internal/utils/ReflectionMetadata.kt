@@ -134,7 +134,7 @@ private class ReflectionMetadataScanner private constructor(
                     }
                     .processClasses()
 
-                classGraphProcessors.forEach(ClassGraphProcessor::postProcess)
+                classGraphProcessors.forEach { it.postProcess(bootstrap.serviceContainer) }
             }
     }
 
@@ -205,7 +205,7 @@ private class ReflectionMetadataScanner private constructor(
                 classMetadataMap[kClass.java] = ClassMetadata(classInfo.sourceFile)
 
                 val isService = bootstrap.isService(classInfo)
-                classGraphProcessors.forEach { it.processClass(classInfo, kClass, isService) }
+                classGraphProcessors.forEach { it.processClass(bootstrap.serviceContainer, classInfo, kClass, isService) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
@@ -248,7 +248,7 @@ private class ReflectionMetadataScanner private constructor(
             methodMetadataMap[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
             val isServiceFactory = bootstrap.isServiceFactory(methodInfo)
-            classGraphProcessors.forEach { it.processMethod(methodInfo, method, classInfo, kClass, isServiceFactory) }
+            classGraphProcessors.forEach { it.processMethod(bootstrap.serviceContainer, methodInfo, method, classInfo, kClass, isServiceFactory) }
         }
     }
 

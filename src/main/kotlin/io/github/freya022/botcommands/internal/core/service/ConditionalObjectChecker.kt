@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.core.service
 
 import io.github.classgraph.ClassInfo
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.annotations.HardcodedCondition
@@ -9,7 +10,12 @@ import io.github.freya022.botcommands.internal.utils.isObject
 import kotlin.reflect.KClass
 
 internal class ConditionalObjectChecker : ClassGraphProcessor {
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        serviceContainer: ServiceContainer,
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isService: Boolean
+    ) {
         if (!isService) return
         if (!kClass.isObject) return
 

@@ -6,9 +6,10 @@ import java.lang.reflect.Executable
 import kotlin.reflect.KClass
 
 interface ClassGraphProcessor {
-    fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {}
+    fun processClass(serviceContainer: ServiceContainer, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {}
 
     fun processMethod(
+        serviceContainer: ServiceContainer,
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,
@@ -16,5 +17,5 @@ interface ClassGraphProcessor {
         isServiceFactory: Boolean,
     ) {}
 
-    fun postProcess() {}
+    fun postProcess(serviceContainer: ServiceContainer) {}
 }

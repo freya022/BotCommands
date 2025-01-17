@@ -18,6 +18,8 @@ interface DefaultServiceContainer : ServiceContainer {
 
     override fun putService(t: Any, name: String): Unit = putService(t, t::class, name)
     override fun putService(t: Any): Unit = putService(t, t::class)
+
+    fun putSuppliedService(serviceSupplier: ServiceSupplier<*>)
 }
 
 inline fun <reified T : Any> DefaultServiceContainer.putServiceAs(
