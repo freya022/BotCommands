@@ -72,15 +72,6 @@ such as command/component filters, `SettingsProvider`, `ExceptionHandler`, `Auto
 
 An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
 
-### Dynamic suppliers
-Dynamic suppliers are interfaced services (that you can make multiple instances of), 
-which lets you provide services of any type.<br>
-The framework will give you the class of what it wants to instantiate, 
-and you can then tell if your supplier supports the class, or not, 
-or if it is supported but cannot create an instance of it.
-
-An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/ban/BanService.kt).
-
 ## Annotated command changes
 Annotated text and slash commands suffered from several issues, 
 due to the data either being applied to the wrong part of the command,

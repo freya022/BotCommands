@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.core.service.annotations
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.service.DynamicSupplier
 import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import org.springframework.stereotype.Component
@@ -111,8 +110,6 @@ import org.springframework.stereotype.Component
  * @see ServiceType @ServiceType
  * @see ServiceName @ServiceName
  * @see ServicePriority @ServicePriority
- *
- * @see DynamicSupplier
  */
 @Component
 @MustBeDocumented
