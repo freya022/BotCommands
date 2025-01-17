@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.*
@@ -38,7 +39,12 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     private val missingResolverFactoryAnnotationMessages: MutableList<String> = arrayListOf()
     private val missingResolverFactorySuperclassMessages: MutableList<String> = arrayListOf()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        serviceContainer: ServiceContainer,
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isService: Boolean
+    ) {
         if (classInfo.isAbstract) return
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
@@ -80,6 +86,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     }
 
     override fun processMethod(
+        serviceContainer: ServiceContainer,
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,
@@ -150,7 +157,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
             }
     }
 
-    override fun postProcess() {
+    override fun postProcess(serviceContainer: ServiceContainer) {
         tasks.forEach { it.invoke() }
 
         if (missingResolverAnnotationMessages.isNotEmpty()) {

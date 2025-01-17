@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
@@ -29,7 +30,12 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        serviceContainer: ServiceContainer,
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isService: Boolean
+    ) {
         if (classInfo.isAbstract) return
 
         val isCommand = classInfo.hasAnnotation(Command::class.java)
@@ -50,7 +56,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess() {
+    override fun postProcess(serviceContainer: ServiceContainer) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
                 val refs = noDeclarationClasses.joinAsList()

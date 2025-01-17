@@ -4,6 +4,7 @@ import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -34,7 +35,15 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
-    override fun processClass(classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(
+        serviceContainer: ServiceContainer,
+        classInfo: ClassInfo,
+        kClass: KClass<*>,
+        isService: Boolean
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        kClass as KClass<Any> // so ServiceSupplier doesnt complain
+
         val instanceSupplier = serviceConfig.instanceSupplierMap[kClass]
         if (instanceSupplier != null) {
             putServiceProvider(SuppliedServiceProvider(kClass, instanceSupplier))
@@ -47,6 +56,7 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
     }
 
     override fun processMethod(
+        serviceContainer: ServiceContainer,
         methodInfo: MethodInfo,
         method: Executable,
         classInfo: ClassInfo,
@@ -66,7 +76,7 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
         putServiceProvider(FunctionServiceProvider(function))
     }
 
-    override fun postProcess() {
+    override fun postProcess(serviceContainer: ServiceContainer) {
         val missingSuppliedProviders = serviceConfig.instanceSupplierMap.keys - typeMap.keys
         check(missingSuppliedProviders.isEmpty()) {
             "Some instance suppliers were registered but their class were not in the search path:\n${missingSuppliedProviders.joinAsList { it.shortQualifiedName } }"
