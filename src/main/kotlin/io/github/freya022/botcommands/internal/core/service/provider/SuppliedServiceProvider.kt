@@ -1,31 +1,30 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import io.github.freya022.botcommands.api.core.service.InstanceSupplier
 import io.github.freya022.botcommands.api.core.service.ServiceError
-import io.github.freya022.botcommands.api.core.service.annotations.Lazy
-import io.github.freya022.botcommands.api.core.service.annotations.Primary
+import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmName
 
 internal class SuppliedServiceProvider internal constructor(
-    private val clazz: KClass<*>,
-    private val supplier: InstanceSupplier<*>
+    serviceSupplier: ServiceSupplier<*>,
 ) : ServiceProvider {
+    private var serviceSupplier: ServiceSupplier<*>? = serviceSupplier
     override var instance: Any? = null
 
-    override val annotations = clazz.annotations
-    override val name = getServiceName(clazz)
-    override val providerKey = clazz.jvmName
+    private val clazz = serviceSupplier.primaryType
+
+    override val annotations = serviceSupplier.annotations
+    override val name = serviceSupplier.name
+    override val providerKey get() = clazz.jvmName
     override val primaryType get() = clazz
-    override val types = getServiceTypes(primaryType)
-    override val isPrimary = hasAnnotation<Primary>()
-    override val isLazy = hasAnnotation<Lazy>()
-    override val priority = getAnnotatedServicePriority()
+    override val types = serviceSupplier.additionalTypes
+    override val isPrimary = serviceSupplier.isPrimary
+    override val isLazy = serviceSupplier.isLazy
+    override val priority = serviceSupplier.priority
 
     override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
         return null
@@ -42,7 +41,9 @@ internal class SuppliedServiceProvider internal constructor(
 
     private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
         return measureTimedInstantiation {
-            supplier.supply(serviceContainer.getService())
+            val service = serviceSupplier!!.supplier(serviceContainer.getService())
+            serviceSupplier = null // Let GC take what wont be used anymore
+            service
         }
     }
 
@@ -50,7 +51,5 @@ internal class SuppliedServiceProvider internal constructor(
 
     override fun getProviderSignature(): String = "<supplied ${clazz.shortQualifiedName}>"
 
-    override fun toString(): String {
-        return "SuppliedServiceProvider(supplier=$supplier, clazz=$clazz, instance=$instance)"
-    }
+    override fun toString(): String = providerKey
 }

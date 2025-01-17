@@ -5,6 +5,7 @@ import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -46,7 +47,7 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
 
         val instanceSupplier = serviceConfig.instanceSupplierMap[kClass]
         if (instanceSupplier != null) {
-            putServiceProvider(SuppliedServiceProvider(kClass, instanceSupplier))
+            putServiceProvider(SuppliedServiceProvider(ServiceSupplier(kClass) { instanceSupplier.supply(it) }))
             return
         }
 
