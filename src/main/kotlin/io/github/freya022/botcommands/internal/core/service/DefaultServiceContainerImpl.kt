@@ -8,10 +8,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.service.provider.ProvidedServiceProvider
-import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
-import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
-import io.github.freya022.botcommands.internal.core.service.provider.TimedInstantiation
+import io.github.freya022.botcommands.internal.core.service.provider.*
 import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
 import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
@@ -207,6 +204,10 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         typeAliases: Set<KClass<*>>
     ) {
         serviceProviders.putServiceProvider(ProvidedServiceProvider(t, clazz, name, isPrimary, priority, annotations, typeAliases))
+    }
+
+    override fun putSuppliedService(serviceSupplier: ServiceSupplier<*>) {
+        serviceProviders.putServiceProvider(SuppliedServiceProvider(serviceSupplier))
     }
 
     override fun canCreateService(name: String, requiredType: KClass<*>): ServiceError? {
