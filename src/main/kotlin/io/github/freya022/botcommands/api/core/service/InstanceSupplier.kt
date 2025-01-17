@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
  *
  * @see BServiceConfigBuilder.registerInstanceSupplier
  */
+@Deprecated("For removal, replaced by ServiceSupplier")
 fun interface InstanceSupplier<T : Any> {
     fun supply(context: BContext): T
 }

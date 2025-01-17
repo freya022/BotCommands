@@ -24,6 +24,7 @@ interface BServiceConfig {
 
     @Deprecated(message = "For removal, didn't do much in the first place")
     val serviceAnnotations: Set<KClass<out Annotation>>
+    @Deprecated("For removal, replaced by serviceSuppliers")
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
     val serviceSuppliers: Map<KClass<*>, ServiceSupplier<*>>
 }
@@ -36,6 +37,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
     private val _instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()
+    @Deprecated("For removal, replaced by serviceSuppliers")
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>> = _instanceSupplierMap.unmodifiableView()
 
     private val _serviceSuppliers: MutableMap<KClass<*>, ServiceSupplier<*>> = hashMapOf()
@@ -54,6 +56,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
      * @param clazz            The primary type as which the service is registered as, other types may be registered with the usual annotations
      * @param instanceSupplier Supplier for the service instance, ran at startup, unless [clazz] is annotated with [@Lazy][Lazy]
      */
+    @Deprecated("For removal, replaced by registerServiceSupplier")
     fun <T : Any> registerInstanceSupplier(clazz: Class<T>, instanceSupplier: InstanceSupplier<T>) {
         _instanceSupplierMap[clazz.kotlin] = instanceSupplier
     }
@@ -93,6 +96,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
         override val debug = this@BServiceConfigBuilder.debug
         @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
         override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
+        @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
         override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap.toImmutableMap()
         override val serviceSuppliers = this@BServiceConfigBuilder.serviceSuppliers.toImmutableMap()
     }
@@ -111,6 +115,8 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
  * @param T                The primary type as which the service is registered as, other types may be registered with the usual annotations
  * @param instanceSupplier Supplier for the service instance, ran at startup, unless [T] is annotated with [@Lazy][Lazy]
  */
+@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
+@Deprecated("For removal, replaced by registerServiceSupplier")
 inline fun <reified T : Any> BServiceConfigBuilder.registerInstanceSupplier(instanceSupplier: InstanceSupplier<T>) {
     return registerInstanceSupplier(T::class.java, instanceSupplier)
 }
