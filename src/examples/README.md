@@ -27,7 +27,7 @@ You can then run the `Main` class.
  
 ### Services
 * [How to automatically load JDA with a service](kotlin/io/github/freya022/bot/Bot.kt)
-* [How to make a strategy-based ban service, using dynamic service suppliers](kotlin/io/github/freya022/bot/commands/ban/BanService.kt)
+* [How to make a strategy-based ban service, using service factories](kotlin/io/github/freya022/bot/commands/ban/BanService.kt)
 
 ### Components
 * [A self-destructing button](kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt)

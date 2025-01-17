@@ -1,13 +1,10 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import io.github.freya022.botcommands.api.core.service.DynamicSupplier
-import io.github.freya022.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -15,7 +12,6 @@ import io.github.freya022.botcommands.internal.core.service.DefaultServiceContai
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.throwState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -69,23 +65,6 @@ internal class ClassServiceProvider internal constructor(
         //Is a singleton
         if (clazz.isObject) return null
 
-        //Check dynamic suppliers
-        serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(clazz, name)
-            when (instantiability.type) {
-                //Return error message
-                InstantiabilityType.NOT_INSTANTIABLE ->
-                    return ErrorType.DYNAMIC_NOT_INSTANTIABLE.toError(
-                        errorMessage = instantiability.message!!,
-                        extraMessage = "${dynamicSupplier::class.simpleNestedName} failed"
-                    )
-                //Continue looking at other suppliers
-                InstantiabilityType.UNSUPPORTED_TYPE -> {}
-                //Found a supplier, return no error message
-                InstantiabilityType.INSTANTIABLE -> return null
-            }
-        }
-
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
         val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
@@ -117,21 +96,6 @@ internal class ClassServiceProvider internal constructor(
     private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
         measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
             return timedInstantiation
-        }
-
-        serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
-            val instantiability = dynamicSupplier.getInstantiability(clazz, name)
-            when (instantiability.type) {
-                // This should have been checked in canInstantiate!
-                InstantiabilityType.NOT_INSTANTIABLE ->
-                    throwState("${dynamicSupplier.javaClass.simpleNestedName} returned '${InstantiabilityType.NOT_INSTANTIABLE.name}' when instantiability test returned '${InstantiabilityType.INSTANTIABLE.name}'! Instantiability should not change over time")
-
-                //Continue looking at other suppliers
-                InstantiabilityType.UNSUPPORTED_TYPE -> {}
-
-                //Found a supplier, return instance
-                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation { dynamicSupplier.get(clazz, name) }
-            }
         }
 
         val constructingFunction = findConstructingFunction(clazz).getOrThrow()
