@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ScopedComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.test.switches.TestService
@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
 @TestService
-class InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+class InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ScopedComponentInteractionFilter {
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
@@ -45,7 +45,7 @@ class InVoiceChannel : ApplicationCommandFilter, TextCommandFilter, ComponentInt
 
 @BService
 @TestService
-class IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+class IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ScopedComponentInteractionFilter {
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
@@ -73,7 +73,7 @@ class IsBotOwner : ApplicationCommandFilter, TextCommandFilter, ComponentInterac
 
 @BService
 @TestService
-class IsGuildOwner(private val botOwners: BotOwners) : ApplicationCommandFilter, TextCommandFilter, ComponentInteractionFilter {
+class IsGuildOwner(private val botOwners: BotOwners) : ApplicationCommandFilter, TextCommandFilter, ScopedComponentInteractionFilter {
 
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,

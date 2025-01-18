@@ -6,7 +6,7 @@ import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ScopedComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
@@ -38,12 +38,11 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * List of filters applied to this component.
      *
      * ### Requirements
-     * - The filter must not be [ComponentInteractionFilter.global].
      * - The filter must be available via dependency injection.
      *
-     * @see ComponentInteractionFilter
+     * @see ScopedComponentInteractionFilter
      */
-    val filters: MutableList<ComponentInteractionFilter>
+    val filters: MutableList<ScopedComponentInteractionFilter>
 
     /**
      * Sets the rate limiter of this component to one declared by a [RateLimitProvider].
@@ -59,33 +58,31 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * Applies a filter to this component.
      *
      * ### Requirements
-     * - The filter must not be [ComponentInteractionFilter.global].
      * - The filter must be available via dependency injection.
      *
-     * @see ComponentInteractionFilter
+     * @see ScopedComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filter: ComponentInteractionFilter): T
+    fun addFilter(filter: ScopedComponentInteractionFilter): T
 
     /**
      * Applies a filter to this component.
      *
      * ### Requirements
-     * - The filter must not be [ComponentInteractionFilter.global].
      * - The filter must be available via dependency injection.
      *
-     * @see ComponentInteractionFilter
+     * @see ScopedComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filterType: Class<out ComponentInteractionFilter>): T
+    fun addFilter(filterType: Class<out ScopedComponentInteractionFilter>): T
 }
 
 /**
- * Convenience extension to load an [ComponentInteractionFilter] service.
+ * Convenience extension to load a [ScopedComponentInteractionFilter] service.
  *
  * Typically used as `filters += filter<MyApplicationCommandFilter>()`
  */
-inline fun <reified T : ComponentInteractionFilter> IActionableComponent<*>.filter(): T {
+inline fun <reified T : ScopedComponentInteractionFilter> IActionableComponent<*>.filter(): T {
     return context.getService<T>()
 }
 

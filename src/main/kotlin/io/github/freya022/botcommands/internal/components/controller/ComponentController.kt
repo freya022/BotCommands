@@ -2,14 +2,12 @@ package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentGroup
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ScopedComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.lazy
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
@@ -78,15 +76,10 @@ internal class ComponentController(
         }
 
         builder.filters.onEach { filter ->
-            val filterClass = filter.javaClass
-            require(!filter.global) {
-                "Global filter ${filterClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
-            }
-
-            requireNotNull(context.serviceContainer.getServiceOrNull(filterClass)) {
+            require(context.serviceContainer.canCreateService(filter::class) == null) {
                 "Component filters must be accessible via dependency injection, " +
                         "filters such as composite filters created with 'and' / 'or' cannot be passed. " +
-                        "See ${classRef<ComponentInteractionFilter>()} for more details."
+                        "See ${classRef<ScopedComponentInteractionFilter>()} for more details."
             }
         }
 

@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components.builder
 
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ScopedComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.builder.IActionableComponent
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
@@ -12,7 +12,7 @@ internal abstract class AbstractActionableComponent<T : IActionableComponent<T>>
 ) : BuilderInstanceHolderImpl<T>(),
     IActionableComponentMixin<T> {
 
-    override val filters: MutableList<ComponentInteractionFilter> = arrayListOf()
+    override val filters: MutableList<ScopedComponentInteractionFilter> = arrayListOf()
 
     override var rateLimitReference: ComponentRateLimitReference? = null
 
@@ -20,10 +20,10 @@ internal abstract class AbstractActionableComponent<T : IActionableComponent<T>>
         this.rateLimitReference = reference
     }
 
-    override fun addFilter(filter: ComponentInteractionFilter): T = applyInstance {
+    override fun addFilter(filter: ScopedComponentInteractionFilter): T = applyInstance {
         this.filters += filter
     }
 
-    override fun addFilter(filterType: Class<out ComponentInteractionFilter>): T =
+    override fun addFilter(filterType: Class<out ScopedComponentInteractionFilter>): T =
         addFilter(context.getService(filterType))
 }

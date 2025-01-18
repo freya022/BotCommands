@@ -1,6 +1,6 @@
 package doc.java.examples.filters;
 
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter;
+import io.github.freya022.botcommands.api.components.GlobalComponentInteractionFilter;
 import io.github.freya022.botcommands.api.core.BotOwners;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @BService
 @TestService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyComponentFilter implements ComponentInteractionFilter {
+public class MyComponentFilter implements GlobalComponentInteractionFilter {
 
     private final MyComponentRejectionHandler rejectionHandler;
     private final BotOwners botOwners;
