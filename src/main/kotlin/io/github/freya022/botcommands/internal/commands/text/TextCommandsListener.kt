@@ -46,7 +46,7 @@ internal class TextCommandsListener internal constructor(
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<TextCommandFilter>,
+    private val globalFilters: List<TextCommandFilter>,
     private val suggestionSupplier: TextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
@@ -54,8 +54,6 @@ internal class TextCommandsListener internal constructor(
 
     private val scope = context.coroutineScopesConfig.textCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
-
-    private val globalFilters = filters.filter { it.global }
 
     @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {

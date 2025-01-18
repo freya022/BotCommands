@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
-import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
@@ -44,8 +43,8 @@ internal class TextCommandVariationImpl internal constructor(
      * @see TextCommandFilter
      */
     val filters: List<TextCommandFilter> = builder.filters.onEach { filter ->
-        require(!filter.global) {
-            "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
+        require(builder.context.serviceContainer.canCreateService(filter::class) != null) {
+            "Global filter ${filter::class.simpleNestedName} cannot be directly used on commands as they will already run"
         }
     }
 
