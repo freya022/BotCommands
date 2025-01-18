@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.framework
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.config.registerInstanceSupplier
+import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import org.flywaydb.core.Flyway
 import kotlin.time.Duration.Companion.seconds
@@ -35,6 +35,6 @@ class TestH2 : HikariSourceSupplier {
 internal fun BConfigBuilder.addH2(instance: TestH2 = TestH2()) {
     addClass<TestH2>()
     services {
-        registerInstanceSupplier { instance }
+        registerServiceSupplier { instance }
     }
 }
