@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.framework
 import io.github.freya022.botcommands.api.core.utils.findAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.flatMap
+import io.github.freya022.botcommands.api.core.utils.flatMapTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Disabled
@@ -68,11 +69,11 @@ private object InheritedAnnotations {
 
 object RecursiveAnnotationTests {
     @Test
-    fun `Find all annotations in order`() {
-        val allAnnotations = FindAllAnnotations.MyClass::class.findAllAnnotations<FindAllAnnotations.MyAnnotation>()
+    fun `Find all annotations, no override`() {
+        val allAnnotations = FindAllAnnotations.MyClass::class.findAllAnnotations<FindAllAnnotations.MyAnnotation>(directOverrides = false)
 
         assertEquals(
-            listOf(
+            setOf(
                 "A",
                 "B",
                 "C",
@@ -81,14 +82,14 @@ object RecursiveAnnotationTests {
                 "F",
                 "G",
             ),
-            allAnnotations.map { it.name }
+            allAnnotations.mapTo(hashSetOf()) { it.name }
         )
     }
 
     @Test
     fun `Override indirect annotations with direct annotation`() {
         val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
-            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(rootOverride = true)
+            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(directOverrides = true)
             .flatMap { it.values.toTypedArray() }
 
         assertEquals(listOf(4), values)
@@ -97,7 +98,7 @@ object RecursiveAnnotationTests {
     @Test
     fun `Override indirect annotations with direct repeatable annotation`() {
         val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
-            .findAllAnnotations<OverrideIndirectAnnotations.RepeatableAnnotationWithValues>(rootOverride = true)
+            .findAllAnnotations<OverrideIndirectAnnotations.RepeatableAnnotationWithValues>(directOverrides = true)
             .flatMap { it.values.toTypedArray() }
 
         assertEquals(listOf(1, 2), values)
@@ -106,11 +107,10 @@ object RecursiveAnnotationTests {
     @Test
     fun `Merge annotations`() {
         val values = OverrideIndirectAnnotations.MultipleValuesAnnotated::class
-            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(rootOverride = false)
-            .flatMap { it.values.toTypedArray() }
+            .findAllAnnotations<OverrideIndirectAnnotations.AnnotationWithValues>(directOverrides = false)
+            .flatMapTo(hashSetOf()) { it.values.toTypedArray() }
 
-        // BFS order!
-        assertEquals(listOf(4, 3), values)
+        assertEquals(hashSetOf(4, 3), values)
     }
 
     @Disabled("Not implemented yet")

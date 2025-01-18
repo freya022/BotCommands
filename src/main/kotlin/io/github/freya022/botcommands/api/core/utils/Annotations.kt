@@ -4,6 +4,7 @@ package io.github.freya022.botcommands.api.core.utils
 
 import java.lang.annotation.Inherited
 import java.util.*
+import kotlin.collections.flatMap
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
@@ -80,55 +81,57 @@ fun <A : Annotation> KAnnotatedElement.findAnnotationRecursive(annotationType: K
 /**
  * Finds all annotations of type [A] from the annotated [element].
  *
- * The search is breadth-first and considers meta-annotations,
+ * The annotations are not in any specific order, this considers meta-annotations,
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
  *
- * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
+ * @param directOverrides Whether a direct annotation should override meta-annotations of the same type
  */
 @JvmOverloads
-fun <A : Annotation> findAllAnnotations(element: KAnnotatedElement, annotationType: Class<A>, rootOverride: Boolean = true): List<A> =
-    element.findAllAnnotations(annotationType.kotlin, rootOverride)
+fun <A : Annotation> findAllAnnotations(element: KAnnotatedElement, annotationType: Class<A>, directOverrides: Boolean = true): List<A> =
+    element.findAllAnnotations(annotationType.kotlin, directOverrides)
 
 /**
  * Finds all annotations of type [A] from the annotated element.
  *
- * The search is breadth-first and considers meta-annotations,
+ * The annotations are not in any specific order, this considers meta-annotations,
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
  *
- * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
+ * @param directOverrides Whether a direct annotation should override meta-annotations of the same type
  */
 @JvmSynthetic
-inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(rootOverride: Boolean = true): List<A> =
-    findAllAnnotations(A::class, rootOverride)
+inline fun <reified A : Annotation> KAnnotatedElement.findAllAnnotations(directOverrides: Boolean = true): List<A> =
+    findAllAnnotations(A::class, directOverrides)
 
 /**
  * Finds all annotations of type [A] from the annotated element.
  *
- * The search is breadth-first and considers meta-annotations,
+ * The annotations are not in any specific order, this considers meta-annotations,
  * but does not support superclasses via [@Inherited][Inherited].
  *
  * [@Repeatable][Repeatable] is supported.
  *
- * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
+ * @param directOverrides Whether a direct annotation should override meta-annotations of the same type
  */
 @JvmSynthetic
-fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, rootOverride: Boolean = true): List<A> {
-    if (rootOverride) {
-        val directAnnotations = annotations.filterIsInstance(annotationType.java)
-        if (directAnnotations.isNotEmpty())
-            return directAnnotations
+fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, directOverrides: Boolean = true): List<A> {
+    return findAllAnnotations(annotationType, directOverrides, hashSetOf())
+}
+
+private fun <A : Annotation> KAnnotatedElement.findAllAnnotations(annotationType: KClass<A>, directOverrides: Boolean, visited: MutableSet<KClass<out Annotation>>): List<A> {
+    val directAnnotations = annotations.filterIsInstance(annotationType.java)
+    if (directOverrides && directAnnotations.isNotEmpty()) {
+        return directAnnotations
     }
 
-    return buildList {
-        bfs(this@findAllAnnotations) {
-            val annotation = annotationType.safeCast(it)
-            if (annotation != null)
-                this += annotation
-            true
+    return directAnnotations + annotations.flatMap {
+        if (visited.add(it.annotationClass)) {
+            it.annotationClass.findAllAnnotations(annotationType, directOverrides, visited)
+        } else {
+            emptyList()
         }
     }
 }
