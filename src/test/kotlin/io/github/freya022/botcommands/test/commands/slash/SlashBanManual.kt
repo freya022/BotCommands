@@ -18,7 +18,7 @@ import io.github.freya022.botcommands.test.services.Disabled
 @Disabled
 @Command
 class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
-    @Test(guildIds = [722891685755093072])
+    @Test(722891685755093072)
     @JDASlashCommand(name = "ban_annotated")
     @TopLevelSlashCommandData(defaultLocked = true, scope = CommandScope.GUILD)
     suspend fun onSlashBan(

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
-import net.dv8tion.jda.api.entities.Guild
 
 /**
  * Defines an **annotated** application command as being test-only.
@@ -13,18 +12,6 @@ import net.dv8tion.jda.api.entities.Guild
  * **Note:** This only applies to top-level commands, for slash commands,
  * this means the annotation needs to be used alongside [@TopLevelSlashCommandData][TopLevelSlashCommandData].
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Test(
-    /**
-     * Specifies the [Guild] IDs in which the command should try to be inserted in
-     */
-    val guildIds: LongArray = [],
-
-    /**
-     * Whether this should be added to the list of existing test guild IDs
-     *
-     * **Default:** false
-     */
-    val append: Boolean = false
-)
+annotation class Test(@get:JvmName("value") vararg val guildIds: Long)

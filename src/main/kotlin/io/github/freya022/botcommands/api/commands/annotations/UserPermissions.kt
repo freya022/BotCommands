@@ -8,6 +8,6 @@ import net.dv8tion.jda.api.Permission
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class UserPermissions(@get:JvmName("value") vararg val permissions: Permission = [], val append: Boolean = false)
+annotation class UserPermissions(@get:JvmName("value") vararg val permissions: Permission)
