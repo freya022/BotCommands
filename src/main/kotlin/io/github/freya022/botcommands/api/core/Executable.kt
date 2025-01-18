@@ -81,13 +81,13 @@ interface Executable {
     /**
      * Finds all annotations of type [annotationType] from this executable's function.
      *
-     * The search is breadth-first and considers meta-annotations.
+     * The annotations are not in any specific order, this considers meta-annotations.
      *
      * [@Repeatable][Repeatable] is supported.
      *
-     * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
+     * @param directOverrides Whether a direct annotation should override meta-annotations of the same type
      */
-    fun <A : Annotation> findAllAnnotations(annotationType: Class<out A>, rootOverride: Boolean) = function.findAllAnnotations(annotationType.kotlin)
+    fun <A : Annotation> findAllAnnotations(annotationType: Class<out A>, directOverrides: Boolean) = function.findAllAnnotations(annotationType.kotlin, directOverrides)
 
     /**
      * Finds all annotations meta-annotated with [annotationType] from this executable's function.
@@ -121,13 +121,13 @@ inline fun <reified A : Annotation> Executable.findAnnotation() = function.findA
 /**
  * Finds all annotations of type [A] from this executable's function.
  *
- * The search is breadth-first and considers meta-annotations.
+ * The annotations are not in any specific order, this considers meta-annotations.
  *
  * [@Repeatable][Repeatable] is supported.
  *
- * @param rootOverride Whether a direct annotation on this element overrides all meta-annotations
+ * @param directOverrides Whether a direct annotation should override meta-annotations of the same type
  */
-inline fun <reified A : Annotation> Executable.findAllAnnotations(rootOverride: Boolean = true) = function.findAllAnnotations<A>(rootOverride)
+inline fun <reified A : Annotation> Executable.findAllAnnotations(directOverrides: Boolean = true) = function.findAllAnnotations<A>(directOverrides)
 
 /**
  * Finds all annotations meta-annotated with [A] from this executable's function.
