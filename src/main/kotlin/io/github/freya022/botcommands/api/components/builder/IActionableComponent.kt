@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
@@ -43,9 +42,8 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * - The filter must be available via dependency injection.
      *
      * @see ComponentInteractionFilter
-     * @see ComponentInteractionRejectionHandler
      */
-    val filters: MutableList<ComponentInteractionFilter<*>>
+    val filters: MutableList<ComponentInteractionFilter>
 
     /**
      * Sets the rate limiter of this component to one declared by a [RateLimitProvider].
@@ -67,7 +65,7 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * @see ComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filter: ComponentInteractionFilter<*>): T
+    fun addFilter(filter: ComponentInteractionFilter): T
 
     /**
      * Applies a filter to this component.
@@ -79,7 +77,7 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * @see ComponentInteractionFilter
      */
     @CheckReturnValue
-    fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T
+    fun addFilter(filterType: Class<out ComponentInteractionFilter>): T
 }
 
 /**
@@ -87,7 +85,7 @@ interface IActionableComponent<T : IActionableComponent<T>> {
  *
  * Typically used as `filters += filter<MyApplicationCommandFilter>()`
  */
-inline fun <reified T : ComponentInteractionFilter<*>> IActionableComponent<*>.filter(): T {
+inline fun <reified T : ComponentInteractionFilter> IActionableComponent<*>.filter(): T {
     return context.getService<T>()
 }
 

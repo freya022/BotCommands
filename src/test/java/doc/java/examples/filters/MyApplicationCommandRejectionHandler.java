@@ -1,7 +1,5 @@
 package doc.java.examples.filters;
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import io.github.freya022.botcommands.test.switches.TestService;
@@ -11,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 @BService
 @TestService
 @TestLanguage(TestLanguage.Language.JAVA)
-public class MyApplicationCommandRejectionHandler implements ApplicationCommandRejectionHandler<String> {
-    @Override
-    public void handle(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo, @NotNull String userData) {
-        event.reply(userData).setEphemeral(true).queue();
+public class MyApplicationCommandRejectionHandler {
+
+    public void handle(@NotNull GenericCommandInteractionEvent event, @NotNull String reason) {
+        event.reply(reason).setEphemeral(true).queue();
     }
 }

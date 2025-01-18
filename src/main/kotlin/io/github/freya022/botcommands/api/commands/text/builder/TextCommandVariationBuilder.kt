@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.text.builder
 
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.builder.TextOptionRegistry
 import io.github.freya022.botcommands.api.core.BContext
@@ -21,9 +20,8 @@ interface TextCommandVariationBuilder : IDeclarationSiteHolderBuilder,
      * Set of filters preventing this command from executing.
      *
      * @see TextCommandFilter
-     * @see TextCommandRejectionHandler
      */
-    val filters: MutableList<TextCommandFilter<*>>
+    val filters: MutableList<TextCommandFilter>
 
     /**
      * Short description of the command displayed in the built-in help command,
@@ -59,6 +57,6 @@ interface TextCommandVariationBuilder : IDeclarationSiteHolderBuilder,
  *
  * Typically used as `filters += filter<MyApplicationCommandFilter>()`
  */
-inline fun <reified T : TextCommandFilter<*>> TextCommandVariationBuilder.filter(): T {
+inline fun <reified T : TextCommandFilter> TextCommandVariationBuilder.filter(): T {
     return context.getService<T>()
 }

@@ -12,7 +12,7 @@ internal abstract class AbstractActionableComponent<T : IActionableComponent<T>>
 ) : BuilderInstanceHolderImpl<T>(),
     IActionableComponentMixin<T> {
 
-    override val filters: MutableList<ComponentInteractionFilter<*>> = arrayListOf()
+    override val filters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
     override var rateLimitReference: ComponentRateLimitReference? = null
 
@@ -20,10 +20,10 @@ internal abstract class AbstractActionableComponent<T : IActionableComponent<T>>
         this.rateLimitReference = reference
     }
 
-    override fun addFilter(filter: ComponentInteractionFilter<*>): T = applyInstance {
+    override fun addFilter(filter: ComponentInteractionFilter): T = applyInstance {
         this.filters += filter
     }
 
-    override fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): T =
+    override fun addFilter(filterType: Class<out ComponentInteractionFilter>): T =
         addFilter(context.getService(filterType))
 }

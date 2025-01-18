@@ -1,0 +1,28 @@
+package doc.kotlin.examples.filters
+
+import doc.java.examples.filters.MyApplicationCommandRejectionHandler
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.test.switches.TestLanguage
+import io.github.freya022.botcommands.test.switches.TestService
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+
+@BService
+@TestService
+@TestLanguage(TestLanguage.Language.KOTLIN)
+class MyApplicationCommandFilter(
+    private val rejectionHandler: MyApplicationCommandRejectionHandler,
+) : ApplicationCommandFilter {
+
+    override suspend fun checkSuspend(
+        event: GenericCommandInteractionEvent,
+        commandInfo: ApplicationCommandInfo
+    ): String? {
+        if (event.channel!!.idLong != 722891685755093076) {
+            rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>")
+            return "Wrong channel"
+        }
+        return null
+    }
+}

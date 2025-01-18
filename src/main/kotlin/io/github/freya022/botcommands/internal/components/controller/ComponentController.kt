@@ -86,7 +86,7 @@ internal class ComponentController(
             requireNotNull(context.serviceContainer.getServiceOrNull(filterClass)) {
                 "Component filters must be accessible via dependency injection, " +
                         "filters such as composite filters created with 'and' / 'or' cannot be passed. " +
-                        "See ${classRef<ComponentInteractionFilter<*>>()} for more details."
+                        "See ${classRef<ComponentInteractionFilter>()} for more details."
             }
         }
 

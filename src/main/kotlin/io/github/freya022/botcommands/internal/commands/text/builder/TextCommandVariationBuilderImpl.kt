@@ -36,7 +36,7 @@ internal class TextCommandVariationBuilderImpl internal constructor(
     override val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = aggregateContainer.optionAggregateBuilders
 
-    override val filters: MutableList<TextCommandFilter<*>> = arrayListOf()
+    override val filters: MutableList<TextCommandFilter> = arrayListOf()
 
     override var description: String? = null
 

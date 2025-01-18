@@ -35,7 +35,7 @@ class SlashDI internal constructor(
     @JDASlashCommand(name = "di")
     internal fun onSlashDi(
         event: GuildSlashEvent,
-        filters: List<ApplicationCommandFilter<*>>,
+        filters: List<ApplicationCommandFilter>,
         databaseLazy: LazyService<BlockingDatabase>,
         @ServiceName("firstReadyListenerNope") inexistantListener: ReadyListener?,
         @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() }

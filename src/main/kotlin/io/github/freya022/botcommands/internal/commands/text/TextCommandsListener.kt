@@ -22,7 +22,10 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLi
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
-import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.launchCatching
+import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.shortSignature
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -43,8 +46,7 @@ internal class TextCommandsListener internal constructor(
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<TextCommandFilter<*>>,
-    rejectionHandler: TextCommandRejectionHandler<*>?,
+    filters: List<TextCommandFilter>,
     private val suggestionSupplier: TextSuggestionSupplier,
     private val helpCommand: IHelpCommand?
 ) {
@@ -53,15 +55,7 @@ internal class TextCommandsListener internal constructor(
     private val scope = context.coroutineScopesConfig.textCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    // Types are crosschecked anyway
-    @Suppress("UNCHECKED_CAST")
-    private val globalFilters = filters.filter { it.global } as List<TextCommandFilter<Any>>
-    @Suppress("UNCHECKED_CAST")
-    private val rejectionHandler = when {
-        globalFilters.isEmpty() -> null
-        else -> rejectionHandler as TextCommandRejectionHandler<Any>?
-            ?: throwState("A ${classRef<TextCommandRejectionHandler<*>>()} must be available if ${classRef<TextCommandFilter<*>>()} is used")
-    }
+    private val globalFilters = filters.filter { it.global }
 
     @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
@@ -213,10 +207,9 @@ internal class TextCommandsListener internal constructor(
 
         // At this point, we're sure that the command is executable
         checkFilters(globalFilters, variation.filters) { filter ->
-            val userError = filter.checkSuspend(event, variation, args)
-            if (userError != null) {
-                rejectionHandler!!.handleSuspend(event, variation, args, userError)
-                logger.trace { "${filter.description} rejected text command '$content'" }
+            val rejectionReason = filter.checkSuspend(event, variation, args)
+            if (rejectionReason != null) {
+                logger.trace { "${filter.description} rejected text command '$content' by user ${event.author.id}: $rejectionReason" }
                 return ExecutionResult.STOP
             }
         }
