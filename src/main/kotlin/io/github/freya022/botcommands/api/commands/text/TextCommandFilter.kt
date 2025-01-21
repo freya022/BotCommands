@@ -18,8 +18,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Filters can be combined with [`and`][and]/[`or`][or] (static methods for Java users).
  *
  * ### Requirements
+ * - Register your instance as a service with [@BService][BService].
+ * This is not required if you pass the instance directly to the command builder.
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
- * - If you want this to be a global filter: Register it as a service with [@BService][BService]
+ * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
  * ### Execution order
  * The execution order of global filters is determined by the priority of the service,
@@ -95,6 +97,8 @@ interface TextCommandFilter : Filter {
 
 infix fun TextCommandFilter.or(other: TextCommandFilter): TextCommandFilter {
     return object : TextCommandFilter {
+        override val global: Boolean = false
+
         override val description: String
             get() = "(${this@or.description} || ${other.description})"
 
@@ -108,6 +112,8 @@ infix fun TextCommandFilter.or(other: TextCommandFilter): TextCommandFilter {
 
 infix fun TextCommandFilter.and(other: TextCommandFilter): TextCommandFilter {
     return object : TextCommandFilter {
+        override val global: Boolean = false
+
         override val description: String
             get() = "(${this@and.description} && ${other.description})"
 

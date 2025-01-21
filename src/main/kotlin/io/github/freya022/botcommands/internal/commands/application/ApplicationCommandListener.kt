@@ -54,10 +54,12 @@ internal class ApplicationCommandListener internal constructor(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    private val globalFilters: List<ApplicationCommandFilter>,
+    filters: List<ApplicationCommandFilter>,
 ) {
     private val scope = context.coroutineScopesConfig.applicationCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
+
+    private val globalFilters = filters.filter { it.global }
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
