@@ -2,13 +2,14 @@ package io.github.freya022.botcommands.internal.components.controller
 
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.Components
-import io.github.freya022.botcommands.api.components.GlobalComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
@@ -38,13 +39,15 @@ internal class ComponentsListener(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    private val globalFilters: List<GlobalComponentInteractionFilter>,
+    filters: List<ComponentInteractionFilter>,
     private val componentController: ComponentController,
     private val continuationManager: ComponentContinuationManager,
     private val componentHandlerExecutor: ComponentHandlerExecutor,
 ) {
     private val scope = context.coroutineScopesConfig.componentScope
     private val exceptionHandler = ExceptionHandler(context, logger)
+
+    private val globalFilters = filters.filter { it.global }
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
@@ -65,6 +68,12 @@ internal class ComponentsListener(
 
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
                 return@launch event.reply_(defaultMessagesFactory.get(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+            }
+
+            component.filters.onEach { filter ->
+                require(!filter.global) {
+                    "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
+                }
             }
 
             rateLimitHandler.tryRun(component, event) { cancellableRateLimit ->

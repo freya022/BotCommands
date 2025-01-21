@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components.data
 
-import io.github.freya022.botcommands.api.components.ScopedComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -15,7 +15,7 @@ internal class EphemeralComponentData(
     override val componentType: ComponentType,
     override val expiresAt: Instant?,
     override val resetTimeoutOnUseDuration: Duration?,
-    override val filters: List<ScopedComponentInteractionFilter>,
+    override val filters: List<ComponentInteractionFilter>,
     override val singleUse: Boolean,
     override val rateLimitReference: ComponentRateLimitReference?,
     override val handler: EphemeralHandler<*>?,
