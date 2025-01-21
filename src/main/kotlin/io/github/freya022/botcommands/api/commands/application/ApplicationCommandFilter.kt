@@ -37,6 +37,8 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *     private val rejectionHandler: MyApplicationCommandRejectionHandler,
  * ) : ApplicationCommandFilter {
  *
+ *     override val global: Boolean get() = true
+ *
  *     override suspend fun checkSuspend(
  *         event: GenericCommandInteractionEvent,
  *         commandInfo: ApplicationCommandInfo
@@ -60,6 +62,11 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *
  *     public MyApplicationCommandFilter(MyApplicationCommandRejectionHandler rejectionHandler) {
  *         this.rejectionHandler = rejectionHandler;
+ *     }
+ *
+ *     @Override
+ *     public boolean getGlobal() {
+ *         return true;
  *     }
  *
  *     @Nullable

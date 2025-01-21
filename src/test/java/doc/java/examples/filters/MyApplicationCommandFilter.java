@@ -20,6 +20,11 @@ public class MyApplicationCommandFilter implements ApplicationCommandFilter {
         this.rejectionHandler = rejectionHandler;
     }
 
+    @Override
+    public boolean getGlobal() {
+        return true;
+    }
+
     @Nullable
     @Override
     public String check(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {

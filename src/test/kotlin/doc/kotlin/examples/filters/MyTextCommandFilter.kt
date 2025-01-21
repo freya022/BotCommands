@@ -15,6 +15,8 @@ class MyTextCommandFilter(
     private val rejectionHandler: MyTextCommandRejectionHandler,
 ) : TextCommandFilter {
 
+    override val global: Boolean get() = true
+
     override suspend fun checkSuspend(
         event: MessageReceivedEvent,
         commandVariation: TextCommandVariation,

@@ -37,6 +37,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *     private val rejectionHandler: MyTextCommandRejectionHandler,
  * ) : TextCommandFilter {
  *
+ *     override val global: Boolean get() = true
+ *
  *     override suspend fun checkSuspend(
  *         event: MessageReceivedEvent,
  *         commandVariation: TextCommandVariation,
@@ -61,6 +63,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  *     public MyTextCommandFilter(MyTextCommandRejectionHandler rejectionHandler) {
  *         this.rejectionHandler = rejectionHandler;
+ *     }
+ *
+ *     @Override
+ *     public boolean getGlobal() {
+ *         return true;
  *     }
  *
  *     @Nullable

@@ -15,6 +15,8 @@ class MyApplicationCommandFilter(
     private val rejectionHandler: MyApplicationCommandRejectionHandler,
 ) : ApplicationCommandFilter {
 
+    override val global: Boolean get() = true
+
     override suspend fun checkSuspend(
         event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo

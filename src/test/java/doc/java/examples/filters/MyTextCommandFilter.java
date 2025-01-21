@@ -20,6 +20,11 @@ public class MyTextCommandFilter implements TextCommandFilter {
         this.rejectionHandler = rejectionHandler;
     }
 
+    @Override
+    public boolean getGlobal() {
+        return true;
+    }
+
     @Nullable
     @Override
     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {

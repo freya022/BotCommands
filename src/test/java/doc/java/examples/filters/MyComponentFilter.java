@@ -22,6 +22,11 @@ public class MyComponentFilter implements ComponentInteractionFilter {
         this.botOwners = botOwners;
     }
 
+    @Override
+    public boolean getGlobal() {
+        return true;
+    }
+
     @Nullable
     @Override
     public String check(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName) {

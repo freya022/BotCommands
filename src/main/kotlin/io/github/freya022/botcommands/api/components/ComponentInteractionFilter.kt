@@ -54,6 +54,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *     private val botOwners: BotOwners,
  * ) : ComponentInteractionFilter {
  *
+ *     override val global: Boolean get() = true
+ *
  *     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
  *         if (event.channel.idLong == 932902082724380744 && event.user !in botOwners) {
  *             rejectionHandler.handle(event, "Only owners are allowed to use components in <#932902082724380744>")
@@ -76,6 +78,11 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *     public MyComponentFilter(MyComponentRejectionHandler rejectionHandler, BotOwners botOwners) {
  *         this.rejectionHandler = rejectionHandler;
  *         this.botOwners = botOwners;
+ *     }
+ *
+ *     @Override
+ *     public boolean getGlobal() {
+ *         return true;
  *     }
  *
  *     @Nullable
