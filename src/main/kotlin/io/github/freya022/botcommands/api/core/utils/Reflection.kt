@@ -5,17 +5,16 @@ import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.lineNumberOrNull
 import io.github.freya022.botcommands.internal.utils.sourceFileOrNull
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.javaConstructor
-import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.jvmName
+import kotlin.reflect.jvm.*
 
 /**
  * Utility class to convert between Kotlin and Java reflection objects.
@@ -26,6 +25,24 @@ object ReflectionUtils { //For Java users
 
     @JvmStatic
     fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
+
+    @JvmStatic
+    fun KFunction<*>.isConstructor(): Boolean = this.isConstructor
+
+    @JvmStatic
+    fun Executable.toKotlin(): KFunction<*> = when (this) {
+        is Method -> toKotlin()
+        is Constructor<*> -> toKotlin()
+    }
+
+    @JvmStatic
+    fun Method.toKotlin(): KFunction<*> = kotlinFunction ?: error("Cannot represent '$this' as a Kotlin function")
+
+    @JvmStatic
+    fun <T : Any> Constructor<T>.toKotlin(): KFunction<T> = kotlinFunction ?: error("Cannot represent '$this' as a Kotlin function")
+
+    @JvmStatic
+    fun KFunction<*>.toJava(): Executable = this.javaMethodOrConstructor
 }
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
