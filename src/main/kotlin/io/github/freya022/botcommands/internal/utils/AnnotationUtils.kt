@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredMemberProperties
 import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterAnnotation
 
 internal object AnnotationUtils {
@@ -41,13 +40,5 @@ internal object AnnotationUtils {
                 }
             }
             .map { context.getService(it) as T }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    internal fun <T, A : Annotation> getAnnotationValue(annotation: A, methodName: String): T {
-        val kFunction = annotation.annotationClass.declaredMemberProperties.find { it.name == methodName }
-            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}'")
-        return kFunction.call(annotation) as? T
-            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}' as the type is incorrect, annotation type: ${kFunction.returnType.simpleNestedName}")
     }
 }
