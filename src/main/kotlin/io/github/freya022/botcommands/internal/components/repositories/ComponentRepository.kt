@@ -117,7 +117,7 @@ internal class ComponentRepository(
         }
     }
 
-    private fun getFilterNames(list: List<ComponentInteractionFilter<*>>): Array<out String> {
+    private fun getFilterNames(list: List<ComponentInteractionFilter>): Array<out String> {
         return Array(list.size) { list[it].javaClass.name }
     }
 

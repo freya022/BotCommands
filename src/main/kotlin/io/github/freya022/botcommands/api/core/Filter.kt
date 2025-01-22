@@ -16,12 +16,10 @@ interface Filter {
     /**
      * Whether this filter is global or command-specific.
      *
-     * - Command-specific filters must override this to `false`.
-     * - Global filters cannot be used on specific commands/components
-     *
-     * **Default:** `true`
+     * If `false`, this filter can be applied to specific commands,
+     * if `true`, this will be applied to all commands.
      */
-    val global: Boolean get() = true
+    val global: Boolean
 
     /**
      * Description of the filter, used for logging purposes (like when a filter rejects a command).

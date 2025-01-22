@@ -27,7 +27,7 @@ public class SlashDIJava extends ApplicationCommand {
 
     @JDASlashCommand(name = "di_java")
     public void onSlashDi(GuildSlashEvent event,
-                          List<ApplicationCommandFilter<?>> filters,
+                          List<ApplicationCommandFilter> filters,
                           LazyService<BlockingDatabase> databaseLazy,
                           @ServiceName("firstReadyListenerNope") @Nullable ReadyListener inexistantListener) {
         event.replyFormat("""

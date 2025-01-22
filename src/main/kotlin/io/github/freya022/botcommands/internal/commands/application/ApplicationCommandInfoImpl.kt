@@ -33,7 +33,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
     ApplicationCommandInfo,
     ExecutableMixin {
 
-    internal val filters: List<ApplicationCommandFilter<*>> = builder.filters.onEach { filter ->
+    internal val filters: List<ApplicationCommandFilter> = builder.filters.onEach { filter ->
         require(!filter.global) {
             "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
         }

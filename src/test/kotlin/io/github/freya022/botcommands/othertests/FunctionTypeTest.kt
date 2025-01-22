@@ -22,16 +22,16 @@ object FunctionTypeTest {
     private object FakeActionableComponent : IPersistentActionableComponent<FakeActionableComponent> {
         override val context: BContext
             get() = throw UnsupportedOperationException()
-        override val filters: MutableList<ComponentInteractionFilter<*>>
+        override val filters: MutableList<ComponentInteractionFilter>
             get() = arrayListOf()
 
         override fun rateLimitReference(reference: ComponentRateLimitReference): FakeActionableComponent =
             throw UnsupportedOperationException()
 
-        override fun addFilter(filter: ComponentInteractionFilter<*>): FakeActionableComponent =
+        override fun addFilter(filter: ComponentInteractionFilter): FakeActionableComponent =
             throw UnsupportedOperationException()
 
-        override fun addFilter(filterType: Class<out ComponentInteractionFilter<*>>): FakeActionableComponent =
+        override fun addFilter(filterType: Class<out ComponentInteractionFilter>): FakeActionableComponent =
             throw UnsupportedOperationException()
 
         override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>): FakeActionableComponent {

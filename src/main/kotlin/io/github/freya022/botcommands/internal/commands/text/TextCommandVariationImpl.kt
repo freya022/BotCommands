@@ -42,9 +42,8 @@ internal class TextCommandVariationImpl internal constructor(
      * Set of filters preventing this command from executing.
      *
      * @see TextCommandFilter
-     * @see TextCommandRejectionHandler
      */
-    val filters: List<TextCommandFilter<*>> = builder.filters.onEach { filter ->
+    val filters: List<TextCommandFilter> = builder.filters.onEach { filter ->
         require(!filter.global) {
             "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
         }

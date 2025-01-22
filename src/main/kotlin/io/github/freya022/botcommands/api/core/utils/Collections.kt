@@ -3,6 +3,7 @@
 package io.github.freya022.botcommands.api.core.utils
 
 import java.util.*
+import kotlin.experimental.ExperimentalTypeInference
 
 fun <T> arrayOfSize(size: Int) = ArrayList<T>(size)
 
@@ -65,10 +66,14 @@ fun <K, V> MutableMap<K, V>.putIfAbsentOrNull(key: K, value: V): V? {
     return null
 }
 
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
 inline fun <T, R> Iterable<T>.flatMap(transform: (T) -> Array<R>): List<R> {
     return flatMapTo(ArrayList<R>(), transform)
 }
 
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
 inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.flatMapTo(destination: C, transform: (T) -> Array<R>): C {
     for (element in this) {
         val list = transform(element)

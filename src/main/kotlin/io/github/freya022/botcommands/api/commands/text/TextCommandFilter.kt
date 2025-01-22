@@ -13,9 +13,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * Filters run when a [command variation][TextCommandBuilder.variation] is about to be executed,
  * i.e., after the permissions/rate limits... were checked.
  *
- * When the final filter returns an error object of type [T],
- * it will then be passed to the [TextCommandRejectionHandler].
- *
  * ### Combining filters
  *
  * Filters can be combined with [`and`][and]/[`or`][or] (static methods for Java users).
@@ -23,7 +20,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * ### Requirements
  * - Register your instance as a service with [@BService][BService].
  * This is not required if you pass the instance directly to the command builder.
- * - Have exactly one instance of [TextCommandRejectionHandler].
  * - Implement either [check] (Java) or [checkSuspend] (Kotlin).
  * - (Optional) Set your filter as a command-specific filter by disabling [global].
  *
@@ -32,12 +28,24 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * while command-specific filters use the insertion order.
  *
  * ### Example - Accepting commands only in a single channel
+ * **Note:** For the example's sake, I will reply directly on each failed condition,
+ * however, I recommend having a separate function/class to handle rejections,
+ * as to not duplicate code on each rejection case.
+ *
  * ```kt
  * @BService
- * class MyTextCommandFilter : TextCommandFilter<String> {
- *     override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? {
- *         if (event.guildChannel.idLong != 722891685755093076) {
- *             return "Can only run commands in <#722891685755093076>"
+ * class MyTextCommandFilter : TextCommandFilter {
+ *
+ *     override val global: Boolean get() = true
+ *
+ *     override suspend fun checkSuspend(
+ *         event: MessageReceivedEvent,
+ *         commandVariation: TextCommandVariation,
+ *         args: String
+ *     ): String? {
+ *         if (event.channel.idLong != 722891685755093076) {
+ *             event.message.reply("Can only run commands in <#722891685755093076>").await()
+ *             return "Wrong channel"
  *         }
  *         return null
  *     }
@@ -48,55 +56,53 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * ```java
  * @BService
- * public class MyTextCommandFilter implements TextCommandFilter<String> {
+ * public class MyTextCommandFilter implements TextCommandFilter {
+ *
+ *     @Override
+ *     public boolean getGlobal() {
+ *         return true;
+ *     }
+ *
  *     @Nullable
  *     @Override
  *     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
- *         if (channel.getIdLong() != 722891685755093076L) {
- *             return "Can only run commands in <#722891685755093076>";
+ *         if (event.getChannel().getIdLong() != 722891685755093076L) {
+ *             event.getMessage().reply("Can only run commands in <#722891685755093076>").queue();
+ *             return "Wrong channel";
  *         }
  *         return null;
  *     }
  * }
  * ```
  *
- * @param T Type of the error object handled by [TextCommandRejectionHandler]
- *
- * @see TextCommandRejectionHandler
  * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
-interface TextCommandFilter<T : Any> : Filter {
+interface TextCommandFilter : Filter {
     /**
-     * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
-     *
-     * The object will be passed to your [TextCommandRejectionHandler] if the command is rejected.
+     * Checks if this text command should run, returns `null` if this filter passes,
+     * or a reason for the rejection, used for logging purposes.
      */
     @JvmSynthetic
-    suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? =
+    suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? =
         check(event, commandVariation, args)
 
     /**
-     * Returns `null` if this filter should allow the command to run, or returns your own object if it can't.
-     *
-     * The object will be passed to your [TextCommandRejectionHandler] if the command is rejected.
+     * Checks if this text command should run, returns `null` if this filter passes,
+     * or a reason for the rejection, used for logging purposes.
      */
-    fun check(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? =
+    fun check(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? =
         throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'check' or 'checkSuspend' method")
 }
 
-infix fun <T : Any> TextCommandFilter<T>.or(other: TextCommandFilter<T>): TextCommandFilter<T> {
-    return object : TextCommandFilter<T> {
+infix fun TextCommandFilter.or(other: TextCommandFilter): TextCommandFilter {
+    return object : TextCommandFilter {
         override val global: Boolean = false
 
         override val description: String
             get() = "(${this@or.description} || ${other.description})"
 
-        override suspend fun checkSuspend(
-            event: MessageReceivedEvent,
-            commandVariation: TextCommandVariation,
-            args: String
-        ): T? {
+        override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? {
             // Elvis operator short circuits if left condition had no error
             this@or.checkSuspend(event, commandVariation, args) ?: return null
             return other.checkSuspend(event, commandVariation, args)
@@ -104,14 +110,14 @@ infix fun <T : Any> TextCommandFilter<T>.or(other: TextCommandFilter<T>): TextCo
     }
 }
 
-infix fun <T : Any> TextCommandFilter<T>.and(other: TextCommandFilter<T>): TextCommandFilter<T> {
-    return object : TextCommandFilter<T> {
+infix fun TextCommandFilter.and(other: TextCommandFilter): TextCommandFilter {
+    return object : TextCommandFilter {
         override val global: Boolean = false
 
         override val description: String
             get() = "(${this@and.description} && ${other.description})"
 
-        override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): T? {
+        override suspend fun checkSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): String? {
             val errorObject = this@and.checkSuspend(event, commandVariation, args)
             if (errorObject != null)
                 return errorObject

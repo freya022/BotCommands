@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.application
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandRejectionHandler
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
@@ -32,7 +31,10 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLi
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
-import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.launchCatching
+import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.Level
 import net.dv8tion.jda.api.entities.Guild
@@ -52,21 +54,12 @@ internal class ApplicationCommandListener internal constructor(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<ApplicationCommandFilter<*>>,
-    rejectionHandler: ApplicationCommandRejectionHandler<*>?
+    filters: List<ApplicationCommandFilter>,
 ) {
     private val scope = context.coroutineScopesConfig.applicationCommandsScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    // Types are crosschecked anyway
-    @Suppress("UNCHECKED_CAST")
-    private val globalFilters = filters.filter { it.global } as List<ApplicationCommandFilter<Any>>
-    @Suppress("UNCHECKED_CAST")
-    private val rejectionHandler = when {
-        filters.isEmpty() -> null
-        else -> rejectionHandler as ApplicationCommandRejectionHandler<Any>?
-            ?: throwState("A ${classRef<ApplicationCommandRejectionHandler<*>>()} must be available if ${classRef<ApplicationCommandFilter<*>>()} is used")
-    }
+    private val globalFilters = filters.filter { it.global }
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -261,13 +254,12 @@ internal class ApplicationCommandListener internal constructor(
         }
 
         checkFilters(globalFilters, applicationCommand.filters) { filter ->
-            val userError = filter.checkSuspend(event, applicationCommand)
-            if (userError != null) {
-                rejectionHandler!!.handleSuspend(event, applicationCommand, userError)
+            val rejectionReason = filter.checkSuspend(event, applicationCommand)
+            if (rejectionReason != null) {
                 if (event.isAcknowledged) {
-                    logger.trace { "${filter.description} rejected application command '${event.commandString}'" }
+                    logger.trace { "${filter.description} rejected application command '${event.commandString}' by user ${event.user.id}: $rejectionReason" }
                 } else {
-                    logger.error { "${filter.description} rejected application command '${event.commandString}' but did not acknowledge the interaction" }
+                    logger.error { "${filter.description} rejected application command '${event.commandString}' by user ${event.user.id} but did not acknowledge the interaction: $rejectionReason" }
                 }
                 return false
             }

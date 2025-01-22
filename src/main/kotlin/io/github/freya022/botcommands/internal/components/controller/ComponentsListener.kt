@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.components.controller
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.ComponentInteractionRejectionHandler
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
@@ -40,8 +39,7 @@ internal class ComponentsListener(
     private val defaultMessagesFactory: DefaultMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
-    filters: List<ComponentInteractionFilter<*>>,
-    rejectionHandler: ComponentInteractionRejectionHandler<*>?,
+    filters: List<ComponentInteractionFilter>,
     private val componentController: ComponentController,
     private val continuationManager: ComponentContinuationManager,
     private val componentHandlerExecutor: ComponentHandlerExecutor,
@@ -49,15 +47,7 @@ internal class ComponentsListener(
     private val scope = context.coroutineScopesConfig.componentScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
-    // Types are crosschecked anyway
-    @Suppress("UNCHECKED_CAST")
-    private val globalFilters = filters.filter { it.global } as List<ComponentInteractionFilter<Any>>
-    @Suppress("UNCHECKED_CAST")
-    private val rejectionHandler = when {
-        globalFilters.isEmpty() -> null
-        else -> rejectionHandler as ComponentInteractionRejectionHandler<Any>?
-            ?: throwState("A ${classRef<ComponentInteractionRejectionHandler<*>>()} must be available if ${classRef<ComponentInteractionFilter<*>>()} is used")
-    }
+    private val globalFilters = filters.filter { it.global }
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
@@ -117,13 +107,12 @@ internal class ComponentsListener(
 
         checkFilters(globalFilters, component.filters) { filter ->
             val handlerName = (component as? PersistentComponentData)?.handler?.handlerName
-            val userError = filter.checkSuspend(event, handlerName)
-            if (userError != null) {
-                rejectionHandler!!.handleSuspend(event, handlerName, userError)
+            val rejectionReason = filter.checkSuspend(event, handlerName)
+            if (rejectionReason != null) {
                 if (event.isAcknowledged) {
-                    logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
+                    logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}): $rejectionReason" }
                 } else {
-                    logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
+                    logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}) but did not acknowledge the interaction: $rejectionReason" }
                 }
                 return false
             }

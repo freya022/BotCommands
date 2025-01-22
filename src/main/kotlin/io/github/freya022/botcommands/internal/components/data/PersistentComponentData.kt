@@ -15,7 +15,7 @@ internal class PersistentComponentData(
     override val componentType: ComponentType,
     override val expiresAt: Instant?,
     override val resetTimeoutOnUseDuration: Duration?,
-    override val filters: List<ComponentInteractionFilter<*>>,
+    override val filters: List<ComponentInteractionFilter>,
     override val singleUse: Boolean,
     override val rateLimitReference: ComponentRateLimitReference?,
     override val handler: PersistentHandler?,

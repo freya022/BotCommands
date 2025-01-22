@@ -15,7 +15,7 @@ internal abstract class ApplicationCommandBuilderImpl<T : ApplicationCommandOpti
 ) : ExecutableCommandBuilderImpl<T, Any>(context, name, function),
     ApplicationCommandBuilder<T> {
 
-    final override val filters: MutableList<ApplicationCommandFilter<*>> = arrayListOf()
+    final override val filters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     final override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
         selfAggregate(declaredName) {
