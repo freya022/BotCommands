@@ -1,6 +1,7 @@
 package doc.kotlin.examples.filters
 
-import doc.java.examples.filters.MyApplicationCommandRejectionHandler
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -11,9 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 @BService
 @TestService
 @TestLanguage(TestLanguage.Language.KOTLIN)
-class MyApplicationCommandFilter(
-    private val rejectionHandler: MyApplicationCommandRejectionHandler,
-) : ApplicationCommandFilter {
+class MyApplicationCommandFilter : ApplicationCommandFilter {
 
     override val global: Boolean get() = true
 
@@ -22,7 +21,7 @@ class MyApplicationCommandFilter(
         commandInfo: ApplicationCommandInfo
     ): String? {
         if (event.channel!!.idLong != 722891685755093076) {
-            rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>")
+            event.reply_("Can only run commands in <#722891685755093076>", ephemeral = true).await()
             return "Wrong channel"
         }
         return null

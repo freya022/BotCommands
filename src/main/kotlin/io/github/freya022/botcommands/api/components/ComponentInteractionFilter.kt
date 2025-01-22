@@ -44,13 +44,13 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * while component-specific filters use the insertion order.
  *
  * ### Example - Rejecting component interactions from non-owners
- * **Note:** I recommend having a separate class to handle rejections,
- * as to not duplicate code on each filter.
+ * **Note:** For the example's sake, I will reply directly on each failed condition,
+ * however, I recommend having a separate function/class to handle rejections,
+ * as to not duplicate code on each rejection case.
  *
  * ```kt
  * @BService
  * class MyComponentFilter(
- *     private val rejectionHandler: MyComponentRejectionHandler,
  *     private val botOwners: BotOwners,
  * ) : ComponentInteractionFilter {
  *
@@ -58,7 +58,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *
  *     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
  *         if (event.channel.idLong == 932902082724380744 && event.user !in botOwners) {
- *             rejectionHandler.handle(event, "Only owners are allowed to use components in <#932902082724380744>")
+ *             event.reply_("Only owners are allowed to use components in <#932902082724380744>", ephemeral = true).await()
  *             return "Not an owner"
  *         }
  *         return null
@@ -72,11 +72,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * @BService
  * public class MyComponentFilter implements ComponentInteractionFilter {
  *
- *     private final MyComponentRejectionHandler rejectionHandler;
  *     private final BotOwners botOwners;
  *
- *     public MyComponentFilter(MyComponentRejectionHandler rejectionHandler, BotOwners botOwners) {
- *         this.rejectionHandler = rejectionHandler;
+ *     public MyComponentFilter(BotOwners botOwners) {
  *         this.botOwners = botOwners;
  *     }
  *
@@ -89,7 +87,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  *     @Override
  *     public String check(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName) {
  *         if (event.getChannel().getIdLong() == 932902082724380744L && !botOwners.isOwner(event.getUser())) {
- *             rejectionHandler.handle(event, "Only owners are allowed to use components in <#932902082724380744>");
+ *             event.reply("Only owners are allowed to use components in <#932902082724380744>").setEphemeral(true).queue();
  *             return "Not an owner";
  *         }
  *         return null;

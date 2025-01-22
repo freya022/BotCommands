@@ -14,12 +14,6 @@ import org.jetbrains.annotations.Nullable;
 @TestLanguage(TestLanguage.Language.JAVA)
 public class MyApplicationCommandFilter implements ApplicationCommandFilter {
 
-    private final MyApplicationCommandRejectionHandler rejectionHandler;
-
-    public MyApplicationCommandFilter(MyApplicationCommandRejectionHandler rejectionHandler) {
-        this.rejectionHandler = rejectionHandler;
-    }
-
     @Override
     public boolean getGlobal() {
         return true;
@@ -29,7 +23,7 @@ public class MyApplicationCommandFilter implements ApplicationCommandFilter {
     @Override
     public String check(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
         if (event.getChannel().getIdLong() != 722891685755093076L) {
-            rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>");
+            event.reply("Can only run commands in <#722891685755093076>").setEphemeral(true).queue();
             return "Not the right channel";
         }
         return null;

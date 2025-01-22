@@ -14,11 +14,9 @@ import org.jetbrains.annotations.Nullable;
 @TestLanguage(TestLanguage.Language.JAVA)
 public class MyComponentFilter implements ComponentInteractionFilter {
 
-    private final MyComponentRejectionHandler rejectionHandler;
     private final BotOwners botOwners;
 
-    public MyComponentFilter(MyComponentRejectionHandler rejectionHandler, BotOwners botOwners) {
-        this.rejectionHandler = rejectionHandler;
+    public MyComponentFilter(BotOwners botOwners) {
         this.botOwners = botOwners;
     }
 
@@ -31,7 +29,7 @@ public class MyComponentFilter implements ComponentInteractionFilter {
     @Override
     public String check(@NotNull GenericComponentInteractionCreateEvent event, @Nullable String handlerName) {
         if (event.getChannel().getIdLong() == 932902082724380744L && !botOwners.isOwner(event.getUser())) {
-            rejectionHandler.handle(event, "Only owners are allowed to use components in <#932902082724380744>");
+            event.reply("Only owners are allowed to use components in <#932902082724380744>").setEphemeral(true).queue();
             return "Not an owner";
         }
         return null;

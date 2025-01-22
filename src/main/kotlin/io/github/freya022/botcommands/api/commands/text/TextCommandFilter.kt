@@ -28,14 +28,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * while command-specific filters use the insertion order.
  *
  * ### Example - Accepting commands only in a single channel
- * **Note:** I recommend having a separate class to handle rejections,
- * as to not duplicate code on each filter.
+ * **Note:** For the example's sake, I will reply directly on each failed condition,
+ * however, I recommend having a separate function/class to handle rejections,
+ * as to not duplicate code on each rejection case.
  *
  * ```kt
  * @BService
- * class MyTextCommandFilter(
- *     private val rejectionHandler: MyTextCommandRejectionHandler,
- * ) : TextCommandFilter {
+ * class MyTextCommandFilter : TextCommandFilter {
  *
  *     override val global: Boolean get() = true
  *
@@ -45,7 +44,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *         args: String
  *     ): String? {
  *         if (event.channel.idLong != 722891685755093076) {
- *             rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>")
+ *             event.message.reply("Can only run commands in <#722891685755093076>").await()
  *             return "Wrong channel"
  *         }
  *         return null
@@ -59,12 +58,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * @BService
  * public class MyTextCommandFilter implements TextCommandFilter {
  *
- *     private final MyTextCommandRejectionHandler rejectionHandler;
- *
- *     public MyTextCommandFilter(MyTextCommandRejectionHandler rejectionHandler) {
- *         this.rejectionHandler = rejectionHandler;
- *     }
- *
  *     @Override
  *     public boolean getGlobal() {
  *         return true;
@@ -74,7 +67,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *     @Override
  *     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
  *         if (event.getChannel().getIdLong() != 722891685755093076L) {
- *             rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>");
+ *             event.getMessage().reply("Can only run commands in <#722891685755093076>").queue();
  *             return "Wrong channel";
  *         }
  *         return null;

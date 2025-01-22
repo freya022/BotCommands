@@ -1,6 +1,7 @@
 package doc.kotlin.examples.filters
 
-import doc.java.examples.filters.MyComponentRejectionHandler
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -12,7 +13,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 @TestService
 @TestLanguage(TestLanguage.Language.KOTLIN)
 class MyComponentFilter(
-    private val rejectionHandler: MyComponentRejectionHandler,
     private val botOwners: BotOwners,
 ) : ComponentInteractionFilter {
 
@@ -20,7 +20,7 @@ class MyComponentFilter(
 
     override suspend fun checkSuspend(event: GenericComponentInteractionCreateEvent, handlerName: String?): String? {
         if (event.channel.idLong == 932902082724380744 && event.user !in botOwners) {
-            rejectionHandler.handle(event, "Only owners are allowed to use components in <#932902082724380744>")
+            event.reply_("Only owners are allowed to use components in <#932902082724380744>", ephemeral = true).await()
             return "Not an owner"
         }
         return null

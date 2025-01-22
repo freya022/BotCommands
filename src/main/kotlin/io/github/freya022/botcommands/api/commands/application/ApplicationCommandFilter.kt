@@ -28,14 +28,13 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * while command-specific filters use the insertion order.
  *
  * ### Example - Accepting commands only in a single channel
- * **Note:** I recommend having a separate class to handle rejections,
- * as to not duplicate code on each filter.
+ * **Note:** For the example's sake, I will reply directly on each failed condition,
+ * however, I recommend having a separate function/class to handle rejections,
+ * as to not duplicate code on each rejection case.
  *
  * ```kt
  * @BService
- * class MyApplicationCommandFilter(
- *     private val rejectionHandler: MyApplicationCommandRejectionHandler,
- * ) : ApplicationCommandFilter {
+ * class MyApplicationCommandFilter : ApplicationCommandFilter {
  *
  *     override val global: Boolean get() = true
  *
@@ -44,7 +43,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *         commandInfo: ApplicationCommandInfo
  *     ): String? {
  *         if (event.channel!!.idLong != 722891685755093076) {
- *             rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>")
+ *             event.reply_("Can only run commands in <#722891685755093076>", ephemeral = true).await()
  *             return "Wrong channel"
  *         }
  *         return null
@@ -58,12 +57,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * @BService
  * public class MyApplicationCommandFilter implements ApplicationCommandFilter {
  *
- *     private final MyApplicationCommandRejectionHandler rejectionHandler;
- *
- *     public MyApplicationCommandFilter(MyApplicationCommandRejectionHandler rejectionHandler) {
- *         this.rejectionHandler = rejectionHandler;
- *     }
- *
  *     @Override
  *     public boolean getGlobal() {
  *         return true;
@@ -73,7 +66,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *     @Override
  *     public String check(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
  *         if (event.getChannel().getIdLong() != 722891685755093076L) {
- *             rejectionHandler.handle(event, "Can only run commands in <#722891685755093076>");
+ *             event.reply("Can only run commands in <#722891685755093076>").setEphemeral(true).queue();
  *             return "Not the right channel";
  *         }
  *         return null;
