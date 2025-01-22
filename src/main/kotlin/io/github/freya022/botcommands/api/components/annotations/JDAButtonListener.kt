@@ -22,7 +22,7 @@ import kotlin.reflect.KFunction
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
- * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindWith], however,
+ * - The annotation value to have same name as the one given to [PersistentButtonBuilder.bindTo], however,
  * it can be omitted if you use the type-safe [bindWith] extensions.
  * - First parameter must be [ButtonEvent].
  *

@@ -1,10 +1,13 @@
 package io.github.freya022.botcommands.api.commands.text
 
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 
 /**
  * Interface to supply text command suggestions from a top level name.
+ *
+ * **Usage**: Register your instance as a service with [@BService][BService].
  *
  * ### Default implementation
  *

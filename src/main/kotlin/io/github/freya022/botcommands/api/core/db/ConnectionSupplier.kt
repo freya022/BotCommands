@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.db
 
+import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService

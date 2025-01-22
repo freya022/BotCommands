@@ -131,8 +131,9 @@ public class EmojiUtils {
      * }
      * </code></pre>
      *
-     * @param emoji
-     * @return
+     * @param emoji The {@link net.fellbaum.jemoji.Emoji Emoji} to convert
+     *
+     * @return {@link Emoji} as a JDA {@link UnicodeEmoji}
      */
     @NotNull
     public static UnicodeEmoji asUnicodeEmoji(@NotNull net.fellbaum.jemoji.Emoji emoji) {
