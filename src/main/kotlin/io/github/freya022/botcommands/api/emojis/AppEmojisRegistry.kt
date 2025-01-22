@@ -39,7 +39,7 @@ object AppEmojisRegistry {
             stackWalker.find { it.declaringClass.kotlin.hasAnnotationRecursive<AppEmojiContainer>() }?.declaringClass
                 ?: throw IllegalCallerException("This method can only be called by a ${annotationRef<AppEmojiContainer>()} class or any class in the call stack")
         return AppEmojisLoader.getByIdentifierOrNull("${callerClass.simpleNestedName}.${fieldName}")
-            ?: throwArgument("Could not find emoji field named '$fieldName', did you forget ${annotationRef<AppEmojiContainer>()}?")
+            ?: throwArgument("Could not find emoji field named '$fieldName', did you forget ${annotationRef<AppEmojiContainer>()} or mistyped the field name?")
     }
 
     /**
