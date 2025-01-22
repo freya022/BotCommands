@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.framework.utils.createTest
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.test.config.Environment
 import io.github.freya022.botcommands.test.config.db.H2DatabaseSource
@@ -29,27 +30,8 @@ object ComponentTests {
         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
         (LoggerFactory.getILoggerFactory() as LoggerContext).loggerList.forEach { it.level = Level.WARN }
 
-        context = BotCommands.create {
-            disableExceptionsInDMs = true
-
+        context = BotCommands.createTest(components = true) {
             addClass<H2DatabaseSource>()
-            addClass<FakeBot>()
-
-            components {
-                enable = true
-            }
-
-            textCommands {
-                enable = false
-            }
-
-            applicationCommands {
-                enable = false
-            }
-
-            modals {
-                enable = false
-            }
         }
     }
 

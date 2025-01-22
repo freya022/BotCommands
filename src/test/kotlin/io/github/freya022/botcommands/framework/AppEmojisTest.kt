@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.framework
 
 import io.github.freya022.botcommands.api.core.BotCommands
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.emojis.AppEmojisRegistry
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
@@ -9,6 +8,7 @@ import io.github.freya022.botcommands.api.emojis.exceptions.EmojiAlreadyExistsEx
 import io.github.freya022.botcommands.api.emojis.exceptions.NoEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.NonUniqueEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.OutOfAppEmojisException
+import io.github.freya022.botcommands.framework.utils.createTest
 import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader
 import io.mockk.*
 import net.dv8tion.jda.api.JDA
@@ -37,34 +37,6 @@ abstract class AbstractAppEmojisTest {
         AppEmojisLoader.clear()
     }
 
-    protected fun light(block: BConfigBuilder.() -> Unit) = BotCommands.create {
-        disableExceptionsInDMs = true
-
-        components {
-            enable = false
-        }
-
-        textCommands {
-            enable = false
-        }
-
-        applicationCommands {
-            enable = false
-        }
-
-        modals {
-            enable = false
-        }
-
-        appEmojis {
-            enable = true
-        }
-
-        addClass<FakeBot>()
-
-        block()
-    }
-
     protected inline fun <reified T : Throwable> unwrapException(block: () -> Unit) {
         return try {
             block()
@@ -91,7 +63,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     fun `Mixing eager and lazy app emojis throws IAE`() {
         assertThrows<IllegalArgumentException> {
             unwrapException<RuntimeException> {
-                light {
+                BotCommands.createTest(appEmojis = true) {
                     addClass<EagerLazyMix>()
                 }
             }
@@ -148,7 +120,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Multiple resource candidates throws`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<MultipleCandidates>()
         }
         val loader = context.getService<AppEmojisLoader>()
@@ -168,7 +140,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `No resource candidates throws`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<NoCandidate>()
         }
         val loader = context.getService<AppEmojisLoader>()
@@ -188,7 +160,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Single resource candidate`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<SingleCandidate>()
         }
         val loader = context.getService<AppEmojisLoader>()
@@ -221,7 +193,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<SingleAnnotatedCandidate>()
 
             appEmojis {
@@ -252,7 +224,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis, oldest first`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<SingleAnnotatedCandidate>()
 
             appEmojis {
@@ -295,7 +267,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis, but not configured to`() {
-        val context = light {
+        val context = BotCommands.createTest(appEmojis = true) {
             addClass<SingleAnnotatedCandidate>()
         }
         val loader = spyk(context.getService<AppEmojisLoader>())
@@ -340,7 +312,7 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
             val basePath = slot<String>()
             every { AppEmojisLoader.register(capture(basePath), any(), any(), any()) } just runs
 
-            light {
+            BotCommands.createTest(appEmojis = true) {
                 addClass(containerType)
             }
 
@@ -365,7 +337,7 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
             val assetPattern = slot<String>()
             every { AppEmojisLoader.register(any(), capture(assetPattern), any(), any()) } just runs
 
-            light {
+            BotCommands.createTest(appEmojis = true) {
                 addClass(containerType)
             }
 
@@ -390,7 +362,7 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
             val emojiName = slot<String>()
             every { AppEmojisLoader.register(any(), any(), capture(emojiName), any()) } just runs
 
-            light {
+            BotCommands.createTest(appEmojis = true) {
                 addClass(containerType)
             }
 

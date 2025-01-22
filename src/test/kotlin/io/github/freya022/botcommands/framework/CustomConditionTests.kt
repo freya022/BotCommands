@@ -4,13 +4,13 @@ import ch.qos.logback.classic.ClassicConstants
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import io.github.freya022.botcommands.api.core.BotCommands
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.tryGetService
+import io.github.freya022.botcommands.framework.utils.createTest
 import io.github.freya022.botcommands.test.config.Environment
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -61,7 +61,7 @@ object CustomConditionTests {
 
     @Test
     fun `Two conditions of same type but different data`() {
-        val context = light {
+        val context = BotCommands.createTest {
             addClass<Class00>()
             addClass<Class10>()
             addClass<Class01>()
@@ -84,27 +84,4 @@ object CustomConditionTests {
         assertNull(serviceResult4.serviceError)
     }
 
-    private fun light(block: BConfigBuilder.() -> Unit) = BotCommands.create {
-        disableExceptionsInDMs = true
-
-        components {
-            enable = false
-        }
-
-        textCommands {
-            enable = false
-        }
-
-        applicationCommands {
-            enable = false
-        }
-
-        modals {
-            enable = false
-        }
-
-        addClass<FakeBot>()
-
-        block()
-    }
 }

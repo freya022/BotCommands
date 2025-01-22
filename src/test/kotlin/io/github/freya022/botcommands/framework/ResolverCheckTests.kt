@@ -4,9 +4,9 @@ import ch.qos.logback.classic.ClassicConstants
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import io.github.freya022.botcommands.api.core.BotCommands
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.framework.utils.createTest
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactorySuperclass
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverSuperclass
 import io.github.freya022.botcommands.test.config.Environment
@@ -39,7 +39,7 @@ object ResolverCheckTests {
     @Test
     fun `Resolver with meta-annotation`() {
         assertThrows<MissingResolverSuperclass> {
-            light {
+            BotCommands.createTest {
                 addClass<MetaAnnotatedResolver>()
             }
         }
@@ -48,33 +48,10 @@ object ResolverCheckTests {
     @Test
     fun `Resolver factory with meta-annotation`() {
         assertThrows<MissingResolverFactorySuperclass> {
-            light {
+            BotCommands.createTest {
                 addClass<MetaAnnotatedResolverFactory>()
             }
         }
     }
 
-    private fun light(block: BConfigBuilder.() -> Unit) = BotCommands.create {
-        disableExceptionsInDMs = true
-
-        components {
-            enable = false
-        }
-
-        textCommands {
-            enable = false
-        }
-
-        applicationCommands {
-            enable = false
-        }
-
-        modals {
-            enable = false
-        }
-
-        addClass<FakeBot>()
-
-        block()
-    }
 }
