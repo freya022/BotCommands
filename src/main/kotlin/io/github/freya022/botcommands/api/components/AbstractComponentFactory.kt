@@ -71,7 +71,7 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
      * Further button clicks will be rejected, timeouts will be canceled,
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
-    @JvmName("deleteComponents")
+    @JvmName("deleteJdaComponents")
     fun deleteJdaComponentsJava(vararg components: ActionComponent) = deleteJdaComponentsJava(components.asList())
 
     /**
@@ -89,7 +89,7 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
      * Further button clicks will be rejected, timeouts will be canceled,
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
-    @JvmName("deleteComponents")
+    @JvmName("deleteJdaComponents")
     fun deleteJdaComponentsJava(components: Collection<ActionComponent>) = runBlocking { deleteJdaComponents(components) }
 
     /**
