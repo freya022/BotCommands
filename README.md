@@ -313,6 +313,16 @@ For an installation guide, you can follow [this guide from JetBrains](https://ww
 
 Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
 
+## Breaking changes
+
+Due to the nature of JDA (and the Discord API), and to always improve the developer experience,
+the library could introduce breaking changes to allow quick adoption of newer features and better practices.
+
+While attempting to reduce breaking changes by using deprecation mechanisms,
+it is not always possible or practical to use deprecations.
+
+Breaking/deprecating changes should be noticed via an increase of the **minor** version. (`3.0.0` -> `3.1.0`)
+
 ## Contributing
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
 
