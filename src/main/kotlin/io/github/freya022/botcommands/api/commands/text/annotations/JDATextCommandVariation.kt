@@ -70,7 +70,7 @@ annotation class JDATextCommandVariation(
      * Path components of the command,
      * limited to three components and composed of [`a-zA-Z1-9_-`][Checks.ALPHANUMERIC_WITH_DASH]
      */
-    val path: Array<out String>,
+    val path: Array<String>,
 
     /**
      * Specifies the priority of this text command variation (1 is the most important).

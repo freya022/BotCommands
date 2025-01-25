@@ -282,6 +282,7 @@
                         <arg>-Xjvm-default=all</arg>
                         <arg>-Xcontext-receivers</arg>
                         <arg>-Xsuppress-warning=CONTEXT_RECEIVERS_DEPRECATED</arg>
+                        <arg>-Xconsistent-data-class-copy-visibility</arg>
                     </args>
                 </configuration>
                 <executions>
