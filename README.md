@@ -161,7 +161,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.freya022:BotCommands:VERSION'
+    implementation("io.github.freya022:BotCommands:VERSION")
 }
 ```
 
