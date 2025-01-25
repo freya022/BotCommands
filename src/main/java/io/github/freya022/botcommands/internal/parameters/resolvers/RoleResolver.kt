@@ -1,92 +1,67 @@
-package io.github.freya022.botcommands.internal.parameters.resolvers;
+package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
-import io.github.freya022.botcommands.api.components.options.ComponentOption;
-import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.regex.Pattern;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.util.regex.Pattern
 
 /**
  * @see RoleResolverFactoryProvider
  */
-public class RoleResolver
-        extends ClassParameterResolver<RoleResolver, Role>
-        implements TextParameterResolver<RoleResolver, Role>,
-                   SlashParameterResolver<RoleResolver, Role>,
-                   ComponentParameterResolver<RoleResolver, Role> {
+class RoleResolver : ClassParameterResolver<RoleResolver, Role>(Role::class),
+                     TextParameterResolver<RoleResolver, Role>,
+                     SlashParameterResolver<RoleResolver, Role>,
+                     ComponentParameterResolver<RoleResolver, Role> {
 
-    private static final Pattern PATTERN = Pattern.compile("<@&(\\d+)>|(\\d+)");
-
-    public RoleResolver() {
-        super(Role.class);
+    override val pattern: Pattern = Pattern.compile("<@&(\\d+)>|(\\d+)")
+    override val testExample: String = "<@&1234>"
+    override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
+        return event.member.roles.stream().findAny()
+            .or { event.guild.roleCache.streamUnordered().findAny() }
+            .map { obj: Role -> obj.asMention }
+            .orElse("role-id/mention")
     }
 
-    @Nullable
-    @Override
-    public Role resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @Nullable String @NotNull [] args) {
-        final var id = args[0] != null ? args[0] : args[1];
-        if (id == null) {
-            ExceptionsKt.throwInternal("How can it not have either");
-            return null; //Nope
-        }
-        if (event.getGuild().getId().equals(id)) return null; //@everyone role
+    override suspend fun resolveSuspend(
+        option: TextCommandOption,
+        event: MessageReceivedEvent,
+        args: Array<String?>
+    ): Role? {
+        val id = args[0] ?: args[1] ?: throwInternal("How can it not have either")
+        if (event.guild.id == id) return null //@everyone role
 
-        return event.getGuild().getRoleById(id);
+        return event.guild.getRoleById(id)
     }
 
-    @Override
-    @NotNull
-    public Pattern getPattern() {
-        return PATTERN;
-    }
 
-    @Override
-    @NotNull
-    public String getTestExample() {
-        return "<@&1234>";
-    }
+    override val optionType: OptionType get() = OptionType.ROLE
 
-    @NotNull
-    @Override
-    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-        return event.getMember().getRoles().stream().findAny()
-                .or(() -> event.getGuild().getRoleCache().streamUnordered().findAny())
-                .map(Role::getAsMention)
-                .orElse("role-id/mention");
-    }
+    override suspend fun resolveSuspend(
+        option: SlashCommandOption,
+        event: CommandInteractionPayload,
+        optionMapping: OptionMapping
+    ): Role = optionMapping.asRole
 
-    @Override
-    @NotNull
-    public OptionType getOptionType() {
-        return OptionType.ROLE;
-    }
+    override suspend fun resolveSuspend(
+        option: ComponentOption,
+        event: GenericComponentInteractionCreateEvent,
+        arg: String
+    ): Role? {
+        val guild = event.guild
+        requireNotNull(guild) { "Can't get a role from DMs" }
 
-    @Nullable
-    @Override
-    public Role resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-        return optionMapping.getAsRole();
-    }
-
-    @Nullable
-    @Override
-    public Role resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-        Objects.requireNonNull(event.getGuild(), "Can't get a role from DMs");
-
-        return event.getGuild().getRoleById(arg);
+        return guild.getRoleById(arg)
     }
 }

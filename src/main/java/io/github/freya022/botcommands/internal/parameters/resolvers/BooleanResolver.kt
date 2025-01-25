@@ -1,94 +1,67 @@
-package io.github.freya022.botcommands.internal.parameters.resolvers;
+package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
-import io.github.freya022.botcommands.api.components.options.ComponentOption;
-import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
-import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.regex.Pattern;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.util.regex.Pattern
 
 @Resolver
-public class BooleanResolver
-        extends ClassParameterResolver<BooleanResolver, Boolean>
-        implements TextParameterResolver<BooleanResolver, Boolean>,
-                   SlashParameterResolver<BooleanResolver, Boolean>,
-                   ComponentParameterResolver<BooleanResolver, Boolean>,
-                   TimeoutParameterResolver<BooleanResolver, Boolean> {
+class BooleanResolver : ClassParameterResolver<BooleanResolver, Boolean>(Boolean::class),
+                        TextParameterResolver<BooleanResolver, Boolean>,
+                        SlashParameterResolver<BooleanResolver, Boolean>,
+                        ComponentParameterResolver<BooleanResolver, Boolean>,
+                        TimeoutParameterResolver<BooleanResolver, Boolean> {
 
-    public BooleanResolver() {
-        super(Boolean.class);
-    }
+    override val pattern: Pattern = Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE)
+    override val testExample: String = "true"
+    override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String = "true"
 
-    @Nullable
-    @Override
-    public Boolean resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-        return parseBoolean(args[0]);
-    }
+    override suspend fun resolveSuspend(
+        option: TextCommandOption,
+        event: MessageReceivedEvent,
+        args: Array<String?>
+    ): Boolean? = parseBoolean(args[0]!!)
 
-    @Override
-    @NotNull
-    public Pattern getPattern() {
-        return Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE);
-    }
 
-    @Override
-    @NotNull
-    public String getTestExample() {
-        return "true";
-    }
+    override val optionType: OptionType get() = OptionType.BOOLEAN
 
-    @NotNull
-    @Override
-    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-        return "true";
-    }
+    override suspend fun resolveSuspend(
+        option: SlashCommandOption,
+        event: CommandInteractionPayload,
+        optionMapping: OptionMapping
+    ): Boolean = optionMapping.asBoolean
 
-    @Override
-    @NotNull
-    public OptionType getOptionType() {
-        return OptionType.BOOLEAN;
-    }
 
-    @Nullable
-    @Override
-    public Boolean resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-        return optionMapping.getAsBoolean();
-    }
+    override suspend fun resolveSuspend(
+        option: ComponentOption,
+        event: GenericComponentInteractionCreateEvent,
+        arg: String
+    ): Boolean? = parseBoolean(arg)
 
-    @Nullable
-    @Override
-    public Boolean resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-        return parseBoolean(arg);
-    }
 
-    @Nullable
-    @Override
-    public Boolean resolve(@NotNull TimeoutOption option, @NotNull String arg) {
-        return parseBoolean(arg);
-    }
+    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Boolean? = parseBoolean(arg)
 
-    @Nullable
-    private Boolean parseBoolean(String arg) {
-        if (arg.equalsIgnoreCase("false")) {
-            return Boolean.FALSE;
-        } else if (arg.equalsIgnoreCase("true")) {
-            return Boolean.TRUE;
+
+    private fun parseBoolean(arg: String): Boolean? {
+        return if (arg.equals("false", ignoreCase = true)) {
+            false
+        } else if (arg.equals("true", ignoreCase = true)) {
+            true
         } else {
-            return null;
+            null
         }
     }
 }

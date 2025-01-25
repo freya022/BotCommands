@@ -1,96 +1,63 @@
-package io.github.freya022.botcommands.internal.parameters.resolvers;
+package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption;
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent;
-import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption;
-import io.github.freya022.botcommands.api.components.options.ComponentOption;
-import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption;
-import io.github.freya022.botcommands.api.core.service.annotations.Resolver;
-import io.github.freya022.botcommands.api.modals.ModalEvent;
-import io.github.freya022.botcommands.api.modals.options.ModalOption;
-import io.github.freya022.botcommands.api.parameters.ClassParameterResolver;
-import io.github.freya022.botcommands.api.parameters.resolvers.*;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.regex.Pattern;
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
+import io.github.freya022.botcommands.api.core.service.annotations.Resolver
+import io.github.freya022.botcommands.api.modals.ModalEvent
+import io.github.freya022.botcommands.api.modals.options.ModalOption
+import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.*
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.modals.ModalMapping
+import java.util.regex.Pattern
 
 @Resolver
-public class StringResolver
-        extends ClassParameterResolver<StringResolver, String>
-        implements QuotableTextParameterResolver<StringResolver, String>,
-                   SlashParameterResolver<StringResolver, String>,
-                   ComponentParameterResolver<StringResolver, String>,
-                   ModalParameterResolver<StringResolver, String>,
-                   TimeoutParameterResolver<StringResolver, String> {
+class StringResolver : ClassParameterResolver<StringResolver, String>(String::class),
+                       QuotableTextParameterResolver<StringResolver, String>,
+                       SlashParameterResolver<StringResolver, String>,
+                       ComponentParameterResolver<StringResolver, String>,
+                       ModalParameterResolver<StringResolver, String>,
+                       TimeoutParameterResolver<StringResolver, String> {
 
-    public StringResolver() {
-        super(String.class);
-    }
+    override val pattern: Pattern = Pattern.compile("(.+)")
+    override val quotedPattern: Pattern = Pattern.compile("\"(.+)\"")
+    override val testExample: String = "foobar"
+    override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String = "foo bar"
 
-    @Nullable
-    @Override
-    public String resolve(@NotNull TextCommandOption option, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-        return args[0];
-    }
+    override suspend fun resolveSuspend(
+        option: TextCommandOption,
+        event: MessageReceivedEvent,
+        args: Array<String?>
+    ): String? = args[0]
 
-    @Override
-    @NotNull
-    public Pattern getPattern() {
-        return Pattern.compile("(.+)");
-    }
 
-    @Override
-    @NotNull
-    public Pattern getQuotedPattern() {
-        return Pattern.compile("\"(.+)\"");
-    }
+    override val optionType: OptionType
+        get() = OptionType.STRING
 
-    @Override
-    @NotNull
-    public String getTestExample() {
-        return "foobar";
-    }
+    override suspend fun resolveSuspend(
+        option: SlashCommandOption,
+        event: CommandInteractionPayload,
+        optionMapping: OptionMapping
+    ): String = optionMapping.asString
 
-    @NotNull
-    @Override
-    public String getHelpExample(@NotNull TextCommandOption option, @NotNull BaseCommandEvent event) {
-        return "foo bar";
-    }
 
-    @Override
-    @NotNull
-    public OptionType getOptionType() {
-        return OptionType.STRING;
-    }
+    override suspend fun resolveSuspend(
+        option: ComponentOption,
+        event: GenericComponentInteractionCreateEvent,
+        arg: String
+    ): String = arg
 
-    @Nullable
-    @Override
-    public String resolve(@NotNull SlashCommandOption option, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-        return optionMapping.getAsString();
-    }
 
-    @Nullable
-    @Override
-    public String resolve(@NotNull ComponentOption option, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-        return arg;
-    }
+    override suspend fun resolveSuspend(option: ModalOption, event: ModalEvent, modalMapping: ModalMapping): String =
+        modalMapping.asString
 
-    @Nullable
-    @Override
-    public String resolve(@NotNull ModalOption option, @NotNull ModalEvent event, @NotNull ModalMapping modalMapping) {
-        return modalMapping.getAsString();
-    }
 
-    @NotNull
-    @Override
-    public String resolve(@NotNull TimeoutOption option, @NotNull String arg) {
-        return arg;
-    }
+    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): String = arg
 }
