@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.annotations
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
+import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
@@ -23,9 +24,6 @@ import java.util.concurrent.TimeUnit
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class BEventListener(
-    /** Whether this event listener is executed on its own coroutine, using the [event dispatcher scope][BCoroutineScopesConfig.eventDispatcherScope] */
-    @Deprecated("Replaced with 'runMode'")
-    val async: Boolean = false,
     /**
      * How this event listener should run, see [RunMode] values.
      *
