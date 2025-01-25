@@ -15,7 +15,6 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : TimeoutParameterResolver<T, R> {
@@ -30,10 +29,6 @@ interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>
      * @param arg    The argument to be resolved
      */
     fun resolve(option: TimeoutOption, arg: String): R? =
-        resolve(arg)
-
-    @Deprecated("Added a TimeoutOption parameter")
-    fun resolve(arg: String): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -48,9 +43,4 @@ interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: TimeoutOption, arg: String): R? =
         resolve(option, arg)
-
-    @JvmSynthetic
-    @Deprecated("Added a TimeoutOption parameter")
-    suspend fun resolveSuspend(arg: String): R? =
-        resolve(arg)
 }

@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -18,7 +17,6 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : TextParameterResolver<T, R> {
@@ -36,10 +34,6 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      * @param args   The arguments of this parameter, extracted with [pattern]
      */
     fun resolve(option: TextCommandOption, event: MessageReceivedEvent, args: Array<String?>): R? =
-        resolve(option.executable, event, args)
-
-    @Deprecated("Replaced TextCommandVariation with TextCommandOption")
-    fun resolve(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -57,11 +51,6 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: TextCommandOption, event: MessageReceivedEvent, args: Array<String?>) =
         resolve(option, event, args)
-
-    @Deprecated("Replaced TextCommandVariation with TextCommandOption")
-    @JvmSynthetic
-    suspend fun resolveSuspend(variation: TextCommandVariation, event: MessageReceivedEvent, args: Array<String?>) =
-        resolve(variation, event, args)
 
     /**
      * Returns the pattern required to recognize this parameter,

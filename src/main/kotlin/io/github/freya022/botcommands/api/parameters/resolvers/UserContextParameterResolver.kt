@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.context.user.UserCommandInfo
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -16,7 +15,6 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : UserContextParameterResolver<T, R> {
@@ -31,10 +29,6 @@ interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
      * @param event  The corresponding event
      */
     fun resolve(option: UserContextCommandOption, event: UserContextInteractionEvent): R? =
-        resolve(option.executable, event)
-
-    @Deprecated("Replaced UserCommandInfo with UserContextCommandOption")
-    fun resolve(info: UserCommandInfo, event: UserContextInteractionEvent): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -49,9 +43,4 @@ interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: UserContextCommandOption, event: UserContextInteractionEvent) =
         resolve(option, event)
-
-    @Deprecated("Replaced UserCommandInfo with UserContextCommandOption")
-    @JvmSynthetic
-    suspend fun resolveSuspend(info: UserCommandInfo, event: UserContextInteractionEvent) =
-        resolve(info, event)
 }

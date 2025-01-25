@@ -18,7 +18,6 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : ComponentParameterResolver<T, R> {
@@ -35,10 +34,6 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
      */
     fun resolve(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): R? =
-        resolve(event, arg)
-
-    @Deprecated("Added a ComponentOption parameter")
-    fun resolve(event: GenericComponentInteractionCreateEvent, arg: String): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -55,9 +50,4 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String) =
         resolve(option, event, arg)
-
-    @Deprecated("Added a ComponentOption parameter")
-    @JvmSynthetic
-    suspend fun resolveSuspend(event: GenericComponentInteractionCreateEvent, arg: String) =
-        resolve(event, arg)
 }
