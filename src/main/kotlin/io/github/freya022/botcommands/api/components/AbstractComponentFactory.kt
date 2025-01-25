@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
+import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import javax.annotation.CheckReturnValue
 
@@ -28,6 +29,22 @@ abstract class AbstractComponentFactory internal constructor(internal val compon
     @JvmSynthetic
     suspend fun deleteComponents(components: Collection<IdentifiableComponent>) =
         deleteComponentsByIds(components.map { it.internalId })
+
+    @JvmName("deleteComponents")
+    fun deleteJdaComponentsJava(vararg components: ActionComponent) = deleteJdaComponentsJava(components.asList())
+
+    @JvmSynthetic
+    suspend fun deleteJdaComponents(vararg components: ActionComponent) = deleteJdaComponents(components.asList())
+
+    @JvmName("deleteComponents")
+    fun deleteJdaComponentsJava(components: Collection<ActionComponent>) = runBlocking { deleteJdaComponents(components) }
+
+    @JvmSynthetic
+    suspend fun deleteJdaComponents(components: Collection<ActionComponent>) =
+        components
+            .mapNotNull { it.id }
+            .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
+            .let { deleteComponents(it) }
 
     // no need for a vararg, the use case is mostly to delete components when JDA gives them to you,
     // which is only in a List
