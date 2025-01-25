@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text
 
+import dev.freya02.jda.emojis.Emojis
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
@@ -12,7 +13,6 @@ import net.dv8tion.jda.api.Permission.MESSAGE_HISTORY
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
@@ -22,9 +22,6 @@ import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 
 private val logger = KotlinLogging.loggerOf<BaseCommandEvent>()
-
-private val SUCCESS = Emoji.fromUnicode("✅") // white_check_mark
-private val ERROR = Emoji.fromUnicode("❌") // x
 
 internal open class BaseCommandEventImpl(
     private val context: BContext,
@@ -88,10 +85,10 @@ internal open class BaseCommandEventImpl(
     }
 
     @CheckReturnValue
-    override fun reactSuccess(): RestAction<Void> = channel.addReactionById(messageId, SUCCESS)
+    override fun reactSuccess(): RestAction<Void> = channel.addReactionById(messageId, Emojis.WHITE_CHECK_MARK)
 
     @CheckReturnValue
-    override fun reactError(): RestAction<Void> = channel.addReactionById(messageId, ERROR)
+    override fun reactError(): RestAction<Void> = channel.addReactionById(messageId, Emojis.X)
 
     override fun respond(text: CharSequence): MessageCreateAction = channel.sendMessage(text)
 

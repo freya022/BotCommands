@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.jda.emojis.UnicodeEmojis
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -12,24 +13,23 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
-import io.github.freya022.botcommands.api.core.utils.lazyUnicodeEmoji
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
-import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji
-import net.fellbaum.jemoji.Emojis
 import kotlin.time.Duration.Companion.seconds
 
-private val wastebasket: UnicodeEmoji by lazyUnicodeEmoji { Emojis.WASTEBASKET }
-
 @Command
-@RequiresComponents // Disables the command if components are not enabled
-class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
+@RequiresComponents // (Optional) Disables the command if components are not enabled
+class SlashSay(
+    private val buttons: Buttons // Factory for buttons
+) : ApplicationCommand() {
+
+    // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
         event: GuildSlashEvent,
         @SlashOption(description = "Channel to send the message in") channel: TextChannel,
         @SlashOption(description = "What to say") content: String
     ) {
-        val deleteButton = buttons.danger(wastebasket).ephemeral {
+        val deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral {
             bindTo { buttonEvent ->
                 buttonEvent.deferEdit().queue()
                 buttonEvent.hook.deleteOriginal().await()
@@ -47,10 +47,13 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 }
 
 @Command
-@RequiresComponents // Disables the command if components are not enabled
-class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvider {
+@RequiresComponents // (Optional) Disables the command if components are not enabled
+class SlashSayDsl(
+    private val buttons: Buttons // Factory for buttons
+) : GlobalApplicationCommandProvider {
+
     suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
-        val deleteButton = buttons.danger(wastebasket).ephemeral {
+        val deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral {
             bindTo { buttonEvent ->
                 buttonEvent.deferEdit().queue()
                 buttonEvent.hook.deleteOriginal().await()
@@ -66,11 +69,12 @@ class SlashSayDsl(private val buttons: Buttons) : GlobalApplicationCommandProvid
             .await()
     }
 
-    // This is nice if you need to run your own code to declare commands
+    // This is nice if you need to run your own code to declare commands.
     // For example, a loop to create commands based on an enum
     // If you don't need any dynamic stuff, just stick to annotations
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("say_dsl", function = ::onSlashSay) {
+            // The descriptions can also be moved to localization files, reducing noise
             description = "Sends a message in a channel"
 
             option("channel") {
