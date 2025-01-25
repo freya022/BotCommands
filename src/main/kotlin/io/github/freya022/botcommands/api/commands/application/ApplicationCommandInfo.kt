@@ -25,9 +25,6 @@ interface ApplicationCommandInfo : CommandInfo, Executable,
 
     override val discordOptions: List<ApplicationCommandOption>
 
-    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
-    override fun getParameter(declaredName: String): ApplicationCommandParameter?
-
     /**
      * Returns the full command name of this application command, separate with spaces.
      *

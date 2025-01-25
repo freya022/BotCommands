@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options.AutocompleteCommandParameterImpl
@@ -84,11 +83,6 @@ internal class AutocompleteHandler(
             }
         }
     }
-
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
-    override fun getParameter(declaredName: String): AggregatedParameter? =
-        parameters.find { it.name == declaredName }
 
     internal fun invalidate() {
         autocompleteInfo.invalidate()
