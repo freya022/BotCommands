@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
+import io.github.freya022.botcommands.internal.utils.throwArgument
+import net.dv8tion.jda.api.interactions.components.ActionComponent
 
 interface IdentifiableComponent {
     val internalId: Int
@@ -8,6 +10,17 @@ interface IdentifiableComponent {
     companion object {
         @JvmStatic
         fun isCompatible(id: String): Boolean = ComponentController.isCompatibleComponent(id)
+
+        fun ActionComponent.toIdentifiableComponent(): IdentifiableComponent = fromComponent(this)
+        fun ActionComponent.toIdentifiableComponentOrNull(): IdentifiableComponent? = fromComponentOrNull(this)
+
+        @JvmStatic
+        fun fromComponent(component: ActionComponent): IdentifiableComponent =
+            fromId(component.id ?: throwArgument("This component has no ID"))
+
+        @JvmStatic
+        fun fromComponentOrNull(component: ActionComponent): IdentifiableComponent? =
+            fromIdOrNull(component.id ?: throwArgument("This component has no ID"))
 
         @JvmStatic
         fun fromId(id: String): IdentifiableComponent {
