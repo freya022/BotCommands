@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
-import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -16,7 +15,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSla
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
-import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.core.entities.inputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
@@ -32,7 +30,6 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.launchCatching
-import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -163,12 +160,11 @@ internal class ApplicationCommandListener internal constructor(
         forceUpdateCommands(guild)
     }
 
-    @Suppress("DEPRECATION")
     private fun createCommandMismatchMessage(preMessage: String): String = """
         $preMessage
         Please check if you have another bot instance running as it could have replaced the current command set.
         Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
-        If the problem persists, try changing the diff engine in ${ApplicationCommandsCacheConfigBuilder::diffEngine.reference} to ${DiffEngine.OLD} and report the issue. ${getDiagnosticVersions()}
+        If the problem persists, please report the issue. ${getDiagnosticVersions()}
     """.trimIndent()
 
     private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
