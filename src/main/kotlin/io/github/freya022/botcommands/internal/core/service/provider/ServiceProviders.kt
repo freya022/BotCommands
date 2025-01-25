@@ -2,12 +2,8 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.ServiceSupplier
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Executable
@@ -19,7 +15,7 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinFunction
 
-internal class ServiceProviders(private val serviceConfig: BServiceConfig) : ClassGraphProcessor {
+internal class ServiceProviders : ClassGraphProcessor {
     private val nameMap: MutableMap<String, MutableSet<ServiceProvider>> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
@@ -42,15 +38,6 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
         kClass: KClass<*>,
         isService: Boolean
     ) {
-        @Suppress("UNCHECKED_CAST")
-        kClass as KClass<Any> // so ServiceSupplier doesnt complain
-
-        val instanceSupplier = serviceConfig.instanceSupplierMap[kClass]
-        if (instanceSupplier != null) {
-            putServiceProvider(SuppliedServiceProvider(ServiceSupplier(kClass) { instanceSupplier.supply(it) }))
-            return
-        }
-
         if (!isService) return
 
         putServiceProvider(ClassServiceProvider(kClass))
@@ -75,12 +62,5 @@ internal class ServiceProviders(private val serviceConfig: BServiceConfig) : Cla
                 ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
                 ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
         putServiceProvider(FunctionServiceProvider(function))
-    }
-
-    override fun postProcess(serviceContainer: ServiceContainer) {
-        val missingSuppliedProviders = serviceConfig.instanceSupplierMap.keys - typeMap.keys
-        check(missingSuppliedProviders.isEmpty()) {
-            "Some instance suppliers were registered but their class were not in the search path:\n${missingSuppliedProviders.joinAsList { it.shortQualifiedName } }"
-        }
     }
 }
