@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.api.components
 
+import dev.freya02.jda.emojis.Emojis
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.button.ButtonFactory
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.utils.EmojiUtils
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -171,7 +171,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -185,7 +185,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -199,7 +199,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is null/blank and the emoji isn't set
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonContent.withEmoji
      */
     @CheckReturnValue
@@ -224,7 +224,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -238,7 +238,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -263,7 +263,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -277,7 +277,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -302,7 +302,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -316,7 +316,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -341,7 +341,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -355,7 +355,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
@@ -380,7 +380,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the url is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      */
     @CheckReturnValue
     fun link(url: String, emoji: Emoji): Button =
@@ -393,7 +393,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * @throws IllegalArgumentException If the url/label is empty
      *
-     * @see EmojiUtils.resolveJDAEmoji
+     * @see Emojis
      */
     @CheckReturnValue
     fun link(url: String, label: String, emoji: Emoji): Button =

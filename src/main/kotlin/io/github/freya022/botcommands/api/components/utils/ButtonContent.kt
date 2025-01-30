@@ -93,24 +93,42 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         /**
          * Constructs a [ButtonContent] with a label and an unicode emoji,
          * see [Emoji.fromUnicode] for accepted formats.
+         *
+         * @see <a href="https://github.com/freya022/jda-emojis" target="_blank">jda-emojis</a>
          */
         @JvmStatic
+        @Deprecated(
+            message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
+            replaceWith = ReplaceWith(expression = "fromEmoji(style, label, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+        )
         fun fromUnicode(style: ButtonStyle, label: String, unicode: String): ButtonContent {
             return ButtonContent(style, label, Emoji.fromUnicode(unicode))
         }
 
         /**
          * Constructs a [ButtonContent] from a shortcode emoji, such as `:joy:`.
+         *
+         * @see <a href="https://github.com/freya022/jda-emojis" target="_blank">jda-emojis</a>
          */
         @JvmStatic
+        @Deprecated(
+            message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
+            replaceWith = ReplaceWith(expression = "fromEmoji(style, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+        )
         fun fromShortcode(style: ButtonStyle, shortcode: String): ButtonContent {
             return ButtonContent(style, null, EmojiUtils.resolveJDAEmoji(shortcode))
         }
 
         /**
          * Constructs a [ButtonContent] from a [String] and a shortcode emoji, such as `:joy:`.
+         *
+         * @see <a href="https://github.com/freya022/jda-emojis" target="_blank">jda-emojis</a>
          */
         @JvmStatic
+        @Deprecated(
+            message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
+            replaceWith = ReplaceWith(expression = "fromEmoji(style, text, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+        )
         fun fromShortcode(style: ButtonStyle, text: String, shortcode: String): ButtonContent {
             return ButtonContent(style, text, EmojiUtils.resolveJDAEmoji(shortcode))
         }
