@@ -62,6 +62,12 @@ class ButtonFactory internal constructor(
     }
 
     /**
+     * Creates a new button factory with the provided JDA emoji.
+     */
+    @CheckReturnValue
+    fun withEmoji(emoji: Emoji?): ButtonFactory = ButtonFactory(componentController, style, label, emoji)
+
+    /**
      * Creates an ephemeral button builder.
      *
      * As a reminder, a [default timeout][Components.defaultEphemeralTimeout] is set.

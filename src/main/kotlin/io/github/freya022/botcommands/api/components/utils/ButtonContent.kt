@@ -50,6 +50,12 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         return ButtonContent(style, label, newEmoji)
     }
 
+    /**
+     * Creates a new button content with the provided JDA emoji.
+     */
+    @CheckReturnValue
+    fun withEmoji(emoji: Emoji?): ButtonContent = ButtonContent(style, label, emoji)
+
     companion object {
         /**
          * Constructs a [ButtonContent] with a label.
