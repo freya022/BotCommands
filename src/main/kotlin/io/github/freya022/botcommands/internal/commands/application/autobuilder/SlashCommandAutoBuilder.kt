@@ -39,6 +39,7 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
@@ -242,7 +243,11 @@ internal class SlashCommandAutoBuilder(
         val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
         val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
         manager.slashCommand(name, if (isTopLevelOnly) metadata.func.castFunction() else null) {
-            contexts = topLevelMetadata.annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            contexts = if (forceGuildCommands) {
+                setOf(InteractionContextType.GUILD)
+            } else {
+                topLevelMetadata.annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            }
             integrationTypes = topLevelMetadata.annotation.integrationTypes.toEnumSetOr(manager.defaultIntegrationTypes)
             isDefaultLocked = topLevelMetadata.annotation.defaultLocked
             nsfw = topLevelMetadata.annotation.nsfw

@@ -23,6 +23,7 @@ import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.KClass
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
@@ -84,7 +85,11 @@ internal class UserContextCommandAutoBuilder(
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 
-            contexts = annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            contexts = if (forceGuildCommands) {
+                setOf(InteractionContextType.GUILD)
+            } else {
+                annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            }
             integrationTypes = annotation.integrationTypes.toEnumSetOr(manager.defaultIntegrationTypes)
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
