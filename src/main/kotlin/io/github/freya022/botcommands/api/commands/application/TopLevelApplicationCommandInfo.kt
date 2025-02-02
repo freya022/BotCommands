@@ -16,8 +16,7 @@ import java.time.OffsetDateTime
  */
 interface TopLevelApplicationCommandInfo : ApplicationCommandInfo, TopLevelApplicationCommandMetadata, ISnowflake {
     /**
-     * The interaction contexts in which this command is executable in,
-     * think of it as 'Where can I use this command in the Discord client'.
+     * Represents where a command can be used.
      */
     val contexts: Set<InteractionContextType>
 

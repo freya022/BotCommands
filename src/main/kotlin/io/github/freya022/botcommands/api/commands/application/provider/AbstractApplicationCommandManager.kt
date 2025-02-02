@@ -153,7 +153,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      *
      * @see GlobalMessageEvent.getTarget
      *
-     * @see JDAMessageCommand
+     * @see JDAMessageCommand @JDAMessageCommand
      */
     fun messageCommand(name: String, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         MessageCommandBuilderImpl(this, name, function)

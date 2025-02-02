@@ -65,8 +65,7 @@ annotation class JDAUserCommand(
     val scope: CommandScope = CommandScope.GLOBAL,
 
     /**
-     * The interaction contexts in which this command is executable in,
-     * think of it as 'Where can I use this command in the Discord client'.
+     * Represents where a command can be used.
      *
      * **Default, depending on [scope]:**
      * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]

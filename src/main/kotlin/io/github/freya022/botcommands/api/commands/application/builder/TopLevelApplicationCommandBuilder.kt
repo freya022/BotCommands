@@ -28,8 +28,7 @@ interface TopLevelApplicationCommandBuilder<T : ApplicationCommandOptionAggregat
         }
 
     /**
-     * The interaction contexts in which this command is executable in,
-     * think of it as 'Where can I use this command in the Discord client'.
+     * Represents where a command can be used.
      *
      * **Default:** [GlobalApplicationCommandManager.Defaults.contexts] or [GuildApplicationCommandManager.Defaults.contexts]
      *
