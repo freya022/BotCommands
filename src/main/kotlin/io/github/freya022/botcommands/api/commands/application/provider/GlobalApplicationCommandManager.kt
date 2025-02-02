@@ -3,8 +3,6 @@ package io.github.freya022.botcommands.api.commands.application.provider
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 
@@ -22,12 +20,12 @@ class GlobalApplicationCommandManager internal constructor(context: BContext): A
          *
          * Defaults to [InteractionContextType.GUILD], can be edited.
          */
-        var contexts: Set<InteractionContextType> = enumSetOf(InteractionContextType.GUILD).unmodifiableView()
+        var contexts: Set<InteractionContextType> = setOf(InteractionContextType.GUILD)
         /**
          * Default value of [TopLevelApplicationCommandBuilder.integrationTypes].
          *
          * Defaults to [IntegrationType.GUILD_INSTALL], can be edited.
          */
-        var integrationTypes: Set<IntegrationType> = enumSetOf(IntegrationType.GUILD_INSTALL).unmodifiableView()
+        var integrationTypes: Set<IntegrationType> = setOf(IntegrationType.GUILD_INSTALL)
     }
 }
