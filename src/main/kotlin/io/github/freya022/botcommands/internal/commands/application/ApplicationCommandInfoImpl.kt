@@ -49,7 +49,7 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
         if (kFunction.isFakeSlashFunction()) return
 
         val eventType = firstParameter.type.jvmErasure
-        if (builder.topLevelBuilder.scope.isGuildOnly) {
+        if (builder.topLevelBuilder.isGuildOnly) {
             if (!eventType.isSubclassOf<GUILD_T>()) {
                 // Do not warn about guild-restricted types when everything is forced as a guild command
                 if (builder.context.applicationConfig.forceGuildCommands) return
@@ -67,6 +67,8 @@ internal abstract class ApplicationCommandInfoImpl internal constructor(
             ?: return@build logger.trace { "Skipping usability checks for non-members" }
         if (channel !is GuildMessageChannel)
             return@build logger.warn { "Cannot get usability outside of a ${classRef<GuildMessageChannel>()}" }
+
+        if (channel.isDetached) return@build
 
         val guild = channel.guild
         if (!guild.selfMember.hasPermission(channel, botPermissions)) add(UnusableReason.BOT_PERMISSIONS)

@@ -2,9 +2,14 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
@@ -22,11 +27,39 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 @Retention(AnnotationRetention.RUNTIME)
 annotation class TopLevelSlashCommandData(
     /**
-     * Specifies the application command scope for this command.
+     * Specifies the application command scope for this command, where the command will be pushed to.
      *
-     * **Default:** [CommandScope.GLOBAL_NO_DM]
+     * This will be forced to [CommandScope.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
+     * **Default:** [CommandScope.GLOBAL]
      */
-    val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
+    val scope: CommandScope = CommandScope.GLOBAL,
+
+    /**
+     * Represents where a command can be used.
+     *
+     * **Default, depending on [scope]:**
+     * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]
+     * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.contexts]
+     *
+     * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
+     * @see InteractionContextType
+     * @see TopLevelSlashCommandBuilder.contexts
+     */
+    val contexts: Array<InteractionContextType> = [],
+
+    /**
+     * The integration types in which this command can be installed in.
+     *
+     * **Default, depending on [scope]:**
+     * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.integrationTypes]
+     * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.integrationTypes]
+     *
+     * @see IntegrationType
+     * @see TopLevelSlashCommandBuilder.integrationTypes
+     */
+    val integrationTypes: Array<IntegrationType> = [],
 
     /**
      * Specifies whether the application command is disabled for everyone but administrators by default,

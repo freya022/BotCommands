@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.interactions.InteractionContextType.*
 
 @Command
 class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
@@ -37,7 +38,7 @@ class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDAUserCommand(scope = CommandScope.GLOBAL, name = "User info (annotated)")
+    @JDAUserCommand(scope = CommandScope.GLOBAL, contexts = [GUILD, BOT_DM, PRIVATE_CHANNEL], name = "User info (annotated)")
     fun onUserContextInfo(
         event: GlobalUserEvent,
         @ContextOption user: InputUser,
@@ -47,7 +48,9 @@ class UserContextInfo : ApplicationCommand(), GlobalApplicationCommandProvider {
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.userCommand("User info", CommandScope.GLOBAL, ::onUserContextInfo) {
+        manager.userCommand("User info", ::onUserContextInfo) {
+            contexts = ALL
+
             option("user")
 
             generatedOption("userTag") {

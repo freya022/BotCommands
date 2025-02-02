@@ -2,10 +2,9 @@ package io.github.freya022.botcommands.internal.commands.application.context.use
 
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.user.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.internal.commands.application.builder.ApplicationCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.options.builder.UserCommandOptionAggregateBuilderImpl
@@ -15,13 +14,12 @@ import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 internal class UserCommandBuilderImpl internal constructor(
-    context: BContext,
+    manager: AbstractApplicationCommandManager,
     name: String,
     function: KFunction<Any>,
-    scope: CommandScope
-) : ApplicationCommandBuilderImpl<UserCommandOptionAggregateBuilder>(context, name, function),
+) : ApplicationCommandBuilderImpl<UserCommandOptionAggregateBuilder>(manager.context, name, function),
     UserCommandBuilder,
-    TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(scope) {
+    TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(manager) {
 
     override val type: CommandType get() = CommandType.USER_CONTEXT
     override val topLevelBuilder get() = this

@@ -6,14 +6,15 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.builder.MessageCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.provider.*
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
@@ -24,8 +25,11 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
- * - First parameter must be [GlobalMessageEvent] for [global][CommandScope.GLOBAL] commands, or,
- * [GuildMessageEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
+ *
+ * The first parameter must be:
+ * - [GuildMessageEvent] if the [interaction context][contexts]
+ * only contains [InteractionContextType.GUILD].
+ * - [GlobalMessageEvent] in other cases.
  *
  * ### Option types
  * - Input options: Uses [@ContextOption][ContextOption], supported types and modifiers are in [ParameterResolver],
@@ -53,11 +57,39 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 @Retention(AnnotationRetention.RUNTIME)
 annotation class JDAMessageCommand(
     /**
-     * Specifies the application command scope for this command.
+     * Specifies the application command scope for this command, where the command will be pushed to.
      *
-     * **Default:** [CommandScope.GLOBAL_NO_DM]
+     * This will be forced to [CommandScope.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
+     * **Default:** [CommandScope.GLOBAL]
      */
-    val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
+    val scope: CommandScope = CommandScope.GLOBAL,
+
+    /**
+     * Represents where a command can be used.
+     *
+     * **Default, depending on [scope]:**
+     * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]
+     * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.contexts]
+     *
+     * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
+     * @see InteractionContextType
+     * @see MessageCommandBuilder.contexts
+     */
+    val contexts: Array<InteractionContextType> = [],
+
+    /**
+     * The integration types in which this command can be installed in.
+     *
+     * **Default, depending on [scope]:**
+     * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.integrationTypes]
+     * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.integrationTypes]
+     *
+     * @see IntegrationType
+     * @see MessageCommandBuilder.integrationTypes
+     */
+    val integrationTypes: Array<IntegrationType> = [],
 
     /**
      * Specifies whether the application command is disabled for everyone but administrators by default,

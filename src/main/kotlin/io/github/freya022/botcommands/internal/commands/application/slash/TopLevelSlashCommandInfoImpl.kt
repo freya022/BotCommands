@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandMetadata
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.utils.toImmutableSet
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.TopLevelSlashCommandBuilderImpl
+import net.dv8tion.jda.api.interactions.IntegrationType
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
 
 internal class TopLevelSlashCommandInfoImpl internal constructor(
@@ -19,12 +21,13 @@ internal class TopLevelSlashCommandInfoImpl internal constructor(
     override val topLevelInstance: TopLevelSlashCommandInfoImpl get() = this
     override val parentInstance get() = null
 
+    override val type: Command.Type get() = Command.Type.SLASH
+
     override lateinit var metadata: TopLevelApplicationCommandMetadata
 
-    override val scope: CommandScope = builder.scope
-    override val type: Command.Type get() = Command.Type.SLASH
+    override val contexts: Set<InteractionContextType> = builder.contexts.toImmutableSet()
+    override val integrationTypes: Set<IntegrationType> = builder.integrationTypes.toImmutableSet()
     override val isDefaultLocked: Boolean = builder.isDefaultLocked
-    override val isGuildOnly: Boolean = scope.isGuildOnly
     override val nsfw: Boolean = builder.nsfw
 
     override val subcommands: Map<String, SlashSubcommandInfoImpl> =

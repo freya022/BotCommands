@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -24,6 +23,7 @@ import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import kotlin.reflect.KClass
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
@@ -81,11 +81,16 @@ internal class MessageContextCommandAutoBuilder(
         val commandId = metadata.commandId
 
         val annotation = metadata.annotation
-        val actualScope = if (forceGuildCommands) CommandScope.GUILD else annotation.scope
-        manager.messageCommand(path.name, actualScope, func.castFunction()) {
+        manager.messageCommand(path.name, func.castFunction()) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 
+            contexts = if (forceGuildCommands) {
+                setOf(InteractionContextType.GUILD)
+            } else {
+                annotation.contexts.toEnumSetOr(manager.defaultContexts)
+            }
+            integrationTypes = annotation.integrationTypes.toEnumSetOr(manager.defaultIntegrationTypes)
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 

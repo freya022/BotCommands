@@ -1,11 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.builder
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
@@ -16,13 +15,12 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 
 internal class TopLevelSlashCommandBuilderImpl internal constructor(
-    context: BContext,
+    manager: AbstractApplicationCommandManager,
     name: String,
     function: KFunction<Any>?,
-    scope: CommandScope
-) : SlashCommandBuilderImpl(context, name, function),
+) : SlashCommandBuilderImpl(manager.context, name, function),
     TopLevelSlashCommandBuilder,
-    TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(scope) {
+    TopLevelApplicationCommandBuilderMixin by TopLevelApplicationCommandBuilderMixinImpl(manager) {
 
     override val topLevelBuilder get() = this
     override val parentInstance: INamedCommand? get() = null

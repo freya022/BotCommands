@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
@@ -17,6 +16,7 @@ import io.github.freya022.botcommands.api.localization.context.AppLocalizationCo
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
@@ -32,11 +32,14 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
- * - First parameter must be [GlobalSlashEvent] for [global][CommandScope.GLOBAL] commands, or,
- * [GuildSlashEvent] for [global guild-only][CommandScope.GLOBAL_NO_DM] and [guild][CommandScope.GUILD] commands.
  * - If you have subcommands,
  * [@TopLevelSlashCommandData][TopLevelSlashCommandData] must be used **once per top-level name**,
  * e.g., if you have `/tag create` and `/tag edit`, you can annotate at most one of them.
+ *
+ * Additionally, the first parameter must be:
+ * - [GuildSlashEvent] if the [interaction contexts][TopLevelSlashCommandData.contexts]
+ * only contains [InteractionContextType.GUILD].
+ * - [GlobalSlashEvent] in other cases.
  *
  * ### Option types
  * - Input options: Uses [@SlashOption][SlashOption], supported types and modifiers are in [ParameterResolver],
