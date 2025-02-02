@@ -230,7 +230,7 @@ internal class AppEmojisLoader internal constructor(
     internal companion object {
 
         // This has to be a getter so we can mock this property
-        internal val maxAppEmojis get() = ApplicationEmoji.APPLICATION_EMOJI_CAP
+        internal val maxAppEmojis get() = ApplicationEmoji.MAX_APPLICATION_EMOJIS
 
         internal var loaded = false
             private set
@@ -274,7 +274,7 @@ internal class AppEmojisLoader internal constructor(
             }
 
             requireThrowing(toLoadEmojiNames.size < maxAppEmojis, ::OutOfAppEmojisException) {
-                "Too many app emojis were registered, registered ${toLoadEmojiNames.size}, but max is ${ApplicationEmoji.APPLICATION_EMOJI_CAP}"
+                "Too many app emojis were registered, registered ${toLoadEmojiNames.size}, but max is ${ApplicationEmoji.MAX_APPLICATION_EMOJIS}"
             }
 
             requireThrowing(toLoadEmojiNames.add(emojiName), ::EmojiAlreadyExistsException) {
