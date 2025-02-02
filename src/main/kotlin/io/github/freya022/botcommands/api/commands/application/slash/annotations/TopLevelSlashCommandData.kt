@@ -42,7 +42,7 @@ annotation class TopLevelSlashCommandData(
      * @see InteractionContextType
      * @see TopLevelSlashCommandBuilder.contexts
      */
-    val contexts: Array<out InteractionContextType> = [],
+    val contexts: Array<InteractionContextType> = [],
 
     /**
      * The integration types in which this command can be installed in.
@@ -54,7 +54,7 @@ annotation class TopLevelSlashCommandData(
      * @see IntegrationType
      * @see TopLevelSlashCommandBuilder.integrationTypes
      */
-    val integrationTypes: Array<out IntegrationType> = [],
+    val integrationTypes: Array<IntegrationType> = [],
 
     /**
      * Specifies whether the application command is disabled for everyone but administrators by default,
