@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.utils;
 
+import dev.freya02.jda.emojis.Emojis;
+import dev.freya02.jda.emojis.UnicodeEmojis;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.fellbaum.jemoji.EmojiManager;
@@ -121,15 +123,10 @@ public class EmojiUtils {
     /**
      * Converts the provided {@link net.fellbaum.jemoji.Emoji Emoji} into a JDA {@link UnicodeEmoji}.
      *
-     * <p>I highly recommend putting your emojis in a class that is loaded only when necessary,
-     * avoiding any unnecessary startup delay.
-     * You can do so by using a static inner class, for example:
+     * <p>I highly recommend using the emojis in-place, not putting them in constants/fields,
+     * so that they are loaded only when used.
      *
-     * <pre><code>
-     * static class Emojis {
-     *     private static final UnicodeEmoji WASTEBASKET = EmojiUtils.asUnicodeEmoji(net.fellbaum.jemoji.Emojis.WASTEBASKET);
-     * }
-     * </code></pre>
+     * <p><b>Note:</b> If you use the emoji constants, you can instead use the constants from {@link Emojis} or {@link UnicodeEmojis}.
      *
      * @param emoji The {@link net.fellbaum.jemoji.Emoji Emoji} to convert
      *

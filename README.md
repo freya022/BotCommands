@@ -174,18 +174,20 @@ Here is how you would create a slash command that sends a message in a specified
 <summary>Kotlin</summary>
 
 ```kt
-private val wastebasket: UnicodeEmoji by lazyUnicodeEmoji { Emojis.WASTEBASKET }
-
 @Command
-@RequiresComponents // Disables the command if components are not enabled
-class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
+@RequiresComponents // (Optional) Disables the command if components are not enabled
+class SlashSay(
+    private val buttons: Buttons // Factory for buttons
+) : ApplicationCommand() {
+
+    // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     suspend fun onSlashSay(
         event: GuildSlashEvent,
         @SlashOption(description = "Channel to send the message in") channel: TextChannel,
         @SlashOption(description = "What to say") content: String
     ) {
-        val deleteButton = buttons.danger(wastebasket).ephemeral {
+        val deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral {
             bindTo { buttonEvent ->
                 buttonEvent.deferEdit().queue()
                 buttonEvent.hook.deleteOriginal().await()
@@ -208,13 +210,14 @@ class SlashSay(private val buttons: Buttons) : ApplicationCommand() {
 <summary>Kotlin (DSL)</summary>
 
 ```kt
-private val wastebasket: UnicodeEmoji by lazyUnicodeEmoji { Emojis.WASTEBASKET }
-
 @Command
-@RequiresComponents // Disables the command if components are not enabled
-class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider {
+@RequiresComponents // (Optional) Disables the command if components are not enabled
+class SlashSay(
+    private val buttons: Buttons // Factory for buttons
+) : GlobalApplicationCommandProvider {
+
     suspend fun onSlashSay(event: GuildSlashEvent, channel: TextChannel, content: String) {
-        val deleteButton = buttons.danger(wastebasket).ephemeral {
+        val deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral {
             bindTo { buttonEvent ->
                 buttonEvent.deferEdit().queue()
                 buttonEvent.hook.deleteOriginal().await()
@@ -230,11 +233,12 @@ class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider 
             .await()
     }
 
-    // This is nice if you need to run your own code to declare commands
+    // This is nice if you need to run your own code to declare commands.
     // For example, a loop to create commands based on an enum
     // If you don't need any dynamic stuff, just stick to annotations
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("say", function = ::onSlashSay) {
+            // The descriptions can also be moved to localization files
             description = "Sends a message in a channel"
 
             option("channel") {
@@ -255,26 +259,23 @@ class SlashSay(private val buttons: Buttons) : GlobalApplicationCommandProvider 
 
 ```java
 @Command
-@RequiresComponents // Disables the command if components are not enabled
-public class SlashSay extends ApplicationCommand {
-    // Little trick to get the emoji lazily, this will reduce the startup impact
-    static class Emojis {
-        private static final UnicodeEmoji WASTEBASKET = EmojiUtils.asUnicodeEmoji(net.fellbaum.jemoji.Emojis.WASTEBASKET);
-    }
+@RequiresComponents // (Optional) Disables the command if components are not enabled
+public class SlashSayJava extends ApplicationCommand {
 
-    private final Buttons buttons;
+    private final Buttons buttons; // Factory for buttons
 
     public SlashSay(Buttons buttons) {
         this.buttons = buttons;
     }
 
+    // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
     public void onSlashSay(
             GuildSlashEvent event,
             @SlashOption(description = "Channel to send the message in") TextChannel channel,
             @SlashOption(description = "What to say") String content
     ) {
-        final Button deleteButton = buttons.danger(Emojis.WASTEBASKET).ephemeral()
+        final Button deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

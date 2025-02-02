@@ -382,3 +382,5 @@ but where having a `Member` triggers additional checks, such as in ban commands.
 [emoji-java](https://github.com/MinnDevelopment/emoji-java) has been replaced with [JEmoji](https://github.com/felldo/JEmoji),
 providing a more up-to-date emoji list, 
 also allowing dropping `org.json` and fixing issues with emoji indexes, and incorrect fitzpatrick formats.
+
+[jda-emojis](https://github.com/freya022/jda-emojis) was also added to get `UnicodeEmoji`s directly.

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
+import dev.freya02.jda.emojis.Emojis
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
@@ -106,7 +107,7 @@ class BTextConfigBuilder internal constructor() : BTextConfig {
         set(value) {
             dmClosedEmojiSupplier = { value }
         }
-    var dmClosedEmojiSupplier: () -> Emoji = { Emoji.fromUnicode("\uD83D\uDCEA") } // mailbox_closed
+    var dmClosedEmojiSupplier: () -> Emoji = { Emojis.MAILBOX_CLOSED }
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {
