@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
+import dev.freya02.jda.emojis.Emojis
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
@@ -45,23 +46,23 @@ class Paginator internal constructor(
 
         /** @see PaginatorBuilder.setFirstContent */
         @JvmStatic
-        var firstPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "rewind") }
+        var firstPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromEmoji(ButtonStyle.PRIMARY, Emojis.REWIND) }
 
         /** @see PaginatorBuilder.setPreviousContent */
         @JvmStatic
-        var previousPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_backward") }
+        var previousPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromEmoji(ButtonStyle.PRIMARY, Emojis.ARROW_BACKWARD) }
 
         /** @see PaginatorBuilder.setNextContent */
         @JvmStatic
-        var nextPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "arrow_forward") }
+        var nextPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromEmoji(ButtonStyle.PRIMARY, Emojis.ARROW_FORWARD) }
 
         /** @see PaginatorBuilder.setLastContent */
         @JvmStatic
-        var lastPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.PRIMARY, "fast_forward") }
+        var lastPageButtonContent: ButtonContent by lazyWritable { ButtonContent.fromEmoji(ButtonStyle.PRIMARY, Emojis.FAST_FORWARD) }
 
         /** @see PaginatorBuilder.setDeleteContent */
         @JvmStatic
-        var deleteButtonContent: ButtonContent by lazyWritable { ButtonContent.fromShortcode(ButtonStyle.DANGER, "wastebasket") }
+        var deleteButtonContent: ButtonContent by lazyWritable { ButtonContent.fromEmoji(ButtonStyle.DANGER, Emojis.WASTEBASKET) }
 
         /** @see PaginatorBuilder.useDeleteButton */
         @JvmStatic
