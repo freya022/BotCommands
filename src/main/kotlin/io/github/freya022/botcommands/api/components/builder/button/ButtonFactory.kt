@@ -19,7 +19,8 @@ class ButtonFactory internal constructor(
     private val componentController: ComponentController,
     private val style: ButtonStyle,
     private val label: String?,
-    private val emoji: Emoji?
+    private val emoji: Emoji?,
+    private val disabled: Boolean,
 ) {
     init {
         require(label != null || emoji != null) { "A label or an emoji needs to be set" }
@@ -58,14 +59,20 @@ class ButtonFactory internal constructor(
             EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
         }
 
-        return ButtonFactory(componentController, style, label, newEmoji)
+        return ButtonFactory(componentController, style, label, newEmoji, disabled)
     }
 
     /**
      * Creates a new button factory with the provided JDA emoji.
      */
     @CheckReturnValue
-    fun withEmoji(emoji: Emoji?): ButtonFactory = ButtonFactory(componentController, style, label, emoji)
+    fun withEmoji(emoji: Emoji?): ButtonFactory = ButtonFactory(componentController, style, label, emoji, disabled)
+
+    /**
+     * Creates a new button factory with the provided disabled state.
+     */
+    @CheckReturnValue
+    fun withDisabled(disabled: Boolean): ButtonFactory = ButtonFactory(componentController, style, label, emoji, disabled)
 
     /**
      * Creates an ephemeral button builder.
@@ -76,7 +83,7 @@ class ButtonFactory internal constructor(
      */
     @CheckReturnValue
     fun ephemeral(): EphemeralButtonBuilder =
-        EphemeralButtonBuilderImpl(componentController, style, label, emoji, InstanceRetriever())
+        EphemeralButtonBuilderImpl(componentController, style, label, emoji, disabled, InstanceRetriever())
 
     /**
      * Creates an ephemeral button.
@@ -98,7 +105,7 @@ class ButtonFactory internal constructor(
      */
     @CheckReturnValue
     fun persistent(): PersistentButtonBuilder =
-        PersistentButtonBuilderImpl(componentController, style, label, emoji, InstanceRetriever())
+        PersistentButtonBuilderImpl(componentController, style, label, emoji, disabled, InstanceRetriever())
 
     /**
      * Creates a persistent button.

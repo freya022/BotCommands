@@ -164,7 +164,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      */
     @CheckReturnValue
     fun of(style: ButtonStyle, label: String): ButtonFactory =
-        ButtonFactory(componentController, style, label, null)
+        ButtonFactory(componentController, style, label, null, disabled = false)
 
     /**
      * Creates a button factory with the style and emoji provided.
@@ -176,7 +176,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      */
     @CheckReturnValue
     fun of(style: ButtonStyle, emoji: Emoji): ButtonFactory =
-        ButtonFactory(componentController, style, null, emoji)
+        ButtonFactory(componentController, style, null, emoji, disabled = false)
 
     /**
      * Creates a button factory with the style, label and emoji provided.
@@ -190,7 +190,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      */
     @CheckReturnValue
     fun of(style: ButtonStyle, label: String, emoji: Emoji): ButtonFactory =
-        ButtonFactory(componentController, style, label, emoji)
+        ButtonFactory(componentController, style, label, emoji, disabled = false)
 
     /**
      * Creates a button factory with the style, label and emoji provided by the [ButtonContent].
@@ -204,7 +204,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      */
     @CheckReturnValue
     fun of(content: ButtonContent): ButtonFactory =
-        ButtonFactory(componentController, content.style, content.label, content.emoji)
+        ButtonFactory(componentController, content.style, content.label, content.emoji, content.disabled)
 
     /**
      * Creates a primary button factory with the label provided.

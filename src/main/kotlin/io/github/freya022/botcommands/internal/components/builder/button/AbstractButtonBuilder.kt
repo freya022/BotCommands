@@ -18,6 +18,7 @@ internal sealed class AbstractButtonBuilder<T : ButtonBuilder<T>>(
     private val style: ButtonStyle,
     private val label: String?,
     private val emoji: Emoji?,
+    private val disabled: Boolean,
     instanceRetriever: InstanceRetriever<T>
 ) : AbstractComponentBuilder<T>(instanceRetriever),
     ButtonBuilder<T> {
@@ -37,7 +38,7 @@ internal sealed class AbstractButtonBuilder<T : ButtonBuilder<T>>(
             ButtonImpl(
                 componentController,
                 internalId,
-                JDAButton.of(style, componentId, label, emoji)
+                JDAButton.of(style, componentId, label, emoji).withDisabled(disabled)
             )
         }
     }

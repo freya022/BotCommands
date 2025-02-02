@@ -16,8 +16,9 @@ internal class PersistentButtonBuilderImpl internal constructor(
     style: ButtonStyle,
     label: String?,
     emoji: Emoji?,
+    disabled: Boolean,
     instanceRetriever: InstanceRetriever<PersistentButtonBuilder>
-) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style, label, emoji, instanceRetriever),
+) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style, label, emoji, disabled, instanceRetriever),
     PersistentButtonBuilder,
     IPersistentActionableComponentMixin<PersistentButtonBuilder> by PersistentActionableComponentImpl(
         componentController.context,

@@ -9,7 +9,7 @@ import javax.annotation.CheckReturnValue
 /**
  * Represents the visual content of a [Button], this contains at least an [Emoji] or a [String]
  */
-data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: Emoji?) {
+data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: Emoji?, val disabled: Boolean) {
     init {
         require(label != null || emoji != null) { "A label or an emoji needs to be set" }
 
@@ -47,14 +47,20 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
             EmojiUtils.resolveJDAEmojiOrNull(it) ?: Emoji.fromFormatted(it)
         }
 
-        return ButtonContent(style, label, newEmoji)
+        return ButtonContent(style, label, newEmoji, disabled)
     }
 
     /**
      * Creates a new button content with the provided JDA emoji.
      */
     @CheckReturnValue
-    fun withEmoji(emoji: Emoji?): ButtonContent = ButtonContent(style, label, emoji)
+    fun withEmoji(emoji: Emoji?): ButtonContent = ButtonContent(style, label, emoji, disabled)
+
+    /**
+     * Creates a new button content with the provided disabled state.
+     */
+    @CheckReturnValue
+    fun withDisabled(disabled: Boolean): ButtonContent = ButtonContent(style, label, emoji, disabled)
 
     companion object {
         /**
@@ -62,7 +68,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
          */
         @JvmStatic
         fun fromLabel(style: ButtonStyle, label: String): ButtonContent {
-            return ButtonContent(style, label, null)
+            return ButtonContent(style, label, null, disabled = false)
         }
 
         /**
@@ -70,7 +76,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
          */
         @JvmStatic
         fun fromEmoji(style: ButtonStyle, emoji: Emoji): ButtonContent {
-            return ButtonContent(style, null, emoji)
+            return ButtonContent(style, null, emoji, disabled = false)
         }
 
         /**
@@ -78,7 +84,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
          */
         @JvmStatic
         fun fromEmoji(style: ButtonStyle, label: String, emoji: Emoji): ButtonContent {
-            return ButtonContent(style, label, emoji)
+            return ButtonContent(style, label, emoji, disabled = false)
         }
 
         /**
@@ -87,7 +93,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
          */
         @JvmStatic
         fun fromUnicode(style: ButtonStyle, unicode: String): ButtonContent {
-            return ButtonContent(style, null, Emoji.fromUnicode(unicode))
+            return ButtonContent(style, null, Emoji.fromUnicode(unicode), disabled = false)
         }
 
         /**
@@ -102,7 +108,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
             replaceWith = ReplaceWith(expression = "fromEmoji(style, label, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
         )
         fun fromUnicode(style: ButtonStyle, label: String, unicode: String): ButtonContent {
-            return ButtonContent(style, label, Emoji.fromUnicode(unicode))
+            return ButtonContent(style, label, Emoji.fromUnicode(unicode), disabled = false)
         }
 
         /**
@@ -116,7 +122,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
             replaceWith = ReplaceWith(expression = "fromEmoji(style, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
         )
         fun fromShortcode(style: ButtonStyle, shortcode: String): ButtonContent {
-            return ButtonContent(style, null, EmojiUtils.resolveJDAEmoji(shortcode))
+            return ButtonContent(style, null, EmojiUtils.resolveJDAEmoji(shortcode), disabled = false)
         }
 
         /**
@@ -130,7 +136,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
             replaceWith = ReplaceWith(expression = "fromEmoji(style, text, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
         )
         fun fromShortcode(style: ButtonStyle, text: String, shortcode: String): ButtonContent {
-            return ButtonContent(style, text, EmojiUtils.resolveJDAEmoji(shortcode))
+            return ButtonContent(style, text, EmojiUtils.resolveJDAEmoji(shortcode), disabled = false)
         }
     }
 }

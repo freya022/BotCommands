@@ -17,8 +17,9 @@ internal class EphemeralButtonBuilderImpl internal constructor(
     style: ButtonStyle,
     label: String?,
     emoji: Emoji?,
+    disabled: Boolean,
     instanceRetriever: InstanceRetriever<EphemeralButtonBuilder>
-) : AbstractButtonBuilder<EphemeralButtonBuilder>(componentController, style, label, emoji, instanceRetriever),
+) : AbstractButtonBuilder<EphemeralButtonBuilder>(componentController, style, label, emoji, disabled, instanceRetriever),
     EphemeralButtonBuilder,
     IEphemeralActionableComponentMixin<EphemeralButtonBuilder, ButtonEvent> by EphemeralActionableComponentImpl(
         componentController.context,
