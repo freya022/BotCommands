@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.builder.isGuildOnly
 import io.github.freya022.botcommands.api.core.reflect.requireUser
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.ResolverData
