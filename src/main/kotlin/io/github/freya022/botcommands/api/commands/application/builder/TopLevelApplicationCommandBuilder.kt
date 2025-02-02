@@ -87,7 +87,11 @@ interface TopLevelApplicationCommandBuilder<T : ApplicationCommandOptionAggregat
      * @see JDAMessageCommand.nsfw
      */
     var nsfw: Boolean
-}
 
-val TopLevelApplicationCommandBuilder<*>.isGuildOnly: Boolean
-    get() = contexts.singleOrNull() == InteractionContextType.GUILD
+    /**
+     * Whether this command can only be used in guilds.
+     *
+     * This is equivalent to `contexts == setOf(InteractionContextType.GUILD)`.
+     */
+    val isGuildOnly: Boolean get() = contexts.singleOrNull() == InteractionContextType.GUILD
+}
