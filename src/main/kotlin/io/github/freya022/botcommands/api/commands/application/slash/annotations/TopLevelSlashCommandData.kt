@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.IntegrationType
@@ -28,6 +29,8 @@ annotation class TopLevelSlashCommandData(
     /**
      * Specifies the application command scope for this command, where the command will be pushed to.
      *
+     * This will be forced to [CommandScope.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
      * **Default:** [CommandScope.GLOBAL]
      */
     val scope: CommandScope = CommandScope.GLOBAL,
@@ -38,6 +41,8 @@ annotation class TopLevelSlashCommandData(
      * **Default, depending on [scope]:**
      * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.contexts]
+     *
+     * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
      * @see TopLevelSlashCommandBuilder.contexts

@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.context.user.Glob
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.builder.UserCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.*
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -60,6 +61,8 @@ annotation class JDAUserCommand(
     /**
      * Specifies the application command scope for this command, where the command will be pushed to.
      *
+     * This will be forced to [CommandScope.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
      * **Default:** [CommandScope.GLOBAL]
      */
     val scope: CommandScope = CommandScope.GLOBAL,
@@ -70,6 +73,8 @@ annotation class JDAUserCommand(
      * **Default, depending on [scope]:**
      * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.contexts]
+     *
+     * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
      * @see UserCommandBuilder.contexts

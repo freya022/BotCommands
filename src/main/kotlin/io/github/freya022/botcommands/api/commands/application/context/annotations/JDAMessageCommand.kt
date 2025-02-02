@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.builder.MessageCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.*
+import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
@@ -58,6 +59,8 @@ annotation class JDAMessageCommand(
     /**
      * Specifies the application command scope for this command, where the command will be pushed to.
      *
+     * This will be forced to [CommandScope.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
+     *
      * **Default:** [CommandScope.GLOBAL]
      */
     val scope: CommandScope = CommandScope.GLOBAL,
@@ -68,6 +71,8 @@ annotation class JDAMessageCommand(
      * **Default, depending on [scope]:**
      * - [Global][CommandScope.GLOBAL] : [GlobalApplicationCommandManager.Defaults.contexts]
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.contexts]
+     *
+     * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
      * @see MessageCommandBuilder.contexts
