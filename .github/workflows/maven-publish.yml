@@ -31,7 +31,7 @@ jobs:
       - name: Compile and release
         run: >
           mvn -B --file pom.xml
-          -P release
+          -P docs,release
           -Dkotlin.compiler.incremental=false
           deploy
         env:
