@@ -55,7 +55,11 @@
 
     <profiles>
         <profile>
-            <id>docs</id>
+            <id>release</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -112,17 +116,6 @@
                             </perPackageOptions>
                         </configuration>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>release</id>
-            <properties>
-                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
-                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
-            </properties>
-            <build>
-                <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
