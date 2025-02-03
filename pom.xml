@@ -53,17 +53,6 @@
         <tag>3.X</tag>
     </scm>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
     <profiles>
         <profile>
             <id>docs</id>
@@ -128,12 +117,29 @@
         </profile>
         <profile>
             <id>release</id>
-            <properties>
-                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
-                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
-            </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-all-profiles-are-activated</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireActiveProfile>
+                                            <profiles>docs</profiles> <!-- Run dokka -->
+                                        </requireActiveProfile>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
@@ -161,43 +167,13 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.4.1</version>
-                        <executions>
-                            <execution>
-                                <id>enforce-all-profiles-are-activated</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <requireActiveProfile>
-                                            <profiles>docs</profiles>
-                                        </requireActiveProfile>
-                                        <requireJavaVersion>
-                                            <!-- Generating docs on the JDK 17 is important -->
-                                            <version>[17, 18)</version>
-                                        </requireJavaVersion>
-                                    </rules>
-                                    <fail>true</fail>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Good resources:
-                    https://github.com/classgraph/classgraph/blob/e81f793faba16ed102aeba4760fa0b5cd6e260d2/pom.xml
-                    https://central.sonatype.org/publish/publish-maven/
-                     -->
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version> <!-- Updated for Java 16+ -->
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -211,12 +187,6 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
-                                <configuration>
-                                    <gpgArguments>
-                                        <arg>--pinentry-mode</arg>
-                                        <arg>loopback</arg>
-                                    </gpgArguments>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
