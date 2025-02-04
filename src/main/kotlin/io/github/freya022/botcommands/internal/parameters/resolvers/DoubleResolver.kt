@@ -50,12 +50,12 @@ class DoubleResolver : ClassParameterResolver<DoubleResolver, Double>(Double::cl
     }
 
 
-    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): Double? {
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): Double {
         return arg.toDouble()
     }
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Double? {
+    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Double {
         return arg.toDouble()
     }
 }

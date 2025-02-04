@@ -49,8 +49,8 @@ private class ImplicitNamedLazyServiceImpl<out T : Any>(
     override fun retrieveServiceError(): ServiceError? {
         // Try getting an implicitly named service, if it has no error, all good
         if (name != null) {
-            val namedError = serviceContainer.canCreateService(name, type)
-            if (namedError == null) {
+            val hasNamedError = serviceContainer.canCreateService(name, type) != null
+            if (!hasNamedError) {
                 return null
             }
         }

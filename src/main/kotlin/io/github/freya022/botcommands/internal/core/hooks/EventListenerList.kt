@@ -20,7 +20,7 @@ internal class EventListenerList {
         newMap.getOrPut(t.runMode) { arrayListOf() }.add(t)
 
         for (handlers in newMap.values) {
-            handlers.sortWith(EventHandlerFunction.Companion.priorityComparator)
+            handlers.sortWith(EventHandlerFunction.priorityComparator)
         }
 
         this.map = newMap

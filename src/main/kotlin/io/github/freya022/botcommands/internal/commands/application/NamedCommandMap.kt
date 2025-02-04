@@ -14,8 +14,8 @@ internal class NamedCommandMap<T> internal constructor() where T : INamedCommand
         mutableMap.putIfAbsentOrThrow(newCommand.name, newCommand) { oldCommand ->
             """
             Command '${newCommand.path.fullPath}' is already defined
-            Existing command declared at: ${oldCommand.declarationSite?.string ?: "<Declaration site unavailable>"}
-            Current command declared at: ${newCommand.declarationSite?.string ?: "<Declaration site unavailable>"}
+            Existing command declared at: ${oldCommand.declarationSite.string}
+            Current command declared at: ${newCommand.declarationSite.string}
             """.trimIndent()
         }
     }
