@@ -9,8 +9,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterReso
  */
 interface TextCommandOption : CommandOption {
 
-    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
-    override val command get() = executable
     override val executable get() = parent.executable
     override val parent: TextCommandParameter
 

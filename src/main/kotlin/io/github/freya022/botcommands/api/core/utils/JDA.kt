@@ -76,9 +76,6 @@ suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, useCache: Boolean = tru
     }
 }
 
-@Deprecated("Replaced with retrieveMemberByIdOrNull", replaceWith = ReplaceWith("retrieveMemberByIdOrNull(userId)"))
-suspend fun Guild.retrieveMemberOrNull(userId: Long): Member? = retrieveMemberOrNull(UserSnowflake.fromId(userId))
-
 /**
  * Retrieves a [Member] with the provided [User].
  *
@@ -122,13 +119,6 @@ suspend fun Guild.retrieveVanityInviteOrNull(): VanityInvite? {
 
     return runIgnoringResponseOrNull(ErrorResponse.INVITE_CODE_INVALID) {
         retrieveVanityInvite().await()
-    }
-}
-
-@Deprecated("Replaced by retrieveUserByIdOrNull", replaceWith = ReplaceWith("retrieveUserByIdOrNull(userId)"))
-suspend fun JDA.retrieveUserOrNull(userId: Long, useCache: Boolean = true): User? {
-    return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
-        retrieveUserById(userId).useCache(useCache).await()
     }
 }
 

@@ -1,9 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application;
 
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter;
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand;
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 
@@ -26,9 +23,4 @@ public enum CommandScope {
      * <p>These commands cannot be filtered.
      */
     GLOBAL,
-    /**
-     * @deprecated Replace this by setting {@link TopLevelSlashCommandData#contexts()}/{@link JDAMessageCommand#contexts()}/{@link JDAUserCommand#contexts()} to {@link InteractionContextType#GUILD}
-     */
-    @Deprecated(forRemoval = true)
-    GLOBAL_NO_DM;
 }

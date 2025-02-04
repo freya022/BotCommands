@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.core.hooks
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -111,9 +110,8 @@ internal class EventListenerRegistry internal constructor(
                         )
                     }
                 }
-            @Suppress("DEPRECATION")
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
-                runMode = if (annotation.async) RunMode.ASYNC else annotation.mode,
+                runMode = annotation.mode,
                 timeout = getTimeout(annotation),
                 priority = annotation.priority,
                 parametersBlock = {

@@ -39,8 +39,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see DefaultMessagesFactory
  *
- * @see SettingsProvider
- *
  * @see GlobalExceptionHandler
  *
  * @see TextCommandProvider

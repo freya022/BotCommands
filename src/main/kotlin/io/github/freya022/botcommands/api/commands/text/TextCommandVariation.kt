@@ -62,11 +62,6 @@ interface TextCommandVariation : Executable, IDeclarationSiteHolder,
      */
     val completePattern: Regex?
 
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("For removal, confusing on whether it searches nested parameters, prefer using collection operations on 'parameters' instead, make an extension or an utility method")
-    override fun getParameter(declaredName: String): TextCommandParameter? =
-        parameters.find { it.name == declaredName }
-
     /**
      * Returns the option with the supplied *display name* (i.e., the name you see on the built-in help command),
      * or `null` if not found.

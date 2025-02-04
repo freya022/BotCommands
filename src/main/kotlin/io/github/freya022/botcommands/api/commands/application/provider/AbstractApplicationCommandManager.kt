@@ -18,7 +18,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
@@ -84,15 +83,6 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .also(slashCommandMap::putNewCommand)
     }
 
-    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
-    fun slashCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
-        return slashCommand(name, function) {
-            contexts = scope.toInteractionContexts()
-
-            builder()
-        }
-    }
-
     /**
      * Declares the supplied function as a user context command.
      *
@@ -124,15 +114,6 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .also(userContextCommandMap::putNewCommand)
     }
 
-    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
-    fun userCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
-        return userCommand(name, function) {
-            contexts = scope.toInteractionContexts()
-
-            builder()
-        }
-    }
-
     /**
      * Declares the supplied function as a message context command.
      *
@@ -161,21 +142,6 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .apply(builder)
             .build()
             .also(messageContextCommandMap::putNewCommand)
-    }
-
-    @Deprecated(message = "Use overload without CommandScope, optionally set the interaction contexts in the builder")
-    fun messageCommand(name: String, scope: CommandScope = defaultScope, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
-        return messageCommand(name, function) {
-            contexts = scope.toInteractionContexts()
-
-            builder()
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun CommandScope.toInteractionContexts(): Set<InteractionContextType> = when (this) {
-        CommandScope.GUILD, CommandScope.GLOBAL_NO_DM -> enumSetOf(InteractionContextType.GUILD)
-        CommandScope.GLOBAL -> enumSetOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
     }
 
     private fun areContextsValid(contexts: Set<InteractionContextType>): Boolean =

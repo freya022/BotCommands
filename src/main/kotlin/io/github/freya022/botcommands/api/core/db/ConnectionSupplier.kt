@@ -54,7 +54,7 @@ import java.time.Duration
  * in chronological order.
  *
  * @see InterfacedService @InterfacedService
- * @see BComponentsConfigBuilder.useComponents
+ * @see BComponentsConfigBuilder.enable
  * @see HikariSourceSupplier
  * @see Database
  * @see BlockingDatabase

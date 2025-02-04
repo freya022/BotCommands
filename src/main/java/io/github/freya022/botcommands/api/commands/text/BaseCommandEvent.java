@@ -108,7 +108,7 @@ public abstract class BaseCommandEvent
     }
 
     /**
-     * Returns the default embed, equivalent to {@link BContext#getDefaultEmbedSupplier() BContext.getDefaultEmbedSupplier().get()}
+     * Returns the default embed, equivalent to {@link TextCommandsContext#getDefaultEmbedSupplier() BContext.getDefaultEmbedSupplier().get()}
      *
      * @return Default embed of the bot
      */
@@ -116,7 +116,7 @@ public abstract class BaseCommandEvent
     public abstract EmbedBuilder getDefaultEmbed();
 
     /**
-     * Returns the default embed footer icon, equivalent to {@link BContext#getDefaultEmbedFooterIconSupplier() BContext.getDefaultFooterIconSupplier().get()}
+     * Returns the default embed footer icon, equivalent to {@link TextCommandsContext#getDefaultEmbedFooterIconSupplier() BContext.getDefaultFooterIconSupplier().get()}
      *
      * @return Default embed footer icon of the bot
      */

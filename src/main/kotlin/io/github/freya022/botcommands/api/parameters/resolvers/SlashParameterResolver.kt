@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
@@ -27,7 +26,6 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-@Suppress("DEPRECATION", "DeprecatedCallableAddReplaceWith")
 interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
         where T : ParameterResolver<T, R>,
               T : SlashParameterResolver<T, R> {
@@ -66,10 +64,6 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * @param optionMapping The [OptionMapping] to be resolved
      */
     fun resolve(option: SlashCommandOption, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
-        resolve(option.executable, event, optionMapping)
-
-    @Deprecated("Replaced SlashCommandInfo with SlashCommandOption")
-    fun resolve(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -89,9 +83,4 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: SlashCommandOption, event: CommandInteractionPayload, optionMapping: OptionMapping) =
         resolve(option, event, optionMapping)
-
-    @JvmSynthetic
-    @Deprecated("Replaced SlashCommandInfo with SlashCommandOption")
-    suspend fun resolveSuspend(info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping) =
-        resolve(info, event, optionMapping)
 }

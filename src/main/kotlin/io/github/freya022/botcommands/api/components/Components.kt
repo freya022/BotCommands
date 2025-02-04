@@ -49,40 +49,6 @@ import java.time.Duration as JavaDuration
 class Components internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     companion object {
         /**
-         * The default timeout for *ephemeral* components and component groups.
-         *
-         * `null`, non-positive and infinite durations are considered as a disabled timeout.
-         */
-        @Deprecated("Renamed to defaultEphemeralTimeout", ReplaceWith("this.defaultEphemeralTimeout"))
-        var defaultTimeout: Duration
-            @JvmSynthetic
-            get() = defaultEphemeralTimeout!!
-            @JvmSynthetic
-            set(value) {
-                defaultEphemeralTimeout = value
-            }
-
-        /**
-         * The default timeout for *ephemeral* components and component groups.
-         *
-         * `null`, non-positive and infinite durations are considered as a disabled timeout.
-         */
-        @JvmStatic
-        @Deprecated("Renamed to getDefaultTimeout", ReplaceWith("this.getDefaultTimeout()"))
-        fun getDefaultTimeout(): JavaDuration = defaultEphemeralTimeout!!.toJavaDuration()
-
-        /**
-         * Sets the default timeout for *ephemeral* components and component groups.
-         *
-         * `null`, non-positive and infinite durations are considered as a disabled timeout.
-         */
-        @JvmStatic
-        @Deprecated("Renamed to setDefaultTimeout", ReplaceWith("this.setDefaultTimeout(timeout)"))
-        fun setDefaultTimeout(timeout: JavaDuration) {
-            defaultEphemeralTimeout = timeout.toKotlinDuration()
-        }
-
-        /**
          * The default timeout for ephemeral components and component groups.
          *
          * `null`, non-positive and infinite durations are considered as a disabled timeout.

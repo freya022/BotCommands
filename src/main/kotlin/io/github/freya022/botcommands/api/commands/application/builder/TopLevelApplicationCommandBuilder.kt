@@ -1,31 +1,16 @@
 package io.github.freya022.botcommands.api.commands.application.builder
 
-import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
-import java.util.*
 
 interface TopLevelApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> : ApplicationCommandBuilder<T> {
-    /**
-     * @see TopLevelSlashCommandData.scope
-     * @see JDAUserCommand.scope
-     * @see JDAMessageCommand.scope
-     */
-    @Deprecated("Replaced with interaction contexts")
-    val scope: CommandScope
-        get() = when (EnumSet.copyOf(contexts)) {
-            enumSetOf(InteractionContextType.GUILD) -> CommandScope.GUILD
-            enumSetOf(InteractionContextType.GUILD, InteractionContextType.BOT_DM) -> CommandScope.GLOBAL
-            else -> throw IllegalArgumentException("Cannot map $contexts to a CommandScope")
-        }
 
     /**
      * Represents where a command can be used.

@@ -24,35 +24,12 @@ interface BComponentsConfig {
      */
     @ConfigurationValue(path = "botcommands.components.enable", defaultValue = "false")
     val enable: Boolean
-
-    /**
-     * Allows loading component services,
-     * such as [Components], [Buttons] and [SelectMenus].
-     *
-     * This requires a [ConnectionSupplier] service to be present
-     *
-     * Default: `false`
-     *
-     * Spring property: `botcommands.components.enable` ; Spring property takes over this config property.
-     *
-     * @see ConnectionSupplier
-     */
-    @Deprecated("Replaced by 'enable'", ReplaceWith("enable"))
-    val useComponents: Boolean get() = enable
 }
 
 @ConfigDSL
 class BComponentsConfigBuilder internal constructor() : BComponentsConfig {
     @set:JvmName("enable")
     override var enable: Boolean = false
-
-    @Deprecated("Replaced by 'enable'", replaceWith = ReplaceWith("enable"))
-    @set:JvmName("useComponents")
-    override var useComponents: Boolean
-        get() = enable
-        set(value) {
-            enable = value
-        }
 
     @JvmSynthetic
     internal fun build() = object : BComponentsConfig {

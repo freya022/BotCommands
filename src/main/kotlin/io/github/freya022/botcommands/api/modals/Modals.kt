@@ -4,10 +4,8 @@ package io.github.freya022.botcommands.api.modals
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import javax.annotation.CheckReturnValue
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -79,6 +77,3 @@ fun ModalBuilder.shortTextInput(inputName: String, label: String, block: TextInp
 context(Modals)
 fun ModalBuilder.paragraphTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput =
     textInput(inputName, label, TextInputStyle.PARAGRAPH, block)
-
-@Deprecated("Replaced with ModalEvent#getValue", replaceWith = ReplaceWith("modalEvent.get(this)"))
-fun TextInput.getValue(modalEvent: ModalInteractionEvent): ModalMapping = (modalEvent as ModalEvent)[this]

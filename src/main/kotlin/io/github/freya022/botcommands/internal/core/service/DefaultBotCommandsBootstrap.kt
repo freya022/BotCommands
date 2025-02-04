@@ -19,7 +19,7 @@ internal class DefaultBotCommandsBootstrap internal constructor(
 ) : AbstractBotCommandsBootstrap(config) {
     internal val serviceConfig: BServiceConfig get() = config.serviceConfig
 
-    internal val serviceProviders = ServiceProviders(serviceConfig)
+    internal val serviceProviders = ServiceProviders()
     override val serviceContainer = DefaultServiceContainerImpl(this)
     override val classGraphProcessors: Set<ClassGraphProcessor> =
         setOf(ConditionalObjectChecker(), serviceProviders)
@@ -46,8 +46,6 @@ internal class DefaultBotCommandsBootstrap internal constructor(
         serviceContainer.putServiceAs<BModalsConfig>(config.modalsConfig)
         serviceContainer.putServiceAs<BComponentsConfig>(config.componentsConfig)
         serviceContainer.putServiceAs<BCoroutineScopesConfig>(config.coroutineScopesConfig)
-        @Suppress("DEPRECATION")
-        serviceContainer.putServiceAs<BDebugConfig>(config.debugConfig)
         serviceContainer.putServiceAs<BTextConfig>(config.textConfig)
 
         serviceContainer.loadServices()

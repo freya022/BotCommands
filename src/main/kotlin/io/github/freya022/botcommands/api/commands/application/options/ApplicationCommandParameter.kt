@@ -10,7 +10,5 @@ import io.github.freya022.botcommands.api.commands.options.CommandParameter
 interface ApplicationCommandParameter : CommandParameter {
     override val nestedAggregatedParameters: List<ApplicationCommandParameter>
 
-    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
-    override val command: ApplicationCommandInfo get() = executable
     override val executable: ApplicationCommandInfo
 }

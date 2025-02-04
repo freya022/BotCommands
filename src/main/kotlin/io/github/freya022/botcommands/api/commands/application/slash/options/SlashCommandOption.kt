@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  */
 interface SlashCommandOption : ApplicationCommandOption {
 
-    @Deprecated("Renamed to 'executable'", replaceWith = ReplaceWith("executable"))
-    override val command get() = executable
     override val executable get() = parent.executable
     override val parent: SlashCommandParameter
 
