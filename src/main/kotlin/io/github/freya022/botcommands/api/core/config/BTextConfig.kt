@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
-import dev.freya02.jda.emojis.Emojis
+import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands

@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash;
 
-import dev.freya02.jda.emojis.UnicodeEmojis;
+import dev.freya02.jda.emojis.unicode.UnicodeEmojis;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;

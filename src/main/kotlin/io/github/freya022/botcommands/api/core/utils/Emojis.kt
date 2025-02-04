@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.core.utils
 
-import dev.freya02.jda.emojis.Emojis
-import dev.freya02.jda.emojis.UnicodeEmojis
+import dev.freya02.jda.emojis.unicode.Emojis
+import dev.freya02.jda.emojis.unicode.UnicodeEmojis
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji
 import net.fellbaum.jemoji.Emoji as JEmoji

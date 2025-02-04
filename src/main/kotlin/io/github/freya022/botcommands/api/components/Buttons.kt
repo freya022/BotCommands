@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.components
 
-import dev.freya02.jda.emojis.Emojis
+import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.builder.button.ButtonFactory
 import io.github.freya022.botcommands.api.components.utils.ButtonContent

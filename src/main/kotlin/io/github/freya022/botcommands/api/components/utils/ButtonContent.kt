@@ -105,7 +105,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         @JvmStatic
         @Deprecated(
             message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
-            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, label, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, label, Emojis.)", imports = ["dev.freya02.jda.emojis.unicode.Emojis"])
         )
         fun fromUnicode(style: ButtonStyle, label: String, unicode: String): ButtonContent {
             return ButtonContent(style, label, Emoji.fromUnicode(unicode), disabled = false)
@@ -119,7 +119,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         @JvmStatic
         @Deprecated(
             message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
-            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, Emojis.)", imports = ["dev.freya02.jda.emojis.unicode.Emojis"])
         )
         fun fromShortcode(style: ButtonStyle, shortcode: String): ButtonContent {
             return ButtonContent(style, null, EmojiUtils.resolveJDAEmoji(shortcode), disabled = false)
@@ -133,7 +133,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         @JvmStatic
         @Deprecated(
             message = "Prefer using emojis from the jda-emojis library, and pass them to fromEmoji",
-            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, text, Emojis.)", imports = ["dev.freya02.jda.emojis.Emojis"])
+            replaceWith = ReplaceWith(expression = "ButtonContent.fromEmoji(style, text, Emojis.)", imports = ["dev.freya02.jda.emojis.unicode.Emojis"])
         )
         fun fromShortcode(style: ButtonStyle, text: String, shortcode: String): ButtonContent {
             return ButtonContent(style, text, EmojiUtils.resolveJDAEmoji(shortcode), disabled = false)

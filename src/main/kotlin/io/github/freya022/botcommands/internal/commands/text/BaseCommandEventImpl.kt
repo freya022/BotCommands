@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text
 
-import dev.freya02.jda.emojis.Emojis
+import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext

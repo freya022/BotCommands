@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
-import dev.freya02.jda.emojis.Emojis
+import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.AbstractPaginationBuilder
