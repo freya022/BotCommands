@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -51,10 +52,10 @@ class EmojiResolver : ClassParameterResolver<EmojiResolver, Emoji>(Emoji::class)
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ): Emoji? = getEmoji(arg)
+        data: SerializedComponentData
+    ): Emoji? = getEmoji(data.asString())
 
-    override fun serialize(obj: Emoji): String = obj.formatted
+    override fun serialize(obj: Emoji) = SerializedComponentData.fromString(obj.formatted)
 
 
     override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Emoji? = getEmoji(arg)

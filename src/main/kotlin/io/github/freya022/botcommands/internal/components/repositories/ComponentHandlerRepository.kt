@@ -30,7 +30,7 @@ internal class ComponentHandlerRepository(
     context(Transaction)
     internal suspend fun insertPersistentHandler(componentId: Int, handler: PersistentHandler) {
         preparedStatement("INSERT INTO bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-            executeUpdate(componentId, handler.handlerName, handler.userData.toTypedArray())
+            executeUpdate(componentId, handler.handlerName, handler.userData.map { it?.asBytes() }.toTypedArray())
         }
     }
 

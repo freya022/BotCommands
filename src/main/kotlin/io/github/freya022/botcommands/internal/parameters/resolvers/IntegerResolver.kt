@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -53,10 +54,10 @@ class IntegerResolver : ClassParameterResolver<IntegerResolver, Int>(Int::class)
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ): Int = arg.toInt()
+        data: SerializedComponentData
+    ): Int = data.asString().toInt()
 
-    override fun serialize(obj: Int): String = obj.toString()
+    override fun serialize(obj: Int) = SerializedComponentData.fromString(obj.toString())
 
 
     override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Int = arg.toInt()

@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
@@ -31,9 +32,9 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      *
      * @param option The option currently being resolved
      * @param event  The corresponding event
-     * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
+     * @param data   A serialized representation of an argument passed in [IPersistentActionableComponent.bindTo]
      */
-    fun resolve(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): R? =
+    fun resolve(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): R? =
         throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     /**
@@ -45,11 +46,11 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      *
      * @param option The option currently being resolved
      * @param event  The corresponding event
-     * @param arg    One of the data passed by the user in [IPersistentActionableComponent.bindTo]
+     * @param data   A serialized representation of an argument passed in [IPersistentActionableComponent.bindTo]
      */
     @JvmSynthetic
-    suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String) =
-        resolve(option, event, arg)
+    suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData) =
+        resolve(option, event, data)
 
     /**
      * Serializes an instance of the resolvable object.
@@ -57,5 +58,5 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
      * The given instance can be serialized in any way you want,
      * remember you must be able to deserialize it in [resolve]/[resolveSuspend].
      */
-    fun serialize(obj: R): String
+    fun serialize(obj: R): SerializedComponentData
 }

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.handler
 
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.exceptions.ComponentSerializationException
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 internal sealed interface ComponentHandler
 
-internal class PersistentHandler private constructor(val handlerName: String, val userData: List<String?>) : ComponentHandler {
+internal class PersistentHandler private constructor(val handlerName: String, val userData: List<SerializedComponentData?>) : ComponentHandler {
 
     operator fun component1() = handlerName
     operator fun component2() = userData
@@ -30,11 +31,11 @@ internal class PersistentHandler private constructor(val handlerName: String, va
             return PersistentHandler(handlerName, processArgs(context, handlerName, userData))
         }
 
-        internal fun fromData(handlerName: String, userData: List<String?>): PersistentHandler {
-            return PersistentHandler(handlerName, userData)
+        internal fun fromData(handlerName: String, userData: List<ByteArray?>): PersistentHandler {
+            return PersistentHandler(handlerName, userData.map { it?.let(SerializedComponentData::fromBytes) })
         }
 
-        private fun processArgs(context: BContext, handlerName: String, args: List<Any?>): List<String?> {
+        private fun processArgs(context: BContext, handlerName: String, args: List<Any?>): List<SerializedComponentData?> {
             val allOptionsOrdered = PersistentHandlerComponentDataOptionCache.getOrCreate(context, handlerName)
 
             return args.mapIndexed { index, arg ->

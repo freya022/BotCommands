@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -78,10 +79,10 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     //endregion
 
     //region Component
-    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): E? =
-        getEnumValueOrNull(arg)
+    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): E? =
+        getEnumValueOrNull(data.asString())
 
-    override fun serialize(obj: E): String = obj.name
+    override fun serialize(obj: E) = SerializedComponentData.fromString(obj.name)
     //endregion
 
     //region Timeout

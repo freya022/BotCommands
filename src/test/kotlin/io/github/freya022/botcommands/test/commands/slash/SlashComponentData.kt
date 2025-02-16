@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import dev.freya02.jda.emojis.unicode.Emojis
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
@@ -14,6 +15,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -39,13 +41,13 @@ class MyComponentDataResolver :
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
+        data: SerializedComponentData
     ): MyComponentData {
-        return mapper.readValue(arg, MyComponentData::class.java)
+        return mapper.readValue<MyComponentData>(data.asBytes())
     }
 
-    override fun serialize(obj: MyComponentData): String {
-        return mapper.writeValueAsString(obj)
+    override fun serialize(obj: MyComponentData): SerializedComponentData {
+        return SerializedComponentData.fromBytes(mapper.writeValueAsBytes(obj))
     }
 }
 

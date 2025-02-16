@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
@@ -106,9 +107,9 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         //endregion
 
         //region Component
-        override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): GuildChannel? {
+        override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): GuildChannel? {
             val guild = event.guild ?: throwArgument("Cannot resolve a channel outside of a guild")
-            val channelId = arg.toLong()
+            val channelId = data.asString().toLong()
             val channel = guild.getChannelById(type, channelId)
             if (channel == null) {
                 if (ThreadChannel::class.java.isAssignableFrom(type))
@@ -121,7 +122,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             return channel
         }
 
-        override fun serialize(obj: GuildChannel): String = obj.id
+        override fun serialize(obj: GuildChannel) = SerializedComponentData.fromString(obj.id)
         //endregion
 
         private suspend fun retrieveThreadChannel(
