@@ -62,5 +62,5 @@ class StringResolver : ClassParameterResolver<StringResolver, String>(String::cl
         modalMapping.asString
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): String = arg
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): String = data.asString()
 }

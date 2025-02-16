@@ -25,7 +25,7 @@ internal class PersistentStringSelectBuilderImpl internal constructor(
     IConstrainableComponentMixin<PersistentStringSelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
     IUniqueComponentMixin<PersistentStringSelectBuilder> by UniqueComponentImpl(instanceRetriever),
     IPersistentActionableComponentMixin<PersistentStringSelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
-    IPersistentTimeoutableComponentMixin<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
+    IPersistentTimeoutableComponentMixin<PersistentStringSelectBuilder> by PersistentTimeoutableComponentImpl(componentController.context, ComponentType.SELECT_MENU, instanceRetriever) {
 
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT

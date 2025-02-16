@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHan
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.ComponentData
@@ -70,7 +71,7 @@ internal class ComponentTimeoutExecutor internal constructor(
     private suspend fun handlePersistentTimeout(
         descriptor: TimeoutDescriptor<*>,
         firstArgument: Any,
-        userDataIterator: Iterator<String?>
+        userDataIterator: Iterator<SerializedComponentData?>
     ): Boolean {
         with(descriptor) {
             val optionValues = parameters.mapOptions { option ->
@@ -86,7 +87,7 @@ internal class ComponentTimeoutExecutor internal constructor(
     private suspend fun tryInsertOption(
         option: OptionImpl,
         optionMap: MutableMap<OptionImpl, Any?>,
-        userDataIterator: Iterator<String?>
+        userDataIterator: Iterator<SerializedComponentData?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {

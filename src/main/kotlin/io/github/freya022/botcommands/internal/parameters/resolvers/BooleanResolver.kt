@@ -55,7 +55,7 @@ class BooleanResolver : ClassParameterResolver<BooleanResolver, Boolean>(Boolean
     override fun serialize(obj: Boolean) = SerializedComponentData.fromString(obj.toString())
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Boolean? = parseBoolean(arg)
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): Boolean? = parseBoolean(data.asString())
 
 
     private fun parseBoolean(arg: String): Boolean? {

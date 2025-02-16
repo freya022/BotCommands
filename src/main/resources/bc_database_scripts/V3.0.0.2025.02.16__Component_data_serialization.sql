@@ -9,3 +9,6 @@ WHERE one_row = true;
 
 ALTER TABLE bc_persistent_handler
     ALTER COLUMN user_data SET DATA TYPE bytea array USING cast(user_data as bytea array);
+
+ALTER TABLE bc_persistent_timeout
+    ALTER COLUMN user_data SET DATA TYPE bytea array USING cast(user_data as bytea array);

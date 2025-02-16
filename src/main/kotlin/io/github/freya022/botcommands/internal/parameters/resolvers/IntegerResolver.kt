@@ -60,5 +60,5 @@ class IntegerResolver : ClassParameterResolver<IntegerResolver, Int>(Int::class)
     override fun serialize(obj: Int) = SerializedComponentData.fromString(obj.toString())
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Int = arg.toInt()
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): Int = data.asString().toInt()
 }

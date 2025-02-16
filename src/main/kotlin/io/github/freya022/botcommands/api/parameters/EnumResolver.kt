@@ -86,7 +86,7 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     //endregion
 
     //region Timeout
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): E = getEnumValue(arg)
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): E = getEnumValue(data.asString())
     //endregion
 
     override fun toString(): String {

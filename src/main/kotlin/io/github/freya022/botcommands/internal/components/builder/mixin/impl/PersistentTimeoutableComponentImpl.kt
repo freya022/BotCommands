@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.internal.components.builder.mixin.impl
 
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolderImpl
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.builder.mixin.IPersistentTimeoutableComponentMixin
@@ -11,6 +13,8 @@ import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import kotlin.time.Duration
 
 internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComponent<T>> internal constructor(
+    private val context: BContext,
+    private val componentType: ComponentType,
     override val instanceRetriever: InstanceRetriever<T>
 ) : BuilderInstanceHolderImpl<T>(),
     IPersistentTimeoutableComponentMixin<T> {
@@ -42,6 +46,6 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
         Checks.checkFitInt(timeout, "timeout")
 
         this.timeoutDuration = timeout
-        this.timeout = PersistentTimeout.create(handlerName, data.toList())
+        this.timeout = PersistentTimeout.create(context, componentType, handlerName, data.toList())
     }
 }

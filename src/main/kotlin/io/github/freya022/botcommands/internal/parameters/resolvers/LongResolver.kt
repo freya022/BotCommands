@@ -62,5 +62,5 @@ class LongResolver : ClassParameterResolver<LongResolver, Long>(Long::class),
     override fun serialize(obj: Long) = SerializedComponentData.fromString(obj.toString())
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Long = arg.toLong()
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): Long = data.asString().toLong()
 }

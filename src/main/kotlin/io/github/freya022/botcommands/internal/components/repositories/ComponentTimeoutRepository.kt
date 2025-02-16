@@ -30,7 +30,7 @@ internal class ComponentTimeoutRepository(
     context(Transaction)
     internal suspend fun insertPersistentTimeout(componentId: Int, timeout: PersistentTimeout) {
         preparedStatement("INSERT INTO bc_persistent_timeout (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-            executeUpdate(componentId, timeout.handlerName, timeout.userData.toTypedArray())
+            executeUpdate(componentId, timeout.handlerName, timeout.userData.map { it?.asBytes() }.toTypedArray())
         }
     }
 

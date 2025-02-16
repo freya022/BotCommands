@@ -1,9 +1,10 @@
 package io.github.freya022.botcommands.api.components.serialization.exceptions
 
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 
 /**
- * An exception thrown when [ComponentParameterResolver.serialize] fails.
+ * An exception thrown when [ComponentParameterResolver.serialize] or [TimeoutParameterResolver.serialize] fails.
  */
 class ComponentSerializationException : RuntimeException {
 

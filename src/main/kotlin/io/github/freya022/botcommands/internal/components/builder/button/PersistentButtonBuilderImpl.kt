@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.components.builder.button
 
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
+import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.builder.mixin.IPersistentActionableComponentMixin
@@ -25,6 +26,8 @@ internal class PersistentButtonBuilderImpl internal constructor(
         instanceRetriever
     ),
     IPersistentTimeoutableComponentMixin<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl(
+        componentController.context,
+        ComponentType.BUTTON,
         instanceRetriever
     ) {
 

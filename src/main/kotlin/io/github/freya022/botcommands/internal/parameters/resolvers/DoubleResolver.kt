@@ -58,7 +58,7 @@ class DoubleResolver : ClassParameterResolver<DoubleResolver, Double>(Double::cl
     override fun serialize(obj: Double) = SerializedComponentData.fromString(obj.toString())
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Double {
-        return arg.toDouble()
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): Double {
+        return data.asString().toDouble()
     }
 }
