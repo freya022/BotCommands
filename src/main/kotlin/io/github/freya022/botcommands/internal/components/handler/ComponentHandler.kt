@@ -1,16 +1,12 @@
 package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.components.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
-internal sealed interface ComponentHandler {
-    val lifetimeType: LifetimeType
-}
+internal sealed interface ComponentHandler
 
 internal class PersistentHandler private constructor(val handlerName: String, val userData: List<String?>) : ComponentHandler {
-    override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
 
     operator fun component1() = handlerName
     operator fun component2() = userData
@@ -41,7 +37,6 @@ internal class PersistentHandler private constructor(val handlerName: String, va
 internal class EphemeralHandler<T : GenericComponentInteractionCreateEvent> internal constructor(
     val handler: suspend (T) -> Unit
 ) : ComponentHandler {
-    override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 
     override fun toString(): String {
         return "EphemeralHandler(handler=${handler::class.simpleNestedName})"
