@@ -78,6 +78,8 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         return entity
     }
 
+    override fun serialize(obj: R): String = obj.id
+
     final override fun resolve(option: UserContextCommandOption, event: UserContextInteractionEvent): R? =
         transformEntities(event.target, event.targetMember)
 

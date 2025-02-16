@@ -64,4 +64,6 @@ class RoleResolver : ClassParameterResolver<RoleResolver, Role>(Role::class),
 
         return guild.getRoleById(arg)
     }
+
+    override fun serialize(obj: Role): String = obj.id
 }

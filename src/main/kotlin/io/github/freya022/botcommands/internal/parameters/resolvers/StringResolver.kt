@@ -54,6 +54,8 @@ class StringResolver : ClassParameterResolver<StringResolver, String>(String::cl
         arg: String
     ): String = arg
 
+    override fun serialize(obj: String): String = obj
+
 
     override suspend fun resolveSuspend(option: ModalOption, event: ModalEvent, modalMapping: ModalMapping): String =
         modalMapping.asString

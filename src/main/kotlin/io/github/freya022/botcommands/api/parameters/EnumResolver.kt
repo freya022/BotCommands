@@ -80,6 +80,8 @@ internal sealed class AbstractEnumResolver<T : AbstractEnumResolver<T, E>, E : E
     //region Component
     override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): E? =
         getEnumValueOrNull(arg)
+
+    override fun serialize(obj: E): String = obj.name
     //endregion
 
     //region Timeout

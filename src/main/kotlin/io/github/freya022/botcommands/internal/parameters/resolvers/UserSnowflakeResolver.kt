@@ -40,6 +40,8 @@ internal object UserSnowflakeResolver :
     override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): UserSnowflake =
         UserSnowflake.fromId(arg)
 
+    override fun serialize(obj: UserSnowflake): String = obj.id
+
     override suspend fun resolveSuspend(
         option: SlashCommandOption,
         event: CommandInteractionPayload,

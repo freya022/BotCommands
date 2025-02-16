@@ -56,6 +56,8 @@ class IntegerResolver : ClassParameterResolver<IntegerResolver, Int>(Int::class)
         arg: String
     ): Int = arg.toInt()
 
+    override fun serialize(obj: Int): String = obj.toString()
+
 
     override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Int = arg.toInt()
 }

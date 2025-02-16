@@ -17,6 +17,6 @@ internal class PersistentActionableComponentImpl<T : IPersistentActionableCompon
         private set
 
     override fun bindTo(handlerName: String, data: List<Any?>): T = applyInstance {
-        this.handler = PersistentHandler.create(handlerName, data)
+        this.handler = PersistentHandler.create(context, handlerName, data)
     }
 }

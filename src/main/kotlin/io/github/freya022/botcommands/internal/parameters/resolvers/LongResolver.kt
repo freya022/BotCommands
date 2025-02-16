@@ -58,6 +58,8 @@ class LongResolver : ClassParameterResolver<LongResolver, Long>(Long::class),
         arg: String
     ): Long = arg.toLong()
 
+    override fun serialize(obj: Long): String = obj.toString()
+
 
     override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Long = arg.toLong()
 }

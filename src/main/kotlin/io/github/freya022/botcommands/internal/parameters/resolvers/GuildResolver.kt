@@ -48,4 +48,6 @@ class GuildResolver : ClassParameterResolver<GuildResolver, Guild>(Guild::class)
         event: GenericComponentInteractionCreateEvent,
         arg: String
     ): Guild? = event.jda.getGuildById(arg)
+
+    override fun serialize(obj: Guild): String = obj.id
 }

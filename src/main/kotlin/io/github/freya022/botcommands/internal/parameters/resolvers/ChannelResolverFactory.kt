@@ -120,6 +120,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
 
             return channel
         }
+
+        override fun serialize(obj: GuildChannel): String = obj.id
         //endregion
 
         private suspend fun retrieveThreadChannel(

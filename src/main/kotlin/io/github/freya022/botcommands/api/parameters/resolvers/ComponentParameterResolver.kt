@@ -50,4 +50,12 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
     @JvmSynthetic
     suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String) =
         resolve(option, event, arg)
+
+    /**
+     * Serializes an instance of the resolvable object.
+     *
+     * The given instance can be serialized in any way you want,
+     * remember you must be able to deserialize it in [resolve]/[resolveSuspend].
+     */
+    fun serialize(obj: R): String
 }

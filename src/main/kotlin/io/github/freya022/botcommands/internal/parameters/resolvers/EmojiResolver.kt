@@ -54,6 +54,8 @@ class EmojiResolver : ClassParameterResolver<EmojiResolver, Emoji>(Emoji::class)
         arg: String
     ): Emoji? = getEmoji(arg)
 
+    override fun serialize(obj: Emoji): String = obj.formatted
+
 
     override suspend fun resolveSuspend(option: TimeoutOption, arg: String): Emoji? = getEmoji(arg)
 
