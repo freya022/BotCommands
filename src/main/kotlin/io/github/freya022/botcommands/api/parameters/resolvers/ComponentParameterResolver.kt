@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
+import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableComponentData
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
@@ -15,6 +16,11 @@ import kotlin.reflect.KType
  * and [@JDASelectMenuListener][JDASelectMenuListener].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Use case - Supporting serializable objects
+ * If you need to pass **serializable** objects to your components,
+ * you can instead use [@SerializableComponentData][SerializableComponentData]
+ * and let it generate a resolver for you.
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

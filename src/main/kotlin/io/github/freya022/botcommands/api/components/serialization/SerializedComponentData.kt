@@ -14,6 +14,8 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
  * @see fromBytes
  *
  * @see ComponentParameterResolver.serialize
+ * @see GlobalComponentDataSerializer.serialize
+ * @see GlobalComponentDataSerializer.deserialize
  */
 class SerializedComponentData private constructor(
     private val bytes: ByteArray,

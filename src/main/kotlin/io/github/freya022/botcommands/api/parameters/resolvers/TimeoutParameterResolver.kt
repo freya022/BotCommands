@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.annotations.ComponentTimeou
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
+import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableTimeoutData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import kotlin.reflect.KParameter
@@ -13,6 +14,11 @@ import kotlin.reflect.KType
  * Parameter resolver for parameters of [@ComponentTimeoutHandler][ComponentTimeoutHandler] and [@GroupTimeoutHandler][GroupTimeoutHandler].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Use case - Supporting serializable objects
+ * If you need to pass **serializable** objects to your components,
+ * you can instead use [@SerializableTimeoutData][SerializableTimeoutData]
+ * and let it generate a resolver for you.
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

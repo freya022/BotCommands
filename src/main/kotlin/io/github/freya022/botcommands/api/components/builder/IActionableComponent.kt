@@ -9,16 +9,17 @@ import io.github.freya022.botcommands.api.components.annotations.JDAButtonListen
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
+import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableComponentData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.function.Consumer
@@ -97,12 +98,15 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * Binds the given handler name with its arguments to this component.
      *
      * ### Handler data
-     * The data passed is transformed with [toString][Object.toString],
-     * except [snowflakes][ISnowflake] which get their IDs stored.
+     * The data passed is [serialized][ComponentParameterResolver.serialize]
+     * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+     * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+     * you must annotate your parameter with [@ComponentData][ComponentData].
+     *
+     * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -115,12 +119,15 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      * Binds the given handler name with its arguments to this component.
      *
      * ### Handler data
-     * The data passed is transformed with [toString][Object.toString],
-     * except [snowflakes][ISnowflake] which get their IDs stored.
+     * The data passed is [serialized][ComponentParameterResolver.serialize]
+     * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
      *
-     * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+     * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+     * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+     * you must annotate your parameter with [@ComponentData][ComponentData].
+     *
+     * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -168,10 +175,15 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+ *
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -184,10 +196,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+ *
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -200,10 +217,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+ *
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -216,12 +238,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KFunction2<E, T1, Unit>, arg1: T1): C {
@@ -232,12 +257,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KSuspendFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -248,12 +276,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -264,12 +295,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KSuspendFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -280,12 +314,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -296,12 +333,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KSuspendFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -312,12 +352,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -328,12 +371,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KSuspendFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -344,12 +390,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -360,12 +409,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KSuspendFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -376,12 +428,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -392,12 +447,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KSuspendFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -408,12 +466,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -424,12 +485,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KSuspendFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -440,12 +504,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -456,12 +523,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KSuspendFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -472,12 +542,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -488,12 +561,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KSuspendFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -504,12 +580,15 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -524,12 +603,15 @@ private fun <C : IPersistentActionableComponent<C>> C.bindWithBoundCallable(func
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: KSuspendFunction2<T, E, Unit>): C {
@@ -540,12 +622,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: KFunction2<T, E, Unit>): C {
@@ -556,12 +641,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KSuspendFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -572,12 +660,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -588,12 +679,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KSuspendFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -604,12 +698,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -620,12 +717,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KSuspendFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -636,12 +736,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -652,12 +755,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KSuspendFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -668,12 +774,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -684,12 +793,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KSuspendFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -700,12 +812,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -716,12 +831,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KSuspendFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -732,12 +850,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -748,12 +869,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KSuspendFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -764,12 +888,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -780,12 +907,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KSuspendFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -796,12 +926,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -812,12 +945,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KSuspendFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -828,12 +964,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -844,12 +983,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KSuspendFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -860,12 +1002,15 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  * Binds the given handler to this component.
  *
  * ### Handler data
- * The data passed is transformed with [toString][Object.toString],
- * except [snowflakes][ISnowflake] which get their IDs stored.
+ * The data passed is [serialized][ComponentParameterResolver.serialize]
+ * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
- * The data can only be reconstructed if a [ComponentParameterResolver] exists for the handler's parameter type.
+ * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
+ * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * you must annotate your parameter with [@ComponentData][ComponentData].
+ *
+ * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
