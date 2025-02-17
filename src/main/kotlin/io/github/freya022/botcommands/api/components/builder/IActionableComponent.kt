@@ -99,11 +99,11 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      *
      * ### Handler data
      * The data passed is [serialized][ComponentParameterResolver.serialize]
-     * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+     * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+     * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
      * you must annotate your parameter with [@ComponentData][ComponentData].
      *
      * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -120,11 +120,11 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      *
      * ### Handler data
      * The data passed is [serialized][ComponentParameterResolver.serialize]
-     * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+     * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+     * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
      * you must annotate your parameter with [@ComponentData][ComponentData].
      *
      * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -176,11 +176,11 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -197,11 +197,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -218,11 +218,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -239,11 +239,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -258,11 +258,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -277,11 +277,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -296,11 +296,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -315,11 +315,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -334,11 +334,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -353,11 +353,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -372,11 +372,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -391,11 +391,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -410,11 +410,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -429,11 +429,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -448,11 +448,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -467,11 +467,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -486,11 +486,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -505,11 +505,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -524,11 +524,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -543,11 +543,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -562,11 +562,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -581,11 +581,11 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -604,11 +604,11 @@ private fun <C : IPersistentActionableComponent<C>> C.bindWithBoundCallable(func
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -623,11 +623,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -642,11 +642,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -661,11 +661,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -680,11 +680,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -699,11 +699,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -718,11 +718,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -737,11 +737,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -756,11 +756,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -775,11 +775,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -794,11 +794,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -813,11 +813,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -832,11 +832,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -851,11 +851,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -870,11 +870,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -889,11 +889,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -908,11 +908,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -927,11 +927,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -946,11 +946,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -965,11 +965,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -984,11 +984,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
@@ -1003,11 +1003,11 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * ### Handler data
  * The data passed is [serialized][ComponentParameterResolver.serialize]
- * and [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
+ * and later [deserialized][ComponentParameterResolver.resolveSuspend] using their resolver.
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and other [ComponentParameterResolver]s,
+ * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
  * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
