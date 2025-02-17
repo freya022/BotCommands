@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.components.repositories
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
@@ -30,7 +31,7 @@ internal class ComponentHandlerRepository(
     context(Transaction)
     internal suspend fun insertPersistentHandler(componentId: Int, handler: PersistentHandler) {
         preparedStatement("INSERT INTO bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-            executeUpdate(componentId, handler.handlerName, handler.userData.map { it?.asBytes() }.toTypedArray())
+            executeUpdate(componentId, handler.handlerName, handler.userData.mapToArray { it?.asBytes() })
         }
     }
 

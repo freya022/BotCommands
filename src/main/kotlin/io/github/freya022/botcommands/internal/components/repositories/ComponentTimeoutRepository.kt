@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.internal.components.repositories
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
@@ -30,7 +31,7 @@ internal class ComponentTimeoutRepository(
     context(Transaction)
     internal suspend fun insertPersistentTimeout(componentId: Int, timeout: PersistentTimeout) {
         preparedStatement("INSERT INTO bc_persistent_timeout (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-            executeUpdate(componentId, timeout.handlerName, timeout.userData.map { it?.asBytes() }.toTypedArray())
+            executeUpdate(componentId, timeout.handlerName, timeout.userData.mapToArray { it?.asBytes() })
         }
     }
 

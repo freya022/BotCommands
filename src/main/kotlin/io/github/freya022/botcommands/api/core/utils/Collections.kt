@@ -81,3 +81,8 @@ inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.flatMapTo(destination
     }
     return destination
 }
+
+inline fun <T, reified R> Collection<T>.mapToArray(transform: (T) -> R): Array<R> {
+    val iterator = iterator()
+    return Array(size) { _ -> transform(iterator.next()) }
+}
