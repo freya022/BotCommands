@@ -1,7 +1,10 @@
 package io.github.freya022.botcommands.api.components.serialization
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData.Companion.fromBytes
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData.Companion.fromString
+import io.github.freya022.botcommands.api.core.reflect.KotlinTypeToken
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 
 /**
@@ -62,3 +65,21 @@ class SerializedComponentData private constructor(
         }
     }
 }
+
+/**
+ * Serializes the given [value] as a [SerializedComponentData] encoded as a UTF-8 string.
+ */
+fun ObjectMapper.writeValueAsComponentData(value: Any): SerializedComponentData =
+    fromBytes(writeValueAsBytes(value))
+
+/**
+ * Deserializes the given UTF-8 encoded JSON object [data] as a [T] instance.
+ */
+inline fun <reified T : Any> ObjectMapper.readValue(data: SerializedComponentData): T =
+    readValue(data.asBytes())
+
+/**
+ * Deserializes the given UTF-8 encoded JSON object [data] as a [T] instance.
+ */
+fun <T : Any> ObjectMapper.readValue(data: SerializedComponentData, typeToken: KotlinTypeToken<T>): T =
+    readValue(data.asBytes(), constructType(typeToken.javaType))
