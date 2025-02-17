@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.components.handler
 
+import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
+import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.exceptions.ComponentSerializationException
 import io.github.freya022.botcommands.api.core.BContext
@@ -7,11 +9,10 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerOption
+import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import io.github.freya022.botcommands.internal.utils.findDeclarationName
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.concurrent.ConcurrentHashMap
 
@@ -27,16 +28,16 @@ internal class PersistentHandler private constructor(val handlerName: String, va
     }
 
     internal companion object {
-        internal fun create(context: BContext, handlerName: String, userData: List<Any?>): PersistentHandler {
-            return PersistentHandler(handlerName, processArgs(context, handlerName, userData))
+        internal fun create(context: BContext, componentType: ComponentType, handlerName: String, userData: List<Any?>): PersistentHandler {
+            return PersistentHandler(handlerName, processArgs(context, componentType, handlerName, userData))
         }
 
         internal fun fromData(handlerName: String, userData: List<ByteArray?>): PersistentHandler {
             return PersistentHandler(handlerName, userData.map { it?.let(SerializedComponentData::fromBytes) })
         }
 
-        private fun processArgs(context: BContext, handlerName: String, args: List<Any?>): List<SerializedComponentData?> {
-            val allOptionsOrdered = PersistentHandlerComponentDataOptionCache.getOrCreate(context, handlerName)
+        private fun processArgs(context: BContext, componentType: ComponentType, handlerName: String, args: List<Any?>): List<SerializedComponentData?> {
+            val allOptionsOrdered = PersistentHandlerComponentDataOptionCache.getOrCreate(context, componentType, handlerName)
 
             return args.mapIndexed { index, arg ->
                 if (arg == null) return@mapIndexed null
@@ -59,10 +60,16 @@ internal class PersistentHandler private constructor(val handlerName: String, va
 private object PersistentHandlerComponentDataOptionCache {
     private val cache = ConcurrentHashMap<String, List<ComponentHandlerOption>>()
 
-    fun getOrCreate(context: BContext, handlerName: String): List<ComponentHandlerOption> {
+    fun getOrCreate(context: BContext, componentType: ComponentType, handlerName: String): List<ComponentHandlerOption> {
         return cache.computeIfAbsent(handlerName) {
-            val descriptor = context.getService<ComponentHandlerContainer>().getButtonDescriptor(handlerName)
-                ?: throwArgument("No handler named '$handlerName' exists")
+            val container = context.getService<ComponentHandlerContainer>()
+            val descriptor = when (componentType) {
+                ComponentType.GROUP -> throwInternal("Tried to retrieve an action component descriptor but the type is a group")
+                ComponentType.BUTTON -> container.getButtonDescriptor(handlerName)
+                    ?: throwArgument("No ${annotationRef<JDAButtonListener>()} named '$handlerName' exists")
+                ComponentType.SELECT_MENU -> container.getSelectMenuDescriptor(handlerName)
+                    ?: throwArgument("No ${annotationRef<JDASelectMenuListener>()} named '$handlerName' exists")
+            }
             descriptor.allOptionsOrdered.filterIsInstance<ComponentHandlerOption>().unmodifiableView()
         }
     }

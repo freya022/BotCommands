@@ -21,15 +21,8 @@ internal class PersistentButtonBuilderImpl internal constructor(
     instanceRetriever: InstanceRetriever<PersistentButtonBuilder>
 ) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style, label, emoji, disabled, instanceRetriever),
     PersistentButtonBuilder,
-    IPersistentActionableComponentMixin<PersistentButtonBuilder> by PersistentActionableComponentImpl(
-        componentController.context,
-        instanceRetriever
-    ),
-    IPersistentTimeoutableComponentMixin<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl(
-        componentController.context,
-        ComponentType.BUTTON,
-        instanceRetriever
-    ) {
+    IPersistentActionableComponentMixin<PersistentButtonBuilder> by PersistentActionableComponentImpl(componentController.context, ComponentType.BUTTON, instanceRetriever),
+    IPersistentTimeoutableComponentMixin<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl(componentController.context, ComponentType.BUTTON, instanceRetriever) {
 
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
     override val instance: PersistentButtonBuilderImpl get() = this
