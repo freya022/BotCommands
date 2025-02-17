@@ -58,10 +58,12 @@ internal class PersistentHandler private constructor(val handlerName: String, va
 
 // It ain't much but hey
 private object PersistentHandlerComponentDataOptionCache {
-    private val cache = ConcurrentHashMap<String, List<ComponentHandlerOption>>()
+    private val cache = ConcurrentHashMap<CacheKey, List<ComponentHandlerOption>>()
+
+    private data class CacheKey(private val componentType: ComponentType, private val handlerName: String)
 
     fun getOrCreate(context: BContext, componentType: ComponentType, handlerName: String): List<ComponentHandlerOption> {
-        return cache.computeIfAbsent(handlerName) {
+        return cache.computeIfAbsent(CacheKey(componentType, handlerName)) {
             val container = context.getService<ComponentHandlerContainer>()
             val descriptor = when (componentType) {
                 ComponentType.GROUP -> throwInternal("Tried to retrieve an action component descriptor but the type is a group")

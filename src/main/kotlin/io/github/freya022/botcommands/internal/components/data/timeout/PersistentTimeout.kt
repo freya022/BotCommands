@@ -57,10 +57,12 @@ internal class PersistentTimeout private constructor(
 
 // It ain't much but hey
 private object PersistentTimeoutComponentDataOptionCache {
-    private val cache = ConcurrentHashMap<String, List<TimeoutHandlerOption>>()
+    private val cache = ConcurrentHashMap<CacheKey, List<TimeoutHandlerOption>>()
+
+    private data class CacheKey(private val componentType: ComponentType, private val handlerName: String)
 
     fun getOrCreate(context: BContext, componentType: ComponentType, handlerName: String): List<TimeoutHandlerOption> {
-        return cache.computeIfAbsent(handlerName) {
+        return cache.computeIfAbsent(CacheKey(componentType, handlerName)) {
             val container = when (componentType) {
                 ComponentType.GROUP -> context.getService<GroupTimeoutHandlers>()
                 else -> context.getService<ComponentTimeoutHandlers>()
