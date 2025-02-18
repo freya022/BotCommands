@@ -39,9 +39,8 @@ internal open class DefaultGlobalComponentDataSerializerProvider {
         }
 
         override fun deserialize(parameter: ParameterWrapper, data: SerializedComponentData): Any {
-            //TODO use parameter.typeToken
             @Suppress("UNCHECKED_CAST")
-            return mapper.readValue(data, KotlinTypeToken.ofType(parameter.type))
+            return mapper.readValue(data, parameter.typeToken as KotlinTypeToken<Any>)
         }
     }
 

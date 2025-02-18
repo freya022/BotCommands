@@ -12,17 +12,18 @@ import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.jvm.jvmErasure
 import io.github.freya022.botcommands.internal.utils.throwArgument as utilsThrowUser
 
 class ParameterWrapper private constructor(
-    val type: KType,
+    type: KType,
     val index: Int,
     val name: String,
     val parameter: KParameter
 ) {
-    val erasure: KClass<*> = type.jvmErasure
-    val javaErasure: Class<*> get() = erasure.java
+    val typeToken: KotlinTypeToken<*> = KotlinTypeToken.ofType(type)
+    val type: KType get() = typeToken.type
+    val erasure: KClass<*> get() = typeToken.kotlinErasure
+    val javaErasure: Class<*> get() = typeToken.javaErasure
     val annotations: List<Annotation> get() = parameter.getAllAnnotations()
     val isRequired get() = !parameter.isNullable && !parameter.isOptional
 
@@ -39,7 +40,7 @@ class ParameterWrapper private constructor(
     fun <A : Annotation> getAnnotation(clazz: Class<out A>): A? = parameter.findAnnotationRecursive(clazz.kotlin)
 
     @JvmSynthetic
-    internal fun toListElementType() = when (type.jvmErasure) {
+    internal fun toListElementType() = when (erasure) {
         List::class -> ParameterWrapper(
             type = type.arguments[0].type ?: throwUser("A concrete List element type is required"),
             index = index,
