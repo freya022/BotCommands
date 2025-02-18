@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.localization.readers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.utils.typeReferenceOf
 import io.github.freya022.botcommands.api.localization.DefaultLocalizationMap
 import io.github.freya022.botcommands.api.localization.LocalizationMap
 import io.github.freya022.botcommands.api.localization.LocalizationMapRequest
@@ -93,7 +93,7 @@ abstract class AbstractJacksonLocalizationMapReader(
         val input = getInputStream(request) ?: return null
         return DefaultLocalizationMap(request) {
             input.use { input ->
-                val map: Map<String, *> = objectMapper.readValue(input, typeReferenceOf())
+                val map: Map<String, *> = objectMapper.readValue(input, jacksonTypeRef())
                 discoverEntries(request, map.entries)
             }
         }
