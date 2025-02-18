@@ -26,10 +26,12 @@ import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMess
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
+import java.sql.DatabaseMetaData
 import java.sql.Timestamp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -54,6 +56,28 @@ internal class ComponentRepository(
         val componentId: Int,
         val instant: Instant
     )
+
+    init {
+        runBlocking {
+            database.fetchConnection(readOnly = true).use {
+                val metadata = it.metaData
+                if (metadata.databaseProductName == "PostgreSQL") {
+                    checkPostgresVersion(metadata)
+                }
+            }
+        }
+    }
+
+    private fun checkPostgresVersion(metadata: DatabaseMetaData) {
+        if (metadata.driverName != "PostgreSQL JDBC Driver") {
+            return logger.warn { "Detected a third party PostgreSQL driver, though it may work regardless, we test PostgreSQL support using the first party driver found at https://github.com/pgjdbc/pgjdbc" }
+        }
+
+        // The 42.7.5 driver is required for byte[] support in setObject
+        check(metadata.driverVersion >= "42.7.5") {
+            "Using components require a version of the PostgreSQL driver higher or equal to 42.7.5"
+        }
+    }
 
     suspend fun getPersistentComponentTimeouts(): List<PersistentComponentTimeout> {
         return database.preparedStatement(
