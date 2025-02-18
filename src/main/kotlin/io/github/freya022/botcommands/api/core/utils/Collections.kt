@@ -86,3 +86,7 @@ inline fun <T, reified R> Collection<T>.mapToArray(transform: (T) -> R): Array<R
     val iterator = iterator()
     return Array(size) { _ -> transform(iterator.next()) }
 }
+
+inline fun <T, reified R> Array<T>.mapToArray(transform: (T) -> R): Array<R> {
+    return Array(size) { i -> transform(this[i]) }
+}

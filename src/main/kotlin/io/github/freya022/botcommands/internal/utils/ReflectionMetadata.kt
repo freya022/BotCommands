@@ -108,7 +108,7 @@ private class ReflectionMetadataScanner private constructor(
                 "io.github.freya022.botcommands.internal",
                 *packages.toTypedArray()
             )
-            .acceptClasses(*classes.map { it.name }.toTypedArray())
+            .acceptClasses(*classes.mapToArray { it.name })
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()

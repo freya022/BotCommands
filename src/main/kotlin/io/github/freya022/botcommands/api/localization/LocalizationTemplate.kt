@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.localization
 
+import io.github.freya022.botcommands.api.core.utils.mapToArray
+
 /**
  * Represents an entire localizable string, with parameters.
  *
@@ -18,4 +20,4 @@ interface LocalizationTemplate {
  * Processes the localization template and replaces the named parameters by their values
  */
 fun LocalizationTemplate.localize(vararg args: Pair<String, Any>): String =
-    localize(*args.map { (k, v) -> Localization.Entry.entry(k, v) }.toTypedArray())
+    localize(*args.mapToArray { (k, v) -> Localization.Entry.entry(k, v) })

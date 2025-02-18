@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMod
 import io.github.freya022.botcommands.api.core.config.BAppEmojisConfig
 import io.github.freya022.botcommands.api.core.events.PreFirstGatewayConnectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.emojis.AppEmojisRegistry
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmoji
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
@@ -219,7 +216,7 @@ internal class AppEmojisLoader internal constructor(
     private inline fun withScannedResources(packages: Collection<String>, action: (ScanResult) -> Unit) {
         ClassGraph()
             .acceptPackagesNonRecursive(*packages.toTypedArray())
-            .acceptClasspathElementsContainingResourcePath(*packages.map { "$it/*" }.toTypedArray())
+            .acceptClasspathElementsContainingResourcePath(*packages.mapToArray { "$it/*" })
             .scan()
             .use(action)
     }
