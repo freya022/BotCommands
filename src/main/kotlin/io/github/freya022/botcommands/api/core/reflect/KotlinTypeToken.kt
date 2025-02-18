@@ -66,6 +66,21 @@ open class KotlinTypeToken<T> {
         this.type = type
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is KotlinTypeToken<*>) return false
+
+        return type == other.type
+    }
+
+    override fun hashCode(): Int {
+        return type.hashCode()
+    }
+
+    override fun toString(): String {
+        return "KotlinTypeToken(type=$type)"
+    }
+
     companion object {
 
         /**
