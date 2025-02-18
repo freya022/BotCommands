@@ -36,6 +36,7 @@ class TextAttachmentResolver :
  * Only a PoC for ordered options, required to bind attachments to the right place
  */
 @Command
+@Disabled
 class TextAttachmentParameters : TextCommand() {
 
     @JvmInline
