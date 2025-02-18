@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
@@ -78,7 +79,7 @@ internal class ComponentHandlerExecutor internal constructor(
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
-        userDataIterator: Iterator<String?>
+        userDataIterator: Iterator<SerializedComponentData?>
     ): Boolean {
         checkEventType(event, descriptor)
 
@@ -112,7 +113,7 @@ internal class ComponentHandlerExecutor internal constructor(
         event: GenericComponentInteractionCreateEvent,
         option: OptionImpl,
         optionMap: MutableMap<OptionImpl, Any?>,
-        userDataIterator: Iterator<String?>
+        userDataIterator: Iterator<SerializedComponentData?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
             OptionType.OPTION -> {

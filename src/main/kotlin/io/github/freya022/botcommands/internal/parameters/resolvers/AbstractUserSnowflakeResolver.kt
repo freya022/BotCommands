@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
@@ -69,14 +70,18 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         optionMapping: OptionMapping
     ): R? = transformEntities(optionMapping.asUser, optionMapping.asMember)
 
-    final override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, arg: String): R? {
-        val id = arg.toLongOrNull() ?: throwArgument("Invalid user id: $arg")
+    final override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): R? {
+        val id = data.asString().let {
+            it.toLongOrNull() ?: throwArgument("Invalid user id: $it")
+        }
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)
             event.reply_(defaultMessagesFactory.get(event).resolverUserNotFoundMsg, ephemeral = true).queue()
 
         return entity
     }
+
+    override fun serialize(obj: R) = SerializedComponentData.fromString(obj.id)
 
     final override fun resolve(option: UserContextCommandOption, event: UserContextInteractionEvent): R? =
         transformEntities(event.target, event.targetMember)

@@ -12,9 +12,19 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 /**
- * Base class for parameter resolvers used in text commands, application commands, and component callbacks.
+ * Base class for parameter resolvers,
+ * needs to be implemented alongside the interface of at least one interaction type:
+ * - Text commands: [TextParameterResolver] or [QuotableTextParameterResolver]
+ * - Slash commands: [SlashParameterResolver]
+ * - Message context commands: [MessageContextParameterResolver]
+ * - User context commands: [UserContextParameterResolver]
+ * - Components: [ComponentParameterResolver]
+ * - Component timeouts: [TimeoutParameterResolver]
+ * - Modal handlers: [ModalParameterResolver]
+ * - Custom parameter types: [ICustomResolver]
  *
- * You need to extend [ClassParameterResolver] or [TypedParameterResolver] instead.
+ * ### Usage
+ * As this class is sealed, you need to extend [ClassParameterResolver] or [TypedParameterResolver] instead.
  *
  * ### Default parameter resolvers
  *
@@ -49,18 +59,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  *
- * @see ClassParameterResolver
- *
  * @see ParameterResolverFactory
- *
- * @see TextParameterResolver
- * @see QuotableTextParameterResolver
- * @see ComponentParameterResolver
- * @see SlashParameterResolver
- * @see MessageContextParameterResolver
- * @see UserContextParameterResolver
- * @see TimeoutParameterResolver
- * @see ICustomResolver
  *
  * @see Resolvers
  */

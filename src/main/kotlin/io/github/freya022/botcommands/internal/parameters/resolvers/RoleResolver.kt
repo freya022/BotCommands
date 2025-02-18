@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -57,11 +58,13 @@ class RoleResolver : ClassParameterResolver<RoleResolver, Role>(Role::class),
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
+        data: SerializedComponentData
     ): Role? {
         val guild = event.guild
         requireNotNull(guild) { "Can't get a role from DMs" }
 
-        return guild.getRoleById(arg)
+        return guild.getRoleById(data.asString())
     }
+
+    override fun serialize(obj: Role) = SerializedComponentData.fromString(obj.id)
 }

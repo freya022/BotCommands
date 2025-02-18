@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
@@ -46,6 +47,8 @@ class GuildResolver : ClassParameterResolver<GuildResolver, Guild>(Guild::class)
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ): Guild? = event.jda.getGuildById(arg)
+        data: SerializedComponentData
+    ): Guild? = event.jda.getGuildById(data.asString())
+
+    override fun serialize(obj: Guild) = SerializedComponentData.fromString(obj.id)
 }

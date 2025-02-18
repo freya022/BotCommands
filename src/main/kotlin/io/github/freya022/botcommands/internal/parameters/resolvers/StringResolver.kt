@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.Sla
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.components.options.ComponentOption
+import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.modals.ModalEvent
@@ -51,13 +52,15 @@ class StringResolver : ClassParameterResolver<StringResolver, String>(String::cl
     override suspend fun resolveSuspend(
         option: ComponentOption,
         event: GenericComponentInteractionCreateEvent,
-        arg: String
-    ): String = arg
+        data: SerializedComponentData
+    ): String = data.asString()
+
+    override fun serialize(obj: String) = SerializedComponentData.fromString(obj)
 
 
     override suspend fun resolveSuspend(option: ModalOption, event: ModalEvent, modalMapping: ModalMapping): String =
         modalMapping.asString
 
 
-    override suspend fun resolveSuspend(option: TimeoutOption, arg: String): String = arg
+    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): String = data.asString()
 }

@@ -25,8 +25,8 @@ internal class PersistentEntitySelectBuilderImpl internal constructor(
     BaseComponentBuilderMixin<PersistentEntitySelectBuilder>,
     IConstrainableComponentMixin<PersistentEntitySelectBuilder> by ConstrainableComponentImpl(instanceRetriever),
     IUniqueComponentMixin<PersistentEntitySelectBuilder> by UniqueComponentImpl(instanceRetriever),
-    IPersistentActionableComponentMixin<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context, instanceRetriever),
-    IPersistentTimeoutableComponentMixin<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl(instanceRetriever) {
+    IPersistentActionableComponentMixin<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context, ComponentType.SELECT_MENU, instanceRetriever),
+    IPersistentTimeoutableComponentMixin<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl(componentController.context, ComponentType.SELECT_MENU, instanceRetriever) {
 
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT

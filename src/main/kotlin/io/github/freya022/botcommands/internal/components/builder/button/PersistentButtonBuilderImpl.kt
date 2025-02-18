@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.components.builder.button
 
 import io.github.freya022.botcommands.api.components.builder.button.PersistentButtonBuilder
+import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.InstanceRetriever
 import io.github.freya022.botcommands.internal.components.builder.mixin.IPersistentActionableComponentMixin
@@ -20,13 +21,8 @@ internal class PersistentButtonBuilderImpl internal constructor(
     instanceRetriever: InstanceRetriever<PersistentButtonBuilder>
 ) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style, label, emoji, disabled, instanceRetriever),
     PersistentButtonBuilder,
-    IPersistentActionableComponentMixin<PersistentButtonBuilder> by PersistentActionableComponentImpl(
-        componentController.context,
-        instanceRetriever
-    ),
-    IPersistentTimeoutableComponentMixin<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl(
-        instanceRetriever
-    ) {
+    IPersistentActionableComponentMixin<PersistentButtonBuilder> by PersistentActionableComponentImpl(componentController.context, ComponentType.BUTTON, instanceRetriever),
+    IPersistentTimeoutableComponentMixin<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl(componentController.context, ComponentType.BUTTON, instanceRetriever) {
 
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
     override val instance: PersistentButtonBuilderImpl get() = this
