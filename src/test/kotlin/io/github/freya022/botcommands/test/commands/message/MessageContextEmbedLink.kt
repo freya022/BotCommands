@@ -5,8 +5,10 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
+import io.github.freya022.botcommands.test.services.Disabled
 
 @Command
+@Disabled
 class MessageContextEmbedLink : ApplicationCommand() {
     @JDAMessageCommand(name = "Embed link to message")
     fun onMessageContextEmbedLinkToMessage(event: GuildMessageEvent) {

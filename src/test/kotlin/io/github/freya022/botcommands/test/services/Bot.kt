@@ -37,6 +37,8 @@ class Bot(private val config: Config, environment: ConfigurableEnvironment?) : J
             shardsTotal = if (config.testMode) 2 else -1,
             memberCachePolicy = MemberCachePolicy.VOICE,
             activityProvider = { Activity.playing("coroutines go brrr #$it") },
-        )
+        ) {
+            setEventPassthrough(true)
+        }
     }
 }
