@@ -412,6 +412,13 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <repositories>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -447,9 +454,9 @@
             <version>0.6.1</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.5.0</version>
+            <version>a4cb724c45</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -475,9 +482,9 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>club.minnced</groupId>
+            <groupId>io.github.freya022</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>0.12.0</version>
+            <version>13c5968346</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -493,6 +500,12 @@
             <groupId>dev.freya02</groupId>
             <artifactId>jda-emojis</artifactId>
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.dv8tion</groupId>
+                    <artifactId>JDA</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
