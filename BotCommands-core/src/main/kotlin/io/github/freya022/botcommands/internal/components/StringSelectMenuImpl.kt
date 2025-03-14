@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion
 import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 internal class StringSelectMenuImpl internal constructor(
@@ -12,7 +13,8 @@ internal class StringSelectMenuImpl internal constructor(
     private val selectMenu: JDAStringSelectMenu
 ) : AbstractAwaitableComponentImpl<StringSelectEvent>(componentController),
     StringSelectMenu,
-    JDAStringSelectMenu by selectMenu {
+    JDAStringSelectMenu by selectMenu,
+    ActionRowChildComponentUnion {
 
     override fun withDisabled(disabled: Boolean): StringSelectMenuImpl {
         return StringSelectMenuImpl(componentController, internalId, super<JDAStringSelectMenu>.withDisabled(disabled))
