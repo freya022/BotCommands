@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.internal.utils.any
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.tree.ComponentTree
 import kotlin.reflect.KProperty
 
@@ -19,6 +20,17 @@ private val logger = KotlinLogging.logger { }
  */
 class UsedComponentSet(private val componentsService: Components, private val cleanAfterRefresh: Boolean) {
     private lateinit var currentIds: TIntHashSet
+
+    @Deprecated(
+        message = "Replaced with setComponent(ComponentTree), if you have a message, you should get the ComponentTree directly from it",
+        replaceWith = ReplaceWith(
+            expression = "setComponents(components.toList().toDefaultComponentTree())",
+            imports = arrayOf("dev.minn.jda.ktx.interactions.components.toDefaultComponentTree")
+        )
+    )
+    fun setComponents(components: Iterable<Component>) {
+        return setComponents(components.toList().toDefaultComponentTree())
+    }
 
     fun setComponents(componentTree: ComponentTree<*>) {
         val newIds = TIntHashSet().apply {
