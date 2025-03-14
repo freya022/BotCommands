@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
+@CustomJDAComponent(net.dv8tion.jda.internal.components.button.ButtonImpl::class)
 internal class ButtonImpl internal constructor(
     componentController: ComponentController,
     override val internalId: Int,

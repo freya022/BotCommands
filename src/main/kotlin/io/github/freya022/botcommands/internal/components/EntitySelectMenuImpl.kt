@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion
 import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
 
+@CustomJDAComponent(net.dv8tion.jda.internal.components.selects.EntitySelectMenuImpl::class)
 internal class EntitySelectMenuImpl internal constructor(
     componentController: ComponentController,
     override val internalId: Int,
