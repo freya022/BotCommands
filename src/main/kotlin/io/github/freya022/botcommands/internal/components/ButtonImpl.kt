@@ -4,8 +4,10 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion
 import net.dv8tion.jda.api.components.button.Button as JDAButton
 import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 internal class ButtonImpl internal constructor(
@@ -14,7 +16,9 @@ internal class ButtonImpl internal constructor(
     private val button: JDAButton
 ) : AbstractAwaitableComponentImpl<ButtonEvent>(componentController),
     Button,
-    JDAButton by button {
+    JDAButton by button,
+    ActionRowChildComponentUnion,
+    SectionAccessoryComponentUnion {
 
     override fun withDisabled(disabled: Boolean): ButtonImpl {
         return ButtonImpl(componentController, internalId, super<JDAButton>.withDisabled(disabled))
