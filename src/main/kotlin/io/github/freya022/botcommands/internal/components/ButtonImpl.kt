@@ -37,7 +37,7 @@ internal class ButtonImpl internal constructor(
         return ButtonImpl(componentController, internalId, super<JDAButton>.withStyle(style))
     }
 
-    override fun getId(): String = button.id ?: throwInternal("BC components cannot have null IDs")
+    override fun getCustomId(): String = button.customId ?: throwInternal("BC components cannot have null IDs")
 
     override fun getUrl(): String? = null
 

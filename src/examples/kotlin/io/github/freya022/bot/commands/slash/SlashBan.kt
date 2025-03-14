@@ -90,14 +90,14 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
                 .queue()
         }
 
-        when (componentEvent.componentId) {
-            cancelButton.id -> {
+        when (componentEvent.uniqueId) {
+            cancelButton.uniqueId -> {
                 logger.debug { "Ban cancelled for ${target.id}" }
                 componentEvent.replaceLocalized(localizationContext, "outputs.cancelled").queue()
 
                 //Cancel logic
             }
-            confirmButton.id -> {
+            confirmButton.uniqueId -> {
                 logger.debug { "Ban confirmed for ${target.id}, $timeframe of messages were deleted, reason: '$reason'" }
 
                 componentEvent.replaceLocalized(

@@ -103,7 +103,7 @@ abstract class AbstractComponentFactory internal constructor(
     @JvmSynthetic
     suspend fun deleteJdaComponents(components: Collection<ActionComponent>) =
         components
-            .mapNotNull { it.id }
+            .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
 
@@ -127,7 +127,7 @@ abstract class AbstractComponentFactory internal constructor(
     @JvmSynthetic
     suspend fun deleteRows(components: Collection<LayoutComponent>) =
         components.flatMap { it.actionComponents }
-            .mapNotNull { it.id }
+            .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
 

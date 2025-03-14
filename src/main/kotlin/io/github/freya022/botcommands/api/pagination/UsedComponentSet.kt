@@ -21,10 +21,10 @@ class UsedComponentSet(private val componentsService: Components, private val cl
         val newIds = TIntHashSet().apply {
             for (row in components) {
                 row.actionComponents.forEach { component ->
-                    if (component.id == null) return@forEach
+                    if (component.customId == null) return@forEach
 
                     val bcComponent = component as? IdentifiableComponent
-                        ?: return@forEach logger.warn { "Attempted to use a non-BC component, id: '${component.id}'" }
+                        ?: return@forEach logger.warn { "Attempted to use a non-BC component, id: '${component.customId}'" }
 
                     add(bcComponent.internalId)
                 }

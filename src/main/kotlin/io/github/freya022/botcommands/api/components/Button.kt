@@ -27,5 +27,8 @@ interface Button : JDAButton,
 
     override fun withStyle(style: ButtonStyle): Button
 
-    override fun getId(): String
+    @Deprecated("Replaced with getCustomId()", ReplaceWith("getCustomId()"))
+    override fun getId(): String = getCustomId()
+
+    override fun getCustomId(): String
 }

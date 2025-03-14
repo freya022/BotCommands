@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwState
 import kotlin.time.Duration
 
@@ -48,7 +47,7 @@ internal class ModalBuilderImpl internal constructor(
             .flatMap { it.actionComponents }
             .filter { it.id != null }
             .forEach { actionComponent ->
-                val id = actionComponent.id ?: throwInternal("Non identifiable components should have been filtered")
+                val id = actionComponent.customId ?: return@forEach
                 val internalId = ModalMaps.parseInputId(id)
 
                 val data = modalMaps.consumeInput(internalId)

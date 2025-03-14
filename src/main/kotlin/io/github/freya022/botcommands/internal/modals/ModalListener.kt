@@ -34,7 +34,7 @@ internal class ModalListener(
 
     @BEventListener
     suspend fun onModalEvent(jdaEvent: ModalInteractionEvent) {
-        logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.values.associate { it.id to it.asString }}" }
+        logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.values.associate { it.uniqueId to it.asString }}" }
 
         scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
             if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
@@ -70,7 +70,7 @@ internal class ModalListener(
     private suspend fun handleException(e: Throwable, event: ModalInteractionEvent) {
         exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'", buildMap(2) {
             event.message?.let { put("Message", it.jumpUrl) }
-            put("Modal values", event.values.associate { it.id to it.asString })
+            put("Modal values", event.values.associate { it.uniqueId to it.asString })
         })
         if (e is InsufficientPermissionException) {
             event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
