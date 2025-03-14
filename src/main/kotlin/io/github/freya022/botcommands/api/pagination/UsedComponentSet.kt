@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.api.pagination
 
+import dev.minn.jda.ktx.interactions.components.findAll
 import gnu.trove.set.hash.TIntHashSet
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.internal.utils.any
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.tree.ComponentTree
 import kotlin.reflect.KProperty
 
 private val logger = KotlinLogging.logger { }
@@ -17,10 +19,11 @@ private val logger = KotlinLogging.logger { }
 class UsedComponentSet(private val componentsService: Components, private val cleanAfterRefresh: Boolean) {
     private lateinit var currentIds: TIntHashSet
 
-    fun setComponents(components: Iterable<LayoutComponent>) {
+    fun setComponents(componentTree: ComponentTree<*>) {
         val newIds = TIntHashSet().apply {
-            for (row in components) {
-                row.actionComponents.forEach { component ->
+            componentTree
+                .findAll<ActionComponent>()
+                .forEach { component ->
                     if (component.customId == null) return@forEach
 
                     val bcComponent = component as? IdentifiableComponent
@@ -28,7 +31,6 @@ class UsedComponentSet(private val componentsService: Components, private val cl
 
                     add(bcComponent.internalId)
                 }
-            }
         }
 
         if (::currentIds.isInitialized.not()) {
