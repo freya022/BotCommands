@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.components
 
+import dev.minn.jda.ktx.interactions.components.findAll
+import dev.minn.jda.ktx.interactions.components.toDefaultComponentTree
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.IUniqueComponent
@@ -9,7 +11,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import javax.annotation.CheckReturnValue
 
 abstract class AbstractComponentFactory internal constructor(
@@ -116,7 +118,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmName("deleteRows")
-    fun deleteRowsJava(components: Collection<LayoutComponent>) = runBlocking { deleteRows(components) }
+    fun deleteRowsJava(components: Collection<MessageTopLevelComponent>) = runBlocking { deleteRows(components) }
 
     /**
      * Removes the component data stored by the framework of the provided components.
@@ -125,8 +127,9 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmSynthetic
-    suspend fun deleteRows(components: Collection<LayoutComponent>) =
-        components.flatMap { it.actionComponents }
+    suspend fun deleteRows(components: Collection<MessageTopLevelComponent>) =
+        components.toDefaultComponentTree()
+            .findAll<ActionComponent>()
             .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
