@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.row
+import dev.minn.jda.ktx.messages.into
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -78,13 +80,13 @@ class SlashPagination(private val paginators: Paginators, private val buttons: B
 
                 // Certified java callback moment
                 runBlocking {
-                    builder.addActionRow(buttons.primary("Random page").ephemeral {
+                    builder.addComponents(buttons.primary("Random page").ephemeral {
                         constraints(paginator.constraints)
                         bindTo {
                             paginator.page = Random.nextInt(0..<paginator.maxPages)
                             it.editMessage(paginator.getCurrentMessage()).await()
                         }
-                    })
+                    }.into())
                 }
             }
             .configurePagination(event)

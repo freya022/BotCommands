@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.paginator
 
+import dev.minn.jda.ktx.interactions.components.row
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
@@ -69,7 +70,7 @@ abstract class AbstractPaginator<T : AbstractPaginator<T>> protected constructor
             }
         }
 
-        builder.addActionRow(buttons)
+        builder.addComponents(buttons.row())
     }
 
     private fun ButtonContent.toPageButton(targetPage: Int) =

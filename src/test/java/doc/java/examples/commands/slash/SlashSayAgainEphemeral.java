@@ -42,7 +42,7 @@ public class SlashSayAgainEphemeral extends ApplicationCommand {
         temporaryButtonRef.set(temporarySaySentenceButton); // We have to do this to get the button in our timeout handler
 
         event.reply("This button expires " + TimeFormat.RELATIVE.after(Duration.ofSeconds(10)))
-                .addActionRow(temporarySaySentenceButton)
+                .addComponents(ActionRow.of(temporarySaySentenceButton))
                 .queue();
     }
 }

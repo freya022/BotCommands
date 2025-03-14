@@ -1,6 +1,7 @@
 package doc.kotlin.examples.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.row
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -35,7 +36,7 @@ class SlashSelectRolePersistent : ApplicationCommand() {
         }
 
         event.reply("This select menu always works")
-            .addActionRow(roleMenu)
+            .addComponents(row(roleMenu))
             .await()
     }
 

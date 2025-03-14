@@ -45,7 +45,7 @@ class SlashSayAgainEphemeral : ApplicationCommand() {
         }
 
         event.reply("This button expires ${TimeFormat.RELATIVE.after(10.seconds)}")
-            .addActionRow(temporarySaySentenceButton)
+            .addComponents(row(temporarySaySentenceButton))
             .await()
     }
 }

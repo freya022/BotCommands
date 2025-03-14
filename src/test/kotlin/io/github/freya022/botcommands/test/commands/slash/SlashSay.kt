@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.jda.emojis.unicode.UnicodeEmojis
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -41,7 +42,7 @@ class SlashSay(
             .queue()
 
         channel.sendMessage(content)
-            .addActionRow(deleteButton)
+            .addComponents(row(deleteButton))
             .await()
     }
 }
@@ -65,7 +66,7 @@ class SlashSayDsl(
             .queue()
 
         channel.sendMessage(content)
-            .addActionRow(deleteButton)
+            .addComponents(row(deleteButton))
             .await()
     }
 

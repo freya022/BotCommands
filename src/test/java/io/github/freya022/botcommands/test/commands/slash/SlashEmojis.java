@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.button.Button;
 import net.dv8tion.jda.api.components.selects.SelectOption;
 import net.dv8tion.jda.api.components.selects.StringSelectMenu;
@@ -26,8 +27,10 @@ public class SlashEmojis extends ApplicationCommand {
                 .build();
 
         MessageCreateData messageData = new MessageCreateBuilder()
-                .addActionRow(approve)
-                .addActionRow(choices)
+                .addComponents(
+                        ActionRow.of(approve),
+                        ActionRow.of(choices)
+                )
                 .build();
 
         event.reply(messageData)

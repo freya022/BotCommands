@@ -49,7 +49,7 @@ public class SlashSelectRoleEphemeral extends ApplicationCommand {
         temporarySelectMenuRef.set(roleMenu);
 
         event.reply("This select menu expires " + TimeFormat.RELATIVE.after(Duration.ofSeconds(10)))
-                .addActionRow(roleMenu)
+                .addComponents(ActionRow.of(roleMenu))
                 .queue();
     }
 }

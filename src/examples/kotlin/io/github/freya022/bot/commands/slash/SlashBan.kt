@@ -1,5 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
+import dev.minn.jda.ktx.interactions.components.row
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
 import io.github.freya022.bot.switches.KotlinDetailProfile
@@ -79,7 +80,7 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
         }
 
         event.replyLocalizedEphemeral(localizationContext, "outputs.confirmationMessage", "userMention" to target.asMention)
-            .addActionRow(cancelButton, confirmButton)
+            .addComponents(row(cancelButton, confirmButton))
             .queue()
 
         val componentEvent: ButtonEvent = try {
