@@ -4,9 +4,9 @@ import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import net.dv8tion.jda.api.components.button.Button as JDAButton
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
 internal class ButtonImpl internal constructor(
     componentController: ComponentController,

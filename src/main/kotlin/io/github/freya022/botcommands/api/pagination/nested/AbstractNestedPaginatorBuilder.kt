@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginatorBuilder
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selects.SelectOption
 
 /**
  * @param T Type of the pagination builder

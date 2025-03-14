@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
 
 @PublishedApi
 internal class PersistentEntitySelectBuilderImpl internal constructor(

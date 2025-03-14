@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.TextInputBuilder
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 @BService
 @RequiresModals

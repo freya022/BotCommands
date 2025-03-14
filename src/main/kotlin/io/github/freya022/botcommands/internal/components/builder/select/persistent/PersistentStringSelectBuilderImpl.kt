@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selects.StringSelectMenu as JDAStringSelectMenu
 
 @PublishedApi
 internal class PersistentStringSelectBuilderImpl internal constructor(

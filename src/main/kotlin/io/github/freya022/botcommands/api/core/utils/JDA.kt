@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.internal.utils.deferredRestAction
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.components.selects.SelectMenu
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Guild.Ban
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -22,7 +23,6 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.Route

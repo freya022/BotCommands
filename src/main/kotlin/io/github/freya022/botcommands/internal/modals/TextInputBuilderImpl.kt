@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.modals.TextInputBuilder
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 internal class TextInputBuilderImpl internal constructor(
     private val modalMaps: ModalMaps,

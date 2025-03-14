@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.ActionComponent
+import net.dv8tion.jda.api.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import javax.annotation.CheckReturnValue
 

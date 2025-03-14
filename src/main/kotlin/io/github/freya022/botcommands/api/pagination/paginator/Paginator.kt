@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.pagination.PageEditor
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.internal.utils.lazyWritable
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**

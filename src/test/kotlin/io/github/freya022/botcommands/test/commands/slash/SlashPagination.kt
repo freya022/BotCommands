@@ -24,8 +24,8 @@ import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
+import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.time.Duration.Companion.seconds

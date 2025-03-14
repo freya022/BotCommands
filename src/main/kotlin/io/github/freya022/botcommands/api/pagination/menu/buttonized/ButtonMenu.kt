@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.utils.ButtonContent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.pagination.Paginators
 import io.github.freya022.botcommands.api.pagination.menu.AbstractMenu
-import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 /**

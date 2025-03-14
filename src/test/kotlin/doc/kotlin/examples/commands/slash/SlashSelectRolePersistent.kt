@@ -13,8 +13,8 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.components.builder.bindWith
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.test.switches.TestLanguage
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import kotlin.random.Random
 
 @Command

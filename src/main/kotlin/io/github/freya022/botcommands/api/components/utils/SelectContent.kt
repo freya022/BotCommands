@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.utils
 
+import net.dv8tion.jda.api.components.selects.SelectOption
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 
 data class SelectContent(val label: String, val description: String?, val emoji: Emoji?) {
     fun toSelectOption(value: String): SelectOption {
