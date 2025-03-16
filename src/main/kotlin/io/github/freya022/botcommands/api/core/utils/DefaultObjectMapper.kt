@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.databind.type.MapType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 object DefaultObjectMapper {
     val lock: ReentrantLock = ReentrantLock()
-    val mapper: ObjectMapper = ObjectMapper()
+    val mapper: ObjectMapper = jacksonObjectMapper()
     val mapType: MapType
     val listType: CollectionType
 
