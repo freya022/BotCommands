@@ -17,11 +17,11 @@ import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.User
+import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
 import javax.annotation.CheckReturnValue
 import kotlin.reflect.*
 import kotlin.time.*
-import java.time.Duration as JavaDuration
 
 /**
  * Allows components to have timeouts.
@@ -161,6 +161,44 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     @CheckReturnValue
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, data: List<Any?>): T =
+        timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, data)
+
+    /**
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
+     *
+     * **Note:** Components inside groups cannot have timeouts.
+     *
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
+     *
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
+     *
+     * ### Timeout data
+     * The data passed is [serialized][TimeoutParameterResolver.serialize]
+     * and later [deserialized][TimeoutParameterResolver.resolveSuspend] using their resolver.
+     *
+     * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+     *
+     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * you must annotate your parameter with [@TimeoutData][TimeoutData].
+     *
+     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     *
+     * @param timeout The value of the timeout
+     * @param timeoutUnit The unit of the timeout
+     * @param handlerName The name of the handler to run when the component expires,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
+     * @param data The data to pass to the timeout handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
+     */
+    @CheckReturnValue
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg data: Any?): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, *data)
 
@@ -198,8 +236,45 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     @CheckReturnValue
+    fun timeout(timeout: JavaDuration, handlerName: String, data: List<Any?>): T =
+        timeout(timeout.toKotlinDuration(), handlerName, data)
+
+    /**
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
+     *
+     * **Note:** Components inside groups cannot have timeouts.
+     *
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
+     *
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
+     *
+     * ### Timeout data
+     * The data passed is [serialized][TimeoutParameterResolver.serialize]
+     * and later [deserialized][TimeoutParameterResolver.resolveSuspend] using their resolver.
+     *
+     * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+     *
+     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * you must annotate your parameter with [@TimeoutData][TimeoutData].
+     *
+     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     *
+     * @param timeout The duration of the timeout
+     * @param handlerName The name of the handler to run when the component expires,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
+     * @param data The data to pass to the timeout handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
+     */
+    @CheckReturnValue
     fun timeout(timeout: JavaDuration, handlerName: String, vararg data: Any?): T =
-        timeout(timeout.toKotlinDuration(), handlerName, *data)
+        timeout(timeout.toKotlinDuration(), handlerName, data.toList())
 
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
@@ -235,7 +310,44 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      * @see GroupTimeoutHandler @GroupTimeoutHandler
      */
     @JvmSynthetic
-    fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T
+    fun timeout(timeout: Duration, handlerName: String, data: List<Any?>): T
+
+    /**
+     * Sets the timeout on this component, invalidating the component on expiration,
+     * and running the timeout handler with the given name and its arguments.
+     *
+     * **Note:** Components inside groups cannot have timeouts.
+     *
+     * ### Timeout cancellation
+     * The timeout will be canceled once a component has been deleted,
+     * including if the component was set to a [single use][IUniqueComponent.singleUse].
+     *
+     * ### Component deletion
+     * - If the component is a group, then all of its owned components will also be deleted.
+     * - If the component is inside a group, then all the group's components will also be deleted.
+     *
+     * ### Timeout data
+     * The data passed is [serialized][TimeoutParameterResolver.serialize]
+     * and later [deserialized][TimeoutParameterResolver.resolveSuspend] using their resolver.
+     *
+     * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
+     *
+     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * you must annotate your parameter with [@TimeoutData][TimeoutData].
+     *
+     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     *
+     * @param timeout The duration of the timeout
+     * @param handlerName The name of the handler to run when the component expires,
+     * defined by either [@ComponentTimeoutHandler][ComponentTimeoutHandler] or [@GroupTimeoutHandler][GroupTimeoutHandler] depending on the type
+     * @param data The data to pass to the timeout handler
+     *
+     * @see ComponentTimeoutHandler @ComponentTimeoutHandler
+     * @see GroupTimeoutHandler @GroupTimeoutHandler
+     */
+    @JvmSynthetic
+    fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T =
+        timeout(timeout, handlerName, data.toList())
 }
 
 /**
@@ -986,7 +1098,7 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
 }
 
 private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithBoundCallable(duration: Duration, func: KFunction<*>, data: List<Any?>): C {
-    return timeout(duration, findHandlerName(func), *data.toTypedArray())
+    return timeout(duration, findHandlerName(func), data)
 }
 
 /**

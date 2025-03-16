@@ -41,11 +41,11 @@ internal class PersistentTimeoutableComponentImpl<T : IPersistentTimeoutableComp
         this.timeout = null
     }
 
-    override fun timeout(timeout: Duration, handlerName: String, vararg data: Any?): T = applyInstance {
+    override fun timeout(timeout: Duration, handlerName: String, data: List<Any?>): T = applyInstance {
         Checks.checkFinite(timeout, "timeout")
         Checks.checkFitInt(timeout, "timeout")
 
         this.timeoutDuration = timeout
-        this.timeout = PersistentTimeout.create(context, componentType, handlerName, data.toList())
+        this.timeout = PersistentTimeout.create(context, componentType, handlerName, data)
     }
 }
