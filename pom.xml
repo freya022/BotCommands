@@ -454,6 +454,10 @@
                     <groupId>club.minnced</groupId>
                     <artifactId>opus-java</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.crypto.tink</groupId>
+                    <artifactId>tink</artifactId>
+                </exclusion>
             </exclusions>
             <scope>provided</scope>
         </dependency>
