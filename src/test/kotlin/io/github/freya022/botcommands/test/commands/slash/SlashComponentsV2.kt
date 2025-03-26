@@ -173,9 +173,6 @@ class InlineFileDisplay(
     }
 }
 
-fun FileDisplay(url: String, uniqueId: Int? = null, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
-    InlineFileDisplay({ FileDisplay.fromUrl(url) }, uniqueId, spoiler).apply(block).build()
-
 fun FileDisplay(file: FileUpload, uniqueId: Int? = null, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
     InlineFileDisplay({ FileDisplay.fromFile(file) }, uniqueId, spoiler).apply(block).build()
 
