@@ -12,7 +12,9 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import javax.annotation.CheckReturnValue
 
-abstract class AbstractComponentFactory internal constructor(internal val componentController: ComponentController) {
+abstract class AbstractComponentFactory internal constructor(
+    @get:JvmSynthetic internal val componentController: ComponentController
+) {
     val context: BContext get() = componentController.context
 
     /**
