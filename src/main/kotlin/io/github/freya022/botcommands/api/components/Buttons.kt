@@ -189,7 +189,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun of(style: ButtonStyle, label: String, emoji: Emoji): ButtonFactory =
+    fun of(style: ButtonStyle, label: String?, emoji: Emoji?): ButtonFactory =
         ButtonFactory(componentController, style, label, emoji, disabled = false)
 
     /**
