@@ -64,14 +64,26 @@ fun Modals.create(title: String, block: ModalBuilder.() -> Unit): Modal {
     return create(title).apply(block).build()
 }
 
-fun ModalBuilder.textInput(inputName: String, label: String, inputStyle: TextInputStyle, block: TextInputBuilder.() -> Unit = {}): TextInput =
-    modals.createTextInput(inputName, label, inputStyle)
+fun ModalBuilder.textInput(inputName: String, label: String, inputStyle: TextInputStyle, block: TextInputBuilder.() -> Unit = {}): TextInput {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return modals.createTextInput(inputName, label, inputStyle)
         .apply(block)
         .build()
         .also { addActionRow(it) }
+}
 
-fun ModalBuilder.shortTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput =
-    textInput(inputName, label, TextInputStyle.SHORT, block)
+fun ModalBuilder.shortTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return textInput(inputName, label, TextInputStyle.SHORT, block)
+}
 
-fun ModalBuilder.paragraphTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput =
-    textInput(inputName, label, TextInputStyle.PARAGRAPH, block)
+fun ModalBuilder.paragraphTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return textInput(inputName, label, TextInputStyle.PARAGRAPH, block)
+}
