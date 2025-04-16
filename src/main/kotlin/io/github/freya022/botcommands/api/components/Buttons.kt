@@ -188,9 +188,10 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see Emojis
      * @see ButtonFactory.withEmoji
      */
+    @JvmOverloads
     @CheckReturnValue
-    fun of(style: ButtonStyle, label: String?, emoji: Emoji?): ButtonFactory =
-        ButtonFactory(componentController, style, label, emoji, disabled = false)
+    fun of(style: ButtonStyle, label: String?, emoji: Emoji?, disabled: Boolean = false): ButtonFactory =
+        ButtonFactory(componentController, style, label, emoji, disabled)
 
     /**
      * Creates a button factory with the style, label and emoji provided by the [ButtonContent].
