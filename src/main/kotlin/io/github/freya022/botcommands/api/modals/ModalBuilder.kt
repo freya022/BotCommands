@@ -3,19 +3,22 @@ package io.github.freya022.botcommands.api.modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.modals.ModalDSL
+import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
+import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
-import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
-import java.time.Duration as JavaDuration
 
 @ModalDSL
 abstract class ModalBuilder protected constructor(
     customId: String,
     title: String
 ) : JDAModal.Builder(customId, title) {
+
+    abstract val modals: Modals
+
     /**
      * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
      *

@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.utils.throwState
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
+    override val modals: Modals,
     private val modalMaps: ModalMaps,
     title: String
 ) : ModalBuilder("0", title) {
