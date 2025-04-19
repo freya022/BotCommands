@@ -293,7 +293,7 @@
                 <configuration>
                     <release>17</release>
                     <compilerArgs>
-                        <compilerArg>-parameters</compilerArg>
+                        <arg>-parameters</arg>
                     </compilerArgs>
                     <excludes>
                         <exclude>io/github/freya022/botcommands/api/$BCInfo.java</exclude>
