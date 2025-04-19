@@ -7,10 +7,10 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.sql.Array as SqlArray
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
-import java.sql.Array as SqlArray
 
 @Lazy
 @BService
@@ -27,6 +27,7 @@ internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<Post
         // Attempt to replace those with our own representation
         override fun addValue(index: Int, value: Any?) {
             if (value == null) return
+            if (value is ByteArray) return
             if (value.javaClass.isArray || value is SqlArray) {
                 values.put(index, formatParameter(value))
             }
