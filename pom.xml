@@ -484,7 +484,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>13c5968346</version>
+            <version>f00a80558d</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
