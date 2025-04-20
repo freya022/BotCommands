@@ -99,9 +99,8 @@ class SlashNewSelects(
 
         selectMenus.group(firstSelect).ephemeral {
             timeout(15.seconds) {
-                event.hook.retrieveOriginal()
-                    .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
-                    .queue()
+                val newComponents = event.hook.callbackResponse.message!!.components.asDisabled()
+                event.hook.editOriginalComponents(newComponents).queue()
             }
         }
         return firstSelect

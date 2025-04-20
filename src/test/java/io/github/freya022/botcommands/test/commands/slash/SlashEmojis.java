@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.annotations.Command;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
@@ -32,10 +31,8 @@ public class SlashEmojis extends ApplicationCommand {
                 .build();
 
         event.reply(messageData)
-                // Since we reply to a slash command, we need to retrieve the message back
-                .flatMap(InteractionHook::retrieveOriginal)
                 // This emoji's name is slightly different as fields can't start with digits
-                .flatMap(message -> message.addReaction(Emojis.HUNDRED_POINTS))
+                .flatMap(hook -> hook.getCallbackResponse().getMessage().addReaction(Emojis.HUNDRED_POINTS))
                 .queue();
     }
 }

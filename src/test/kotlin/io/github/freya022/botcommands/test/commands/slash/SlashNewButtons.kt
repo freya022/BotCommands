@@ -118,9 +118,8 @@ class SlashNewButtons(
 
         buttons.group(secondButton).ephemeral {
             timeout(15.minutes) {
-                event.hook.retrieveOriginal()
-                    .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
-                    .queue()
+                val newComponents = event.hook.callbackResponse.message!!.components.asDisabled()
+                event.hook.editOriginalComponents(newComponents).queue()
             }
         }
         return firstButton
