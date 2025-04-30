@@ -24,7 +24,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 

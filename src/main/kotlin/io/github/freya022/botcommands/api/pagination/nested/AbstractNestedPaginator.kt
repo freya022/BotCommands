@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.components.selects.StringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.internal.utils.Checks

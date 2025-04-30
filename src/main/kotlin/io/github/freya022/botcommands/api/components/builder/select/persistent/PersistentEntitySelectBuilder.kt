@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.select.persistent
 
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 abstract class PersistentEntitySelectBuilder :
         JDAEntitySelectMenu.Builder(""),

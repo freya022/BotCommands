@@ -81,8 +81,8 @@ class SlashComponentsV2(
         event.replyComponents(
             Container(accentColor = hex("00FF00")) {
                 +MediaGallery {
-                    +item("https://cdn.discordapp.com/attachments/964253122547552349/1336440069892083712/7Q3S.gif")
-                    +item(rustAnimation)
+                    item("https://cdn.discordapp.com/attachments/964253122547552349/1336440069892083712/7Q3S.gif")
+                    item(rustAnimation)
                 }
 
                 +Section(

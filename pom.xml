@@ -456,7 +456,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>a4cb724c45</version>
+            <version>0af40c2f6a</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -484,7 +484,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>f00a80558d</version>
+            <version>7fa68fce12</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

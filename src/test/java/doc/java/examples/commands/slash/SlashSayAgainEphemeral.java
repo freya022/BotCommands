@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.components.Buttons;
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.time.Duration;

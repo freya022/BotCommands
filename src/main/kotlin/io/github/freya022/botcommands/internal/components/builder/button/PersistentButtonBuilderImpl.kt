@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.IPersist
 import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentActionableComponentImpl
 import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentTimeoutableComponentImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 internal class PersistentButtonBuilderImpl internal constructor(

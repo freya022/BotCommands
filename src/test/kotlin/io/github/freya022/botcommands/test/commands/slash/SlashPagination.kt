@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.into
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -26,7 +25,7 @@ import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.api.pagination.paginator.Paginator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
 import kotlin.random.Random
 import kotlin.random.nextInt

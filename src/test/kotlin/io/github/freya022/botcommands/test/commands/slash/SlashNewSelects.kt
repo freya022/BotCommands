@@ -22,7 +22,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.test.config.Config
 import io.github.freya022.botcommands.test.filters.InVoiceChannel
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel

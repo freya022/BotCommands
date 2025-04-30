@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.builder.select.EntitySelect
 import io.github.freya022.botcommands.api.components.builder.select.StringSelectMenuFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
 import java.util.*
 import javax.annotation.CheckReturnValue
 

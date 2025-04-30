@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
 import io.github.freya022.botcommands.test.switches.TestLanguage;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 
 @Command
 @RequiresComponents

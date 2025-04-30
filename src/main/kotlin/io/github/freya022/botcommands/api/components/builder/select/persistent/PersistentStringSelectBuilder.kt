@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.select.persistent
 
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
-import net.dv8tion.jda.api.components.selects.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 abstract class PersistentStringSelectBuilder :
         JDAStringSelectMenu.Builder(""),

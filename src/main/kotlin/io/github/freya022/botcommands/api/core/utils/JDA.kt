@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.internal.utils.deferredRestAction
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.components.selects.SelectMenu
+import net.dv8tion.jda.api.components.selections.SelectMenu
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Guild.Ban
 import net.dv8tion.jda.api.entities.channel.ChannelType
