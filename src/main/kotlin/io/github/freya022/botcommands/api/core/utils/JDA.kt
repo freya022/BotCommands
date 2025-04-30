@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageCreate
+import dev.minn.jda.ktx.messages.MessageEdit
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.internal.utils.deferredRestAction
@@ -386,6 +389,34 @@ fun MessageEditData.edit(hook: InteractionHook): WebhookMessageEditAction<Messag
  */
 fun MessageEditData.edit(channel: MessageChannel, id: Long): MessageEditAction =
     channel.editMessageById(id, this)
+
+/**
+ * @see IReplyCallback.reply
+ */
+inline fun IReplyCallback.reply(ephemeral: Boolean = false, block: InlineMessage<*>.() -> Unit): ReplyCallbackAction {
+    return reply(MessageCreate { block() }).setEphemeral(ephemeral)
+}
+
+/**
+ * @see IMessageEditCallback.editMessage
+ */
+inline fun IMessageEditCallback.edit(block: InlineMessage<*>.() -> Unit): MessageEditCallbackAction {
+    return editMessage(MessageEdit { block() })
+}
+
+/**
+ * @see InteractionHook.sendMessage
+ */
+inline fun InteractionHook.send(ephemeral: Boolean = false, block: InlineMessage<*>.() -> Unit): WebhookMessageCreateAction<Message> {
+    return sendMessage(MessageCreate { block() }).setEphemeral(ephemeral)
+}
+
+/**
+ * @see InteractionHook.editOriginal
+ */
+inline fun InteractionHook.edit(block: InlineMessage<*>.() -> Unit): WebhookMessageEditAction<Message> {
+    return editOriginal(MessageEdit { block() })
+}
 
 /**
  * @see InteractionHook.editOriginal
