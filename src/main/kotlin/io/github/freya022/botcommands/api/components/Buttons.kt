@@ -154,7 +154,7 @@ import javax.annotation.CheckReturnValue
 @RequiresComponents
 class Buttons internal constructor(componentController: ComponentController) : AbstractComponentFactory(componentController) {
     /**
-     * Creates a button factory with the style and label provided.
+     * Creates a button factory with the provided style and label.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -167,7 +167,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         ButtonFactory(componentController, style, label, null, disabled = false)
 
     /**
-     * Creates a button factory with the style and emoji provided.
+     * Creates a button factory with the provided style and emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -179,7 +179,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         ButtonFactory(componentController, style, null, emoji, disabled = false)
 
     /**
-     * Creates a button factory with the style, label and emoji provided.
+     * Creates a button factory with the provided style, label and emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -198,7 +198,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
-     * @throws IllegalArgumentException If the label is null/blank and the emoji isn't set
+     * @throws IllegalArgumentException If the label is null/blank, and the emoji isn't set
      *
      * @see Emojis
      * @see ButtonContent.withEmoji
@@ -208,7 +208,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         ButtonFactory(componentController, content.style, content.label, content.emoji, content.disabled)
 
     /**
-     * Creates a primary button factory with the label provided.
+     * Creates a primary button factory with the provided label.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -221,7 +221,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.PRIMARY, label)
 
     /**
-     * Creates a primary button factory with the emoji provided.
+     * Creates a primary button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -233,7 +233,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.PRIMARY, emoji)
 
     /**
-     * Creates a primary button factory with the emoji provided.
+     * Creates a primary button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -243,11 +243,11 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun primary(label: String, emoji: Emoji): ButtonFactory =
+    fun primary(label: String?, emoji: Emoji?): ButtonFactory =
         of(ButtonStyle.PRIMARY, label, emoji)
 
     /**
-     * Creates a secondary button factory with the label provided.
+     * Creates a secondary button factory with the provided label.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -260,7 +260,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.SECONDARY, label)
 
     /**
-     * Creates a secondary button factory with the emoji provided.
+     * Creates a secondary button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -272,7 +272,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.SECONDARY, emoji)
 
     /**
-     * Creates a secondary button factory with the emoji provided.
+     * Creates a secondary button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -282,11 +282,11 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun secondary(label: String, emoji: Emoji): ButtonFactory =
+    fun secondary(label: String?, emoji: Emoji?): ButtonFactory =
         of(ButtonStyle.SECONDARY, label, emoji)
 
     /**
-     * Creates a success button factory with the label provided.
+     * Creates a success button factory with the provided label.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -299,7 +299,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.SUCCESS, label)
 
     /**
-     * Creates a success button factory with the emoji provided.
+     * Creates a success button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -311,7 +311,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.SUCCESS, emoji)
 
     /**
-     * Creates a success button factory with the emoji provided.
+     * Creates a success button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -321,11 +321,11 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun success(label: String, emoji: Emoji): ButtonFactory =
+    fun success(label: String?, emoji: Emoji?): ButtonFactory =
         of(ButtonStyle.SUCCESS, label, emoji)
 
     /**
-     * Creates a danger button factory with the label provided.
+     * Creates a danger button factory with the provided label.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -338,7 +338,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.DANGER, label)
 
     /**
-     * Creates a danger button factory with the emoji provided.
+     * Creates a danger button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -350,7 +350,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         of(ButtonStyle.DANGER, emoji)
 
     /**
-     * Creates a danger button factory with the emoji provided.
+     * Creates a danger button factory with the provided emoji.
      *
      * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
      *
@@ -360,13 +360,11 @@ class Buttons internal constructor(componentController: ComponentController) : A
      * @see ButtonFactory.withEmoji
      */
     @CheckReturnValue
-    fun danger(label: String, emoji: Emoji): ButtonFactory =
+    fun danger(label: String?, emoji: Emoji?): ButtonFactory =
         of(ButtonStyle.DANGER, label, emoji)
 
     /**
-     * Creates a danger button factory with the label provided.
-     *
-     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     * Creates a link button factory with the provided label.
      *
      * @throws IllegalArgumentException If the url/label is empty
      */
@@ -375,9 +373,7 @@ class Buttons internal constructor(componentController: ComponentController) : A
         Button.link(url, label)
 
     /**
-     * Creates a danger button factory with the emoji provided.
-     *
-     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     * Creates a link button factory with the provided emoji.
      *
      * @throws IllegalArgumentException If the url is empty
      *
@@ -388,15 +384,13 @@ class Buttons internal constructor(componentController: ComponentController) : A
         Button.link(url, emoji)
 
     /**
-     * Creates a danger button factory with the emoji provided.
-     *
-     * You can use [ButtonFactory.persistent] or [ButtonFactory.ephemeral] to then start building a button.
+     * Creates a link button factory with the provided label and emoji.
      *
      * @throws IllegalArgumentException If the url/label is empty
      *
      * @see Emojis
      */
     @CheckReturnValue
-    fun link(url: String, label: String, emoji: Emoji): Button =
-        Button.link(url, label).withEmoji(emoji)
+    fun link(url: String, label: String?, emoji: Emoji?): Button =
+        Button.of(ButtonStyle.LINK, url, label, emoji)
 }
