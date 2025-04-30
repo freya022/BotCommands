@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.test.services.Disabled
 import kotlinx.coroutines.withTimeoutOrNull
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.Role
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 import kotlin.time.Duration.Companion.minutes
 
 @BService
+@Disabled
 class ReactionRoleService {
     fun addReactionRole(message: Message, role: Role, reactionId: String, isUnicode: Boolean): Unit {
 
@@ -35,6 +37,7 @@ class ReactionRoleService {
 }
 
 @Command
+@Disabled
 @RequiresComponents
 class MessageContextAddReactionRole(private val selectMenus: SelectMenus,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
