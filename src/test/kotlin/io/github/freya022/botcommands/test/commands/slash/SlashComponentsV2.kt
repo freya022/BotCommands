@@ -34,6 +34,50 @@ class SlashComponentsV2(
     suspend fun onSlashComponentsV2(event: GuildSlashEvent) {
         val ephemeral = true
 
+//        event.reply_("ok", ephemeral = true)
+//            .await()
+//            .retrieveOriginal()
+//            .await()
+//            .editMessageComponents(MediaGallery.of(MediaGalleryItem.fromFile(rustAnimation)))
+//            .setContent(null)
+//            .useComponentsV2()
+//            .await()
+//
+//        event.messageChannel.sendMessage("CV1")
+//            .awaitAndLog()
+//            .editMessageComponents(MediaGallery.of(MediaGalleryItem.fromFile(rustAnimation)))
+//            .setContent(null)
+//            .useComponentsV2()
+//            .awaitAndLogCatching()
+
+//        event.messageChannel.sendMessageComponents(MediaGallery {
+//            +item(rustAnimation)
+//        }).useComponentsV2().awaitAndLog()
+
+//        event.messageChannel.sendMessage("CV1 (will be fully replaced)")
+//            .awaitAndLog()
+//            .editMessageComponents(MediaGallery.of(MediaGalleryItem.fromFile(rustAnimation)))
+//            .useComponentsV2()
+//            .setReplace(true)
+//            .awaitAndLogCatching()
+
+//        event.messageChannel.sendMessageComponents(TextDisplay("CV2"))
+//            .useComponentsV2()
+//            .awaitAndLog()
+//            .editMessageComponents(MediaGallery.of(MediaGalleryItem.fromFile(rustAnimation)))
+//            .useComponentsV2()
+//            .awaitAndLogCatching()
+//
+//        event.messageChannel.sendMessageComponents(TextDisplay("CV2 (will be fully replaced)"))
+//            .useComponentsV2()
+//            .awaitAndLog()
+//            .editMessageComponents(MediaGallery.of(MediaGalleryItem.fromFile(rustAnimation)))
+//            .useComponentsV2()
+//            .setAttachments()
+//            .awaitAndLogCatching()
+
+//        return
+
         event.replyComponents(
             Container(accentColor = hex("00FF00")) {
                 +MediaGallery {
