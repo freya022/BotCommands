@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 abstract class EphemeralEntitySelectBuilder :
-        JDAEntitySelectMenu.Builder(""),
+        JDAEntitySelectMenu.Builder("temp"),
         BaseComponentBuilder<EphemeralEntitySelectBuilder>,
         IConstrainableComponent<EphemeralEntitySelectBuilder>,
         IUniqueComponent<EphemeralEntitySelectBuilder>,

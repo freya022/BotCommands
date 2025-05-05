@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 abstract class EphemeralStringSelectBuilder :
-        JDAStringSelectMenu.Builder(""),
+        JDAStringSelectMenu.Builder("temp"),
         BaseComponentBuilder<EphemeralStringSelectBuilder>,
         IConstrainableComponent<EphemeralStringSelectBuilder>,
         IUniqueComponent<EphemeralStringSelectBuilder>,

@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.builder.*
 import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 abstract class PersistentStringSelectBuilder :
-        JDAStringSelectMenu.Builder(""),
+        JDAStringSelectMenu.Builder("temp"),
         BaseComponentBuilder<PersistentStringSelectBuilder>,
         IConstrainableComponent<PersistentStringSelectBuilder>,
         IUniqueComponent<PersistentStringSelectBuilder>,

@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.components.builder.*
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 abstract class PersistentEntitySelectBuilder :
-        JDAEntitySelectMenu.Builder(""),
+        JDAEntitySelectMenu.Builder("temp"),
         BaseComponentBuilder<PersistentEntitySelectBuilder>,
         IConstrainableComponent<PersistentEntitySelectBuilder>,
         IUniqueComponent<PersistentEntitySelectBuilder>,
