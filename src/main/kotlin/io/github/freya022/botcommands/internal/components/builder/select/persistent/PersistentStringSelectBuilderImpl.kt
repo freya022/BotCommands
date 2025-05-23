@@ -48,6 +48,12 @@ internal class PersistentStringSelectBuilderImpl internal constructor(
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun setCustomId(customId: String): JDAStringSelectMenu.Builder {
+        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        throwArgument("Cannot set an ID on components managed by the framework")
+    }
+
     override fun build(): StringSelectMenu = runBlocking { buildSuspend() }
 
     @PublishedApi
