@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.test.config.Config
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.MapPropertySource
@@ -35,7 +34,6 @@ class Bot(private val config: Config, environment: ConfigurableEnvironment?) : J
             token = config.token,
             shardRange = if (config.testMode) 0..1 else null,
             shardsTotal = if (config.testMode) 2 else -1,
-            memberCachePolicy = MemberCachePolicy.VOICE,
             activityProvider = { Activity.playing("coroutines go brrr #$it") },
         ) {
             setEventPassthrough(true)
