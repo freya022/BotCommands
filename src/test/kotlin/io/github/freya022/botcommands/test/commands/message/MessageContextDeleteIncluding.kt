@@ -1,7 +1,10 @@
 package io.github.freya022.botcommands.test.commands.message
 
 import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.interactions.components.row
+import dev.minn.jda.ktx.interactions.components.ActionRow
+import dev.minn.jda.ktx.messages.editMessage
+import dev.minn.jda.ktx.messages.editMessage_
+import dev.minn.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
@@ -11,8 +14,6 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
-import io.github.freya022.botcommands.api.core.utils.edit
-import io.github.freya022.botcommands.api.core.utils.send
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
@@ -42,28 +43,27 @@ class MessageContextDeleteIncluding(
         event.hook.send {
             content = "This will delete ${messagesToDelete.size} messages up until ${messagesToDelete.last().jumpUrl}"
 
-            // TODO use CV2 DSL for the ActionRow
-            components += row(
-                buttons.danger("Delete").ephemeral {
+            components += ActionRow {
+                +buttons.danger("Delete").ephemeral {
                     singleUse = true
 
                     bindTo { buttonEvent ->
                         val futures = message.channel.purgeMessagesById(*messageIdsToDelete)
-                        buttonEvent.edit {
+                        buttonEvent.editMessage_ {
                             content = "Deleting messages..."
                         }.queue()
 
                         futures.forEach { it.await() }
 
                         buttonEvent.hook
-                            .edit {
+                            .editMessage {
                                 content = "Done!"
                             }
                             .deleteDelayed(2.seconds)
                             .await()
                     }
                 }
-            )
+            }
         }.queue()
     }
 }
