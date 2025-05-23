@@ -44,9 +44,8 @@ class MessageContextDeleteIncluding(
         event.hook.send {
             content = "This will delete ${messagesToDelete.size} messages up until ${messagesToDelete.last().jumpUrl}"
 
-            // TODO use CV2 DSL for the ActionRow
-            components += row(
-                buttons.danger("Delete").ephemeral {
+            components += ActionRow {
+                +buttons.danger("Delete").ephemeral {
                     singleUse = true
 
                     bindTo { buttonEvent ->
@@ -65,7 +64,7 @@ class MessageContextDeleteIncluding(
                             .await()
                     }
                 }
-            )
+            }
         }.queue()
     }
 }
