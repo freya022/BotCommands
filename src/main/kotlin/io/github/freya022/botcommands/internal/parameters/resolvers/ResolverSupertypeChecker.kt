@@ -165,9 +165,9 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         } else if (missingResolverFactoryAnnotationMessages.isNotEmpty()) {
             throw MissingResolverFactoryAnnotation('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
         } else if (missingResolverSuperclassMessages.isNotEmpty()) {
-            throw MissingResolverSuperclass('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
+            throw MissingResolverSuperclass('\n' + missingResolverSuperclassMessages.joinAsList())
         } else if (missingResolverFactorySuperclassMessages.isNotEmpty()) {
-            throw MissingResolverFactorySuperclass('\n' + missingResolverFactoryAnnotationMessages.joinAsList())
+            throw MissingResolverFactorySuperclass('\n' + missingResolverFactorySuperclassMessages.joinAsList())
         }
     }
 }
