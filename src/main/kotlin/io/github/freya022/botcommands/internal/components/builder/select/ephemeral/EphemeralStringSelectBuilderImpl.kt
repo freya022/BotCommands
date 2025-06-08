@@ -45,13 +45,13 @@ internal class EphemeralStringSelectBuilderImpl internal constructor(
 
     @Suppress("OVERRIDE_DEPRECATION") // yup
     override fun setId(customId: String): JDAStringSelectMenu.Builder {
-        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        if (customId == "temp") return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
     @Suppress("OVERRIDE_DEPRECATION") // yup
     override fun setCustomId(customId: String): JDAStringSelectMenu.Builder {
-        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        if (customId == "temp") return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
