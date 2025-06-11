@@ -21,7 +21,7 @@ abstract class TextInputBuilder internal constructor(
 
     override fun setLabel(label: String): TextInputBuilder = this.apply { super.setLabel(label) }
 
-    override fun setStyle(style: TextInputStyle?): TextInputBuilder = this.apply { super.setStyle(style) }
+    override fun setStyle(style: TextInputStyle): TextInputBuilder = this.apply { super.setStyle(style) }
 
     override fun setRequired(required: Boolean): TextInputBuilder = this.apply { super.setRequired(required) }
 
