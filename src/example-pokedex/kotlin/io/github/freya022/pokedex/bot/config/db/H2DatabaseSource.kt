@@ -4,8 +4,10 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.pokedex.bot.config.Data
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.flywaydb.core.Flyway
+import kotlin.io.path.absolutePathString
 import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger { }
@@ -14,7 +16,7 @@ private val logger = KotlinLogging.logger { }
 @BService
 class H2DatabaseSource : HikariSourceSupplier {
     override val source = HikariDataSource(HikariConfig().apply {
-        jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+        jdbcUrl = "jdbc:h2:file:${Data.folder.resolve("pokedex-bot").absolutePathString()};DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
 
         maximumPoolSize = 2
         leakDetectionThreshold = 10.seconds.inWholeMilliseconds
