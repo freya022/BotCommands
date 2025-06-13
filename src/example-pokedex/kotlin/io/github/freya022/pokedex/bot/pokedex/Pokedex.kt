@@ -5,17 +5,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import java.nio.file.Path
-import kotlin.io.path.Path
-import kotlin.io.path.readBytes
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.pokedex.bot.pokedex.data.PokemonDataFetcher
+import kotlinx.coroutines.runBlocking
 
-object Pokedex {
+private const val ENTRIES_PER_PAGE = 10
 
-    const val ENTRIES_PER_PAGE = 10
-
-    val rootDirectory: Path = Path("pokemon-data")
-    val emojisDirectory: Path = rootDirectory.resolve("images/emojis")
-    val galleryDirectory: Path = rootDirectory.resolve("images/media-gallery")
+@BService
+class Pokedex(
+    pokemonDataFetcher: PokemonDataFetcher,
+) {
 
     val pokemons: Map<Int, Pokemon>
     val maxPage: Int
@@ -25,7 +24,7 @@ object Pokedex {
             .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature())
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-        val allPokemons = mapper.readTree(rootDirectory.resolve("pokedex.json").readBytes())
+        val allPokemons = runBlocking { mapper.readTree(pokemonDataFetcher.getPokedexData()) }
 
         val first151PokemonsJson = allPokemons.takeWhile { it["id"].asInt() <= 151 }
         val first151Pokemons = mapper.treeToValue<List<Pokemon>>(ArrayNode(mapper.nodeFactory, first151PokemonsJson))

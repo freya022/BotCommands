@@ -13,8 +13,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Resolver
-class PokemonResolver : ClassParameterResolver<PokemonResolver, Pokemon>(Pokemon::class),
-                        SlashParameterResolver<PokemonResolver, Pokemon> {
+class PokemonResolver(
+    private val pokedex: Pokedex,
+) : ClassParameterResolver<PokemonResolver, Pokemon>(Pokemon::class),
+    SlashParameterResolver<PokemonResolver, Pokemon> {
 
     override val optionType: OptionType = OptionType.INTEGER
 
@@ -24,7 +26,7 @@ class PokemonResolver : ClassParameterResolver<PokemonResolver, Pokemon>(Pokemon
         optionMapping: OptionMapping
     ): Pokemon? {
         val pokemonId = optionMapping.asInt
-        val pokemon = Pokedex.getByIdOrNull(pokemonId)
+        val pokemon = pokedex.getByIdOrNull(pokemonId)
         if (pokemon == null && event is IReplyCallback) {
             event.reply_("Pokemon #$pokemonId does not exist.", ephemeral = true).queue()
         }

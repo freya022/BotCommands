@@ -17,25 +17,31 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.utils.edit
 import io.github.freya022.botcommands.api.core.utils.send
 import io.github.freya022.botcommands.api.core.utils.toEditData
-import io.github.freya022.pokedex.bot.pokedex.*
+import io.github.freya022.pokedex.bot.pokedex.Pokedex
+import io.github.freya022.pokedex.bot.pokedex.Pokemon
+import io.github.freya022.pokedex.bot.pokedex.PokemonEmojisService
+import io.github.freya022.pokedex.bot.pokedex.data.PokemonDataFetcher
+import io.github.freya022.pokedex.bot.pokedex.data.getRandomImages
+import io.github.freya022.pokedex.bot.pokedex.data.getThumbnail
+import io.github.freya022.pokedex.bot.pokedex.getEmojis
 import net.dv8tion.jda.api.components.section.Section
 import net.dv8tion.jda.api.components.separator.Separator
-import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
-private const val headerUrl = "https://raw.githubusercontent.com/DV8FromTheWorld/discord-pokedex/refs/heads/main/pokemon-data/images/pokedex-header.webp"
 private const val pokemonDataUrl = "https://github.com/Purukitto/pokemon-data.json"
 private const val pokemonImagesUrl = "https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types"
 
 @Command
 class SlashPokedex(
+    private val pokemonDataFetcher: PokemonDataFetcher,
     private val pokemonEmojisService: PokemonEmojisService,
+    private val pokedex: Pokedex,
     private val buttons: Buttons,
 ) : ApplicationCommand() {
 
     @JDASlashCommand(name = "pokedex", description = "Shows the pokédex for the OG 151 pokémons")
     suspend fun onSlashPokedex(event: GuildSlashEvent) {
-        getPokedexPage(Pokedex.getPage(0), 0)
+        getPokedexPage(pokedex.getPage(0), 0)
             .send(event)
             .queue()
     }
@@ -43,7 +49,7 @@ class SlashPokedex(
     private suspend fun getPokedexPage(pokemons: List<Pokemon>, currentPage: Int): MessageCreateData = MessageCreate(useComponentsV2 = true) {
         components += Container {
             +MediaGallery {
-                item(headerUrl)
+                +pokemonDataFetcher.getPokedexHeader().toMediaGalleryItem()
             }
 
             pokemons.forEach { pokemon ->
@@ -61,9 +67,9 @@ class SlashPokedex(
                     +buttons.primary("Prev").toLabelButton()
                 }
 
-                +buttons.secondary("Page (${currentPage + 1} / ${Pokedex.maxPage + 1})").toLabelButton()
+                +buttons.secondary("Page (${currentPage + 1} / ${pokedex.maxPage + 1})").toLabelButton()
 
-                if (currentPage < Pokedex.maxPage) {
+                if (currentPage < pokedex.maxPage) {
                     +buttons.primary("Next").persistent {
                         bindWith(::onChangePageClicked, currentPage + 1)
                     }
@@ -76,7 +82,7 @@ class SlashPokedex(
 
     @JDAButtonListener
     suspend fun onChangePageClicked(event: ButtonEvent, @ComponentData page: Int) {
-        getPokedexPage(Pokedex.getPage(page), page)
+        getPokedexPage(pokedex.getPage(page), page)
             .toEditData()
             .edit(event)
             .await()
@@ -84,7 +90,7 @@ class SlashPokedex(
 
     @JDAButtonListener
     suspend fun onViewPokemonClicked(event: ButtonEvent, @ComponentData pokemonId: Int, @ComponentData pokedexPage: Int?) {
-        getPokemonView(Pokedex.getById(pokemonId), pokedexPage)
+        getPokemonView(pokedex.getById(pokemonId), pokedexPage)
             .toEditData()
             .edit(event)
             .await()
@@ -93,7 +99,7 @@ class SlashPokedex(
     suspend fun getPokemonView(pokemon: Pokemon, pokedexPage: Int?): MessageCreateData = MessageCreate(useComponentsV2 = true) {
         components += Container {
             +Section(
-                accessory = Thumbnail(pokemon.thumbnailUrl)
+                accessory = pokemon.getThumbnail(pokemonDataFetcher).toThumbnail()
             ) {
                 +TextDisplay("**${pokemon.name.english}**")
                 +TextDisplay(pokemon.description)
@@ -103,7 +109,7 @@ class SlashPokedex(
 
             pokemon.evolution.prev?.let { prevEvolution ->
                 +TextDisplay("**Previous Evolution**")
-                val prevPokemon = Pokedex.getById(prevEvolution.id)
+                val prevPokemon = pokedex.getById(prevEvolution.id)
                 +pokemonSection(prevPokemon) {
                     bindWith(::onViewPokemonClicked, prevPokemon.id, pokedexPage)
                 }
@@ -112,7 +118,7 @@ class SlashPokedex(
             if (pokemon.evolution.next != null) {
                 +TextDisplay("**Next Evolution**")
                 pokemon.evolution.next.forEach { nextEvolution ->
-                    val nextPokemon = Pokedex.getById(nextEvolution.id)
+                    val nextPokemon = pokedex.getById(nextEvolution.id)
                     +pokemonSection(nextPokemon, "-# Criteria: ${nextEvolution.criteria.joinToString()}") {
                         bindWith(::onViewPokemonClicked, nextPokemon.id, pokedexPage)
                     }
@@ -120,8 +126,8 @@ class SlashPokedex(
             }
 
             +MediaGallery {
-                pokemon.getRandomImages(4).forEach { imagePath ->
-                    item(FileUpload.fromData(imagePath))
+                pokemon.getRandomImages(pokemonDataFetcher, 4).forEach { randomImageAsset ->
+                    +randomImageAsset.toMediaGalleryItem()
                 }
             }
 

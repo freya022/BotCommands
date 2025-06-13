@@ -17,6 +17,7 @@ private const val POKEMON_ID_AUTOCOMPLETE_NAME = "SlashPokedexLookup: pokemon"
 @Command
 class SlashPokedexLookup(
     private val slashPokedex: SlashPokedex,
+    private val pokedex: Pokedex,
 ) : ApplicationCommand() {
 
     @JDASlashCommand(name = "pokedex-lookup", description = "Lookup pokemon by their id")
@@ -28,9 +29,9 @@ class SlashPokedexLookup(
     fun onPokemonAutocomplete(event: CommandAutoCompleteInteractionEvent): List<Choice> {
         val query = event.focusedOption.value
         val pokemons = if (query.isNotBlank())
-            Pokedex.pokemons.values.filter { pokemon -> query.startsWith(pokemon.name.english) }
+            pokedex.pokemons.values.filter { pokemon -> query.startsWith(pokemon.name.english) }
         else
-            Pokedex.pokemons.values
+            pokedex.pokemons.values
         return pokemons.take(OptionData.MAX_CHOICES).map { Choice(it.name.english, it.id.toLong()) }
     }
 }

@@ -4,32 +4,39 @@ import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.PreFirstGatewayConnectEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.pokedex.bot.pokedex.data.PokemonDataFetcher
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
-import kotlin.io.path.nameWithoutExtension
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger { }
 
 @BService
-class PokemonEmojisService {
+class PokemonEmojisService(
+    private val pokemonDataFetcher: PokemonDataFetcher,
+    private val pokedex: Pokedex,
+) {
 
     lateinit var emojis: Map<Int, List<ApplicationEmoji>>
         private set
 
     @BEventListener(mode = BEventListener.RunMode.BLOCKING)
     suspend fun onInjectedJDA(event: PreFirstGatewayConnectEvent) {
-        val appEmojis: MutableList<ApplicationEmoji> = event.jda.retrieveApplicationEmojis().await()
+        try {
+            val appEmojis: Map<String, ApplicationEmoji> = event.jda.retrieveApplicationEmojis().await().associateBy { it.name }
 
-        emojis = Pokedex.pokemons.values.associate { pokemon ->
-            pokemon.id to pokemon.emojiPaths.map { emojiPath ->
-                val emojiName = emojiPath.nameWithoutExtension
-                val existingEmoji = appEmojis.find { it.name == emojiName }
-                if (existingEmoji != null) return@map existingEmoji
-
-                logger.info { "Inserting emoji '$emojiName'" }
-                event.jda.createApplicationEmoji(emojiName, Icon.from(emojiPath.toFile())).await()
+            emojis = pokedex.pokemons.keys.associateWith { pokemonId ->
+                pokemonDataFetcher.getPokemonEmojis(pokemonId).map { emojiAsset ->
+                    val emojiName = emojiAsset.name.substringBeforeLast('.')
+                    appEmojis[emojiName] ?: run {
+                        logger.info { "Inserting emoji '$emojiName'" }
+                        event.jda.createApplicationEmoji(emojiName, emojiAsset.toIcon()).await()
+                    }
+                }
             }
+        } catch (e: Exception) {
+            logger.catching(e)
+            exitProcess(2)
         }
     }
 }
