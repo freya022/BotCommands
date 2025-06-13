@@ -11,3 +11,5 @@ schemas/Test.json
 /schemas
 dev-config
 dev-data
+
+/pokemon-data

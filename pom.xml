@@ -282,6 +282,7 @@
                                 <sourceDir>${project.basedir}/src/test/java</sourceDir>
                                 <!-- Examples -->
                                 <sourceDir>${project.basedir}/src/examples/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/example-pokedex/kotlin</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -354,6 +355,7 @@
                         <configuration>
                             <sources>
                                 <source>src/examples/kotlin</source>
+                                <source>src/example-pokedex/kotlin</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -367,6 +369,7 @@
                             <resources>
                                 <resource>
                                     <directory>src/examples/resources</directory>
+                                    <directory>src/example-pokedex/resources</directory>
                                 </resource>
                             </resources>
                         </configuration>
