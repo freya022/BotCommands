@@ -35,6 +35,8 @@ internal class TextCommandOptionAggregateBuilderImpl internal constructor(
     override fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit) {
         if (hasVararg())
             throwArgument("Cannot have more than 1 vararg in text commands")
+        require(amount > 0) { "Amount must be positive" }
+        require(requiredAmount > 0) { "Required amount must be positive" }
 
         //Same as in TextCommandVariationBuilder#optionVararg
         varargAggregate(declaredName) {

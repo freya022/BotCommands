@@ -79,9 +79,6 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
         }
         // If this is not a vararg, it should throw later when calling the aggregator
         if (!addedOption && parameter.isVararg) {
-            // TODO: this may cause issues with text commands
-            //  for example when a variation has no argument
-            //  and another variation has a 0-N vararg
             aggregatorArguments[parameter.aggregator.kFunction.valueParameters.last()] = emptyList<Any?>()
         }
 
