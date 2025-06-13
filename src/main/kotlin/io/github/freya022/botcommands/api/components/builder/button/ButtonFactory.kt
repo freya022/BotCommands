@@ -9,7 +9,9 @@ import io.github.freya022.botcommands.internal.components.builder.button.Ephemer
 import io.github.freya022.botcommands.internal.components.builder.button.PersistentButtonBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import java.util.concurrent.ThreadLocalRandom
 import javax.annotation.CheckReturnValue
 
 /**
@@ -73,6 +75,20 @@ class ButtonFactory internal constructor(
      */
     @CheckReturnValue
     fun withDisabled(disabled: Boolean): ButtonFactory = ButtonFactory(componentController, style, label, emoji, disabled)
+
+    /**
+     * Returns a native [Button][JDAButton] which is disabled,
+     * useful to display data between two button,
+     * such as pagination state (`Page ($page / $maxPage)`).
+     *
+     * The button has no data associated with it,
+     * attempting to use it will behave the same as an unknown button.
+     */
+    @CheckReturnValue
+    fun toLabelButton(): JDAButton {
+        val tempId = ThreadLocalRandom.current().nextLong().toString()
+        return JDAButton.of(style, tempId, label, emoji).asDisabled()
+    }
 
     /**
      * Creates an ephemeral button builder.
