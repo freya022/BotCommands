@@ -1,7 +1,7 @@
 plugins {
     id("BotCommands-conventions")
+    id("BotCommands-publish-conventions")
     `java-library`
-    `maven-publish`
 }
 
 dependencies {
@@ -117,6 +117,13 @@ sourceSets {
     }
 }
 
+dokka {
+    dokkaSourceSets.configureEach {
+        suppressedFiles.from("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
+        suppressGeneratedFiles = false
+    }
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
@@ -125,11 +132,5 @@ kotlin {
             "-Xsuppress-warning=CONTEXT_RECEIVERS_DEPRECATED",
             "-Xconsistent-data-class-copy-visibility",
         )
-    }
-}
-
-publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
     }
 }
