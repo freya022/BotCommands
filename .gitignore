@@ -4,10 +4,9 @@
 *.iml
 .idea
 target
-release.properties
-pom.xml.releaseBackup
+build
+.gradle
+.kotlin
 
-schemas/Test.json
-/schemas
 dev-config
 dev-data

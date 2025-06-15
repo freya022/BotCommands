@@ -52,6 +52,6 @@ internal class SpringClassAnnotationsMap(
         val beansWithAnnotation = context.getBeansWithAnnotation(clazz.java)
         if (beansWithAnnotation.isEmpty()) return null
 
-        return beansWithAnnotation.keys.mapTo(hashSetOf()) { context.getType(it).kotlin }
+        return beansWithAnnotation.keys.mapTo(hashSetOf()) { context.getType(it)!!.kotlin }
     }
 }
