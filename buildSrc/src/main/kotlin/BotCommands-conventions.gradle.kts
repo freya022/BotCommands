@@ -5,15 +5,6 @@ plugins {
 }
 
 group = "io.github.freya022"
-version = "3.0.0-beta.2_DEV"
-
-version = Version(
-    major = "3",
-    minor = "0",
-    revision = "0",
-    classifier = "beta.2",
-    isDev = true
-)
 
 java {
     toolchain {
@@ -22,8 +13,6 @@ java {
 
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-
-    withSourcesJar()
 }
 
 repositories {

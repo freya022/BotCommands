@@ -1,6 +1,7 @@
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
+    java
     signing
     id("com.vanniktech.maven.publish")
     id("org.jetbrains.dokka")
@@ -27,12 +28,22 @@ val mavenGpgSecretKey: String? by project
 val canSign = mavenGpgKeyId != null && mavenGpgSecretKey != null
 val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
 
-version = (version as Version).copy(isDev = !canPublish)
+version = Version(
+    major = "3",
+    minor = "0",
+    revision = "0",
+    classifier = "beta.2",
+    isDev = !canPublish
+)
 
 val effectiveTag = if (canPublish) {
     GitUtils.getHeadTag(logger, providers, projectDir.absolutePath) ?: error("Attempted to publish on a non-release commit")
 } else {
     "3.X"
+}
+
+java {
+    withSourcesJar()
 }
 
 dokka {
