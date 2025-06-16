@@ -1,6 +1,7 @@
 plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
+    alias(libs.plugins.ksp)
     `java-library`
 }
 
@@ -67,6 +68,10 @@ dependencies {
     api(libs.jsr305)
     compileOnly(libs.jetbrains.annotations)
 
+    // -------------------- ANNOTATION PROCESSORS --------------------
+
+    ksp(projects.springPropertiesProcessor)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     // Mocking
@@ -106,6 +111,10 @@ dependencies {
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
     doNotTrackState("Can't know when Git hash/branch changes")
     outputs.upToDateWhen { false }
+}
+
+ksp {
+    excludedSources.from(generateInfo)
 }
 
 sourceSets {

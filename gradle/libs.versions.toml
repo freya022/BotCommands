@@ -19,6 +19,8 @@ kotlinx-datetime-jvm = "0.6.1"
 
 jackson = "2.18.3"
 
+kotlinx-serialization = "1.8.1"
+
 trove4j-core = "3.1.0"
 
 jda-emojis = "3.0.0"
@@ -46,6 +48,14 @@ mockk-jvm = "1.13.16"
 byte-buddy = "1.16.1"
 byte-buddy-agent = "1.16.1"
 
+ksp = "2.1.21-2.0.2"
+
+jetbrains-markdown = "0.7.3"
+
+[plugins]
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
@@ -68,6 +78,8 @@ kotlinx-datetime-jvm = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", 
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
 
@@ -97,3 +109,7 @@ mockk-jvm = { module = "io.mockk:mockk-jvm", version.ref = "mockk-jvm" }
 
 byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byte-buddy" }
 byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "byte-buddy-agent" }
+
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+
+jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
