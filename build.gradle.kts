@@ -61,7 +61,8 @@ dependencies {
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot
-    compileOnly(libs.spring.boot.starter) // Optional
+    compileOnly(libs.spring.boot) // Optional
+    compileOnly(libs.spring.boot.autoconfigure) // Optional
 
     // -------------------- ANNOTATION DEPENDENCIES --------------------
 

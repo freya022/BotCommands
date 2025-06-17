@@ -1,6 +1,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+# Change in buildSrc too
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
 
@@ -93,6 +94,8 @@ java-string-similarity = { module = "info.debatty:java-string-similarity", versi
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 
+spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "spring-boot" }
+spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot" }
 
