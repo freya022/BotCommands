@@ -1,7 +1,7 @@
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    java
+    `java-library`
     signing
     id("com.vanniktech.maven.publish")
     id("org.jetbrains.dokka")

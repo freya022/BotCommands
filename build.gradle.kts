@@ -2,7 +2,6 @@ plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
     alias(libs.plugins.ksp)
-    `java-library`
 }
 
 dependencies {
