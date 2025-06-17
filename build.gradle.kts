@@ -107,6 +107,9 @@ dependencies {
     // but we need to make sure the main module works without it
     testCompileOnly(libs.spring.boot)
     testCompileOnly(libs.spring.boot.autoconfigure)
+
+    dokka(rootProject)
+    dokka(projects.botCommandsSpring)
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {

@@ -56,8 +56,8 @@ dokka {
         }
 
         sourceLink {
-            localDirectory = file("src")
-            remoteUrl("https://github.com/freya022/BotCommands/tree/${effectiveTag}/src")
+            localDirectory = rootDir
+            remoteUrl("https://github.com/freya022/BotCommands/tree/${effectiveTag}")
             remoteLineSuffix = "#L"
         }
 
