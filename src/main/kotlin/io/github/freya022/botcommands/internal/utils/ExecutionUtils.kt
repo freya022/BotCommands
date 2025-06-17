@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMix
 import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.valueParameters
 
 internal enum class InsertOptionResult {
     OK,
@@ -68,11 +69,17 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
         }
     } else {
         val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parametersSize)
+        var addedOption = false
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings
             if (option in optionValues) {
                 aggregatorArguments[option] = optionValues[option]
+                addedOption = true
             }
+        }
+        // If this is not a vararg, it should throw later when calling the aggregator
+        if (!addedOption && parameter.isVararg) {
+            aggregatorArguments[parameter.aggregator.kFunction.valueParameters.last()] = emptyList<Any?>()
         }
 
         for (nestedAggregatedParameter in parameter.nestedAggregatedParameters) {

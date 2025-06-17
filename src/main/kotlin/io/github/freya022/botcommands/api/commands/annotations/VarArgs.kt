@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.options.bui
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.options.builder.inlineClassOptionVararg
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 /**
  * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].
@@ -32,12 +33,16 @@ import io.github.freya022.botcommands.api.commands.text.options.builder.inlineCl
 @Retention(AnnotationRetention.RUNTIME)
 annotation class VarArgs(
     /**
-     * The number of times this option needs to appear, which must be between 1 and {@value CommandData#MAX_OPTIONS}.
+     * The number of times this option needs to appear, must be positive.
      */
     val value: Int,
 
     /**
      * The number of required options for this vararg.
+     *
+     * For slash commands, this must can be 0, positive, or how many remaining options there are until [MAX_OPTIONS][CommandData.MAX_OPTIONS].
+     *
+     * For text commands, this must be at least 1.
      */
     val numRequired: Int = 1
 )

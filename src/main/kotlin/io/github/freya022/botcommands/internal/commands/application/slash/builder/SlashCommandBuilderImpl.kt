@@ -44,6 +44,9 @@ internal abstract class SlashCommandBuilderImpl internal constructor(
     }
 
     final override fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit) {
+        require(amount > 0) { "Amount must be positive" }
+        require(requiredAmount >= 0) { "Required amount must be zero or positive" }
+
         //Same as in TextCommandVariationBuilder#optionVararg
         varargAggregate(declaredName) {
             for (i in 0..<amount) {
