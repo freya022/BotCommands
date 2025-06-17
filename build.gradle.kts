@@ -59,7 +59,7 @@ dependencies {
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
-    // Spring Boot
+    // Spring Boot (only for compatibility that cannot be put in a different module)
     compileOnly(libs.spring.boot) // Optional
     compileOnly(libs.spring.boot.autoconfigure) // Optional
 
@@ -103,9 +103,10 @@ dependencies {
     // Test stuff
     testImplementation(libs.kotlin.metadata.jvm)
 
-    // Spring Boot
-    testImplementation(libs.spring.boot.starter)
-    testImplementation(libs.spring.boot.devtools)
+    // The Spring Boot module will include them at runtime,
+    // but we need to make sure the main module works without it
+    testCompileOnly(libs.spring.boot)
+    testCompileOnly(libs.spring.boot.autoconfigure)
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {

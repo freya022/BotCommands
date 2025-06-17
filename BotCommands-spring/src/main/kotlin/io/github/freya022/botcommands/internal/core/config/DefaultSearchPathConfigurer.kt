@@ -3,9 +3,7 @@ package io.github.freya022.botcommands.internal.core.config
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigConfigurer
 import io.github.freya022.botcommands.internal.core.annotations.InternalComponentScan
-import io.github.freya022.botcommands.internal.utils.annotationRef
 import org.springframework.beans.factory.getBeansWithAnnotation
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.ComponentScans
@@ -19,7 +17,7 @@ internal open class DefaultSearchPathConfigurer(private val applicationContext: 
 
         val allUserPackages = (scans + groupScans).flatMap { it.packages }
         check(allUserPackages.isNotEmpty()) {
-            "You must configure at least one package on your ${annotationRef<SpringBootApplication>()} (recommended) or in a ${annotationRef<ComponentScan>()}"
+            "You must configure at least one package on your @SpringBootApplication (recommended) or in a @ComponentScan"
         }
         builder.packages += allUserPackages
     }

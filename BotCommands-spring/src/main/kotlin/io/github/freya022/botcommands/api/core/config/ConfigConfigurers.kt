@@ -9,7 +9,7 @@ sealed interface BConfigurer<T : Any> {
 
 /**
  * Configurer for [BConfig].
- * 
+ *
  * Only usable with Spring.
  */
 interface BConfigConfigurer : BConfigurer<BConfigBuilder>

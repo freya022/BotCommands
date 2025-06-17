@@ -14,16 +14,16 @@ import kotlinx.coroutines.runBlocking
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
-internal abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : BotCommandsBootstrap {
+abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : BotCommandsBootstrap {
     protected val logger = objectLogger()
 
-    internal fun init() {
+    protected fun init() {
         measure("Scanned reflection metadata") {
             ReflectionMetadata.runScan(config, this)
         }
     }
 
-    internal fun loadContext() = runBlocking {
+    fun loadContext() = runBlocking {
         measure("Completed BotCommands loading events") {
             serviceContainer.getService<BContextImpl>().apply {
                 setStatus(BContext.Status.PRE_LOAD)

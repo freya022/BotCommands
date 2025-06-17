@@ -119,7 +119,7 @@ interface BConfig {
 }
 
 @ConfigDSL
-class BConfigBuilder internal constructor() : BConfig {
+class BConfigBuilder : BConfig {
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
 
@@ -272,8 +272,7 @@ class BConfigBuilder internal constructor() : BConfig {
         componentsConfig.apply(block)
     }
 
-    @JvmSynthetic
-    internal fun build(): BConfig {
+    fun build(): BConfig {
         val logger = KotlinLogging.loggerOf<BConfig>()
         if (disableExceptionsInDMs)
             logger.info { "Disabled sending exception in bot owners DMs" }

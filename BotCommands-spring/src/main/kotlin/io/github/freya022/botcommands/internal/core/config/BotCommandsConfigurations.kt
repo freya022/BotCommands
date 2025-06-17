@@ -5,16 +5,15 @@ import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.utils.EmojiUtils
-import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Name
+import java.time.Duration as JavaDuration
 import kotlin.io.path.Path
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
-import java.time.Duration as JavaDuration
 
 @ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
 internal class BotCommandsCoreConfiguration(
@@ -221,4 +220,4 @@ internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComp
     enable = configuration.enable
 }
 
-private fun unusable(): Nothing = throwArgument("Cannot be used")
+private fun unusable(): Nothing = throw UnsupportedOperationException("Cannot be used")

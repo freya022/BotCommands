@@ -6,13 +6,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 
 // This really needs to not be critical
-internal class Version private constructor(
+class Version private constructor(
     val minor: Int,
     val major: Int,
     val revision: Int,
     val classifier: Classifier?
 ) : Comparable<Version> {
-    internal data class Classifier(val name: String, val version: Int) : Comparable<Classifier> {
+    data class Classifier internal constructor(val name: String, val version: Int) : Comparable<Classifier> {
         override fun compareTo(other: Classifier): Int {
             if (name != other.name) return classifierIndex().compareTo(other.classifierIndex())
             return version.compareTo(other.version)

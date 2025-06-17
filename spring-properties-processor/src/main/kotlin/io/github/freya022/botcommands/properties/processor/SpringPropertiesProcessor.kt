@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.properties.processor
 
 import com.google.devtools.ksp.containingFile
-import com.google.devtools.ksp.getDeclaredFunctions
-import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import io.github.freya022.botcommands.properties.processor.utils.*
@@ -13,8 +11,6 @@ import org.intellij.markdown.ast.getTextInNode
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.parser.MarkdownParser
 
-private val nameName = AnnotationName("org.springframework.boot.context.properties.bind", "Name")
-private val configurationPropertiesName = AnnotationName("org.springframework.boot.context.properties", "ConfigurationProperties")
 private val configurationValueName = AnnotationName("io.github.freya022.botcommands.internal.core.config", "ConfigurationValue")
 private val deprecatedValueName = AnnotationName("io.github.freya022.botcommands.internal.core.config", "DeprecatedValue")
 private val ignoreDefaultValueName = AnnotationName("io.github.freya022.botcommands.internal.core.config", "IgnoreDefaultValue")
@@ -34,17 +30,11 @@ class SpringPropertiesProcessor(
     private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
 
-    private val configurableProperties: MutableSet<String> = hashSetOf()
-    private val configuredProperties: MutableSet<String> = hashSetOf()
     private val metadata = SpringMetadata()
 
     private val processedNodes: MutableList<KSNode> = arrayListOf()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        processedNodes += resolver.getSymbolsWithAnnotation(configurationPropertiesName.name, inDepth = false)
-            .filterIsInstance<KSClassDeclaration>()
-            .onEach(::processClassDeclaration)
-
         processedNodes += resolver.getSymbolsWithAnnotation(configurationValueName.name, inDepth = false)
             .filterIsInstance<KSPropertyDeclaration>()
             .onEach(::processPropertyDeclaration)
@@ -54,16 +44,7 @@ class SpringPropertiesProcessor(
 
     @OptIn(ExperimentalSerializationApi::class)
     override fun finish() {
-        log.warn("Processed ${processedNodes.size} nodes")
-
-        val propertiesWithoutConfigValue = configurableProperties - configuredProperties
-        val propertiesWithoutConstructorParam = configuredProperties - configurableProperties
-        if (propertiesWithoutConfigValue.isNotEmpty()) {
-            log.warn("Could not find a @ConfigurationValue for $propertiesWithoutConfigValue")
-        }
-        if (propertiesWithoutConstructorParam.isNotEmpty()) {
-            log.warn("Could not find a constructor parameter for $propertiesWithoutConstructorParam")
-        }
+        log.info("Processed ${processedNodes.size} nodes")
 
         codeGenerator.createNewFile(
             dependencies = Dependencies(
@@ -78,64 +59,10 @@ class SpringPropertiesProcessor(
         }
     }
 
-    /**
-     * Find all properties based on the @ConfigurationProperties prefix + constructor parameter name.
-     *
-     * This is used to check that all properties have a @ConfigurationValue assigned and vice versa
-     */
-    private fun processClassDeclaration(classDeclaration: KSClassDeclaration) {
-        val prefix: String = classDeclaration.findAnnotation(configurationPropertiesName).getOrDefault("prefix")
-        addPropertyBinds(classDeclaration, prefix)
-    }
-
-    /**
-     * Add all constructor parameters as configuration properties,
-     * handle inner classes recursively
-     */
-    private fun addPropertyBinds(classDeclaration: KSClassDeclaration, prefix: String) {
-        val constructor = classDeclaration.getDeclaredFunctions().single { it.isConstructor() }
-
-        constructor.parameters.forEach { param ->
-            /**
-             * Get the class declaration of [param],
-             * or `null` if the parameter does not represent an inner class of [classDeclaration].
-             */
-            fun getInnerClassOrNull(): KSClassDeclaration? {
-                val paramClassDeclaration = param.type.resolve().declaration as? KSClassDeclaration ?: return null
-
-                val parentDeclaration = paramClassDeclaration.parentDeclaration ?: return null
-                if (parentDeclaration.qualifiedName!!.asString() != classDeclaration.qualifiedName!!.asString()) return null
-
-                return paramClassDeclaration
-            }
-
-            val innerClass = getInnerClassOrNull()
-            val fullBindName = "$prefix.${param.getBindName()}"
-            if (innerClass != null && innerClass.classKind == ClassKind.CLASS) {
-                addPropertyBinds(innerClass, fullBindName)
-            } else {
-                configurableProperties.add(fullBindName)
-            }
-        }
-    }
-
-    private fun KSValueParameter.getBindName(): String {
-        val nameAnnotation = findAnnotationOrNull(nameName)
-        return nameAnnotation?.getOrDefault("value")
-            ?: this.name?.asString()
-            ?: throw IllegalArgumentException("No name for $this")
-    }
-
     private fun processPropertyDeclaration(propertyDeclaration: KSPropertyDeclaration) {
         val configurationPropertiesAnnotation = propertyDeclaration.findAnnotation(configurationValueName)
         val path: String = configurationPropertiesAnnotation.getOrDefault("path")
         val defaultValue: String? = configurationPropertiesAnnotation.getIfSet("defaultValue")
-
-        if (path !in configurableProperties) {
-            log.warn("Metadata was added for '$path' but there is no such parameter in a constructor annotated with @ConfigurationProperties")
-        } else {
-            configuredProperties += path
-        }
 
         fun KSTypeReference.resolveTypedQualifiedName(from: KSDeclaration): String {
             val type = resolve()

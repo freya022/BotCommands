@@ -5,10 +5,10 @@ import io.github.freya022.botcommands.api.core.service.annotations.InjectedServi
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import kotlinx.coroutines.debug.DebugProbes
+import java.time.Duration as JavaDuration
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
-import java.time.Duration as JavaDuration
 
 @InjectedService
 interface BDatabaseConfig {

@@ -1,5 +1,3 @@
-@file:Suppress("ConfigurationProperties")
-
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.JDAService
@@ -10,9 +8,9 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.Name
 import org.springframework.context.event.ContextClosedEvent
+import java.time.Duration as JavaDuration
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
-import java.time.Duration as JavaDuration
 
 /**
  * Configuration properties for [JDAService].
