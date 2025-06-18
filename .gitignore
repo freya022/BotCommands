@@ -3,7 +3,6 @@
 
 *.iml
 .idea
-target
 build
 .gradle
 .kotlin
