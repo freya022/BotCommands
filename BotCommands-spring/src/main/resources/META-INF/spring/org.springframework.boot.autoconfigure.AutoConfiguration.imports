@@ -1,1 +1,1 @@
-io.github.freya022.botcommands.autoconfigure.BotCommandsAutoConfiguration
+io.github.freya022.botcommands.internal.core.autoconfigure.BotCommandsAutoConfiguration

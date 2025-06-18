@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.autoconfigure
+package io.github.freya022.botcommands.internal.core.autoconfigure
 
 import io.github.freya022.botcommands.internal.core.SpringBotCommandsConfiguration
 import org.springframework.boot.autoconfigure.AutoConfiguration
