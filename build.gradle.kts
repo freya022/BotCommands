@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+configurations.all {
+    exclude(module = "opus-java")
+    exclude(module = "tink")
+}
+
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
