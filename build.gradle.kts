@@ -135,6 +135,18 @@ sourceSets {
     }
 }
 
+// Register examples
+sourceSets {
+    register("examples") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+configurations["examplesApi"].extendsFrom(configurations["api"], configurations["testApi"])
+configurations["examplesImplementation"].extendsFrom(configurations["implementation"], configurations["testImplementation"])
+configurations["examplesCompileOnly"].extendsFrom(configurations["compileOnly"], configurations["testCompileOnly"])
+
 dokka {
     dokkaSourceSets.configureEach {
         suppressedFiles.from("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
