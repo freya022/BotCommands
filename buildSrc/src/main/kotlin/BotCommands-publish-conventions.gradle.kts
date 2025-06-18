@@ -33,7 +33,8 @@ version = Version(
     minor = "0",
     revision = "0",
     classifier = "beta.2",
-    isDev = !canPublish
+    // isRelease = isCi || canPublish
+    isDev = !GitUtils.isCI(providers) && !canPublish
 )
 
 val effectiveTag = if (canPublish) {
