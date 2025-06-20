@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
@@ -8,11 +7,11 @@ import io.github.freya022.botcommands.api.commands.text.options.TextCommandOptio
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.retrieveMemberByIdOrNull
 import io.github.freya022.botcommands.api.core.utils.retrieveUserByIdOrNull
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -41,8 +40,8 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     SlashParameterResolver<T, R>,
     ComponentParameterResolver<T, R>,
     UserContextParameterResolver<T, R> {
-        
-    private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
+
+    private val builtinRepliesFactory: BuiltinRepliesFactory = context.getService()
 
     final override val pattern: Pattern get() = userMentionPattern
     final override val testExample: String = "<@1234>"
@@ -76,7 +75,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         }
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)
-            event.reply_(defaultMessagesFactory.get(event).resolverUserNotFoundMsg, ephemeral = true).queue()
+            event.reply(builtinRepliesFactory.get(event).resolverUserNotFound(event, id)).setEphemeral(true).queue()
 
         return entity
     }

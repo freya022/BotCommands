@@ -1,14 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
@@ -156,11 +155,10 @@ private fun onUnresolvableOption(
         else -> {
             //Only use the generic message if the user didn't handle this situation
             if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                val defaultMessages = option.context.getService<DefaultMessagesFactory>().get(event)
-                event.reply_(
-                    defaultMessages.getSlashCommandUnresolvableOptionMsg(option.discordName),
-                    ephemeral = true
-                ).queue()
+                val defaultMessages = option.context.getService<BuiltinRepliesFactory>().get(event)
+                event.reply(defaultMessages.slashCommandUnresolvableOption(event, option))
+                    .setEphemeral(true)
+                    .queue()
             }
 
             InsertOptionResult.ABORT

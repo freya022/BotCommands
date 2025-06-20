@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.RequiresText
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -14,7 +15,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.utils.reference
@@ -44,14 +44,14 @@ internal open class BuiltInHelpCommandProvider {
     @ConditionalOnMissingBean(IHelpCommand::class)
     internal open fun builtInHelpCommand(
         context: BContextImpl,
-        defaultMessagesFactory: DefaultMessagesFactory,
+        builtinRepliesFactory: BuiltinRepliesFactory,
         textCommandsContext: TextCommandsContext,
         helpBuilderConsumer: HelpBuilderConsumer?,
-    ) = HelpCommand(context, defaultMessagesFactory, textCommandsContext, helpBuilderConsumer)
+    ) = HelpCommand(context, builtinRepliesFactory, textCommandsContext, helpBuilderConsumer)
 }
 internal class HelpCommand internal constructor(
     private val context: BContextImpl,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val builtinRepliesFactory: BuiltinRepliesFactory,
     private val textCommandsContext: TextCommandsContext,
     private val helpBuilderConsumer: HelpBuilderConsumer?
 ) : IHelpCommand, TextCommandProvider {
@@ -118,7 +118,7 @@ internal class HelpCommand internal constructor(
             // Ignore and reply in channel/react if we can't send to DMs
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                 if (event.channel.canTalk())
-                    event.respond(defaultMessagesFactory.get(event).closedDMErrorMsg).await()
+                    event.channel.sendMessage(builtinRepliesFactory.get(event).closedDirectMessages(event)).await()
                 else if (hasReactionPermissions)
                     // May throw REACTION_BLOCKED
                     event.message.addReaction(context.textConfig.dmClosedEmoji).await()

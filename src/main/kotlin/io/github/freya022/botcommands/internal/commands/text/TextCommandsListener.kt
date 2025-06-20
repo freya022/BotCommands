@@ -10,6 +10,8 @@ import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BTextConfig
+import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -17,7 +19,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalSe
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -42,7 +44,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val builtinRepliesFactory: BuiltinRepliesFactory,
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     private val rateLimitHandler: RateLimitHandler,
@@ -132,9 +134,9 @@ internal class TextCommandsListener internal constructor(
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         if (e is InsufficientPermissionException) {
-            replyError(event, defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
+            replyError(event, builtinRepliesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            replyError(event, defaultMessagesFactory.get(event).generalErrorMsg)
+            replyError(event, builtinRepliesFactory.get(event).uncaughtException(event))
         }
     }
 
@@ -175,19 +177,22 @@ internal class TextCommandsListener internal constructor(
         val usability = commandInfo.getUsability(member, event.guildChannel)
 
         if (usability.isNotUsable) {
-            val errorMessage: String = when (usability.bestReason) {
-                UnusableReason.HIDDEN -> throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
-                UnusableReason.OWNER_ONLY -> defaultMessagesFactory.get(event).ownerOnlyErrorMsg
-                UnusableReason.USER_PERMISSIONS -> {
-                    val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
-                    defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions)
+            val errorMessage = fromReplies(event) {
+                when (usability.bestReason) {
+                    UnusableReason.HIDDEN -> throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
+                    UnusableReason.OWNER_ONLY -> ownerOnly(event)
+                    UnusableReason.USER_PERMISSIONS -> {
+                        val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
+                        missingUserPermissions(event, missingPermissions)
+                    }
+                    UnusableReason.BOT_PERMISSIONS -> {
+                        val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
+                        missingBotPermissions(event, missingPermissions)
+                    }
+                    UnusableReason.NSFW_ONLY -> nsfwOnly(event)
                 }
-                UnusableReason.BOT_PERMISSIONS -> {
-                    val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
-                    defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions)
-                }
-                UnusableReason.NSFW_ONLY -> defaultMessagesFactory.get(event).nsfwOnlyErrorMsg
             }
+
             replyError(event, errorMessage)
             return false
         }
@@ -218,13 +223,13 @@ internal class TextCommandsListener internal constructor(
         return ExecutionResult.OK
     }
 
-    private suspend fun replyError(event: MessageReceivedEvent, msg: String) {
+    private suspend fun replyError(event: MessageReceivedEvent, message: MessageCreateData) {
         val channel = when {
             event.guildChannel.canTalk() -> event.channel
             else -> event.author.openPrivateChannel().await()
         }
 
-        channel.sendMessage(msg)
+        channel.sendMessage(message)
             .awaitCatching()
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                 event.message.addReaction(context.textConfig.dmClosedEmoji).await()
@@ -240,9 +245,12 @@ internal class TextCommandsListener internal constructor(
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
-            val suggestionsStr = suggestions.joinToString("**, **", "**", "**") { it.name }
-            replyError(event, defaultMessagesFactory.get(event).getCommandNotFoundMsg(suggestionsStr))
+            replyError(event, builtinRepliesFactory.get(event).commandNotFound(event, suggestions))
         }
+    }
+
+    private inline fun fromReplies(event: MessageReceivedEvent, crossinline block: BuiltinReplies.() -> MessageCreateData): MessageCreateData {
+        return builtinRepliesFactory.get(event).run(block)
     }
 
     internal enum class Status {

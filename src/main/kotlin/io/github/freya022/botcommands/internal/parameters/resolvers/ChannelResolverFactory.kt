@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
@@ -12,10 +11,10 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.function
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
@@ -33,7 +32,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -61,8 +59,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         // When a component expired while the bot was offline,
         // the required JDA instance isn't there yet.
         IChannelResolver {
-            
-        private val defaultMessagesFactory: DefaultMessagesFactory = context.getService()
+
+        private val builtinRepliesFactory: BuiltinRepliesFactory = context.getService()
 
         //region Text
         override val pattern: Pattern = channelPattern
@@ -116,7 +114,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
                     return retrieveThreadChannel(event, guild, channelId)
 
                 logger.trace { "Could not find channel of type ${type.simpleNestedName} and id $channelId" }
-                event.reply_(defaultMessagesFactory.get(event).resolverChannelNotFoundMsg, ephemeral = true).queue()
+                event.reply(builtinRepliesFactory.get(event).resolverChannelNotFound(event, channelId)).setEphemeral(true).queue()
             }
 
             return channel
@@ -130,15 +128,15 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
             if (event.channel.canTalk())
-                event.message.reply(defaultMessagesFactory.get(event).getResolverChannelMissingAccessMsg("<#$channelId>")).queue()
+                event.message.reply(builtinRepliesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
         })
 
         private suspend fun retrieveThreadChannel(
-            event: IReplyCallback,
+            event: GenericComponentInteractionCreateEvent,
             guild: Guild,
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(guild, channelId, onMissingAccess = {
-            event.reply_(defaultMessagesFactory.get(event).getResolverChannelMissingAccessMsg("<#$channelId>"), ephemeral = true).queue()
+            event.reply(builtinRepliesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
         })
 
         private suspend fun retrieveThreadChannel(

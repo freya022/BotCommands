@@ -1,14 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit.handler
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.bucket4j.Bucket
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.CancellableRateLimitImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.NullCancellableRateLimit
@@ -28,7 +27,7 @@ internal class RateLimitHandler internal constructor(
     private val context: BContext,
     private val botOwners: BotOwners,
     private val rateLimitContainer: RateLimitContainer,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val builtinRepliesFactory: BuiltinRepliesFactory,
     config: BConfig,
 ) {
     private val enableOwnerBypass = config.enableOwnerBypass
@@ -91,8 +90,7 @@ internal class RateLimitHandler internal constructor(
         val rateLimitInfo = rateLimitContainer[group]
             ?: run {
                 componentsListenerLogger.warn { "Could not find a rate limiter named '$group'" }
-                val defaultMessages = defaultMessagesFactory.get(event)
-                event.reply_(defaultMessages.componentExpiredErrorMsg, ephemeral = true).queue()
+                event.reply(builtinRepliesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
                 return
             }
 

@@ -7,22 +7,26 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.api.localization.DefaultMessages
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.dv8tion.jda.api.utils.TimeFormat
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -59,8 +63,8 @@ class DefaultRateLimitHandler(
             event.guildChannel.canTalk() -> event.channel
             else -> event.author.openPrivateChannel().await()
         }
-        val messages = context.getService<DefaultMessagesFactory>().get(event)
-        val content = getRateLimitMessage(messages, probe)
+        val messages = context.getService<BuiltinRepliesFactory>().get(event)
+        val content = getRateLimitMessage(event, messages, probe)
 
         runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
             val messageId = channel.sendMessage(content).await().idLong
@@ -80,7 +84,7 @@ class DefaultRateLimitHandler(
         commandInfo: ApplicationCommandInfo,
         probe: ConsumptionProbe
     ) where T : GenericCommandInteractionEvent, T : IReplyCallback {
-        onRateLimit(context, event, probe)
+        onRateLimit0(context, event, probe)
     }
 
     override suspend fun <T> onRateLimit(
@@ -88,12 +92,17 @@ class DefaultRateLimitHandler(
         event: T,
         probe: ConsumptionProbe
     ) where T : GenericComponentInteractionCreateEvent, T : IReplyCallback, T : IMessageEditCallback {
-        onRateLimit(context, event as IReplyCallback, probe)
+        onRateLimit0(context, event, probe)
     }
 
-    private suspend fun onRateLimit(context: BContext, event: IReplyCallback, probe: ConsumptionProbe) {
-        val messages = context.getService<DefaultMessagesFactory>().get(event)
-        val content = getRateLimitMessage(messages, probe)
+    private suspend fun <T> onRateLimit0(
+        context: BContext,
+        event: T,
+        probe: ConsumptionProbe
+    ) where T : GenericInteractionCreateEvent,
+            T : IReplyCallback {
+        val messages = context.getService<BuiltinRepliesFactory>().get(event)
+        val content = getRateLimitMessage(event, messages, probe)
         val hook = event.reply(content).setEphemeral(true).await()
         // Only schedule delete if the interaction hook doesn't expire before
         // Technically this is supposed to be 15 minutes but, just to be safe
@@ -106,16 +115,17 @@ class DefaultRateLimitHandler(
     }
 
     private fun getRateLimitMessage(
-        messages: DefaultMessages,
+        event: Event,
+        replies: BuiltinReplies,
         probe: ConsumptionProbe
-    ): String {
-        val timestamp = TimeFormat.RELATIVE.atTimestamp(System.currentTimeMillis() + probe.nanosToWaitForRefill.floorDiv(1_000_000))
+    ): MessageCreateData {
+        val deadline = Instant.now().plusNanos(probe.nanosToWaitForRefill)
         return when (scope) {
-            RateLimitScope.USER -> messages.getUserRateLimitMsg(timestamp)
-            RateLimitScope.USER_PER_GUILD -> messages.getUserRateLimitMsg(timestamp)
-            RateLimitScope.USER_PER_CHANNEL -> messages.getUserRateLimitMsg(timestamp)
-            RateLimitScope.GUILD -> messages.getGuildRateLimitMsg(timestamp)
-            RateLimitScope.CHANNEL -> messages.getChannelRateLimitMsg(timestamp)
+            RateLimitScope.USER -> replies.userRateLimited(event, deadline)
+            RateLimitScope.USER_PER_GUILD -> replies.userRateLimited(event, deadline)
+            RateLimitScope.USER_PER_CHANNEL -> replies.userRateLimited(event, deadline)
+            RateLimitScope.GUILD -> replies.guildRateLimited(event, deadline)
+            RateLimitScope.CHANNEL -> replies.channelRateLimited(event, deadline)
         }
     }
 }
