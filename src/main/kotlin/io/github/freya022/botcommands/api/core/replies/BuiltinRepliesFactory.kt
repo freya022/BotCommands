@@ -2,7 +2,6 @@
 
 package io.github.freya022.botcommands.api.core.replies
 
-import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
@@ -15,7 +14,11 @@ import java.util.*
  * Factory of [BuiltinReplies], the default implementation is [DefaultBuiltinRepliesFactory], or,
  * if a non-default [DefaultMessagesFactory] exists, an adapter is used.
  *
- * **Usage**: Register your instance as a service with [@BService][BService].
+ * ### Complete customization
+ *
+ * Returning a [BuiltinRepliesFactory] from a service factory will disable the default implementation,
+ * this will let you return a completely custom instance,
+ * in which you can craft entirely custom messages in any way you see fit.
  */
 @InterfacedService(acceptMultiple = false)
 interface BuiltinRepliesFactory {

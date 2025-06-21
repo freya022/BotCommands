@@ -31,12 +31,6 @@ import kotlin.concurrent.withLock
  *
  * Refer to [Localization] for mode customization details.
  *
- * ### Complete customization
- *
- * Returning a [BuiltinRepliesFactory] from a service factory will disable the default implementation,
- * this will let you return a completely custom instance,
- * in which you can craft entirely custom messages in any way you see fit.
- *
  * @see Localization
  */
 class DefaultBuiltinRepliesFactory(
