@@ -1,3 +1,5 @@
+@file:Suppress("removal", "DEPRECATION")
+
 package io.github.freya022.botcommands.api.core.utils
 
 import dev.minn.jda.ktx.coroutines.await

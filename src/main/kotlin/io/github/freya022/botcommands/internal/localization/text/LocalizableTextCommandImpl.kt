@@ -1,3 +1,5 @@
+@file:Suppress("removal", "DEPRECATION")
+
 package io.github.freya022.botcommands.internal.localization.text
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
@@ -35,6 +37,8 @@ internal class LocalizableTextCommandImpl internal constructor(
         )
     }
 
+    @Suppress("DEPRECATION", "removal")
+    @Deprecated("Replaced with getBuiltinReplies()")
     override fun getDefaultMessages(): DefaultMessages {
         return defaultMessagesFactory.get(locale)
     }

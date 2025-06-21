@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
-import io.github.freya022.botcommands.api.localization.DefaultMessages
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
@@ -39,7 +38,7 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
  *   then it is sent to the user's DMs, or returns if not possible.
  * - Interactions are simply replying an ephemeral message to the user.
  *
- * All messages sent to the user are localized messages from [DefaultMessages] and will be deleted when expired.
+ * All messages sent to the user are localized messages from [BuiltinReplies] and will be deleted when expired.
  *
  * **Note:** The rate limit message won't be deleted in a private channel,
  * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.

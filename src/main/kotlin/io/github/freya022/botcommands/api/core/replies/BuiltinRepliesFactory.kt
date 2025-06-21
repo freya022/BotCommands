@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.freya022.botcommands.api.core.replies
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService

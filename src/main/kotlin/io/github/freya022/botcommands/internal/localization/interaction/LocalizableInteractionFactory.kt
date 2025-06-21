@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.freya022.botcommands.internal.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig

@@ -45,6 +45,8 @@ interface LocalizableAction {
      *
      * @see DefaultMessagesFactory
      */
+    @Suppress("DEPRECATION", "removal")
+    @Deprecated("Replaced with getBuiltinReplies()")
     fun getDefaultMessages(): DefaultMessages
 
     /**

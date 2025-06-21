@@ -1,3 +1,5 @@
+@file:Suppress("removal", "DEPRECATION")
+
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -15,6 +17,7 @@ import java.util.*
  *
  * @see InterfacedService @InterfacedService
  */
+@Deprecated("Replaced by BuiltinRepliesFactory")
 @InterfacedService(acceptMultiple = false)
 interface DefaultMessagesFactory {
     /**
