@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -16,7 +17,8 @@ internal class LocalizableInteractionFactory internal constructor(
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
     private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val builtinRepliesFactory: BuiltinRepliesFactory,
 ) {
     internal fun create(event: IReplyCallback) =
-        LocalizableInteractionImpl(event, localizationService, localizationConfig, userLocaleProvider, guildLocaleProvider, defaultMessagesFactory)
+        LocalizableInteractionImpl(event, localizationService, localizationConfig, userLocaleProvider, guildLocaleProvider, defaultMessagesFactory, builtinRepliesFactory)
 }
