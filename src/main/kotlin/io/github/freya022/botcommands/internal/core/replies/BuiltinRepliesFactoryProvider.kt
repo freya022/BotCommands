@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.core.service.getInterfacedServiceTypes
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.localization.FallbackDefaultMessagesFactory
@@ -34,6 +35,7 @@ internal open class BuiltinRepliesFactoryProvider internal constructor() {
     @ConditionalService(ActivationCondition::class)
     open fun builtinRepliesFactory(
         defaultMessagesFactory: DefaultMessagesFactory,
+        permissionLocalization: PermissionLocalization,
         localizationService: LocalizationService,
         textCommandLocaleProvider: TextCommandLocaleProvider,
         userLocaleProvider: UserLocaleProvider,
@@ -44,7 +46,7 @@ internal open class BuiltinRepliesFactoryProvider internal constructor() {
             return BuiltinRepliesFactoryDefaultMessagesFactoryAdapter(defaultMessagesFactory)
         }
 
-        return DefaultBuiltinRepliesFactory(localizationService, textCommandLocaleProvider, userLocaleProvider)
+        return DefaultBuiltinRepliesFactory(permissionLocalization, localizationService, textCommandLocaleProvider, userLocaleProvider)
     }
 
     private fun hasCustomDefaultMessages(): Boolean {

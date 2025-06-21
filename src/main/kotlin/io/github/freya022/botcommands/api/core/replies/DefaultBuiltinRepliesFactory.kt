@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.replies
 
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -34,6 +35,7 @@ import kotlin.concurrent.withLock
  * @see Localization
  */
 class DefaultBuiltinRepliesFactory(
+    private val permissionLocalization: PermissionLocalization,
     private val localizationService: LocalizationService,
     private val textCommandLocaleProvider: TextCommandLocaleProvider,
     private val userLocaleProvider: UserLocaleProvider,
@@ -47,7 +49,7 @@ class DefaultBuiltinRepliesFactory(
         cache[locale]?.let { return it }
 
         return lock.withLock {
-            cache.getOrPut(locale) { DefaultBuiltinReplies(localizationService, locale, bundleName) }
+            cache.getOrPut(locale) { DefaultBuiltinReplies(permissionLocalization, localizationService, locale, bundleName) }
         }
     }
 

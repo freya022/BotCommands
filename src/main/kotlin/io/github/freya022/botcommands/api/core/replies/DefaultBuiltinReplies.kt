@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.LocalizationTemplate
+import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.localize
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.Permission
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 import java.util.*
+import kotlin.to
 
 /**
  * Default implementation of [BuiltinReplies],
@@ -21,8 +23,9 @@ import java.util.*
  * @see DefaultBuiltinRepliesFactory
  */
 open class DefaultBuiltinReplies(
+    protected val permissionLocalization: PermissionLocalization,
     localizationService: LocalizationService,
-    locale: Locale,
+    protected val locale: Locale,
     bundleName: String,
 ) : BuiltinReplies {
 
@@ -32,19 +35,17 @@ open class DefaultBuiltinReplies(
         throwArgument("Could find localization files for '$bundleName', providers: $mappingProviders, readers: $mappingReaders")
     }
 
-    protected val permissionsLocalization: Localization? = localizationService.getInstance("Permissions", locale)
-
     override fun uncaughtException(event: GenericEvent?): MessageCreateData {
         return getLocalizationTemplate("uncaught_exception").localize().toMessage()
     }
 
     override fun missingUserPermissions(event: GenericEvent?, permissions: Set<Permission>): MessageCreateData {
-        val localizedPermissions = permissions.joinToString(separator = ", ", transform = ::getLocalizedPermission)
+        val localizedPermissions = permissions.joinToString(separator = ", ") { permissionLocalization.localize(it, locale) }
         return getLocalizationTemplate("missing.permissions.user").localize("permissions" to localizedPermissions).toMessage()
     }
 
     override fun missingBotPermissions(event: GenericEvent?, permissions: Set<Permission>): MessageCreateData {
-        val localizedPermissions = permissions.joinToString(separator = ", ", transform = ::getLocalizedPermission)
+        val localizedPermissions = permissions.joinToString(separator = ", ") { permissionLocalization.localize(it, locale) }
         return getLocalizationTemplate("missing.permissions.bot").localize("permissions" to localizedPermissions).toMessage()
     }
 
@@ -117,11 +118,6 @@ open class DefaultBuiltinReplies(
             ?: throwArgument("Template '$path' could not be found, available keys: ${localization.keys}")
 
         return template
-    }
-
-    protected fun getLocalizedPermission(permission: Permission): String {
-        @Suppress("UsePropertyAccessSyntax") // `permission.name` targets Enum#name() which is definitely not the same
-        return permissionsLocalization?.get(permission.name)?.localize() ?: permission.getName()
     }
 
     protected fun String.toMessage(): MessageCreateData = MessageCreateData.fromContent(this)
