@@ -29,11 +29,8 @@ open class DefaultBuiltinReplies(
     bundleName: String,
 ) : BuiltinReplies {
 
-    protected val localization: Localization = localizationService.getInstance(bundleName, locale) ?: run {
-        val mappingProviders = localizationService.getMappingProviders()
-        val mappingReaders = localizationService.getMappingReaders()
-        throwArgument("Could find localization files for '$bundleName', providers: $mappingProviders, readers: $mappingReaders")
-    }
+    protected val localization: Localization = localizationService.getInstance(bundleName, locale)
+        ?: throwArgument("Could not find localization files for '$bundleName'")
 
     override fun uncaughtException(event: GenericEvent?): MessageCreateData {
         return getLocalizationTemplate("uncaught_exception").localize().toMessage()
