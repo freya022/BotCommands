@@ -42,10 +42,10 @@ class DefaultBuiltinRepliesFactory(
     private val bundleName: String = "BuiltinReplies",
 ) : BuiltinRepliesFactory {
 
-    private val cache: MutableMap<Locale, BuiltinReplies> = hashMapOf()
+    private val cache: MutableMap<Locale, DefaultBuiltinReplies> = hashMapOf()
     private val lock = ReentrantLock()
 
-    override fun get(locale: Locale): BuiltinReplies {
+    override fun get(locale: Locale): DefaultBuiltinReplies {
         cache[locale]?.let { return it }
 
         return lock.withLock {
@@ -53,7 +53,7 @@ class DefaultBuiltinRepliesFactory(
         }
     }
 
-    override fun get(event: MessageReceivedEvent): BuiltinReplies = get(textCommandLocaleProvider.getLocale(event))
+    override fun get(event: MessageReceivedEvent): DefaultBuiltinReplies = get(textCommandLocaleProvider.getLocale(event))
 
-    override fun get(event: Interaction): BuiltinReplies = get(userLocaleProvider.getLocale(event))
+    override fun get(event: Interaction): DefaultBuiltinReplies = get(userLocaleProvider.getLocale(event))
 }
