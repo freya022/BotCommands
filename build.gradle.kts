@@ -102,8 +102,8 @@ dependencies {
     testImplementation(libs.jackson.dataformat.yaml)
 
     // Upgrade because kotlinx-coroutines-debug somehow has an ANCIENT version
-    testImplementation(libs.byte.buddy)
-    testImplementation(libs.byte.buddy.agent)
+    testImplementation(libs.bytebuddy)
+    testImplementation(libs.bytebuddy.agent)
 
     // Test stuff
     testImplementation(libs.kotlin.metadata)
