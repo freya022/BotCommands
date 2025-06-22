@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*

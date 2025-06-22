@@ -4,7 +4,7 @@ import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL

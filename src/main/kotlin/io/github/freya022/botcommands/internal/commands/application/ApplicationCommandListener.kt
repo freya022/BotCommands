@@ -15,8 +15,8 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.entities.inputUser
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions

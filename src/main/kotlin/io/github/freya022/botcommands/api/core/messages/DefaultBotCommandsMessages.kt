@@ -1,8 +1,8 @@
-package io.github.freya022.botcommands.api.core.replies
+package io.github.freya022.botcommands.api.core.messages
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
-import io.github.freya022.botcommands.api.core.replies.exceptions.MissingReplyTemplateException
+import io.github.freya022.botcommands.api.core.messages.exceptions.MissingReplyTemplateException
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.LocalizationTemplate

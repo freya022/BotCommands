@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider

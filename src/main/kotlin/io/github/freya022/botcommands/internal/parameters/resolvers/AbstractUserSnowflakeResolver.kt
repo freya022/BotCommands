@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.options.TextCommandOptio
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.retrieveMemberByIdOrNull

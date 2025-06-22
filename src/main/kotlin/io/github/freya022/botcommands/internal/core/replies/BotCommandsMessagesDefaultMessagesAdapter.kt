@@ -4,7 +4,7 @@ package io.github.freya022.botcommands.internal.core.replies
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.GenericEvent

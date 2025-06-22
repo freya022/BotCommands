@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.modals
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BModalsConfig
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals

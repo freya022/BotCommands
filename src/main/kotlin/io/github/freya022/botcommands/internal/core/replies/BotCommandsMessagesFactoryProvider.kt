@@ -3,8 +3,8 @@
 package io.github.freya022.botcommands.internal.core.replies
 
 import io.github.classgraph.ClassGraph
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.replies.DefaultBotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService

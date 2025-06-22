@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.core.replies
+package io.github.freya022.botcommands.api.core.messages
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo

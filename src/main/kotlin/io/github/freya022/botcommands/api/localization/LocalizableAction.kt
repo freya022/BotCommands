@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries

@@ -4,10 +4,10 @@ package io.github.freya022.botcommands.framework
 
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
-import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.replies.DefaultBotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.replies.exceptions.MissingReplyTemplateException
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.messages.exceptions.MissingReplyTemplateException
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
