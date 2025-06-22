@@ -31,11 +31,3 @@ dependencies {
     testImplementation(libs.spring.boot.starter)
     testRuntimeOnly(libs.spring.boot.devtools)
 }
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xjvm-default=all",
-        )
-    }
-}

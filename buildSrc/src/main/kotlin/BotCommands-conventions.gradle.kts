@@ -35,6 +35,8 @@ kotlin {
 
         freeCompilerArgs.addAll(
             "-Xjsr305=strict",
+            "-Xjvm-default=all",
+            "-Xconsistent-data-class-copy-visibility",
         )
     }
 }

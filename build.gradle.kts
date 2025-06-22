@@ -157,10 +157,8 @@ dokka {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-Xjvm-default=all",
             "-Xcontext-receivers",
             "-Xsuppress-warning=CONTEXT_RECEIVERS_DEPRECATED",
-            "-Xconsistent-data-class-copy-visibility",
         )
     }
 }
