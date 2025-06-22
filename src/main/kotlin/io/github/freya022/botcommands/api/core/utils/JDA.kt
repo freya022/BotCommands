@@ -7,7 +7,7 @@ import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
-import io.github.freya022.botcommands.api.localization.DefaultMessages
+import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.internal.utils.deferredRestAction
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import net.dv8tion.jda.api.JDA
@@ -242,9 +242,9 @@ inline fun <R> suppressContentWarning(block: () -> R): R {
 
 /**
  * Computes the missing permissions from the specified permission holder,
- * If you plan on showing them, be sure to use [DefaultMessages.getPermission]
+ * if you plan on showing them, be sure to use [PermissionLocalization.localize].
  *
- * @see DefaultMessages.getPermission
+ * @see PermissionLocalization.localize
  */
 fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: IPermissionHolder, channel: GuildChannel): Set<Permission> =
     EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
