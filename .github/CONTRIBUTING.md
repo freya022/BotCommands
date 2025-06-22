@@ -38,10 +38,10 @@ but the PR merge commit must contain the prefix.
 - Return the best type; don't narrow
 
 ## Building locally
-You can build the library and publish it to your *local* Maven repository by running `mvn install`,
+You can build the library and publish it to your *local* Maven repository by running `./gradlew publishToMavenLocal`,
 at which point you can use the library with the build tool of your choice, 
 with the artifact `io.github.freya022:BotCommands:$version`, 
-where `$version` is the version in the `pom.xml` suffixed with `_DEV`.
+where `$version` is usually the latest version (defined [here](../buildSrc/src/main/kotlin/BotCommands-publish-conventions.gradle.kts)), suffixed with `_DEV`.
 
 ## Running the test bot
 
