@@ -76,19 +76,19 @@ open class DefaultBuiltinReplies(
     }
 
     override fun resolverChannelNotFound(event: GenericEvent?, channelId: Long): MessageCreateData {
-        return getLocalizationTemplate("resolver.channel.not_found").localize("channelId" to channelId).toMessage()
+        return getLocalizationTemplate("resolver.channel.not_found").localize("channel_id" to channelId).toMessage()
     }
 
     override fun resolverChannelMissingAccess(event: GenericEvent?, channelId: Long): MessageCreateData {
-        return getLocalizationTemplate("resolver.channel.missing_access").localize("channelId" to channelId).toMessage()
+        return getLocalizationTemplate("resolver.channel.missing_access").localize("channel_id" to channelId).toMessage()
     }
 
     override fun resolverUserNotFound(event: GenericEvent?, userId: Long): MessageCreateData {
-        return getLocalizationTemplate("resolver.user.not_found").localize("userId" to userId).toMessage()
+        return getLocalizationTemplate("resolver.user.not_found").localize("user_id" to userId).toMessage()
     }
 
     override fun slashCommandUnresolvableOption(event: GenericEvent?, option: SlashCommandOption): MessageCreateData {
-        return getLocalizationTemplate("commands.slash.option.unresolvable").localize("optionName" to option.discordName).toMessage()
+        return getLocalizationTemplate("commands.slash.option.unresolvable").localize("option_name" to option.discordName).toMessage()
     }
 
     override fun closedDirectMessages(event: GenericEvent?): MessageCreateData {
