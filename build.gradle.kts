@@ -19,7 +19,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlin.logging)
 
     // JDA
     api(libs.jda)
@@ -30,7 +30,7 @@ dependencies {
 
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
-    api(libs.kotlinx.datetime.jvm)
+    api(libs.kotlinx.datetime)
 
     // Deserialization
     api(libs.jackson.databind)
@@ -80,13 +80,13 @@ dependencies {
     // -------------------- TEST DEPENDENCIES --------------------
 
     // Mocking
-    testImplementation(libs.mockk.jvm)
+    testImplementation(libs.mockk)
 
     // Logging
     testImplementation(libs.logback.classic)
 
     // Coroutines
-    testImplementation(libs.stacktrace.decoroutinator.jvm)
+    testImplementation(libs.stacktrace.decoroutinator)
 
     // Database
     testImplementation(libs.postgresql)
@@ -106,7 +106,7 @@ dependencies {
     testImplementation(libs.byte.buddy.agent)
 
     // Test stuff
-    testImplementation(libs.kotlin.metadata.jvm)
+    testImplementation(libs.kotlin.metadata)
 
     // The Spring Boot module will include them at runtime,
     // but we need to make sure the main module works without it

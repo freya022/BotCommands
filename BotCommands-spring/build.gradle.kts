@@ -8,7 +8,7 @@ dependencies {
     api(projects.botCommands)
 
     // Logging
-    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlin.logging)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
