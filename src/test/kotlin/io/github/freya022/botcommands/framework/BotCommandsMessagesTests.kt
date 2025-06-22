@@ -65,7 +65,7 @@ class BotCommandsMessagesTests {
     }
 
     @Test
-    fun `All built-in replies have defaults`() {
+    fun `All messages have defaults`() {
         val context = BotCommands.createTest {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
