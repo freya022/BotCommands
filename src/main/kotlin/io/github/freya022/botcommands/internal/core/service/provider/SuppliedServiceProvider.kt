@@ -21,7 +21,7 @@ internal class SuppliedServiceProvider internal constructor(
     override val name = serviceSupplier.name
     override val providerKey get() = clazz.jvmName
     override val primaryType get() = clazz
-    override val types = serviceSupplier.additionalTypes
+    override val types = serviceSupplier.additionalTypes + primaryType
     override val isPrimary = serviceSupplier.isPrimary
     override val isLazy = serviceSupplier.isLazy
     override val priority = serviceSupplier.priority
