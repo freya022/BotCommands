@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
@@ -27,7 +27,7 @@ internal class RateLimitHandler internal constructor(
     private val context: BContext,
     private val botOwners: BotOwners,
     private val rateLimitContainer: RateLimitContainer,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     config: BConfig,
 ) {
     private val enableOwnerBypass = config.enableOwnerBypass
@@ -90,7 +90,7 @@ internal class RateLimitHandler internal constructor(
         val rateLimitInfo = rateLimitContainer[group]
             ?: run {
                 componentsListenerLogger.warn { "Could not find a rate limiter named '$group'" }
-                event.reply(builtinRepliesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+                event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
                 return
             }
 

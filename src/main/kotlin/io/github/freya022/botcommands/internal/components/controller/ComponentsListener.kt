@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
@@ -35,7 +35,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentsListener(
     private val context: BContext,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
     filters: List<ComponentInteractionFilter>,
@@ -60,13 +60,13 @@ internal class ComponentsListener(
                 ComponentController.parseComponentId(id)
             }
             val component = componentController.getActiveComponent(componentId)
-                ?: return@launch event.reply(builtinRepliesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+                ?: return@launch event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
 
             if (component !is ActionComponentData)
                 throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
 
             if (component.filters === ComponentFilters.INVALID_FILTERS) {
-                return@launch event.reply(builtinRepliesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+                return@launch event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
             }
 
             component.filters.onEach { filter ->
@@ -100,7 +100,7 @@ internal class ComponentsListener(
         component: ActionComponentData
     ): Boolean {
         if (!component.constraints.isAllowed(event)) {
-            event.reply(builtinRepliesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+            event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
             return false
         }
 
@@ -138,9 +138,9 @@ internal class ComponentsListener(
             "Component" to event.component
         ))
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(builtinRepliesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
+            event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(builtinRepliesFactory.get(event).uncaughtException(event))
+            event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
 }

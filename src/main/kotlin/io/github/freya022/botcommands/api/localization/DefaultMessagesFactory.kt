@@ -17,7 +17,7 @@ import java.util.*
  *
  * @see InterfacedService @InterfacedService
  */
-@Deprecated("Replaced by BuiltinRepliesFactory")
+@Deprecated("Replaced by BotCommandsMessagesFactory")
 @InterfacedService(acceptMultiple = false)
 interface DefaultMessagesFactory {
     /**

@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.options.TextCommandOptio
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.retrieveMemberByIdOrNull
@@ -41,7 +41,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
     ComponentParameterResolver<T, R>,
     UserContextParameterResolver<T, R> {
 
-    private val builtinRepliesFactory: BuiltinRepliesFactory = context.getService()
+    private val messagesFactory: BotCommandsMessagesFactory = context.getService()
 
     final override val pattern: Pattern get() = userMentionPattern
     final override val testExample: String = "<@1234>"
@@ -75,7 +75,7 @@ internal sealed class AbstractUserSnowflakeResolver<T : AbstractUserSnowflakeRes
         }
         val entity = retrieveOrNull(id, event.message)
         if (entity == null)
-            event.reply(builtinRepliesFactory.get(event).resolverUserNotFound(event, id)).setEphemeral(true).queue()
+            event.reply(messagesFactory.get(event).resolverUserNotFound(event, id)).setEphemeral(true).queue()
 
         return entity
     }

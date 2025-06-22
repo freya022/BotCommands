@@ -43,7 +43,7 @@ import static io.github.freya022.botcommands.api.localization.Localization.Entry
  *
  * @see Localization
  *
- * @deprecated This has been replaced by {@link io.github.freya022.botcommands.api.core.replies.DefaultBuiltinReplies DefaultBuiltinReplies}
+ * @deprecated This has been replaced by {@link io.github.freya022.botcommands.api.core.replies.DefaultBotCommandsMessages DefaultBotCommandsMessages}
  */
 @Deprecated(since = "3.1.0-beta.1", forRemoval = true)
 public final class DefaultMessages {

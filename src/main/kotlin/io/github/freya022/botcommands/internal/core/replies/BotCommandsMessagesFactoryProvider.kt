@@ -3,8 +3,8 @@
 package io.github.freya022.botcommands.internal.core.replies
 
 import io.github.classgraph.ClassGraph
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
-import io.github.freya022.botcommands.api.core.replies.DefaultBuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.replies.DefaultBotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -26,27 +26,27 @@ import org.springframework.context.annotation.Bean
 private val logger = KotlinLogging.logger { }
 
 @AutoConfiguration
-@ConditionalOnMissingBean(BuiltinRepliesFactory::class)
+@ConditionalOnMissingBean(BotCommandsMessagesFactory::class)
 @BService
-internal open class BuiltinRepliesFactoryProvider internal constructor() {
+internal open class BotCommandsMessagesFactoryProvider internal constructor() {
 
     @Bean
     @BService
     @ConditionalService(ActivationCondition::class)
-    open fun builtinRepliesFactory(
+    open fun botCommandsMessagesFactory(
         defaultMessagesFactory: DefaultMessagesFactory,
         permissionLocalization: PermissionLocalization,
         localizationService: LocalizationService,
         textCommandLocaleProvider: TextCommandLocaleProvider,
         userLocaleProvider: UserLocaleProvider,
-    ): BuiltinRepliesFactory {
+    ): BotCommandsMessagesFactory {
         // Check if the user has a custom factory or if the fallback factory has customized files
         if (defaultMessagesFactory !is FallbackDefaultMessagesFactory || hasCustomDefaultMessages()) {
             logger.warn { "${classRef<DefaultMessagesFactory>()} has been deprecated and will be removed in the full release." }
-            return BuiltinRepliesFactoryDefaultMessagesFactoryAdapter(defaultMessagesFactory)
+            return BotCommandsMessagesFactoryDefaultMessagesFactoryAdapter(defaultMessagesFactory)
         }
 
-        return DefaultBuiltinRepliesFactory(permissionLocalization, localizationService, textCommandLocaleProvider, userLocaleProvider)
+        return DefaultBotCommandsMessagesFactory(permissionLocalization, localizationService, textCommandLocaleProvider, userLocaleProvider)
     }
 
     private fun hasCustomDefaultMessages(): Boolean {
@@ -65,9 +65,9 @@ internal open class BuiltinRepliesFactoryProvider internal constructor() {
 
     internal object ActivationCondition : ConditionalServiceChecker {
         override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
-            val types = serviceContainer.getInterfacedServiceTypes<BuiltinRepliesFactory>()
+            val types = serviceContainer.getInterfacedServiceTypes<BotCommandsMessagesFactory>()
             if (types.isNotEmpty()) {
-                return "An user supplied ${classRef<BuiltinRepliesFactory>()} is already active (${types.first().simpleNestedName})"
+                return "An user supplied ${classRef<BotCommandsMessagesFactory>()} is already active (${types.first().simpleNestedName})"
             }
 
             return null

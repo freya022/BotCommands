@@ -4,16 +4,16 @@ package io.github.freya022.botcommands.framework
 
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
-import io.github.freya022.botcommands.api.core.replies.DefaultBuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.replies.DefaultBotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.replies.exceptions.MissingReplyTemplateException
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.framework.utils.createTest
-import io.github.freya022.botcommands.internal.core.replies.BuiltinRepliesFactoryProvider
+import io.github.freya022.botcommands.internal.core.replies.BotCommandsMessagesFactoryProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -28,7 +28,7 @@ import kotlin.test.Test
 import kotlin.test.assertIsNot
 import kotlin.test.fail
 
-class BuiltinRepliesTests {
+class BotCommandsMessagesTests {
 
     @Test
     fun `Adapter is used when custom DefaultMessagesFactory type is used`() {
@@ -44,16 +44,16 @@ class BuiltinRepliesTests {
             }
         }
 
-        assertIsNot<DefaultBuiltinRepliesFactory>(context.getService<BuiltinRepliesFactory>())
+        assertIsNot<DefaultBotCommandsMessagesFactory>(context.getService<BotCommandsMessagesFactory>())
     }
 
     @Test
     fun `Adapter is used when custom DefaultMessages JSON exists`() {
         val context = BotCommands.createTest {
             services {
-                registerServiceSupplier<BuiltinRepliesFactoryProvider> {
+                registerServiceSupplier<BotCommandsMessagesFactoryProvider> {
                     mockk {
-                        every { builtinRepliesFactory(any(), any(), any(), any(), any()) } answers { callOriginal() }
+                        every { botCommandsMessagesFactory(any(), any(), any(), any(), any()) } answers { callOriginal() }
 
                         every { this@mockk["hasCustomDefaultMessages"]() } returns true
                     }
@@ -61,7 +61,7 @@ class BuiltinRepliesTests {
             }
         }
 
-        assertIsNot<DefaultBuiltinRepliesFactory>(context.getService<BuiltinRepliesFactory>())
+        assertIsNot<DefaultBotCommandsMessagesFactory>(context.getService<BotCommandsMessagesFactory>())
     }
 
     @Test
@@ -69,8 +69,8 @@ class BuiltinRepliesTests {
         val context = BotCommands.createTest {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
-                registerServiceSupplier<DefaultBuiltinRepliesFactory>(additionalTypes = setOf(BuiltinRepliesFactory::class)) { context ->
-                    DefaultBuiltinRepliesFactory(
+                registerServiceSupplier<DefaultBotCommandsMessagesFactory>(additionalTypes = setOf(BotCommandsMessagesFactory::class)) { context ->
+                    DefaultBotCommandsMessagesFactory(
                         context.getService(),
                         context.getService(),
                         context.getService(),
@@ -81,36 +81,36 @@ class BuiltinRepliesTests {
         }
 
         val templatePathSlot = slot<String>()
-        val builtinReplies = spyk(context.getService<DefaultBuiltinRepliesFactory>().get(Locale.ROOT), recordPrivateCalls = true) {
+        val messages = spyk(context.getService<DefaultBotCommandsMessagesFactory>().get(Locale.ROOT), recordPrivateCalls = true) {
             every { this@spyk["getLocalizationTemplate"](capture(templatePathSlot)) } answers { callOriginal() }
         }
 
         val methodCalls = mapOf(
-            methodCall(builtinReplies::uncaughtException) { this(mockk()) },
-            methodCall(builtinReplies::missingUserPermissions) { this(mockk(), emptySet()) },
-            methodCall(builtinReplies::missingBotPermissions) { this(mockk(), emptySet()) },
-            methodCall(builtinReplies::ownerOnly) { this(mockk()) },
-            methodCall(builtinReplies::userRateLimited) { this(mockk(), Instant.now()) },
-            methodCall(builtinReplies::channelRateLimited) { this(mockk(), Instant.now()) },
-            methodCall(builtinReplies::guildRateLimited) { this(mockk(), Instant.now()) },
-            methodCall(builtinReplies::applicationCommandsNotAvailable) { this(mockk()) },
-            methodCall(builtinReplies::commandNotFound) { this(mockk(), emptySet()) },
-            methodCall(builtinReplies::resolverChannelNotFound) { this(mockk(), 0) },
-            methodCall(builtinReplies::resolverChannelMissingAccess) { this(mockk(), 0) },
-            methodCall(builtinReplies::resolverUserNotFound) { this(mockk(), 0) },
-            methodCall(builtinReplies::slashCommandUnresolvableOption) {
+            methodCall(messages::uncaughtException) { this(mockk()) },
+            methodCall(messages::missingUserPermissions) { this(mockk(), emptySet()) },
+            methodCall(messages::missingBotPermissions) { this(mockk(), emptySet()) },
+            methodCall(messages::ownerOnly) { this(mockk()) },
+            methodCall(messages::userRateLimited) { this(mockk(), Instant.now()) },
+            methodCall(messages::channelRateLimited) { this(mockk(), Instant.now()) },
+            methodCall(messages::guildRateLimited) { this(mockk(), Instant.now()) },
+            methodCall(messages::applicationCommandsNotAvailable) { this(mockk()) },
+            methodCall(messages::commandNotFound) { this(mockk(), emptySet()) },
+            methodCall(messages::resolverChannelNotFound) { this(mockk(), 0) },
+            methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
+            methodCall(messages::resolverUserNotFound) { this(mockk(), 0) },
+            methodCall(messages::slashCommandUnresolvableOption) {
                 this(mockk(), mockk {
                     every { discordName } returns "discord_name"
                 })
             },
-            methodCall(builtinReplies::closedDirectMessages) { this(mockk()) },
-            methodCall(builtinReplies::nsfwOnly) { this(mockk()) },
-            methodCall(builtinReplies::componentNotAllowed) { this(mockk()) },
-            methodCall(builtinReplies::componentExpired) { this(mockk()) },
-            methodCall(builtinReplies::modalExpired) { this(mockk()) },
+            methodCall(messages::closedDirectMessages) { this(mockk()) },
+            methodCall(messages::nsfwOnly) { this(mockk()) },
+            methodCall(messages::componentNotAllowed) { this(mockk()) },
+            methodCall(messages::componentExpired) { this(mockk()) },
+            methodCall(messages::modalExpired) { this(mockk()) },
         )
 
-        val missingTests = BuiltinReplies::class.java.declaredMethods.mapTo(hashSetOf()) { it.name } - methodCalls.keys
+        val missingTests = BotCommandsMessages::class.java.declaredMethods.mapTo(hashSetOf()) { it.name } - methodCalls.keys
         if (missingTests.isNotEmpty()) {
             fail("The following methods are missing tests:\n" + missingTests.joinAsList())
         }

@@ -10,8 +10,8 @@ import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.config.BTextConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -44,7 +44,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val textCommandsContext: TextCommandsContextImpl,
     private val localizableTextCommandFactory: LocalizableTextCommandFactory,
     private val rateLimitHandler: RateLimitHandler,
@@ -134,9 +134,9 @@ internal class TextCommandsListener internal constructor(
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         if (e is InsufficientPermissionException) {
-            replyError(event, builtinRepliesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
+            replyError(event, messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            replyError(event, builtinRepliesFactory.get(event).uncaughtException(event))
+            replyError(event, messagesFactory.get(event).uncaughtException(event))
         }
     }
 
@@ -245,12 +245,12 @@ internal class TextCommandsListener internal constructor(
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
-            replyError(event, builtinRepliesFactory.get(event).commandNotFound(event, suggestions))
+            replyError(event, messagesFactory.get(event).commandNotFound(event, suggestions))
         }
     }
 
-    private inline fun fromReplies(event: MessageReceivedEvent, crossinline block: BuiltinReplies.() -> MessageCreateData): MessageCreateData {
-        return builtinRepliesFactory.get(event).run(block)
+    private inline fun fromReplies(event: MessageReceivedEvent, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+        return messagesFactory.get(event).run(block)
     }
 
     internal enum class Status {

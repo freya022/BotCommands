@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlash
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
@@ -155,7 +155,7 @@ private fun onUnresolvableOption(
         else -> {
             //Only use the generic message if the user didn't handle this situation
             if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                val defaultMessages = option.context.getService<BuiltinRepliesFactory>().get(event)
+                val defaultMessages = option.context.getService<BotCommandsMessagesFactory>().get(event)
                 event.reply(defaultMessages.slashCommandUnresolvableOption(event, option))
                     .setEphemeral(true)
                     .queue()

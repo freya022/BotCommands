@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -57,7 +57,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
      * If the interaction is not replied to,
-     * the handler sends an [unresolvable option error message][BuiltinReplies.slashCommandUnresolvableOption].
+     * the handler sends an [unresolvable option error message][BotCommandsMessages.slashCommandUnresolvableOption].
      *
      * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]
@@ -74,7 +74,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
      * If the interaction is not replied to,
-     * the handler sends an [unresolvable option error message][BuiltinReplies.slashCommandUnresolvableOption].
+     * the handler sends an [unresolvable option error message][BotCommandsMessages.slashCommandUnresolvableOption].
      *
      * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]

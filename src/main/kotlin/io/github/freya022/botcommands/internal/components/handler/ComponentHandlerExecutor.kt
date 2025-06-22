@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.components.ComponentType
@@ -32,7 +32,7 @@ private val logger = KotlinLogging.logger { }
 @BService
 @RequiresComponents
 internal class ComponentHandlerExecutor internal constructor(
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val componentHandlerContainer: ComponentHandlerContainer,
 ) {
     internal suspend fun runHandler(component: ActionComponentData, event: GenericComponentInteractionCreateEvent): Boolean {
@@ -60,7 +60,7 @@ internal class ComponentHandlerExecutor internal constructor(
                         Component raw data: $userData
                     """.trimIndent()
                 }
-                event.reply(builtinRepliesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+                event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
                 return false
             }
 

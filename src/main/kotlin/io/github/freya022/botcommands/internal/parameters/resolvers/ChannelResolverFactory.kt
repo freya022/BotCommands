@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.function
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
@@ -60,7 +60,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
         // the required JDA instance isn't there yet.
         IChannelResolver {
 
-        private val builtinRepliesFactory: BuiltinRepliesFactory = context.getService()
+        private val messagesFactory: BotCommandsMessagesFactory = context.getService()
 
         //region Text
         override val pattern: Pattern = channelPattern
@@ -114,7 +114,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
                     return retrieveThreadChannel(event, guild, channelId)
 
                 logger.trace { "Could not find channel of type ${type.simpleNestedName} and id $channelId" }
-                event.reply(builtinRepliesFactory.get(event).resolverChannelNotFound(event, channelId)).setEphemeral(true).queue()
+                event.reply(messagesFactory.get(event).resolverChannelNotFound(event, channelId)).setEphemeral(true).queue()
             }
 
             return channel
@@ -128,7 +128,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
             if (event.channel.canTalk())
-                event.message.reply(builtinRepliesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
+                event.message.reply(messagesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
         })
 
         private suspend fun retrieveThreadChannel(
@@ -136,7 +136,7 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
             guild: Guild,
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(guild, channelId, onMissingAccess = {
-            event.reply(builtinRepliesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
+            event.reply(messagesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
         })
 
         private suspend fun retrieveThreadChannel(

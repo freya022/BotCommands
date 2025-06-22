@@ -3,8 +3,8 @@
 package io.github.freya022.botcommands.internal.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.Localization
@@ -26,7 +26,7 @@ internal class LocalizableInteractionImpl internal constructor(
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
     private val defaultMessagesFactory: DefaultMessagesFactory,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService),
     LocalizableInteraction {
 
@@ -44,13 +44,13 @@ internal class LocalizableInteractionImpl internal constructor(
     }
 
     @Suppress("DEPRECATION", "removal")
-    @Deprecated("Replaced with getBuiltinReplies()")
+    @Deprecated("Replaced with getBotCommandsMessages()")
     override fun getDefaultMessages(): DefaultMessages {
         return defaultMessagesFactory.get(deferrableCallback)
     }
 
-    override fun getBuiltinReplies(): BuiltinReplies {
-        return builtinRepliesFactory.get(deferrableCallback)
+    override fun getBotCommandsMessages(): BotCommandsMessages {
+        return messagesFactory.get(deferrableCallback)
     }
 
     override fun getUserMessage(localizationPath: String, vararg entries: Localization.Entry): String {

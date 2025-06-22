@@ -9,11 +9,11 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 
 /**
- * Returns the messages used by the framework, instance produced by [BuiltinRepliesFactory].
+ * Returns the messages used by the framework, instance produced by [BotCommandsMessagesFactory].
  *
- * @see BuiltinRepliesFactory
+ * @see BotCommandsMessagesFactory
  */
-interface BuiltinReplies {
+interface BotCommandsMessages {
 
     /**
      * @return Message to display when an uncaught exception occurs

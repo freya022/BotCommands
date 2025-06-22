@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
@@ -38,7 +38,7 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
  *   then it is sent to the user's DMs, or returns if not possible.
  * - Interactions are simply replying an ephemeral message to the user.
  *
- * All messages sent to the user are localized messages from [BuiltinReplies] and will be deleted when expired.
+ * All messages sent to the user are localized messages from [BotCommandsMessages] and will be deleted when expired.
  *
  * **Note:** The rate limit message won't be deleted in a private channel,
  * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
@@ -62,7 +62,7 @@ class DefaultRateLimitHandler(
             event.guildChannel.canTalk() -> event.channel
             else -> event.author.openPrivateChannel().await()
         }
-        val messages = context.getService<BuiltinRepliesFactory>().get(event)
+        val messages = context.getService<BotCommandsMessagesFactory>().get(event)
         val content = getRateLimitMessage(event, messages, probe)
 
         runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
@@ -100,7 +100,7 @@ class DefaultRateLimitHandler(
         probe: ConsumptionProbe
     ) where T : GenericInteractionCreateEvent,
             T : IReplyCallback {
-        val messages = context.getService<BuiltinRepliesFactory>().get(event)
+        val messages = context.getService<BotCommandsMessagesFactory>().get(event)
         val content = getRateLimitMessage(event, messages, probe)
         val hook = event.reply(content).setEphemeral(true).await()
         // Only schedule delete if the interaction hook doesn't expire before
@@ -115,7 +115,7 @@ class DefaultRateLimitHandler(
 
     private fun getRateLimitMessage(
         event: Event,
-        replies: BuiltinReplies,
+        replies: BotCommandsMessages,
         probe: ConsumptionProbe
     ): MessageCreateData {
         val deadline = Instant.now().plusNanos(probe.nanosToWaitForRefill)

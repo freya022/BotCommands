@@ -3,7 +3,7 @@
 package io.github.freya022.botcommands.internal.localization.text
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -17,8 +17,8 @@ internal class LocalizableTextCommandFactory internal constructor(
     private val localizationConfig: BLocalizationConfig,
     private val localeProvider: TextCommandLocaleProvider,
     private val defaultMessagesFactory: DefaultMessagesFactory,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
 ) {
     internal fun create(event: MessageReceivedEvent) =
-        LocalizableTextCommandImpl(event, localizationService, localizationConfig, localeProvider, defaultMessagesFactory, builtinRepliesFactory)
+        LocalizableTextCommandImpl(event, localizationService, localizationConfig, localeProvider, defaultMessagesFactory, messagesFactory)
 }

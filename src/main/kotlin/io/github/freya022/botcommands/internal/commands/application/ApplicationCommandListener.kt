@@ -15,8 +15,8 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.entities.inputUser
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
@@ -50,7 +50,7 @@ private val logger = KotlinLogging.logger {  }
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
     filters: List<ApplicationCommandFilter>,
@@ -146,7 +146,7 @@ internal class ApplicationCommandListener internal constructor(
             } else {
                 logger.debug { "Ignored '${event.fullCommandName}' as guild (${guild!!.id}) commands could not be updated" }
             }
-            return event.reply(builtinRepliesFactory.get(event).applicationCommandsNotAvailable(event)).setEphemeral(true).queue()
+            return event.reply(messagesFactory.get(event).applicationCommandsNotAvailable(event)).setEphemeral(true).queue()
         }
 
         //This is done so warnings are printed after the exception
@@ -227,9 +227,9 @@ internal class ApplicationCommandListener internal constructor(
 
         exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap(), logLevel)
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(builtinRepliesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
+            event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(builtinRepliesFactory.get(event).uncaughtException(event))
+            event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
 
@@ -280,7 +280,7 @@ internal class ApplicationCommandListener internal constructor(
             }
     }
 
-    private inline fun fromReplies(event: Interaction, crossinline block: BuiltinReplies.() -> MessageCreateData): MessageCreateData {
-        return builtinRepliesFactory.get(event).run(block)
+    private inline fun fromReplies(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+        return messagesFactory.get(event).run(block)
     }
 }

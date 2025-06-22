@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinReplies
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
@@ -46,15 +46,15 @@ interface LocalizableAction {
      * @see DefaultMessagesFactory
      */
     @Suppress("DEPRECATION", "removal")
-    @Deprecated("Replaced with getBuiltinReplies()")
+    @Deprecated("Replaced with getBotCommandsMessages()")
     fun getDefaultMessages(): DefaultMessages
 
     /**
-     * Retrieves a [BuiltinReplies] instance, using a locale suitable for messages sent to the user.
+     * Retrieves a [BotCommandsMessages] instance, using a locale suitable for messages sent to the user.
      *
-     * @see BuiltinRepliesFactory
+     * @see BotCommandsMessagesFactory
      */
-    fun getBuiltinReplies(): BuiltinReplies
+    fun getBotCommandsMessages(): BotCommandsMessages
 
     /**
      * Returns the localized message at the following [path][localizationPath],

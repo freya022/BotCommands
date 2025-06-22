@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.RequiresText
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.config.BTextConfig
-import io.github.freya022.botcommands.api.core.replies.BuiltinRepliesFactory
+import io.github.freya022.botcommands.api.core.replies.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -44,14 +44,14 @@ internal open class BuiltInHelpCommandProvider {
     @ConditionalOnMissingBean(IHelpCommand::class)
     internal open fun builtInHelpCommand(
         context: BContextImpl,
-        builtinRepliesFactory: BuiltinRepliesFactory,
+        messagesFactory: BotCommandsMessagesFactory,
         textCommandsContext: TextCommandsContext,
         helpBuilderConsumer: HelpBuilderConsumer?,
-    ) = HelpCommand(context, builtinRepliesFactory, textCommandsContext, helpBuilderConsumer)
+    ) = HelpCommand(context, messagesFactory, textCommandsContext, helpBuilderConsumer)
 }
 internal class HelpCommand internal constructor(
     private val context: BContextImpl,
-    private val builtinRepliesFactory: BuiltinRepliesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val textCommandsContext: TextCommandsContext,
     private val helpBuilderConsumer: HelpBuilderConsumer?
 ) : IHelpCommand, TextCommandProvider {
@@ -118,7 +118,7 @@ internal class HelpCommand internal constructor(
             // Ignore and reply in channel/react if we can't send to DMs
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                 if (event.channel.canTalk())
-                    event.channel.sendMessage(builtinRepliesFactory.get(event).closedDirectMessages(event)).await()
+                    event.channel.sendMessage(messagesFactory.get(event).closedDirectMessages(event)).await()
                 else if (hasReactionPermissions)
                     // May throw REACTION_BLOCKED
                     event.message.addReaction(context.textConfig.dmClosedEmoji).await()

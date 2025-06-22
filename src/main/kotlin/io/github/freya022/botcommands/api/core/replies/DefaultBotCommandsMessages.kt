@@ -18,17 +18,17 @@ import java.util.*
 import kotlin.to
 
 /**
- * Default implementation of [BuiltinReplies],
- * see [DefaultBuiltinRepliesFactory] for more details.
+ * Default implementation of [BotCommandsMessages],
+ * see [DefaultBotCommandsMessagesFactory] for more details.
  *
- * @see DefaultBuiltinRepliesFactory
+ * @see DefaultBotCommandsMessagesFactory
  */
-open class DefaultBuiltinReplies(
+open class DefaultBotCommandsMessages(
     protected val permissionLocalization: PermissionLocalization,
     localizationService: LocalizationService,
     protected val locale: Locale,
     bundleName: String,
-) : BuiltinReplies {
+) : BotCommandsMessages {
 
     protected val localization: Localization = localizationService.getInstance(bundleName, locale)
         ?: throwArgument("Could not find localization files for '$bundleName'")
