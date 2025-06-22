@@ -6,12 +6,6 @@ on:
       - reopened
       - synchronize
       - closed
-    paths:
-      - 'pom.xml'
-      - 'src/main/**.java'
-      - 'src/test/**.java'
-      - 'src/main/**.kt'
-      - 'src/test/**.kt'
 
 permissions:
   pull-requests: write

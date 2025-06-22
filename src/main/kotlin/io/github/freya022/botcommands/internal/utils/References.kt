@@ -5,8 +5,7 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-@PublishedApi
-internal val KProperty<*>.reference: String
+val KProperty<*>.reference: String
     get() {
         val callableReference = (this as? CallableReference)
             ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")

@@ -1,10 +1,11 @@
 package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
+import io.github.freya022.botcommands.api.core.JDAService.Companion.defaultIntents
 import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestConfig
+import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestRateLimiter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.conditions.RequiredIntents
-import io.github.freya022.botcommands.api.core.config.JDAConfiguration
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
@@ -60,7 +61,7 @@ import javax.annotation.CheckReturnValue
  *
  * #### Spring support
  * Spring users must set their gateway intents and cache flags using properties,
- * named `jda.intents` and `jda.cacheFlags` respectively, also available in [JDAConfiguration].
+ * named `jda.intents` and `jda.cacheFlags` respectively, also available in `JDAConfiguration`.
  *
  * @see createJDA
  * @see InterfacedService @InterfacedService
