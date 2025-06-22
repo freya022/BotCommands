@@ -4,12 +4,9 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.DependsOn
-import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
-internal sealed interface ClassAnnotationsMap {
+interface ClassAnnotationsMap {
     fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>?
 }
 
@@ -43,15 +40,3 @@ internal class DefaultClassAnnotationsMap(
     override fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>? = instantiableAnnotatedClasses[clazz]
 }
 
-@Service
-@DependsOn("springBotCommandsBootstrap") // Forces reflection metadata to be scanned first
-internal class SpringClassAnnotationsMap(
-    private val context: ApplicationContext
-) : ClassAnnotationsMap {
-    override fun getOrNull(clazz: KClass<out Annotation>): Set<KClass<*>>? {
-        val beansWithAnnotation = context.getBeansWithAnnotation(clazz.java)
-        if (beansWithAnnotation.isEmpty()) return null
-
-        return beansWithAnnotation.keys.mapTo(hashSetOf()) { context.getType(it)!!.kotlin }
-    }
-}

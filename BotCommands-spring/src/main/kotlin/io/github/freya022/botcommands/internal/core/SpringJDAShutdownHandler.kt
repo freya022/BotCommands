@@ -14,7 +14,7 @@ private val logger = KotlinLogging.logger { }
 
 @Component
 @ConditionalOnProperty(value = ["spring.devtools.restart.enabled", "jda.devtools.enabled"], havingValue = "true", matchIfMissing = true)
-internal class SpringJDARestartListener(
+internal class SpringJDAShutdownHandler(
     private val jdaConfiguration: JDAConfiguration,
 ) {
 
