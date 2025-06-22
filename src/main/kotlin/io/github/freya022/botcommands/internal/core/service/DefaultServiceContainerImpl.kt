@@ -36,6 +36,10 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
         else -> DefaultServiceCreationStack()
     }
 
+    init {
+        serviceBootstrap.serviceConfig.serviceSuppliers.values.forEach(::putSuppliedService)
+    }
+
     internal fun loadServices() {
         getService<DefaultInstantiableServices>()
             .availableProviders
