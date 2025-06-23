@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 
 /**
- * Returns the messages used by the framework, instance produced by [BotCommandsMessagesFactory].
+ * Returns the messages used by the framework, instances are produced by [BotCommandsMessagesFactory].
  *
  * @see BotCommandsMessagesFactory
  */
@@ -21,32 +21,32 @@ interface BotCommandsMessages {
     fun uncaughtException(event: GenericEvent?): MessageCreateData
 
     /**
-     * @return Message to display when the user does not have enough permissions
+     * @return Message to display when the user is missing [permissions][io.github.freya022.botcommands.api.commands.annotations.UserPermissions]
      */
     fun missingUserPermissions(event: GenericEvent?, permissions: Set<Permission>): MessageCreateData
 
     /**
-     * @return Message to display when the bot does not have enough permissions
+     * @return Message to display when the bot is missing [permissions][io.github.freya022.botcommands.api.commands.annotations.BotPermissions]
      */
     fun missingBotPermissions(event: GenericEvent?, permissions: Set<Permission>): MessageCreateData
 
     /**
-     * @return Message to display when the command is only usable by the owner
+     * @return Message to display when a text command is [only usable by the owner][io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner]
      */
     fun ownerOnly(event: GenericEvent?): MessageCreateData
 
     /**
-     * @return Message to display when the command is on per-user rate limit
+     * @return Message to display when a user has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
      */
     fun userRateLimited(event: GenericEvent?, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when the command is on per-channel rate limit
+     * @return Message to display when a channel has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
      */
     fun channelRateLimited(event: GenericEvent?, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when the command is on per-guild rate limit
+     * @return Message to display when a guild has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
      */
     fun guildRateLimited(event: GenericEvent?, deadline: Instant): MessageCreateData
 
@@ -66,7 +66,7 @@ interface BotCommandsMessages {
     fun resolverChannelNotFound(event: GenericEvent?, channelId: Long): MessageCreateData
 
     /**
-     * @return Message to display when a channel parameter could not be resolved
+     * @return Message to display when a channel parameter could be resolved but is not accessible (such as private threads)
      */
     fun resolverChannelMissingAccess(event: GenericEvent?, channelId: Long): MessageCreateData
 
@@ -86,17 +86,17 @@ interface BotCommandsMessages {
     fun closedDirectMessages(event: GenericEvent?): MessageCreateData
 
     /**
-     * @return Message to display when a command is used in a NSFW [IAgeRestrictedChannel]
+     * @return Message to display when a command is used in a NSFW [IAgeRestrictedChannel] (see [@NSFW][io.github.freya022.botcommands.api.commands.text.annotations.NSFW])
      */
     fun nsfwOnly(event: GenericEvent?): MessageCreateData
 
     /**
-     * @return Message to display when a user tries to use a component it cannot interact with
+     * @return Message to display when a user tries to use a component it isn't allowed to interact with
      */
     fun componentNotAllowed(event: GenericEvent?): MessageCreateData
 
     /**
-     * @return Message to display when a user tries to use a component which has reached timeout while the bot was offline
+     * @return Message to display when a user tries to use a component which does not exist anymore
      */
     fun componentExpired(event: GenericEvent?): MessageCreateData
 

@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.core.messages
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
-import io.github.freya022.botcommands.api.core.messages.exceptions.MissingReplyTemplateException
+import io.github.freya022.botcommands.api.core.messages.exceptions.MissingMessageTemplateException
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.LocalizationTemplate
@@ -113,7 +113,7 @@ open class DefaultBotCommandsMessages(
 
     protected fun getLocalizationTemplate(path: String): LocalizationTemplate {
         val template = localization[path]
-            ?: throw MissingReplyTemplateException("Template '$path' could not be found, available keys: ${localization.keys}")
+            ?: throw MissingMessageTemplateException("Template '$path' could not be found, available keys: ${localization.keys}")
 
         return template
     }

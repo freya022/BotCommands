@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.messages.exceptions.MissingReplyTemplateException
+import io.github.freya022.botcommands.api.core.messages.exceptions.MissingMessageTemplateException
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
@@ -127,7 +127,7 @@ class BotCommandsMessagesTests {
             templatePathSlot.clear()
             try {
                 methodCall()
-            } catch (_: MissingReplyTemplateException) {
+            } catch (_: MissingMessageTemplateException) {
                 methodsMissingTemplate += templatePathSlot.captured
             }
         }
