@@ -115,16 +115,16 @@ class DefaultRateLimitHandler(
 
     private fun getRateLimitMessage(
         event: Event,
-        replies: BotCommandsMessages,
+        messages: BotCommandsMessages,
         probe: ConsumptionProbe
     ): MessageCreateData {
         val deadline = Instant.now().plusNanos(probe.nanosToWaitForRefill)
         return when (scope) {
-            RateLimitScope.USER -> replies.userRateLimited(event, deadline)
-            RateLimitScope.USER_PER_GUILD -> replies.userRateLimited(event, deadline)
-            RateLimitScope.USER_PER_CHANNEL -> replies.userRateLimited(event, deadline)
-            RateLimitScope.GUILD -> replies.guildRateLimited(event, deadline)
-            RateLimitScope.CHANNEL -> replies.channelRateLimited(event, deadline)
+            RateLimitScope.USER -> messages.userRateLimited(event, deadline)
+            RateLimitScope.USER_PER_GUILD -> messages.userRateLimited(event, deadline)
+            RateLimitScope.USER_PER_CHANNEL -> messages.userRateLimited(event, deadline)
+            RateLimitScope.GUILD -> messages.guildRateLimited(event, deadline)
+            RateLimitScope.CHANNEL -> messages.channelRateLimited(event, deadline)
         }
     }
 }

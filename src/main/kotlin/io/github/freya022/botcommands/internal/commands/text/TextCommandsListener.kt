@@ -177,7 +177,7 @@ internal class TextCommandsListener internal constructor(
         val usability = commandInfo.getUsability(member, event.guildChannel)
 
         if (usability.isNotUsable) {
-            val errorMessage = fromReplies(event) {
+            val errorMessage = fromMessages(event) {
                 when (usability.bestReason) {
                     UnusableReason.HIDDEN -> throwInternal("Hidden commands should have been ignored by ${TextCommandsListener::findCommandWithArgs.shortSignature}")
                     UnusableReason.OWNER_ONLY -> ownerOnly(event)
@@ -249,7 +249,7 @@ internal class TextCommandsListener internal constructor(
         }
     }
 
-    private inline fun fromReplies(event: MessageReceivedEvent, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+    private inline fun fromMessages(event: MessageReceivedEvent, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
         return messagesFactory.get(event).run(block)
     }
 

@@ -236,7 +236,7 @@ internal class ApplicationCommandListener internal constructor(
     private suspend fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfoImpl): Boolean {
         val usability = applicationCommand.getUsability(event.inputUser, event.messageChannel)
         if (usability.isNotUsable) {
-            val errorMessage = fromReplies(event) {
+            val errorMessage = fromMessages(event) {
                 when (usability.bestReason) {
                     UnusableReason.OWNER_ONLY -> ownerOnly(event)
                     UnusableReason.USER_PERMISSIONS -> {
@@ -280,7 +280,7 @@ internal class ApplicationCommandListener internal constructor(
             }
     }
 
-    private inline fun fromReplies(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+    private inline fun fromMessages(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
         return messagesFactory.get(event).run(block)
     }
 }

@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.framework.utils.createTest
-import io.github.freya022.botcommands.internal.core.replies.BotCommandsMessagesFactoryProvider
+import io.github.freya022.botcommands.internal.core.messages.BotCommandsMessagesFactoryProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -53,7 +53,9 @@ class BotCommandsMessagesTests {
             services {
                 registerServiceSupplier<BotCommandsMessagesFactoryProvider> {
                     mockk {
-                        every { botCommandsMessagesFactory(any(), any(), any(), any(), any()) } answers { callOriginal() }
+                        every {
+                            botCommandsMessagesFactory(any(), any(), any(), any(), any())
+                        } answers { callOriginal() }
 
                         every { this@mockk["hasCustomDefaultMessages"]() } returns true
                     }
@@ -69,19 +71,23 @@ class BotCommandsMessagesTests {
         val context = BotCommands.createTest {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
-                registerServiceSupplier<DefaultBotCommandsMessagesFactory>(additionalTypes = setOf(BotCommandsMessagesFactory::class)) { context ->
+                registerServiceSupplier<DefaultBotCommandsMessagesFactory>(
+                    additionalTypes = setOf(
+                        BotCommandsMessagesFactory::class,
+                    )
+                ) { context ->
                     DefaultBotCommandsMessagesFactory(
                         context.getService(),
                         context.getService(),
                         context.getService(),
-                        context.getService()
+                        context.getService(),
                     )
                 }
             }
         }
 
         val templatePathSlot = slot<String>()
-        val messages = spyk(context.getService<DefaultBotCommandsMessagesFactory>().get(Locale.ROOT), recordPrivateCalls = true) {
+        val messages = spyk(context.getService<DefaultBotCommandsMessagesFactory>().get(Locale.ROOT)) {
             every { this@spyk["getLocalizationTemplate"](capture(templatePathSlot)) } answers { callOriginal() }
         }
 
@@ -110,7 +116,8 @@ class BotCommandsMessagesTests {
             methodCall(messages::modalExpired) { this(mockk()) },
         )
 
-        val missingTests = BotCommandsMessages::class.java.declaredMethods.mapTo(hashSetOf()) { it.name } - methodCalls.keys
+        val missingTests =
+            BotCommandsMessages::class.java.declaredMethods.mapTo(hashSetOf()) { it.name } - methodCalls.keys
         if (missingTests.isNotEmpty()) {
             fail("The following methods are missing tests:\n" + missingTests.joinAsList())
         }
@@ -132,7 +139,7 @@ class BotCommandsMessagesTests {
 
     private fun <F : KFunction<MessageCreateData>> methodCall(
         callableRef: F,
-        executor: F.() -> Unit
+        executor: F.() -> Unit,
     ): Pair<String, () -> Unit> {
         return callableRef.name to { executor(callableRef) }
     }
