@@ -14,12 +14,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 
-@AutoConfiguration
-@ConditionalOnMissingBean(PermissionLocalization::class)
 @BService
+@AutoConfiguration
 internal open class PermissionLocalizationProvider internal constructor() {
 
     @Bean
+    @ConditionalOnMissingBean(PermissionLocalization::class)
     @BService
     @ConditionalService(ActivationCondition::class)
     open fun permissionLocalization(localizationService: LocalizationService): PermissionLocalization {

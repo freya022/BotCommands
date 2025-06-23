@@ -25,12 +25,12 @@ import org.springframework.context.annotation.Bean
 
 private val logger = KotlinLogging.logger { }
 
-@AutoConfiguration
-@ConditionalOnMissingBean(BotCommandsMessagesFactory::class)
 @BService
+@AutoConfiguration
 internal open class BotCommandsMessagesFactoryProvider internal constructor() {
 
     @Bean
+    @ConditionalOnMissingBean(BotCommandsMessagesFactory::class)
     @BService
     @ConditionalService(ActivationCondition::class)
     open fun botCommandsMessagesFactory(
