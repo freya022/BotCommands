@@ -228,7 +228,7 @@ internal class ComponentRepository(
         }
     }
 
-    context(Transaction)
+    context(transaction: Transaction)
     private suspend fun getGroup(
         id: Int,
         lifetimeType: LifetimeType,
@@ -240,7 +240,7 @@ internal class ComponentRepository(
             LifetimeType.EPHEMERAL -> componentTimeoutRepository.getEphemeralTimeout(id)
         }
 
-        val componentIds: List<Int> = preparedStatement(
+        val componentIds: List<Int> = transaction.preparedStatement(
             """
                 select component_id
                 from bc_component_component_group
@@ -287,7 +287,7 @@ internal class ComponentRepository(
             ?: throwInternal("Could not find back component with id '$groupId'")
     }
 
-    context(Transaction)
+    context(transaction: Transaction)
     private suspend fun insertBaseComponent(
         builder: IComponentBuilderMixin<*>,
         singleUse: Boolean,
@@ -306,7 +306,7 @@ internal class ComponentRepository(
             resetTimeoutOnUseDurationMs = null
         }
 
-        return preparedStatement(
+        return transaction.preparedStatement(
             "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, rate_limit_discriminator, filters) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
@@ -316,7 +316,7 @@ internal class ComponentRepository(
         }
     }
 
-    context(Transaction)
+    context(_: Transaction)
     private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponentMixin<*>, componentId: Int) {
         val timeout = timeoutableComponentBuilder.timeout
         if (timeout is EphemeralTimeout) {

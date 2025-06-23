@@ -9,13 +9,13 @@ private typealias Object = Map<String, *>
 private typealias ObjectName = String
 
 internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
-    context(DiffLogger)
+    context(logger: DiffLogger)
     override fun checkCommands(oldCommands: List<Command>, newCommands: List<Command>): Boolean {
         val addedCommands = newCommands.toNames() - oldCommands.toNames()
-        if (addedCommands.isNotEmpty()) log { "Added top-level commands: ${addedCommands.joinToString()}" }
+        if (addedCommands.isNotEmpty()) logger.log { "Added top-level commands: ${addedCommands.joinToString()}" }
 
         val removedCommands = oldCommands.toNames() - newCommands.toNames()
-        if (removedCommands.isNotEmpty()) log { "Removed top-level commands: ${removedCommands.joinToString()}" }
+        if (removedCommands.isNotEmpty()) logger.log { "Removed top-level commands: ${removedCommands.joinToString()}" }
 
         val isSame = forEachByName(oldCommands, newCommands) { commandName, oldCommand, newCommand ->
             checkProperties(oldCommand, newCommand, "top-level command '$commandName'") &&
@@ -27,7 +27,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         return addedCommands.isEmpty() && removedCommands.isEmpty() && isSame
     }
 
-    context(DiffLogger)
+    context(logger: DiffLogger)
     private fun checkSubcommandGroups(
         topLevelName: ObjectName,
         oldCommand: Command,
@@ -37,10 +37,10 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         val newSubcommandGroups = newCommand.subcommandGroups
 
         val addedSubcommandGroups = newSubcommandGroups.toNames() - oldSubcommandGroups.toNames()
-        if (addedSubcommandGroups.isNotEmpty()) log { "Added subcommand groups to '$topLevelName': ${addedSubcommandGroups.joinToString()}" }
+        if (addedSubcommandGroups.isNotEmpty()) logger.log { "Added subcommand groups to '$topLevelName': ${addedSubcommandGroups.joinToString()}" }
 
         val removedSubcommandGroups = oldSubcommandGroups.toNames() - newSubcommandGroups.toNames()
-        if (removedSubcommandGroups.isNotEmpty()) log { "Removed subcommand groups from '$topLevelName': ${removedSubcommandGroups.joinToString()}" }
+        if (removedSubcommandGroups.isNotEmpty()) logger.log { "Removed subcommand groups from '$topLevelName': ${removedSubcommandGroups.joinToString()}" }
 
         val isSame = forEachByName(oldSubcommandGroups, newSubcommandGroups) { subcommandGroupName, oldSubcommandGroup, newSubcommandGroup ->
             checkProperties(oldSubcommandGroup, newSubcommandGroup, "subcommand group '$topLevelName $subcommandGroupName'") &&
@@ -50,7 +50,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         return addedSubcommandGroups.isEmpty() && removedSubcommandGroups.isEmpty() && isSame
     }
 
-    context(DiffLogger)
+    context(logger: DiffLogger)
     private fun checkSubcommands(
         parentName: ObjectName,
         oldCommand: Command,
@@ -60,10 +60,10 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         val newSubcommands = newCommand.subcommands
 
         val addedSubcommands = newSubcommands.toNames() - oldSubcommands.toNames()
-        if (addedSubcommands.isNotEmpty()) log { "Added subcommands to '$parentName': ${addedSubcommands.joinToString()}" }
+        if (addedSubcommands.isNotEmpty()) logger.log { "Added subcommands to '$parentName': ${addedSubcommands.joinToString()}" }
 
         val removedSubcommands = oldSubcommands.toNames() - newSubcommands.toNames()
-        if (removedSubcommands.isNotEmpty()) log { "Removed subcommands from '$parentName': ${removedSubcommands.joinToString()}" }
+        if (removedSubcommands.isNotEmpty()) logger.log { "Removed subcommands from '$parentName': ${removedSubcommands.joinToString()}" }
 
         val isSame = forEachByName(oldSubcommands, newSubcommands) { subcommandName, oldSubcommand, newSubcommand ->
             checkProperties(oldSubcommand, newSubcommand, "subcommand '$parentName $subcommandName'") &&
@@ -73,21 +73,21 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         return addedSubcommands.isEmpty() && removedSubcommands.isEmpty() && isSame
     }
 
-    context(DiffLogger)
+    context(logger: DiffLogger)
     private fun checkOptions(cmdName: ObjectName, oldCommand: Command, newCommand: Command): Boolean {
         val oldOptions = oldCommand.options
         val newOptions = newCommand.options
 
         val addedOptions = newOptions.toNames() - oldOptions.toNames()
-        if (addedOptions.isNotEmpty()) log { "Added options to '$cmdName': ${addedOptions.joinToString()}" }
+        if (addedOptions.isNotEmpty()) logger.log { "Added options to '$cmdName': ${addedOptions.joinToString()}" }
 
         val removedOptions = oldOptions.toNames() - newOptions.toNames()
-        if (removedOptions.isNotEmpty()) log { "Removed options from '$cmdName': ${removedOptions.joinToString()}" }
+        if (removedOptions.isNotEmpty()) logger.log { "Removed options from '$cmdName': ${removedOptions.joinToString()}" }
 
         val isSame = forEachOption(oldOptions, newOptions) { optionName, oldOptionIndex, oldOption, newOptionIndex, newOption ->
             var isSame = true
             if (oldOptionIndex != newOptionIndex) {
-                log { "Option '$optionName' from '$cmdName' moved from #$oldOptionIndex to #$newOptionIndex" }
+                logger.log { "Option '$optionName' from '$cmdName' moved from #$oldOptionIndex to #$newOptionIndex" }
                 isSame = false
             }
 
@@ -99,16 +99,16 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         return addedOptions.isEmpty() && removedOptions.isEmpty() && isSame
     }
 
-    context(DiffLogger)
+    context(logger: DiffLogger)
     private fun checkChoices(cmdName: ObjectName, optionName: ObjectName, oldOption: Option, newOption: Option): Boolean {
         val oldChoices = oldOption.choices
         val newChoices = newOption.choices
 
         val addedChoices = newChoices.toNames() - oldChoices.toNames()
-        if (addedChoices.isNotEmpty()) log { "Added choices to option '$optionName' of '$cmdName': ${addedChoices.joinToString()}" }
+        if (addedChoices.isNotEmpty()) logger.log { "Added choices to option '$optionName' of '$cmdName': ${addedChoices.joinToString()}" }
 
         val removedChoices = oldChoices.toNames() - newChoices.toNames()
-        if (removedChoices.isNotEmpty()) log { "Removed choices from option '$optionName' of '$cmdName': ${removedChoices.joinToString()}" }
+        if (removedChoices.isNotEmpty()) logger.log { "Removed choices from option '$optionName' of '$cmdName': ${removedChoices.joinToString()}" }
 
         val isUnmodified = forEachByName(oldChoices, newChoices) { choiceName, oldChoice, newChoice ->
             checkProperties(oldChoice, newChoice, "choice '$choiceName' in option '$optionName' of '$cmdName'")
@@ -117,16 +117,16 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
         return addedChoices.isEmpty() && removedChoices.isEmpty() && isUnmodified
     }
 
-    context(DiffLogger)
+    context(logger: DiffLogger)
     private fun checkProperties(oldCommand: Command, newCommand: Command, cmdName: ObjectName): Boolean {
         val oldPropertyNames = oldCommand.keys
         val newPropertyNames = newCommand.keys
 
         val addedPropertyNames = newPropertyNames - oldPropertyNames
-        if (addedPropertyNames.isNotEmpty()) log { "Added properties to $cmdName: ${addedPropertyNames.joinToString()}" }
+        if (addedPropertyNames.isNotEmpty()) logger.log { "Added properties to $cmdName: ${addedPropertyNames.joinToString()}" }
 
         val removedPropertyNames = oldPropertyNames - newPropertyNames
-        if (removedPropertyNames.isNotEmpty()) log { "Removed properties from $cmdName: ${removedPropertyNames.joinToString()}" }
+        if (removedPropertyNames.isNotEmpty()) logger.log { "Removed properties from $cmdName: ${removedPropertyNames.joinToString()}" }
 
         var hasModifications = false
         // Don't check order-sensitive properties, they're done manually
@@ -136,7 +136,7 @@ internal object NewApplicationCommandDiffEngine : ApplicationCommandDiffEngine {
             val newProperty = newCommand[propertyName]
             if (oldProperty?.javaClass != newProperty?.javaClass || oldProperty != newProperty) {
                 fun Any?.q() = if (this == null) "null" else "'$this'"
-                log { "Property '$propertyName' from $cmdName changed from ${oldProperty.q()} -> ${newProperty.q()}" }
+                logger.log { "Property '$propertyName' from $cmdName changed from ${oldProperty.q()} -> ${newProperty.q()}" }
                 hasModifications = true
             }
         }

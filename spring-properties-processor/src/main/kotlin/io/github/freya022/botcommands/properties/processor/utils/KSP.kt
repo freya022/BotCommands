@@ -24,11 +24,11 @@ fun <R : Any> KSAnnotation.getOrDefault(name: String): R {
     return arguments[name]
 }
 
-context(KSAnnotation)
 @Suppress("UNCHECKED_CAST")
+context(annotation: KSAnnotation)
 private operator fun <R : Any> Iterable<KSValueArgument>.get(name: String): R =
     singleOrNull { it.name?.asString() == name }?.value as R?
-        ?: throw IllegalArgumentException("Could not find an argument named '$name' on ${shortName.asString()}")
+        ?: throw IllegalArgumentException("Could not find an argument named '$name' on ${annotation.shortName.asString()}")
 
 fun KSAnnotated.findAnnotation(annotationName: AnnotationName): KSAnnotation {
     return annotations.single { it.isA(annotationName) }

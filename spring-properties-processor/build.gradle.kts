@@ -12,8 +12,7 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-Xcontext-receivers",
-            "-Xsuppress-warning=CONTEXT_RECEIVERS_DEPRECATED",
+            "-Xcontext-parameters",
         )
     }
 }

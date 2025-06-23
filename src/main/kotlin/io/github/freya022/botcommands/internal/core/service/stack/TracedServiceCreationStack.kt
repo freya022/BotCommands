@@ -28,7 +28,7 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
         abstract fun onValue(value: V)
 
-        context(StringBuilder)
+        context(_: StringBuilder)
         abstract fun print(indent: Int = 0)
 
         // For circular dependency string
@@ -46,15 +46,15 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
             _error = value
         }
 
-        context(StringBuilder)
+        context(builder: StringBuilder)
         override fun print(indent: Int) {
-            append("  ".repeat(indent))
+            builder.append("  ".repeat(indent))
 
             val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
             val typeName = provider.primaryType.simpleNestedName
             val failIndicator = if (hasFailed) " failed" else ""
             val errorMessage = if (error != null) " {${error?.toSimpleString()}}" else ""
-            appendLine("[Check$failIndicator, $opDuration] $typeName$errorMessage ($providerKey)")
+            builder.appendLine("[Check$failIndicator, $opDuration] $typeName$errorMessage ($providerKey)")
 
             children.forEach { it.print(indent + 1) }
         }
@@ -72,18 +72,18 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
             instance = value.instance
         }
 
-        context(StringBuilder)
+        context(builder: StringBuilder)
         override fun print(indent: Int) {
-            append("  ".repeat(indent))
+            builder.append("  ".repeat(indent))
 
             val opDuration = elapsed.toString(DurationUnit.MILLISECONDS, decimals = 3)
             if (::instance.isInitialized) {
                 val typeName = instance::class.simpleNestedName
                 val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
-                appendLine("[Create, $opDuration] $typeName as $loadedAsTypes ($providerKey)")
+                builder.appendLine("[Create, $opDuration] $typeName as $loadedAsTypes ($providerKey)")
             } else {
                 val typeName = provider.primaryType.simpleNestedName
-                appendLine("[Create failed, $opDuration] $typeName ($providerKey)")
+                builder.appendLine("[Create failed, $opDuration] $typeName ($providerKey)")
             }
 
             children.forEach { it.print(indent + 1) }

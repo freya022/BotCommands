@@ -70,14 +70,14 @@ class ServiceError private constructor(
         }
     }
 
-    context(StringBuilder)
+    context(builder: StringBuilder)
     internal fun appendPostfixSimpleString() {
         if (siblingErrors.isNotEmpty()) {
-            append("\n")
-            append(toSimpleString())
+            builder.append("\n")
+            builder.append(toSimpleString())
         } else {
-            append(": ")
-            append(toSimpleString())
+            builder.append(": ")
+            builder.append(toSimpleString())
         }
     }
 

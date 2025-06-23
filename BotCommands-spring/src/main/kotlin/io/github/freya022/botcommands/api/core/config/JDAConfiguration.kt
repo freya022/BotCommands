@@ -37,7 +37,7 @@ class JDAConfiguration internal constructor(
     @IgnoreDefaultValue
     @ConfigurationValue("jda.cacheFlags")
     val cacheFlags: Set<CacheFlag> = emptySet(),
-    @Name("devtools")
+    @param:Name("devtools")
     val devTools: DevTools = DevTools(),
 ) {
 

@@ -28,6 +28,7 @@ internal class PersistentEntitySelectBuilderImpl internal constructor(
     IPersistentActionableComponentMixin<PersistentEntitySelectBuilder> by PersistentActionableComponentImpl(componentController.context, ComponentType.SELECT_MENU, instanceRetriever),
     IPersistentTimeoutableComponentMixin<PersistentEntitySelectBuilder> by PersistentTimeoutableComponentImpl(componentController.context, ComponentType.SELECT_MENU, instanceRetriever) {
 
+    @Suppress("PROPERTY_HIDES_JAVA_FIELD")
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.PERSISTENT
     override val instance: PersistentEntitySelectBuilderImpl get() = this

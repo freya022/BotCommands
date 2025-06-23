@@ -29,6 +29,7 @@ internal class EphemeralEntitySelectBuilderImpl internal constructor(
     IEphemeralActionableComponentMixin<EphemeralEntitySelectBuilder, EntitySelectEvent> by EphemeralActionableComponentImpl(componentController.context, instanceRetriever),
     IEphemeralTimeoutableComponentMixin<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl(instanceRetriever) {
 
+    @Suppress("PROPERTY_HIDES_JAVA_FIELD")
     override val componentType: ComponentType get() = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType get() = LifetimeType.EPHEMERAL
     override val instance: EphemeralEntitySelectBuilderImpl get() = this

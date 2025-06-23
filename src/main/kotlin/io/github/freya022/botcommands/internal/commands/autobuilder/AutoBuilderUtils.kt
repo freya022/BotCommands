@@ -36,17 +36,15 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
             if (ex == null) {
                 ex = newException
             } else {
-                ex!!.addSuppressed(newException)
+                ex.addSuppressed(newException)
             }
         }
     }
 
-    if (ex != null) {
-        ex!!.rethrow("Exception(s) occurred while registering annotated commands")
-    }
+    ex?.rethrow("Exception(s) occurred while registering annotated commands")
 }
 
-context(CommandAutoBuilder, SkipLogger)
+context(_: CommandAutoBuilder, logger: SkipLogger)
 internal fun runFiltered(
     manager: AbstractApplicationCommandManager,
     forceGuildCommands: Boolean,
@@ -55,7 +53,6 @@ internal fun runFiltered(
     block: () -> Unit
 ) {
     val path = applicationFunctionMetadata.path
-    val instance = applicationFunctionMetadata.instance
     val commandId = applicationFunctionMetadata.commandId
     val func = applicationFunctionMetadata.func
 
@@ -81,12 +78,12 @@ internal fun runFiltered(
         throwInternal("Test commands on a global scope should have thrown in ${::checkTestCommand.shortSignatureNoSrc}")
 
     if (testState == TestState.EXCLUDE)
-        return skip(path, "Is a test command while this guild isn't a test guild")
+        return logger.skip(path, "Is a test command while this guild isn't a test guild")
 
     block()
 }
 
-context(CommandAutoBuilder, SkipLogger)
+context(autoBuilder: CommandAutoBuilder, logger: SkipLogger)
 internal fun checkDeclarationFilter(
     manager: AbstractApplicationCommandManager,
     func: KFunction<*>,
@@ -99,9 +96,9 @@ internal fun checkDeclarationFilter(
         }
 
         declarationFilter.filters.forEach {
-            if (!serviceContainer.getService(it).filter(manager.guild, path, commandId)) {
+            if (!autoBuilder.serviceContainer.getService(it).filter(manager.guild, path, commandId)) {
                 val commandIdStr = if (commandId != null) " (id ${commandId})" else ""
-                skip(path, "${it.simpleNestedName} rejected this command$commandIdStr")
+                logger.skip(path, "${it.simpleNestedName} rejected this command$commandIdStr")
                 return false
             }
         }
@@ -109,7 +106,7 @@ internal fun checkDeclarationFilter(
     return true
 }
 
-context(CommandAutoBuilder)
+context(_: CommandAutoBuilder)
 internal inline fun <reified E : Enum<E>> Array<out E>.toEnumSetOr(fallback: Set<E>): Set<E> = when {
     this.isEmpty() -> fallback
     else -> enumSetOf<E>(*this)
@@ -173,24 +170,24 @@ internal fun CommandBuilder.fillCommandBuilder(functions: List<KFunction<*>>) {
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) = fillCommandBuilder(listOf(func))
 
-context(CommandBuilder)
+context(_: CommandBuilder)
 internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresentAnnotationOfVariants(): Boolean {
     return singleAnnotationOfVariants<A>() != null
 }
 
-context(CommandBuilder)
+context(_: CommandBuilder)
 internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
     return singleValueOfVariants(annotationRef<A>()) { it.findAnnotationRecursive<A>() }
 }
 
-context(CommandBuilder)
+context(builder: CommandBuilder)
 internal fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String, associationBlock: (KFunction<*>) -> V?): V? {
     val allValues = this.associateWith(associationBlock)
 
     val nonNullMap = allValues.filterValues { it != null }
     check(nonNullMap.size <= 1) {
         val refs = nonNullMap.map { it.key }.joinAsList { it.shortSignature }
-        "Command '$path' should have $desc defined at most once:\n$refs"
+        "Command '${builder.path}' should have $desc defined at most once:\n$refs"
     }
     return nonNullMap.values.firstOrNull()
 }

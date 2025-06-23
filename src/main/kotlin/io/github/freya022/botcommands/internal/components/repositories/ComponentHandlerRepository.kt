@@ -14,9 +14,9 @@ import io.github.freya022.botcommands.internal.utils.throwInternal
 internal class ComponentHandlerRepository(
     private val ephemeralComponentHandlers: EphemeralComponentHandlers
 ) {
-    context(Transaction)
+    context(transaction: Transaction)
     internal suspend fun getPersistentHandler(id: Int): PersistentHandler? {
-        return preparedStatement(
+        return transaction.preparedStatement(
             "SELECT handler_name, user_data FROM bc_persistent_handler WHERE component_id = ?"
         ) {
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
@@ -28,16 +28,16 @@ internal class ComponentHandlerRepository(
         }
     }
 
-    context(Transaction)
+    context(transaction: Transaction)
     internal suspend fun insertPersistentHandler(componentId: Int, handler: PersistentHandler) {
-        preparedStatement("INSERT INTO bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
+        transaction.preparedStatement("INSERT INTO bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
             executeUpdate(componentId, handler.handlerName, handler.userData.mapToArray { it?.asBytes() })
         }
     }
 
-    context(Transaction)
+    context(transaction: Transaction)
     internal suspend fun getEphemeralHandler(id: Int): EphemeralHandler<*>? {
-        return preparedStatement(
+        return transaction.preparedStatement(
             "SELECT handler_id FROM bc_ephemeral_handler WHERE component_id = ?"
         ) {
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
@@ -49,9 +49,9 @@ internal class ComponentHandlerRepository(
         }
     }
 
-    context(Transaction)
+    context(transaction: Transaction)
     internal suspend fun insertEphemeralHandler(componentId: Int, handler: EphemeralHandler<*>) {
-        preparedStatement("INSERT INTO bc_ephemeral_handler (component_id, handler_id) VALUES (?, ?)") {
+        transaction.preparedStatement("INSERT INTO bc_ephemeral_handler (component_id, handler_id) VALUES (?, ?)") {
             executeUpdate(componentId, ephemeralComponentHandlers.put(handler))
         }
     }

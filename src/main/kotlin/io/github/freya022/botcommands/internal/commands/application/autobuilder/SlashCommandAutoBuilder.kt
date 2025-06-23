@@ -40,10 +40,10 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.InteractionContextType
+import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
-import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 
 private val logger = KotlinLogging.logger { }
 private val defaultTopLevelMetadata = TopLevelSlashCommandData()
@@ -232,7 +232,7 @@ internal class SlashCommandAutoBuilder(
         }
     }
 
-    context(SkipLogger)
+    context(_: SkipLogger)
     private fun processCommand(manager: AbstractApplicationCommandManager, topLevelMetadata: TopLevelSlashCommandMetadata) {
         val metadata = topLevelMetadata.metadata
         val annotation = metadata.annotation
@@ -274,7 +274,7 @@ internal class SlashCommandAutoBuilder(
         }
     }
 
-    context(SkipLogger)
+    context(_: SkipLogger)
     private fun TopLevelSlashCommandBuilder.addSubcommandGroups(
         manager: AbstractApplicationCommandManager,
         subcommandGroupsMetadata: MutableMap<String, SlashSubcommandGroupMetadata>,
@@ -298,7 +298,7 @@ internal class SlashCommandAutoBuilder(
         }
     }
 
-    context(SkipLogger)
+    context(_: SkipLogger)
     private fun TopLevelSlashCommandBuilder.addSubcommands(
         manager: AbstractApplicationCommandManager,
         subcommandsMetadata: MutableList<SlashFunctionMetadata>,

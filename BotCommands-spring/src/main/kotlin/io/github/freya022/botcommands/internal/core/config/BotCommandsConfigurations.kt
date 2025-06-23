@@ -87,7 +87,7 @@ internal class BotCommandsTextConfiguration(
     override val prefixes: List<String> = emptyList(),
     override val isHelpDisabled: Boolean = false,
     override val showSuggestions: Boolean = true,
-    @Name("dmClosedEmoji")
+    @param:Name("dmClosedEmoji")
     internal val dmClosedEmojiString: String? = null
 ) : BTextConfig {
     override val dmClosedEmoji: Nothing get() = unusable()
@@ -120,7 +120,7 @@ internal class BotCommandsApplicationConfiguration(
     override val forceGuildCommands: Boolean = false,
     localizations: Map<String, List<DiscordLocale>> = emptyMap(),
     override val logMissingLocalizationKeys: Boolean = false,
-    @Name("cache")
+    @param:Name("cache")
     internal val springCache: Cache = Cache(),
 ) : BApplicationConfig {
     override val cache: Nothing get() = unusable()

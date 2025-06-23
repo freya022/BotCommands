@@ -62,7 +62,7 @@ internal sealed class TextCommandInfoImpl(
         if (!channel.guild.selfMember.hasPermission(channel, botPermissions)) add(UnusableReason.BOT_PERMISSIONS)
     }
 
-    context(EnumSet<UnusableReason>)
+    context(set: EnumSet<UnusableReason>)
     private fun checkNSFW(channel: GuildMessageChannel) {
         // Do not run if command is not NSFW
         if (!nsfw) return
@@ -73,7 +73,7 @@ internal sealed class TextCommandInfoImpl(
 
         if (channel is IAgeRestrictedChannel) {
             if (!channel.isNSFW) {
-                add(UnusableReason.NSFW_ONLY)
+                set.add(UnusableReason.NSFW_ONLY)
             }
         } else {
             throwInternal("Unsupported channel: $channel")

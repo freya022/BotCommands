@@ -44,13 +44,13 @@ internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap:
     return InsertOptionResult.SKIP
 }
 
-context(ExecutableMixin)
+context(executable: ExecutableMixin)
 internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
-) = buildParameters(eventFunction.kFunction) {
-    this[eventFunction.instanceParameter] = instance
-    this[eventFunction.firstParameter] = firstParam
+) = buildParameters(executable.eventFunction.kFunction) {
+    this[executable.eventFunction.instanceParameter] = executable.instance
+    this[executable.eventFunction.firstParameter] = firstParam
 
     for (parameter in this@mapFinalParameters) {
         insertAggregate(firstParam, this, optionValues, parameter)

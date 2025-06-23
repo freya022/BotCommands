@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -36,10 +37,10 @@ tasks.withType<Test>() {
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
+        jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
 
         freeCompilerArgs.addAll(
             "-Xjsr305=strict",
-            "-Xjvm-default=all",
             "-Xconsistent-data-class-copy-visibility",
         )
     }
