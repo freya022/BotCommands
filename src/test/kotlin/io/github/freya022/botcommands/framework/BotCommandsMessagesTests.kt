@@ -21,11 +21,13 @@ import io.mockk.spyk
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import org.junit.jupiter.api.assertDoesNotThrow
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.test.Test
 import kotlin.test.assertIsNot
+import kotlin.test.assertSame
 import kotlin.test.fail
 
 class BotCommandsMessagesTests {
@@ -64,6 +66,19 @@ class BotCommandsMessagesTests {
         }
 
         assertIsNot<DefaultBotCommandsMessagesFactory>(context.getService<BotCommandsMessagesFactory>())
+    }
+
+    @Test
+    fun `Can override autoconfiguration`() {
+        val expected = mockk<BotCommandsMessagesFactory>()
+        val context = BotCommands.createTest {
+            services {
+                registerServiceSupplier<BotCommandsMessagesFactory> { expected }
+            }
+        }
+
+        val actual = assertDoesNotThrow { context.getService<BotCommandsMessagesFactory>() }
+        assertSame(expected, actual)
     }
 
     @Test
