@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -77,20 +76,20 @@ class DefaultRateLimitHandler(
         }
     }
 
-    override suspend fun <T> onRateLimit(
+    override suspend fun onRateLimit(
         context: BContext,
-        event: T,
+        event: GenericCommandInteractionEvent,
         commandInfo: ApplicationCommandInfo,
         probe: ConsumptionProbe
-    ) where T : GenericCommandInteractionEvent, T : IReplyCallback {
+    ) {
         onRateLimit0(context, event, probe)
     }
 
-    override suspend fun <T> onRateLimit(
+    override suspend fun onRateLimit(
         context: BContext,
-        event: T,
+        event: GenericComponentInteractionCreateEvent,
         probe: ConsumptionProbe
-    ) where T : GenericComponentInteractionCreateEvent, T : IReplyCallback, T : IMessageEditCallback {
+    ) {
         onRateLimit0(context, event, probe)
     }
 
