@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.handler
 
 import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.util.ref
+import dev.minn.jda.ktx.generics.getChannel
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -67,10 +68,13 @@ class DefaultRateLimitHandler(
         runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
             val messageId = channel.sendMessage(content).await().idLong
             if (deleteOnRefill && channel is GuildChannel) {
-                val channelRef by channel.ref()
+                val jda = channel.jda
+                val channelId = channel.idLong
                 deleteScope.launch {
                     delay(probe.nanosToWaitForRefill.nanoseconds)
-                    channelRef.deleteMessageById(messageId).awaitCatching()
+                    jda.getChannel<GuildMessageChannel>(channelId)
+                        ?.deleteMessageById(messageId)
+                        ?.awaitCatching()
                 }
             }
         }
