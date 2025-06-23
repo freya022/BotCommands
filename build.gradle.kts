@@ -135,17 +135,30 @@ sourceSets {
     }
 }
 
-// Register examples
-sourceSets {
-    register("examples") {
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
+fun registerSourceSet(name: String, extendsTestDependencies: Boolean) {
+    sourceSets {
+        register(name) {
+            compileClasspath += sourceSets.main.get().output
+            runtimeClasspath += sourceSets.main.get().output
+        }
+    }
+
+    configurations["${name}Api"].extendsFrom(configurations["api"])
+    configurations["${name}Implementation"].extendsFrom(configurations["implementation"])
+    configurations["${name}CompileOnly"].extendsFrom(configurations["compileOnly"])
+
+    if (extendsTestDependencies) {
+        configurations["${name}Api"].extendsFrom(configurations["testApi"])
+        configurations["${name}Implementation"].extendsFrom(configurations["testImplementation"])
+        configurations["${name}CompileOnly"].extendsFrom(configurations["testCompileOnly"])
     }
 }
 
-configurations["examplesApi"].extendsFrom(configurations["api"], configurations["testApi"])
-configurations["examplesImplementation"].extendsFrom(configurations["implementation"], configurations["testImplementation"])
-configurations["examplesCompileOnly"].extendsFrom(configurations["compileOnly"], configurations["testCompileOnly"])
+// Register other source sets
+registerSourceSet(name = "examples", extendsTestDependencies = true)
+// Use different source sets so we can use the same class names without clashes
+registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
+registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
 
 dokka {
     dokkaSourceSets.configureEach {

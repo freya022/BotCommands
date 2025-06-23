@@ -9,7 +9,6 @@ import kotlin.io.path.absolutePathString
 @SpringBootApplication(
         scanBasePackages = [
             "io.github.freya022.botcommands.test",
-            "doc"
         ]
 )
 open class SpringMain

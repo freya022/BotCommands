@@ -40,7 +40,6 @@ object Main {
                 disableExceptionsInDMs = true
 
                 addSearchPath("io.github.freya022.botcommands.test")
-                addSearchPath("doc")
 
                 database {
                     queryLogThreshold = 250.milliseconds
