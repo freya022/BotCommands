@@ -1,10 +1,9 @@
 package io.github.freya022.botcommands.internal.modals
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BModalsConfig
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -24,7 +23,7 @@ private val logger = KotlinLogging.logger { }
 @RequiresModals
 internal class ModalListener(
     private val context: BContextImpl,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val modalHandlerContainer: ModalHandlerContainer,
     private val modalMaps: ModalMaps,
@@ -44,7 +43,7 @@ internal class ModalListener(
 
             val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))
             if (modalData == null) { //Probably the modal expired
-                jdaEvent.reply_(defaultMessagesFactory.get(jdaEvent).modalExpiredErrorMsg, ephemeral = true).queue()
+                jdaEvent.reply(messagesFactory.get(jdaEvent).modalExpired(jdaEvent)).setEphemeral(true).queue()
                 return@launch
             }
 
@@ -73,9 +72,9 @@ internal class ModalListener(
             put("Modal values", event.values.associate { it.id to it.asString })
         })
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
+            event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
+            event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
 }

@@ -14,8 +14,8 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.*
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
@@ -37,7 +37,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see ICoroutineEventManagerSupplier
  * @see JDAService
  *
- * @see DefaultMessagesFactory
+ * @see BotCommandsMessagesFactory
  *
  * @see GlobalExceptionHandler
  *

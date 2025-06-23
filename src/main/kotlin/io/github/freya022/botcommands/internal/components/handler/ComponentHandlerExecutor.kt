@@ -1,15 +1,14 @@
 package io.github.freya022.botcommands.internal.components.handler
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
@@ -33,7 +32,7 @@ private val logger = KotlinLogging.logger { }
 @BService
 @RequiresComponents
 internal class ComponentHandlerExecutor internal constructor(
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val componentHandlerContainer: ComponentHandlerContainer,
 ) {
     internal suspend fun runHandler(component: ActionComponentData, event: GenericComponentInteractionCreateEvent): Boolean {
@@ -61,7 +60,7 @@ internal class ComponentHandlerExecutor internal constructor(
                         Component raw data: $userData
                     """.trimIndent()
                 }
-                event.reply_(defaultMessagesFactory.get(event).componentExpiredErrorMsg, ephemeral = true).queue()
+                event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
                 return false
             }
 

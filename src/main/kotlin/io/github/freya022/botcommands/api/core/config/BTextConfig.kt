@@ -4,9 +4,9 @@ import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextPrefixSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
-import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -78,7 +78,7 @@ interface BTextConfig {
     /**
      * Emoji used to indicate a user that their DMs are closed.
      *
-     * This is only used if [the closed DMs error message][DefaultMessages.getClosedDMErrorMsg] can't be sent.
+     * This is only used if [the closed DMs error message][BotCommandsMessages.closedDirectMessages] can't be sent.
      *
      * Default: `mailbox_closed`
      *

@@ -9,6 +9,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.lang.reflect.InvocationTargetException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -138,7 +139,7 @@ internal fun Throwable.unwrap(): Throwable {
 }
 
 internal suspend fun IReplyCallback.replyExceptionMessage(
-    message: String
+    message: MessageCreateData
 ) = runIgnoringResponse(ErrorResponse.UNKNOWN_INTERACTION, ErrorResponse.UNKNOWN_WEBHOOK) {
     if (isAcknowledged) {
         // Give ourselves 5 seconds to delete

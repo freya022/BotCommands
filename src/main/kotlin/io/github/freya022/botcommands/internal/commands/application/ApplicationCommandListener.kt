@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
@@ -16,10 +15,11 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.entities.inputUser
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
@@ -40,6 +40,8 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+import net.dv8tion.jda.api.interactions.Interaction
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 private val logger = KotlinLogging.logger {  }
 
@@ -48,7 +50,7 @@ private val logger = KotlinLogging.logger {  }
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: RateLimitHandler,
     filters: List<ApplicationCommandFilter>,
@@ -144,7 +146,7 @@ internal class ApplicationCommandListener internal constructor(
             } else {
                 logger.debug { "Ignored '${event.fullCommandName}' as guild (${guild!!.id}) commands could not be updated" }
             }
-            return event.reply_(defaultMessagesFactory.get(event).applicationCommandsNotAvailableMsg, ephemeral = true).queue()
+            return event.reply(messagesFactory.get(event).applicationCommandsNotAvailable(event)).setEphemeral(true).queue()
         }
 
         //This is done so warnings are printed after the exception
@@ -225,29 +227,31 @@ internal class ApplicationCommandListener internal constructor(
 
         exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap(), logLevel)
         if (e is InsufficientPermissionException) {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).getBotPermErrorMsg(setOf(e.permission)))
+            event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            event.replyExceptionMessage(defaultMessagesFactory.get(event).generalErrorMsg)
+            event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
 
     private suspend fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfoImpl): Boolean {
         val usability = applicationCommand.getUsability(event.inputUser, event.messageChannel)
         if (usability.isNotUsable) {
-            val errorMessage: String = when (usability.bestReason) {
-                UnusableReason.OWNER_ONLY -> defaultMessagesFactory.get(event).ownerOnlyErrorMsg
-                UnusableReason.USER_PERMISSIONS -> {
-                    val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
-                    val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
-                    defaultMessagesFactory.get(event).getUserPermErrorMsg(missingPermissions)
+            val errorMessage = fromMessages(event) {
+                when (usability.bestReason) {
+                    UnusableReason.OWNER_ONLY -> ownerOnly(event)
+                    UnusableReason.USER_PERMISSIONS -> {
+                        val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
+                        val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
+                        missingUserPermissions(event, missingPermissions)
+                    }
+                    UnusableReason.BOT_PERMISSIONS -> {
+                        val guild = event.guild ?: throwInternal("BOT_PERMISSIONS got checked even if guild is null")
+                        val missingPermissions = getMissingPermissions(applicationCommand.botPermissions, guild.selfMember, event.guildChannel)
+                        missingBotPermissions(event, missingPermissions)
+                    }
+                    UnusableReason.NSFW_ONLY -> throwInternal("Discord already handles NSFW commands")
+                    UnusableReason.HIDDEN -> throwInternal("Application commands can't be hidden")
                 }
-                UnusableReason.BOT_PERMISSIONS -> {
-                    val guild = event.guild ?: throwInternal("BOT_PERMISSIONS got checked even if guild is null")
-                    val missingPermissions = getMissingPermissions(applicationCommand.botPermissions, guild.selfMember, event.guildChannel)
-                    defaultMessagesFactory.get(event).getBotPermErrorMsg(missingPermissions)
-                }
-                UnusableReason.NSFW_ONLY -> throwInternal("Discord already handles NSFW commands")
-                UnusableReason.HIDDEN -> throwInternal("Application commands can't be hidden")
             }
             reply(event, errorMessage)
             return false
@@ -268,10 +272,15 @@ internal class ApplicationCommandListener internal constructor(
         return true
     }
 
-    private fun reply(event: GenericCommandInteractionEvent, msg: String) {
-        event.reply_(msg, ephemeral = true)
+    private fun reply(event: GenericCommandInteractionEvent, message: MessageCreateData) {
+        event.reply(message)
+            .setEphemeral(true)
             .queue(null) { throwable ->
                 exceptionHandler.handleException(event, throwable, "interaction reply", emptyMap())
             }
+    }
+
+    private inline fun fromMessages(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+        return messagesFactory.get(event).run(block)
     }
 }

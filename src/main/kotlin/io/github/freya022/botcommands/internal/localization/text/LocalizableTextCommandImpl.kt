@@ -1,6 +1,10 @@
+@file:Suppress("removal", "DEPRECATION")
+
 package io.github.freya022.botcommands.internal.localization.text
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.Localization
@@ -20,6 +24,7 @@ internal class LocalizableTextCommandImpl internal constructor(
     localizationConfig: BLocalizationConfig,
     private val localeProvider: TextCommandLocaleProvider,
     private val defaultMessagesFactory: DefaultMessagesFactory,
+    private val messagesFactory: BotCommandsMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService), LocalizableTextCommand {
     private val locale: Locale by lazy { localeProvider.getLocale(event) }
 
@@ -32,8 +37,14 @@ internal class LocalizableTextCommandImpl internal constructor(
         )
     }
 
+    @Suppress("DEPRECATION", "removal")
+    @Deprecated("Replaced with getBotCommandsMessages()")
     override fun getDefaultMessages(): DefaultMessages {
         return defaultMessagesFactory.get(locale)
+    }
+
+    override fun getBotCommandsMessages(): BotCommandsMessages {
+        return messagesFactory.get(locale)
     }
 
     override fun getGuildMessage(localizationPath: String, vararg entries: Localization.Entry): String {
