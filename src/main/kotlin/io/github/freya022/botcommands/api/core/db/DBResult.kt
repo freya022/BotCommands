@@ -36,7 +36,7 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         }
 
         override fun next(): DBResult {
-            if (hasNext != true) {
+            if (!hasNext()) {
                 throw NoSuchElementException()
             }
             hasNext = null
