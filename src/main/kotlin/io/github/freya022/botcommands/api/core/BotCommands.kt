@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.core.service.DefaultBotCommandsBootstrap
+import io.github.freya022.botcommands.internal.core.service.BCBotCommandsBootstrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
@@ -61,7 +61,7 @@ object BotCommands {
 
     private fun build(config: BConfig): BContext {
         val (context, duration) = measureTimedValue {
-            val bootstrap = DefaultBotCommandsBootstrap(config)
+            val bootstrap = BCBotCommandsBootstrap(config)
             bootstrap.injectAndLoadServices()
             bootstrap.loadContext()
             bootstrap.serviceContainer.getService<BContext>()

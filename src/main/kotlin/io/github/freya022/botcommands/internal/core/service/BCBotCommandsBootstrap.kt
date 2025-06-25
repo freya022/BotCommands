@@ -14,13 +14,13 @@ import net.dv8tion.jda.api.JDAInfo
 
 private const val SERVICE_ANNOTATION_NAME = "io.github.freya022.botcommands.api.core.service.annotations.BService"
 
-internal class DefaultBotCommandsBootstrap internal constructor(
+internal class BCBotCommandsBootstrap internal constructor(
     config: BConfig
 ) : AbstractBotCommandsBootstrap(config) {
     internal val serviceConfig: BServiceConfig get() = config.serviceConfig
 
     internal val serviceProviders = ServiceProviders()
-    override val serviceContainer = DefaultServiceContainerImpl(this)
+    override val serviceContainer = BCServiceContainerImpl(this)
     override val classGraphProcessors: Set<ClassGraphProcessor> =
         setOf(ConditionalObjectChecker(), serviceProviders)
 

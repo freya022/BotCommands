@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.core.service.provider.TimedInstan
 import io.github.freya022.botcommands.internal.core.service.stack.ServiceCreationStack.Companion.logger
 import kotlin.time.DurationUnit
 
-internal class DefaultServiceCreationStack : ServiceCreationStack {
+internal class ServiceCreationStackImpl : ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
     private val set get() = localSet.get()
 

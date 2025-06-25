@@ -6,14 +6,13 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.Singletons
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import kotlin.collections.set
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -45,9 +44,9 @@ internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
 
     val instance: Any?
 
-    fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError?
+    fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError?
 
-    fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*>
+    fun createInstance(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*>
 
     fun getProviderFunction(): KFunction<*>?
 
@@ -145,7 +144,7 @@ internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass
     return effectiveTypes
 }
 
-internal fun ServiceProvider.commonCanInstantiate(serviceContainer: DefaultServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
+internal fun ServiceProvider.commonCanInstantiate(serviceContainer: BCServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
     findAnnotations<Dependencies>().forEach { dependencies ->
         dependencies.value.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
@@ -247,7 +246,7 @@ internal inline fun <T : Any> measureNullableTimedInstantiation(block: () -> T?)
     return TimedInstantiation(value, duration)
 }
 
-internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
+internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
         serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
             when {
@@ -265,7 +264,7 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: DefaultSer
     return null
 }
 
-internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
+internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
     val params: MutableMap<KParameter, Any?> = hashMapOf()
     this.nonInstanceParameters.forEach {
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
@@ -290,7 +289,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: DefaultServ
     }
 }
 
-internal fun <R> KFunction<R>.callStatic(serviceContainer: DefaultServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
+internal fun <R> KFunction<R>.callStatic(serviceContainer: BCServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
     if (this.isSuspend) {
         throwArgument(this, "Suspending functions are not supported in this context")
     }

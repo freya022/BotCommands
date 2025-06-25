@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.core.service.provider
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
@@ -47,11 +47,11 @@ internal class ProvidedServiceProvider internal constructor(
 
     override fun getProviderSignature(): String = "<provided ${clazz.shortQualifiedName}>"
 
-    override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
+    override fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
         return null
     }
 
-    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): Nothing {
+    override fun createInstance(serviceContainer: BCServiceContainerImpl): Nothing {
         throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
     }
 }

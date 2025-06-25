@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
@@ -8,7 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.service.provider.*
-import io.github.freya022.botcommands.internal.core.service.stack.DefaultServiceCreationStack
+import io.github.freya022.botcommands.internal.core.service.stack.ServiceCreationStackImpl
 import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -27,13 +29,17 @@ import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
-internal class DefaultServiceContainerImpl internal constructor(internal val serviceBootstrap: DefaultBotCommandsBootstrap) : DefaultServiceContainer {
+internal class BCServiceContainerImpl internal constructor(
+    internal val serviceBootstrap: BCBotCommandsBootstrap
+) : BCServiceContainer,
+    DefaultServiceContainer {
+
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders
     private val lock = ReentrantLock()
     private val serviceCreationStack = when {
         serviceConfig.debug -> TracedServiceCreationStack()
-        else -> DefaultServiceCreationStack()
+        else -> ServiceCreationStackImpl()
     }
 
     init {
@@ -41,7 +47,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     }
 
     internal fun loadServices() {
-        getService<DefaultInstantiableServices>()
+        getService<BCInstantiableServices>()
             .availableProviders
             .filterNot { it.isLazy }
             // This should never throw as the providers are available and not lazy
@@ -133,7 +139,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
     }
 
     override fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): Collection<String> {
-        return getService<DefaultInstantiableServices>().availableProviders
+        return getService<BCInstantiableServices>().availableProviders
             .filter { it.annotations.any { a -> a.annotationClass == annotationType } }
             .map { it.name }
             .unmodifiableView()
@@ -311,7 +317,7 @@ internal class DefaultServiceContainerImpl internal constructor(internal val ser
             // If DefaultInstantiableServices is still running,
             // usable providers with the same names weren't checked yet,
             // throw here too.
-            if (serviceProviders.findAllForType(DefaultInstantiableServices::class).single() in serviceCreationStack) {
+            if (serviceProviders.findAllForType(BCInstantiableServices::class).single() in serviceCreationStack) {
                 throwState(duplicatedNamedProvidersMsg(mapOf(name to primaryProviders)))
             } else {
                 throwInternal("${classRef<InstantiableServices>()} should have made sure that only one '$name' named provider exists")

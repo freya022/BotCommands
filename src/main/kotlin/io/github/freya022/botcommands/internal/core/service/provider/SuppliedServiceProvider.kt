@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.internal.core.service.DefaultServiceContainerImpl
+import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmName
@@ -26,11 +26,11 @@ internal class SuppliedServiceProvider internal constructor(
     override val isLazy = serviceSupplier.isLazy
     override val priority = serviceSupplier.priority
 
-    override fun canInstantiate(serviceContainer: DefaultServiceContainerImpl): ServiceError? {
+    override fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
         return null
     }
 
-    override fun createInstance(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
+    override fun createInstance(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
         if (instance != null)
             throwInternal("Tried to create an instance of ${clazz.jvmName} when one already exists, instance should be retrieved manually beforehand")
 
@@ -39,7 +39,7 @@ internal class SuppliedServiceProvider internal constructor(
         return timedInstantiation
     }
 
-    private fun createInstanceNonCached(serviceContainer: DefaultServiceContainerImpl): TimedInstantiation<*> {
+    private fun createInstanceNonCached(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
         return measureTimedInstantiation {
             val service = serviceSupplier!!.supplier(serviceContainer.getService())
             serviceSupplier = null // Let GC take what wont be used anymore

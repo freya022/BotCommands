@@ -4,9 +4,8 @@ import org.springframework.context.annotation.Condition
 import org.springframework.context.annotation.ConditionContext
 import org.springframework.core.type.AnnotatedTypeMetadata
 
-internal class DefaultInjectionCondition : Condition {
+internal class BCInjectionCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         return false
     }
 }
-
