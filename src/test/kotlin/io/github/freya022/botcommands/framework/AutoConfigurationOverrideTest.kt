@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.FieldSource
 import kotlin.reflect.KClass
 import kotlin.test.assertSame
 
-object AutoConfigureOverrideTest {
+object AutoConfigurationOverrideTest {
 
     private lateinit var autoconfiguredTypes: Set<KClass<*>>
 
