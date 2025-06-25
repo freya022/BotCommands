@@ -79,6 +79,9 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
+    // Architecture tests
+    testImplementation(libs.konsist)
+
     // Mocking
     testImplementation(libs.mockk)
 
