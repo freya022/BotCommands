@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.localization.text
+package io.github.freya022.botcommands.internal.localization.text.autoconfigure
 
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent

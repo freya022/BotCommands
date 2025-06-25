@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core
+package io.github.freya022.botcommands.internal.core.autoconfigure
 
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService

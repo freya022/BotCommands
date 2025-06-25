@@ -1,6 +1,6 @@
 @file:Suppress("removal", "DEPRECATION")
 
-package io.github.freya022.botcommands.internal.localization
+package io.github.freya022.botcommands.internal.localization.autoconfigure
 
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory

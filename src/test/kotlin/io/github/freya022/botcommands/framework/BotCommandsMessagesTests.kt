@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.framework.utils.createTest
-import io.github.freya022.botcommands.internal.core.messages.BotCommandsMessagesFactoryAutoConfiguration
+import io.github.freya022.botcommands.internal.core.messages.autoconfigure.BotCommandsMessagesFactoryAutoConfiguration
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

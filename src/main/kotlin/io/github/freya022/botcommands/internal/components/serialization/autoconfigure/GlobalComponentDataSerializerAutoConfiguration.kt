@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.serialization
+package io.github.freya022.botcommands.internal.components.serialization.autoconfigure
 
 import io.github.freya022.botcommands.api.components.serialization.GlobalComponentDataSerializer
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService

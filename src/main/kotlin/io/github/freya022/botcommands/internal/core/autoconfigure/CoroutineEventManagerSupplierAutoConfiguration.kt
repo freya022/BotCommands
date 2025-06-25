@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.core
+package io.github.freya022.botcommands.internal.core.autoconfigure
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier

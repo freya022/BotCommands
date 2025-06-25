@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.text
+package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
 import dev.minn.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.spacedPath
+import io.github.freya022.botcommands.internal.commands.text.TextUtils
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.Member
@@ -20,7 +21,7 @@ import kotlin.time.Duration.Companion.minutes
 
 private val spacePattern = Regex("\\s+")
 
-internal class HelpCommand internal constructor(
+internal class DefaultHelpCommand internal constructor(
     private val context: BContext,
     private val messagesFactory: BotCommandsMessagesFactory,
     private val textCommandsContext: TextCommandsContext,
@@ -130,13 +131,13 @@ internal class HelpCommand internal constructor(
 
             botPermissions = enumSetOf(VIEW_CHANNEL, MESSAGE_SEND)
 
-            variation(HelpCommand::onTextHelpCommand) {
+            variation(DefaultHelpCommand::onTextHelpCommand) {
                 option("commandStr", "command path") {
                     helpExample = "tag"
                 }
             }
 
-            variation(HelpCommand::onTextHelpFallback) //fallback
+            variation(DefaultHelpCommand::onTextHelpFallback) //fallback
 		}
     }
 }

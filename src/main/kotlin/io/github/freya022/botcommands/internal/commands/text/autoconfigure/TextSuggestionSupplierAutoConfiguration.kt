@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.text
+package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands

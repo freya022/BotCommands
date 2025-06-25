@@ -1,6 +1,6 @@
 @file:Suppress("removal", "DEPRECATION")
 
-package io.github.freya022.botcommands.internal.core.messages
+package io.github.freya022.botcommands.internal.core.messages.autoconfigure
 
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.text
+package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
 import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
@@ -29,7 +29,7 @@ internal open class HelpCommandAutoConfiguration {
         textCommandsContext: TextCommandsContext,
         helpBuilderConsumer: HelpBuilderConsumer?,
     ): IHelpCommand {
-        return HelpCommand(context, messagesFactory, textCommandsContext, helpBuilderConsumer)
+        return DefaultHelpCommand(context, messagesFactory, textCommandsContext, helpBuilderConsumer)
     }
 
     internal object IsHelpDisabledChecker : ConditionalServiceChecker {

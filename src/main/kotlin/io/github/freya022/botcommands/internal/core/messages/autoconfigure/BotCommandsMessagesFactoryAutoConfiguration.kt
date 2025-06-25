@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package io.github.freya022.botcommands.internal.core.messages
+package io.github.freya022.botcommands.internal.core.messages.autoconfigure
 
 import io.github.classgraph.ClassGraph
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
-import io.github.freya022.botcommands.internal.localization.FallbackDefaultMessagesFactory
+import io.github.freya022.botcommands.internal.localization.autoconfigure.FallbackDefaultMessagesFactory
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -37,7 +37,12 @@ internal open class BotCommandsMessagesFactoryAutoConfiguration internal constru
             return BotCommandsMessagesFactoryDefaultMessagesFactoryAdapter(defaultMessagesFactory)
         }
 
-        return DefaultBotCommandsMessagesFactory(permissionLocalization, localizationService, textCommandLocaleProvider, userLocaleProvider)
+        return DefaultBotCommandsMessagesFactory(
+            permissionLocalization,
+            localizationService,
+            textCommandLocaleProvider,
+            userLocaleProvider
+        )
     }
 
     private fun hasCustomDefaultMessages(): Boolean {

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.localization.text
+package io.github.freya022.botcommands.internal.localization.text.autoconfigure
 
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.serialization
+package io.github.freya022.botcommands.internal.components.serialization.autoconfigure
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.freya022.botcommands.api.components.serialization.GlobalComponentDataSerializer
