@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.UsabilityImpl
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandBuilderImpl
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -81,6 +81,6 @@ internal sealed class TextCommandInfoImpl(
     }
 
     override fun toString(): String {
-        return "Text command '${path.getSpacedPath()}', ${variations.size} variations"
+        return "Text command '${path.spacedPath}', ${variations.size} variations"
     }
 }

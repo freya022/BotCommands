@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.commands.text.options.TextCommandOptionImpl
 import io.github.freya022.botcommands.internal.commands.text.options.TextCommandParameterImpl
@@ -139,6 +139,6 @@ internal class TextCommandVariationImpl internal constructor(
     }
 
     override fun toString(): String {
-        return "Text command '${command.path.getSpacedPath()}' @ ${function.shortSignature}"
+        return "Text command '${command.path.spacedPath}' @ ${function.shortSignature}"
     }
 }

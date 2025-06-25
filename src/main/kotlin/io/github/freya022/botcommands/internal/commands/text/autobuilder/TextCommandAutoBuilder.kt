@@ -24,8 +24,8 @@ import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.*
+import io.github.freya022.botcommands.internal.commands.components
 import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.components
 import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap

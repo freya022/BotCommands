@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.mess
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -101,6 +101,6 @@ internal class MessageCommandInfoImpl internal constructor(
     }
 
     override fun toString(): String {
-        return "Message context '${path.getSpacedPath()}' @ ${function.shortSignature}"
+        return "Message context '${path.spacedPath}' @ ${function.shortSignature}"
     }
 }

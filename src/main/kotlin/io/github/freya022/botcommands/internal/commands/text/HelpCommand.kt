@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProv
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.Member
@@ -79,7 +79,7 @@ internal class HelpCommand internal constructor(
         val member = event.member
         val usability = commandInfo.getUsability(member, event.guildChannel)
         if (usability.isNotVisible) {
-            return event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").awaitUnit()
+            return event.respond("Command '" + commandInfo.path.spacedPath + "' does not exist").awaitUnit()
         }
 
         val embed = generateCommandHelp(event, commandInfo)

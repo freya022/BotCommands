@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.builde
 import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
 import io.github.freya022.botcommands.internal.commands.application.slash.options.*
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
-import io.github.freya022.botcommands.internal.commands.text.TextUtils.getSpacedPath
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
@@ -83,7 +83,7 @@ internal sealed class SlashCommandInfoImpl(
     }
 
     override fun toString(): String {
-        return "/${path.getSpacedPath()} @ ${function.shortSignature}"
+        return "/${path.spacedPath} @ ${function.shortSignature}"
     }
 }
 

@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import dev.minn.jda.ktx.messages.InlineEmbed
-import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandParameter
+import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.IMentionable
@@ -19,7 +19,7 @@ object TextUtils {
 
     @JvmStatic
     fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder = InlineEmbed(event.defaultEmbed).apply {
-        val spacedPath = commandInfo.path.getSpacedPath()
+        val spacedPath = commandInfo.path.spacedPath
 
         val author = builder.takeUnless { builder.isEmpty }
             ?.build()
@@ -50,7 +50,7 @@ object TextUtils {
 
     private fun StringBuilder.addSubcommands(textSubcommands: Collection<TextCommandInfo>, depth: Int = 1) {
         textSubcommands.forEach { subcommandInfo ->
-            val pathComponent = subcommandInfo.path.getSpacedPath()
+            val pathComponent = subcommandInfo.path.spacedPath
             append("**$pathComponent**")
             subcommandInfo.description?.let { append(": $it") }
             appendLine()
@@ -60,7 +60,7 @@ object TextUtils {
     }
 
     private fun generateDescription(commandInfo: TextCommandInfo, event: BaseCommandEvent) = buildString {
-        val name = commandInfo.path.getSpacedPath()
+        val name = commandInfo.path.spacedPath
 
         commandInfo.description?.let { appendLine(it) }
 
@@ -179,9 +179,4 @@ object TextUtils {
     @JvmStatic
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
-
-    fun CommandPath.getSpacedPath(): String = getFullPath(' ')
-
-    val CommandPath.components: List<String>
-        get() = fullPath.split(' ')
 }
