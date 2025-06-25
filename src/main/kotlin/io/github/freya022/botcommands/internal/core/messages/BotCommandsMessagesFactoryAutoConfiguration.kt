@@ -5,34 +5,25 @@ package io.github.freya022.botcommands.internal.core.messages
 import io.github.classgraph.ClassGraph
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
-import io.github.freya022.botcommands.api.core.service.getInterfacedServiceTypes
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
+import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
 import io.github.freya022.botcommands.internal.localization.FallbackDefaultMessagesFactory
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
 
 private val logger = KotlinLogging.logger { }
 
-@BService
-@AutoConfiguration
-internal open class BotCommandsMessagesFactoryProvider internal constructor() {
+@InternalAutoConfiguration
+internal open class BotCommandsMessagesFactoryAutoConfiguration internal constructor() {
 
-    @Bean
-    @ConditionalOnMissingBean(BotCommandsMessagesFactory::class)
-    @BService
-    @ConditionalService(ActivationCondition::class)
+    @InternalAutoConfigurationBeanService
+    @ConditionalOnMissingService(BotCommandsMessagesFactory::class)
     open fun botCommandsMessagesFactory(
         defaultMessagesFactory: DefaultMessagesFactory,
         permissionLocalization: PermissionLocalization,
@@ -61,16 +52,5 @@ internal open class BotCommandsMessagesFactoryProvider internal constructor() {
                         path.startsWith("bc_localization/DefaultMessages") && !path.startsWith("bc_localization/DefaultMessages-default")
                     }
             }
-    }
-
-    internal object ActivationCondition : ConditionalServiceChecker {
-        override fun checkServiceAvailability(serviceContainer: ServiceContainer, checkedClass: Class<*>): String? {
-            val types = serviceContainer.getInterfacedServiceTypes<BotCommandsMessagesFactory>()
-            if (types.isNotEmpty()) {
-                return "An user supplied ${classRef<BotCommandsMessagesFactory>()} is already active (${types.first().simpleNestedName})"
-            }
-
-            return null
-        }
     }
 }

@@ -1,0 +1,16 @@
+package io.github.freya022.botcommands.internal.core
+
+import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
+import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
+import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
+import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
+
+@InternalAutoConfiguration
+internal open class DefaultEmbedFooterIconSupplierAutoConfiguration {
+
+    @InternalAutoConfigurationBeanService
+    @ConditionalOnMissingService(DefaultEmbedFooterIconSupplier::class)
+    open fun defaultEmbedFooterIconSupplier(): DefaultEmbedFooterIconSupplier {
+        return DefaultEmbedFooterIconSupplier { null }
+    }
+}
