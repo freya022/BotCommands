@@ -40,7 +40,7 @@ abstract class GenerateBCInfoTask : DefaultTask() {
             "version-revision" to version.revision,
             "version-classifier" to (version.classifier ?: "null"),
             "branch-name" to (GitUtils.getCommitBranch(logger, providers, projectDir) ?: "null"),
-            "commit-hash" to (GitUtils.getCommitHash(logger, providers, projectDir) ?: "null"),
+            "commit-hash" to (GitUtils.getCommitHash(logger, providers, projectDir)?.take(10) ?: "null"),
             "build-jda-version" to jdaVersion,
             "build-time" to Instant.now().toEpochMilli().toString(),
         )
