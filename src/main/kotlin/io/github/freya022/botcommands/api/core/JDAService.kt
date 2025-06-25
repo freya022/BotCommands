@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core
 
 import dev.minn.jda.ktx.events.CoroutineEventManager
+import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.JDAService.Companion.defaultIntents
 import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestConfig
 import io.github.freya022.botcommands.api.core.JDAService.Companion.getDefaultRestRateLimiter
@@ -280,7 +281,9 @@ abstract class JDAService {
          */
         @JvmStatic
         fun getDefaultRestConfig(): RestConfig {
-            return RestConfig().setRateLimiterFactory(::getDefaultRestRateLimiter)
+            return RestConfig()
+                .setUserAgentSuffix("[${BCInfo.GITHUB}, ${BCInfo.VERSION}]")
+                .setRateLimiterFactory(::getDefaultRestRateLimiter)
         }
 
         /**
