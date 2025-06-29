@@ -50,10 +50,9 @@ bucket4j-jdk17-postgresql = "8.14.0"
 
 konsist = "0.17.3"
 
-mockk = "1.13.16"
+mockk = "1.14.4"
 
-bytebuddy = "1.16.1"
-bytebuddy-agent = "1.16.1"
+bytebuddy = "1.17.5"
 
 ksp = "2.2.0-2.0.2"
 
@@ -123,7 +122,7 @@ konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
 
 bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
-bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy-agent" }
+bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
