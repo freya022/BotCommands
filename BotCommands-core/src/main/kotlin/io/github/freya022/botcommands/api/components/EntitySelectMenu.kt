@@ -13,5 +13,6 @@ interface EntitySelectMenu : JDAEntitySelectMenu,
 
     override fun withDisabled(disabled: Boolean): EntitySelectMenu
 
-    override fun getId(): String
+    @Deprecated("Replaced with getCustomId()", ReplaceWith("getCustomId()"))
+    override fun getId(): String = customId
 }

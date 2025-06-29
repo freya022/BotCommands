@@ -1,5 +1,6 @@
 package doc.kotlin.examples.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.durations.after
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -45,7 +46,7 @@ class SlashSelectRoleEphemeral : ApplicationCommand() {
         temporarySelectMenu = roleMenu
 
         event.reply("This select menu expires ${TimeFormat.RELATIVE.after(10.seconds)}")
-            .addActionRow(roleMenu)
+            .addComponents(row(roleMenu))
             .await()
     }
 }

@@ -1,5 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
@@ -79,7 +80,7 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
         }
 
         event.replyLocalizedEphemeral(localizationContext, "outputs.confirmationMessage", "userMention" to target.asMention)
-            .addActionRow(cancelButton, confirmButton)
+            .addComponents(row(cancelButton, confirmButton))
             .queue()
 
         val componentEvent: ButtonEvent = try {
@@ -90,14 +91,14 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
                 .queue()
         }
 
-        when (componentEvent.componentId) {
-            cancelButton.id -> {
+        when (componentEvent.uniqueId) {
+            cancelButton.uniqueId -> {
                 logger.debug { "Ban cancelled for ${target.id}" }
                 componentEvent.replaceLocalized(localizationContext, "outputs.cancelled").queue()
 
                 //Cancel logic
             }
-            confirmButton.id -> {
+            confirmButton.uniqueId -> {
                 logger.debug { "Ban confirmed for ${target.id}, $timeframe of messages were deleted, reason: '$reason'" }
 
                 componentEvent.replaceLocalized(

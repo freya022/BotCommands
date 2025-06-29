@@ -5,12 +5,12 @@ package dev.freya02.botcommands.jda.ktx.messages
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import dev.freya02.botcommands.jda.ktx.components.row
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder
@@ -39,7 +39,7 @@ inline fun MessageCreateBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     // TODO useComponentsV2
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
@@ -65,7 +65,7 @@ inline fun MessageCreate(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     // TODO useComponentsV2
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
@@ -97,7 +97,7 @@ inline fun MessageCreate(
 inline fun MessageEditBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     mentions: Mentions? = null,
     replace: Boolean = false,
@@ -127,7 +127,7 @@ inline fun MessageEditBuilder(
 inline fun MessageEdit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     mentions: Mentions? = null,
     replace: Boolean = false,
@@ -182,13 +182,13 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         embeds += InlineEmbed(EmbedBuilder(embed)).apply(builder).build()
     }
 
-    val components = Accumulator<LayoutComponent>() // TODO TopLevelMessageComponent
+    val components = Accumulator<MessageTopLevelComponent>() // TODO TopLevelMessageComponent
 
-    fun actionRow(vararg components: ItemComponent) {
+    fun actionRow(vararg components: ActionRowChildComponent) {
         this.components += row(*components)
     }
 
-    fun actionRow(components: Collection<ItemComponent>) {
+    fun actionRow(components: Collection<ActionRowChildComponent>) {
         this.components += components.row()
     }
 

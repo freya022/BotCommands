@@ -47,7 +47,7 @@ class SlashNewButtons(
             }
         }.into()
 
-        event.reply("OK, button ID: ${persistentButton.id}").setComponents(row).queue()
+        event.reply("OK, button ID: ${persistentButton.customId}").setComponents(row).queue()
 
         try {
 //            withTimeout(5.seconds) {

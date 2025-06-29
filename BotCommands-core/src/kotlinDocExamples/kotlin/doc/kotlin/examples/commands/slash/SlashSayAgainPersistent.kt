@@ -1,5 +1,6 @@
 package doc.kotlin.examples.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -38,7 +39,7 @@ class SlashSayAgainPersistent : ApplicationCommand() {
         }
 
         event.reply("This button always works")
-            .addActionRow(persistentSaySentenceButton)
+            .addComponents(row(persistentSaySentenceButton))
             .await()
     }
 

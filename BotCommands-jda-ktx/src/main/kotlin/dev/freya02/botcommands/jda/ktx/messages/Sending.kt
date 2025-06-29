@@ -1,12 +1,12 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
@@ -20,7 +20,7 @@ inline fun IReplyCallback.reply_(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = false,
@@ -35,7 +35,7 @@ inline fun InteractionHook.send(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = false,
@@ -50,7 +50,7 @@ inline fun MessageChannel.send(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},
@@ -65,7 +65,7 @@ inline fun Message.reply_(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
-    components: Collection<LayoutComponent> = NO_CONTENT,
+    components: Collection<MessageTopLevelComponent> = NO_CONTENT,
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},

@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.components.Buttons;
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener;
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.api.components.event.ButtonEvent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 
 @Command
@@ -35,7 +36,7 @@ public class SlashSayAgainPersistent extends ApplicationCommand {
                 .build();
 
         event.reply("This button always works")
-                .addActionRow(persistentSaySentenceButton)
+                .addComponents(ActionRow.of(persistentSaySentenceButton))
                 .queue();
     }
 

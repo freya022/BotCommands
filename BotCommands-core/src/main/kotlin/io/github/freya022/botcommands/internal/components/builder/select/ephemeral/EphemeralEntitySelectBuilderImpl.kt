@@ -52,6 +52,12 @@ internal class EphemeralEntitySelectBuilderImpl internal constructor(
         throwArgument("Cannot set an ID on components managed by the framework")
     }
 
+    @Suppress("OVERRIDE_DEPRECATION") // yup
+    override fun setCustomId(customId: String): JDAEntitySelectMenu.Builder {
+        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        throwArgument("Cannot set an ID on components managed by the framework")
+    }
+
     override fun build(): EntitySelectMenu = runBlocking { buildSuspend() }
 
     @PublishedApi

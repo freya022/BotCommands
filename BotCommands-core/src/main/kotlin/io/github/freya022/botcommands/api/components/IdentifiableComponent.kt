@@ -16,11 +16,11 @@ interface IdentifiableComponent {
 
         @JvmStatic
         fun fromComponent(component: ActionComponent): IdentifiableComponent =
-            fromId(component.id ?: throwArgument("This component has no ID"))
+            fromId(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic
         fun fromComponentOrNull(component: ActionComponent): IdentifiableComponent? =
-            fromIdOrNull(component.id ?: throwArgument("This component has no ID"))
+            fromIdOrNull(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic
         fun fromId(id: String): IdentifiableComponent {

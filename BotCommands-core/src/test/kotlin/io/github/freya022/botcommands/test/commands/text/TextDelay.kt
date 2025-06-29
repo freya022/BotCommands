@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.text
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
@@ -22,12 +23,14 @@ class TextDelay : TextCommand() {
         }
 
         event.message.reply("delayed after $millis ms")
-                .setActionRow(
-                        buttons.primary("Delay").persistent {
-                            bindWith(::runDelayButton)
-                        }
+            .setComponents(
+                row(
+                    buttons.primary("Delay").persistent {
+                        bindWith(::runDelayButton)
+                    }
                 )
-                .queue()
+            )
+            .queue()
 
         throw IllegalArgumentException()
     }

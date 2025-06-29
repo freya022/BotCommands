@@ -19,6 +19,7 @@ interface Button : JDAButton,
 
     override fun withLabel(label: String): Button
 
+    @Deprecated("Replaced with withCustomId(id)", ReplaceWith("withCustomId(id)"))
     override fun withId(id: String): Nothing =
         throw UnsupportedOperationException("This type of button cannot contain custom IDs")
 
@@ -27,5 +28,8 @@ interface Button : JDAButton,
 
     override fun withStyle(style: ButtonStyle): Button
 
-    override fun getId(): String
+    @Deprecated("Replaced with getCustomId()", ReplaceWith("getCustomId()"))
+    override fun getId(): String = getCustomId()
+
+    override fun getCustomId(): String
 }

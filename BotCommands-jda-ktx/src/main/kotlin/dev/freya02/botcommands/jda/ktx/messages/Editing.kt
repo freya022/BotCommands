@@ -1,12 +1,12 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.utils.AttachedFile
 inline fun IMessageEditCallback.editMessage_(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
@@ -53,7 +53,7 @@ inline fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
@@ -77,7 +77,7 @@ inline fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
@@ -99,7 +99,7 @@ inline fun MessageChannel.editMessage(
 inline fun Message.edit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},

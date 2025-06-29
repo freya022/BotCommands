@@ -19,10 +19,13 @@ abstract class EphemeralEntitySelectBuilder :
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     abstract override fun setId(customId: String): JDAEntitySelectMenu.Builder
 
+    @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
+    abstract override fun setCustomId(customId: String): JDAEntitySelectMenu.Builder
+
     abstract override fun build(): EntitySelectMenu
 
     protected fun jdaBuild(id: String): JDAEntitySelectMenu {
-        super.setId(id)
+        super.setCustomId(id)
         return super.build()
     }
 }
