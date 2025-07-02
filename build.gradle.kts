@@ -164,6 +164,10 @@ registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
 registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
 
 dokka {
+    // Since this is the root module,
+    // we need to override this property to make URLs predictable and more consistent
+    modulePath = "BotCommands"
+
     dokkaSourceSets.configureEach {
         suppressedFiles.from("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
         suppressGeneratedFiles = false
