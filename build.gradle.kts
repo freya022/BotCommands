@@ -113,8 +113,8 @@ dependencies {
 
     // The Spring Boot module will include them at runtime,
     // but we need to make sure the main module works without it
-    testCompileOnly(libs.spring.boot)
-    testCompileOnly(libs.spring.boot.autoconfigure)
+    testImplementation(libs.spring.boot)
+    testImplementation(libs.spring.boot.autoconfigure)
 
     dokka(rootProject)
     dokka(projects.botCommandsSpring)
