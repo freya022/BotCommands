@@ -61,6 +61,7 @@ jetbrains-markdown = "0.7.3"
 [plugins]
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 
 [libraries]
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
