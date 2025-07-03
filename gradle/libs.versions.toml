@@ -1,62 +1,38 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
-
 [versions]
-# Plugins
-maven-publish-plugin = "0.32.0"
-dokka-plugin = "2.0.0"
-
-# Libraries
-kotlin = "2.2.0"
-kotlinx-coroutines = "1.10.2"
-
-stacktrace-decoroutinator = "2.4.8"
-
-slf4j-api = "2.0.16"
-logback-classic = "1.5.16"
-kotlin-logging = "7.0.3"
-
-jda = "5.5.0"
-jda-ktx = "0.12.0"
-
-classgraph = "4.8.179"
-
-kotlinx-datetime = "0.6.1"
-
-jackson = "2.19.1"
-
-kotlinx-serialization = "1.9.0"
-
-trove4j-core = "3.1.0"
-
-jda-emojis = "3.0.0"
-jemoji = "1.7.4"
-
-caffeine = "3.2.0"
-
-java-string-similarity = "2.0.0"
-
-jsr305 = "3.0.2"
-jetbrains-annotations = "26.0.2"
-
-spring-boot = "3.5.3"
-
-h2 = "2.3.232"
-postgresql = "42.7.7" # Tied to [[ComponentRepository#checkPostgresVersion]]
-hikaricp = "6.2.1"
-flyway = "11.2.0"
-
 bucket4j-jdk17-core = "8.14.0"
 bucket4j-jdk17-postgresql = "8.14.0"
-
-konsist = "0.17.3"
-
-mockk = "1.14.4"
-
 bytebuddy = "1.17.5"
-
-ksp = "2.2.0-2.0.2"
-
+caffeine = "3.2.0"
+classgraph = "4.8.179"
+dokka-plugin = "2.0.0"
+flyway = "11.2.0"
+h2 = "2.3.232"
+hikaricp = "6.2.1"
+jackson = "2.19.1"
+java-string-similarity = "2.0.0"
+jda = "5.5.0"
+jda-emojis = "3.0.0"
+jda-ktx = "0.12.0"
+jemoji = "1.7.4"
+jetbrains-annotations = "26.0.2"
 jetbrains-markdown = "0.7.3"
+jsr305 = "3.0.2"
+konsist = "0.17.3"
+kotlin = "2.2.0"
+kotlin-logging = "7.0.3"
+kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.6.1"
+kotlinx-serialization = "1.9.0"
+ksp = "2.2.0-2.0.2"
+logback-classic = "1.5.16"
+maven-publish-plugin = "0.32.0"
+mockk = "1.14.4"
+postgresql = "42.7.7"
+slf4j-api = "2.0.16"
+spring-boot = "3.5.3"
+stacktrace-decoroutinator = "2.4.8"
+trove4j-core = "3.1.0"
 
 [plugins]
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -64,67 +40,46 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 
 [libraries]
-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-maven-publish-plugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish-plugin" }
-dokka-plugin = { module = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin", version.ref = "dokka-plugin" }
-
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
-
-stacktrace-decoroutinator = { module = "dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm", version.ref = "stacktrace-decoroutinator" }
-
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
-kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
-
-jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
-jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
-
+bucket4j-jdk17-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j-jdk17-core" }
+bucket4j-jdk17-postgresql = { module = "com.bucket4j:bucket4j_jdk17-postgresql", version.ref = "bucket4j-jdk17-postgresql" }
+bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
+bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
-
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
-
+dokka-plugin = { module = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin", version.ref = "dokka-plugin" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-
-trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
-
-jda-emojis = { module = "dev.freya02:jda-emojis", version.ref = "jda-emojis" }
-jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
-
-caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
-
 java-string-similarity = { module = "info.debatty:java-string-similarity", version.ref = "java-string-similarity" }
-
-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+jda-emojis = { module = "dev.freya02:jda-emojis", version.ref = "jda-emojis" }
+jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
+jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
-
+jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
+kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+maven-publish-plugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish-plugin" }
+mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "spring-boot" }
 spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot" }
-
-h2 = { module = "com.h2database:h2", version.ref = "h2" }
-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
-flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
-flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-
-bucket4j-jdk17-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j-jdk17-core" }
-bucket4j-jdk17-postgresql = { module = "com.bucket4j:bucket4j_jdk17-postgresql", version.ref = "bucket4j-jdk17-postgresql" }
-
-konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
-
-mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
-
-bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
-bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
-
-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-
-jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
+stacktrace-decoroutinator = { module = "dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm", version.ref = "stacktrace-decoroutinator" }
+trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
