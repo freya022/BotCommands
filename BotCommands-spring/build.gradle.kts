@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.botCommands)
+    api(projects.botCommandsCore)
 
     // Logging
     implementation(libs.kotlin.logging)
@@ -23,9 +23,9 @@ dependencies {
     // -------------------- TEST DEPENDENCIES --------------------
 
     // Take the same test dependencies as the main library
-    testImplementation(rootProject.sourceSets.test.get().compileClasspath)
+    testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().compileClasspath)
     // Take the same test sources as the main library
-    testImplementation(rootProject.sourceSets.test.get().output)
+    testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().output)
 
     // Spring Boot
     testImplementation(libs.spring.boot.starter)
