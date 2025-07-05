@@ -4,6 +4,32 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+fun registerSourceSet(name: String, extendsTestDependencies: Boolean) {
+    sourceSets {
+        register(name) {
+            compileClasspath += sourceSets.main.get().output
+            runtimeClasspath += sourceSets.main.get().output
+        }
+    }
+
+    configurations["${name}Api"].extendsFrom(configurations["api"])
+    configurations["${name}Implementation"].extendsFrom(configurations["implementation"])
+    configurations["${name}CompileOnly"].extendsFrom(configurations["compileOnly"])
+
+    if (extendsTestDependencies) {
+        configurations["${name}Api"].extendsFrom(configurations["testApi"])
+        configurations["${name}Implementation"].extendsFrom(configurations["testImplementation"])
+        configurations["${name}CompileOnly"].extendsFrom(configurations["testCompileOnly"])
+    }
+}
+
+// Register other source sets
+// NOTE: Register them before dependencies, or you won't be able to add deps to them
+registerSourceSet(name = "examples", extendsTestDependencies = true)
+// Use different source sets so we can use the same class names without clashes
+registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
+registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
+
 configurations.all {
     exclude(module = "opus-java")
     exclude(module = "tink")
@@ -137,31 +163,6 @@ sourceSets {
         }
     }
 }
-
-fun registerSourceSet(name: String, extendsTestDependencies: Boolean) {
-    sourceSets {
-        register(name) {
-            compileClasspath += sourceSets.main.get().output
-            runtimeClasspath += sourceSets.main.get().output
-        }
-    }
-
-    configurations["${name}Api"].extendsFrom(configurations["api"])
-    configurations["${name}Implementation"].extendsFrom(configurations["implementation"])
-    configurations["${name}CompileOnly"].extendsFrom(configurations["compileOnly"])
-
-    if (extendsTestDependencies) {
-        configurations["${name}Api"].extendsFrom(configurations["testApi"])
-        configurations["${name}Implementation"].extendsFrom(configurations["testImplementation"])
-        configurations["${name}CompileOnly"].extendsFrom(configurations["testCompileOnly"])
-    }
-}
-
-// Register other source sets
-registerSourceSet(name = "examples", extendsTestDependencies = true)
-// Use different source sets so we can use the same class names without clashes
-registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
-registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
 
 dokka {
     // Since this is the root module,
