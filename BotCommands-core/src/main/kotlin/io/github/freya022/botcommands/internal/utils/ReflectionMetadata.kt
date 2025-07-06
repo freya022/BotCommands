@@ -5,6 +5,8 @@ import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.debugNull
+import io.github.freya022.botcommands.api.core.reflect.ClassGraphProcessorProvider
+import io.github.freya022.botcommands.api.core.reflect.annotations.ExperimentalReflectionApi
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
@@ -21,6 +23,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.MethodMe
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
+import java.util.*
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -82,10 +85,21 @@ private class ReflectionMetadataScanner private constructor(
     private val bootstrap: BotCommandsBootstrap
 ) {
 
-    private val classGraphProcessors: List<ClassGraphProcessor> =
-        config.classGraphProcessors +
-                bootstrap.classGraphProcessors +
-                listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker(), AppEmojiContainerProcessor)
+    @OptIn(ExperimentalReflectionApi::class)
+    private val classGraphProcessors: List<ClassGraphProcessor> = buildList {
+        addAll(config.classGraphProcessors)
+
+        addAll(bootstrap.classGraphProcessors)
+
+        add(CommandsPresenceChecker())
+        add(ResolverSupertypeChecker())
+        add(HandlersPresenceChecker())
+        add(AppEmojiContainerProcessor)
+
+        ServiceLoader.load(ClassGraphProcessorProvider::class.java).forEach {
+            addAll(it.getProcessors(config))
+        }
+    }
 
     private val classMetadataMap: MutableMap<Class<*>, ClassMetadata> = hashMapOf()
     private val methodMetadataMap: MutableMap<Executable, MethodMetadata> = hashMapOf()
