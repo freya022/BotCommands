@@ -34,7 +34,7 @@ inline fun runCatchingResponse(vararg ignoredResponses: ErrorResponse, block: ()
  */
 inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     try {
@@ -58,7 +58,7 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
  */
 inline fun <R> runIgnoringResponseOrNull(vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return try {

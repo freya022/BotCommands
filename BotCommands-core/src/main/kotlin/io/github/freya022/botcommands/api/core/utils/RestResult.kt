@@ -375,7 +375,7 @@ inline fun <T> RestResult<T>.handle(vararg types: KClass<out Throwable>, block: 
  */
 inline fun <T> runCatchingRest(block: () -> T): RestResult<T> {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return try {
