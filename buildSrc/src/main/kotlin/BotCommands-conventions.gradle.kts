@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    id("BotCommands-repositories-conventions")
     kotlin("jvm")
 }
 
@@ -16,11 +17,6 @@ java {
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
