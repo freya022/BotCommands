@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.context.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
+import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionRegistry
+import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionRegistry
 import org.jetbrains.annotations.Nullable
 
 /**
@@ -9,8 +11,8 @@ import org.jetbrains.annotations.Nullable
  * @see Optional @Optional
  *
  * @see Nullable @Nullable
- * @see UserCommandBuilder.option DSL equivalent (user context commands)
- * @see MessageCommandBuilder.option DSL equivalent (message context commands)
+ * @see UserCommandOptionRegistry.option DSL equivalent (user context commands)
+ * @see MessageCommandOptionRegistry.option DSL equivalent (message context commands)
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application
 
+import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.time.OffsetDateTime
 
@@ -24,7 +25,7 @@ interface TopLevelApplicationCommandMetadata {
      * The ID of this application command,
      * this is a snowflake that contains the time at which the command was created.
      *
-     * Does not change after an update, can be used to [make a mention][TopLevelSlashCommandInfo.asMention].
+     * Does not change after an update, can be used to [make a mention][SlashCommandInfo.asMention].
      */
     val id: Long
 

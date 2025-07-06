@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.pagination
 
 import io.github.freya022.botcommands.api.components.Button
+import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -24,7 +25,7 @@ import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
  *
  * Since paginators heavily rely on *ephemeral* components, they might consume more memory if not cleaned up.
  *
- * In case the paginator is deleted, calling [AbstractPaginator.cleanup] allows cleaning up early.
+ * In case the paginator is deleted, calling [AbstractPagination.cleanup] allows cleaning up early.
  * If this is not called, it will be done when the paginator expires.
  *
  * By default, components used in a page are invalidated
@@ -34,7 +35,7 @@ import io.github.freya022.botcommands.api.pagination.paginator.PaginatorBuilder
  *
  * ### Timeout
  *
- * Paginators have a default timeout set to [Components.defaultEphemeralTimeout],
+ * Paginators have a default timeout set to [Components.defaultEphemeralTimeout][Components.Companion.defaultEphemeralTimeout],
  * which can be modified using [AbstractPaginationBuilder.setTimeout].
  *
  * You can also disable the timeout using [AbstractPaginationBuilder.noTimeout],

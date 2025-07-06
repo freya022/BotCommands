@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.context.annotati
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.provider.*
@@ -76,7 +77,7 @@ annotation class JDAUserCommand(
      * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
-     * @see UserCommandBuilder.contexts
+     * @see TopLevelApplicationCommandBuilder.contexts DSL equivalent
      */
     val contexts: Array<InteractionContextType> = [],
 
@@ -88,7 +89,7 @@ annotation class JDAUserCommand(
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.integrationTypes]
      *
      * @see IntegrationType
-     * @see UserCommandBuilder.integrationTypes
+     * @see TopLevelApplicationCommandBuilder.integrationTypes DSL equivalent
      */
     val integrationTypes: Array<IntegrationType> = [],
 
@@ -102,7 +103,7 @@ annotation class JDAUserCommand(
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see UserCommandBuilder.isDefaultLocked
+     * @see TopLevelApplicationCommandBuilder.isDefaultLocked DSL equivalent
      */
     val defaultLocked: Boolean = false,
 
@@ -117,7 +118,7 @@ annotation class JDAUserCommand(
      *
      * @return `true` if the command is restricted to NSFW channels
      *
-     * @see UserCommandBuilder.nsfw DSL equivalent
+     * @see TopLevelApplicationCommandBuilder.nsfw DSL equivalent
      */
     val nsfw: Boolean = false,
 

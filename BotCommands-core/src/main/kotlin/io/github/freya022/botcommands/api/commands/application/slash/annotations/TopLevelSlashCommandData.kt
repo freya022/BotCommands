@@ -2,8 +2,10 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import net.dv8tion.jda.api.Permission
@@ -44,7 +46,7 @@ annotation class TopLevelSlashCommandData(
      * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
-     * @see TopLevelSlashCommandBuilder.contexts
+     * @see TopLevelApplicationCommandBuilder.contexts DSL equivalent
      */
     val contexts: Array<InteractionContextType> = [],
 
@@ -56,7 +58,7 @@ annotation class TopLevelSlashCommandData(
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.integrationTypes]
      *
      * @see IntegrationType
-     * @see TopLevelSlashCommandBuilder.integrationTypes
+     * @see TopLevelApplicationCommandBuilder.integrationTypes DSL equivalent
      */
     val integrationTypes: Array<IntegrationType> = [],
 
@@ -73,7 +75,7 @@ annotation class TopLevelSlashCommandData(
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see TopLevelSlashCommandBuilder.isDefaultLocked DSL equivalent
+     * @see TopLevelApplicationCommandBuilder.isDefaultLocked DSL equivalent
      */
     val defaultLocked: Boolean = false,
 
@@ -88,7 +90,7 @@ annotation class TopLevelSlashCommandData(
      *
      * @return `true` if the command is restricted to NSFW channels
      *
-     * @see TopLevelSlashCommandBuilder.nsfw DSL equivalent
+     * @see TopLevelApplicationCommandBuilder.nsfw DSL equivalent
      */
     val nsfw: Boolean = false,
 
@@ -105,7 +107,7 @@ annotation class TopLevelSlashCommandData(
      *
      * @see LocalizationFunction
      *
-     * @see TopLevelSlashCommandBuilder.description DSL equivalent
+     * @see SlashCommandBuilder.description DSL equivalent
      */
     val description: String = ""
 )

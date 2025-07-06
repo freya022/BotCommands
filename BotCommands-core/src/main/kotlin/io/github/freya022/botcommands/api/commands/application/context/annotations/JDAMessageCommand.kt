@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.context.annotati
 import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
+import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.commands.application.provider.*
@@ -74,7 +75,7 @@ annotation class JDAMessageCommand(
      * This will be forced to [InteractionContextType.GUILD] if [BApplicationConfig.forceGuildCommands] is enabled.
      *
      * @see InteractionContextType
-     * @see MessageCommandBuilder.contexts
+     * @see TopLevelApplicationCommandBuilder.contexts DSL equivalent
      */
     val contexts: Array<InteractionContextType> = [],
 
@@ -86,7 +87,7 @@ annotation class JDAMessageCommand(
      * - [Guild][CommandScope.GUILD] : [GuildApplicationCommandManager.Defaults.integrationTypes]
      *
      * @see IntegrationType
-     * @see MessageCommandBuilder.integrationTypes
+     * @see TopLevelApplicationCommandBuilder.integrationTypes DSL equivalent
      */
     val integrationTypes: Array<IntegrationType> = [],
 
@@ -100,7 +101,7 @@ annotation class JDAMessageCommand(
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see MessageCommandBuilder.isDefaultLocked DSL equivalent
+     * @see TopLevelApplicationCommandBuilder.isDefaultLocked DSL equivalent
      */
     val defaultLocked: Boolean = false,
 
@@ -115,7 +116,7 @@ annotation class JDAMessageCommand(
      *
      * @return `true` if the command is restricted to NSFW channels
      *
-     * @see MessageCommandBuilder.nsfw DSL equivalent
+     * @see TopLevelApplicationCommandBuilder.nsfw DSL equivalent
      */
     val nsfw: Boolean = false,
 

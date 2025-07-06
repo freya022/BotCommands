@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashOptionRegistry
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
@@ -46,7 +47,7 @@ import org.jetbrains.annotations.Nullable
  * @see AutocompleteHandler @AutocompleteHandler
  * @see VarArgs @VarArgs
  *
- * @see SlashCommandBuilder.option DSL equivalent
+ * @see SlashOptionRegistry.option DSL equivalent
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

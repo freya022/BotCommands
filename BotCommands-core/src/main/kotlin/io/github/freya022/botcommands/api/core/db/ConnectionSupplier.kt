@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.db
 
+import com.zaxxer.hikari.HikariConfig
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -64,14 +65,14 @@ interface ConnectionSupplier {
     /**
      * The maximum number of connections retrievable without blocking.
      *
-     * This is typically the number of connections set up in [HikariDataSource.setMaximumPoolSize].
+     * This is typically the number of connections set up in [HikariConfig.setMaximumPoolSize].
      */
     val maxConnections: Int
 
     /**
      * Returns the duration until a thread/coroutine dump is attempted during a transaction.
      *
-     * This should be the same value as the [HikariCP leak detection threshold][HikariDataSource.setLeakDetectionThreshold].
+     * This should be the same value as the [HikariCP leak detection threshold][HikariConfig.setLeakDetectionThreshold].
      *
      * @see BDatabaseConfig.dumpLongTransactions
      */

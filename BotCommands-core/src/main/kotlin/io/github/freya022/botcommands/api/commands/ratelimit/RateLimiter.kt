@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.commands.ratelimit
 
+import com.zaxxer.hikari.HikariConfig
 import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefault
@@ -83,7 +84,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * **Note:**
          * - You can use any RDBMs supported by Bucket4J, as you are passing the DataSource directly.
-         * - You may need to set the [default schema on your DataSource][HikariDataSource.schema] to `public`,
+         * - You may need to set the [default schema on your DataSource][HikariConfig.setSchema] to `public`,
          * or the schema you store the table in.
          *
          * #### Anything else
