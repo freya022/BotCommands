@@ -5,8 +5,6 @@ plugins {
     kotlin("jvm")
 }
 
-group = "io.github.freya022"
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(24)

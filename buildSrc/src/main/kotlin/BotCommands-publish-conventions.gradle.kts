@@ -28,6 +28,7 @@ val mavenGpgSecretKey: String? by project
 val canSign = mavenGpgKeyId != null && mavenGpgSecretKey != null
 val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
 
+group = "io.github.freya022"
 version = Version(
     major = "3",
     minor = "0",
