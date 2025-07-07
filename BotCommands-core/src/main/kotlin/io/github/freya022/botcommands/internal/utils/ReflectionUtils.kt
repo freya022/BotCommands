@@ -167,8 +167,7 @@ internal fun KParameter.findDeclarationName(): String =
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
-@PublishedApi
-internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
+inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
 
 @PublishedApi
 internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType {
