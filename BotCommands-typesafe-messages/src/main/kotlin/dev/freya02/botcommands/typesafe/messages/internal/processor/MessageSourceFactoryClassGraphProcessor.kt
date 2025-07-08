@@ -31,7 +31,7 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
         serviceContainer as BCServiceContainer
 
         val messageSourceFactoryType = kClass as KClass<IMessageSourceFactory<*>>
-        val messageSourceType = kClass.superErasureAt<IMessageSourceFactory<*>>(0).jvmErasure as KClass<out IMessageSource>
+        val messageSourceType = kClass.superErasureAt<IMessageSourceFactory<*>>(0).jvmErasure as KClass<IMessageSource>
 
         serviceContainer.putSuppliedService(ServiceSupplier(messageSourceFactoryType) { context ->
             MessageSourceFactoryGenerator.createFactory(

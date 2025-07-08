@@ -31,12 +31,13 @@ internal object MessageSourceFactoryGenerator {
     private val CD_AbstractMessageSourceFactory = classDesc<AbstractMessageSourceFactory>()
     private val CD_AbstractMessageSourceFactory_Params = classDesc<AbstractMessageSourceFactory.Params>()
 
-    internal fun createFactory(
+    @Suppress("UNCHECKED_CAST")
+    internal fun <T : IMessageSourceFactory<U>, U : IMessageSource> createFactory(
         context: BContext,
         annotation: MessageSourceFactory,
-        sourceFactoryType: KClass<out IMessageSourceFactory<*>>,
-        sourceType: KClass<out IMessageSource>,
-    ): IMessageSourceFactory<*> {
+        sourceFactoryType: KClass<T>,
+        sourceType: KClass<U>,
+    ): T {
         // The only abstract method should be the one we implement
         sourceFactoryType.java.methods
             // Look at abstract methods
@@ -91,6 +92,6 @@ internal object MessageSourceFactoryGenerator {
 
         return MethodHandles.lookup().defineClass(factoryBytes)
             .declaredConstructors.single()
-            .newInstance(params) as IMessageSourceFactory<*>
+            .newInstance(params) as T
     }
 }
