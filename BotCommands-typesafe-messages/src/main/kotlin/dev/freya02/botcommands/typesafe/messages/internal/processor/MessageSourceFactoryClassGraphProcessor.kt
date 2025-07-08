@@ -18,6 +18,8 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
 
     @Suppress("UNCHECKED_CAST")
     override fun processClass(serviceContainer: ServiceContainer, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (serviceContainer !is BCServiceContainer) return
+
         val annotation = classInfo.getAnnotationInfo(MessageSourceFactory::class.java)?.loadClassAndInstantiate() as MessageSourceFactory? ?: return
 
         require(classInfo.isInterface) {
@@ -26,9 +28,6 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
         require(classInfo.implementsInterface(IMessageSourceFactory::class.java)) {
             "${classInfo.shortQualifiedName} must implement ${IMessageSourceFactory::class.simpleName}"
         }
-
-        // TODO add support in ServiceContainer
-        serviceContainer as BCServiceContainer
 
         val messageSourceFactoryType = kClass as KClass<IMessageSourceFactory<*>>
         val messageSourceType = kClass.superErasureAt<IMessageSourceFactory<*>>(0).jvmErasure as KClass<IMessageSource>
