@@ -13,10 +13,16 @@ dependencies {
     // Logging
     implementation(libs.kotlin.logging)
 
+    implementation(libs.spring.boot)
+    implementation(libs.spring.boot.autoconfigure)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     testImplementation(libs.mockk)
     testImplementation(libs.logback.classic)
+
+    testImplementation(projects.botCommandsSpring)
+    testImplementation(libs.spring.boot.starter.test)
 }
 
 java {
