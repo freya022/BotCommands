@@ -13,5 +13,9 @@ include(":BotCommands-jda-ktx")
 include(":jda-ktx-deprecation-processor")
 include(":spring-properties-processor")
 include(":BotCommands-spring")
-include(":BotCommands-typesafe-messages")
+include(
+    ":BotCommands-typesafe-messages:core",
+    ":BotCommands-typesafe-messages:bc",
+    ":BotCommands-typesafe-messages:spring",
+)
 include(":test-bot")
