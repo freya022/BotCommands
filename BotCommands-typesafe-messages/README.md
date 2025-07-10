@@ -15,8 +15,8 @@ Let's start by creating a localization bundle at `src/main/resources/bc_localiza
 for our example it will contain a single localization template where:
 
 - The key is `bot.info`
-- The template is `I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and my up-time is {uptime, number} milliseconds.`
-  - `guild_count` and `uptime` are variables
+- The template is `I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and my up-time is {uptime_ms, number} milliseconds.`
+  - `guild_count` and `uptime_ms` are variables
   - `number` and `choice` are format types
   - `0#guilds|1#guild|1<guilds` is a subformat pattern for [ChoiceFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/ChoiceFormat.html)
   - See [MessageFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html) for more details
