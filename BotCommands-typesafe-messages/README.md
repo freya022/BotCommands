@@ -7,7 +7,7 @@ without having to implement anything, alongside a few other benefits:
 - Removes magic strings from your business logic
 
 ## Example
-> [!INFO]
+> [!NOTE]
 > This example will use Kotlin but any other language should work.
 
 ### Creating a localization bundle
