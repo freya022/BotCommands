@@ -13,6 +13,9 @@ dependencies {
     // Logging
     implementation(libs.kotlin.logging)
 
+    // Spring annotations
+    compileOnly(libs.spring.context)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     testImplementation(libs.mockk)

@@ -30,6 +30,7 @@ maven-publish-plugin = "0.34.0"
 mockk = "1.14.4"
 postgresql = "42.7.7"
 slf4j-api = "2.0.16"
+spring = "6.2.8"
 spring-boot = "3.5.3"
 stacktrace-decoroutinator = "2.5.7"
 trove4j-core = "3.1.0"
@@ -87,6 +88,7 @@ spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-aut
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 stacktrace-decoroutinator = { module = "dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm", version.ref = "stacktrace-decoroutinator" }
 trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
 
