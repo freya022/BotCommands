@@ -80,7 +80,7 @@ class SlashInfo(
         name = "info",
         description = "Sends info about the bot",
     )
-    fun onSlashFox(event: GuildSlashEvent) {
+    fun onSlashInfo(event: GuildSlashEvent) {
         // Create an instance from the current interaction
         val botMessages = botMessagesFactory.create(event)
         val response = botMessages.botInfo(
