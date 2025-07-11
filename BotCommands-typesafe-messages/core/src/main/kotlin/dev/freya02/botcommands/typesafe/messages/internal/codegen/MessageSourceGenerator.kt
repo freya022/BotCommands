@@ -3,8 +3,10 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
+import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
@@ -87,6 +89,10 @@ internal object MessageSourceGenerator {
             }
 
             toImplement.forEach { method ->
+                if (method.returnType.jvmErasure != String::class) {
+                    throw IllegalMessageSourceReturnTypeException("Method must return a String: ${method.getSignature(qualifiedClass = true, source = false)}")
+                }
+
                 val annotation = method.findAnnotation<LocalizedContent>()
                     ?: error("Method was to be implemented but annotation is absent")
                 val templateParameters = method.valueParameters

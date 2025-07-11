@@ -3,12 +3,14 @@ package dev.freya02.botcommands.typesafe.messages
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,7 +45,18 @@ class MessageSourceGeneratorTest {
         fun test(): String = "test"
     }
 
-    // TODO test works with interfaces only
+    interface SourceWithAbstractWithDiffReturnType : IMessageSource {
+
+        @LocalizedContent("SourceWithAbstractWithDiffReturnType.key")
+        fun test()
+    }
+
+    interface SourceWithConcreteWithDiffReturnType : IMessageSource {
+
+        @LocalizedContent("SourceWithConcreteWithDiffReturnType.key")
+        fun test() { }
+    }
+
     // TODO test return type is String enforced
 
     @Test
@@ -92,5 +105,22 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext>()
         val source = MessageSourceGenerator.create(SourceWithoutAnnotationOnConcrete::class, localizationContext)
         assertEquals("test", source.test())
+    }
+
+    @Test
+    fun `Cannot generate IMessageSource with abstract method returning non-String`() {
+        val localizationContext = mockk<LocalizationContext>()
+        assertThrows<IllegalMessageSourceReturnTypeException> {
+            MessageSourceGenerator.create(SourceWithAbstractWithDiffReturnType::class, localizationContext)
+        }
+    }
+
+    @Test
+    fun `Generate IMessageSource with concrete method returning non-String`() {
+        val localizationContext = mockk<LocalizationContext>()
+        assertDoesNotThrow {
+            val source = MessageSourceGenerator.create(SourceWithConcreteWithDiffReturnType::class, localizationContext)
+            source.test()
+        }
     }
 }
