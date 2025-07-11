@@ -4,6 +4,8 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceFactoryMethodException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceClassTypeException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
 import dev.freya02.botcommands.typesafe.messages.internal.utils.isAbstract
@@ -38,6 +40,14 @@ object MessageSourceFactoryGenerator {
         sourceFactoryType: KClass<T>,
         sourceType: KClass<U>,
     ): T {
+        if (!sourceFactoryType.java.isInterface) {
+            throw IllegalMessageSourceFactoryClassTypeException("${sourceFactoryType.jvmName} must be an interface!")
+        }
+
+        if (!sourceType.java.isInterface) {
+            throw IllegalMessageSourceClassTypeException("${sourceType.jvmName} must be an interface!")
+        }
+
         // The only abstract method should be the one we implement
         sourceFactoryType.java.methods
             // Look at abstract methods
