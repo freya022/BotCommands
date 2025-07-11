@@ -7,6 +7,7 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFa
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceClassTypeException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedOptionalParameterException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
@@ -76,6 +77,12 @@ class MessageSourceGeneratorTest {
 
         @LocalizedContent("SourceWithCamelCaseArg.key")
         fun test(myArg: String): String
+    }
+
+    interface SourceWithOptionalArg: IMessageSource {
+
+        @LocalizedContent("SourceWithOptionalArg.key")
+        fun test(myArg: String = "test"): String
     }
 
     @Test
@@ -169,6 +176,14 @@ class MessageSourceGeneratorTest {
         source.test("arg")
 
         verify(exactly = 1) { localizationContext.localize("SourceWithCamelCaseArg.key", Localization.Entry("my_arg", "arg")) }
+    }
+
+    @Test
+    fun `Cannot generate IMessageSource with optional parameters`() {
+        val localizationContext = mockk<LocalizationContext>()
+        assertThrows<UnsupportedOptionalParameterException> {
+            createAndInstantiate(SourceWithOptionalArg::class, localizationContext)
+        }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(
