@@ -9,11 +9,11 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.invoke.MethodHandle
 
-internal abstract class AbstractMessageSourceFactory internal constructor(
+internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> internal constructor(
     private val params: Params,
-) : IMessageSourceFactory<IMessageSource> {
+) : IMessageSourceFactory<T> {
 
-    override fun create(interaction: Interaction): IMessageSource {
+    override fun create(interaction: Interaction): T {
         val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
 
         val localizationContext = LocalizationContext.create(

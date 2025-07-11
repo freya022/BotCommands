@@ -7,6 +7,7 @@ import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSo
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceFactoryProvider
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
+import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.createSignature
 import dev.freya02.botcommands.typesafe.messages.internal.utils.isAbstract
 import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
@@ -20,6 +21,7 @@ import io.github.freya022.botcommands.internal.utils.superErasureAt
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.*
+import java.lang.classfile.attribute.SignatureAttribute
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.CD_void
 import java.lang.constant.ConstantDescs.INIT_NAME
@@ -32,7 +34,7 @@ import kotlin.reflect.jvm.jvmName
 
 object MessageSourceFactoryGenerator {
 
-    private val CD_AbstractMessageSourceFactory = classDesc<AbstractMessageSourceFactory>()
+    private val CD_AbstractMessageSourceFactory = classDesc<AbstractMessageSourceFactory<*>>()
     private val CD_AbstractMessageSourceFactory_Params = classDesc<AbstractMessageSourceFactory.Params>()
 
     @Suppress("UNCHECKED_CAST")
@@ -56,6 +58,8 @@ object MessageSourceFactoryGenerator {
                 }
             }
 
+        val sourceType = sourceFactoryType.superErasureAt<IMessageSourceFactory<*>>(0).jvmErasure as KClass<IMessageSource>
+
         val classFile = ClassFile.of()
         val thisClass = ClassDesc.of("${MessageSourceFactoryGenerator::class.java.packageName}.${sourceFactoryType.simpleNestedBinaryName}Impl")
 
@@ -64,6 +68,7 @@ object MessageSourceFactoryGenerator {
             classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
             classBuilder.withSuperclass(CD_AbstractMessageSourceFactory)
             classBuilder.withInterfaceSymbols(ClassDesc.of(sourceFactoryType.jvmName))
+            classBuilder.with(SignatureAttribute.of(CD_AbstractMessageSourceFactory.createSignature(sourceType.java)))
 
             classBuilder.withField("params", CD_AbstractMessageSourceFactory_Params, ACC_PRIVATE or ACC_FINAL)
 
@@ -93,7 +98,6 @@ object MessageSourceFactoryGenerator {
             .declaredConstructors.single()
             .let(lookup::unreflectConstructor)
         // Create it outside the factory to prevent duplicates and also validate early
-        val sourceType = sourceFactoryType.superErasureAt<IMessageSourceFactory<*>>(0).jvmErasure as KClass<IMessageSource>
         val sourceHandle = MessageSourceGenerator.create(sourceType)
 
         return MessageSourceFactoryProvider { context: BContext ->
