@@ -7,14 +7,14 @@ import io.github.freya022.botcommands.api.localization.context.LocalizationConte
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.Interaction
-import kotlin.reflect.KClass
+import java.lang.invoke.MethodHandle
 
 internal abstract class AbstractMessageSourceFactory internal constructor(
     private val params: Params,
 ) : IMessageSourceFactory<IMessageSource> {
 
     override fun create(interaction: Interaction): IMessageSource {
-        val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceType) = params
+        val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
 
         val localizationContext = LocalizationContext.create(
             localizationService = localizationService,
@@ -24,7 +24,7 @@ internal abstract class AbstractMessageSourceFactory internal constructor(
             userLocale = userLocaleProvider.getDiscordLocale(interaction),
         )
 
-        return MessageSourceGenerator.create(sourceType, localizationContext)
+        return MessageSourceGenerator.instantiate(sourceHandle, localizationContext)
     }
 
     internal data class Params(
@@ -32,6 +32,6 @@ internal abstract class AbstractMessageSourceFactory internal constructor(
         internal val bundle: String,
         internal val guildLocaleProvider: GuildLocaleProvider,
         internal val userLocaleProvider: UserLocaleProvider,
-        internal val sourceType: KClass<out IMessageSource>,
+        internal val sourceHandle: MethodHandle,
     )
 }

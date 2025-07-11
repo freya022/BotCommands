@@ -3,6 +3,7 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceClassTypeException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
@@ -16,11 +17,9 @@ import java.lang.classfile.attribute.SourceFileAttribute
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
+import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
-import java.lang.reflect.Constructor
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -31,20 +30,11 @@ import kotlin.reflect.jvm.jvmName
 
 internal object MessageSourceGenerator {
 
-    private val lock = ReentrantLock()
-    private val cache: MutableMap<KClass<out IMessageSource>, Constructor<out IMessageSource>> = hashMapOf()
+    internal fun create(sourceType: KClass<out IMessageSource>): MethodHandle {
+        if (!sourceType.java.isInterface) {
+            throw IllegalMessageSourceClassTypeException("${sourceType.jvmName} must be an interface!")
+        }
 
-    @Suppress("UNCHECKED_CAST")
-    internal fun <T : IMessageSource> create(
-        sourceType: KClass<T>,
-        localizationContext: LocalizationContext,
-    ): T = lock.withLock {
-        return cache.getOrPut(sourceType) {
-            generateClass(sourceType).declaredConstructors.single() as Constructor<out IMessageSource>
-        }.newInstance(localizationContext) as T
-    }
-
-    private fun generateClass(sourceType: KClass<out IMessageSource>): Class<*> {
         val abstractMethods = sourceType.memberFunctions.filter { it.isAbstract }
         val toImplement = abstractMethods.filter { it.hasAnnotation<LocalizedContent>() }
 
@@ -152,7 +142,10 @@ internal object MessageSourceGenerator {
             }
         }
 
-        return MethodHandles.lookup().defineClass(sourceBytes)
+        val lookup = MethodHandles.lookup()
+        return lookup.defineClass(sourceBytes)
+            .getConstructor(LocalizationContext::class.java)
+            .let(lookup::unreflectConstructor)
     }
 
     private fun String.convertToCamelCase(): String {
@@ -165,5 +158,10 @@ internal object MessageSourceGenerator {
             }
         }
         return builder.toString()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    internal fun <T : IMessageSource> instantiate(handle: MethodHandle, localizationContext: LocalizationContext): T {
+        return handle.invoke(localizationContext) as T
     }
 }

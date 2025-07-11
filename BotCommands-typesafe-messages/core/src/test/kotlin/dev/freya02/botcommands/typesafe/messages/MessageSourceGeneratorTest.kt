@@ -1,21 +1,36 @@
 package dev.freya02.botcommands.typesafe.messages
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
+import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
+import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceClassTypeException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
+import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
+import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.Localization
+import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
+import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
+import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class MessageSourceGeneratorTest {
+
+    interface SourceFactoryWithAbstractClassSource : IMessageSourceFactory<SourceFactoryWithAbstractClassSource.SourceAsAbstractClass> {
+        abstract class SourceAsAbstractClass : IMessageSource
+    }
 
     interface SourceWithoutArgs : IMessageSource {
 
@@ -63,14 +78,29 @@ class MessageSourceGeneratorTest {
         fun test(myArg: String): String
     }
 
-    // TODO test return type is String enforced
+    @Test
+    fun `Cannot generate IMessageSource as abstract class`() {
+        val context = mockk<BContext> {
+            every { getService<LocalizationService>() } returns mockk()
+            every { getService<GuildLocaleProvider>() } returns mockk()
+            every { getService<UserLocaleProvider>() } returns mockk()
+        }
+        assertThrows<IllegalMessageSourceClassTypeException> {
+            MessageSourceFactoryGenerator.createFactory(
+                context = context,
+                annotation = MessageSourceFactory("testBundle"),
+                sourceFactoryType = SourceFactoryWithAbstractClassSource::class,
+                sourceType = SourceFactoryWithAbstractClassSource.SourceAsAbstractClass::class,
+            )
+        }
+    }
 
     @Test
     fun `Generate IMessageSource without params`() {
         val localizationContext = mockk<LocalizationContext> {
             every { localize(any<String>()) } returns "expected"
         }
-        val source = MessageSourceGenerator.create(SourceWithoutArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithoutArgs::class, localizationContext)
 
         source.test()
         verify(exactly = 1) { localizationContext.localize("SourceWithoutArgs.key") }
@@ -81,7 +111,7 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext> {
             every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = MessageSourceGenerator.create(SourceWithArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithArgs::class, localizationContext)
 
         source.test("42")
         verify(exactly = 1) { localizationContext.localize("SourceWithArgs.key", Localization.Entry("string", "42")) }
@@ -92,7 +122,7 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext> {
             every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = MessageSourceGenerator.create(SourceWithPrimitiveArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithPrimitiveArgs::class, localizationContext)
 
         source.test(42)
         verify(exactly = 1) { localizationContext.localize("SourceWithPrimitiveArgs.key", Localization.Entry("integer", 42)) }
@@ -102,14 +132,14 @@ class MessageSourceGeneratorTest {
     fun `Cannot generate IMessageSource without annotation on abstract method`() {
         val localizationContext = mockk<LocalizationContext>()
         assertThrows<AbstractMessageSourceMethodException> {
-            MessageSourceGenerator.create(SourceWithoutAnnotationOnAbstract::class, localizationContext)
+            createAndInstantiate(SourceWithoutAnnotationOnAbstract::class, localizationContext)
         }
     }
 
     @Test
     fun `Generate IMessageSource without annotation on concrete method`() {
         val localizationContext = mockk<LocalizationContext>()
-        val source = MessageSourceGenerator.create(SourceWithoutAnnotationOnConcrete::class, localizationContext)
+        val source = createAndInstantiate(SourceWithoutAnnotationOnConcrete::class, localizationContext)
         assertEquals("test", source.test())
     }
 
@@ -117,7 +147,7 @@ class MessageSourceGeneratorTest {
     fun `Cannot generate IMessageSource with abstract method returning non-String`() {
         val localizationContext = mockk<LocalizationContext>()
         assertThrows<IllegalMessageSourceReturnTypeException> {
-            MessageSourceGenerator.create(SourceWithAbstractWithDiffReturnType::class, localizationContext)
+            createAndInstantiate(SourceWithAbstractWithDiffReturnType::class, localizationContext)
         }
     }
 
@@ -125,7 +155,7 @@ class MessageSourceGeneratorTest {
     fun `Generate IMessageSource with concrete method returning non-String`() {
         val localizationContext = mockk<LocalizationContext>()
         assertDoesNotThrow {
-            val source = MessageSourceGenerator.create(SourceWithConcreteWithDiffReturnType::class, localizationContext)
+            val source = createAndInstantiate(SourceWithConcreteWithDiffReturnType::class, localizationContext)
             source.test()
         }
     }
@@ -135,9 +165,16 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext> {
             every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = MessageSourceGenerator.create(SourceWithCamelCaseArg::class, localizationContext)
+        val source = createAndInstantiate(SourceWithCamelCaseArg::class, localizationContext)
         source.test("arg")
 
         verify(exactly = 1) { localizationContext.localize("SourceWithCamelCaseArg.key", Localization.Entry("my_arg", "arg")) }
+    }
+
+    private fun <T : IMessageSource> createAndInstantiate(
+        sourceType: KClass<T>,
+        localizationContext: LocalizationContext,
+    ): T {
+        return instantiate(MessageSourceGenerator.create(sourceType), localizationContext)
     }
 }
