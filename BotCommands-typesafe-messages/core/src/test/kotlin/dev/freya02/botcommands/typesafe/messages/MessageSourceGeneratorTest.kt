@@ -88,6 +88,12 @@ class MessageSourceGeneratorTest {
         suspend fun test(): String
     }
 
+    interface SourceWithNullableArg: IMessageSource {
+
+        @LocalizedContent("SourceWithNullableArg.key")
+        fun test(arg: String?): String
+    }
+
     @Test
     fun `Cannot generate IMessageSource as abstract class`() {
         val context = mockk<BContext> {
@@ -194,6 +200,14 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext>()
         assertThrows<UnsupportedSuspendFunctionException> {
             createAndInstantiate(SourceWithSuspendFunction::class, localizationContext)
+        }
+    }
+
+    @Test
+    fun `Cannot generate IMessageSource with nullable parameters`() {
+        val localizationContext = mockk<LocalizationContext>()
+        assertThrows<UnsupportedNullableParameterException> {
+            createAndInstantiate(SourceWithNullableArg::class, localizationContext)
         }
     }
 

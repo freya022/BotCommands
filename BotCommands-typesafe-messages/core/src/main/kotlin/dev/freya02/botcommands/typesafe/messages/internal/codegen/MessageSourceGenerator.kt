@@ -115,6 +115,10 @@ private object LocalizedContentFunctionGenerator {
             require(parameter.isRequired, ::UnsupportedOptionalParameterException) {
                 "Optional parameters are not supported! $parameter"
             }
+
+            require(!parameter.type.isMarkedNullable, ::UnsupportedNullableParameterException) {
+                "Nullable parameters are not allowed! $parameter"
+            }
         }
 
         // TODO make sure a fallback message exists for the given "templateKey"
