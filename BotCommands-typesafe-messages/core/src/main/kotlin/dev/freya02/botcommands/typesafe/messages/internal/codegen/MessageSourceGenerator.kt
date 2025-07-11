@@ -10,7 +10,6 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
@@ -129,7 +128,7 @@ private object LocalizedContentFunctionGenerator {
 
         classBuilder.withMethodBody(
             function.name,
-            MethodTypeDesc.of(function.returnType.jvmErasure.toClassDesc(), *function.valueParameters.mapToArray { it.type.jvmErasure.toClassDesc() }),
+            function.toMethodTypeDesc(),
             ClassFile.ACC_PUBLIC or ClassFile.ACC_FINAL,
         ) { codeBuilder ->
             val lineNumber = LineNumber(codeBuilder)
@@ -155,9 +154,7 @@ private object LocalizedContentFunctionGenerator {
                 codeBuilder.ldc(templateVarName)
                 codeBuilder.loadLocal(TypeKind.from(parameter.type.jvmErasure.java), codeBuilder.parameterSlot(parameterIndex))
                 codeBuilder.boxIfNecessary(parameter.type.jvmErasure)
-                codeBuilder.invokespecial(
-                    CD_Localization_Entry,
-                    INIT_NAME, MethodTypeDesc.of(CD_void, CD_String, CD_Object))
+                codeBuilder.invokespecial(CD_Localization_Entry, INIT_NAME, MethodTypeDesc.of(CD_void, CD_String, CD_Object))
                 codeBuilder.astore(localizationEntrySlot)
 
                 // localizationArgs[i] = localizationEntry
