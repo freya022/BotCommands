@@ -117,14 +117,14 @@ internal object MessageSourceGenerator {
                     codeBuilder.astore(localizationArgsSlot)
 
                     templateParameters.withIndex().forEachIndexed { arrayIndex, (parameterIndex, parameter) ->
-                        val paramName = parameter.name
+                        val templateVarName = parameter.name?.convertToCamelCase()
                             ?: error("Parameter names are absent from $method ; see https://bc.freya02.dev/3.X/using-botcommands/parameter-names/")
 
                         // localizationEntry = new Localization.Entry(paramName, value)
                         lineNumber.setAndIncrement()
                         codeBuilder.new_(CD_Localization_Entry)
                         codeBuilder.dup() // As <init> doesn't return itself
-                        codeBuilder.ldc(paramName)
+                        codeBuilder.ldc(templateVarName)
                         codeBuilder.loadLocal(TypeKind.from(parameter.type.jvmErasure.java), codeBuilder.parameterSlot(parameterIndex))
                         codeBuilder.boxIfNecessary(parameter.type.jvmErasure)
                         codeBuilder.invokespecial(
@@ -153,5 +153,17 @@ internal object MessageSourceGenerator {
         }
 
         return MethodHandles.lookup().defineClass(sourceBytes)
+    }
+
+    private fun String.convertToCamelCase(): String {
+        val builder = StringBuilder(this.length * 2)
+        for (char in this) {
+            if (char.isUpperCase()) {
+                builder.append('_').append(char.lowercaseChar())
+            } else {
+                builder.append(char)
+            }
+        }
+        return builder.toString()
     }
 }

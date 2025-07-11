@@ -57,6 +57,12 @@ class MessageSourceGeneratorTest {
         fun test() { }
     }
 
+    interface SourceWithCamelCaseArg : IMessageSource {
+
+        @LocalizedContent("SourceWithCamelCaseArg.key")
+        fun test(myArg: String): String
+    }
+
     // TODO test return type is String enforced
 
     @Test
@@ -122,5 +128,16 @@ class MessageSourceGeneratorTest {
             val source = MessageSourceGenerator.create(SourceWithConcreteWithDiffReturnType::class, localizationContext)
             source.test()
         }
+    }
+
+    @Test
+    fun `Generate IMessageSource with camelCase param converts to snake_case`() {
+        val localizationContext = mockk<LocalizationContext> {
+            every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
+        }
+        val source = MessageSourceGenerator.create(SourceWithCamelCaseArg::class, localizationContext)
+        source.test("arg")
+
+        verify(exactly = 1) { localizationContext.localize("SourceWithCamelCaseArg.key", Localization.Entry("my_arg", "arg")) }
     }
 }
