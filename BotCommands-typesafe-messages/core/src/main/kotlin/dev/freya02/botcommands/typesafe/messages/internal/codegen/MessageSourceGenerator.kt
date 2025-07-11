@@ -127,8 +127,6 @@ private object LocalizedContentFunctionGenerator {
             }
         }
 
-        // TODO make sure a fallback message exists for the given "templateKey"
-
         classBuilder.withMethodBody(
             function.name,
             MethodTypeDesc.of(function.returnType.jvmErasure.toClassDesc(), *function.valueParameters.mapToArray { it.type.jvmErasure.toClassDesc() }),
