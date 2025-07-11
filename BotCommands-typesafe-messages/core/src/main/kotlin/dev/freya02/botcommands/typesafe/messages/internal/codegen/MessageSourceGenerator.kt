@@ -77,6 +77,10 @@ internal object MessageSourceGenerator {
             }
 
             toImplement.forEach { method ->
+                if (method.isSuspend) {
+                    throw UnsupportedSuspendFunctionException("Suspend functions are not supported! ${method.getSignature(qualifiedClass = true, source = false)}")
+                }
+
                 if (method.returnType.jvmErasure != String::class) {
                     throw IllegalMessageSourceReturnTypeException("Method must return a String: ${method.getSignature(qualifiedClass = true, source = false)}")
                 }

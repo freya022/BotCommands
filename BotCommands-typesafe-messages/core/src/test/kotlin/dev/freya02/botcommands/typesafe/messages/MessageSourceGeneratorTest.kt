@@ -4,10 +4,7 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceMethodException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceClassTypeException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceReturnTypeException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedOptionalParameterException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
@@ -83,6 +80,12 @@ class MessageSourceGeneratorTest {
 
         @LocalizedContent("SourceWithOptionalArg.key")
         fun test(myArg: String = "test"): String
+    }
+
+    interface SourceWithSuspendFunction: IMessageSource {
+
+        @LocalizedContent("SourceWithSuspendFunction.key")
+        suspend fun test(): String
     }
 
     @Test
@@ -183,6 +186,14 @@ class MessageSourceGeneratorTest {
         val localizationContext = mockk<LocalizationContext>()
         assertThrows<UnsupportedOptionalParameterException> {
             createAndInstantiate(SourceWithOptionalArg::class, localizationContext)
+        }
+    }
+
+    @Test
+    fun `Cannot generate IMessageSource with suspend functions`() {
+        val localizationContext = mockk<LocalizationContext>()
+        assertThrows<UnsupportedSuspendFunctionException> {
+            createAndInstantiate(SourceWithSuspendFunction::class, localizationContext)
         }
     }
 
