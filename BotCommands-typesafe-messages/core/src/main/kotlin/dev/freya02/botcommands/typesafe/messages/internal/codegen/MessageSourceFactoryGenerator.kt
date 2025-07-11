@@ -8,6 +8,7 @@ import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSo
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
 import dev.freya02.botcommands.typesafe.messages.internal.utils.isAbstract
+import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
@@ -39,8 +40,8 @@ object MessageSourceFactoryGenerator {
         sourceFactoryType: KClass<T>,
         sourceType: KClass<U>,
     ): T {
-        if (!sourceFactoryType.java.isInterface) {
-            throw IllegalMessageSourceFactoryClassTypeException("${sourceFactoryType.jvmName} must be an interface!")
+        require(sourceFactoryType.java.isInterface, ::IllegalMessageSourceFactoryClassTypeException) {
+            "${sourceFactoryType.jvmName} must be an interface!"
         }
 
         // The only abstract method should be the one we implement
@@ -50,8 +51,8 @@ object MessageSourceFactoryGenerator {
             // Remove methods we implement
             .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Interaction::class.java && it.returnType == IMessageSource::class.java }
             .also { unimplementedMethods ->
-                if (unimplementedMethods.isNotEmpty()) {
-                    throw AbstractMessageSourceFactoryMethodException("${sourceFactoryType.jvmName} cannot contain abstract methods:\n${unimplementedMethods.joinAsList()}")
+                require(unimplementedMethods.isEmpty(), ::AbstractMessageSourceFactoryMethodException) {
+                    "${sourceFactoryType.jvmName} cannot contain abstract methods:\n${unimplementedMethods.joinAsList()}"
                 }
             }
 
