@@ -5,5 +5,7 @@ import net.dv8tion.jda.api.interactions.Interaction
 
 @ExperimentalTypesafeMessagesApi
 interface IMessageSourceFactory<out T : IMessageSource> {
+    val bundleName: String
+
     fun create(interaction: Interaction): T
 }

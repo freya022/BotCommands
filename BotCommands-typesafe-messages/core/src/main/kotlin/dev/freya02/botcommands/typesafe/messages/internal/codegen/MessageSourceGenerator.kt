@@ -25,8 +25,8 @@ import java.lang.reflect.AccessFlag
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.functions
 import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
@@ -38,8 +38,8 @@ internal object MessageSourceGenerator {
             "${sourceType.jvmName} must be an interface!"
         }
 
-        val abstractMethods = sourceType.memberFunctions.filter { it.isAbstract }
-        val toImplement = abstractMethods.filter { it.hasAnnotation<LocalizedContent>() }
+        val abstractMethods = sourceType.functions.filter { it.isAbstract }
+        val toImplement = getImplementableFunctions(sourceType)
 
         (abstractMethods - toImplement).also { unimplementedMethods ->
             require(unimplementedMethods.isEmpty(), ::AbstractMessageSourceMethodException) {
@@ -90,6 +90,12 @@ internal object MessageSourceGenerator {
         return lookup.defineClass(sourceBytes)
             .getConstructor(LocalizationContext::class.java)
             .let(lookup::unreflectConstructor)
+    }
+
+    internal fun getImplementableFunctions(sourceType: KClass<out IMessageSource>): List<KFunction<*>> {
+        return sourceType.functions
+            .filter { it.isAbstract }
+            .filter { it.hasAnnotation<LocalizedContent>() }
     }
 
     @Suppress("UNCHECKED_CAST")

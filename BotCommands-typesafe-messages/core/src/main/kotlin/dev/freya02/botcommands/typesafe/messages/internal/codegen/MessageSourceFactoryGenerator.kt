@@ -52,6 +52,7 @@ object MessageSourceFactoryGenerator {
             .filter { it.isAbstract() }
             // Remove methods we implement
             .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Interaction::class.java && it.returnType == IMessageSource::class.java }
+            .filterNot { it.name == "getBundleName" && it.parameterTypes.isEmpty() }
             .also { unimplementedMethods ->
                 require(unimplementedMethods.isEmpty(), ::AbstractMessageSourceFactoryMethodException) {
                     "${sourceFactoryType.jvmName} cannot contain abstract methods:\n${unimplementedMethods.joinAsList()}"

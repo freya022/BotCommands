@@ -13,6 +13,8 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> int
     private val params: Params,
 ) : IMessageSourceFactory<T> {
 
+    override val bundleName: String get() = params.bundle
+
     override fun create(interaction: Interaction): T {
         val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
 
