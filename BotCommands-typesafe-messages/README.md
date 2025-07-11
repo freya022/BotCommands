@@ -15,15 +15,15 @@ Let's start by creating a localization bundle at `src/main/resources/bc_localiza
 for our example it will contain a single localization template where:
 
 - The key is `bot.info`
-- The template is `I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and my up-time is {uptime_ms, number} milliseconds.`
-  - `guild_count` and `uptime_ms` are variables
+- The template is `I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and I am up since {uptime_timestamp}.`
+  - `guild_count` and `uptime_timestamp` are variables
   - `number` and `choice` are format types
   - `0#guilds|1#guild|1<guilds` is a subformat pattern for [ChoiceFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/ChoiceFormat.html)
   - See [MessageFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html) for more details
 
 ```json
 {
-  "bot.info": "I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and my up-time is {uptime_ms, number} milliseconds."
+  "bot.info": "I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and I am up since {uptime_timestamp}."
 }
 ```
 
@@ -40,9 +40,16 @@ in that annotation you will need to put the key present in your localization bun
 interface MyBotMessages : IMessageSource {
 
     // The function can have any name you want
-    // Parameter names are converted to snake_case for use in the template
     @LocalizedContent("bot.info")
-    fun botInfo(guildCount: Int, uptimeMs: Long): String
+    fun botInfo(
+      // Parameter names are converted to snake_case for use in the template
+      guildCount: Int, 
+      // For simplicity this is a String,
+      // but you could define an "ArgumentFormatter"
+      // so you can pass a Timestamp, a Long, an Instant or anything you want
+      // and have it converted.
+      uptimeTimestamp: String
+    ): String
 }
 ```
 
@@ -86,7 +93,7 @@ class SlashInfo(
         val response = botMessages.botInfo(
             // Use named parameters to make the arguments clearer!
             guildCount = event.jda.guildCache.size(),
-            uptimeMs = ManagementFactory.getRuntimeMXBean().uptime,
+            uptimeTimestamp = TimeFormat.RELATIVE.format(ManagementFactory.getRuntimeMXBean().startTime),
         )
 
         event.reply(response)
