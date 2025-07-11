@@ -2,7 +2,6 @@ package dev.freya02.botcommands.typesafe.messages
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
-import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceFactoryMethodException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
@@ -47,7 +46,7 @@ class MessageSourceFactoryGeneratorTest {
 
         MessageSourceFactoryGenerator.createFactory(
             context = context,
-            annotation = MessageSourceFactory("testBundle"),
+            bundleName = "testBundle",
             sourceFactoryType = Factory::class,
             sourceType = IMessageSource::class
         )
@@ -67,7 +66,7 @@ class MessageSourceFactoryGeneratorTest {
         assertThrows<AbstractMessageSourceFactoryMethodException> {
             MessageSourceFactoryGenerator.createFactory(
                 context = context,
-                annotation = MessageSourceFactory("testBundle"),
+                bundleName = "testBundle",
                 sourceFactoryType = FactoryWithoutAnnotationOnAbstract::class,
                 sourceType = IMessageSource::class
             )
@@ -87,7 +86,7 @@ class MessageSourceFactoryGeneratorTest {
 
         MessageSourceFactoryGenerator.createFactory(
             context = context,
-            annotation = MessageSourceFactory("testBundle"),
+            bundleName = "testBundle",
             sourceFactoryType = FactoryWithoutAnnotationOnConcrete::class,
             sourceType = IMessageSource::class
         )
@@ -107,7 +106,7 @@ class MessageSourceFactoryGeneratorTest {
         assertThrows<IllegalMessageSourceFactoryClassTypeException> {
             MessageSourceFactoryGenerator.createFactory(
                 context = context,
-                annotation = MessageSourceFactory("testBundle"),
+                bundleName = "testBundle",
                 sourceFactoryType = SourceFactoryAsAbstractClass::class,
                 sourceType = IMessageSource::class,
             )

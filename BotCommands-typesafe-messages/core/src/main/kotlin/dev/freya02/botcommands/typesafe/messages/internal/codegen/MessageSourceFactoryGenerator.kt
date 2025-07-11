@@ -2,7 +2,6 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
-import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceFactoryMethodException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
@@ -36,7 +35,7 @@ object MessageSourceFactoryGenerator {
     @Suppress("UNCHECKED_CAST")
     fun <T : IMessageSourceFactory<U>, U : IMessageSource> createFactory(
         context: BContext,
-        annotation: MessageSourceFactory,
+        bundleName: String,
         sourceFactoryType: KClass<T>,
         sourceType: KClass<U>,
     ): T {
@@ -58,7 +57,7 @@ object MessageSourceFactoryGenerator {
 
         val params = AbstractMessageSourceFactory.Params(
             context.getService<LocalizationService>(),
-            annotation.bundleName,
+            bundleName,
             context.getService<GuildLocaleProvider>(),
             context.getService<UserLocaleProvider>(),
             MessageSourceGenerator.create(sourceType),

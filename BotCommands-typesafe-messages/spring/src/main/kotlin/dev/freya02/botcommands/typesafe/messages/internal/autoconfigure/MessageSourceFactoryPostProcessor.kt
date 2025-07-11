@@ -55,7 +55,7 @@ internal class MessageSourceFactoryPostProcessor internal constructor(
                     BeanDefinitionBuilder.genericBeanDefinition(messageSourceFactoryType.java) {
                         MessageSourceFactoryGenerator.createFactory(
                             context.getBean<BContext>(),
-                            annotation,
+                            annotation.bundleName,
                             messageSourceFactoryType,
                             messageSourceType
                         )
