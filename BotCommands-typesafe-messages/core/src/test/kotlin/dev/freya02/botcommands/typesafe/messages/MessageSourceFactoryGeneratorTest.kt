@@ -6,14 +6,10 @@ import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageS
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.localization.LocalizationService
-import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
-import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.verify
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
@@ -35,80 +31,51 @@ class MessageSourceFactoryGeneratorTest {
 
     @Test
     fun `Generate IMessageSourceFactory`() {
-        val context = mockk<BContext> {
-            every { getService<LocalizationService>() } returns mockk()
-            every { getService<GuildLocaleProvider>() } returns mockk()
-            every { getService<UserLocaleProvider>() } returns mockk()
-        }
-
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
-        MessageSourceFactoryGenerator.createFactory(
-            context = context,
+        MessageSourceFactoryGenerator.createProvider(
             bundleName = "testBundle",
             sourceFactoryType = Factory::class,
-            sourceType = IMessageSource::class
         )
+
+        // Make sure the factory generator also triggers MessageSourceGenerator checks
+        verify(exactly = 1) { MessageSourceGenerator.create(any()) }
     }
 
     @Test
     fun `Cannot generate IMessageSourceFactory with abstract method`() {
-        val context = mockk<BContext> {
-            every { getService<LocalizationService>() } returns mockk()
-            every { getService<GuildLocaleProvider>() } returns mockk()
-            every { getService<UserLocaleProvider>() } returns mockk()
-        }
-
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
         assertThrows<AbstractMessageSourceFactoryMethodException> {
-            MessageSourceFactoryGenerator.createFactory(
-                context = context,
+            MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
                 sourceFactoryType = FactoryWithoutAnnotationOnAbstract::class,
-                sourceType = IMessageSource::class
             )
         }
     }
 
     @Test
     fun `Generate IMessageSourceFactory with concrete method`() {
-        val context = mockk<BContext> {
-            every { getService<LocalizationService>() } returns mockk()
-            every { getService<GuildLocaleProvider>() } returns mockk()
-            every { getService<UserLocaleProvider>() } returns mockk()
-        }
-
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
-        MessageSourceFactoryGenerator.createFactory(
-            context = context,
+        MessageSourceFactoryGenerator.createProvider(
             bundleName = "testBundle",
             sourceFactoryType = FactoryWithoutAnnotationOnConcrete::class,
-            sourceType = IMessageSource::class
         )
     }
 
     @Test
     fun `Cannot generate IMessageSourceFactory as abstract class`() {
-        val context = mockk<BContext> {
-            every { getService<LocalizationService>() } returns mockk()
-            every { getService<GuildLocaleProvider>() } returns mockk()
-            every { getService<UserLocaleProvider>() } returns mockk()
-        }
-
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
         assertThrows<IllegalMessageSourceFactoryClassTypeException> {
-            MessageSourceFactoryGenerator.createFactory(
-                context = context,
+            MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
                 sourceFactoryType = SourceFactoryAsAbstractClass::class,
-                sourceType = IMessageSource::class,
             )
         }
     }
