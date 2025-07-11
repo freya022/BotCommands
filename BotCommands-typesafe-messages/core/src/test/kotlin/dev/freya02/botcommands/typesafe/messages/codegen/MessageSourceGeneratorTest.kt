@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.typesafe.messages
+package dev.freya02.botcommands.typesafe.messages.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
