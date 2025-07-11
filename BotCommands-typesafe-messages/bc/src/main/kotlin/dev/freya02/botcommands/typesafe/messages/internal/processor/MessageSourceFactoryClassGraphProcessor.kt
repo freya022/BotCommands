@@ -35,7 +35,7 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
         serviceContainer.putSuppliedService(ServiceSupplier(messageSourceFactoryType) { context ->
             MessageSourceFactoryGenerator.createFactory(
                 context,
-                annotation,
+                annotation.bundleName,
                 messageSourceFactoryType,
                 messageSourceType
             )

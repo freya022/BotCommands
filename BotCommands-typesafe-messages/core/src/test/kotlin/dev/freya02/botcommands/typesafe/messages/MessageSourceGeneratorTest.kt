@@ -1,20 +1,12 @@
 package dev.freya02.botcommands.typesafe.messages
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
-import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
-import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
-import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.Localization
-import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
-import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
-import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -26,9 +18,7 @@ import kotlin.test.assertEquals
 
 class MessageSourceGeneratorTest {
 
-    interface SourceFactoryWithAbstractClassSource : IMessageSourceFactory<SourceFactoryWithAbstractClassSource.SourceAsAbstractClass> {
-        abstract class SourceAsAbstractClass : IMessageSource
-    }
+    abstract class SourceAsAbstractClass : IMessageSource
 
     interface SourceWithoutArgs : IMessageSource {
 
@@ -96,18 +86,8 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource as abstract class`() {
-        val context = mockk<BContext> {
-            every { getService<LocalizationService>() } returns mockk()
-            every { getService<GuildLocaleProvider>() } returns mockk()
-            every { getService<UserLocaleProvider>() } returns mockk()
-        }
         assertThrows<IllegalMessageSourceClassTypeException> {
-            MessageSourceFactoryGenerator.createFactory(
-                context = context,
-                annotation = MessageSourceFactory("testBundle"),
-                sourceFactoryType = SourceFactoryWithAbstractClassSource::class,
-                sourceType = SourceFactoryWithAbstractClassSource.SourceAsAbstractClass::class,
-            )
+            MessageSourceGenerator.create(SourceAsAbstractClass::class)
         }
     }
 
@@ -146,9 +126,8 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource without annotation on abstract method`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertThrows<AbstractMessageSourceMethodException> {
-            createAndInstantiate(SourceWithoutAnnotationOnAbstract::class, localizationContext)
+            MessageSourceGenerator.create(SourceWithoutAnnotationOnAbstract::class)
         }
     }
 
@@ -161,18 +140,15 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource with abstract method returning non-String`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertThrows<IllegalMessageSourceReturnTypeException> {
-            createAndInstantiate(SourceWithAbstractWithDiffReturnType::class, localizationContext)
+            MessageSourceGenerator.create(SourceWithAbstractWithDiffReturnType::class)
         }
     }
 
     @Test
     fun `Generate IMessageSource with concrete method returning non-String`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertDoesNotThrow {
-            val source = createAndInstantiate(SourceWithConcreteWithDiffReturnType::class, localizationContext)
-            source.test()
+            MessageSourceGenerator.create(SourceWithConcreteWithDiffReturnType::class)
         }
     }
 
@@ -189,25 +165,22 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource with optional parameters`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertThrows<UnsupportedOptionalParameterException> {
-            createAndInstantiate(SourceWithOptionalArg::class, localizationContext)
+            MessageSourceGenerator.create(SourceWithOptionalArg::class)
         }
     }
 
     @Test
     fun `Cannot generate IMessageSource with suspend functions`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertThrows<UnsupportedSuspendFunctionException> {
-            createAndInstantiate(SourceWithSuspendFunction::class, localizationContext)
+            MessageSourceGenerator.create(SourceWithSuspendFunction::class)
         }
     }
 
     @Test
     fun `Cannot generate IMessageSource with nullable parameters`() {
-        val localizationContext = mockk<LocalizationContext>()
         assertThrows<UnsupportedNullableParameterException> {
-            createAndInstantiate(SourceWithNullableArg::class, localizationContext)
+            MessageSourceGenerator.create(SourceWithNullableArg::class)
         }
     }
 
