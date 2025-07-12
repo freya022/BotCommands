@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.hasAnnotation
@@ -103,9 +104,9 @@ internal object MessageSourceGenerator {
     }
 }
 
-private object LocalizedContentFunctionGenerator {
+internal object LocalizedContentFunctionGenerator {
 
-    fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, function: KFunction<*>) {
+    internal fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, function: KFunction<*>) {
         require(!function.isSuspend, ::UnsupportedSuspendFunctionException) {
             "Suspend functions are not supported! ${function.getSignature(qualifiedClass = true, source = false)}"
         }
@@ -116,7 +117,7 @@ private object LocalizedContentFunctionGenerator {
 
         val annotation = function.findAnnotation<LocalizedContent>()
             ?: error("Function was to be implemented but annotation is absent")
-        val templateParameters = function.valueParameters.onEach { parameter ->
+        val templateParameters = getTemplateArgumentParameters(function).onEach { parameter ->
             require(parameter.isRequired, ::UnsupportedOptionalParameterException) {
                 "Optional parameters are not supported! $parameter"
             }
@@ -144,7 +145,7 @@ private object LocalizedContentFunctionGenerator {
             codeBuilder.astore(localizationArgsSlot)
 
             templateParameters.withIndex().forEachIndexed { arrayIndex, (parameterIndex, parameter) ->
-                val templateVarName = parameter.name?.convertToCamelCase()
+                val templateVarName = getTemplateArgumentParameterName(parameter)
                     ?: error("Parameter names are absent from $function ; see https://bc.freya02.dev/3.X/using-botcommands/parameter-names/")
 
                 // localizationEntry = new Localization.Entry(paramName, value)
@@ -174,5 +175,13 @@ private object LocalizedContentFunctionGenerator {
             codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
             codeBuilder.areturn()
         }
+    }
+
+    internal fun getTemplateArgumentParameters(function: KFunction<*>): List<KParameter> {
+        return function.valueParameters
+    }
+
+    internal fun getTemplateArgumentParameterName(parameter: KParameter): String? {
+        return parameter.name?.convertToCamelCase()
     }
 }

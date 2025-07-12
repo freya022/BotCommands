@@ -4,7 +4,9 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchBundleException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateKeyException
+import dev.freya02.botcommands.typesafe.messages.internal.codegen.LocalizedContentFunctionGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
@@ -13,6 +15,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 import io.github.freya022.botcommands.internal.utils.superErasureAt
 import java.util.*
 import kotlin.reflect.KClass
@@ -41,8 +44,17 @@ internal object PostLoadValidator {
                     ?: error("Function was said to be implementable but does not have @LocalizedContent")
                 val templateKey = localizedContent.templateKey
 
-                require(localization[templateKey] != null, ::NoSuchTemplateKeyException) {
+                val template = localization[templateKey]
+                require(template != null, ::NoSuchTemplateKeyException) {
                     "No template key '$templateKey' exists in the root bundle '$bundleName' for ${function.getSignature(qualifiedClass = true, source = false)}"
+                }
+
+                val formattableArguments = template.arguments.filterIsInstance<FormattableArgument>()
+                LocalizedContentFunctionGenerator.getTemplateArgumentParameters(function).forEach { parameter ->
+                    val expectedArgName = LocalizedContentFunctionGenerator.getTemplateArgumentParameterName(parameter)!!
+                    require(formattableArguments.any { it.argumentName == expectedArgName }, ::NoSuchTemplateArgumentException) {
+                        "Template key '$templateKey' is missing argument '$expectedArgName' required by ${function.getSignature(qualifiedClass = true, source = false)}"
+                    }
                 }
             }
         }

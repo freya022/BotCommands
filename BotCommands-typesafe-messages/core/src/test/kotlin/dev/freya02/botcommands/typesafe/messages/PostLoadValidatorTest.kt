@@ -4,6 +4,7 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchBundleException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateKeyException
 import dev.freya02.botcommands.typesafe.messages.internal.PostLoadValidator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
@@ -30,6 +31,15 @@ class PostLoadValidatorTest {
 
             @LocalizedContent("factory.source.key")
             fun test(): String
+        }
+    }
+
+    interface FactoryWithSourceWithUnknownArgName : IMessageSourceFactory<FactoryWithSourceWithUnknownArgName.Source> {
+
+        interface Source : IMessageSource {
+
+            @LocalizedContent("factory.source.key")
+            fun test(unknownArg: String): String
         }
     }
 
@@ -78,5 +88,27 @@ class PostLoadValidatorTest {
 
         val localization = localizationService.getInstance("bundle", Locale.ROOT)!!
         verify(exactly = 1) { localization[any<String>()] }
+    }
+
+    @Test
+    fun `Validates root bundle template has parameters`() {
+        val event = mockk<PostLoadEvent>()
+        val localizationService = mockk<LocalizationService> {
+            every { getInstance("bundle", Locale.ROOT)!!["factory.source.key"]!!.arguments } returns emptyList()
+        }
+        val context = mockk<BContext> {
+            every { getService<LocalizationService>() } returns localizationService
+            every { getService<GuildLocaleProvider>() } returns mockk()
+            every { getService<UserLocaleProvider>() } returns mockk()
+        }
+        val factories = listOf<IMessageSourceFactory<*>>(
+            MessageSourceFactoryGenerator.createProvider("bundle", FactoryWithSourceWithUnknownArgName::class).get(context)
+        )
+
+        assertThrows<NoSuchTemplateArgumentException> {
+            PostLoadValidator.onPostLoad(event, localizationService, factories)
+        }
+
+        verify(exactly = 1) { localizationService.getInstance("bundle", Locale.ROOT)!!["factory.source.key"]!!.arguments }
     }
 }
