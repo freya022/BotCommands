@@ -29,45 +29,48 @@ private val alphanumericRegex = Regex("""\w+""")
  * Full example: `"There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"`
  */
 class DefaultLocalizationTemplate(context: BContext, private val template: String, locale: Locale) : LocalizationTemplate {
-    private val localizableArguments: MutableList<LocalizableArgument> = ArrayList()
+
+    override val arguments: List<LocalizableArgument>
 
     init {
         val formattableArgumentFactories = context.getInterfacedServices<FormattableArgumentFactory>()
 
-        var start = 0
-        argumentRegex.findAll(template).forEach argumentsLoop@{ argumentMatch ->
-            val matchStart = argumentMatch.range.first
-            addRawArgument(template.substring(start, matchStart))
+        fun MutableList<LocalizableArgument>.addRawArgument(substring: String) {
+            if (substring.isEmpty()) return
+            add(RawArgument(substring))
+        }
 
-            val formattableArgument = argumentMatch.groups[1]?.value!!
-            // Try to match against each factory
-            formattableArgumentFactories.forEach { factory ->
-                factory.regex.matchEntire(formattableArgument)?.let {
-                    localizableArguments += factory.get(it, locale)
+        arguments = buildList {
+            var start = 0
+            argumentRegex.findAll(template).forEach argumentsLoop@{ argumentMatch ->
+                val matchStart = argumentMatch.range.first
+                addRawArgument(template.substring(start, matchStart))
+
+                val formattableArgument = argumentMatch.groupValues[1]
+                // Try to match against each factory
+                formattableArgumentFactories.forEach { factory ->
+                    factory.regex.matchEntire(formattableArgument)?.let {
+                        this += factory.get(it, locale)
+                        start = argumentMatch.range.last + 1
+                        return@argumentsLoop
+                    }
+                }
+
+                // If the entire thing looks like a simple argument name
+                if (formattableArgument.matches(alphanumericRegex)) {
+                    this += SimpleArgument(formattableArgument)
                     start = argumentMatch.range.last + 1
                     return@argumentsLoop
                 }
-            }
 
-            // If the entire thing looks like a simple argument name
-            if (formattableArgument.matches(alphanumericRegex)) {
-                localizableArguments += SimpleArgument(formattableArgument)
-                start = argumentMatch.range.last + 1
-                return@argumentsLoop
+                throwArgument("Could not match formattable argument '$formattableArgument' against ${formattableArgumentFactories.map { it.javaClass.simpleNestedName }}")
             }
-
-            throwArgument("Could not match formattable argument '$formattableArgument' against ${formattableArgumentFactories.map { it.javaClass.simpleNestedName }}")
+            addRawArgument(template.substring(start))
         }
-        addRawArgument(template.substring(start))
-    }
-
-    private fun addRawArgument(substring: String) {
-        if (substring.isEmpty()) return
-        localizableArguments += RawArgument(substring)
     }
 
     override fun localize(vararg args: Localization.Entry): String {
-        return localizableArguments.joinToString("") { localizableArgument ->
+        return arguments.joinToString("") { localizableArgument ->
             when (localizableArgument) {
                 is RawArgument -> localizableArgument.get()
                 is FormattableArgument -> formatFormattableString(args, localizableArgument)
@@ -91,6 +94,6 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
     }
 
     override fun toString(): String {
-        return "DefaultLocalizationTemplate(template='$template', localizableArguments=$localizableArguments)"
+        return "DefaultLocalizationTemplate(template='$template', arguments=$arguments)"
     }
 }
