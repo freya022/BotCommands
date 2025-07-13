@@ -6,6 +6,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.InlineMessage
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
+import io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.internal.utils.deferredRestAction
@@ -395,6 +396,7 @@ fun MessageEditData.edit(channel: MessageChannel, id: Long): MessageEditAction =
 /**
  * @see IReplyCallback.reply
  */
+@ExperimentalCoreApi // Unsure if jda-ktx will provide the `block` parameter to its own reply functions in the near future
 inline fun IReplyCallback.reply(ephemeral: Boolean = false, block: InlineMessage<*>.() -> Unit): ReplyCallbackAction {
     return reply(MessageCreate { block() }).setEphemeral(ephemeral)
 }
@@ -402,6 +404,7 @@ inline fun IReplyCallback.reply(ephemeral: Boolean = false, block: InlineMessage
 /**
  * @see IMessageEditCallback.editMessage
  */
+@ExperimentalCoreApi // Unsure if jda-ktx will provide the `block` parameter to its own reply functions in the near future
 inline fun IMessageEditCallback.edit(block: InlineMessage<*>.() -> Unit): MessageEditCallbackAction {
     return editMessage(MessageEdit { block() })
 }
@@ -409,6 +412,7 @@ inline fun IMessageEditCallback.edit(block: InlineMessage<*>.() -> Unit): Messag
 /**
  * @see InteractionHook.sendMessage
  */
+@ExperimentalCoreApi // Unsure if jda-ktx will provide the `block` parameter to its own reply functions in the near future
 inline fun InteractionHook.send(ephemeral: Boolean = false, block: InlineMessage<*>.() -> Unit): WebhookMessageCreateAction<Message> {
     return sendMessage(MessageCreate { block() }).setEphemeral(ephemeral)
 }
@@ -416,6 +420,7 @@ inline fun InteractionHook.send(ephemeral: Boolean = false, block: InlineMessage
 /**
  * @see InteractionHook.editOriginal
  */
+@ExperimentalCoreApi // Unsure if jda-ktx will provide the `block` parameter to its own reply functions in the near future
 inline fun InteractionHook.edit(block: InlineMessage<*>.() -> Unit): WebhookMessageEditAction<Message> {
     return editOriginal(MessageEdit { block() })
 }
