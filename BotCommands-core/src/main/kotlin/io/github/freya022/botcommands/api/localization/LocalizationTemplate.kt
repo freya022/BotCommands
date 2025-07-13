@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.localization
 
 import io.github.freya022.botcommands.api.core.utils.mapToArray
-import io.github.freya022.botcommands.internal.localization.LocalizableArgument
+import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 
 /**
  * Represents an entire localizable string, with parameters.
@@ -11,7 +11,11 @@ import io.github.freya022.botcommands.internal.localization.LocalizableArgument
  * @see DefaultLocalizationTemplate
  */
 interface LocalizationTemplate {
-    val arguments: List<LocalizableArgument>
+
+    /**
+     * Details about the arguments a user needs to supply to [localize].
+     */
+    val arguments: List<FormattableArgument>
 
     /**
      * Processes the localization template and replaces the named parameters by their values

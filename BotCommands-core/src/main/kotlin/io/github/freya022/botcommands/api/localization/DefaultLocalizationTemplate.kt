@@ -30,7 +30,8 @@ private val alphanumericRegex = Regex("""\w+""")
  */
 class DefaultLocalizationTemplate(context: BContext, private val template: String, locale: Locale) : LocalizationTemplate {
 
-    override val arguments: List<LocalizableArgument>
+    private val localizableArguments: List<LocalizableArgument>
+    override val arguments: List<FormattableArgument>
 
     init {
         val formattableArgumentFactories = context.getInterfacedServices<FormattableArgumentFactory>()
@@ -40,7 +41,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             add(RawArgument(substring))
         }
 
-        arguments = buildList {
+        localizableArguments = buildList {
             var start = 0
             argumentRegex.findAll(template).forEach argumentsLoop@{ argumentMatch ->
                 val matchStart = argumentMatch.range.first
@@ -67,15 +68,17 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             }
             addRawArgument(template.substring(start))
         }
+
+        arguments = localizableArguments.filterIsInstance<FormattableArgument>()
     }
 
-    override fun localize(vararg args: Localization.Entry): String {
-        return arguments.joinToString("") { localizableArgument ->
-            when (localizableArgument) {
+    override fun localize(vararg args: Localization.Entry): String = buildString {
+        localizableArguments.forEach { localizableArgument ->
+            append(when (localizableArgument) {
                 is RawArgument -> localizableArgument.get()
                 is FormattableArgument -> formatFormattableString(args, localizableArgument)
                 else -> throwArgument("Unknown localizable argument type: ${localizableArgument::class.simpleNestedName}")
-            }
+            })
         }
     }
 
