@@ -17,7 +17,7 @@ import kotlin.contracts.contract
  */
 inline fun runCatchingResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit): RestResult<Unit> {
     contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return runCatchingRest(block).ignore(*ignoredResponses)
