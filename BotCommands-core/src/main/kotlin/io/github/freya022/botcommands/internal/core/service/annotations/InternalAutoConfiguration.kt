@@ -7,4 +7,4 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 @BService
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
-internal annotation class InternalAutoConfiguration
+annotation class InternalAutoConfiguration

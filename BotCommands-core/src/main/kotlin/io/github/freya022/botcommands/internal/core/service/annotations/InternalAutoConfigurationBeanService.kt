@@ -8,4 +8,4 @@ import org.springframework.context.annotation.Bean
 @MustBeDocumented
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
-internal annotation class InternalAutoConfigurationBeanService
+annotation class InternalAutoConfigurationBeanService
