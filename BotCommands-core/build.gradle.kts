@@ -11,11 +11,6 @@ registerSourceSet(name = "examples", extendsTestDependencies = true)
 registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
 registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
 
-configurations.all {
-    exclude(module = "opus-java")
-    exclude(module = "tink")
-}
-
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
