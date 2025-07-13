@@ -118,10 +118,10 @@ dependencies {
     testImplementation(libs.stacktrace.decoroutinator)
 
     // Database
-    testImplementation(libs.postgresql)
-    testImplementation(libs.h2)
+    testRuntimeOnly(libs.postgresql)
+    testRuntimeOnly(libs.h2)
     testImplementation(libs.flyway.core)
-    testImplementation(libs.flyway.database.postgresql)
+    testRuntimeOnly(libs.flyway.database.postgresql)
     testImplementation(libs.hikaricp)
 
     // Persistent rate limiting
@@ -131,8 +131,8 @@ dependencies {
     testImplementation(libs.jackson.dataformat.yaml)
 
     // Upgrade because kotlinx-coroutines-debug somehow has an ANCIENT version
-    testImplementation(libs.bytebuddy)
-    testImplementation(libs.bytebuddy.agent)
+    testRuntimeOnly(libs.bytebuddy)
+    testRuntimeOnly(libs.bytebuddy.agent)
 
     // Test stuff
     testImplementation(libs.kotlin.metadata)
