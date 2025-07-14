@@ -46,10 +46,13 @@ internal class CoroutineEventManagerImpl internal constructor(
 
     override fun register(listener: Any): Unit = listenerWrappersLock.withLock {
         when (listener) {
-            is CoroutineEventListener -> if (defaultTimeout != null) {
-                TimeConstrainedCoroutineListenerWrapper(listener, defaultTimeout)
-            } else {
-                UnconstrainedCoroutineListenerWrapper(listener)
+            is CoroutineEventListener -> {
+                val timeout = listener.timeout ?: defaultTimeout
+                if (timeout != null) {
+                    TimeConstrainedCoroutineListenerWrapper(listener, timeout)
+                } else {
+                    UnconstrainedCoroutineListenerWrapper(listener)
+                }
             }
             is EventListener -> UnconstrainedListenerWrapper(listener)
             else -> throwArgument("Listener must implement either EventListener or CoroutineEventListener")
