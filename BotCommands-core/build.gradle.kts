@@ -24,8 +24,13 @@ dependencies {
     implementation(libs.kotlin.logging)
 
     // JDA
-    api(libs.jda)
-    api(libs.jda.ktx)
+    api(libs.jda) {
+        exclude(module = "opus-java")
+        exclude(module = "tink")
+    }
+    api(libs.jda.ktx) {
+        exclude(module = "JDA")
+    }
 
     // Classpath scanning
     api(libs.classgraph)
@@ -54,7 +59,9 @@ dependencies {
     // All Unicode emojis
     api(libs.jemoji)
     // JDA-specific emojis
-    api(libs.jda.emojis)
+    api(libs.jda.emojis) {
+        exclude(module = "JDA")
+    }
 
     // -------------------- AUTOCOMPLETE DEPENDENCIES --------------------
 

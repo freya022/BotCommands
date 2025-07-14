@@ -19,11 +19,6 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
-configurations.all {
-    exclude(module = "opus-java")
-    exclude(module = "tink")
-}
-
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.1")
