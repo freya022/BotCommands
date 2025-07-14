@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.shortSignature
+import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
@@ -102,7 +103,7 @@ internal class EventDispatcherImpl internal constructor(
                     function.callSuspend(instance, event, *eventHandlerFunction.parameters)
                 }
                 if (result == null) {
-                    logger.debug { "Event of type ${event.javaClass.simpleName} timed out." }
+                    logger.debug { "Event listener ${function.shortSignatureNoSrc} timed out" }
                 }
             } else {
                 function.callSuspend(instance, event, *eventHandlerFunction.parameters)
