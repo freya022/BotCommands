@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
+import io.github.freya022.botcommands.api.core.config.BEventManagerConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import net.dv8tion.jda.api.events.GenericEvent
@@ -50,9 +51,10 @@ annotation class BEventListener(
      */
     val ignoredIntents: Array<GatewayIntent> = [],
     /**
-     * The time before the coroutine is canceled, using a negative value means no timeout.
+     * The time before the coroutine is canceled,
+     * using a non-positive or non-finite value equals to no timeout.
      *
-     * **Default:** [CoroutineEventManager.timeout] from [ICoroutineEventManagerSupplier]
+     * **Default:** [BEventManagerConfig.defaultTimeout]
      */
     val timeout: Long = 0,
     /** The time unit used for the timeout */
