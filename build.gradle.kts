@@ -17,7 +17,6 @@ dependencies {
     // -------------------- DEFAULT SUBPROJECTS DEPENDENCIES --------------------
 
     api(projects.botCommandsCore)
-    api(projects.botCommandsSpring)
 
     // ---------------------------- TEST DEPENDENCIES ---------------------------
 
