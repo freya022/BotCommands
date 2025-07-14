@@ -11,6 +11,7 @@ import java.util.concurrent.Executor
 
 @InjectedService
 interface BCoroutineScopesConfig {
+    val eventManagerScope: CoroutineScope           //Used by [[CoroutineEventManagerImpl]]
     val commandUpdateScope: CoroutineScope          //Not used much
     /**
      * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync],
@@ -32,6 +33,7 @@ fun interface CoroutineScopeFactory {
 
 @ConfigDSL
 class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
+    override val eventManagerScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
     override val commandUpdateScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
     override val eventDispatcherScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
     override val textCommandsScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
@@ -42,6 +44,7 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
     override val modalTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
     override val paginationTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
 
+    var eventManagerScopeFactory: CoroutineScopeFactory = defaultFactory("Event manager", 4)
     var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 1)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
     var textCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("Text command handler", 2)
@@ -78,6 +81,7 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
 
     @JvmSynthetic
     internal fun build() = object : BCoroutineScopesConfig {
+        override val eventManagerScope = eventManagerScopeFactory.create()
         override val commandUpdateScope = commandUpdateScopeFactory.create()
         override val eventDispatcherScope = eventDispatcherScopeFactory.create()
         override val textCommandsScope = textCommandsScopeFactory.create()

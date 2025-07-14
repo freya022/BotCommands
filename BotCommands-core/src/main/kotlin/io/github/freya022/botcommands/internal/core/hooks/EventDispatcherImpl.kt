@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.unwrap
@@ -16,13 +16,13 @@ import kotlin.reflect.full.callSuspend
 
 private val logger = KotlinLogging.logger { }
 
+@BService
 internal class EventDispatcherImpl internal constructor(
     coroutineScopesConfig: BCoroutineScopesConfig,
-    originalCoroutineEventManager: CoroutineEventManager,
     private val eventListenerRegistry: EventListenerRegistry,
 ) : EventDispatcher() {
 
-    private val inheritedCoroutineScope: CoroutineScope = originalCoroutineEventManager
+    private val eventManagerCoroutineScope: CoroutineScope = coroutineScopesConfig.eventManagerScope
     private val asyncCoroutineScope: CoroutineScope = coroutineScopesConfig.eventDispatcherScope
 
     internal fun onEvent(event: GenericEvent) {
@@ -47,7 +47,7 @@ internal class EventDispatcherImpl internal constructor(
 
         handlers[RunMode.SHARED]?.let { eventHandlers ->
             // Stick to what JDA-KTX does, 1 coroutine per event for all listeners
-            inheritedCoroutineScope.launch {
+            eventManagerCoroutineScope.launch {
                 eventHandlers.forEach { eventHandler ->
                     runEventHandler(eventHandler, event)
                 }
@@ -95,9 +95,6 @@ internal class EventDispatcherImpl internal constructor(
         try {
             val (instance, function) = eventHandlerFunction.classPathFunction
 
-            /**
-             * See [CoroutineEventManager.handle]
-             */
             val actualTimeout = eventHandlerFunction.timeout
             if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
                 // Timeout only works when the continuations implement a cancellation handler
