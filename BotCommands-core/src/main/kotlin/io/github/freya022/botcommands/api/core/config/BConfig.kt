@@ -107,6 +107,7 @@ interface BConfig {
 
     val classGraphProcessors: List<ClassGraphProcessor>
 
+    val eventManagerConfig: BEventManagerConfig
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
@@ -138,6 +139,7 @@ class BConfigBuilder : BConfig {
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
+    override val eventManagerConfig = BEventManagerConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
     override val databaseConfig = BDatabaseConfigBuilder()
     override val localizationConfig = BLocalizationConfigBuilder()
@@ -236,6 +238,10 @@ class BConfigBuilder : BConfig {
         addClass(T::class.java)
     }
 
+    fun eventManager(block: ReceiverConsumer<BEventManagerConfigBuilder>) {
+        eventManagerConfig.apply(block)
+    }
+
     fun services(block: ReceiverConsumer<BServiceConfigBuilder>) {
         serviceConfig.apply(block)
     }
@@ -287,6 +293,7 @@ class BConfigBuilder : BConfig {
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
             override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter
             override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
+            override val eventManagerConfig = this@BConfigBuilder.eventManagerConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()

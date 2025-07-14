@@ -13,6 +13,11 @@ sealed interface BConfigurer<T : Any> {
 interface BConfigConfigurer : BConfigurer<BConfigBuilder>
 
 /**
+ * Configurer for [BEventManagerConfig].
+ */
+interface BEventManagerConfigConfigurer : BConfigurer<BEventManagerConfigBuilder>
+
+/**
  * Configurer for [BDatabaseConfig].
  */
 interface BDatabaseConfigConfigurer : BConfigurer<BDatabaseConfigBuilder>
