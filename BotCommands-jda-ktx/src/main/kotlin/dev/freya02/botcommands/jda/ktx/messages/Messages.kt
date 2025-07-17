@@ -2,7 +2,6 @@
 
 package dev.freya02.botcommands.jda.ktx.messages
 
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -18,6 +17,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.dv8tion.jda.api.utils.messages.MessageRequest
 import java.time.temporal.TemporalAccessor
+import java.util.*
 
 @DslMarker
 @Retention(AnnotationRetention.BINARY)
@@ -377,7 +377,7 @@ class WhitelistMentionConfig(
 
     companion object {
 
-        private val allowedTypes = enumSetOf(MentionType.USER, MentionType.ROLE)
+        private val allowedTypes = EnumSet.of(MentionType.USER, MentionType.ROLE)
     }
 }
 
@@ -388,7 +388,7 @@ data class Mentions(
     var here: Boolean
 ) {
     fun applyOn(request: MessageRequest<*>) {
-        val types = enumSetOf<MentionType>()
+        val types = EnumSet.noneOf(MentionType::class.java)
         if (everyone) types.add(MentionType.EVERYONE)
         if (here) types.add(MentionType.HERE)
         if (users is MassMentionConfig) types.add(MentionType.USER)

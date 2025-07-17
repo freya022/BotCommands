@@ -1,11 +1,8 @@
-package dev.freya02.botcommands.jda.ktx
+package io.github.freya022.botcommands.api.utils
 
 import io.github.freya022.botcommands.api.core.hooks.CoroutineEventListener
-import io.github.freya022.botcommands.api.core.waiter.EventWaiter
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -104,19 +101,4 @@ suspend inline fun <reified T : GenericEvent> ShardManager.await(
     }
     addEventListener(listener)
     cont.invokeOnCancellation { removeEventListener(listener) }
-}
-
-/**
- * Suspends until an event of type [T] satisfying the [filter] is received on any shard, then returns it.
- *
- * If you wish to use a timeout with it, you can use [withTimeoutOrNull][kotlinx.coroutines.withTimeoutOrNull].
- *
- * @param filter Condition to satisfy before returning the event
- */
-suspend inline fun <reified T : Event> EventWaiter.await(
-    noinline filter: (T) -> Boolean = { true },
-): T {
-    return of<T>()
-        .addPrecondition(filter)
-        .submit().await()
 }

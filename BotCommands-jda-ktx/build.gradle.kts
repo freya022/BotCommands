@@ -6,7 +6,8 @@ plugins {
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
-    api(projects.botCommandsCore)
+    api(libs.jda)
+    api(libs.kotlinx.coroutines.core)
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-jda-ktx")

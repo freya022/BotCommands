@@ -2,8 +2,13 @@ package io.github.freya022.botcommands.api.core.waiter
 
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 /**
  * Lets you run code when receiving a specific event, while not blocking threads nor having listeners everywhere,
@@ -54,4 +59,46 @@ interface EventWaiter {
      * @return A new event waiter builder
      */
     fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T>
+}
+
+/**
+ * Same as [EventWaiter.of] but with a reified type parameter.
+ */
+inline fun <reified T : Event> EventWaiter.of(): EventWaiterBuilder<T> = of(T::class.java)
+
+/**
+ * Suspends until an event of type [T] satisfying the [filter] is received on any shard, then returns it.
+ *
+ * If you wish to use a timeout with it, you can use [withTimeoutOrNull][kotlinx.coroutines.withTimeoutOrNull].
+ *
+ * @param filter Condition to satisfy before returning the event
+ */
+suspend inline fun <reified T : Event> EventWaiter.await(
+    noinline filter: (T) -> Boolean = { true },
+): T {
+    return of<T>()
+        .addPrecondition(filter)
+        .submit().await()
+}
+
+/**
+ * Suspends until a [Message] from the [author] satisfying the [filter] is received on any shard, then returns it.
+ *
+ * If you wish to use a timeout with it, you can use [withTimeoutOrNull][kotlinx.coroutines.withTimeoutOrNull].
+ *
+ * @param filter Additional conditions to satisfy before returning the message
+ */
+suspend inline fun EventWaiter.awaitMessage(
+    channel: MessageChannel,
+    author: UserSnowflake? = null,
+    crossinline filter: (Message) -> Boolean = { true }
+): Message {
+    val channelId = channel.idLong
+    val authorId = author?.idLong
+
+    return await<MessageReceivedEvent> {
+        it.channel.idLong == channelId
+                && (authorId == null || it.author.idLong == authorId)
+                && filter(it.message)
+    }.message
 }
