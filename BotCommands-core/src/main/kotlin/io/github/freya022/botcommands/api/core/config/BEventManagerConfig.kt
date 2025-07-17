@@ -15,27 +15,51 @@ interface BEventManagerConfig {
     /**
      * The time applied to all event listeners by default before their coroutine is cancelled.
      *
-     * A non-positive or non-finite value equals to no timeout.
+     * A `null`, non-positive or non-finite value equals to no timeout.
      *
-     * Default: `Duration.INFINITE`
+     * Default: `null` (no timeout)
      *
      * Spring property: `botcommands.event.manager.defaultTimeout`
      *
      * @see BEventListener.timeout
      */
-    @ConfigurationValue(path = "botcommands.event.manager.defaultTimeout", type = "java.time.Duration")
-    val defaultTimeout: Duration
+    @ConfigurationValue(path = "botcommands.event.manager.defaultTimeout", type = "java.time.Duration", defaultValue = "null")
+    @get:JvmSynthetic
+    val defaultTimeout: Duration?
 
-    fun getDefaultTimeout(): JavaDuration = defaultTimeout.toJavaDuration()
+    /**
+     * The time applied to all event listeners by default before their coroutine is cancelled.
+     *
+     * A `null`, non-positive or non-finite value equals to no timeout.
+     *
+     * Default: `null` (no timeout)
+     *
+     * Spring property: `botcommands.event.manager.defaultTimeout`
+     *
+     * @see BEventListener.timeout
+     */
+    fun getDefaultTimeout(): JavaDuration? = defaultTimeout?.toJavaDuration()
 }
 
 @ConfigDSL
 class BEventManagerConfigBuilder internal constructor() : BEventManagerConfig {
 
-    override var defaultTimeout: Duration = Duration.INFINITE
+    @set:JvmSynthetic
+    override var defaultTimeout: Duration? = null
 
-    fun setDefaultTimeout(timeout: JavaDuration) {
-        defaultTimeout = timeout.toKotlinDuration()
+    /**
+     * The time applied to all event listeners by default before their coroutine is cancelled.
+     *
+     * A `null`, non-positive or non-finite value equals to no timeout.
+     *
+     * Default: `null` (no timeout)
+     *
+     * Spring property: `botcommands.event.manager.defaultTimeout`
+     *
+     * @see BEventListener.timeout
+     */
+    fun setDefaultTimeout(timeout: JavaDuration?) {
+        defaultTimeout = timeout?.toKotlinDuration()
     }
 
     @JvmSynthetic

@@ -52,10 +52,10 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
 
 @ConfigurationProperties(prefix = "botcommands.event.manager", ignoreUnknownFields = false)
 internal class BotCommandsEventManagerConfiguration(
-    defaultTimeout: JavaDuration,
+    defaultTimeout: JavaDuration? = null,
 ) : BEventManagerConfig {
 
-    override val defaultTimeout = defaultTimeout.toKotlinDuration()
+    override val defaultTimeout = defaultTimeout?.toKotlinDuration()
 }
 
 @OptIn(DevConfig::class)

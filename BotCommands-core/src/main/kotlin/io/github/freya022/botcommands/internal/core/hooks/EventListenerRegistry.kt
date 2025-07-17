@@ -42,7 +42,7 @@ internal class EventListenerRegistry internal constructor(
     functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
 
-    private val defaultTimeout: Duration = config.eventManagerConfig.defaultTimeout
+    private val defaultTimeout: Duration = config.eventManagerConfig.defaultTimeout ?: Duration.INFINITE
 
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()

@@ -38,7 +38,7 @@ internal class CoroutineEventManagerImpl internal constructor(
     coroutineScopesConfig: BCoroutineScopesConfig,
 ) : IEventManager {
 
-    private val defaultTimeout = config.defaultTimeout.takeIfFinite()
+    private val defaultTimeout = config.defaultTimeout?.takeIfFinite()
     private val eventManagerCoroutineScope: CoroutineScope = coroutineScopesConfig.eventManagerScope
 
     private val listenerWrappersLock = ReentrantLock()
