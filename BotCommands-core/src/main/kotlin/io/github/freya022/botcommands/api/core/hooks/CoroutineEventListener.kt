@@ -9,6 +9,8 @@ interface CoroutineEventListener {
     /**
      * The duration for which this listener's code is allowed to run for.
      *
+     * A `null`, non-positive or non-finite value will use the [default timeout][io.github.freya022.botcommands.api.core.config.BEventManagerConfig.defaultTimeout].
+     *
      * Once the time has elapsed, a [TimeoutCancellationException] will be thrown after the next resume/suspension point.
      */
     val timeout: Duration?
