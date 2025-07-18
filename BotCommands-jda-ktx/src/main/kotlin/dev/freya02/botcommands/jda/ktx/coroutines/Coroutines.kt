@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.jda.ktx
+package dev.freya02.botcommands.jda.ktx.coroutines
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
