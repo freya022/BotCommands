@@ -133,7 +133,7 @@ Additionally, `jda-ktx` has additional extensions that were not ported:
   - You can replace it with `namedDefaultScope`
 - All extensions already handled by the framework, such as creating/listening to commands, components and modals
 - The [`WebhookAppender`](https://github.com/MinnDevelopment/jda-ktx/blob/54110fc157e4e6c85a7ba052b37a3330a72fe8ab/src/main/kotlin/dev/minn/jda/ktx/logback/WebhookAppender.kt)
-- `into` and `named` extensions from [messages/utils.kt](https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/messages/utils.kt)
+- `named`, `String#invoke` and some `into` extensions from [messages/utils.kt](https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/messages/utils.kt)
 - OkHttp's [`Call` extensions](https://github.com/MinnDevelopment/jda-ktx/blob/54110fc157e4e6c85a7ba052b37a3330a72fe8ab/src/main/kotlin/dev/minn/jda/ktx/util/okhttp.kt#L58) `awaitWith` and `await`
   - I would recommend using [ktor](https://ktor.io/docs/client-create-new-application.html#new-project) with the [OkHttp client engine](https://ktor.io/docs/client-engines.html#okhttp)
 - [SLF4J logger delegation](https://github.com/MinnDevelopment/jda-ktx/blob/54110fc157e4e6c85a7ba052b37a3330a72fe8ab/src/main/kotlin/dev/minn/jda/ktx/util/proxies.kt#L61-L86) (`private val logger by SLF4J`)

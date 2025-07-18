@@ -440,3 +440,5 @@ data class Mentions(
         }
     }
 }
+
+fun MessageEmbed.into() = listOf(this)
