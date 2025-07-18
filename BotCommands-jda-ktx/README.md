@@ -3,7 +3,7 @@ This module provides a set of Kotlin extensions and top-level functions,
 similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
 
 ## Usage
-If you come from `jda-ktx`, look at [Migrating from jda-ktx](#migrating-from-jda-ktx)
+If you come from `jda-ktx`, look at [Migrating from jda-ktx](#migrating-from-jda-ktx).
 
 ### Coroutine extensions
 
@@ -100,7 +100,7 @@ A few functions to make colors were added:
   - This one should display the color in the gutter, at least on IntelliJ
 
 ## Migrating from `jda-ktx`
-Migrating to this extension is recommended but not *necessary*
+Migrating to this extension is recommended but not *necessary*.
 
 ### Changes to the `CoroutineEventManager`
 The core module includes its own event manager,
@@ -109,6 +109,8 @@ and the `CoroutineScope` in `BCoroutineScopesConfig#eventManagerScope`.
 
 As a result, extensions from `jda-ktx` relying on its `CoroutineEventManager` no longer work,
 but you can fix this by importing the extension from this module.
+
+You can still register `CoroutineEventListener`s if required.
 
 ### Changed functionalities
 If you decide to switch, some functions have replacements:
@@ -128,9 +130,9 @@ Additionally, `jda-ktx` has additional extensions that were not ported:
 - `String#toCustomEmoji()`
   - It is recommended to use [application emojis](https://bc.freya02.dev/3.X/using-botcommands/app-emojis/)
 - `String#toUnicodeEmoji()`
-  - It is recommended to use [jda-emojis](https://github.com/freya022/jda-emojis)'s `UnicodeEmojis` class (already included by default)
+  - It is recommended to use [jda-emojis](https://github.com/freya022/jda-emojis)'s `UnicodeEmojis` class (included by default)
 - `getDefaultScope`
-  - You can replace it with `namedDefaultScope`
+  - Replaced with `namedDefaultScope`
 - All extensions already handled by the framework, such as creating/listening to commands, components and modals
 - The [`WebhookAppender`](https://github.com/MinnDevelopment/jda-ktx/blob/54110fc157e4e6c85a7ba052b37a3330a72fe8ab/src/main/kotlin/dev/minn/jda/ktx/logback/WebhookAppender.kt)
 - `named`, `String#invoke` and some `into` extensions from [messages/utils.kt](https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/messages/utils.kt)
