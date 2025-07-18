@@ -27,24 +27,49 @@ internal annotation class MessageBuilderDSL
 typealias InlineMessageCreate = InlineMessage<MessageCreateData>
 typealias InlineMessageEdit = InlineMessage<MessageEditData>
 
+@JvmField
+@PublishedApi
+internal val NO_CONTENT = emptyList<Nothing>()
+
 inline fun MessageCreateBuilder(
+    content: String? = null,
+    embeds: Collection<MessageEmbed> = NO_CONTENT,
+    files: Collection<FileUpload> = NO_CONTENT,
+    components: Collection<LayoutComponent> = NO_CONTENT,
     // TODO useComponentsV2
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},
 ): InlineMessageCreate = MessageCreateBuilder().run {
-    setTTS(tts)
+    if (content != null)
+        setContent(content)
+    if (embeds !== NO_CONTENT)
+        setEmbeds(embeds)
+    if (files !== NO_CONTENT)
+        setFiles(files)
+    if (components !== NO_CONTENT)
+        setComponents(components)
+    if (tts)
+        setTTS(true)
     mentions.applyOn(this)
 
     InlineMessage(this).apply(builder)
 }
 
 inline fun MessageCreate(
+    content: String? = null,
+    embeds: Collection<MessageEmbed> = NO_CONTENT,
+    files: Collection<FileUpload> = NO_CONTENT,
+    components: Collection<LayoutComponent> = NO_CONTENT,
     // TODO useComponentsV2
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},
 ): MessageCreateData = MessageCreateBuilder(
+    content,
+    embeds,
+    files,
+    components,
     tts,
     mentions,
     builder
@@ -123,8 +148,10 @@ inline fun EmbedBuilder(
     timestamp: TemporalAccessor? = null,
     builder: InlineEmbed.() -> Unit = {},
 ): InlineEmbed = EmbedBuilder().run {
-    setTimestamp(timestamp)
-    color?.let(this::setColor)
+    if (timestamp != null)
+        setTimestamp(timestamp)
+    if (color != null)
+        setColor(color)
     InlineEmbed(this).apply(builder)
 }
 
@@ -268,7 +295,7 @@ class InlineEmbed(val builder: EmbedBuilder) {
     }
 
     inline fun author(
-        name: String?,
+        name: String? = null,
         url: String? = null,
         iconUrl: String? = null,
         build: InlineAuthor.() -> Unit = {},
