@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.application.exceptions.ApplicationCommandUpdateException

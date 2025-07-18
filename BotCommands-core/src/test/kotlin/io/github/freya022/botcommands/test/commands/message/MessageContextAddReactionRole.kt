@@ -1,11 +1,10 @@
 package io.github.freya022.botcommands.test.commands.message
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.events.await
-import dev.minn.jda.ktx.interactions.components.row
-import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.MessageCreate
-import dev.minn.jda.ktx.messages.MessageEdit
+import dev.freya02.botcommands.jda.ktx.components.row
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.InlineMessage
+import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
+import dev.freya02.botcommands.jda.ktx.messages.MessageEdit
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
@@ -14,6 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.utils.await
 import io.github.freya022.botcommands.test.services.Disabled
 import kotlinx.coroutines.withTimeoutOrNull
 import net.dv8tion.jda.api.entities.Message
@@ -71,7 +71,7 @@ class MessageContextAddReactionRole(private val selectMenus: SelectMenus,
         }.queue()
 
         val reaction = withTimeoutOrNull(2.minutes) {
-            event.jda.await<MessageReactionAddEvent>() { it.messageIdLong == message.idLong && it.user == event.user }.reaction
+            event.jda.await<MessageReactionAddEvent> { it.messageIdLong == message.idLong && it.user == event.user }.reaction
         } ?: return event.replaceOriginal("Reaction select timeout").queue()
 
         message.addReaction(reaction.emoji).await()

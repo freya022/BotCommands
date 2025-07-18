@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.test.commands.slash.userapps
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.MessageCreate
-import dev.minn.jda.ktx.messages.into
+import dev.freya02.botcommands.jda.ktx.components.into
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider

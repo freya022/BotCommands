@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.exceptions.BadIdException

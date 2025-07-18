@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager

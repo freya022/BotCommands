@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
-import dev.minn.jda.ktx.messages.into
-import dev.minn.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.components.into
+import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
 import io.github.bucket4j.postgresql.Bucket4jPostgreSQL
 import io.github.freya022.botcommands.api.commands.annotations.Command

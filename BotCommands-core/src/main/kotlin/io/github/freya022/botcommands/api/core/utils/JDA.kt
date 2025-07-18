@@ -2,10 +2,10 @@
 
 package io.github.freya022.botcommands.api.core.utils
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.InlineMessage
-import dev.minn.jda.ktx.messages.MessageCreate
-import dev.minn.jda.ktx.messages.MessageEdit
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.InlineMessage
+import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
+import dev.freya02.botcommands.jda.ktx.messages.MessageEdit
 import io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
 import io.github.freya022.botcommands.api.localization.PermissionLocalization

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.components.builder
 
-import dev.minn.jda.ktx.util.ref
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
@@ -20,7 +19,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
@@ -149,6 +147,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      * ### Captured entities
      * Pay *extra* attention to not capture JDA entities in such handlers
      * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
+     * You should instead make a variable from the entity's ID, outside the lambda, then capture it.
      *
      * @param handler The handler to run when the button is clicked
      */
@@ -161,9 +160,7 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
      * ### Captured entities
      * Pay *extra* attention to not capture JDA entities in such handlers
      * as [they can stop being updated by JDA](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected).
-     *
-     * You can still use [User.ref] and such from JDA-KTX to attenuate this issue,
-     * even though it will return you an outdated object if the entity cannot be found anymore.
+     * You should instead make a variable from the entity's ID, outside the lambda, then capture it.
      *
      * @param handler The handler to run when the button is clicked
      */

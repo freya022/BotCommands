@@ -1,6 +1,6 @@
 package doc.kotlin.examples.commands.slash
 
-import dev.minn.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand

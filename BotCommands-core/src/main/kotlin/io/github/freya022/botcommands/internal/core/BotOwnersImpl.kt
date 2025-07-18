@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.core
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
 import io.github.freya022.botcommands.api.core.BotOwners

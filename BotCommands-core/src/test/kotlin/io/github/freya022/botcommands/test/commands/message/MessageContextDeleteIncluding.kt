@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.commands.message
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.interactions.components.row
+import dev.freya02.botcommands.jda.ktx.components.row
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.utils.edit
 import io.github.freya022.botcommands.api.core.utils.send
+import kotlinx.coroutines.future.await
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission

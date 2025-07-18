@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.handler
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.generics.getChannel
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.getChannel
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
