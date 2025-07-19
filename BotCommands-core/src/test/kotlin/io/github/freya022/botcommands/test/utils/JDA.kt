@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.test.utils
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import dev.freya02.botcommands.jda.ktx.coroutines.await
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
+import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.requests.RestAction

@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.test.commands.message
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.requests.awaitUnit
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
-import io.github.freya022.botcommands.api.core.utils.awaitUnit
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Message

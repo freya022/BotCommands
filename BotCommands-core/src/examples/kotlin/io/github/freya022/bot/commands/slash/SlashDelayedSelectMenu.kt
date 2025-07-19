@@ -3,6 +3,7 @@ package io.github.freya022.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.components.SelectOption
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -15,7 +16,6 @@ import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.localization.interaction.LocalizableInteractionHook
 import kotlin.time.Duration.Companion.seconds
 

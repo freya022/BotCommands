@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.components.SelectOption
 import dev.freya02.botcommands.jda.ktx.components.row
+import dev.freya02.botcommands.jda.ktx.durations.before
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -10,7 +11,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashE
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.SelectMenus
-import io.github.freya022.botcommands.api.core.utils.before
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.localize

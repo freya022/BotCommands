@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.api.core.waiter.await
 import io.github.oshai.kotlinlogging.KotlinLogging

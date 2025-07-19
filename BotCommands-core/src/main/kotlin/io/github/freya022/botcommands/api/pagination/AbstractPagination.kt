@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.api.pagination
 
+import dev.freya02.botcommands.jda.ktx.messages.toEditData
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.toEditData
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.oshai.kotlinlogging.KotlinLogging

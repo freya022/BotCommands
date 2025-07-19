@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.test.readme
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds

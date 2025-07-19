@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.core
 
+import dev.freya02.botcommands.jda.ktx.durations.awaitShutdown
 import io.github.freya022.botcommands.api.core.config.JDAConfiguration
-import io.github.freya022.botcommands.api.core.utils.awaitShutdown
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import org.springframework.beans.factory.getBean

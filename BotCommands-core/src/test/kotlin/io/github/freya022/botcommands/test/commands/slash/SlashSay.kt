@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.jda.emojis.unicode.UnicodeEmojis
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -12,7 +13,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import kotlin.time.Duration.Companion.seconds
 

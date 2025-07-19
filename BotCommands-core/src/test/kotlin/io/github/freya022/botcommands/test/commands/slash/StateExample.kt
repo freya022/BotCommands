@@ -3,13 +3,13 @@ package io.github.freya022.botcommands.test.commands.slash
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import dev.freya02.botcommands.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.messages.toEditData
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.core.utils.toEditData
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import kotlin.time.Duration.Companion.minutes
 

@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.utils
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.freya022.botcommands.api.core.DeclarationSite
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
-import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

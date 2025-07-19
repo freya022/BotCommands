@@ -2,6 +2,10 @@ package io.github.freya022.botcommands.test.commands.message
 
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.messages.editMessage
+import dev.freya02.botcommands.jda.ktx.messages.editMessage_
+import dev.freya02.botcommands.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
@@ -10,9 +14,6 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
-import io.github.freya022.botcommands.api.core.utils.edit
-import io.github.freya022.botcommands.api.core.utils.send
 import kotlinx.coroutines.future.await
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
@@ -50,14 +51,14 @@ class MessageContextDeleteIncluding(
 
                     bindTo { buttonEvent ->
                         val futures = message.channel.purgeMessagesById(*messageIdsToDelete)
-                        buttonEvent.edit {
+                        buttonEvent.editMessage_ {
                             content = "Deleting messages..."
                         }.queue()
 
                         futures.forEach { it.await() }
 
                         buttonEvent.hook
-                            .edit {
+                            .editMessage {
                                 content = "Done!"
                             }
                             .deleteDelayed(2.seconds)

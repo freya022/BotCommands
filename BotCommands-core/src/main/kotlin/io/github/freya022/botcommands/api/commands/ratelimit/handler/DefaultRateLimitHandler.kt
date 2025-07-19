@@ -2,6 +2,8 @@ package io.github.freya022.botcommands.api.commands.ratelimit.handler
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.getChannel
+import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
+import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
@@ -10,9 +12,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
-import io.github.freya022.botcommands.api.core.utils.runIgnoringResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel

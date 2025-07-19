@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.requests.awaitUnit
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
-import io.github.freya022.botcommands.api.core.utils.awaitUnit
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import org.apache.commons.collections4.map.CaseInsensitiveMap
 import java.util.*
