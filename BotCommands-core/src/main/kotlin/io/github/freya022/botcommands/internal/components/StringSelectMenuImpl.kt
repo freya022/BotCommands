@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 internal class StringSelectMenuImpl internal constructor(
     componentController: ComponentController,

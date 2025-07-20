@@ -9,9 +9,9 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.utils.TimeFormat
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds

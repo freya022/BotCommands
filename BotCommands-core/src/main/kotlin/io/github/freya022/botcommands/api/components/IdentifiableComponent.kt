@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.interactions.components.ActionComponent
+import net.dv8tion.jda.api.components.ActionComponent
 
 interface IdentifiableComponent {
     val internalId: Int

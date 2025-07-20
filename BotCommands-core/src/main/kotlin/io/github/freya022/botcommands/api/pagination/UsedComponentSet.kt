@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.internal.utils.any
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import kotlin.reflect.KProperty
 
 private val logger = KotlinLogging.logger { }

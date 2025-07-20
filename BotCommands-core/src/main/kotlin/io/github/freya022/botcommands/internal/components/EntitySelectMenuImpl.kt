@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 internal class EntitySelectMenuImpl internal constructor(
     componentController: ComponentController,

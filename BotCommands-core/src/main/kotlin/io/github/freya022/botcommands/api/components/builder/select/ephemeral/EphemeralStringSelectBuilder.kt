@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.components.builder.select.ephemeral
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 abstract class EphemeralStringSelectBuilder :
         JDAStringSelectMenu.Builder(""),

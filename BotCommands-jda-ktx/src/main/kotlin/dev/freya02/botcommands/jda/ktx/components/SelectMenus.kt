@@ -1,9 +1,9 @@
 package dev.freya02.botcommands.jda.ktx.components
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 @ReplaceJdaKtx
 fun SelectOption(

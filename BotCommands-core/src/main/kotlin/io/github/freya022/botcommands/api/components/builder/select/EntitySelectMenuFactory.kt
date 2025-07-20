@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.components.builder.InstanceRetrie
 import io.github.freya022.botcommands.internal.components.builder.select.ephemeral.EphemeralEntitySelectBuilderImpl
 import io.github.freya022.botcommands.internal.components.builder.select.persistent.PersistentEntitySelectBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
 import javax.annotation.CheckReturnValue
 
 /**

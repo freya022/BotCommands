@@ -5,8 +5,8 @@ package io.github.freya022.botcommands.api.modals
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.Modals.Companion.defaultTimeout
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import java.time.Duration as JavaDuration
 import javax.annotation.CheckReturnValue
 import kotlin.contracts.ExperimentalContracts
