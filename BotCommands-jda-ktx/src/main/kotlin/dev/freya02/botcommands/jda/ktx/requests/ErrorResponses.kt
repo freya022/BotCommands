@@ -17,12 +17,12 @@ import kotlin.contracts.contract
  * @see runIgnoringResponseOrNull
  */
 @DeprecatedInBcCore
-inline fun runCatchingResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit): RestResult<Unit> {
+inline fun runCatchingResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> Unit): RestResult<Unit> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    return runCatchingRest(block).ignore(*ignoredResponses)
+    return runCatchingRest(block).ignore(ignored, *ignoredResponses)
 }
 
 /**
@@ -35,7 +35,7 @@ inline fun runCatchingResponse(vararg ignoredResponses: ErrorResponse, block: ()
  * @see runIgnoringResponseOrNull
  */
 @DeprecatedInBcCore
-inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
+inline fun runIgnoringResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
@@ -43,7 +43,7 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
     try {
         block()
     } catch (e: ErrorResponseException) {
-        if (e.errorResponse !in ignoredResponses) {
+        if (e.errorResponse != ignored && e.errorResponse !in ignoredResponses) {
             throw e
         }
     }
@@ -60,7 +60,7 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
  * @see awaitOrNullOn
  */
 @DeprecatedInBcCore
-inline fun <R> runIgnoringResponseOrNull(vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
+inline fun <R> runIgnoringResponseOrNull(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
@@ -68,7 +68,7 @@ inline fun <R> runIgnoringResponseOrNull(vararg ignoredResponses: ErrorResponse,
     return try {
         block()
     } catch (e: ErrorResponseException) {
-        if (e.errorResponse !in ignoredResponses) {
+        if (e.errorResponse != ignored && e.errorResponse !in ignoredResponses) {
             throw e
         }
         null

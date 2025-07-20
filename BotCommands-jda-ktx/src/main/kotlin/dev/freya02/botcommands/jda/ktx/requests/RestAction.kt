@@ -31,8 +31,8 @@ suspend fun <R> RestAction<*>.awaitNull(): R? {
  * @see ErrorHandler
  */
 @DeprecatedInBcCore
-fun RestAction<*>.queueIgnoring(vararg errorResponses: ErrorResponse) {
-    queue(null, ErrorHandler().ignore(errorResponses.asList()))
+fun RestAction<*>.queueIgnoring(ignored: ErrorResponse, vararg errorResponses: ErrorResponse) {
+    queue(null, ErrorHandler().ignore(ignored, *errorResponses))
 }
 
 /**
@@ -44,8 +44,8 @@ fun RestAction<*>.queueIgnoring(vararg errorResponses: ErrorResponse) {
  * @see runIgnoringResponseOrNull
  */
 @DeprecatedInBcCore
-suspend fun <R> RestAction<R>.awaitOrNullOn(vararg errorResponses: ErrorResponse): R? {
-    return runIgnoringResponseOrNull(*errorResponses) {
+suspend fun <R> RestAction<R>.awaitOrNullOn(ignored: ErrorResponse, vararg errorResponses: ErrorResponse): R? {
+    return runIgnoringResponseOrNull(ignored, *errorResponses) {
         await()
     }
 }

@@ -259,8 +259,8 @@ inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResu
  * @see handle
  */
 @DeprecatedInBcCore
-fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> =
-    ignore { it is ErrorResponseException && it.errorResponse in responses }
+fun <T> RestResult<T>.ignore(ignored: ErrorResponse, vararg responses: ErrorResponse): RestResult<T> =
+    ignore { it is ErrorResponseException && (it.errorResponse == ignored || it.errorResponse in responses) }
 
 /**
  * Dismisses the encapsulated exception
@@ -274,8 +274,8 @@ fun <T> RestResult<T>.ignore(vararg responses: ErrorResponse): RestResult<T> =
  * @see handle
  */
 @DeprecatedInBcCore
-fun <T> RestResult<T>.ignore(vararg types: KClass<out Throwable>): RestResult<T> =
-    ignore { throwable -> types.any { it.isInstance(throwable) } }
+fun <T> RestResult<T>.ignore(ignored: KClass<out Throwable>, vararg types: KClass<out Throwable>): RestResult<T> =
+    ignore { throwable -> ignored.isInstance(throwable) || types.any { it.isInstance(throwable) } }
 
 @DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, block: (Throwable) -> R): RestResult<R> {
@@ -305,25 +305,25 @@ inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, b
  * @see ignore
  */
 @DeprecatedInBcCore
-inline fun <T : R, R> RestResult<T>.recover(vararg responses: ErrorResponse, block: (ErrorResponseException) -> R): RestResult<R> {
+inline fun <T : R, R> RestResult<T>.recover(response: ErrorResponse, vararg responses: ErrorResponse, block: (ErrorResponseException) -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return recover(
-        predicate = { it is ErrorResponseException && it.errorResponse in responses },
+        predicate = { it is ErrorResponseException && (it.errorResponse == response || it.errorResponse in responses) },
         block = { block(it as ErrorResponseException) }
     )
 }
 
 @DeprecatedInBcCore
-inline fun <T : R, R> RestResult<T>.recover(vararg types: KClass<out Throwable>, block: (Throwable) -> R): RestResult<R> {
+inline fun <T : R, R> RestResult<T>.recover(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return recover(
-        predicate = { exception -> types.any { it.isInstance(exception) } },
+        predicate = { exception -> type.isInstance(exception) || types.any { it.isInstance(exception) } },
         block = block
     )
 }
@@ -359,25 +359,25 @@ inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (T
  * @see ignore
  */
 @DeprecatedInBcCore
-inline fun <T> RestResult<T>.handle(vararg responses: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
+inline fun <T> RestResult<T>.handle(type: ErrorResponse, vararg responses: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return handle(
-        predicate = { it is ErrorResponseException && it.errorResponse in responses },
+        predicate = { it is ErrorResponseException && (it.errorResponse == type || it.errorResponse in responses) },
         block = { block(it as ErrorResponseException) }
     )
 }
 
 @DeprecatedInBcCore
-inline fun <T> RestResult<T>.handle(vararg types: KClass<out Throwable>, block: (Throwable) -> Unit): RestResult<T> {
+inline fun <T> RestResult<T>.handle(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
     return handle(
-        predicate = { exception -> types.any { it.isInstance(exception) } },
+        predicate = { exception -> type.isInstance(exception) || types.any { it.isInstance(exception) } },
         block = block
     )
 }
