@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.utils.await
+import io.github.freya022.botcommands.api.core.utils.await
 import io.github.freya022.botcommands.test.services.Disabled
 import kotlinx.coroutines.withTimeoutOrNull
 import net.dv8tion.jda.api.entities.Message

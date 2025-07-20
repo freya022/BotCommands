@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.utils
+package io.github.freya022.botcommands.api.core.utils
 
 import io.github.freya022.botcommands.api.core.hooks.CoroutineEventListener
 import kotlinx.coroutines.suspendCancellableCoroutine
