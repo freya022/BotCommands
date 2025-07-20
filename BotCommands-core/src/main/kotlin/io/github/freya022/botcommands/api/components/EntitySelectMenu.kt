@@ -11,6 +11,8 @@ interface EntitySelectMenu : JDAEntitySelectMenu,
 
     override fun asDisabled(): EntitySelectMenu = withDisabled(true)
 
+    override fun withUniqueId(uniqueId: Int): EntitySelectMenu
+
     override fun withDisabled(disabled: Boolean): EntitySelectMenu
 
     @Deprecated("Replaced with getCustomId()", ReplaceWith("getCustomId()"))

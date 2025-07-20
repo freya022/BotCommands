@@ -15,6 +15,10 @@ internal class StringSelectMenuImpl internal constructor(
     JDAStringSelectMenu by selectMenu,
     ActionRowChildComponentUnion {
 
+    override fun withUniqueId(uniqueId: Int): StringSelectMenuImpl {
+        return StringSelectMenuImpl(componentController, internalId, selectMenu.withUniqueId(uniqueId))
+    }
+
     override fun withDisabled(disabled: Boolean): StringSelectMenuImpl {
         return StringSelectMenuImpl(componentController, internalId, super<JDAStringSelectMenu>.withDisabled(disabled))
     }

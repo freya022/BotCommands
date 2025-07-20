@@ -15,6 +15,10 @@ internal class EntitySelectMenuImpl internal constructor(
     JDAEntitySelectMenu by selectMenu,
     ActionRowChildComponentUnion {
 
+    override fun withUniqueId(uniqueId: Int): EntitySelectMenuImpl {
+        return EntitySelectMenuImpl(componentController, internalId, selectMenu.withUniqueId(uniqueId))
+    }
+
     override fun withDisabled(disabled: Boolean): EntitySelectMenuImpl {
         return EntitySelectMenuImpl(componentController, internalId, super<JDAEntitySelectMenu>.withDisabled(disabled))
     }
