@@ -103,7 +103,7 @@ class DeprecationProcessor(
             val header = """
                 ---
                 type: specs.openrewrite.org/v1beta/recipe
-                name: dev.freya02.MigrateJdaKtx
+                name: dev.freya02.MigrateToBotCommandsJdaKtx
                 description: Migrates most jda-ktx an BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments
                 recipeList:
             """.trimIndent()
@@ -132,7 +132,7 @@ class DeprecationProcessor(
             val oldPackage = rule.old.getPackage()
             val newPackage = rule.new.getPackage()
             if (added.add(oldPackage to newPackage)) {
-                listOf(rule, rule.copy(old = "$oldPackage.*", new = "$oldPackage.*\\n$newPackage.*"))
+                listOf(rule, rule.copy(old = "$oldPackage.*", new = "$oldPackage.*\\nimport $newPackage.*"))
             } else {
                 listOf(rule)
             }
