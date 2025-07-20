@@ -1,9 +1,11 @@
 package dev.freya02.botcommands.jda.ktx.components
 
+import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
+@ReplaceJdaKtx
 fun SelectOption(
     label: String,
     value: String,
@@ -15,6 +17,7 @@ fun SelectOption(
     .withEmoji(emoji)
     .withDefault(default)
 
+@ReplaceJdaKtx("dev.minn.jda.ktx.interactions.components")
 fun StringSelectMenu.Builder.option(
     label: String,
     value: String,

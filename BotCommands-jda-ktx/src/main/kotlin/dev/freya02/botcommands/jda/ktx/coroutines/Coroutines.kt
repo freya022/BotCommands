@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.coroutines
 
+import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.future.await
@@ -13,11 +14,13 @@ import kotlin.coroutines.resumeWithException
 /**
  * Suspends until the REST request is finished and returns the result.
  */
+@ReplaceJdaKtx("dev.minn.jda.ktx.coroutines")
 suspend fun <T> RestAction<T>.await(): T = submit(true).await()
 
 /**
  * Suspends until the gateway request is finished and returns the result.
  */
+@ReplaceJdaKtx("dev.minn.jda.ktx.coroutines")
 suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { cont ->
     cont.invokeOnCancellation { cancel() }
     onSuccess { r -> cont.resume(r) }
@@ -27,6 +30,7 @@ suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { cont ->
 /**
  * Converts the pagination action to a [Flow].
  */
+@ReplaceJdaKtx
 fun <T> PaginationAction<T, *>.asFlow(): Flow<T> = flow {
     cache(false)
     var elements: List<T> = await()

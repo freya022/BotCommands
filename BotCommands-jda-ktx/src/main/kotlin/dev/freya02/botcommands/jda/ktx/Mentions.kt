@@ -7,6 +7,7 @@ import org.apache.commons.collections4.Bag
 /**
  * Same as [Mentions.getChannels] but with a reified type parameter.
  */
+@ReplaceJdaKtx
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : GuildChannel> Mentions.getChannels(): List<T> {
     return getChannels(T::class.java)

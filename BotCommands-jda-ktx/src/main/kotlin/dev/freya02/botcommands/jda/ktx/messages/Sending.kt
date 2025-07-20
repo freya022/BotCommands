@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
+import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 /**
  * @see IReplyCallback.reply
  */
+@ReplaceJdaKtx
 inline fun IReplyCallback.reply_(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
@@ -28,6 +30,7 @@ inline fun IReplyCallback.reply_(
 /**
  * @see InteractionHook.sendMessage
  */
+@ReplaceJdaKtx
 inline fun InteractionHook.send(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
@@ -42,6 +45,7 @@ inline fun InteractionHook.send(
 /**
  * @see MessageChannel.sendMessage
  */
+@ReplaceJdaKtx
 inline fun MessageChannel.send(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
@@ -56,6 +60,7 @@ inline fun MessageChannel.send(
  * @see MessageChannel.sendMessage
  * @see MessageCreateAction.setMessageReference
  */
+@ReplaceJdaKtx
 inline fun Message.reply_(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
