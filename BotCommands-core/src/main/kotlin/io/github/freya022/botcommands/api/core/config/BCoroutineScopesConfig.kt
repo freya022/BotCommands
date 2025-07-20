@@ -42,7 +42,7 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
     override val modalTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
     override val paginationTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
 
-    var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 0)
+    var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 1)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
     var textCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("Text command handler", 2)
     var applicationCommandsScopeFactory: CoroutineScopeFactory = defaultFactory("App command handler", 2)
