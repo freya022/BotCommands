@@ -12,8 +12,7 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -65,10 +64,15 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
 }
 
 /**
- * Creates a [CoroutineScope] with incremental thread naming, uses [getDefaultScope] under the hood.
+ * Creates a [CoroutineScope] with incremental thread naming.
+ *
+ * As per [ScheduledThreadPoolExecutor][java.util.concurrent.ScheduledThreadPoolExecutor],
+ * a fixed-size thread pool using [corePoolSize] threads will be used,
+ * but it is almost never a good idea to set a [corePoolSize] to zero
+ * because it may leave the pool without threads to handle tasks once they become eligible to run.
  *
  * @param name         The base name of the threads and coroutines, will be prefixed by the number if [corePoolSize] > 1
- * @param corePoolSize The number of threads to keep in the pool, even if they are idle
+ * @param corePoolSize The number of threads to keep in the pool, even if they are idle, must not be negative
  * @param job          The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
  * @param errorHandler The [CoroutineExceptionHandler] used for handling uncaught exceptions,
  * uses a logging handler which cancels the parent job on [Error] by default
@@ -82,19 +86,16 @@ fun namedDefaultScope(
     context: CoroutineContext = EmptyCoroutineContext
 ): CoroutineScope {
     require(corePoolSize >= 0) {
-        "Pool size must be positive"
+        "Pool size must not be negative"
     }
 
-    val lock = ReentrantLock()
-    var count = 0
+    val count = AtomicInteger(1)
     val executor = Executors.newScheduledThreadPool(corePoolSize) {
         Thread(it).apply {
             if (corePoolSize <= 1) {
                 this.name = name
             } else {
-                lock.withLock {
-                    this.name = "$name ${++count}"
-                }
+                this.name = "$name ${count.getAndIncrement()}"
             }
         }
     }
