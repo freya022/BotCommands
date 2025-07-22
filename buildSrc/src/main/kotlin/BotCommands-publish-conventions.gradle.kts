@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `java-library`
     signing
@@ -93,7 +91,7 @@ signing {
 
 mavenPublishing {
     if (canPublish) {
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false) // TODO set to automatic when done testing
+        publishToMavenCentral(automaticRelease = false) // TODO set to automatic when done testing
 
         signAllPublications()
     }
