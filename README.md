@@ -3,7 +3,7 @@
 [bc-jitpack-shield]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [bc-jitpack-link]: https://jitpack.io/#freya022/BotCommands
 [bc-releases]: #installation
-[jda-version]: https://img.shields.io/badge/JDA%20Version-5.5.0+-important
+[jda-version]: https://img.shields.io/badge/JDA-5.6.1+-important?logo=data:image/webp;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAW4AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAEAAAABAAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAMAAAAABNjb2xybmNseAACAAIABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAAXZtZGF0EgAKCRgVf/+SBAQNCDLeAhmAEEkChYLB7ntYGXOA0f2AO1y+OQSAZ/+4k/+8cHSs3agNudzbWMa88pAwhg7wt5T3r++KAdrox72GcnCJ+5eYdRm/bCIY7FzXNyzWx5sF4aIG6mHy+63fAvwhY7b8VFs1rQqElmxoQX1OZY+UPfHezHFzj1Wp4NX+rFvG6mZn8GQPriAH6yK8jwUJOwZn6HtI17V3Qt0+dvvues8+LINU3aUW/JSAHLOgDwuVDT3QO+YusPXmHLAUZLovrOnPBzkB9vbDkFYynaRt4qnVpeBhj1bpRbEMhFaIg0UOOPSalejx1nfaHYqqrcv8LEQJUT2UV5QdllmG5ed/SsHJP/tZ3MrllECw0l444JMXfmeP5+mO/4sy0FiasxeLgFZz4c9hyFH77PSfQfUdsYhgUn03Rim6F73SztGxVw0fyaNF/lzJ+ZdKgfdSlwTN5oTIqjicDvpNE4zCQpaCHnJw
 [jda-releases]: https://github.com/discord-jda/JDA/releases
 [discord-shield]: https://discord.com/api/guilds/848502702731165738/embed.png?style=shield
 [discord-invite]: https://discord.gg/frpCcQfvTz
