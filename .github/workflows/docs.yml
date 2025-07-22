@@ -36,7 +36,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./build/dokka
+          path: ./build/dokka/html
 
   publish-docs:
     name: Publish docs
