@@ -66,7 +66,7 @@ dependencies {
     // -------------------- AUTOCOMPLETE DEPENDENCIES --------------------
 
     // Fuzzy matching
-    api(libs.java.string.similarity)
+    implementation(libs.java.string.similarity)
 
     // Caching
     implementation(libs.caffeine)
