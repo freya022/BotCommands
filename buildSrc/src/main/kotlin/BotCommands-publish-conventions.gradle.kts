@@ -91,7 +91,7 @@ signing {
 
 mavenPublishing {
     if (canPublish) {
-        publishToMavenCentral(automaticRelease = false) // TODO set to automatic when done testing
+        publishToMavenCentral(automaticRelease = true)
 
         signAllPublications()
     }
