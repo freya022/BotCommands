@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.jda.ktx.messages.edits
+package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import net.dv8tion.jda.api.entities.Message

@@ -1,6 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
-import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
 import io.github.freya022.bot.switches.KotlinDetailProfile

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.readme
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
-import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand

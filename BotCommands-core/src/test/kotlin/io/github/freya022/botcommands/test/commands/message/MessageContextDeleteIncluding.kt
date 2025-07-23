@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.test.commands.message
 
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
-import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.editMessage
 import dev.freya02.botcommands.jda.ktx.messages.editMessage_
 import dev.freya02.botcommands.jda.ktx.messages.send

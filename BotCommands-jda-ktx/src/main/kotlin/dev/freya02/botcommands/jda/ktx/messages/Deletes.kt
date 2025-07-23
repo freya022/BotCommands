@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.jda.ktx.messages.deletes
+package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import dev.freya02.botcommands.jda.ktx.durations.delay

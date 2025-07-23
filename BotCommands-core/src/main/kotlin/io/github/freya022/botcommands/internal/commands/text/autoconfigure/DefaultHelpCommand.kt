@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
-import dev.freya02.botcommands.jda.ktx.messages.deletes.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.requests.*
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.text.*

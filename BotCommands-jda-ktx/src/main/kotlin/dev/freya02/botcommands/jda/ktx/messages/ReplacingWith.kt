@@ -1,7 +1,6 @@
-package dev.freya02.botcommands.jda.ktx.messages.edits
+package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
-import dev.freya02.botcommands.jda.ktx.messages.toEditData
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
