@@ -17,7 +17,7 @@ import kotlin.contracts.contract
  * @see runIgnoringResponseOrNull
  */
 @DeprecatedInBcCore
-inline fun runCatchingResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> Unit): RestResult<Unit> {
+inline fun <R> runCatchingResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
