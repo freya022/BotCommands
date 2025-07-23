@@ -1,3 +1,6 @@
+[bc-module-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-jda-ktx?label=Maven%20central&logo=apachemaven&versionPrefix=3
+[bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-jda-ktx
+
 # BotCommands module - JDA Kotlin extensions
 This module provides a set of Kotlin extensions and top-level functions,
 similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
@@ -167,7 +170,7 @@ A few functions to make colors were added:
   - This one should display the color in the gutter, at least on IntelliJ
 
 ## Installation
-![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-jda-ktx?versionPrefix=3)
+[![BotCommands-jda-ktx on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 
 ### Maven
 ```xml
