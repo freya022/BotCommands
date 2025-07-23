@@ -97,7 +97,6 @@ mavenPublishing {
     }
 
     pom {
-        name = project.name
         description = "A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake, using the JDA library."
         url = "https://github.com/freya022/BotCommands"
         inceptionYear = "2020"
@@ -124,5 +123,11 @@ mavenPublishing {
             url = "https://github.com/freya022/BotCommands"
             tag = effectiveTag
         }
+    }
+}
+
+afterEvaluate {
+    check(isPublishedArtifactConfigured(project)) {
+        "Project '${project.path}' did not call 'configurePublishedArtifact'"
     }
 }

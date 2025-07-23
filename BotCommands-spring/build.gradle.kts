@@ -31,3 +31,5 @@ dependencies {
     testImplementation(libs.spring.boot.starter)
     testRuntimeOnly(libs.spring.boot.devtools)
 }
+
+configurePublishedArtifact(artifactId = "BotCommands-spring")

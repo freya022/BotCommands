@@ -29,8 +29,4 @@ dependencies {
     dokka(projects.botCommandsSpring)
 }
 
-mavenPublishing {
-    pom {
-        packaging = "pom"
-    }
-}
+configurePublishedArtifact(artifactId = "BotCommands", packaging = "pom")

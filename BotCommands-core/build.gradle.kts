@@ -159,3 +159,5 @@ kotlin {
         )
     }
 }
+
+configurePublishedArtifact(artifactId = "BotCommands-core")
