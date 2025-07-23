@@ -101,6 +101,15 @@ class DeprecationProcessor(
             "rewrite",
             extensionName = "yml"
         ).use { outputStream ->
+            val aggregateRecipe = """
+                ---
+                type: specs.openrewrite.org/v1beta/recipe
+                name: dev.freya02.MigrateToBcJdaKtx
+                description: Migrates most jda-ktx and BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments
+                recipeList:
+                  - dev.freya02.MigrateFromJdaKtxToBcJdaKtx
+                  - dev.freya02.MigrateFromBcCoreToBcJdaKtx
+            """.trimIndent()
             val ktxRecipe = createFindAndReplaceRecipe(
                 name = "dev.freya02.MigrateFromJdaKtxToBcJdaKtx",
                 description = "Migrates most jda-ktx extensions to BotCommands-jda-ktx, may require further adjustments",
@@ -112,7 +121,7 @@ class DeprecationProcessor(
                 pairs = bcCoreFindReplacePairs,
             )
 
-            outputStream.write((ktxRecipe + "\n\n" + bcCoreRecipe + "\n").encodeToByteArray())
+            outputStream.write((aggregateRecipe + "\n\n" + ktxRecipe + "\n\n" + bcCoreRecipe + "\n").encodeToByteArray())
         }
     }
 
