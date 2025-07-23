@@ -24,7 +24,7 @@ interface BEventManagerConfig {
      * @see BEventListener.timeout
      */
     @ConfigurationValue(path = "botcommands.event.manager.defaultTimeout", type = "java.time.Duration", defaultValue = "null")
-    @get:JvmSynthetic
+//    @get:JvmSynthetic // TODO Can't use this until https://github.com/mockk/mockk/issues/1417 is fixed
     val defaultTimeout: Duration?
 
     /**
