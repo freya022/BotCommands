@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.config.BEventManagerConfig
 import io.github.freya022.botcommands.api.core.hooks.CoroutineEventListener
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
@@ -32,6 +33,7 @@ private val logger = KotlinLogging.logger { }
  * then runs regular [[EventListener]] subclasses in a new coroutine.
  */
 @BService
+@ServiceType(IEventManager::class)
 internal class CoroutineEventManagerImpl internal constructor(
     private val eventDispatcher: EventDispatcherImpl,
     config: BEventManagerConfig,
