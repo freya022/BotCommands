@@ -27,11 +27,12 @@ class DeprecationProcessor(
 ) : SymbolProcessor {
 
     private val sourceFiles = arrayListOf<CompatSourceFile>()
-    private val findReplacePairs = linkedSetOf<RewriteFindReplace>()
+    private val ktxFindReplacePairs = linkedSetOf<RewriteFindReplace>()
+    private val bcCoreFindReplacePairs = linkedSetOf<RewriteFindReplace>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         // @ReplaceJdaKtx -> Create find&replace, no accessor as we don't have the sources
-        context(logger, codeGenerator, findReplacePairs) {
+        context(logger, codeGenerator, ktxFindReplacePairs) {
             val jdaKtxReplacedSymbols = resolver.getSymbolsWithAnnotation(REPLACE_JDA_KTX, inDepth = false).toList()
             JdaKtxMigrationProcessor.process(jdaKtxReplacedSymbols)
         }
@@ -46,7 +47,7 @@ class DeprecationProcessor(
                 val functionAccessors = mutableListOf<String>()
                 val typeAliases = mutableListOf<String>()
 
-                context(imports, findReplacePairs) {
+                context(imports, bcCoreFindReplacePairs) {
                     deprecatedNodes.forEach { node ->
                         when (node) {
                             is KSFunctionDeclaration -> {
@@ -90,34 +91,49 @@ class DeprecationProcessor(
             }
         }
 
-        require(findReplacePairs.isNotEmpty())
+        require(ktxFindReplacePairs.isNotEmpty() && bcCoreFindReplacePairs.isNotEmpty())
         codeGenerator.createNewFile(
             Dependencies(
                 aggregating = true,
-                sources = findReplacePairs.map { it.processedFile }.toTypedArray()
+                sources = (ktxFindReplacePairs + bcCoreFindReplacePairs).map { it.processedFile }.toTypedArray()
             ),
             "META-INF/rewrite",
             "rewrite",
             extensionName = "yml"
         ).use { outputStream ->
-            val header = """
-                ---
-                type: specs.openrewrite.org/v1beta/recipe
-                name: dev.freya02.MigrateToBotCommandsJdaKtx
-                description: Migrates most jda-ktx an BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments
-                recipeList:
-            """.trimIndent()
+            val ktxRecipe = createFindAndReplaceRecipe(
+                name = "dev.freya02.MigrateFromJdaKtxToBcJdaKtx",
+                description = "Migrates most jda-ktx extensions to BotCommands-jda-ktx, may require further adjustments",
+                pairs = ktxFindReplacePairs,
+            )
+            val bcCoreRecipe = createFindAndReplaceRecipe(
+                name = "dev.freya02.MigrateFromBcCoreToBcJdaKtx",
+                description = "Migrates most BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments",
+                pairs = bcCoreFindReplacePairs,
+            )
 
-            val recipes = findReplacePairs.withStarImports().joinToString("\n") { (_, old, new) ->
-                """
-                    - org.openrewrite.text.FindAndReplace:
-                        find: "$old"
-                        replace: "$new"
-                """.trimIndent().prependIndent("  ")
-            }
-
-            outputStream.write((header + "\n" + recipes).encodeToByteArray())
+            outputStream.write((ktxRecipe + "\n\n" + bcCoreRecipe + "\n").encodeToByteArray())
         }
+    }
+
+    private fun createFindAndReplaceRecipe(name: String, description: String, pairs: Collection<RewriteFindReplace>): String {
+        val header = """
+            ---
+            type: specs.openrewrite.org/v1beta/recipe
+            name: $name
+            description: $description
+            recipeList:
+        """.trimIndent()
+
+        val recipes = pairs.withStarImports().joinToString("\n") { (_, old, new) ->
+            """
+                - org.openrewrite.text.FindAndReplace:
+                    find: "$old"
+                    replace: "$new"
+            """.trimIndent().prependIndent("  ")
+        }
+
+        return header + "\n" + recipes
     }
 
     private fun Collection<RewriteFindReplace>.withStarImports(): List<RewriteFindReplace> {
