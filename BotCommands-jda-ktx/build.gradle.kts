@@ -15,6 +15,7 @@ dependencies {
     // -------------------- TEST DEPENDENCIES --------------------
 
     testImplementation(libs.classgraph)
+    testImplementation(libs.kotlin.reflect)
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-jda-ktx")

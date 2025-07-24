@@ -1,6 +1,7 @@
 package dev.freya02.botcommands.jda.ktx.retrieve
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
+import dev.freya02.botcommands.jda.ktx.IgnoreForMatch
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponseOrNull
 import net.dv8tion.jda.api.JDA
@@ -22,7 +23,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
  * @see JDA.retrieveUserById
  */
 @DeprecatedInBcCore
-suspend fun JDA.retrieveUserByIdOrNull(userId: String, useCache: Boolean = true): User? {
+suspend fun JDA.retrieveUserByIdOrNull(userId: String, @IgnoreForMatch useCache: Boolean = true): User? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
         retrieveUserById(userId).useCache(useCache).await()
     }
@@ -39,7 +40,7 @@ suspend fun JDA.retrieveUserByIdOrNull(userId: String, useCache: Boolean = true)
  * @see JDA.retrieveUserById
  */
 @DeprecatedInBcCore
-suspend fun JDA.retrieveUserByIdOrNull(userId: Long, useCache: Boolean = true): User? {
+suspend fun JDA.retrieveUserByIdOrNull(userId: Long, @IgnoreForMatch useCache: Boolean = true): User? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
         retrieveUserById(userId).useCache(useCache).await()
     }

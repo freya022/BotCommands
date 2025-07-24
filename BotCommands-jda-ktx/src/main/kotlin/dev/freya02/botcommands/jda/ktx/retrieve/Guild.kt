@@ -1,13 +1,22 @@
 package dev.freya02.botcommands.jda.ktx.retrieve
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
+import dev.freya02.botcommands.jda.ktx.IgnoreForMatch
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.deferredRestAction
+import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
+import dev.freya02.botcommands.jda.ktx.requests.awaitOrNullOn
+import dev.freya02.botcommands.jda.ktx.requests.onErrorResponseException
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponseOrNull
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Guild.Ban
+import net.dv8tion.jda.api.entities.automod.AutoModRule
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
+import net.dv8tion.jda.api.entities.sticker.GuildSticker
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.Route
@@ -29,7 +38,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl
  * @see Guild.retrieveMemberById
  */
 @DeprecatedInBcCore
-suspend fun Guild.retrieveMemberByIdOrNull(userId: String, useCache: Boolean = true): Member? {
+suspend fun Guild.retrieveMemberByIdOrNull(userId: String, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMemberById(userId).useCache(useCache).await()
     }
@@ -47,7 +56,7 @@ suspend fun Guild.retrieveMemberByIdOrNull(userId: String, useCache: Boolean = t
  * @see Guild.retrieveMemberById
  */
 @DeprecatedInBcCore
-suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, useCache: Boolean = true): Member? {
+suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMemberById(userId).useCache(useCache).await()
     }
@@ -65,7 +74,7 @@ suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, useCache: Boolean = tru
  * @see Guild.retrieveMember
  */
 @DeprecatedInBcCore
-suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake, useCache: Boolean = true): Member? {
+suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMember(user).useCache(useCache).await()
     }
@@ -196,4 +205,100 @@ suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
  */
 suspend fun Guild.retrieveThreadChannelByIdOrNull(id: String): ThreadChannel? {
     return retrieveThreadChannelByIdOrNull(MiscUtil.parseSnowflake(id))
+}
+
+/**
+ * Same as [Guild.retrieveAutoModRuleById], but returns `null` if the rule does not exist.
+ */
+suspend fun Guild.retrieveAutoModRuleByIdOrNull(id: Long): AutoModRule? {
+    return retrieveAutoModRuleByIdOrNull(id.toString())
+}
+
+/**
+ * Same as [Guild.retrieveAutoModRuleById], but returns `null` if the rule does not exist.
+ */
+suspend fun Guild.retrieveAutoModRuleByIdOrNull(id: String): AutoModRule? {
+    return retrieveAutoModRuleById(id)
+        .awaitCatching()
+        .onErrorResponseException {
+            if (it.response.code == 404) return null
+        }
+        .getOrThrow()
+}
+
+/**
+ * Same as [Guild.retrieveEmojiById], but returns `null` on [ErrorResponse.UNKNOWN_EMOJI].
+ */
+suspend fun Guild.retrieveEmojiByIdOrNull(id: Long): RichCustomEmoji? {
+    return retrieveEmojiById(id).awaitOrNullOn(ErrorResponse.UNKNOWN_EMOJI)
+}
+
+/**
+ * Same as [Guild.retrieveEmojiById], but returns `null` on [ErrorResponse.UNKNOWN_EMOJI].
+ */
+suspend fun Guild.retrieveEmojiByIdOrNull(id: String): RichCustomEmoji? {
+    return retrieveEmojiById(id).awaitOrNullOn(ErrorResponse.UNKNOWN_EMOJI)
+}
+
+/**
+ * Same as [Guild.retrieveEmoji], but returns `null` on [ErrorResponse.UNKNOWN_EMOJI].
+ */
+suspend fun Guild.retrieveEmojiOrNull(emoji: CustomEmoji): RichCustomEmoji? {
+    return retrieveEmoji(emoji).awaitOrNullOn(ErrorResponse.UNKNOWN_EMOJI)
+}
+
+/**
+ * Same as [Guild.retrieveSticker], but returns `null` on [ErrorResponse.UNKNOWN_STICKER].
+ */
+suspend fun Guild.retrieveStickerOrNull(sticker: StickerSnowflake): GuildSticker? {
+    return retrieveSticker(sticker).awaitOrNullOn(ErrorResponse.UNKNOWN_STICKER)
+}
+
+/**
+ * Same as [Guild.retrieveWelcomeScreen], but returns `null` on [ErrorResponse.UNKNOWN_GUILD_WELCOME_SCREEN].
+ */
+suspend fun Guild.retrieveWelcomeScreenOrNull(): GuildWelcomeScreen? {
+    return retrieveWelcomeScreen().awaitOrNullOn(ErrorResponse.UNKNOWN_GUILD_WELCOME_SCREEN)
+}
+
+/**
+ * Same as [Guild.retrieveMemberVoiceStateById], but returns `null` on [ErrorResponse.UNKNOWN_VOICE_STATE].
+ */
+suspend fun Guild.retrieveMemberVoiceStateByIdOrNull(id: Long, @IgnoreForMatch useCache: Boolean = true): GuildVoiceState? {
+    return retrieveMemberVoiceStateById(id).useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_VOICE_STATE)
+}
+
+/**
+ * Same as [Guild.retrieveMemberVoiceStateById], but returns `null` on [ErrorResponse.UNKNOWN_VOICE_STATE].
+ */
+suspend fun Guild.retrieveMemberVoiceStateByIdOrNull(id: String): GuildVoiceState? {
+    return retrieveMemberVoiceStateById(id).awaitOrNullOn(ErrorResponse.UNKNOWN_VOICE_STATE)
+}
+
+/**
+ * Same as [Guild.retrieveMemberVoiceState], but returns `null` on [ErrorResponse.UNKNOWN_VOICE_STATE].
+ */
+suspend fun Guild.retrieveMemberVoiceStateOrNull(user: UserSnowflake): GuildVoiceState? {
+    return retrieveMemberVoiceState(user).awaitOrNullOn(ErrorResponse.UNKNOWN_VOICE_STATE)
+}
+
+/**
+ * Same as [Guild.retrieveOwner], but returns `null` on [ErrorResponse.UNKNOWN_MEMBER] or [ErrorResponse.UNKNOWN_USER].
+ */
+suspend fun Guild.retrieveOwnerOrNull(@IgnoreForMatch useCache: Boolean = true): Member? {
+    return retrieveOwner().useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER)
+}
+
+/**
+ * Same as [Guild.retrieveScheduledEventById], but returns `null` on [ErrorResponse.UNKNOWN_SCHEDULED_EVENT].
+ */
+suspend fun Guild.retrieveScheduledEventByIdOrNull(id: Long, @IgnoreForMatch useCache: Boolean = true): ScheduledEvent? {
+    return retrieveScheduledEventById(id).useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_SCHEDULED_EVENT)
+}
+
+/**
+ * Same as [Guild.retrieveScheduledEventById], but returns `null` on [ErrorResponse.UNKNOWN_SCHEDULED_EVENT].
+ */
+suspend fun Guild.retrieveScheduledEventByIdOrNull(id: String, @IgnoreForMatch useCache: Boolean = true): ScheduledEvent? {
+    return retrieveScheduledEventById(id).useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_SCHEDULED_EVENT)
 }
