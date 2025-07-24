@@ -153,7 +153,15 @@ fun MessageEditData.toCreateData(): MessageCreateData
 ```
 
 ### Durations
-See [durations/Durations.kt](./src/main/kotlin/dev/freya02/botcommands/jda/ktx/durations/Durations.kt)
+All functions in JDA which accept `java.time.Duration` have overloads accepting `kotlin.time.Duration`.
+
+See [durations/Durations.kt](./src/main/kotlin/dev/freya02/botcommands/jda/ktx/durations/Durations.kt).
+
+### Retrieval functions returning `null`
+All functions in JDA which can throw when the requested entity is missing have functions ending in `OrNull`,
+they will only return `null` when the error exactly says the entity is missing, meaning other exceptions will still be thrown.
+
+See [sources in `retrieve`](./src/main/kotlin/dev/freya02/botcommands/jda/ktx/retrieve).
 
 ### Misc
 ```kt
