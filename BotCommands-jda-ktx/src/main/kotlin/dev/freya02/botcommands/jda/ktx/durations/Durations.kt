@@ -6,12 +6,17 @@ import net.dv8tion.jda.api.entities.BulkBanResponse
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.Once
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.Timestamp
 import net.dv8tion.jda.api.utils.concurrent.Task
+import net.dv8tion.jda.api.utils.messages.MessagePollBuilder
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask
+import okhttp3.MediaType
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -109,3 +114,27 @@ fun <T> Task<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.to
  */
 @DeprecatedInBcCore
 fun <T> GatewayTask<T>.setTimeout(duration: Duration): Task<T> = setTimeout(duration.toJavaDuration())
+
+/**
+ * @see FileUpload.asVoiceMessage
+ */
+fun FileUpload.asVoiceMessage(mediaType: MediaType, waveform: ByteArray, duration: Duration): FileUpload =
+    asVoiceMessage(mediaType, waveform, duration.toJavaDuration())
+
+/**
+ * @see Once.Builder.timeout
+ */
+fun <E : GenericEvent> Once.Builder<E>.timeout(timeout: Duration): Once.Builder<E> =
+    timeout(timeout.toJavaDuration())
+
+/**
+ * @see Once.Builder.timeout
+ */
+fun <E : GenericEvent> Once.Builder<E>.timeout(timeout: Duration, timeoutCallback: Runnable): Once.Builder<E> =
+    timeout(timeout.toJavaDuration(), timeoutCallback)
+
+/**
+ * @see MessagePollBuilder.setDuration
+ */
+fun MessagePollBuilder.setDuration(duration: Duration): MessagePollBuilder =
+    setDuration(duration.toJavaDuration())
