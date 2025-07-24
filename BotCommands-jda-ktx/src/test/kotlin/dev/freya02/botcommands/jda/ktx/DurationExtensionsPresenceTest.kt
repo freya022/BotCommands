@@ -1,5 +1,8 @@
 package dev.freya02.botcommands.jda.ktx
 
+import dev.freya02.botcommands.jda.ktx.utils.getJavaInvocationParameterTypes
+import dev.freya02.botcommands.jda.ktx.utils.getKotlinInvocationParameterTypes
+import dev.freya02.botcommands.jda.ktx.utils.unmangledName
 import io.github.classgraph.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.Test
@@ -8,7 +11,20 @@ class DurationExtensionsPresenceTest {
 
     @Test
     fun `All JDA methods accepting Duration have extensions`() {
-        val methodsWithLongParameter = ClassGraph()
+        withMethodsWithLongParameter { methodsWithLongParameter ->
+            withMethodsAcceptingDuration { methodsAcceptingDuration ->
+                val missingKotlinDurationEquivalents = methodsAcceptingDuration.filter { method ->
+                    methodsWithLongParameter.none { isKotlinDurationEquivalent(method, it) }
+                }
+                assertTrue(missingKotlinDurationEquivalents.isEmpty()) {
+                    "Some functions miss kotlin.time.Duration equivalents:\n${missingKotlinDurationEquivalents.joinToString("\n") { "${it.classInfo.name}: $it" }}"
+                }
+            }
+        }
+    }
+
+    private fun withMethodsWithLongParameter(block: (methodsWithLongParameter: List<MethodInfo>) -> Unit) {
+        ClassGraph()
             .acceptPackages("io.github.freya022.botcommands", "dev.freya02.botcommands")
             .enableMethodInfo()
             .enableAnnotationInfo()
@@ -19,26 +35,23 @@ class DurationExtensionsPresenceTest {
                     .flatMap { it.declaredMethodInfo }
                     .filter { it.parameterInfo.any { param -> param.isLongParameter() } }
                     .toList()
+                    .also(block)
             }
+    }
 
+    private fun withMethodsAcceptingDuration(block: (methodsAcceptingDuration: List<MethodInfo>) -> Unit) {
         ClassGraph()
             .acceptPackages("net.dv8tion.jda.api")
             .enableMethodInfo()
             .scan()
             .use { scan ->
-                val methodsAcceptingDuration = scan.allClasses
+                scan.allClasses
                     .asSequence()
                     .flatMap { it.declaredMethodInfo }
                     .filterNot { it.isStatic }
                     .filter { it.parameterInfo.any { param -> param.isJavaDurationParameter() } }
                     .toList()
-
-                val missingKotlinDurationEquivalents = methodsAcceptingDuration.filter { method ->
-                    methodsWithLongParameter.none { isKotlinDurationEquivalent(method, it) }
-                }
-                assertTrue(missingKotlinDurationEquivalents.isEmpty()) {
-                    "Some functions miss kotlin.time.Duration equivalents:\n${missingKotlinDurationEquivalents.joinToString("\n") { "${it.classInfo.name}: $it" }}"
-                }
+                    .also(block)
             }
     }
 
@@ -52,39 +65,14 @@ class DurationExtensionsPresenceTest {
 
     private fun isKotlinDurationEquivalent(javaMethod: MethodInfo, kotlinFunction: MethodInfo): Boolean {
         return javaMethod.name == kotlinFunction.unmangledName
-                && javaMethod.getJavaInvocationParameterTypes() == kotlinFunction.getKotlinInvocationParameterTypes()
+                && javaMethod.getJavaInvocationParameterTypes() == kotlinFunction.getKotlinInvocationParameterTypes().replaceLongWithJavaDuration()
     }
 
-    private fun MethodInfo.getJavaInvocationParameterTypes(): List<String> {
-        return listOf(this.className) + this.parameterInfo.map { it.fullTypeName }
-    }
-
-    private fun MethodInfo.getKotlinInvocationParameterTypes(): List<String> {
-        return this.parameterInfo.map {
-            val typeName = it.fullTypeName
-            if (typeName == "long") {
-                "java.time.Duration"
-            } else {
-                typeName
-            }
+    private fun List<String>.replaceLongWithJavaDuration() = map {
+        if (it == "long") {
+            "java.time.Duration"
+        } else {
+            it
         }
     }
-
-    private val MethodParameterInfo.fullTypeName: String
-        get() = typeSignatureOrTypeDescriptor.fullTypeName
-
-    private val TypeSignature.fullTypeName: String
-        get() = when (this) {
-            is ClassRefTypeSignature -> fullyQualifiedClassName
-            is BaseTypeSignature -> typeStr
-            is ArrayTypeSignature -> nestedType.fullTypeName
-            is TypeVariableSignature -> resolve().classBound?.fullTypeName
-                ?: resolve().interfaceBounds.getOrNull(0)?.fullTypeName
-                ?: "java.lang.Object"
-
-            else -> error("Unhandled $this")
-        }
-
-    private val MethodInfo.unmangledName: String
-        get() = name.substringBefore('-')
 }
