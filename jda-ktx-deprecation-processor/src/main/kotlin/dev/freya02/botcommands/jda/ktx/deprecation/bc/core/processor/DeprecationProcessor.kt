@@ -215,7 +215,7 @@ class DeprecationProcessor(
                 add("@OptIn(ExperimentalContracts::class)")
             }
             function.annotations.filterNot { it.shortName.asString() == "DeprecatedInBcCore" }.forEach { annotation ->
-                add("@${annotation.shortName.asString()}(${annotation.arguments.joinToString(", ") { getCompileValue(it.value) }})")
+                add(annotation.render())
             }
         }.joinToString(separator = "\n")
         val modifiers = function.renderModifiers().suffixIfNotEmpty(" ")
@@ -252,16 +252,6 @@ class DeprecationProcessor(
             appendLine(delegateExpr.prependIndent())
 
             append("}")
-        }
-    }
-
-    private fun getCompileValue(value: Any?): String {
-        if (value is List<*>)
-            return value.joinToString { getCompileValue(it) }
-
-        return when (value) {
-            is String -> "\"$value\""
-            else -> error("Unsupported annotation value $value")
         }
     }
 

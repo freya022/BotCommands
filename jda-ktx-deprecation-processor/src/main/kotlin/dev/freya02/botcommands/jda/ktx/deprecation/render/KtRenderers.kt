@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.deprecation.render
 
+import com.google.devtools.ksp.isDefault
 import com.google.devtools.ksp.symbol.*
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.ifNotEmpty
 import ksp.org.jetbrains.kotlin.analysis.api.KaExperimentalApi
@@ -79,6 +80,21 @@ fun KSDeclaration.renderTypeParameters(): String {
                 append(bounds.single().resolve().toNestedTypeString())
             }
         }
+    }
+}
+
+fun KSAnnotation.render(): String {
+    return "@${this.shortName.asString()}(${this.arguments.filterNot { it.isDefault() }.joinToString(", ") { it.name!!.asString() + " = " + getCompileValue(it.value) }})"
+}
+
+private fun getCompileValue(value: Any?): String {
+    return when (value) {
+        is List<*> -> value.joinToString(prefix = "[", separator = ", ", postfix = "]") { getCompileValue(it) }
+        is String -> "\"$value\""
+        is KSAnnotation -> value.render().drop(1) // drop @ for nested annotations
+        is KSValueArgument -> "${value.name!!.asString()} = ${getCompileValue(value.value)}"
+        is KSClassDeclaration if (value.classKind == ClassKind.ENUM_ENTRY) -> value.toString()
+        else -> error("Unsupported annotation value $value")
     }
 }
 
