@@ -11,6 +11,10 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
 
     ksp(projects.jdaKtxDeprecationProcessor)
+
+    // -------------------- TEST DEPENDENCIES --------------------
+
+    testImplementation(libs.classgraph)
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-jda-ktx")
