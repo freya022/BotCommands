@@ -132,11 +132,11 @@ internal class EventListenerRegistry internal constructor(
             }
         }
 
-    private fun getTimeout(annotation: BEventListener): Duration {
+    private fun getTimeout(annotation: BEventListener): Duration? {
         if (annotation.timeout < 0) return Duration.INFINITE
 
         return annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
-            it.takeIfFinite() ?: defaultTimeout
+            it.takeIfFinite() ?: defaultTimeout.takeIfFinite()
         }
     }
 }

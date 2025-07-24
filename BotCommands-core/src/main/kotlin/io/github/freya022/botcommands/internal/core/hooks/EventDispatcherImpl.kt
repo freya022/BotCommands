@@ -96,10 +96,10 @@ internal class EventDispatcherImpl internal constructor(
         try {
             val (instance, function) = eventHandlerFunction.classPathFunction
 
-            val actualTimeout = eventHandlerFunction.timeout
-            if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
+            val timeout = eventHandlerFunction.timeout
+            if (timeout != null) {
                 // Timeout only works when the continuations implement a cancellation handler
-                val result = withTimeoutOrNull(actualTimeout.inWholeMilliseconds) {
+                val result = withTimeoutOrNull(timeout) {
                     function.callSuspend(instance, event, *eventHandlerFunction.parameters)
                 }
                 if (result == null) {
