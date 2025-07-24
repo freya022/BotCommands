@@ -3,11 +3,13 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
+import dev.freya02.botcommands.jda.ktx.components.row
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.dv8tion.jda.api.utils.FileUpload
@@ -182,7 +184,13 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
 
     val components = Accumulator<LayoutComponent>() // TODO TopLevelMessageComponent
 
-    // TODO component functions
+    fun actionRow(vararg components: ItemComponent) {
+        this.components += row(*components)
+    }
+
+    fun actionRow(components: Collection<ItemComponent>) {
+        this.components += components.row()
+    }
 
     var allowedMentionTypes: Set<MentionType> = MessageRequest.getDefaultMentions()
         set(value) {
