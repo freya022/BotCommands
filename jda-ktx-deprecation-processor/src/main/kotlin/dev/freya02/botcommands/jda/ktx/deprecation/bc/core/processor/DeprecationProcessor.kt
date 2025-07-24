@@ -238,14 +238,16 @@ class DeprecationProcessor(
         return buildString {
             appendLine(docs)
             if (annotations.isNotEmpty()) appendLine(annotations)
-            appendLine("""
-                @Deprecated(
-                    message = "Moved to the BotCommands-jda-ktx module\n" +
-                              "You can find & replace:\n" +
-                              "Find: $fullOldFunction\n" + 
-                              "Replace: $fullOldFunction" 
-                )
-            """.trimIndent())
+            if (annotations.lines().none { it.startsWith("@Deprecated") }) {
+                appendLine("""
+                    @Deprecated(
+                        message = "Moved to the BotCommands-jda-ktx module\n" +
+                                  "You can find & replace:\n" +
+                                  "Find: $fullOldFunction\n" + 
+                                  "Replace: $fullNewFunction" 
+                    )
+                """.trimIndent())
+            }
             appendLine("${modifiers}fun ${typeParameters}${extensionReceiver}${functionName}${parameters}: $returnType {")
             if (contract.isNotEmpty())
                 append(contract.prependIndent()).append("\n\n")
