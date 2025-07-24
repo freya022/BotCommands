@@ -8,10 +8,12 @@ import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassRefTypeSignature
 import io.github.classgraph.MethodInfo
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction
 import net.dv8tion.jda.api.utils.concurrent.Task
 import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.reflect.jvm.kotlinFunction
@@ -63,6 +65,40 @@ class RetrieveOrNullExtensionsPresenceTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `All extensions of JDA retrieval methods returning CachedRestAction have useCache parameter`() {
+        withRetrieveOrNullFunctions { retrieveOrNullFunctions ->
+            withRetrieveMethods { retrieveMethods ->
+                val missingUseCacheParameter = arrayListOf<MethodInfo>()
+
+                retrieveMethods.forEach { retrieveMethod ->
+                    retrieveOrNullFunctions.forEach { retrieveOrNullFunction ->
+                        val match = isOrNullEquivalent(retrieveMethod, retrieveOrNullFunction)
+                        if (!match) return@forEach
+
+                        if (retrieveMethod.isReturningCacheRestAction() && retrieveOrNullFunction.hasUseCacheParameter()) {
+                            missingUseCacheParameter += retrieveOrNullFunction
+                        }
+                    }
+                }
+
+                assertTrue(missingUseCacheParameter.isEmpty()) {
+                    "${missingUseCacheParameter.size} functions miss 'useCache' parameter:\n${missingUseCacheParameter.joinToString("\n") { it.toFullyQualifiedSignature() }}"
+                }
+            }
+        }
+    }
+
+    private fun MethodInfo.isReturningCacheRestAction(): Boolean {
+        val typeRef = typeSignatureOrTypeDescriptor.resultType as? ClassRefTypeSignature ?: return false
+        return typeRef.fullyQualifiedClassName == CacheRestAction::class.java.name
+                || typeRef.classInfo.implementsInterface(CacheRestAction::class.java)
+    }
+
+    private fun MethodInfo.hasUseCacheParameter(): Boolean {
+        return loadClassAndGetMethod().kotlinFunction!!.valueParameters.none { it.name == "useCache" }
     }
 
     private fun withRetrieveOrNullFunctions(block: (retrieveOrNullFunctions: List<MethodInfo>) -> Unit) {
