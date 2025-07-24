@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.Route
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction
+import net.dv8tion.jda.api.utils.MiscUtil
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.entities.GuildImpl
 import net.dv8tion.jda.internal.requests.RestActionImpl
@@ -132,6 +133,19 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
  *
  * The cached threads are checked first, and then a request is made.
  *
+ * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
+ *
+ * @see retrieveThreadChannelOrNull
+ */
+fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> {
+    return retrieveThreadChannelById(MiscUtil.parseSnowflake(id))
+}
+
+/**
+ * Retrieves a thread by ID.
+ *
+ * The cached threads are checked first, and then a request is made.
+ *
  * The returned thread may be null if:
  * - It doesn't exist
  * - The bot doesn't have access to it
@@ -140,12 +154,46 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
  * @see retrieveThreadChannelById
  */
 @DeprecatedInBcCore
+@Deprecated("Replaced by retrieveThreadChannelByIdOrNull")
+@Suppress("deprecated")
 suspend fun Guild.retrieveThreadChannelOrNull(id: Long): ThreadChannel? {
+    return retrieveThreadChannelByIdOrNull(id)
+}
+
+/**
+ * Retrieves a thread by ID.
+ *
+ * The cached threads are checked first, and then a request is made.
+ *
+ * The returned thread may be null if:
+ * - It doesn't exist
+ * - The bot doesn't have access to it
+ * - The channel isn't a thread
+ *
+ * @see retrieveThreadChannelById
+ */
+suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_CHANNEL, ErrorResponse.MISSING_ACCESS) {
         try {
             retrieveThreadChannelById(id).await()
-        } catch (e: InvalidChannelTypeException) {
+        } catch (_: InvalidChannelTypeException) {
             return null
         }
     }
+}
+
+/**
+ * Retrieves a thread by ID.
+ *
+ * The cached threads are checked first, and then a request is made.
+ *
+ * The returned thread may be null if:
+ * - It doesn't exist
+ * - The bot doesn't have access to it
+ * - The channel isn't a thread
+ *
+ * @see retrieveThreadChannelById
+ */
+suspend fun Guild.retrieveThreadChannelByIdOrNull(id: String): ThreadChannel? {
+    return retrieveThreadChannelByIdOrNull(MiscUtil.parseSnowflake(id))
 }
