@@ -240,10 +240,12 @@ inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResu
     if (value !is RestResult.FatalFailure) return this
 
     val it = value.exception
-    return if (predicate(it)) {
-        RestResult(RestResult.IgnoredFailure(it))
-    } else {
-        this
+    return transformRR {
+        if (predicate(it)) {
+            RestResult(RestResult.IgnoredFailure(it))
+        } else {
+            this
+        }
     }
 }
 
@@ -284,11 +286,13 @@ inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, b
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    val it = exceptionOrNull()
-    return if (it != null && predicate(it)) {
-        runCatchingRest { block(it) }
-    } else {
-        this
+    return transformRR {
+        val it = exceptionOrNull()
+        if (it != null && predicate(it)) {
+            RestResult.success(block(it))
+        } else {
+            return this
+        }
     }
 }
 
@@ -335,16 +339,14 @@ inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (T
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
 
-    val it = exceptionOrNull()
-    if (it != null && predicate(it)) {
-        try {
+    return transformRR {
+        val it = exceptionOrNull()
+        if (it != null && predicate(it)) {
             block(it)
             return ignore(predicate)
-        } catch (e: Throwable) {
-            return RestResult.failure(e)
+        } else {
+            return this
         }
-    } else {
-        return this
     }
 }
 
@@ -395,6 +397,19 @@ inline fun <T> runCatchingRest(block: () -> T): RestResult<T> {
 
     return try {
         RestResult.success(block())
+    } catch (e: Throwable) {
+        RestResult.failure(e)
+    }
+}
+
+@PublishedApi
+internal inline fun <T> transformRR(block: () -> RestResult<T>): RestResult<T> {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    return try {
+        block()
     } catch (e: Throwable) {
         RestResult.failure(e)
     }
