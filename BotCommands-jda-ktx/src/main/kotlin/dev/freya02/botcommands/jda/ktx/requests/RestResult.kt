@@ -222,12 +222,12 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
 }
 
 /**
- * Dismisses the encapsulated exception if it corresponds to an predicate.
+ * Dismisses the encapsulated exception if it corresponds to the [predicate].
  *
  * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
  * but does not allow using functions returning values.
  *
- * Returns a new `RestResult` if the exception matches.
+ * Exceptions thrown in [predicate] are returned in a new [RestResult].
  *
  * @see handle
  */
@@ -256,8 +256,6 @@ inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResu
  * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
  * but does not allow using functions returning values.
  *
- * Returns a new `RestResult` if the exception matches.
- *
  * @see handle
  */
 @DeprecatedInBcCore
@@ -271,14 +269,20 @@ fun <T> RestResult<T>.ignore(ignored: ErrorResponse, vararg responses: ErrorResp
  * Allows for [orThrow][RestResult.orThrow] to be used on failures without throwing,
  * but does not allow using functions returning values.
  *
- * Returns a new `RestResult` if the exception matches.
- *
  * @see handle
  */
 @DeprecatedInBcCore
 fun <T> RestResult<T>.ignore(ignored: KClass<out Throwable>, vararg types: KClass<out Throwable>): RestResult<T> =
     ignore { throwable -> ignored.isInstance(throwable) || types.any { it.isInstance(throwable) } }
 
+/**
+ * Maps the encapsulated exception using the given [block]
+ * if it corresponds to the [predicate].
+ *
+ * Any thrown exception will be encapsulated in a new [RestResult].
+ *
+ * @see ignore
+ */
 @DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, block: (Throwable) -> R): RestResult<R> {
     contract {
@@ -297,14 +301,10 @@ inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, b
 }
 
 /**
- * Maps the encapsulated [error response][ErrorResponse] using the given function [block]
+ * Maps the encapsulated exception using the given [block]
  * if it corresponds to an ignored response.
  *
- * Exceptions other than [responses] will be rethrown in a new [RestResult].
- *
  * Any thrown exception will be encapsulated in a new [RestResult].
- *
- * May return a new `RestResult`.
  *
  * @see ignore
  */
@@ -320,6 +320,14 @@ inline fun <T : R, R> RestResult<T>.recover(response: ErrorResponse, vararg resp
     )
 }
 
+/**
+ * Maps the encapsulated exception using the given [block]
+ * if it corresponds to an ignored exception type.
+ *
+ * Any thrown exception will be encapsulated in a new [RestResult].
+ *
+ * @see ignore
+ */
 @DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> R): RestResult<R> {
     contract {
@@ -332,6 +340,16 @@ inline fun <T : R, R> RestResult<T>.recover(type: KClass<out Throwable>, vararg 
     )
 }
 
+/**
+ * Dismisses the encapsulated exception and runs the given [block]
+ * if it matches the [predicate].
+ *
+ * Any thrown exception will be encapsulated in a new [RestResult].
+ *
+ * Returns a new [RestResult] with the ignored exception, or itself if it didn't match.
+ *
+ * @see ignore
+ */
 @DeprecatedInBcCore
 inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (Throwable) -> Unit): RestResult<T> {
     contract {
@@ -351,12 +369,12 @@ inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (T
 }
 
 /**
- * Dismisses the encapsulated [error response][ErrorResponse] and runs the given [block]
+ * Dismisses the encapsulated exception and runs the given [block]
  * if it corresponds to an ignored response.
  *
  * Any thrown exception will be encapsulated in a new [RestResult].
  *
- * Returns a new `RestResult` with the ignored exception, or itself if it didn't match.
+ * Returns a new [RestResult] with the ignored exception, or itself if it didn't match.
  *
  * @see ignore
  */
@@ -372,6 +390,16 @@ inline fun <T> RestResult<T>.handle(type: ErrorResponse, vararg responses: Error
     )
 }
 
+/**
+ * Dismisses the encapsulated exception and runs the given [block]
+ * if it corresponds to an ignored exception type.
+ *
+ * Any thrown exception will be encapsulated in a new [RestResult].
+ *
+ * Returns a new [RestResult] with the ignored exception, or itself if it didn't match.
+ *
+ * @see ignore
+ */
 @DeprecatedInBcCore
 inline fun <T> RestResult<T>.handle(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> Unit): RestResult<T> {
     contract {
