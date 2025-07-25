@@ -1,17 +1,17 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.core.utils.reply
 
 @Command
 class SlashVoiceState : ApplicationCommand() {
 
     @JDASlashCommand(name = "voice_state")
     fun onSlashVoiceState(event: GuildSlashEvent) {
-        event.reply(ephemeral = true) {
+        event.reply_(ephemeral = true) {
             content = """
                 Cached member: ${event.guild.getMember(event.member)}
                 Voice state: ${event.member.voiceState}

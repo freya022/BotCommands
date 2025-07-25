@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
+import dev.freya02.botcommands.jda.ktx.retrieve.retrieveMemberByIdOrNull
+import dev.freya02.botcommands.jda.ktx.retrieve.retrieveUserByIdOrNull
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
@@ -10,8 +12,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.traceNull
-import io.github.freya022.botcommands.api.core.utils.retrieveMemberByIdOrNull
-import io.github.freya022.botcommands.api.core.utils.retrieveUserByIdOrNull
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver

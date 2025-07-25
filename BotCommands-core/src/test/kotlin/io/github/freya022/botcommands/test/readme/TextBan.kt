@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.test.readme
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds

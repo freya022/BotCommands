@@ -8,7 +8,7 @@ internal class EventHandlerFunction(
     val classPathFunction: ClassPathFunction,
     val priority: Int,
     val runMode: BEventListener.RunMode,
-    val timeout: Duration,
+    val timeout: Duration?,
     private val parametersBlock: () -> Array<Any>
 ) {
     val parameters: Array<Any> by lazy {

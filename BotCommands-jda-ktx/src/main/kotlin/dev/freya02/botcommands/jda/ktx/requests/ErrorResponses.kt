@@ -1,0 +1,76 @@
+@file:OptIn(ExperimentalContracts::class)
+
+package dev.freya02.botcommands.jda.ktx.requests
+
+import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
+/**
+ * Encapsulates the result of the specified function [block] and dismisses [error responses][ErrorResponse]
+ * that corresponds to an ignored response, making the [Result] a success.
+ *
+ * @see runIgnoringResponse
+ * @see runIgnoringResponseOrNull
+ */
+@DeprecatedInBcCore
+inline fun <R> runCatchingResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): RestResult<R> {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    return runCatchingRest(block).ignore(ignored, *ignoredResponses)
+}
+
+/**
+ * Runs the specified function [block] and dismisses [error responses][ErrorResponse]
+ * that corresponds to an ignored response.
+ *
+ * Any other exception is still thrown.
+ *
+ * @see ignore
+ * @see runIgnoringResponseOrNull
+ */
+@DeprecatedInBcCore
+inline fun runIgnoringResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    try {
+        block()
+    } catch (e: ErrorResponseException) {
+        if (e.errorResponse != ignored && e.errorResponse !in ignoredResponses) {
+            throw e
+        }
+    }
+}
+
+/**
+ * Runs the specified function [block] and returns `null` on [error responses][ErrorResponse]
+ * that corresponds to an ignored response.
+ *
+ * Any other exception is still thrown.
+ *
+ * @see ignore
+ * @see runIgnoringResponse
+ * @see awaitOrNullOn
+ */
+@DeprecatedInBcCore
+inline fun <R> runIgnoringResponseOrNull(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    return try {
+        block()
+    } catch (e: ErrorResponseException) {
+        if (e.errorResponse != ignored && e.errorResponse !in ignoredResponses) {
+            throw e
+        }
+        null
+    }
+}

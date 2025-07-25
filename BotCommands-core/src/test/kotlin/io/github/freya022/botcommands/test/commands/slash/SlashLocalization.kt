@@ -1,16 +1,16 @@
 package io.github.freya022.botcommands.test.commands.slash
 
-import dev.minn.jda.ktx.interactions.components.SelectOption
-import dev.minn.jda.ktx.interactions.components.row
-import dev.minn.jda.ktx.messages.MessageCreate
-import dev.minn.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.components.SelectOption
+import dev.freya02.botcommands.jda.ktx.components.row
+import dev.freya02.botcommands.jda.ktx.durations.before
+import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
+import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.SelectMenus
-import io.github.freya022.botcommands.api.core.utils.before
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.localize

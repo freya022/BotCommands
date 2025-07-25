@@ -28,9 +28,7 @@ dependencies {
         exclude(module = "opus-java")
         exclude(module = "tink")
     }
-    api(libs.jda.ktx) {
-        exclude(module = "JDA")
-    }
+    implementation(projects.botCommandsJdaKtx)
 
     // Classpath scanning
     api(libs.classgraph)

@@ -1,11 +1,11 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
-import dev.minn.jda.ktx.events.CoroutineEventManager
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
@@ -33,16 +33,16 @@ private typealias EventMap = MutableMap<KClass<*>, EventListenerList>
 
 private val logger = KotlinLogging.logger { }
 
+@BService
 internal class EventListenerRegistry internal constructor(
     private val config: BConfig,
     private val serviceContainer: ServiceContainer,
-    originalCoroutineEventManager: CoroutineEventManager,
     private val eventTreeService: EventTreeService,
     private val jdaService: JDAService,
     functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
 
-    private val eventTimeout: Duration = originalCoroutineEventManager.timeout
+    private val defaultTimeout: Duration = config.eventManagerConfig.defaultTimeout ?: Duration.INFINITE
 
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
@@ -132,14 +132,11 @@ internal class EventListenerRegistry internal constructor(
             }
         }
 
-    private fun getTimeout(annotation: BEventListener): Duration {
+    private fun getTimeout(annotation: BEventListener): Duration? {
         if (annotation.timeout < 0) return Duration.INFINITE
 
         return annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
-            when {
-                it.isPositive() && it.isFinite() -> it
-                else -> eventTimeout // Inherit from the (possibly user-provided) CoroutineEventManager
-            }
+            it.takeIfFinite() ?: defaultTimeout.takeIfFinite()
         }
     }
 }

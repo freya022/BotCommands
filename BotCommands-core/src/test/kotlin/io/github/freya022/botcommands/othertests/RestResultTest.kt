@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.othertests
 
-import io.github.freya022.botcommands.api.core.utils.awaitCatching
-import io.github.freya022.botcommands.api.core.utils.ignore
-import io.github.freya022.botcommands.api.core.utils.recover
+import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
+import dev.freya02.botcommands.jda.ktx.requests.ignore
+import dev.freya02.botcommands.jda.ktx.requests.recover
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse

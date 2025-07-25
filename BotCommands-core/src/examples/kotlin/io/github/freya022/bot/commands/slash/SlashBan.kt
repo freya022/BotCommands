@@ -1,5 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.bot.commands.ban.BanService
 import io.github.freya022.bot.resolvers.localize
 import io.github.freya022.bot.switches.KotlinDetailProfile
@@ -17,7 +18,6 @@ import io.github.freya022.botcommands.api.components.awaitAny
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.deleteDelayed
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.editLocalized

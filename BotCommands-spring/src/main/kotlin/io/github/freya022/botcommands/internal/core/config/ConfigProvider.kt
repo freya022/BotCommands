@@ -11,6 +11,7 @@ internal open class ConfigProvider {
     @Primary
     internal open fun bConfig(
         coreConfiguration: BotCommandsCoreConfiguration, coreConfigurers: List<BConfigConfigurer>,
+        eventManagerConfiguration: BotCommandsEventManagerConfiguration, eventManagerConfigurers: List<BEventManagerConfigConfigurer>,
         databaseConfiguration: BotCommandsDatabaseConfiguration, databaseConfigurers: List<BDatabaseConfigConfigurer>,
         appEmojisConfiguration: BotCommandsAppEmojisConfiguration, appEmojisConfigurers: List<BAppEmojisConfigConfigurer>,
         textConfiguration: BotCommandsTextConfiguration, textConfigurers: List<BTextConfigConfigurer>,
@@ -23,6 +24,7 @@ internal open class ConfigProvider {
         BConfigBuilder()
             .applyConfig(coreConfiguration)
             .apply {
+                eventManagerConfig.applyConfig(eventManagerConfiguration).configure(eventManagerConfigurers)
                 databaseConfig.applyConfig(databaseConfiguration).configure(databaseConfigurers)
                 appEmojisConfig.applyConfig(appEmojisConfiguration).configure(appEmojisConfigurers)
                 textConfig.applyConfig(textConfiguration).configure(textConfigurers)
@@ -34,6 +36,10 @@ internal open class ConfigProvider {
             }
             .configure(coreConfigurers)
             .build()
+
+    @Bean
+    @Primary
+    internal open fun bEventManagerConfig(config: BConfig): BEventManagerConfig = config.eventManagerConfig
 
     @Bean
     @Primary

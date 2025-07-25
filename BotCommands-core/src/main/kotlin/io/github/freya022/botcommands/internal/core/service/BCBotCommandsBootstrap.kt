@@ -38,6 +38,7 @@ internal class BCBotCommandsBootstrap internal constructor(
         serviceContainer.putService(serviceProviders)
 
         serviceContainer.putServiceAs<BConfig>(config)
+        serviceContainer.putServiceAs<BEventManagerConfig>(config.eventManagerConfig)
         serviceContainer.putServiceAs<BServiceConfig>(config.serviceConfig)
         serviceContainer.putServiceAs<BDatabaseConfig>(config.databaseConfig)
         serviceContainer.putServiceAs<BLocalizationConfig>(config.localizationConfig)

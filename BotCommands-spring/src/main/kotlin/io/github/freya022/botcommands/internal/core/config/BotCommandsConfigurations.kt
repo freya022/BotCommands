@@ -27,6 +27,7 @@ internal class BotCommandsCoreConfiguration(
     override val ignoreRestRateLimiter: Boolean = false,
 ) : BConfig {
     override val classGraphProcessors: Nothing get() = unusable()
+    override val eventManagerConfig: Nothing get() = unusable()
     override val serviceConfig: Nothing get() = unusable()
     override val databaseConfig: Nothing get() = unusable()
     override val localizationConfig: Nothing get() = unusable()
@@ -47,6 +48,19 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     ignoredIntents += configuration.ignoredIntents
     ignoredEventIntents += configuration.ignoredEventIntents
     ignoreRestRateLimiter = configuration.ignoreRestRateLimiter
+}
+
+@ConfigurationProperties(prefix = "botcommands.event.manager", ignoreUnknownFields = false)
+internal class BotCommandsEventManagerConfiguration(
+    defaultTimeout: JavaDuration? = null,
+) : BEventManagerConfig {
+
+    override val defaultTimeout = defaultTimeout?.toKotlinDuration()
+}
+
+@OptIn(DevConfig::class)
+internal fun BEventManagerConfigBuilder.applyConfig(configuration: BotCommandsEventManagerConfiguration) = apply {
+    defaultTimeout = configuration.defaultTimeout
 }
 
 @ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)

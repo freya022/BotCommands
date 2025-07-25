@@ -48,6 +48,8 @@ interface BContext {
 
     //region Configs
     val config: BConfig
+    val eventManagerConfig: BEventManagerConfig
+        get() = config.eventManagerConfig
     val localizationConfig: BLocalizationConfig
         get() = config.localizationConfig
     val applicationConfig: BApplicationConfig

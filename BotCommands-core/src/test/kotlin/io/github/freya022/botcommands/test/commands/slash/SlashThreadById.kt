@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.test.commands.slash
 
-import dev.minn.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.messages.reply_
+import dev.freya02.botcommands.jda.ktx.retrieve.retrieveThreadChannelOrNull
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.core.utils.retrieveThreadChannelOrNull
 
 @Command
 class SlashThreadById : ApplicationCommand() {

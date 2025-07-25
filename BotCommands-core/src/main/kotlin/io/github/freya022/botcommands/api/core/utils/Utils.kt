@@ -2,7 +2,9 @@
 
 package io.github.freya022.botcommands.api.core.utils
 
-import dev.minn.jda.ktx.events.getDefaultScope
+import io.github.freya022.botcommands.api.core.Logging.toUnwrappedLogger
+import io.github.freya022.botcommands.internal.utils.StackSensitive
+import io.github.freya022.botcommands.internal.utils.findCaller
 import io.github.freya022.botcommands.internal.utils.stackWalker
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -104,7 +106,7 @@ fun namedDefaultScope(
 }
 
 /**
- * Creates a [CoroutineScope] with incremental thread naming, uses [getDefaultScope] under the hood.
+ * Creates a [CoroutineScope] with incremental thread naming.
  *
  * @param coroutineName The name of the coroutines
  * @param executor      The executor running the coroutines
@@ -118,7 +120,19 @@ fun namedDefaultScope(
     executor: Executor,
     job: Job? = null,
     errorHandler: CoroutineExceptionHandler? = null,
-    context: CoroutineContext = EmptyCoroutineContext
+    context: CoroutineContext = EmptyCoroutineContext,
 ): CoroutineScope {
-    return getDefaultScope(pool = executor, context = CoroutineName(coroutineName) + context, job = job, errorHandler = errorHandler)
+    @OptIn(StackSensitive::class)
+    val logger = findCaller().declaringClass.toUnwrappedLogger()
+
+    val dispatcher = executor.asCoroutineDispatcher()
+    val parent = job ?: SupervisorJob()
+    val handler = errorHandler ?: CoroutineExceptionHandler { _, throwable ->
+        logger.error(throwable) { "Uncaught exception from coroutine" }
+        if (throwable is Error) {
+            parent.cancel()
+            throw throwable
+        }
+    }
+    return CoroutineScope(dispatcher + parent + handler + context + CoroutineName(coroutineName))
 }

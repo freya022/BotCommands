@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.test.commands.text
 
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.into
+import dev.freya02.botcommands.jda.ktx.components.into
+import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommand

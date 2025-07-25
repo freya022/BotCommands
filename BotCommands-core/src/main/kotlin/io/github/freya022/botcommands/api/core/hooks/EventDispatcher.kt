@@ -1,8 +1,5 @@
 package io.github.freya022.botcommands.api.core.hooks
 
-import dev.minn.jda.ktx.events.CoroutineEventListener
-import dev.minn.jda.ktx.events.CoroutineEventManager
-import io.github.freya022.botcommands.api.core.ICoroutineEventManagerSupplier
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.BEvent
@@ -11,7 +8,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 /**
  * Dispatches JDA and BC events to [@BEventListener][BEventListener] methods.
@@ -24,7 +20,7 @@ abstract class EventDispatcher internal constructor() {
      *
      * Only methods annotated by [@BEventListener][BEventListener] will be registered,
      * use your `JDA` or `ShardManager` instance to register event listeners that use
-     * [CoroutineEventListener], [ListenerAdapter] or [EventListener].
+     * [EventListener] subclasses.
      */
     abstract fun addEventListener(listener: Any)
 
@@ -33,7 +29,7 @@ abstract class EventDispatcher internal constructor() {
      *
      * Only methods annotated by [@BEventListener][BEventListener] will be unregistered,
      * use your `JDA` or `ShardManager` instance to unregister event listeners that use
-     * [CoroutineEventListener], [ListenerAdapter] or [EventListener].
+     * [EventListener] subclasses.
      */
     abstract fun removeEventListener(listener: Any)
 
@@ -49,9 +45,7 @@ abstract class EventDispatcher internal constructor() {
      * [ASYNC][BEventListener.RunMode.ASYNC] listeners will then be launched on [BCoroutineScopesConfig.eventDispatcherScope],
      * without blocking.
      *
-     * Finally, [SHARED][BEventListener.RunMode.SHARED] listeners will be fired on
-     * the scope of the [CoroutineEventManager] without blocking,
-     * which can be configured with [ICoroutineEventManagerSupplier].
+     * Finally, [SHARED][BEventListener.RunMode.SHARED] listeners will be sequentially fired on this same coroutine.
      *
      * Any thrown exception will be logged separately and do not affect other listeners.
      */
@@ -70,9 +64,7 @@ abstract class EventDispatcher internal constructor() {
      * [ASYNC][BEventListener.RunMode.ASYNC] listeners will then be launched on [BCoroutineScopesConfig.eventDispatcherScope],
      * without blocking.
      *
-     * Finally, [SHARED][BEventListener.RunMode.SHARED] listeners will be fired on
-     * the scope of the [CoroutineEventManager] without blocking,
-     * which can be configured with [ICoroutineEventManagerSupplier].
+     * Finally, [SHARED][BEventListener.RunMode.SHARED] listeners will be sequentially fired on this same thread.
      *
      * Any thrown exception will be logged separately and do not affect other listeners.
      */

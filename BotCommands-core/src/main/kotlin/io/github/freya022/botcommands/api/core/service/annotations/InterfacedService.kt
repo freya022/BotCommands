@@ -11,7 +11,10 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.core.*
+import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
+import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
+import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
+import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -34,7 +37,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see IgnoreServiceTypes @IgnoreServiceTypes
  *
- * @see ICoroutineEventManagerSupplier
  * @see JDAService
  *
  * @see BotCommandsMessagesFactory

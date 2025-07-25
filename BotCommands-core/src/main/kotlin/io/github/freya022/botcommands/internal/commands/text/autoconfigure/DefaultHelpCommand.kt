@@ -1,13 +1,15 @@
 package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 
-import dev.minn.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
+import dev.freya02.botcommands.jda.ktx.requests.*
 import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.commands.text.TextUtils
 import net.dv8tion.jda.api.EmbedBuilder
