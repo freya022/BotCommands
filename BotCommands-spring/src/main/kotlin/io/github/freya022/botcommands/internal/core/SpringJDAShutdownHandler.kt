@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.core
 
-import dev.freya02.botcommands.jda.ktx.durations.awaitShutdown
 import io.github.freya022.botcommands.api.core.config.JDAConfiguration
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -9,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.event.ContextClosedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import kotlin.time.toJavaDuration
 
 private val logger = KotlinLogging.logger { }
 
@@ -25,7 +25,7 @@ internal class SpringJDAShutdownHandler(
         val jda = event.applicationContext.getBean<JDA>()
         jda.shutdown()
 
-        if (!jda.awaitShutdown(jdaConfiguration.devTools.shutdownTimeout)) {
+        if (!jda.awaitShutdown(jdaConfiguration.devTools.shutdownTimeout.toJavaDuration())) {
             logger.warn { "Timed out waiting for JDA to shutdown, forcing" }
 
             jda.shutdownNow()

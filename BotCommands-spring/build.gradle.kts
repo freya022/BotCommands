@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     api(projects.botCommandsCore)
-    implementation(projects.botCommandsJdaKtx)
 
     // Logging
     implementation(libs.kotlin.logging)
