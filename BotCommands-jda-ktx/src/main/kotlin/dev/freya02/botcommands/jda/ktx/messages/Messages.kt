@@ -303,7 +303,7 @@ class InlineEmbed(val builder: EmbedBuilder) {
      * Sets the footer, if [name] is not set
      */
     inline fun footer(
-        name: String?,
+        name: String? = null,
         iconUrl: String? = null,
         build: InlineFooter.() -> Unit = {},
     ) {
