@@ -18,4 +18,8 @@ dependencies {
     testImplementation(libs.kotlin.reflect)
 }
 
+tasks.named<Test>("test") {
+    environment("KSP_OUTPUT", layout.buildDirectory.dir("generated/ksp").get().asFile.path)
+}
+
 configurePublishedArtifact(artifactId = "BotCommands-jda-ktx")
