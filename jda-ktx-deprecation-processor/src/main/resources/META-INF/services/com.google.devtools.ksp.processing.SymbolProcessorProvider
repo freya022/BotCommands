@@ -1,1 +1,3 @@
 dev.freya02.botcommands.jda.ktx.deprecation.bc.core.processor.DeprecationProcessorProvider
+dev.freya02.botcommands.jda.ktx.deprecation.ktx.processor.JdaKtxMigrationProcessorProvider
+dev.freya02.botcommands.jda.ktx.deprecation.processor.aggregate.AggregateMigrationProcessorProvider

@@ -1,24 +1,32 @@
 package dev.freya02.botcommands.jda.ktx.deprecation.ktx.processor
 
-import com.google.devtools.ksp.processing.CodeGenerator
-import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import dev.freya02.botcommands.jda.ktx.deprecation.RewriteFindReplace
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.RichKotlinClassMetadata
+import dev.freya02.botcommands.jda.ktx.deprecation.utils.createFindAndReplaceRecipe
 import io.github.classgraph.ClassGraph
 import kotlin.metadata.jvm.KotlinClassMetadata
 import kotlin.metadata.jvm.Metadata
 
-object JdaKtxMigrationProcessor {
+private const val REPLACE_JDA_KTX = "dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx"
+
+class JdaKtxMigrationProcessor(
+    private val logger: KSPLogger,
+    private val codeGenerator: CodeGenerator,
+) : SymbolProcessor {
+
+    private val findReplacePairs = linkedSetOf<RewriteFindReplace>()
 
     @Suppress("UNCHECKED_CAST")
-    context(logger: KSPLogger, codeGenerator: CodeGenerator, findReplacePairs: MutableCollection<RewriteFindReplace>)
-    fun process(symbols: List<KSAnnotated>) {
-        if (symbols.isEmpty()) return
+    override fun process(resolver: Resolver): List<KSAnnotated> {
+        // @ReplaceJdaKtx -> Create find&replace, no accessor as we don't have the sources
+        val symbols = resolver.getSymbolsWithAnnotation(REPLACE_JDA_KTX, inDepth = false).toList()
+        if (symbols.isEmpty()) return emptyList()
 
-        val metadata = loadMetadata()
+        val metadata = context(logger) { loadMetadata() }
 
         for (symbol in symbols) {
             val annotation = symbol.annotations.first { it.shortName.asString() == "ReplaceJdaKtx" }
@@ -45,10 +53,11 @@ object JdaKtxMigrationProcessor {
                 }
             }
         }
+
+        return emptyList()
     }
 
     @Suppress("UNCHECKED_CAST")
-    context(logger: KSPLogger)
     private fun loadMetadata(): List<RichKotlinClassMetadata> {
         return ClassGraph()
             .acceptPackages("dev.minn.jda.ktx")
@@ -77,5 +86,26 @@ object JdaKtxMigrationProcessor {
                     }
                 }
             }
+    }
+
+    override fun finish() {
+        require(findReplacePairs.isNotEmpty())
+        codeGenerator.createNewFile(
+            Dependencies(
+                aggregating = true,
+                sources = findReplacePairs.map { it.processedFile }.toTypedArray()
+            ),
+            "META-INF/rewrite",
+            "jda-ktx-to-bc-jdk-ktx",
+            extensionName = "yml"
+        ).use { outputStream ->
+            val ktxRecipe = createFindAndReplaceRecipe(
+                name = "dev.freya02.MigrateFromJdaKtxToBcJdaKtx",
+                description = "Migrates most jda-ktx extensions to BotCommands-jda-ktx, may require further adjustments",
+                pairs = findReplacePairs,
+            )
+
+            outputStream.write((ktxRecipe + "\n").encodeToByteArray())
+        }
     }
 }

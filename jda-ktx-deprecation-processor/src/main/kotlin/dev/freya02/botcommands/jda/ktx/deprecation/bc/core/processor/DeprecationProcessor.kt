@@ -1,42 +1,36 @@
 package dev.freya02.botcommands.jda.ktx.deprecation.bc.core.processor
 
 import com.google.devtools.ksp.containingFile
-import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import dev.freya02.botcommands.jda.ktx.deprecation.CompatSourceFile
 import dev.freya02.botcommands.jda.ktx.deprecation.RewriteFindReplace
-import dev.freya02.botcommands.jda.ktx.deprecation.ktx.processor.JdaKtxMigrationProcessor
 import dev.freya02.botcommands.jda.ktx.deprecation.render.*
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.KaAccessor
+import dev.freya02.botcommands.jda.ktx.deprecation.utils.createFindAndReplaceRecipe
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.suffixIfNotEmpty
 import ksp.org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import ksp.org.jetbrains.kotlin.analysis.api.symbols.KaNamedFunctionSymbol
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 
-private const val REPLACE_JDA_KTX = "dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx"
 private const val DEPRECATED_IN_BC_CORE = "dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore"
 private const val UTILS_PACKAGE = "io.github.freya022.botcommands.api.core.utils"
 
 class DeprecationProcessor(
-    private val logger: KSPLogger,
     private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
 
     private val sourceFiles = arrayListOf<CompatSourceFile>()
-    private val ktxFindReplacePairs = linkedSetOf<RewriteFindReplace>()
-    private val bcCoreFindReplacePairs = linkedSetOf<RewriteFindReplace>()
+    private val findReplacePairs = linkedSetOf<RewriteFindReplace>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        // @ReplaceJdaKtx -> Create find&replace, no accessor as we don't have the sources
-        context(logger, codeGenerator, ktxFindReplacePairs) {
-            val jdaKtxReplacedSymbols = resolver.getSymbolsWithAnnotation(REPLACE_JDA_KTX, inDepth = false).toList()
-            JdaKtxMigrationProcessor.process(jdaKtxReplacedSymbols)
-        }
-
         // @DeprecatedInBcCore -> Create accessors and find&replace
         resolver
             .getSymbolsWithAnnotation(DEPRECATED_IN_BC_CORE, inDepth = false)
@@ -47,7 +41,7 @@ class DeprecationProcessor(
                 val functionAccessors = mutableListOf<String>()
                 val typeAliases = mutableListOf<String>()
 
-                context(imports, bcCoreFindReplacePairs) {
+                context(imports, findReplacePairs) {
                     deprecatedNodes.forEach { node ->
                         when (node) {
                             is KSFunctionDeclaration -> {
@@ -91,76 +85,23 @@ class DeprecationProcessor(
             }
         }
 
-        require(ktxFindReplacePairs.isNotEmpty() && bcCoreFindReplacePairs.isNotEmpty())
+        require(findReplacePairs.isNotEmpty())
         codeGenerator.createNewFile(
             Dependencies(
                 aggregating = true,
-                sources = (ktxFindReplacePairs + bcCoreFindReplacePairs).map { it.processedFile }.toTypedArray()
+                sources = findReplacePairs.map { it.processedFile }.toTypedArray()
             ),
             "META-INF/rewrite",
-            "rewrite",
+            "bc-core-to-bc-jdk-ktx",
             extensionName = "yml"
         ).use { outputStream ->
-            val aggregateRecipe = """
-                ---
-                type: specs.openrewrite.org/v1beta/recipe
-                name: dev.freya02.MigrateToBcJdaKtx
-                description: Migrates most jda-ktx and BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments
-                recipeList:
-                  - dev.freya02.MigrateFromJdaKtxToBcJdaKtx
-                  - dev.freya02.MigrateFromBcCoreToBcJdaKtx
-            """.trimIndent()
-            val ktxRecipe = createFindAndReplaceRecipe(
-                name = "dev.freya02.MigrateFromJdaKtxToBcJdaKtx",
-                description = "Migrates most jda-ktx extensions to BotCommands-jda-ktx, may require further adjustments",
-                pairs = ktxFindReplacePairs,
-            )
-            val bcCoreRecipe = createFindAndReplaceRecipe(
+            val recipe = createFindAndReplaceRecipe(
                 name = "dev.freya02.MigrateFromBcCoreToBcJdaKtx",
                 description = "Migrates most BotCommands-core extensions to BotCommands-jda-ktx, may require further adjustments",
-                pairs = bcCoreFindReplacePairs,
+                pairs = findReplacePairs,
             )
 
-            outputStream.write((aggregateRecipe + "\n\n" + ktxRecipe + "\n\n" + bcCoreRecipe + "\n").encodeToByteArray())
-        }
-    }
-
-    private fun createFindAndReplaceRecipe(name: String, description: String, pairs: Collection<RewriteFindReplace>): String {
-        val header = """
-            ---
-            type: specs.openrewrite.org/v1beta/recipe
-            name: $name
-            description: $description
-            recipeList:
-        """.trimIndent()
-
-        val recipes = pairs.withStarImports().joinToString("\n") { (_, old, new) ->
-            """
-                - org.openrewrite.text.FindAndReplace:
-                    find: "$old"
-                    replace: "$new"
-            """.trimIndent().prependIndent("  ")
-        }
-
-        return header + "\n" + recipes
-    }
-
-    private fun Collection<RewriteFindReplace>.withStarImports(): List<RewriteFindReplace> {
-        val added = hashSetOf<Pair<String, String>>()
-
-        return flatMap { rule ->
-            fun String.getPackage(): String {
-                // Assume there are no rule with nested classes, so we can just drop the last import component
-                return substringBeforeLast('.')
-            }
-
-            val oldPackage = rule.old.getPackage()
-            val newPackage = rule.new.getPackage()
-            if (added.add(oldPackage to newPackage)) {
-                listOf(rule, rule.copy(old = "$oldPackage.*", new = "$oldPackage.*\\nimport $newPackage.*"))
-            } else {
-                listOf(rule)
-            }
+            outputStream.write((recipe + "\n").encodeToByteArray())
         }
     }
 
