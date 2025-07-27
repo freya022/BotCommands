@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageEditAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.messages.MessageRequest
 
 /**
  * Same as [IMessageEditCallback.editMessage].
@@ -31,9 +32,10 @@ inline fun IMessageEditCallback.editMessage_(
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditCallbackAction = editMessage(MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditCallbackAction = editMessage(MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [InteractionHook.editMessageById].
@@ -55,9 +57,10 @@ inline fun InteractionHook.editMessage(
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): WebhookMessageEditAction<Message> = editMessageById(id, MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): WebhookMessageEditAction<Message> = editMessageById(id, MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [MessageChannel.editMessageById].
@@ -79,9 +82,10 @@ inline fun MessageChannel.editMessage(
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditAction = editMessageById(id, MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditAction = editMessageById(id, MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [Message.editMessage].
@@ -101,6 +105,7 @@ inline fun Message.edit(
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditAction = editMessage(MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditAction = editMessage(MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))

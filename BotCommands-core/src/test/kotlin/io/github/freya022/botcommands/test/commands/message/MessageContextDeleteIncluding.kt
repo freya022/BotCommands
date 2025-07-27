@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.components.Buttons
-import io.github.freya022.botcommands.test.commands.slash.ActionRow
 import kotlinx.coroutines.future.await
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
@@ -44,7 +43,7 @@ class MessageContextDeleteIncluding(
         event.hook.send {
             content = "This will delete ${messagesToDelete.size} messages up until ${messagesToDelete.last().jumpUrl}"
 
-            components += ActionRow {
+            actionRow {
                 +buttons.danger("Delete").ephemeral {
                     singleUse = true
 

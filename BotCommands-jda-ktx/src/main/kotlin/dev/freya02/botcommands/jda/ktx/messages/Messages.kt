@@ -3,10 +3,15 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
-import dev.freya02.botcommands.jda.ktx.components.row
+import dev.freya02.botcommands.jda.ktx.components.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
+import net.dv8tion.jda.api.components.container.ContainerChildComponent
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
+import net.dv8tion.jda.api.components.section.SectionAccessoryComponent
+import net.dv8tion.jda.api.components.section.SectionContentComponent
+import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
@@ -40,7 +45,7 @@ inline fun MessageCreateBuilder(
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
     components: Collection<MessageTopLevelComponent> = NO_CONTENT,
-    // TODO useComponentsV2
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},
@@ -55,6 +60,7 @@ inline fun MessageCreateBuilder(
         setComponents(components)
     if (tts)
         setTTS(true)
+    useComponentsV2(useComponentsV2)
     mentions.applyOn(this)
 
     InlineMessage(this).apply(builder)
@@ -66,7 +72,7 @@ inline fun MessageCreate(
     embeds: Collection<MessageEmbed> = NO_CONTENT,
     files: Collection<FileUpload> = NO_CONTENT,
     components: Collection<MessageTopLevelComponent> = NO_CONTENT,
-    // TODO useComponentsV2
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessageCreate.() -> Unit = {},
@@ -75,6 +81,7 @@ inline fun MessageCreate(
     embeds,
     files,
     components,
+    useComponentsV2,
     tts,
     mentions,
     builder
@@ -98,6 +105,7 @@ inline fun MessageEditBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<AttachedFile>? = null,
     mentions: Mentions? = null,
     replace: Boolean = false,
@@ -107,6 +115,7 @@ inline fun MessageEditBuilder(
     if (embeds != null) setEmbeds(embeds)
     if (components != null) setComponents(components)
     if (files != null) setAttachments(files)
+    useComponentsV2(useComponentsV2)
     mentions?.applyOn(this)
     isReplace = replace
     InlineMessage(this).apply(builder)
@@ -128,6 +137,7 @@ inline fun MessageEdit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<AttachedFile>? = null,
     mentions: Mentions? = null,
     replace: Boolean = false,
@@ -136,6 +146,7 @@ inline fun MessageEdit(
     content,
     embeds,
     components,
+    useComponentsV2,
     files,
     mentions,
     replace,
@@ -182,14 +193,135 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         embeds += InlineEmbed(EmbedBuilder(embed)).apply(builder).build()
     }
 
-    val components = Accumulator<MessageTopLevelComponent>() // TODO TopLevelMessageComponent
+    val components = Accumulator<MessageTopLevelComponent>()
 
-    fun actionRow(vararg components: ActionRowChildComponent) {
-        this.components += row(*components)
+    inline fun actionRow(
+        vararg components: ActionRowChildComponent,
+        uniqueId: Int = -1,
+        block: InlineActionRow.() -> Unit = {},
+    ) {
+        this.components += ActionRow(uniqueId) {
+            this.components += components
+            block()
+        }
     }
 
-    fun actionRow(components: Collection<ActionRowChildComponent>) {
-        this.components += components.row()
+    inline fun actionRow(
+        components: Collection<ActionRowChildComponent> = emptyList(),
+        uniqueId: Int = -1,
+        block: InlineActionRow.() -> Unit = {},
+    ) {
+        this.components += ActionRow(uniqueId) {
+            this.components += components
+            block()
+        }
+    }
+
+    inline fun section(
+        accessory: SectionAccessoryComponent? = null,
+        vararg components: SectionContentComponent,
+        uniqueId: Int = -1,
+        block: InlineSection.() -> Unit = {},
+    ) {
+        this.components += Section(accessory, uniqueId) {
+            this.components += components
+            block()
+        }
+    }
+
+    inline fun section(
+        accessory: SectionAccessoryComponent? = null,
+        components: Collection<SectionContentComponent> = emptyList(),
+        uniqueId: Int = -1,
+        block: InlineSection.() -> Unit = {},
+    ) {
+        this.components += Section(accessory, uniqueId) {
+            this.components += components
+            block()
+        }
+    }
+
+    inline fun textDisplay(
+        content: String? = null,
+        uniqueId: Int = -1,
+        block: InlineTextDisplay.() -> Unit = {},
+    ) {
+        this.components += TextDisplay(content, uniqueId, block)
+    }
+
+    inline fun mediaGallery(
+        vararg items: MediaGalleryItem,
+        uniqueId: Int = -1,
+        block: InlineMediaGallery.() -> Unit = {},
+    ) {
+        this.components += MediaGallery(uniqueId) {
+            this.items += items
+            block()
+        }
+    }
+
+    inline fun mediaGallery(
+        items: Collection<MediaGalleryItem> = emptyList(),
+        uniqueId: Int = -1,
+        block: InlineMediaGallery.() -> Unit = {},
+    ) {
+        this.components += MediaGallery(uniqueId) {
+            this.items += items
+            block()
+        }
+    }
+
+    inline fun separator(
+        uniqueId: Int = -1,
+        isDivider: Boolean = true,
+        spacing: Separator.Spacing = Separator.Spacing.SMALL,
+        block: InlineSeparator.() -> Unit = {},
+    ) {
+        this.components += Separator(uniqueId, isDivider, spacing, block)
+    }
+
+    fun fileDisplay(
+        file: FileUpload,
+        uniqueId: Int = -1,
+        spoiler: Boolean = false,
+        block: InlineFileDisplay.() -> Unit = {},
+    ) {
+        this.components += FileDisplay(file, uniqueId, spoiler, block)
+    }
+
+    fun fileDisplay(
+        fileName: String,
+        uniqueId: Int = -1,
+        spoiler: Boolean = false,
+        block: InlineFileDisplay.() -> Unit = {},
+    ) {
+        this.components += FileDisplay(fileName, uniqueId, spoiler, block)
+    }
+
+    inline fun container(
+        vararg components: ContainerChildComponent,
+        uniqueId: Int = -1,
+        accentColor: Int? = null,
+        spoiler: Boolean = false,
+        block: InlineContainer.() -> Unit = {},
+    ) {
+        this.components += Container(uniqueId, accentColor, spoiler) {
+            this.components += components
+            block()
+        }
+    }
+
+    inline fun container(
+        components: Collection<ContainerChildComponent> = emptyList(),
+        uniqueId: Int = -1,
+        accentColor: Int? = null,
+        spoiler: Boolean = false,
+        block: InlineContainer.() -> Unit = {},
+    ) {
+        this.components += Container(uniqueId, accentColor, spoiler) {
+            this.components += components
+            block()
+        }
     }
 
     var allowedMentionTypes: Set<MentionType> = MessageRequest.getDefaultMentions()
@@ -360,7 +492,7 @@ class Accumulator<T> internal constructor() {
     internal var hasItems: Boolean = false
         private set
 
-    operator fun plusAssign(items: Collection<T>) {
+    operator fun plusAssign(items: Iterable<T>) {
         hasItems = true
         _items += items
     }
@@ -370,7 +502,7 @@ class Accumulator<T> internal constructor() {
         _items += item
     }
 
-    operator fun minusAssign(items: Collection<T>) {
+    operator fun minusAssign(items: Iterable<T>) {
         hasItems = true
         _items -= items
     }
