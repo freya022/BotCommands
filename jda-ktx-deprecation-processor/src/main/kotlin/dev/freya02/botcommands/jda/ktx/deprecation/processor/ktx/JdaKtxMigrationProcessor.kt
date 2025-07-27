@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.jda.ktx.deprecation.ktx.processor
+package dev.freya02.botcommands.jda.ktx.deprecation.processor.ktx
 
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated

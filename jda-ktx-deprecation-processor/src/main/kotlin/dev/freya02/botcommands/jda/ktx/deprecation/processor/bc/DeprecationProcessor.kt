@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.jda.ktx.deprecation.bc.core.processor
+package dev.freya02.botcommands.jda.ktx.deprecation.processor.bc
 
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.CodeGenerator
