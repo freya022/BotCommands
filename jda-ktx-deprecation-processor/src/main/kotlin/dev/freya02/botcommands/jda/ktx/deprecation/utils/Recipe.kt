@@ -1,8 +1,8 @@
 package dev.freya02.botcommands.jda.ktx.deprecation.utils
 
-import dev.freya02.botcommands.jda.ktx.deprecation.RewriteFindReplace
+import dev.freya02.botcommands.jda.ktx.deprecation.FindReplacePairs
 
-fun createFindAndReplaceRecipe(name: String, description: String, pairs: Collection<RewriteFindReplace>): String {
+fun createFindAndReplaceRecipe(name: String, description: String, pairs: FindReplacePairs): String {
     val header = """
         ---
         type: specs.openrewrite.org/v1beta/recipe
@@ -11,32 +11,21 @@ fun createFindAndReplaceRecipe(name: String, description: String, pairs: Collect
         recipeList:
     """.trimIndent()
 
-    val recipes = pairs.sortedBy { it.old }.withStarImports().joinToString("\n") { (_, old, new) ->
+    val recipes = pairs.pairs.entries.joinToString("\n") { (old, replacements) ->
         """
             - org.openrewrite.text.FindAndReplace:
-                find: "$old"
-                replace: "$new"
+                find: "import $old"
+                replace: "${replacements.joinToString("\\n") { "import $it" }}"
+            - org.openrewrite.text.FindAndReplace:
+                find: "import ${old.getPackage()}.*"
+                replace: "${replacements.joinToString("\\n") { "import ${it.getPackage()}.*" }}"
         """.trimIndent().prependIndent("  ")
     }
 
     return header + "\n" + recipes
 }
 
-private fun Collection<RewriteFindReplace>.withStarImports(): List<RewriteFindReplace> {
-    val added = hashSetOf<Pair<String, String>>()
-
-    return flatMap { rule ->
-        fun String.getPackage(): String {
-            // Assume there are no rule with nested classes, so we can just drop the last import component
-            return substringBeforeLast('.')
-        }
-
-        val oldPackage = rule.old.getPackage()
-        val newPackage = rule.new.getPackage()
-        if (added.add(oldPackage to newPackage)) {
-            listOf(rule, rule.copy(old = "$oldPackage.*", new = "$oldPackage.*\\nimport $newPackage.*"))
-        } else {
-            listOf(rule)
-        }
-    }
+private fun String.getPackage(): String {
+    // Assume there are no rule with nested classes, so we can just drop the last import component
+    return substringBeforeLast('.')
 }
