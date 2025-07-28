@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.components.ActionComponent
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.tree.ComponentTree
 import javax.annotation.CheckReturnValue
 
 abstract class AbstractComponentFactory internal constructor(
@@ -128,8 +129,21 @@ abstract class AbstractComponentFactory internal constructor(
      */
     @JvmSynthetic
     suspend fun deleteRows(components: Collection<MessageTopLevelComponent>) =
-        components.toDefaultComponentTree()
-            .findAll<ActionComponent>()
+        deleteTree(components.toDefaultComponentTree())
+
+
+    @JvmSynthetic
+    @JvmName("deleteRows")
+    suspend fun deleteTreeJava(tree: ComponentTree<*>) =
+        tree.findAll<ActionComponent>()
+            .mapNotNull { it.customId }
+            .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
+            .let { deleteComponents(it) }
+
+
+    @JvmSynthetic
+    suspend fun deleteTree(tree: ComponentTree<*>) =
+        tree.findAll<ActionComponent>()
             .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
