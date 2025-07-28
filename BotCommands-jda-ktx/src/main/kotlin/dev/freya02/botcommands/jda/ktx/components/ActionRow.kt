@@ -4,6 +4,8 @@ import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.entities.emoji.Emoji
 
 private val DUMMY_ROW = ActionRow.of(Button.success("id", "label"))
 
@@ -18,6 +20,10 @@ class InlineActionRow : InlineComponentWithChildren<ActionRowChildComponent> {
         }
 
     override val components = mutableListOf<ActionRowChildComponent>()
+
+    fun link(url: String, label: String? = null, emoji: Emoji? = null, disabled: Boolean = false) {
+        components += Button.of(ButtonStyle.LINK, url, label, emoji).withDisabled(disabled)
+    }
 
     fun build(): ActionRow {
         return row.withComponents(components)
