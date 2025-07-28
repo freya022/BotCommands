@@ -47,7 +47,7 @@ class ModalEvent internal constructor(
             "Can only get modal mapping for modal-compatible components, provided: $component"
         }
 
-        return event.values.first { it.uniqueId == component.uniqueId }
+        return event.values.first { it.customId == component.customId }
             ?: throwArgument("No value found, you likely passed an input from another modal, or haven't attached it")
     }
 }
