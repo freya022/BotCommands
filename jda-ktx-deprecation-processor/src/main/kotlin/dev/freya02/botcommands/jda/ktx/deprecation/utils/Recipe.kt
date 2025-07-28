@@ -11,7 +11,7 @@ fun createFindAndReplaceRecipe(name: String, description: String, pairs: Collect
         recipeList:
     """.trimIndent()
 
-    val recipes = pairs.withStarImports().joinToString("\n") { (_, old, new) ->
+    val recipes = pairs.sortedBy { it.old }.withStarImports().joinToString("\n") { (_, old, new) ->
         """
             - org.openrewrite.text.FindAndReplace:
                 find: "$old"
