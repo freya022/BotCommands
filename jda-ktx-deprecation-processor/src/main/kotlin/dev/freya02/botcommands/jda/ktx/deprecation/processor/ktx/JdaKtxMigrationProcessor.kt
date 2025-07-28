@@ -4,7 +4,7 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import dev.freya02.botcommands.jda.ktx.deprecation.RewriteFindReplace
+import dev.freya02.botcommands.jda.ktx.deprecation.FindReplacePairs
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.RichKotlinClassMetadata
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.createFindAndReplaceRecipe
 import io.github.classgraph.ClassGraph
@@ -18,7 +18,7 @@ class JdaKtxMigrationProcessor(
     private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
 
-    private val findReplacePairs = linkedSetOf<RewriteFindReplace>()
+    private val findReplacePairs = FindReplacePairs()
 
     @Suppress("UNCHECKED_CAST")
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -34,18 +34,18 @@ class JdaKtxMigrationProcessor(
 
             when (symbol) {
                 is KSClassDeclaration -> {
-                    findReplacePairs += if (forcedPkg.isNotBlank()) {
-                        RewriteFindReplace.Companion.from(symbol, forcedPkg + "." + symbol.simpleName.asString(), symbol.qualifiedName!!.asString())
+                    if (forcedPkg.isNotBlank()) {
+                        findReplacePairs.add(symbol, forcedPkg + "." + symbol.simpleName.asString(), symbol.qualifiedName!!.asString())
                     } else {
-                        JdaKtxClassProcessor.findReplacement(symbol, metadata)
+                        findReplacePairs.add(JdaKtxClassProcessor.findReplacement(symbol, metadata))
                     }
                 }
                 is KSFunctionDeclaration -> {
                     require(symbol.parentDeclaration == null) { "Only top-level functions are supported" }
-                    findReplacePairs += if (forcedPkg.isNotBlank()) {
-                        RewriteFindReplace.Companion.from(symbol, forcedPkg + "." + symbol.simpleName.asString(), symbol.qualifiedName!!.asString())
+                    if (forcedPkg.isNotBlank()) {
+                        findReplacePairs.add(symbol, forcedPkg + "." + symbol.simpleName.asString(), symbol.qualifiedName!!.asString())
                     } else {
-                        JdaKtxFunctionProcessor.findReplacement(symbol, metadata)
+                        findReplacePairs.add(JdaKtxFunctionProcessor.findReplacement(symbol, metadata))
                     }
                 }
                 else -> {
@@ -89,11 +89,11 @@ class JdaKtxMigrationProcessor(
     }
 
     override fun finish() {
-        require(findReplacePairs.isNotEmpty())
+        require(findReplacePairs.pairs.isNotEmpty())
         codeGenerator.createNewFile(
             Dependencies(
                 aggregating = true,
-                sources = findReplacePairs.map { it.processedFile }.toTypedArray()
+                sources = findReplacePairs.processedFiles.toTypedArray()
             ),
             "META-INF/rewrite",
             "jda-ktx-to-bc-jdk-ktx",

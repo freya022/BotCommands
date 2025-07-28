@@ -10,7 +10,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import dev.freya02.botcommands.jda.ktx.deprecation.CompatSourceFile
-import dev.freya02.botcommands.jda.ktx.deprecation.RewriteFindReplace
+import dev.freya02.botcommands.jda.ktx.deprecation.FindReplacePairs
 import dev.freya02.botcommands.jda.ktx.deprecation.render.*
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.KaAccessor
 import dev.freya02.botcommands.jda.ktx.deprecation.utils.createFindAndReplaceRecipe
@@ -28,7 +28,7 @@ class DeprecationProcessor(
 ) : SymbolProcessor {
 
     private val sourceFiles = arrayListOf<CompatSourceFile>()
-    private val findReplacePairs = linkedSetOf<RewriteFindReplace>()
+    private val findReplacePairs = FindReplacePairs()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         // @DeprecatedInBcCore -> Create accessors and find&replace
@@ -85,11 +85,11 @@ class DeprecationProcessor(
             }
         }
 
-        require(findReplacePairs.isNotEmpty())
+        require(findReplacePairs.pairs.isNotEmpty())
         codeGenerator.createNewFile(
             Dependencies(
                 aggregating = true,
-                sources = findReplacePairs.map { it.processedFile }.toTypedArray()
+                sources = findReplacePairs.processedFiles.toTypedArray()
             ),
             "META-INF/rewrite",
             "bc-core-to-bc-jdk-ktx",
@@ -142,11 +142,11 @@ class DeprecationProcessor(
     }.trimEnd('\n') + '\n'
 
     @OptIn(KaExperimentalApi::class)
-    context(imports: MutableSet<String>, findReplacePairs: MutableCollection<RewriteFindReplace>)
+    context(imports: MutableSet<String>, findReplacePairs: FindReplacePairs)
     private fun createFunctionAccessor(function: KSFunctionDeclaration): String {
         val fullOldFunction = "$UTILS_PACKAGE.${function.simpleName.asString()}"
         val fullNewFunction = function.qualifiedName!!.asString()
-        findReplacePairs +=  RewriteFindReplace.Companion.from(function, fullOldFunction, fullNewFunction)
+        findReplacePairs.add(function, fullOldFunction, fullNewFunction)
 
         val functionSymbol = KaAccessor.getKaFunctionSymbol(function) as KaNamedFunctionSymbol
 
@@ -198,13 +198,13 @@ class DeprecationProcessor(
         }
     }
 
-    context(findReplacePairs: MutableCollection<RewriteFindReplace>)
+    context(findReplacePairs: FindReplacePairs)
     private fun createTypeAlias(clazz: KSClassDeclaration): String {
         val aliasName = clazz.simpleName.asString()
         val implFullName = clazz.qualifiedName!!.asString()
         val typeArguments = clazz.renderTypeParameters()
 
-        findReplacePairs +=  RewriteFindReplace.Companion.from(clazz, "$UTILS_PACKAGE.$aliasName", implFullName)
+        findReplacePairs.add(clazz, "$UTILS_PACKAGE.$aliasName", implFullName)
 
         return "typealias $aliasName$typeArguments = $implFullName$typeArguments"
     }

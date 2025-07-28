@@ -21,7 +21,7 @@ class MigrationSnapshotTest {
                 while (zipStream.nextEntry.also { entry = it } != null) {
                     if (entry!!.isDirectory) continue
                     val frozenBytes = zipStream.readAllBytes()
-                    val generatedBytes = kspOutput.resolve("${entry.name}").readBytes()
+                    val generatedBytes = kspOutput.resolve(entry.name).readBytes()
 
                     if (!(frozenBytes contentEquals generatedBytes)) {
                         diffFiles += entry.name
