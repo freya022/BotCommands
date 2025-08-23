@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.api.modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.modals.ModalDSL
-import net.dv8tion.jda.api.interactions.modals.Modal as JDAModal
+import net.dv8tion.jda.api.modals.Modal as JDAModal
 import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer

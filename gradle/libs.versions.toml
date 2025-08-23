@@ -10,7 +10,7 @@ h2 = "2.3.232"
 hikaricp = "6.2.1"
 jackson = "2.19.1"
 java-string-similarity = "2.0.0"
-jda = "e87771b759"
+jda = "6.0.0-rc.3"
 jda-emojis = "3.0.0"
 jda-ktx = "0.12.0"
 jemoji = "1.7.4"
@@ -54,7 +54,7 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 java-string-similarity = { module = "info.debatty:java-string-similarity", version.ref = "java-string-similarity" }
-jda = { module = "io.github.freya022:JDA", version.ref = "jda" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 jda-emojis = { module = "dev.freya02:jda-emojis", version.ref = "jda-emojis" }
 jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
 jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
