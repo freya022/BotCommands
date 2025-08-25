@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.config.BServiceConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import kotlin.reflect.KClass
 
 /**
@@ -68,6 +69,7 @@ class ServiceSupplier<T : Any> @JvmOverloads constructor(
     }
 
     companion object {
+        @SkipJavaReflectionOverload
         fun defaultName(clazz: KClass<*>): String {
             return clazz.simpleNestedName.replaceFirstChar { it.lowercase() }
         }

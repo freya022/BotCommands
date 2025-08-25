@@ -26,6 +26,7 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 import io.github.freya022.botcommands.internal.commands.application.context.user.builder.UserCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.TopLevelSlashCommandBuilderImpl
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -75,6 +76,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      *
      * @see JDASlashCommand @JDASlashCommand
      */
+    @SkipJavaReflectionOverload
     fun slashCommand(name: String, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         TopLevelSlashCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()
@@ -106,6 +108,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      *
      * @see JDAUserCommand @JDAUserCommand
      */
+    @SkipJavaReflectionOverload
     fun userCommand(name: String, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {
         UserCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()
@@ -136,6 +139,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
      *
      * @see JDAMessageCommand @JDAMessageCommand
      */
+    @SkipJavaReflectionOverload
     fun messageCommand(name: String, function: KFunction<Any>, builder: MessageCommandBuilder.() -> Unit) {
         MessageCommandBuilderImpl(this, name, function)
             .setCallerAsDeclarationSite()

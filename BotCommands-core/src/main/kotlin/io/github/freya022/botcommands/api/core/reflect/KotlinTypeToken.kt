@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.reflect
 
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
@@ -117,12 +118,14 @@ open class KotlinTypeToken<T> {
          * this is equivalent to [`clazz.startProjectedType`][KClass.starProjectedType].
          */
         @JvmStatic
+        @SkipJavaReflectionOverload
         fun ofKClass(clazz: KClass<*>) = KotlinTypeToken<Any>(clazz.starProjectedType)
 
         /**
          * Creates a [KotlinTypeToken] with the given [KType], unchanged.
          */
         @JvmStatic
+        @SkipJavaReflectionOverload
         fun ofType(type: KType) = KotlinTypeToken<Any>(type)
     }
 }

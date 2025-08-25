@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.service
 
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -31,12 +32,14 @@ class ServiceError private constructor(
         FAILED_FATAL_CUSTOM_CONDITION("At least one custom check returned an error message, and was configured to fail");
 
         @JvmOverloads
+        @SkipJavaReflectionOverload
         fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
             ServiceError(this, errorMessage, nestedError, siblingErrors, buildMap(2) {
                 if (extraMessage != null) put("Extra message", extraMessage)
                 if (failedFunction != null) put("Failed function", failedFunction)
             } + extra)
 
+        @SkipJavaReflectionOverload
         fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList(), extra: Map<String, Any> = emptyMap()) =
             ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError, siblingErrors, extra))
     }

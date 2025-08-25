@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import kotlin.reflect.KFunction
 
@@ -19,6 +20,7 @@ class DeclarationSite private constructor(
 
     companion object {
         @JvmStatic
+        @SkipJavaReflectionOverload("Expected to be supplied with an Executable's function")
         fun fromFunctionSignature(function: KFunction<*>): DeclarationSite {
             return DeclarationSite(function.shortSignature)
         }

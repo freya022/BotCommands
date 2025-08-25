@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.reflect
 
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
@@ -46,9 +47,11 @@ class ParameterType private constructor(val type: KType) {
             )
 
         @JvmStatic
+        @SkipJavaReflectionOverload
         fun ofKClass(clazz: KClass<*>) = ParameterType(clazz.starProjectedType)
 
         @JvmStatic
+        @SkipJavaReflectionOverload
         fun ofType(type: KType) = ParameterType(type)
     }
 }

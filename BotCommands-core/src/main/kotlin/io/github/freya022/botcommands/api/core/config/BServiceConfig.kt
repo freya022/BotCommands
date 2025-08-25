@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.toImmutableMap
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import kotlin.reflect.KClass
 
@@ -44,7 +45,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
      * @param annotations     Annotations which should be tied to this service
      * @param supplier        The function supplying the service
      */
-    @JvmOverloads
+    @SkipJavaReflectionOverload
     fun <T : Any> registerServiceSupplier(
         primaryType: KClass<T>,
         name: String = ServiceSupplier.defaultName(primaryType),
@@ -56,6 +57,36 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
         supplier: (BContext) -> T,
     ) {
         _serviceSuppliers[primaryType] = ServiceSupplier(primaryType, name, additionalTypes, isPrimary, isLazy, priority, annotations, supplier)
+    }
+
+    /**
+     * Registers a supplier which gets loaded in the same manner as annotated service classes/factories.
+     *
+     * **Note:** The [annotations] passed will not be readable using standard reflection,
+     * they are only read when functions
+     * like [ServiceContainer.findAnnotationOnService] or [ServiceContainer.getServiceNamesForAnnotation] are used.
+     *
+     * @param primaryType     The type as which the service will be *registered* as
+     * @param name            The [name][ServiceName] to register the service as
+     * @param additionalTypes [Additional types][ServiceType] this service can be *retrieved* as
+     * @param isPrimary       Whether this service should be a [primary][Primary] service
+     * @param isLazy          Whether this service should be initialized only [when requested][Lazy]
+     * @param priority        The [priority][ServicePriority] of this service
+     * @param annotations     Annotations which should be tied to this service
+     * @param supplier        The function supplying the service
+     */
+    @JvmOverloads
+    fun <T : Any> registerServiceSupplier(
+        primaryType: Class<T>,
+        name: String = ServiceSupplier.defaultName(primaryType),
+        additionalTypes: Set<Class<in T>> = emptySet(), // Accept superclasses not subclasses
+        isPrimary: Boolean = false,
+        isLazy: Boolean = false,
+        priority: Int = 0,
+        annotations: List<Annotation> = emptyList(),
+        supplier: (BContext) -> T,
+    ) {
+        _serviceSuppliers[primaryType.kotlin] = ServiceSupplier(primaryType.kotlin, name, additionalTypes.mapTo(hashSetOf()) { it.kotlin }, isPrimary, isLazy, priority, annotations, supplier)
     }
 
     @JvmSynthetic
