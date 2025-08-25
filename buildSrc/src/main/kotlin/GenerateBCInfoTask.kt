@@ -1,8 +1,6 @@
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.Directory
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -14,13 +12,13 @@ import javax.inject.Inject
 abstract class GenerateBCInfoTask : DefaultTask() {
 
     @get:InputFile
-    val inputFile = project.layout.projectDirectory.file("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
+    val inputFile = project.layout.projectDirectory.file($$"src/main/java/io/github/freya022/botcommands/api/$BCInfo.java")
 
     @get:OutputDirectory
     val outputDir = project.layout.buildDirectory.dir("generated/sources/BotCommands/main/java")
 
     @get:Input
-    val projectDir = project.projectDir.absolutePath
+    val projectDir: String = project.projectDir.absolutePath
 
     @get:Inject
     abstract val providers: ProviderFactory
@@ -34,7 +32,7 @@ abstract class GenerateBCInfoTask : DefaultTask() {
 
     @TaskAction
     fun run() {
-        val attributes = mapOf<String, String>(
+        val attributes = mapOf(
             "version-major" to version.major,
             "version-minor" to version.minor,
             "version-revision" to version.revision,
@@ -46,7 +44,7 @@ abstract class GenerateBCInfoTask : DefaultTask() {
         )
 
         val initialContent = inputFile.asFile.readText()
-        val filteredContent = initialContent.replaceTokens(attributes).replace("\$BCInfo", "BCInfo")
+        val filteredContent = initialContent.replaceTokens(attributes).replace($$"$BCInfo", "BCInfo")
 
         val bcInfoFile = outputDir.get().file("io/github/freya022/botcommands/api/BCInfo.java").asFile
         bcInfoFile.parentFile.mkdirs()
