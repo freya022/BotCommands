@@ -24,6 +24,7 @@ dependencies {
 
     // Take the same test dependencies as the main library
     testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().compileClasspath)
+    testRuntimeOnly(project.project(projects.botCommandsCore.path).sourceSets.test.get().runtimeClasspath)
     // Take the same test sources as the main library
     testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().output)
 
