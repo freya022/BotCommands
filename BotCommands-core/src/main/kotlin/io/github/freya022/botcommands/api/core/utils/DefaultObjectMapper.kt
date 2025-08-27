@@ -11,9 +11,16 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 object DefaultObjectMapper {
+    @get:JvmStatic
     val lock: ReentrantLock = ReentrantLock()
+
+    @get:JvmStatic
     val mapper: ObjectMapper = jacksonObjectMapper()
+
+    @get:JvmStatic
     val mapType: MapType
+
+    @get:JvmStatic
     val listType: CollectionType
 
     init {

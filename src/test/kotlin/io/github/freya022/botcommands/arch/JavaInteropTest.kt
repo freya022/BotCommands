@@ -4,6 +4,7 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoTypeArgumentDeclaration
 import com.lemonappdev.konsist.api.ext.list.functions
 import com.lemonappdev.konsist.api.ext.list.modifierprovider.withPublicOrDefaultModifier
+import com.lemonappdev.konsist.api.ext.list.properties
 import com.lemonappdev.konsist.api.ext.list.withParameter
 import com.lemonappdev.konsist.api.ext.list.withoutAnnotationNamed
 import com.lemonappdev.konsist.api.ext.provider.hasAnnotationOf
@@ -49,6 +50,17 @@ class JavaInteropTest {
             .objects(includeNested = true)
             .filter { it.packagee!!.name.contains("api") }
             .functions(includeNested = true)
+            .withPublicOrDefaultModifier()
+            .withoutAnnotationNamed(JvmSynthetic::class.java.simpleName)
+            .assertTrue(strict = true) { it.hasAnnotationOf<JvmStatic>() }
+    }
+
+    @Test
+    fun `Check all object properties have @JvmStatic`() {
+        Konsist.scopeFromProduction()
+            .objects(includeNested = true)
+            .filter { it.packagee!!.name.contains("api") }
+            .properties(includeNested = true)
             .withPublicOrDefaultModifier()
             .withoutAnnotationNamed(JvmSynthetic::class.java.simpleName)
             .assertTrue(strict = true) { it.hasAnnotationOf<JvmStatic>() }
