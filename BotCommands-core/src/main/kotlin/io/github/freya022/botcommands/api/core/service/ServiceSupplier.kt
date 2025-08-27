@@ -41,6 +41,7 @@ class ServiceSupplier<T : Any>(
     }
 
     companion object {
+        @JvmStatic
         @SkipJavaReflectionOverload
         fun defaultName(clazz: KClass<*>): String {
             return clazz.simpleNestedName.replaceFirstChar { it.lowercase() }
@@ -56,6 +57,7 @@ class ServiceSupplier<T : Any>(
          *
          * @param primaryType The type as which the service will be *registered* as
          */
+        @JvmStatic
         @SkipJavaReflectionOverload
         fun <T : Any> builder(primaryType: KClass<T>): ServiceSupplierBuilder<T> {
             return ServiceSupplierBuilder(primaryType)

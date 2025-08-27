@@ -109,6 +109,8 @@ class ServiceError private constructor(
     }
 
     companion object {
+
+        @JvmStatic
         fun fromErrors(errors: List<ServiceError>): ServiceError {
             return errors.first().withSiblings(errors.drop(1))
         }
@@ -159,8 +161,13 @@ class ServiceResult<out T : Any> private constructor(val service: T?, val servic
     }
 
     companion object {
+        @JvmStatic
         fun <T : Any> pass(service: T) = ServiceResult(service, null)
+
+        @JvmStatic
         fun <T : Any> fail(error: ServiceError) = ServiceResult<T>(null, error)
+
+        @JvmStatic
         fun <T : Any> fail(errors: List<ServiceError>) = fail<T>(ServiceError.fromErrors(errors))
     }
 }

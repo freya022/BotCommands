@@ -16,6 +16,7 @@ fun interface ReceiverConsumer<T> : (T) -> Unit {
     companion object {
         private val NOOP = ReceiverConsumer<Any?> { }
 
+        @JvmStatic
         @Suppress("UNCHECKED_CAST")
         fun <T> noop(): ReceiverConsumer<T> = NOOP as ReceiverConsumer<T>
     }

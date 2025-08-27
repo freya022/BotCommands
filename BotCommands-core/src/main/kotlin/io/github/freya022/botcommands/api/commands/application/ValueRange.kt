@@ -10,10 +10,13 @@ class ValueRange private constructor(val min: Number, val max: Number) {
         fun ofDouble(minValue: Double, maxValue: Double) =
             ValueRange(minValue, maxValue)
 
+        @JvmSynthetic
         infix fun Long.range(maxValue: Long) = ValueRange(this, maxValue)
 
+        @JvmSynthetic
         infix fun Int.range(maxValue: Int) = ValueRange(this, maxValue)
 
+        @JvmSynthetic
         infix fun Double.range(maxValue: Double) = ValueRange(this, maxValue)
     }
 }

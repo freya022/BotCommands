@@ -11,7 +11,9 @@ interface IdentifiableComponent {
         @JvmStatic
         fun isCompatible(id: String): Boolean = ComponentController.isCompatibleComponent(id)
 
+        @JvmSynthetic
         fun ActionComponent.toIdentifiableComponent(): IdentifiableComponent = fromComponent(this)
+        @JvmSynthetic
         fun ActionComponent.toIdentifiableComponentOrNull(): IdentifiableComponent? = fromComponentOrNull(this)
 
         @JvmStatic

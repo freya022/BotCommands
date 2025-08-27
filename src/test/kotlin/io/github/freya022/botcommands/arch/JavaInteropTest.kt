@@ -3,11 +3,14 @@ package io.github.freya022.botcommands.arch
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoTypeArgumentDeclaration
 import com.lemonappdev.konsist.api.ext.list.functions
+import com.lemonappdev.konsist.api.ext.list.modifierprovider.withPublicOrDefaultModifier
 import com.lemonappdev.konsist.api.ext.list.withParameter
 import com.lemonappdev.konsist.api.ext.list.withoutAnnotationNamed
+import com.lemonappdev.konsist.api.ext.provider.hasAnnotationOf
 import com.lemonappdev.konsist.api.provider.*
 import com.lemonappdev.konsist.api.verify.assertEmpty
 import com.lemonappdev.konsist.api.verify.assertNotEmpty
+import com.lemonappdev.konsist.api.verify.assertTrue
 import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import kotlin.test.Test
 
@@ -31,12 +34,23 @@ class JavaInteropTest {
             .assertEmpty(strict = true)
     }
 
-    fun KoNonNullableTypeProvider.getAllTypes(): List<KoBaseProvider> {
+    private fun KoNonNullableTypeProvider.getAllTypes(): List<KoBaseProvider> {
         fun KoTypeArgumentProvider.allArgumentTypes(): List<KoTypeArgumentDeclaration> {
             val args = typeArguments ?: return emptyList()
             return args + args.flatMap { it.allArgumentTypes() }
         }
 
         return listOf(this.type) + this.type.allArgumentTypes()
+    }
+
+    @Test
+    fun `Check all object functions have @JvmStatic`() {
+        Konsist.scopeFromProduction()
+            .objects(includeNested = true)
+            .filter { it.packagee!!.name.contains("api") }
+            .functions(includeNested = true)
+            .withPublicOrDefaultModifier()
+            .withoutAnnotationNamed(JvmSynthetic::class.java.simpleName)
+            .assertTrue(strict = true) { it.hasAnnotationOf<JvmStatic>() }
     }
 }
