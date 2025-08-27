@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
  *
  * @see BServiceConfigBuilder.registerServiceSupplier
  */
-class ServiceSupplier<T : Any> @JvmOverloads constructor(
+class ServiceSupplier<T : Any>(
     val primaryType: KClass<T>,
     val name: String = defaultName(primaryType),
     val additionalTypes: Set<KClass<in T>> = emptySet(), // Accept superclasses not subclasses
@@ -35,34 +35,6 @@ class ServiceSupplier<T : Any> @JvmOverloads constructor(
     val annotations: List<Annotation> = emptyList(),
     val supplier: (BContext) -> T,
 ) {
-
-    /**
-     * Constructs a [ServiceSupplier].
-     *
-     * **Note:** The [annotations] passed will not be readable using standard reflection,
-     * they are only read when functions
-     * like [ServiceContainer.findAnnotationOnService] or [ServiceContainer.getServiceNamesForAnnotation] are used.
-     *
-     * @param primaryType     The type as which the service will be *registered* as
-     * @param name            The [name][ServiceName] to register the service as
-     * @param additionalTypes [Additional types][ServiceType] this service can be *retrieved* as
-     * @param isPrimary       Whether this service should be a [primary][Primary] service
-     * @param isLazy          Whether this service should be initialized only [when requested][Lazy]
-     * @param priority        The [priority][ServicePriority] of this service
-     * @param annotations     Annotations which should be tied to this service
-     * @param supplier        The function supplying the service
-     */
-    @JvmOverloads
-    constructor(
-        primaryType: Class<T>,
-        name: String = defaultName(primaryType.kotlin),
-        additionalTypes: Set<Class<in T>> = emptySet(), // Accept superclasses not subclasses
-        isPrimary: Boolean = false,
-        isLazy: Boolean = false,
-        priority: Int = 0,
-        annotations: List<Annotation> = emptyList(),
-        supplier: (BContext) -> T,
-    ) : this(primaryType.kotlin, name, additionalTypes.mapTo(hashSetOf()) { it.kotlin }, isPrimary, isLazy, priority, annotations, supplier)
 
     override fun toString(): String {
         return "ServiceSupplier(primaryType=$primaryType, name='$name', additionalTypes=$additionalTypes, isPrimary=$isPrimary, isLazy=$isLazy, priority=$priority, annotations=$annotations)"
@@ -77,6 +49,26 @@ class ServiceSupplier<T : Any> @JvmOverloads constructor(
         @JvmStatic
         fun defaultName(clazz: Class<*>): String {
             return clazz.simpleNestedName.replaceFirstChar { it.lowercase() }
+        }
+
+        /**
+         * Creates a [ServiceSupplierBuilder].
+         *
+         * @param primaryType The type as which the service will be *registered* as
+         */
+        @SkipJavaReflectionOverload
+        fun <T : Any> builder(primaryType: KClass<T>): ServiceSupplierBuilder<T> {
+            return ServiceSupplierBuilder(primaryType)
+        }
+
+        /**
+         * Creates a [ServiceSupplierBuilder].
+         *
+         * @param primaryType The type as which the service will be *registered* as
+         */
+        @JvmStatic
+        fun <T : Any> builder(primaryType: Class<T>): ServiceSupplierBuilder<T> {
+            return ServiceSupplierBuilder(primaryType.kotlin)
         }
     }
 }
