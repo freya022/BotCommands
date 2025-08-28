@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -98,5 +99,6 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * Must match an autocomplete handler created from [@AutocompleteHandler][AutocompleteHandler]
      * or [AutocompleteManager.autocomplete].
      */
+    @SkipJavaReflectionOverload
     fun autocompleteByFunction(function: KFunction<Collection<Any>>)
 }

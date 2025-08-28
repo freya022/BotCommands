@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 
@@ -49,5 +50,6 @@ interface AutocompleteManager {
      *
      * @see AutocompleteHandler @AutocompleteHandler
      */
+    @SkipJavaReflectionOverload
     fun autocomplete(function: KFunction<Collection<Any>>, name: String? = null, block: AutocompleteInfoBuilder.() -> Unit = {})
 }

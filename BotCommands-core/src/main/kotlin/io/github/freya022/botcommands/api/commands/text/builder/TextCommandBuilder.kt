@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BotOwners
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 import kotlin.reflect.KFunction
@@ -91,5 +92,6 @@ interface TextCommandBuilder : CommandBuilder {
      * If no variation matches and there is no fallback,
      * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
      */
+    @SkipJavaReflectionOverload
     fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {})
 }

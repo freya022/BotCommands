@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.internal.commands.CommandDSL
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
@@ -36,5 +37,6 @@ interface SlashSubcommandGroupBuilder : INamedCommand, IDeclarationSiteHolderBui
      *
      * @see JDASlashCommand.subcommand
      */
+    @SkipJavaReflectionOverload
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {})
 }

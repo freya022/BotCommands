@@ -12,6 +12,15 @@ interface BCServiceContainer : ServiceContainer {
         annotations: Collection<Annotation> = emptySet(),
         typeAliases: Set<KClass<*>> = emptySet()
     )
+    fun <T : Any> putService(
+        t: T,
+        clazz: Class<out T>,
+        name: String?,
+        isPrimary: Boolean,
+        priority: Int,
+        annotations: Collection<Annotation>,
+        typeAliases: Set<Class<*>>,
+    ) = putService(t, clazz.kotlin, name, isPrimary, priority, annotations, typeAliases.mapTo(hashSetOf()) { it.kotlin })
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String) = putService(t, clazz, name)
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = putService(t, clazz)
 

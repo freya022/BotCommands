@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.utils
 
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.lineNumberOrNull
@@ -24,9 +25,11 @@ object ReflectionUtils { //For Java users
     fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
 
     @JvmStatic
+    @SkipJavaReflectionOverload
     fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
 
     @JvmStatic
+    @SkipJavaReflectionOverload
     fun KFunction<*>.isConstructor(): Boolean = this.isConstructor
 
     @JvmStatic
@@ -42,6 +45,7 @@ object ReflectionUtils { //For Java users
     fun <T : Any> Constructor<T>.toKotlin(): KFunction<T> = kotlinFunction ?: error("Cannot represent '$this' as a Kotlin function")
 
     @JvmStatic
+    @SkipJavaReflectionOverload
     fun KFunction<*>.toJava(): Executable = this.javaMethodOrConstructor
 }
 

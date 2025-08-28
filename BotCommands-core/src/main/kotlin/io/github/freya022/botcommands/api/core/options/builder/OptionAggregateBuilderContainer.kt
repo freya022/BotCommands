@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.options.builder
 
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KClass
@@ -20,6 +21,7 @@ interface OptionAggregateBuilderContainer<T : OptionAggregateBuilder<T>> {
      *
      * @see Aggregate @Aggregate
      */
+    @SkipJavaReflectionOverload
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit = {})
 }
 

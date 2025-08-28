@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.builder
 import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
+import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
@@ -15,6 +16,7 @@ interface TopLevelSlashCommandBuilder : SlashCommandBuilder,
      *
      * @see JDASlashCommand.subcommand
      */
+    @SkipJavaReflectionOverload
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {})
 
     /**
