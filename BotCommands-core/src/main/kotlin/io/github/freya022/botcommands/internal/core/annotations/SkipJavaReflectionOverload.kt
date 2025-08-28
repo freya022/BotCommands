@@ -5,5 +5,5 @@ package io.github.freya022.botcommands.internal.core.annotations
  *
  * The test essentially makes sure the contributor did not forget about adding a Java equivalent.
  */
-@Retention(AnnotationRetention.SOURCE)
-annotation class SkipJavaReflectionOverload(val reason: String = "")
+@Retention(AnnotationRetention.BINARY)
+internal annotation class SkipJavaReflectionOverload(val reason: String = "")
