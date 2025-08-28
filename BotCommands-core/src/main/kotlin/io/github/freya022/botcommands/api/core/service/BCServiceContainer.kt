@@ -14,7 +14,6 @@ interface BCServiceContainer : ServiceContainer {
     )
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String) = putService(t, clazz, name)
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = putService(t, clazz)
-    override fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putService(t, clazz.kotlin)
 
     override fun putService(t: Any, name: String): Unit = putService(t, t::class, name)
     override fun putService(t: Any): Unit = putService(t, t::class)

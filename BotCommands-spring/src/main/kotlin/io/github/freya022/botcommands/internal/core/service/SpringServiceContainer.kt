@@ -88,8 +88,6 @@ internal class SpringServiceContainer internal constructor(private val applicati
         return applicationContext.getBeanProvider(clazz.java).toList()
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putService(t)
-
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = putService(t)
 
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String) = putService(t, name)

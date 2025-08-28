@@ -63,7 +63,8 @@ interface ServiceContainer {
 
     fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String)
     fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>)
-    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>)
+    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>, name: String) = putServiceAs(t, clazz.kotlin, name)
+    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
     fun putService(t: Any, name: String)
     fun putService(t: Any)
 }
