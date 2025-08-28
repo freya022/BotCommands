@@ -7,18 +7,26 @@ import com.lemonappdev.konsist.api.ext.list.properties
 import com.lemonappdev.konsist.api.ext.list.withoutAnnotationNamed
 import com.lemonappdev.konsist.api.ext.provider.hasAnnotationOf
 import com.lemonappdev.konsist.api.verify.assertTrue
+import io.github.classgraph.BaseTypeSignature
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import java.lang.reflect.Method
 import java.lang.reflect.Type
+import java.time.Duration as JavaDuration
+import java.util.concurrent.TimeUnit
 import kotlin.metadata.jvm.KotlinClassMetadata
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.jvm.kotlinFunction
 import kotlin.test.Test
 import kotlin.test.fail
+import kotlin.time.Duration
 
 private val ktReflectNameRegex = Regex("kotlin\\.reflect\\.[\\w.]+")
 
@@ -97,6 +105,104 @@ class JavaInteropTest {
     private fun MethodInfo.getParameterTypesString(): String {
         return parameterInfo.joinToString { it.typeSignatureOrTypeDescriptor.toString() }
     }
+
+    @Test
+    fun `Check all functions accepting Kotlin's Duration have overloads with Java's Duration`() {
+        val failedFunctions = arrayListOf<String>()
+
+        forEachClass({
+            acceptPackages("*.botcommands*.api.*")
+            enableMethodInfo()
+            enableAnnotationInfo()
+        }) { classInfo ->
+            // Ignore if outside a class
+            if (!classInfo.isKotlinExplicitClass()) return@forEachClass
+
+            val declaredMemberFunctions by lazy {
+                classInfo.loadClass().kotlin.declaredMemberFunctions
+            }
+
+            // Small optimization to avoid loading reflection data of every class
+            classInfo.declaredMethodInfo.forEach { methodInfo ->
+                if (methodInfo.isSynthetic) return@forEach
+
+                // Attempt to look for kotlin.time.Duration only if there is a `long` parameter,
+                // as this is what it compiles to
+                val hasLongParam = methodInfo.parameterInfo.any { (it.typeDescriptor as? BaseTypeSignature)?.typeSignatureChar == 'J' }
+                if (!hasLongParam) return@forEach
+
+                // Make sure we have a k.t.Duration
+                val function = methodInfo.loadClassAndGetMethod().kotlinFunction ?: return@forEach
+                if (function.parameters.none { it.type.jvmErasureOrNull == Duration::class }) return@forEach
+
+                context(failedFunctions, declaredMemberFunctions) {
+                    checkJavaDurationOverload(methodInfo, function)
+                    checkRawTimeUnitOverload(methodInfo, function)
+                }
+            }
+        }
+
+        if (failedFunctions.isNotEmpty()) {
+            fail("Some functions do not comply:\n${failedFunctions.joinToString("\n")}")
+        }
+    }
+
+    private fun forEachClass(configure: ClassGraph.() -> Unit, block: (classInfo: ClassInfo) -> Unit) {
+        ClassGraph()
+            .apply(configure)
+            .scan()
+            .use { scan ->
+                scan.allClasses.forEach(block)
+            }
+    }
+
+    context(failedFunctions: MutableCollection<String>, declaredMemberFunctions: Collection<KFunction<*>>)
+    private fun checkJavaDurationOverload(methodInfo: MethodInfo, function: KFunction<*>) {
+        checkOverload(
+            desc = "Missing j.t.Duration",
+            methodInfo = methodInfo,
+            function = function,
+            durationReplacements = listOf(JavaDuration::class.java)
+        )
+    }
+
+    context(failedFunctions: MutableCollection<String>, declaredMemberFunctions: Collection<KFunction<*>>)
+    private fun checkRawTimeUnitOverload(methodInfo: MethodInfo, function: KFunction<*>) {
+        checkOverload(
+            desc = "Missing raw time + TimeUnit",
+            methodInfo = methodInfo,
+            function = function,
+            durationReplacements = listOf(Long::class.javaPrimitiveType!!, TimeUnit::class.java)
+        )
+    }
+
+    context(failedFunctions: MutableCollection<String>, declaredMemberFunctions: Collection<KFunction<*>>)
+    private fun checkOverload(desc: String, methodInfo: MethodInfo, function: KFunction<*>, durationReplacements: List<Class<*>>) {
+        val expectedOverloadTypes: List<Class<*>?> = buildList {
+            function.parameters.map { it.type.jvmErasureOrNull?.java }.forEach { originalType ->
+                if (originalType == Duration::class.java) {
+                    addAll(durationReplacements)
+                } else {
+                    add(originalType)
+                }
+            }
+        }
+
+        val hasExpectedOverload = declaredMemberFunctions.any { function ->
+            function.parameters.map { it.type.jvmErasureOrNull?.java } == expectedOverloadTypes
+        }
+
+        if (!hasExpectedOverload) {
+            val parameters = function.valueParameters.joinToString { it.type.jvmErasureOrNull?.simpleName ?: "<function type>" }
+            failedFunctions += "$desc : ${methodInfo.classInfo.shortQualifiedName} : ${function.name}($parameters)"
+        }
+    }
+
+    private val KType.jvmErasureOrNull: KClass<*>?
+        get() {
+            classifier ?: return null
+            return jvmErasure
+        }
 
     @Test
     fun `Check all object functions have @JvmStatic`() {

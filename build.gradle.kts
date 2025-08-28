@@ -30,4 +30,12 @@ dependencies {
     dokka(projects.botCommandsSpring)
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xcontext-parameters",
+        )
+    }
+}
+
 configurePublishedArtifact(artifactId = "BotCommands", packaging = "pom")
