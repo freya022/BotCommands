@@ -2,12 +2,14 @@ package io.github.freya022.botcommands.api.core.waiter
 
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.events.Event
+import java.time.Duration as JavaDuration
 import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Predicate
 import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
+import kotlin.time.toKotlinDuration
 
 /**
  * Builder for [EventWaiter]
@@ -33,7 +35,20 @@ interface EventWaiterBuilder<T : Event> {
      * Sets the timeout for this event waiter;
      * the action will no longer be usable after the time has elapsed.
      *
-     * @param timeout     Amount of time before the timeout occurs
+     * @param timeout Amount of time before the timeout occurs
+     *
+     * @throws IllegalArgumentException If the timeout is not positive
+     *
+     * @return This builder for chaining convenience
+     */
+    fun setTimeout(timeout: JavaDuration): EventWaiterBuilder<T> =
+        setTimeout(timeout.toKotlinDuration())
+
+    /**
+     * Sets the timeout for this event waiter;
+     * the action will no longer be usable after the time has elapsed.
+     *
+     * @param timeout Amount of time before the timeout occurs
      *
      * @throws IllegalArgumentException If the timeout is not positive
      *
