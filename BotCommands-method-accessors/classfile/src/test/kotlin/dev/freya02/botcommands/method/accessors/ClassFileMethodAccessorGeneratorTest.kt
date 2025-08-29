@@ -76,5 +76,7 @@ object ClassFileMethodAccessorGeneratorTest {
         argumentSet("From interface", object : TestInterface { }, TestInterface::run, listOf<Any?>()),
         argumentSet("With return type", TestClass(), TestClass::runWithReturnType, listOf<Any?>()),
         argumentSet("With static modifier", TestStatic, TestStatic::run, listOf<Any?>()),
+        argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
+        argumentSet("With overridden defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>(3)),
     )
 }

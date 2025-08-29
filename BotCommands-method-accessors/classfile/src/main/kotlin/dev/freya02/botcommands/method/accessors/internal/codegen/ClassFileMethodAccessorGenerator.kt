@@ -5,6 +5,7 @@ import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
 import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.*
+import java.lang.classfile.CodeBuilder
 import java.lang.classfile.TypeKind
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
@@ -28,9 +29,6 @@ internal object ClassFileMethodAccessorGenerator {
         val executable = function.javaExecutable
         require(executable is Method) { "Constructors are not supported yet" }
 
-        val hasOptionals = function.parameters.any { it.isOptional }
-        require(!hasOptionals) { "Optionals are not supported yet" }
-
         val isSuspend = function.isSuspend
         require(!isSuspend) { "Suspending functions are not supported yet" }
 
@@ -41,11 +39,6 @@ internal object ClassFileMethodAccessorGenerator {
         }
 
         val instanceDesc = instance.javaClass.describeConstable().get()
-        val methodTypeDesc = run {
-            val returnTypeDesc = executable.returnType.describeConstable().get()
-            val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
-            MethodTypeDesc.of(returnTypeDesc, parameterDescs)
-        }
 
         // The class must be unique per function, which is why we don't cache the class
         // Also "duplicate" definitions are allowed for hidden classes
@@ -81,40 +74,13 @@ internal object ClassFileMethodAccessorGenerator {
             }
 
             classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
-                val thisSlot = codeBuilder.receiverSlot()
-                val argsSlot = codeBuilder.parameterSlot(0)
                 val continuationSlot = codeBuilder.parameterSlot(1)
 
-                val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
-
-                // this.instance.[methodName]([params])
-                codeBuilder.aload(thisSlot)
-                codeBuilder.getfield(thisClass, "instance", instanceDesc)
-                function.parameters.forEachIndexed { index, parameter ->
-                    if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
-
-                    // var parameter = function.getParameters().get([index])
-                    codeBuilder.aload(thisSlot)
-                    codeBuilder.getfield(thisClass, "function", CD_KFunction)
-                    codeBuilder.invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
-                    codeBuilder.loadConstant(index)
-                    codeBuilder.invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
-                    codeBuilder.checkcast(CD_KParameter)
-                    codeBuilder.astore(parameterSlot)
-
-                    // <parameter> = args.get(parameter)
-                    codeBuilder.aload(argsSlot)
-                    codeBuilder.aload(parameterSlot)
-                    codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
-                    codeBuilder.castTo(target = parameter.type.jvmErasure.java)
-                }
-                if (Modifier.isStatic(executable.modifiers)) {
-                    codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
+                if (function.parameters.any { it.isOptional }) {
+                    writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
                 } else {
-                    codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
+                    writeInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
                 }
-                // Discard invoked method return value
-                if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
 
                 codeBuilder.aload(continuationSlot)
                 codeBuilder.areturn()
@@ -128,4 +94,182 @@ internal object ClassFileMethodAccessorGenerator {
             .getDeclaredConstructor(instance.javaClass, KFunction::class.java)
             .newInstance(instance, function) as MethodAccessor
     }
+
+    private fun writeInvokeInstructions(
+        thisClass: ClassDesc,
+        instanceDesc: ClassDesc,
+        function: KFunction<*>,
+        executable: Method,
+        codeBuilder: CodeBuilder,
+    ) {
+        val methodTypeDesc = run {
+            val returnTypeDesc = executable.returnType.describeConstable().get()
+            val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
+            MethodTypeDesc.of(returnTypeDesc, parameterDescs)
+        }
+
+        val thisSlot = codeBuilder.receiverSlot()
+        val argsSlot = codeBuilder.parameterSlot(0)
+
+        val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+
+        // this.instance.[methodName]([params])
+        codeBuilder.aload(thisSlot)
+        codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        function.parameters.forEachIndexed { index, parameter ->
+            if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
+
+            // var parameter = function.getParameters().get([index])
+            codeBuilder.aload(thisSlot)
+            codeBuilder.getfield(thisClass, "function", CD_KFunction)
+            codeBuilder.invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
+            codeBuilder.loadConstant(index)
+            codeBuilder.invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
+            codeBuilder.checkcast(CD_KParameter)
+            codeBuilder.astore(parameterSlot)
+
+            // <parameter> = args.get(parameter)
+            codeBuilder.aload(argsSlot)
+            codeBuilder.aload(parameterSlot)
+            codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
+            codeBuilder.castTo(target = parameter.type.jvmErasure.java)
+        }
+        if (Modifier.isStatic(executable.modifiers)) {
+            codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
+        } else {
+            codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
+        }
+
+        // Discard invoked method return value
+        if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
+    }
+
+    private fun writeDefaultInvokeInstructions(
+        thisClass: ClassDesc,
+        instanceDesc: ClassDesc,
+        function: KFunction<*>,
+        executable: Method,
+        codeBuilder: CodeBuilder,
+    ) {
+        val methodTypeDesc = run {
+            val returnTypeDesc = executable.returnType.describeConstable().get()
+            val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
+            MethodTypeDesc.of(
+                returnTypeDesc,
+                listOf(instanceDesc) + parameterDescs + listOf(CD_int, CD_Object)
+            )
+        }
+
+        val thisSlot = codeBuilder.receiverSlot()
+        val argsSlot = codeBuilder.parameterSlot(0)
+
+        val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+        val boxedArgSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+        val maskSlot = codeBuilder.allocateLocal(TypeKind.INT)
+
+        // maskSlot = 0
+        codeBuilder.iconst_0()
+        codeBuilder.istore(maskSlot)
+
+        // InstanceClass.[methodName]$default(instance, [params], mask, null)
+        codeBuilder.aload(thisSlot)
+        codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        var valueParameterIndex = 0
+        function.parameters.forEachIndexed { index, parameter ->
+            if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
+
+            val paramJavaType = parameter.type.jvmErasure.java
+            val readyArgSlot = codeBuilder.allocateLocal(TypeKind.from(paramJavaType))
+
+            // var parameter = function.getParameters().get([index])
+            codeBuilder.aload(thisSlot)
+            codeBuilder.getfield(thisClass, "function", CD_KFunction)
+            codeBuilder.invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
+            codeBuilder.loadConstant(index)
+            codeBuilder.invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
+            codeBuilder.checkcast(CD_KParameter)
+            codeBuilder.astore(parameterSlot)
+
+            // <parameter> = args.get(parameter)
+            codeBuilder.aload(argsSlot)
+            codeBuilder.aload(parameterSlot)
+            codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
+            if (parameter.isOptional) {
+                // This will cast only if the value is non-null
+                codeBuilder.astore(boxedArgSlot)
+                codeBuilder.orLoadDefaultConstant(inputSlot = boxedArgSlot, type = paramJavaType, outputSlot = readyArgSlot, maskSlot, valueParameterIndex)
+                codeBuilder.loadLocal(TypeKind.from(paramJavaType), readyArgSlot)
+            } else {
+                // Cast non-null value into primitive/ref
+                codeBuilder.castTo(target = parameter.type.jvmErasure.java)
+            }
+
+            valueParameterIndex++
+        }
+        codeBuilder.iload(maskSlot)
+        codeBuilder.aconst_null()
+        codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
+
+        // Discard invoked method return value
+        if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
+    }
+}
+
+private fun CodeBuilder.orLoadDefaultConstant(
+    inputSlot: Int,
+    type: Class<*>,
+    outputSlot: Int,
+    maskSlot: Int,
+    valueParameterIndex: Int,
+) {
+    val ifNullLabel = newLabel()
+    val resumeLabel = newLabel()
+
+    aload(inputSlot)
+    // If stack top value is null then load default
+    // Here we go to the default loading if null
+    ifnull(ifNullLabel)
+    // At this point the value is non-null, set boolean to false, move to if/then/else
+    // Value is non-null, unbox if necessary
+    aload(inputSlot)
+    castTo(type)
+    storeLocal(TypeKind.from(type), outputSlot)
+    goto_(resumeLabel)
+
+    labelBinding(ifNullLabel)
+    // At this point the value is null, set boolean to true, move to if/then/else
+    // Value is null, load default
+    // <output> = default_value
+    when (type) {
+        Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType -> {
+            iconst_0()
+            istore(outputSlot)
+        }
+
+        Long::class.javaPrimitiveType -> {
+            lconst_0()
+            lstore(outputSlot)
+        }
+
+        Float::class.javaPrimitiveType -> {
+            fconst_0()
+            fstore(outputSlot)
+        }
+
+        Double::class.javaPrimitiveType -> {
+            dconst_0()
+            dstore(outputSlot)
+        }
+
+        else -> error("Unmatched $type")
+    }
+
+    // Also set our mask bit so the placeholder gets replaced by the default
+    // mask = mask | [1 << (valueParameterIndex % Integer.SIZE)]
+    iload(maskSlot)
+    loadConstant(1 shl (valueParameterIndex % Integer.SIZE))
+    ior()
+    istore(maskSlot)
+
+    labelBinding(resumeLabel)
 }
