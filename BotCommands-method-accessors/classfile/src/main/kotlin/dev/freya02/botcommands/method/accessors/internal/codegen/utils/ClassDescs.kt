@@ -7,6 +7,7 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
+internal val CD_Unit = ClassDesc.of(Unit::class.java.name)
 internal val CD_Continuation = ClassDesc.of(Continuation::class.java.name)
 internal val CD_KCallable = ClassDesc.of(KCallable::class.java.name)
 internal val CD_KFunction = ClassDesc.of(KFunction::class.java.name)

@@ -74,15 +74,14 @@ internal object ClassFileMethodAccessorGenerator {
             }
 
             classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
-                val continuationSlot = codeBuilder.parameterSlot(1)
-
                 if (function.parameters.any { it.isOptional }) {
                     writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
                 } else {
                     writeInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
                 }
 
-                codeBuilder.aload(continuationSlot)
+                // Return Unit as the implemented method has no return type but must return something
+                codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
                 codeBuilder.areturn()
             }
         }
