@@ -132,7 +132,7 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.aload(argsSlot)
             codeBuilder.aload(parameterSlot)
             codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
-            codeBuilder.castTo(target = parameter.type.jvmErasure.java)
+            codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
         }
         if (Modifier.isStatic(executable.modifiers)) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
@@ -179,7 +179,6 @@ internal object ClassFileMethodAccessorGenerator {
             if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
 
             val paramJavaType = parameter.type.jvmErasure.java
-            val readyArgSlot = codeBuilder.allocateLocal(TypeKind.from(paramJavaType))
 
             // var parameter = function.getParameters().get([index])
             codeBuilder.aload(thisSlot)
@@ -196,12 +195,10 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
             if (parameter.isOptional) {
                 // This will cast only if the value is non-null
-                codeBuilder.astore(boxedArgSlot)
-                codeBuilder.orLoadDefaultConstant(inputSlot = boxedArgSlot, type = paramJavaType, outputSlot = readyArgSlot, maskSlot, valueParameterIndex)
-                codeBuilder.loadLocal(TypeKind.from(paramJavaType), readyArgSlot)
+                codeBuilder.unboxOrLoadDefaultIfNull(paramJavaType, maskSlot, valueParameterIndex)
             } else {
                 // Cast non-null value into primitive/ref
-                codeBuilder.castTo(target = parameter.type.jvmErasure.java)
+                codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
             }
 
             valueParameterIndex++
@@ -215,52 +212,35 @@ internal object ClassFileMethodAccessorGenerator {
     }
 }
 
-private fun CodeBuilder.orLoadDefaultConstant(
-    inputSlot: Int,
+private fun CodeBuilder.unboxOrLoadDefaultIfNull(
     type: Class<*>,
-    outputSlot: Int,
     maskSlot: Int,
     valueParameterIndex: Int,
 ) {
     val ifNullLabel = newLabel()
     val resumeLabel = newLabel()
 
-    aload(inputSlot)
+    dup() // So we can use the reference again after the ifnull
     // If stack top value is null then load default
     // Here we go to the default loading if null
     ifnull(ifNullLabel)
     // At this point the value is non-null, set boolean to false, move to if/then/else
     // Value is non-null, unbox if necessary
-    aload(inputSlot)
-    castTo(type)
-    storeLocal(TypeKind.from(type), outputSlot)
+    unboxOrCastTo(type)
     goto_(resumeLabel)
 
     labelBinding(ifNullLabel)
     // At this point the value is null, set boolean to true, move to if/then/else
     // Value is null, load default
     // <output> = default_value
+    pop() // We don't need the reference in that branch
     when (type) {
-        Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType -> {
+        Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType ->
             iconst_0()
-            istore(outputSlot)
-        }
 
-        Long::class.javaPrimitiveType -> {
-            lconst_0()
-            lstore(outputSlot)
-        }
-
-        Float::class.javaPrimitiveType -> {
-            fconst_0()
-            fstore(outputSlot)
-        }
-
-        Double::class.javaPrimitiveType -> {
-            dconst_0()
-            dstore(outputSlot)
-        }
-
+        Long::class.javaPrimitiveType -> lconst_0()
+        Float::class.javaPrimitiveType -> fconst_0()
+        Double::class.javaPrimitiveType -> dconst_0()
         else -> error("Unmatched $type")
     }
 

@@ -4,7 +4,7 @@ import java.lang.classfile.CodeBuilder
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 
-internal fun CodeBuilder.castTo(target: Class<*>) {
+internal fun CodeBuilder.unboxOrCastTo(target: Class<*>) {
     when (target) {
         Boolean::class.javaPrimitiveType -> {
             checkcast(CD_Boolean)
