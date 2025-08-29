@@ -75,5 +75,6 @@ object ClassFileMethodAccessorGeneratorTest {
         argumentSet("Unboxing", TestClass(), TestClass::runWithUnboxing, listOf<Any?>(true, 1.toByte(), 1.toChar(), 1.toShort(), 1, 1.toLong(), 1.toFloat(), 1.toDouble())),
         argumentSet("From interface", object : TestInterface { }, TestInterface::run, listOf<Any?>()),
         argumentSet("With return type", TestClass(), TestClass::runWithReturnType, listOf<Any?>()),
+        argumentSet("With static modifier", TestStatic, TestStatic::run, listOf<Any?>()),
     )
 }

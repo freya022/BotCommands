@@ -12,6 +12,7 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
@@ -107,8 +108,11 @@ internal object ClassFileMethodAccessorGenerator {
                     codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
                     codeBuilder.castTo(target = parameter.type.jvmErasure.java)
                 }
-                // TODO other method types could be called
-                codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
+                if (Modifier.isStatic(executable.modifiers)) {
+                    codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
+                } else {
+                    codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
+                }
                 // Discard invoked method return value
                 if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
 
