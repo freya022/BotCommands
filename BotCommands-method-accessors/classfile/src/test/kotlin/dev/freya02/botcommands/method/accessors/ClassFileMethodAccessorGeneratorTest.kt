@@ -1,6 +1,7 @@
 package dev.freya02.botcommands.method.accessors
 
 import dev.freya02.botcommands.method.accessors.internal.ClassFileMethodAccessorFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments.argumentSet
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
+import kotlin.time.Duration.Companion.milliseconds
 
 interface TestInterface {
 
@@ -58,6 +60,14 @@ class TestClass {
 
     suspend fun coRunWithDefaults(int: Int = 2) {
 
+    }
+
+    suspend fun coRunWithSuspensionPoints(a: Int, b: Int): Int {
+        delay(10.milliseconds)
+        val c = a + b
+        delay(10.milliseconds)
+        println("$a + $b = $c")
+        return c
     }
 }
 
@@ -131,5 +141,6 @@ object ClassFileMethodAccessorGeneratorTest {
         argumentSet("0-arg suspend method", TestClass(), TestClass::coRun, listOf<Any?>()),
         argumentSet("Suspend with defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>()),
         argumentSet("Suspend with overridden defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>(3)),
+        argumentSet("Suspend with suspension points", TestClass(), TestClass::coRunWithSuspensionPoints, listOf<Any?>(1, 1)),
     )
 }

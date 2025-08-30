@@ -7,6 +7,7 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.*
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.TypeKind
+import java.lang.classfile.instruction.SwitchCase
 import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
@@ -71,26 +72,11 @@ internal object ClassFileMethodAccessorGenerator {
             }
 
             classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
-                // TODO would be interesting to see if the ClassFile API can eliminate unused variables
-                val continuationSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
-
                 if (function.isSuspend) {
-                    codeBuilder.assignOrCreateContinuation(continuationSlot)
-                }
-
-                if (function.parameters.any { it.isOptional }) {
-                    writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+                    writeSuspendingCallerInstructions(function, thisClass, instanceDesc, executable, codeBuilder)
                 } else {
-                    writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+                    writeBlockingCallerInstructions(function, thisClass, instanceDesc, executable, codeBuilder)
                 }
-
-                // Return value as Object, or return Unit as the implemented method must return something
-                if (executable.returnType != Void.TYPE) {
-                    codeBuilder.boxIfPrimitive(type = executable.returnType)
-                } else {
-                    codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
-                }
-                codeBuilder.areturn()
             }
         }
 
@@ -100,6 +86,106 @@ internal object ClassFileMethodAccessorGenerator {
         return clazz
             .getDeclaredConstructor(instance.javaClass, KFunction::class.java)
             .newInstance(instance, function) as MethodAccessor
+    }
+
+    private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {
+        if (function.parameters.any { it.isOptional }) {
+            writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
+        } else {
+            writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
+        }
+
+        // Return value as Object, or return Unit as the implemented method must return something
+        if (executable.returnType != Void.TYPE) {
+            codeBuilder.boxIfPrimitive(type = executable.returnType)
+        } else {
+            codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+        }
+        codeBuilder.areturn()
+    }
+
+    private fun writeSuspendingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {
+        val continuationSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+        val callReturnValueSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+
+        codeBuilder.assignOrCreateContinuation(continuationSlot)
+
+        val firstRunLabel = codeBuilder.newLabel()
+        val firstResumeLabel = codeBuilder.newLabel()
+        val defaultResumeLabel = codeBuilder.newLabel()
+        /** Skips right to the return statement */
+        val returnResultLabel = codeBuilder.newLabel()
+
+        // var callReturnValue = continuation.result;
+        codeBuilder.aload(continuationSlot)
+        codeBuilder.getfield(CD_MethodAccessorContinuation, "result", CD_Object)
+        codeBuilder.astore(callReturnValueSlot)
+
+        // switch (continuation.label) { ... }
+        codeBuilder.aload(continuationSlot)
+        codeBuilder.getfield(CD_MethodAccessorContinuation, "label", CD_int)
+        codeBuilder.tableswitch(
+            defaultResumeLabel,
+            listOf(
+                SwitchCase.of(0, firstRunLabel),
+                SwitchCase.of(1, firstResumeLabel)
+            )
+        )
+
+
+        codeBuilder.labelBinding(firstRunLabel)
+        // continuation.label = 1
+        codeBuilder.aload(continuationSlot)
+        codeBuilder.iconst_1()
+        codeBuilder.putfield(CD_MethodAccessorContinuation, "label", CD_int)
+
+        if (function.parameters.any { it.isOptional }) {
+            writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+        } else {
+            writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+        }
+        codeBuilder.astore(callReturnValueSlot)
+
+        // if (callReturnValue == IntrinsicsKt.getCOROUTINE_SUSPENDED()) { ... }
+        codeBuilder.aload(callReturnValueSlot)
+        codeBuilder.invokestatic(CD_IntrinsicsKt, "getCOROUTINE_SUSPENDED", MethodTypeDesc.of(CD_Object))
+        codeBuilder.if_acmpne(returnResultLabel) // If not COROUTINE_SUSPENDED, go return real value
+        // At this point the result is equal to COROUTINE_SUSPENDED
+        // DebugProbesKt.probeCoroutineSuspended(continuation)
+        codeBuilder.aload(continuationSlot)
+        codeBuilder.invokestatic(CD_DebugProbesKt, "probeCoroutineSuspended", MethodTypeDesc.of(CD_void, CD_Continuation))
+        // return callReturnValue (always COROUTINE_SUSPENDED)
+        codeBuilder.aload(callReturnValueSlot)
+        codeBuilder.areturn()
+
+
+        codeBuilder.labelBinding(firstResumeLabel)
+        // After the first suspension point (i.e. the call to the user function), return result
+        // ResultKt.throwOnFailure(callReturnValue)
+        codeBuilder.aload(callReturnValueSlot)
+        codeBuilder.invokestatic(CD_ResultKt, "throwOnFailure", MethodTypeDesc.of(CD_void, CD_Object))
+        // return result
+        codeBuilder.goto_(returnResultLabel)
+
+
+        codeBuilder.labelBinding(defaultResumeLabel)
+        // throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine")
+        codeBuilder.new_(CD_IllegalStateException)
+        codeBuilder.dup()
+        codeBuilder.ldc("call to 'resume' before 'invoke' with coroutine" as java.lang.String)
+        codeBuilder.invokespecial(CD_IllegalStateException, INIT_NAME, MethodTypeDesc.of(CD_void, CD_String))
+        codeBuilder.athrow()
+
+
+        codeBuilder.labelBinding(returnResultLabel)
+        // As per KCallable#callSuspendBy, Unit functions may not return Unit in some cases
+        if (function.returnType.classifier == Unit::class && !function.returnType.isMarkedNullable) {
+            // In those cases, force return Unit
+            codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+        } else {
+            codeBuilder.aload(callReturnValueSlot)
+        }
+        codeBuilder.areturn()
     }
 
     private fun CodeBuilder.assignOrCreateContinuation(continuationSlot: Int) {
@@ -149,7 +235,7 @@ internal object ClassFileMethodAccessorGenerator {
         instanceDesc: ClassDesc,
         function: KFunction<*>,
         executable: Method,
-        continuationSlot: Int,
+        continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
         val methodTypeDesc = run {
@@ -178,7 +264,7 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
             codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
         }
-        if (function.isSuspend) codeBuilder.aload(continuationSlot)
+        if (continuationSlot != null) codeBuilder.aload(continuationSlot)
         if (Modifier.isStatic(executable.modifiers)) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
         } else {
@@ -191,7 +277,7 @@ internal object ClassFileMethodAccessorGenerator {
         instanceDesc: ClassDesc,
         function: KFunction<*>,
         executable: Method,
-        continuationSlot: Int,
+        continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
         val methodTypeDesc = run {
@@ -239,7 +325,7 @@ internal object ClassFileMethodAccessorGenerator {
 
             valueParameterIndex++
         }
-        if (function.isSuspend) codeBuilder.aload(continuationSlot)
+        if (continuationSlot != null) codeBuilder.aload(continuationSlot)
         codeBuilder.iload(maskSlot)
         codeBuilder.aconst_null()
         codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
