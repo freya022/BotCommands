@@ -29,9 +29,6 @@ internal object ClassFileMethodAccessorGenerator {
         val executable = function.javaExecutable
         require(executable is Method) { "Constructors are not supported yet" }
 
-        val isSuspend = function.isSuspend
-        require(!isSuspend) { "Suspending functions are not supported yet" }
-
         function.parameters.forEach { parameter ->
             require(parameter.kind == KParameter.Kind.INSTANCE || parameter.kind == KParameter.Kind.VALUE) {
                 "Unsupported parameter kind: $parameter"
@@ -74,10 +71,17 @@ internal object ClassFileMethodAccessorGenerator {
             }
 
             classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+                // TODO would be interesting to see if the ClassFile API can eliminate unused variables
+                val continuationSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
+
+                if (function.isSuspend) {
+                    codeBuilder.assignOrCreateContinuation(continuationSlot)
+                }
+
                 if (function.parameters.any { it.isOptional }) {
-                    writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
+                    writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
                 } else {
-                    writeInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
+                    writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
                 }
 
                 // Return value as Object, or return Unit as the implemented method must return something
@@ -98,11 +102,54 @@ internal object ClassFileMethodAccessorGenerator {
             .newInstance(instance, function) as MethodAccessor
     }
 
+    private fun CodeBuilder.assignOrCreateContinuation(continuationSlot: Int) {
+        val thisSlot = receiverSlot()
+        val completionSlot = parameterSlot(1)
+
+        block { blockCodeBuilder ->
+            // if (completion instanceof MethodAccessorContinuation) { ... }
+            aload(completionSlot)
+            instanceOf(CD_MethodAccessorContinuation)
+            ifThen { instanceOfCodeBuilder ->
+                // continuation = (MethodAccessorContinuation) completion;
+                instanceOfCodeBuilder.aload(completionSlot)
+                instanceOfCodeBuilder.checkcast(CD_MethodAccessorContinuation)
+                instanceOfCodeBuilder.astore(continuationSlot)
+
+                // if (continuation.isResumeLabel()) { ... }
+                instanceOfCodeBuilder.aload(continuationSlot)
+                instanceOfCodeBuilder.invokevirtual(CD_MethodAccessorContinuation, "isResumeLabel", MethodTypeDesc.of(CD_boolean))
+                instanceOfCodeBuilder.ifThen { isResumeCodeBuilder ->
+                    // continuation.label = continuation.label - Integer.MIN_VALUE
+                    isResumeCodeBuilder.aload(continuationSlot)
+                    isResumeCodeBuilder.dup() // So we can reassign it
+                    isResumeCodeBuilder.getfield(CD_MethodAccessorContinuation, "label", CD_int)
+                    isResumeCodeBuilder.loadConstant(Integer.MIN_VALUE)
+                    isResumeCodeBuilder.isub()
+                    isResumeCodeBuilder.putfield(CD_MethodAccessorContinuation, "label", CD_int)
+
+                    // break <block>
+                    instanceOfCodeBuilder.goto_(blockCodeBuilder.breakLabel())
+                }
+            }
+
+            // If we're here, the continuation either isn't ours, or it is (what I assume) a resumed one
+            // continuation = new MethodAccessorContinuation(completion, this);
+            new_(CD_MethodAccessorContinuation)
+            dup() // To assign after <init>
+            aload(completionSlot)
+            aload(thisSlot)
+            invokespecial(CD_MethodAccessorContinuation, INIT_NAME, MethodTypeDesc.of(CD_void, CD_Continuation, CD_MethodAccessor))
+            astore(continuationSlot)
+        }
+    }
+
     private fun writeInvokeInstructions(
         thisClass: ClassDesc,
         instanceDesc: ClassDesc,
         function: KFunction<*>,
         executable: Method,
+        continuationSlot: Int,
         codeBuilder: CodeBuilder,
     ) {
         val methodTypeDesc = run {
@@ -131,6 +178,7 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
             codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
         }
+        if (function.isSuspend) codeBuilder.aload(continuationSlot)
         if (Modifier.isStatic(executable.modifiers)) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
         } else {
@@ -143,6 +191,7 @@ internal object ClassFileMethodAccessorGenerator {
         instanceDesc: ClassDesc,
         function: KFunction<*>,
         executable: Method,
+        continuationSlot: Int,
         codeBuilder: CodeBuilder,
     ) {
         val methodTypeDesc = run {
@@ -190,6 +239,7 @@ internal object ClassFileMethodAccessorGenerator {
 
             valueParameterIndex++
         }
+        if (function.isSuspend) codeBuilder.aload(continuationSlot)
         codeBuilder.iload(maskSlot)
         codeBuilder.aconst_null()
         codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)

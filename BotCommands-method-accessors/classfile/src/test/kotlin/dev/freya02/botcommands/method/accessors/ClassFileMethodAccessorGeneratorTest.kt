@@ -51,6 +51,14 @@ class TestClass {
     fun runWithReturnTypeWithDefaults(arg: Int = 2): Int {
         return arg
     }
+
+    suspend fun coRun() {
+
+    }
+
+    suspend fun coRunWithDefaults(int: Int = 2) {
+
+    }
 }
 
 object ClassFileMethodAccessorGeneratorTest {
@@ -68,6 +76,47 @@ object ClassFileMethodAccessorGeneratorTest {
         }
     }
 
+//    @Test
+//    fun idk() {
+//        val outerClass = ClassDesc.of(ClassFileMethodAccessorGeneratorTest::class.java.packageName, "Outer")
+//        val innerClass = ClassDesc.of(ClassFileMethodAccessorGeneratorTest::class.java.packageName, $$"Outer$Inner")
+//
+//        val outerBytes = of().build(outerClass) { classBuilder ->
+//            classBuilder.with(InnerClassesAttribute.of(InnerClassInfo.of(innerClass, Optional.of(outerClass), Optional.empty(), 0)))
+//            classBuilder.with(NestMembersAttribute.ofSymbols(innerClass))
+//
+//            classBuilder.withMethodBody("<init>", MethodTypeDesc.of(CD_void), 0) { codeBuilder ->
+//                val thisSlot = codeBuilder.receiverSlot()
+//
+//                codeBuilder.aload(thisSlot)
+//                codeBuilder.invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void))
+//
+//                codeBuilder.return_()
+//            }
+//        }
+//        val innerBytes = of().build(innerClass) { classBuilder ->
+//            classBuilder.with(NestHostAttribute.of(outerClass))
+//            classBuilder.withField("outer", outerClass, ACC_PRIVATE or ACC_FINAL)
+//
+//            classBuilder.withMethodBody("<init>", MethodTypeDesc.of(CD_void, outerClass), 0) { codeBuilder ->
+//                val thisSlot = codeBuilder.receiverSlot()
+//
+//                codeBuilder.aload(thisSlot)
+//                codeBuilder.invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void))
+//
+//                codeBuilder.return_()
+//            }
+//        }
+//
+//        val outerLookup = MethodHandles.lookup().defineHiddenClass(outerBytes, true)
+//        val outerClazz = outerLookup.lookupClass()
+//
+//        val innerLookup = outerLookup.defineHiddenClass(innerBytes, true, MethodHandles.Lookup.ClassOption.NESTMATE)
+//        val innerClazz = innerLookup.lookupClass()
+//
+//        println()
+//    }
+
     @JvmStatic
     fun testCallers(): List<Arguments> = listOf(
         argumentSet("0-arg method", TestClass(), TestClass::run, listOf<Any?>()),
@@ -78,5 +127,9 @@ object ClassFileMethodAccessorGeneratorTest {
         argumentSet("With static modifier", TestStatic, TestStatic::run, listOf<Any?>()),
         argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
         argumentSet("With overridden defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>(3)),
+
+        argumentSet("0-arg suspend method", TestClass(), TestClass::coRun, listOf<Any?>()),
+        argumentSet("Suspend with defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>()),
+        argumentSet("Suspend with overridden defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>(3)),
     )
 }
