@@ -119,13 +119,7 @@ internal object ClassFileMethodAccessorGenerator {
             if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
 
             // var parameter = function.getParameters().get([index])
-            codeBuilder.aload(thisSlot)
-            codeBuilder.getfield(thisClass, "function", CD_KFunction)
-            codeBuilder.invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
-            codeBuilder.loadConstant(index)
-            codeBuilder.invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
-            codeBuilder.checkcast(CD_KParameter)
-            codeBuilder.astore(parameterSlot)
+            codeBuilder.loadParameter(thisSlot, thisClass, index, parameterSlot)
 
             // <parameter> = args.get(parameter)
             codeBuilder.aload(argsSlot)
@@ -163,7 +157,6 @@ internal object ClassFileMethodAccessorGenerator {
         val argsSlot = codeBuilder.parameterSlot(0)
 
         val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
-        val boxedArgSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
         val maskSlot = codeBuilder.allocateLocal(TypeKind.INT)
 
         // maskSlot = 0
@@ -180,13 +173,7 @@ internal object ClassFileMethodAccessorGenerator {
             val paramJavaType = parameter.type.jvmErasure.java
 
             // var parameter = function.getParameters().get([index])
-            codeBuilder.aload(thisSlot)
-            codeBuilder.getfield(thisClass, "function", CD_KFunction)
-            codeBuilder.invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
-            codeBuilder.loadConstant(index)
-            codeBuilder.invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
-            codeBuilder.checkcast(CD_KParameter)
-            codeBuilder.astore(parameterSlot)
+            codeBuilder.loadParameter(thisSlot, thisClass, index, parameterSlot)
 
             // <parameter> = args.get(parameter)
             codeBuilder.aload(argsSlot)
@@ -197,7 +184,7 @@ internal object ClassFileMethodAccessorGenerator {
                 codeBuilder.unboxOrLoadDefaultIfNull(paramJavaType, maskSlot, valueParameterIndex)
             } else {
                 // Cast non-null value into primitive/ref
-                codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
+                codeBuilder.unboxOrCastTo(target = paramJavaType)
             }
 
             valueParameterIndex++
@@ -209,6 +196,17 @@ internal object ClassFileMethodAccessorGenerator {
         // Discard invoked method return value
         if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
     }
+}
+
+private fun CodeBuilder.loadParameter(thisSlot: Int, thisClass: ClassDesc, index: Int, parameterSlot: Int) {
+    // var parameter = function.getParameters().get([index])
+    aload(thisSlot)
+    getfield(thisClass, "function", CD_KFunction)
+    invokeinterface(CD_KCallable, "getParameters", MethodTypeDesc.of(CD_List))
+    loadConstant(index)
+    invokeinterface(CD_List, "get", MethodTypeDesc.of(CD_Object, CD_int))
+    checkcast(CD_KParameter)
+    astore(parameterSlot)
 }
 
 private fun CodeBuilder.unboxOrLoadDefaultIfNull(
