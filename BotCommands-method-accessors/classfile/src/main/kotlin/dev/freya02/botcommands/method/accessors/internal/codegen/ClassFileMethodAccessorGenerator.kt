@@ -80,8 +80,12 @@ internal object ClassFileMethodAccessorGenerator {
                     writeInvokeInstructions(thisClass, instanceDesc, function, executable, codeBuilder)
                 }
 
-                // Return Unit as the implemented method has no return type but must return something
-                codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+                // Return value as Object, or return Unit as the implemented method must return something
+                if (executable.returnType != Void.TYPE) {
+                    codeBuilder.boxIfPrimitive(type = executable.returnType)
+                } else {
+                    codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+                }
                 codeBuilder.areturn()
             }
         }
@@ -132,9 +136,6 @@ internal object ClassFileMethodAccessorGenerator {
         } else {
             codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
         }
-
-        // Discard invoked method return value
-        if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
     }
 
     private fun writeDefaultInvokeInstructions(
@@ -192,9 +193,6 @@ internal object ClassFileMethodAccessorGenerator {
         codeBuilder.iload(maskSlot)
         codeBuilder.aconst_null()
         codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
-
-        // Discard invoked method return value
-        if (methodTypeDesc.returnType() != CD_void) codeBuilder.pop()
     }
 }
 

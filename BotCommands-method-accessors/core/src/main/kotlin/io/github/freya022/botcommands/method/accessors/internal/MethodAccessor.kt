@@ -5,5 +5,5 @@ import kotlin.reflect.KParameter
 interface MethodAccessor {
 
     // Return type is not specified due to some intricacies described in KCallable.callSuspendBy
-    suspend fun call(args: Map<KParameter, Any?>)
+    suspend fun call(args: Map<KParameter, Any?>): Any?
 }

@@ -13,10 +13,10 @@ internal class KotlinReflectMethodAccessor internal constructor(
 
     private val instanceParameter = function.instanceParameter
 
-    override suspend fun call(args: Map<KParameter, Any?>) {
+    override suspend fun call(args: Map<KParameter, Any?>): Any? {
         val args = args.toMutableMap()
         if (instanceParameter != null) args.putIfAbsent(instanceParameter, instance)
 
-        function.callSuspendBy(args)
+        return function.callSuspendBy(args)
     }
 }

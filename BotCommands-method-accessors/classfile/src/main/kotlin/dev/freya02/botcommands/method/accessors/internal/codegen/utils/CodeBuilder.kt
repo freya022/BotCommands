@@ -63,3 +63,33 @@ internal fun CodeBuilder.unboxOrCastTo(target: Class<*>) {
         }
     }
 }
+
+internal fun CodeBuilder.boxIfPrimitive(type: Class<*>) {
+    when (type) {
+        Boolean::class.javaPrimitiveType -> {
+            invokestatic(CD_Boolean, "valueOf", MethodTypeDesc.of(CD_Boolean, CD_boolean))
+        }
+        Byte::class.javaPrimitiveType -> {
+            invokestatic(CD_Byte, "valueOf", MethodTypeDesc.of(CD_Byte, CD_byte))
+        }
+        Char::class.javaPrimitiveType -> {
+            invokestatic(CD_Character, "valueOf", MethodTypeDesc.of(CD_Character, CD_char))
+        }
+        Short::class.javaPrimitiveType -> {
+            invokestatic(CD_Short, "valueOf", MethodTypeDesc.of(CD_Short, CD_short))
+        }
+        Int::class.javaPrimitiveType -> {
+            invokestatic(CD_Integer, "valueOf", MethodTypeDesc.of(CD_Integer, CD_int))
+        }
+        Long::class.javaPrimitiveType -> {
+            invokestatic(CD_Long, "valueOf", MethodTypeDesc.of(CD_Long, CD_long))
+        }
+        Float::class.javaPrimitiveType -> {
+            invokestatic(CD_Float, "valueOf", MethodTypeDesc.of(CD_Float, CD_float))
+        }
+        Double::class.javaPrimitiveType -> {
+            invokestatic(CD_Double, "valueOf", MethodTypeDesc.of(CD_Double, CD_double))
+        }
+        else -> {}
+    }
+}
