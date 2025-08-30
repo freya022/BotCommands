@@ -216,39 +216,33 @@ private fun CodeBuilder.unboxOrLoadDefaultIfNull(
     maskSlot: Int,
     valueParameterIndex: Int,
 ) {
-    val ifNullLabel = newLabel()
-    val resumeLabel = newLabel()
-
     dup() // So we can use the reference again after the ifnull
-    // If stack top value is null then load default
-    // Here we go to the default loading if null
-    ifnull(ifNullLabel)
-    // At this point the value is non-null, set boolean to false, move to if/then/else
-    // Value is non-null, unbox if necessary
-    unboxOrCastTo(type)
-    goto_(resumeLabel)
+    ifNull(
+        onNull = {
+            // Value is null, load default
+            // We don't need the reference in that branch
+            // this is also important to have the same amount of stack data in and out of the branch
+            pop()
+            when (type) {
+                Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType ->
+                    iconst_0()
 
-    labelBinding(ifNullLabel)
-    // At this point the value is null, set boolean to true, move to if/then/else
-    // Value is null, load default
-    // <output> = default_value
-    pop() // We don't need the reference in that branch
-    when (type) {
-        Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType ->
-            iconst_0()
+                Long::class.javaPrimitiveType -> lconst_0()
+                Float::class.javaPrimitiveType -> fconst_0()
+                Double::class.javaPrimitiveType -> dconst_0()
+                else -> error("Unmatched $type")
+            }
 
-        Long::class.javaPrimitiveType -> lconst_0()
-        Float::class.javaPrimitiveType -> fconst_0()
-        Double::class.javaPrimitiveType -> dconst_0()
-        else -> error("Unmatched $type")
-    }
-
-    // Also set our mask bit so the placeholder gets replaced by the default
-    // mask = mask | [1 << (valueParameterIndex % Integer.SIZE)]
-    iload(maskSlot)
-    loadConstant(1 shl (valueParameterIndex % Integer.SIZE))
-    ior()
-    istore(maskSlot)
-
-    labelBinding(resumeLabel)
+            // Also set our mask bit so the placeholder gets replaced by the default
+            // mask = mask | [1 << (valueParameterIndex % Integer.SIZE)]
+            iload(maskSlot)
+            loadConstant(1 shl (valueParameterIndex % Integer.SIZE))
+            ior()
+            istore(maskSlot)
+        },
+        onNonNull = {
+            // Value is non-null, unbox if necessary
+            unboxOrCastTo(type)
+        }
+    )
 }

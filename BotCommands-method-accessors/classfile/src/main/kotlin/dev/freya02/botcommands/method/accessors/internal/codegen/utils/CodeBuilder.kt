@@ -4,6 +4,26 @@ import java.lang.classfile.CodeBuilder
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 
+/**
+ * Consumes the top stack value
+ */
+internal fun CodeBuilder.ifNull(onNull: () -> Unit, onNonNull: () -> Unit) {
+    val ifNullLabel = newLabel()
+    val resumeLabel = newLabel()
+
+    // If stack top value is null then jump
+    ifnull(ifNullLabel)
+    // At this point the value is non-null
+    onNonNull()
+    goto_(resumeLabel) // Skip null case
+
+    labelBinding(ifNullLabel)
+    // At this point the value is null
+    onNull()
+
+    labelBinding(resumeLabel)
+}
+
 internal fun CodeBuilder.unboxOrCastTo(target: Class<*>) {
     when (target) {
         Boolean::class.javaPrimitiveType -> {
