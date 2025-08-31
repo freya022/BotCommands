@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MethodAccessorContinuation extends ContinuationImpl {
-    private final MethodAccessor methodAccessor;
+    private final MethodAccessor<?> methodAccessor;
 
     public Object result;
     public int label;
 
-    public MethodAccessorContinuation(@Nullable Continuation<Object> completion, MethodAccessor methodAccessor) {
+    public MethodAccessorContinuation(@Nullable Continuation<Object> completion, MethodAccessor<?> methodAccessor) {
         super(completion);
         this.methodAccessor = methodAccessor;
     }

@@ -21,11 +21,11 @@ import kotlin.reflect.jvm.jvmErasure
 
 internal object ClassFileMethodAccessorGenerator {
 
-    internal fun generate(
+    internal fun <R> generate(
         instance: Any,
-        function: KFunction<*>,
+        function: KFunction<R>,
         lookup: MethodHandles.Lookup,
-    ): MethodAccessor {
+    ): MethodAccessor<R> {
         // TODO support constructors? unsure if it will be beneficial for services, they run once, see what's the diff in stack traces
         val executable = function.javaExecutable
         require(executable is Method) { "Constructors are not supported yet" }
@@ -83,9 +83,10 @@ internal object ClassFileMethodAccessorGenerator {
         val clazz = lookup
             .defineHiddenClass(bytes, true)
             .lookupClass()
+        @Suppress("UNCHECKED_CAST")
         return clazz
             .getDeclaredConstructor(instance.javaClass, KFunction::class.java)
-            .newInstance(instance, function) as MethodAccessor
+            .newInstance(instance, function) as MethodAccessor<R>
     }
 
     private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {

@@ -21,7 +21,6 @@ import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.full.callSuspendBy
 
 private val logger = KotlinLogging.logger { }
 
@@ -79,7 +78,7 @@ internal class ComponentTimeoutExecutor internal constructor(
                     return false
             }
 
-            function.callSuspendBy(parameters.mapFinalParameters(firstArgument, optionValues))
+            eventFunction.methodAccessor.call(parameters.mapFinalParameters(firstArgument, optionValues))
         }
         return true
     }

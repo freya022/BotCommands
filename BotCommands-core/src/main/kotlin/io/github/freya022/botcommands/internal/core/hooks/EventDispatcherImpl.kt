@@ -13,7 +13,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.full.callSuspend
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.valueParameters
 
 private val logger = KotlinLogging.logger { }
 
@@ -94,19 +95,29 @@ internal class EventDispatcherImpl internal constructor(
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val (instance, function) = eventHandlerFunction.classPathFunction
+            val classPathFunction = eventHandlerFunction.classPathFunction
+            val methodAccessor = classPathFunction.methodAccessor
+            val args: Map<KParameter, Any?> = buildMap {
+                classPathFunction.function.valueParameters.forEachIndexed { index, param ->
+                    if (index == 0) {
+                        this[param] = event
+                    } else {
+                        this[param] = eventHandlerFunction.parameters[index - 1]
+                    }
+                }
+            }
 
             val timeout = eventHandlerFunction.timeout
             if (timeout != null) {
                 // Timeout only works when the continuations implement a cancellation handler
                 val result = withTimeoutOrNull(timeout) {
-                    function.callSuspend(instance, event, *eventHandlerFunction.parameters)
+                    methodAccessor.call(args)
                 }
                 if (result == null) {
-                    logger.debug { "Event listener ${function.shortSignatureNoSrc} timed out" }
+                    logger.debug { "Event listener ${classPathFunction.function.shortSignatureNoSrc} timed out" }
                 }
             } else {
-                function.callSuspend(instance, event, *eventHandlerFunction.parameters)
+                methodAccessor.call(args)
             }
         } catch (e: InvocationTargetException) {
             if (event is InitializationEvent) {

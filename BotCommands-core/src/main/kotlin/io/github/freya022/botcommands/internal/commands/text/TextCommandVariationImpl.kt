@@ -24,7 +24,6 @@ import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 internal class TextCommandVariationImpl internal constructor(
@@ -90,7 +89,7 @@ internal class TextCommandVariationImpl internal constructor(
     internal suspend fun execute(event: BaseCommandEvent, optionValues: Map<out OptionImpl, Any?>) {
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
-        function.callSuspendBy(finalParameters)
+        eventFunction.methodAccessor.call(finalParameters)
     }
 
     /**

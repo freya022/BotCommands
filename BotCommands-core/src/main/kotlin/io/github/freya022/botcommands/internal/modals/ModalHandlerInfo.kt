@@ -25,7 +25,6 @@ import io.github.freya022.botcommands.internal.parameters.*
 import io.github.freya022.botcommands.internal.requireUser
 import io.github.freya022.botcommands.internal.throwUser
 import io.github.freya022.botcommands.internal.utils.*
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 internal class ModalHandlerInfo internal constructor(
@@ -90,7 +89,7 @@ internal class ModalHandlerInfo internal constructor(
                 throwInternal(::tryInsertOption, "Insertion function shouldn't have been aborted")
         }
 
-        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        eventFunction.methodAccessor.call(parameters.mapFinalParameters(event, optionValues))
     }
 
     private suspend fun tryInsertOption(

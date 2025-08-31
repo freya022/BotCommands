@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -77,7 +76,7 @@ internal sealed class SlashCommandInfoImpl(
 
     internal suspend fun execute(event: GlobalSlashEvent): Boolean {
         val objects = getSlashOptions(event, parameters) ?: return false
-        function.callSuspendBy(objects)
+        eventFunction.methodAccessor.call(objects)
 
         return true
     }

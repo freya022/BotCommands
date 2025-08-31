@@ -25,7 +25,6 @@ import io.github.freya022.botcommands.internal.utils.*
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
-import kotlin.reflect.full.callSuspendBy
 
 internal class MessageCommandInfoImpl internal constructor(
     override val context: BContext,
@@ -67,7 +66,7 @@ internal class MessageCommandInfoImpl internal constructor(
         }
 
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
-        function.callSuspendBy(finalParameters)
+        eventFunction.methodAccessor.call(finalParameters)
 
         return true
     }

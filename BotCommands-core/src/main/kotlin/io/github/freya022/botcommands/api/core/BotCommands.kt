@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.service.BCBotCommandsBootstrap
+import io.github.freya022.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
@@ -27,6 +28,32 @@ import kotlin.time.measureTimedValue
  */
 object BotCommands {
     private val logger = KotlinLogging.logger { }
+
+    /**
+     * If enabled, instructs the framework to prefer using improved reflection calls, with the following benefits:
+     * - Shorter stack traces in exceptions and the debugger
+     * - No [InvocationTargetExceptions][java.lang.reflect.InvocationTargetException]
+     * - Better performance
+     *
+     * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
+     */
+    @ExperimentalMethodAccessorsApi
+    @get:JvmName("isPreferClassFileAccessors")
+    var preferClassFileAccessors: Boolean = false
+        private set
+
+    /**
+     * Instructs the framework to prefer using improved reflection calls, with the following benefits:
+     * - Shorter stack traces in exceptions and the debugger
+     * - No [InvocationTargetExceptions][java.lang.reflect.InvocationTargetException]
+     * - Better performance
+     *
+     * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
+     */
+    @ExperimentalMethodAccessorsApi
+    fun preferClassFileAccessors() {
+        preferClassFileAccessors = true
+    }
 
     /**
      * Creates a new instance of the framework.

@@ -1,8 +1,10 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
@@ -12,6 +14,7 @@ internal open class MemberFunction<R> internal constructor(
     instanceSupplier: () -> Any
 ) : Function<R>(boundFunction) {
     val instance by lazy(instanceSupplier)
+    val methodAccessor: MethodAccessor<R> by lazy { MethodAccessorFactoryProvider.getAccessorFactory().create(instance, kFunction) }
 
     val resolvableParameters = kFunction.valueParameters.drop(1) //Drop the first parameter
     val instanceParameter = kFunction.instanceParameter

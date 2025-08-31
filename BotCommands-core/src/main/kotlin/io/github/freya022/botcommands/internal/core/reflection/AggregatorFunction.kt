@@ -60,6 +60,7 @@ internal class AggregatorFunction private constructor(
             aggregatorArguments[eventParameter] = firstParam
         }
 
+        // TODO replace with MethodAccessor once it supports constructors/static
         return aggregator.callSuspendBy(aggregatorArguments)
     }
 }
