@@ -12,9 +12,7 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
-import java.lang.reflect.AccessFlag
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+import java.lang.reflect.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
@@ -26,16 +24,13 @@ internal object ClassFileMethodAccessorGenerator {
         function: KFunction<R>,
         lookup: MethodHandles.Lookup,
     ): MethodAccessor<R> {
-        // TODO support constructors? unsure if it will be beneficial for services, they run once, see what's the diff in stack traces
-        val executable = function.javaExecutable
-        require(executable is Method) { "Constructors are not supported yet" }
-
         function.parameters.forEach { parameter ->
             require(parameter.kind == KParameter.Kind.INSTANCE || parameter.kind == KParameter.Kind.VALUE) {
                 "Unsupported parameter kind: $parameter"
             }
         }
 
+        val executable = function.javaExecutable
         val instanceClass = executable.declaringClass
         val instanceDesc = instanceClass.describeConstable().get()
         val isStatic = Modifier.isStatic(executable.modifiers)
@@ -103,23 +98,27 @@ internal object ClassFileMethodAccessorGenerator {
         }
     }
 
-    private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {
+    private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Executable, codeBuilder: CodeBuilder) {
         if (function.parameters.any { it.isOptional }) {
             writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
         } else {
             writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
         }
 
-        // Return value as Object, or return Unit as the implemented method must return something
-        if (executable.returnType != Void.TYPE) {
-            codeBuilder.boxIfPrimitive(type = executable.returnType)
-        } else {
-            codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+        if (executable is Method) {
+            // Return value as Object, or return Unit as the implemented method must return something
+            if (executable.returnType != Void.TYPE) {
+                codeBuilder.boxIfPrimitive(type = executable.returnType)
+            } else {
+                codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)
+            }
         }
         codeBuilder.areturn()
     }
 
-    private fun writeSuspendingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {
+    private fun writeSuspendingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Executable, codeBuilder: CodeBuilder) {
+        require(executable is Method)
+
         val continuationSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
         val callReturnValueSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
 
@@ -249,13 +248,13 @@ internal object ClassFileMethodAccessorGenerator {
         thisClass: ClassDesc,
         instanceDesc: ClassDesc,
         function: KFunction<*>,
-        executable: Method,
+        executable: Executable,
         continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
         val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
-            val returnTypeDesc = executable.returnType.describeConstable().get()
+            val returnTypeDesc = if (executable is Method) executable.returnType.describeConstable().get() else CD_void
             val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
             MethodTypeDesc.of(returnTypeDesc, parameterDescs)
         }
@@ -266,7 +265,10 @@ internal object ClassFileMethodAccessorGenerator {
         val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
 
         // this.instance.[methodName]([params])
-        if (!isStatic) {
+        if (executable is Constructor<*>) {
+            codeBuilder.new_(instanceDesc)
+            codeBuilder.dup() // So we can return it
+        } else if (!isStatic) {
             codeBuilder.aload(thisSlot)
             codeBuilder.getfield(thisClass, "instance", instanceDesc)
         }
@@ -283,7 +285,9 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
         }
         if (continuationSlot != null) codeBuilder.aload(continuationSlot)
-        if (isStatic) {
+        if (executable is Constructor<*>) {
+            codeBuilder.invokespecial(instanceDesc, INIT_NAME, methodTypeDesc)
+        } else if (isStatic) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
         } else if (executable.declaringClass.isInterface) {
             codeBuilder.invokeinterface(instanceDesc, executable.name, methodTypeDesc)
@@ -296,18 +300,20 @@ internal object ClassFileMethodAccessorGenerator {
         thisClass: ClassDesc,
         instanceDesc: ClassDesc,
         function: KFunction<*>,
-        executable: Method,
+        executable: Executable,
         continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
         val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
-            val returnTypeDesc = executable.returnType.describeConstable().get()
+            val returnTypeDesc = if (executable is Method) executable.returnType.describeConstable().get() else CD_void
             val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
-            MethodTypeDesc.of(
-                returnTypeDesc,
-                (if (isStatic) listOf() else listOf(instanceDesc)) + parameterDescs + listOf(CD_int, CD_Object)
-            )
+            val effectiveParameters = when {
+                executable is Constructor<*> -> parameterDescs + listOf(CD_int, CD_DefaultConstructorMarker)
+                isStatic -> parameterDescs + listOf(CD_int, CD_Object)
+                else -> listOf(instanceDesc) + parameterDescs + listOf(CD_int, CD_Object)
+            }
+            MethodTypeDesc.of(returnTypeDesc, effectiveParameters)
         }
 
         val thisSlot = codeBuilder.receiverSlot()
@@ -321,7 +327,10 @@ internal object ClassFileMethodAccessorGenerator {
         codeBuilder.istore(maskSlot)
 
         // InstanceClass.[methodName]$default(instance, [params], mask, null)
-        if (!isStatic) {
+        if (executable is Constructor<*>) {
+            codeBuilder.new_(instanceDesc)
+            codeBuilder.dup() // So we can return it
+        } else if (!isStatic) {
             codeBuilder.aload(thisSlot)
             codeBuilder.getfield(thisClass, "instance", instanceDesc)
         }
@@ -350,7 +359,11 @@ internal object ClassFileMethodAccessorGenerator {
         if (continuationSlot != null) codeBuilder.aload(continuationSlot)
         codeBuilder.iload(maskSlot)
         codeBuilder.aconst_null()
-        codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
+        if (executable is Constructor<*>) {
+            codeBuilder.invokespecial(instanceDesc, INIT_NAME, methodTypeDesc)
+        } else {
+            codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
+        }
     }
 }
 

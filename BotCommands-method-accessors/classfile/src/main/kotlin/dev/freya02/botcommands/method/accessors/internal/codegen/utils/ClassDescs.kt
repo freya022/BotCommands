@@ -11,6 +11,7 @@ import kotlin.reflect.KParameter
 internal val CD_IllegalStateException = ClassDesc.of(IllegalStateException::class.java.name)
 
 internal val CD_Unit = ClassDesc.of(Unit::class.java.name)
+internal val CD_DefaultConstructorMarker = ClassDesc.of("kotlin.jvm.internal.DefaultConstructorMarker")
 internal val CD_Continuation = ClassDesc.of(Continuation::class.java.name)
 internal val CD_KCallable = ClassDesc.of(KCallable::class.java.name)
 internal val CD_KFunction = ClassDesc.of(KFunction::class.java.name)

@@ -26,7 +26,9 @@ object TestStatic {
     }
 }
 
-class TestConstructor(arg: Int = 2)
+class TestConstructor(arg: Int)
+
+class TestConstructorWithDefaults(arg: Int = 2)
 
 class TestClass {
 
@@ -98,6 +100,8 @@ object ClassFileMethodAccessorGeneratorTest {
     fun testCallers(): List<Arguments> = listOf(
         argumentSet("0-arg method", TestClass(), TestClass::run, listOf<Any?>()),
         argumentSet("1-arg method", TestClass(), TestClass::runWithArgs, listOf<Any?>("foobar")),
+        argumentSet("1-arg constructor", null, ::TestConstructor, listOf<Any?>(1)),
+        argumentSet("Constructor with defaults", null, ::TestConstructorWithDefaults, listOf<Any?>()),
         argumentSet("Unboxing", TestClass(), TestClass::runWithUnboxing, listOf<Any?>(true, 1.toByte(), 1.toChar(), 1.toShort(), 1, 1.toLong(), 1.toFloat(), 1.toDouble())),
         argumentSet("From interface", object : TestInterface { }, TestInterface::run, listOf<Any?>()),
         argumentSet("With return type", TestClass(), TestClass::runWithReturnType, listOf<Any?>()),
