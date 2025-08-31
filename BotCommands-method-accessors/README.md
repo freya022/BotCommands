@@ -19,10 +19,12 @@ note that this will only have an effect if your bot runs on Java 24+.
 ### Stack trace comparison
 
 #### kotlin-reflect
-![img.png](./assets/stack-trace-kotlin-reflect.avif)
+
+<img alt="Stack trace of kotlin-reflect call" src="./assets/stack-trace-kotlin-reflect.avif" width="600"/>
 
 #### ClassFile
-![img_1.png](./assets/stack-trace-classfile.avif)
+
+<img alt="Stack trace of custom caller" src="./assets/stack-trace-classfile.avif" width="600"/>
 
 ### Performance comparison
 
