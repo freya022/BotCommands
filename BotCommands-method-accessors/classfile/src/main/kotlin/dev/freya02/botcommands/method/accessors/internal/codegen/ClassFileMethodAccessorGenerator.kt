@@ -22,7 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 internal object ClassFileMethodAccessorGenerator {
 
     internal fun <R> generate(
-        instance: Any,
+        instance: Any?,
         function: KFunction<R>,
         lookup: MethodHandles.Lookup,
     ): MethodAccessor<R> {
@@ -36,7 +36,9 @@ internal object ClassFileMethodAccessorGenerator {
             }
         }
 
-        val instanceDesc = instance.javaClass.describeConstable().get()
+        val instanceClass = executable.declaringClass
+        val instanceDesc = instanceClass.describeConstable().get()
+        val isStatic = Modifier.isStatic(executable.modifiers)
 
         // The class must be unique per function, which is why we don't cache the class
         // Also "duplicate" definitions are allowed for hidden classes
@@ -46,22 +48,28 @@ internal object ClassFileMethodAccessorGenerator {
             classBuilder.withInterfaceSymbols(CD_MethodAccessor)
 
             // TODO replace with class data of hidden class
-            classBuilder.withField("instance", instanceDesc, ACC_PRIVATE or ACC_FINAL)
+            if (!isStatic) classBuilder.withField("instance", instanceDesc, ACC_PRIVATE or ACC_FINAL)
             classBuilder.withField("function", CD_KFunction, ACC_PRIVATE or ACC_FINAL)
 
-            classBuilder.withMethodBody(INIT_NAME, MethodTypeDesc.of(CD_void, instanceDesc, CD_KFunction), ACC_PUBLIC) { codeBuilder ->
+            val ctorType = when {
+                isStatic -> MethodTypeDesc.of(CD_void, CD_KFunction)
+                else -> MethodTypeDesc.of(CD_void, instanceDesc, CD_KFunction)
+            }
+            classBuilder.withMethodBody(INIT_NAME, ctorType, ACC_PUBLIC) { codeBuilder ->
                 val thisSlot = codeBuilder.receiverSlot()
-                val instanceSlot = codeBuilder.parameterSlot(0)
-                val functionSlot = codeBuilder.parameterSlot(1)
+                val functionSlot = codeBuilder.parameterSlot(if (isStatic) 0 else 1)
 
                 // this.super()
                 codeBuilder.aload(thisSlot)
                 codeBuilder.invokespecial(CD_Object, INIT_NAME, MethodTypeDesc.of(CD_void))
 
-                // this.instance = instance;
-                codeBuilder.aload(thisSlot)
-                codeBuilder.aload(instanceSlot)
-                codeBuilder.putfield(thisClass, "instance", instanceDesc)
+                if (!isStatic) {
+                    // this.instance = instance;
+                    val instanceSlot = codeBuilder.parameterSlot(0)
+                    codeBuilder.aload(thisSlot)
+                    codeBuilder.aload(instanceSlot)
+                    codeBuilder.putfield(thisClass, "instance", instanceDesc)
+                }
 
                 // this.function = function;
                 codeBuilder.aload(thisSlot)
@@ -84,9 +92,15 @@ internal object ClassFileMethodAccessorGenerator {
             .defineHiddenClass(bytes, true)
             .lookupClass()
         @Suppress("UNCHECKED_CAST")
-        return clazz
-            .getDeclaredConstructor(instance.javaClass, KFunction::class.java)
-            .newInstance(instance, function) as MethodAccessor<R>
+        return if (isStatic) {
+            clazz
+                .getDeclaredConstructor(KFunction::class.java)
+                .newInstance(function) as MethodAccessor<R>
+        } else {
+            clazz
+                .getDeclaredConstructor(instanceClass, KFunction::class.java)
+                .newInstance(instance, function) as MethodAccessor<R>
+        }
     }
 
     private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Method, codeBuilder: CodeBuilder) {
@@ -239,6 +253,7 @@ internal object ClassFileMethodAccessorGenerator {
         continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
+        val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
             val returnTypeDesc = executable.returnType.describeConstable().get()
             val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
@@ -251,8 +266,10 @@ internal object ClassFileMethodAccessorGenerator {
         val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
 
         // this.instance.[methodName]([params])
-        codeBuilder.aload(thisSlot)
-        codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        if (!isStatic) {
+            codeBuilder.aload(thisSlot)
+            codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        }
         function.parameters.forEachIndexed { index, parameter ->
             if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed
 
@@ -266,8 +283,10 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.unboxOrCastTo(target = parameter.type.jvmErasure.java)
         }
         if (continuationSlot != null) codeBuilder.aload(continuationSlot)
-        if (Modifier.isStatic(executable.modifiers)) {
+        if (isStatic) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
+        } else if (executable.declaringClass.isInterface) {
+            codeBuilder.invokeinterface(instanceDesc, executable.name, methodTypeDesc)
         } else {
             codeBuilder.invokevirtual(instanceDesc, executable.name, methodTypeDesc)
         }
@@ -281,12 +300,13 @@ internal object ClassFileMethodAccessorGenerator {
         continuationSlot: Int?,
         codeBuilder: CodeBuilder,
     ) {
+        val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
             val returnTypeDesc = executable.returnType.describeConstable().get()
             val parameterDescs = executable.parameters.map { it.type.describeConstable().get() }
             MethodTypeDesc.of(
                 returnTypeDesc,
-                listOf(instanceDesc) + parameterDescs + listOf(CD_int, CD_Object)
+                (if (isStatic) listOf() else listOf(instanceDesc)) + parameterDescs + listOf(CD_int, CD_Object)
             )
         }
 
@@ -301,8 +321,10 @@ internal object ClassFileMethodAccessorGenerator {
         codeBuilder.istore(maskSlot)
 
         // InstanceClass.[methodName]$default(instance, [params], mask, null)
-        codeBuilder.aload(thisSlot)
-        codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        if (!isStatic) {
+            codeBuilder.aload(thisSlot)
+            codeBuilder.getfield(thisClass, "instance", instanceDesc)
+        }
         var valueParameterIndex = 0
         function.parameters.forEachIndexed { index, parameter ->
             if (parameter.kind != KParameter.Kind.VALUE) return@forEachIndexed

@@ -3,19 +3,12 @@ package dev.freya02.botcommands.method.accessors.internal
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
 
-internal class KotlinReflectMethodAccessor<R> internal constructor(
-    private val instance: Any,
+internal class KotlinReflectStaticMethodAccessor<R> internal constructor(
     private val function: KFunction<R>,
 ) : MethodAccessor<R> {
 
-    private val instanceParameter = function.instanceParameter!!
-
     override suspend fun call(args: Map<KParameter, Any?>): R {
-        val args = args.toMutableMap()
-        args.putIfAbsent(instanceParameter, instance)
-
         return function.callSuspendBy(args)
     }
 }
