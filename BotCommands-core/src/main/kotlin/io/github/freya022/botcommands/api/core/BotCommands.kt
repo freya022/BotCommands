@@ -38,6 +38,7 @@ object BotCommands {
      * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
      */
     @ExperimentalMethodAccessorsApi
+    @get:JvmStatic
     @get:JvmName("isPreferClassFileAccessors")
     var preferClassFileAccessors: Boolean = false
         private set
@@ -50,6 +51,7 @@ object BotCommands {
      *
      * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
      */
+    @JvmStatic
     @ExperimentalMethodAccessorsApi
     fun preferClassFileAccessors() {
         preferClassFileAccessors = true
