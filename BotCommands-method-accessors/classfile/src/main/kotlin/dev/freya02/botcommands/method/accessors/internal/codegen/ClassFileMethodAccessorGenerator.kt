@@ -373,7 +373,7 @@ private fun CodeBuilder.loadUnboxedOptional(
                 Long::class.javaPrimitiveType -> lconst_0()
                 Float::class.javaPrimitiveType -> fconst_0()
                 Double::class.javaPrimitiveType -> dconst_0()
-                else -> error("Unmatched $type")
+                else -> aconst_null()
             }
 
             // Also set our mask bit so the placeholder gets replaced by the default
