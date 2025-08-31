@@ -12,32 +12,30 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
-import java.lang.reflect.*
+import java.lang.reflect.AccessFlag
+import java.lang.reflect.Constructor
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
-internal object ClassFileMethodAccessorGenerator {
+internal class ClassFileMethodAccessorGenerator<R> private constructor(
+    private val instance: Any?,
+    private val function: KFunction<R>,
+    private val lookup: MethodHandles.Lookup,
+) {
 
-    internal fun <R> generate(
-        instance: Any?,
-        function: KFunction<R>,
-        lookup: MethodHandles.Lookup,
-    ): MethodAccessor<R> {
-        function.parameters.forEach { parameter ->
-            require(parameter.kind == KParameter.Kind.INSTANCE || parameter.kind == KParameter.Kind.VALUE) {
-                "Unsupported parameter kind: $parameter"
-            }
-        }
+    private val executable = function.javaExecutable
+    private val instanceClass = executable.declaringClass
+    private val instanceDesc = instanceClass.describeConstable().get()
+    private val isStatic = Modifier.isStatic(executable.modifiers)
 
-        val executable = function.javaExecutable
-        val instanceClass = executable.declaringClass
-        val instanceDesc = instanceClass.describeConstable().get()
-        val isStatic = Modifier.isStatic(executable.modifiers)
+    private val thisClass = ClassDesc.of("${lookup.lookupClass().packageName}.ClassFileMethodAccessor")
 
-        // The class must be unique per function, which is why we don't cache the class
-        // Also "duplicate" definitions are allowed for hidden classes
-        val thisClass = ClassDesc.of("${lookup.lookupClass().packageName}.ClassFileMethodAccessor")
+    // The class must be unique per function, which is why we don't cache the class
+    // Also "duplicate" definitions are allowed for hidden classes
+    private fun generate(): MethodAccessor<R> {
         val bytes = ClassFile.of().build(thisClass) { classBuilder ->
             classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
             classBuilder.withInterfaceSymbols(CD_MethodAccessor)
@@ -76,9 +74,9 @@ internal object ClassFileMethodAccessorGenerator {
 
             classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
                 if (function.isSuspend) {
-                    writeSuspendingCallerInstructions(function, thisClass, instanceDesc, executable, codeBuilder)
+                    writeSuspendingCallerInstructions(codeBuilder)
                 } else {
-                    writeBlockingCallerInstructions(function, thisClass, instanceDesc, executable, codeBuilder)
+                    writeBlockingCallerInstructions(codeBuilder)
                 }
             }
         }
@@ -98,11 +96,11 @@ internal object ClassFileMethodAccessorGenerator {
         }
     }
 
-    private fun writeBlockingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Executable, codeBuilder: CodeBuilder) {
+    private fun writeBlockingCallerInstructions(codeBuilder: CodeBuilder) {
         if (function.parameters.any { it.isOptional }) {
-            writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
+            writeDefaultInvokeInstructions(continuationSlot = null, codeBuilder)
         } else {
-            writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot = null, codeBuilder)
+            writeInvokeInstructions(continuationSlot = null, codeBuilder)
         }
 
         if (executable is Method) {
@@ -116,7 +114,7 @@ internal object ClassFileMethodAccessorGenerator {
         codeBuilder.areturn()
     }
 
-    private fun writeSuspendingCallerInstructions(function: KFunction<*>, thisClass: ClassDesc, instanceDesc: ClassDesc, executable: Executable, codeBuilder: CodeBuilder) {
+    private fun writeSuspendingCallerInstructions(codeBuilder: CodeBuilder) {
         require(executable is Method)
 
         val continuationSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
@@ -154,9 +152,9 @@ internal object ClassFileMethodAccessorGenerator {
         codeBuilder.putfield(CD_MethodAccessorContinuation, "label", CD_int)
 
         if (function.parameters.any { it.isOptional }) {
-            writeDefaultInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+            writeDefaultInvokeInstructions(continuationSlot, codeBuilder)
         } else {
-            writeInvokeInstructions(thisClass, instanceDesc, function, executable, continuationSlot, codeBuilder)
+            writeInvokeInstructions(continuationSlot, codeBuilder)
         }
         codeBuilder.astore(callReturnValueSlot)
 
@@ -244,14 +242,7 @@ internal object ClassFileMethodAccessorGenerator {
         }
     }
 
-    private fun writeInvokeInstructions(
-        thisClass: ClassDesc,
-        instanceDesc: ClassDesc,
-        function: KFunction<*>,
-        executable: Executable,
-        continuationSlot: Int?,
-        codeBuilder: CodeBuilder,
-    ) {
+    private fun writeInvokeInstructions(continuationSlot: Int?, codeBuilder: CodeBuilder) {
         val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
             val returnTypeDesc = if (executable is Method) executable.returnType.describeConstable().get() else CD_void
@@ -296,14 +287,7 @@ internal object ClassFileMethodAccessorGenerator {
         }
     }
 
-    private fun writeDefaultInvokeInstructions(
-        thisClass: ClassDesc,
-        instanceDesc: ClassDesc,
-        function: KFunction<*>,
-        executable: Executable,
-        continuationSlot: Int?,
-        codeBuilder: CodeBuilder,
-    ) {
+    private fun writeDefaultInvokeInstructions(continuationSlot: Int?, codeBuilder: CodeBuilder) {
         val isStatic = Modifier.isStatic(executable.modifiers)
         val methodTypeDesc = run {
             val returnTypeDesc = if (executable is Method) executable.returnType.describeConstable().get() else CD_void
@@ -363,6 +347,22 @@ internal object ClassFileMethodAccessorGenerator {
             codeBuilder.invokespecial(instanceDesc, INIT_NAME, methodTypeDesc)
         } else {
             codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
+        }
+    }
+
+    internal companion object {
+        internal fun <R> generate(
+            instance: Any?,
+            function: KFunction<R>,
+            lookup: MethodHandles.Lookup,
+        ): MethodAccessor<R> {
+            function.parameters.forEach { parameter ->
+                require(parameter.kind == KParameter.Kind.INSTANCE || parameter.kind == KParameter.Kind.VALUE) {
+                    "Unsupported parameter kind: $parameter"
+                }
+            }
+
+            return ClassFileMethodAccessorGenerator(instance, function, lookup).generate()
         }
     }
 }
