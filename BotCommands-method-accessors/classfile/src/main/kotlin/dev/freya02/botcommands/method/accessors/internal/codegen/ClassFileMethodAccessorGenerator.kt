@@ -1,8 +1,8 @@
 package dev.freya02.botcommands.method.accessors.internal.codegen
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.*
 import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.*
 import java.lang.classfile.CodeBuilder

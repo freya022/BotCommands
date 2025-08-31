@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.method.accessors.api.annotations
+package dev.freya02.botcommands.method.accessors.api.annotations
 
 import kotlin.annotation.AnnotationTarget.*
 
@@ -10,7 +10,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * Any usage of a declaration annotated with `@ExperimentalMethodAccessorsApi` must be accepted either by
  * annotating that usage with the [@OptIn][OptIn] annotation, e.g. `@OptIn(ExperimentalMethodAccessorsApi::class)`,
- * or by using the compiler argument `-opt-in=io.github.freya022.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi`.
+ * or by using the compiler argument `-opt-in=dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi`.
  */
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
 @Retention(AnnotationRetention.BINARY)

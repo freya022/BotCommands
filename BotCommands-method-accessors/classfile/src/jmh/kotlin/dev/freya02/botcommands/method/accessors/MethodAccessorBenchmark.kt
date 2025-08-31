@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.method.accessors
 
 import dev.freya02.botcommands.method.accessors.internal.ClassFileMethodAccessorFactory
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import kotlinx.coroutines.runBlocking
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.TimeUnit

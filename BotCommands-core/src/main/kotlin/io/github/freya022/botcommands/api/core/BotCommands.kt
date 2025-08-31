@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core
 
+import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -8,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.service.BCBotCommandsBootstrap
-import io.github.freya022.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue

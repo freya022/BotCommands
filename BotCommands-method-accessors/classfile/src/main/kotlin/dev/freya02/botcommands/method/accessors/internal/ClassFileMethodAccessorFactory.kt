@@ -2,8 +2,6 @@ package dev.freya02.botcommands.method.accessors.internal
 
 import dev.freya02.botcommands.method.accessors.internal.codegen.ClassFileMethodAccessorGenerator
 import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessorFactory
 import java.lang.invoke.MethodHandles
 import kotlin.reflect.KFunction
 

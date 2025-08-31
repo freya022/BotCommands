@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.method.accessors.internal;
 
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.jvm.internal.ContinuationImpl;
 import org.jetbrains.annotations.NotNull;

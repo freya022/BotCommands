@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.method.accessors.internal
+package dev.freya02.botcommands.method.accessors.internal
 
 import kotlin.reflect.KParameter
 

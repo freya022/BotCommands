@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.asKFunction
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

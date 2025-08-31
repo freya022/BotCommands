@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters

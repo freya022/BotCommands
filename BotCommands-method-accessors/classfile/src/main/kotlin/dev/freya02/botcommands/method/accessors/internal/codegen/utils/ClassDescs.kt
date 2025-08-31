@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.method.accessors.internal.codegen.utils
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessorContinuation
-import io.github.freya022.botcommands.method.accessors.internal.MethodAccessor
 import java.lang.constant.ClassDesc
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KCallable
