@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test
 
 import ch.qos.logback.classic.ClassicConstants
+import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import dev.reformator.stacktracedecoroutinator.jvm.DecoroutinatorJvmApi
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
@@ -35,6 +36,9 @@ object Main {
             } else {
                 DecoroutinatorJvmApi.install()
             }
+
+            @OptIn(ExperimentalMethodAccessorsApi::class)
+            BotCommands.preferClassFileAccessors()
 
             BotCommands.create {
                 disableExceptionsInDMs = true
