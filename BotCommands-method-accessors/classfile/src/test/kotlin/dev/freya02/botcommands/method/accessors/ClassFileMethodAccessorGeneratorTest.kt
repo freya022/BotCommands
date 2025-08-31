@@ -46,6 +46,14 @@ class TestClass {
 
     }
 
+    fun runWithMoreDefaults(a: String, b: Int = 42, c: Double = 3.14159) {
+
+    }
+
+    fun runWithNullOptional(arg: Int? = 2) {
+        require(arg == null) { "The expected argument was null but the accessor replaced it with a value ($arg)" }
+    }
+
     fun runWithReturnType(): Int {
         return 1
     }
@@ -136,7 +144,9 @@ object ClassFileMethodAccessorGeneratorTest {
         argumentSet("With return type", TestClass(), TestClass::runWithReturnType, listOf<Any?>()),
         argumentSet("With static modifier", TestStatic, TestStatic::run, listOf<Any?>()),
         argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
+        argumentSet("With more defaults", TestClass(), TestClass::runWithMoreDefaults, listOf<Any?>("foobar")),
         argumentSet("With overridden defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>(3)),
+        argumentSet("With optional parameter set to null", TestClass(), TestClass::runWithNullOptional, listOf<Any?>(null)),
 
         argumentSet("0-arg suspend method", TestClass(), TestClass::coRun, listOf<Any?>()),
         argumentSet("Suspend with defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>()),
