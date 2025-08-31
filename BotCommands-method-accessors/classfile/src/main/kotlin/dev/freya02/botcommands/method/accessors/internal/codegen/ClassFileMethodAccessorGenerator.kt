@@ -311,14 +311,13 @@ internal object ClassFileMethodAccessorGenerator {
             // var parameter = function.getParameters().get([index])
             codeBuilder.loadParameter(thisSlot, thisClass, index, parameterSlot)
 
-            // <parameter> = args.get(parameter)
-            codeBuilder.aload(argsSlot)
-            codeBuilder.aload(parameterSlot)
-            codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
             if (parameter.isOptional) {
-                // This will cast only if the value is non-null
-                codeBuilder.unboxOrLoadDefaultIfNull(paramJavaType, maskSlot, valueParameterIndex)
+                codeBuilder.loadUnboxedOptional(paramJavaType, argsSlot, parameterSlot, maskSlot, valueParameterIndex)
             } else {
+                // <parameter> = args.get(parameter)
+                codeBuilder.aload(argsSlot)
+                codeBuilder.aload(parameterSlot)
+                codeBuilder.invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
                 // Cast non-null value into primitive/ref
                 codeBuilder.unboxOrCastTo(target = paramJavaType)
             }
@@ -343,18 +342,30 @@ private fun CodeBuilder.loadParameter(thisSlot: Int, thisClass: ClassDesc, index
     astore(parameterSlot)
 }
 
-private fun CodeBuilder.unboxOrLoadDefaultIfNull(
+private fun CodeBuilder.loadUnboxedOptional(
     type: Class<*>,
+    argsSlot: Int,
+    parameterSlot: Int,
     maskSlot: Int,
     valueParameterIndex: Int,
 ) {
-    dup() // So we can use the reference again after the ifnull
-    ifNull(
-        onNull = {
-            // Value is null, load default
-            // We don't need the reference in that branch
-            // this is also important to have the same amount of stack data in and out of the branch
-            pop()
+    aload(argsSlot)
+    aload(parameterSlot)
+    invokeinterface(CD_Map, "containsKey", MethodTypeDesc.of(CD_boolean, CD_Object))
+
+    // NOTE: Remember to have the same amount of stack data in and out of the branch
+    ifThenElse(
+        {
+            // Key exists, unbox or cast
+            // <stack> <- (<type>) args.get(parameter)
+            aload(argsSlot)
+            aload(parameterSlot)
+            invokeinterface(CD_Map, "get", MethodTypeDesc.of(CD_Object, CD_Object))
+            // The value may be null, but null can always be cast to any object type
+            unboxOrCastTo(type)
+        },
+        {
+            // Key does not exist, load default
             when (type) {
                 Boolean::class.javaPrimitiveType, Byte::class.javaPrimitiveType, Char::class.javaPrimitiveType, Short::class.javaPrimitiveType, Int::class.javaPrimitiveType ->
                     iconst_0()
@@ -371,10 +382,6 @@ private fun CodeBuilder.unboxOrLoadDefaultIfNull(
             loadConstant(1 shl (valueParameterIndex % Integer.SIZE))
             ior()
             istore(maskSlot)
-        },
-        onNonNull = {
-            // Value is non-null, unbox if necessary
-            unboxOrCastTo(type)
         }
     )
 }
