@@ -87,7 +87,7 @@ internal class ComponentHandlerExecutor internal constructor(
                     return false
             }
 
-            eventFunction.methodAccessor.call(parameters.mapFinalParameters(event, optionValues))
+            eventFunction.methodAccessor.callSuspend(parameters.mapFinalParameters(event, optionValues))
         }
         return true
     }

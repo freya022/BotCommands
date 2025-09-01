@@ -27,6 +27,6 @@ public class MethodAccessorContinuation extends ContinuationImpl {
     protected Object invokeSuspend(@NotNull Object result) {
         this.result = result;
         this.label |= Integer.MIN_VALUE;
-        return methodAccessor.call(null, this);
+        return methodAccessor.callSuspend(null, this);
     }
 }

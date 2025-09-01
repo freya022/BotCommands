@@ -4,5 +4,5 @@ import kotlin.reflect.KParameter
 
 interface MethodAccessor<R> {
 
-    suspend fun call(args: Map<KParameter, Any?>): R
+    suspend fun callSuspend(args: Map<KParameter, Any?>): R
 }

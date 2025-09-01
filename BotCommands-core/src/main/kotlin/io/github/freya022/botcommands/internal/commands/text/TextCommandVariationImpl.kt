@@ -89,7 +89,7 @@ internal class TextCommandVariationImpl internal constructor(
     internal suspend fun execute(event: BaseCommandEvent, optionValues: Map<out OptionImpl, Any?>) {
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
-        eventFunction.methodAccessor.call(finalParameters)
+        eventFunction.methodAccessor.callSuspend(finalParameters)
     }
 
     /**

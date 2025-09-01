@@ -88,7 +88,7 @@ object ClassFileMethodAccessorGeneratorTest {
     fun `Generate method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
         runBlocking {
             val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
-            methodAccessor.call(buildMap {
+            methodAccessor.callSuspend(buildMap {
                 args.forEachIndexed { index, arg ->
                     this[function.valueParameters[index]] = arg
                 }

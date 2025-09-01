@@ -111,13 +111,13 @@ internal class EventDispatcherImpl internal constructor(
             if (timeout != null) {
                 // Timeout only works when the continuations implement a cancellation handler
                 val result = withTimeoutOrNull(timeout) {
-                    methodAccessor.call(args)
+                    methodAccessor.callSuspend(args)
                 }
                 if (result == null) {
                     logger.debug { "Event listener ${classPathFunction.function.shortSignatureNoSrc} timed out" }
                 }
             } else {
-                methodAccessor.call(args)
+                methodAccessor.callSuspend(args)
             }
         } catch (e: InvocationTargetException) {
             if (event is InitializationEvent) {

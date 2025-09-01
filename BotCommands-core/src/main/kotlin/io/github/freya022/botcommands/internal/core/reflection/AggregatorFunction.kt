@@ -52,7 +52,7 @@ internal class AggregatorFunction private constructor(
             aggregatorArguments[eventParameter] = firstParam
         }
 
-        return methodAccessor.call(aggregatorArguments)
+        return methodAccessor.callSuspend(aggregatorArguments)
     }
 }
 

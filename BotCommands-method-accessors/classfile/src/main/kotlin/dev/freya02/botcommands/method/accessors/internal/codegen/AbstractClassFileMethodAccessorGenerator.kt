@@ -48,7 +48,7 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
 
             addConstructor(classBuilder)
 
-            classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+            classBuilder.withMethodBody("callSuspend", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
                 val modalityGenerator = when {
                     function.isSuspend -> SuspendingInvokerGenerator
                     else -> BlockingInvokerGenerator
