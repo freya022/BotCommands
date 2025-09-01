@@ -49,7 +49,6 @@ internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
 ) = buildParameters(executable.eventFunction.kFunction) {
-    this[executable.eventFunction.instanceParameter] = executable.instance
     this[executable.eventFunction.firstParameter] = firstParam
 
     for (parameter in this@mapFinalParameters) {
