@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -30,6 +31,6 @@ internal object Singletons {
             "Constructor of ${clazz.shortQualifiedName} must be effectively public (internal is allowed)"
         }
 
-        return constructor.callBy(mapOf())
+        return MethodAccessorFactoryProvider.getStaticAccessor(constructor).call(mapOf())
     }
 }

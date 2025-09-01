@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.Singletons
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
@@ -295,16 +296,15 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: BCServiceContainerImp
     }
 
     return when (val instanceParameter = this.instanceParameter) {
-        null -> this.callBy(args)
+        null -> MethodAccessorFactoryProvider.getStaticAccessor(this).call(args)
         else -> {
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
                 ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
                     throwArgument(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
                 }
-            args[instanceParameter] = instance
 
-            this.callBy(args)
+            MethodAccessorFactoryProvider.getAccessorFactory().create(instance, this).call(args)
         }
     }
 }
