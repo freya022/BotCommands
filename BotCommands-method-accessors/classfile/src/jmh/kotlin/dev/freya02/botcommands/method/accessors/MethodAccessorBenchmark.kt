@@ -20,9 +20,9 @@ open class MethodAccessorBenchmark {
 
     private lateinit var instance: MyClass
 
-    private lateinit var simpleMethodAccessor: MethodAccessor
-    private lateinit var methodWithDefaultsAccessor: MethodAccessor
-    private lateinit var suspendingMethodWithDefaultsAccessor: MethodAccessor
+    private lateinit var simpleMethodAccessor: MethodAccessor<*>
+    private lateinit var methodWithDefaultsAccessor: MethodAccessor<*>
+    private lateinit var suspendingMethodWithDefaultsAccessor: MethodAccessor<*>
 
     private lateinit var simpleMethodKotlin: KFunction<*>
     private lateinit var methodWithDefaultsKotlin: KFunction<*>
