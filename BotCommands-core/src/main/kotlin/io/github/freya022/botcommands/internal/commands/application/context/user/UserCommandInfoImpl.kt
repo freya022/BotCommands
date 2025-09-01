@@ -66,7 +66,7 @@ internal class UserCommandInfoImpl internal constructor(
         }
 
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
-        eventFunction.methodAccessor.callSuspend(finalParameters)
+        methodAccessor.callSuspend(finalParameters)
 
         return true
     }

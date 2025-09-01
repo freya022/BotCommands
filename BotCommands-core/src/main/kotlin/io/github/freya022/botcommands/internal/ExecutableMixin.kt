@@ -14,6 +14,8 @@ internal interface ExecutableMixin : Executable {
         get() = eventFunction.kFunction
     val instance: Any
         get() = eventFunction.instance
+    val methodAccessor
+        get() = eventFunction.methodAccessor
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace

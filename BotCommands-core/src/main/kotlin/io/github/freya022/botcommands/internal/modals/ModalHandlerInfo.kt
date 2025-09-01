@@ -89,7 +89,7 @@ internal class ModalHandlerInfo internal constructor(
                 throwInternal(::tryInsertOption, "Insertion function shouldn't have been aborted")
         }
 
-        eventFunction.methodAccessor.callSuspend(parameters.mapFinalParameters(event, optionValues))
+        methodAccessor.callSuspend(parameters.mapFinalParameters(event, optionValues))
     }
 
     private suspend fun tryInsertOption(

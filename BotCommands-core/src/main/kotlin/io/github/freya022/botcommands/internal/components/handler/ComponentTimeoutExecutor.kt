@@ -78,7 +78,7 @@ internal class ComponentTimeoutExecutor internal constructor(
                     return false
             }
 
-            eventFunction.methodAccessor.callSuspend(parameters.mapFinalParameters(firstArgument, optionValues))
+            methodAccessor.callSuspend(parameters.mapFinalParameters(firstArgument, optionValues))
         }
         return true
     }

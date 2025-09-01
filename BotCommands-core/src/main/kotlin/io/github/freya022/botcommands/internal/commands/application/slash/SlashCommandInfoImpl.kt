@@ -76,7 +76,7 @@ internal sealed class SlashCommandInfoImpl(
 
     internal suspend fun execute(event: GlobalSlashEvent): Boolean {
         val objects = getSlashOptions(event, parameters) ?: return false
-        eventFunction.methodAccessor.callSuspend(objects)
+        methodAccessor.callSuspend(objects)
 
         return true
     }

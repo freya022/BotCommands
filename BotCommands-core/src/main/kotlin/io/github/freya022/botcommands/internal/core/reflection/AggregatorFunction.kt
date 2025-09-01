@@ -20,7 +20,7 @@ internal class AggregatorFunction private constructor(
     /**
      * Nullable due to constructor aggregators
      */
-    private val aggregatorInstance: Any?,
+    aggregatorInstance: Any?,
     firstParamType: KClass<*>
 ) : Function<Any?>(boundAggregator) {
     init {
