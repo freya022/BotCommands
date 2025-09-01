@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.method.accessors.internal
 
+import dev.freya02.botcommands.method.accessors.internal.exceptions.IllegalSuspendCallException
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -17,5 +18,14 @@ internal class KotlinReflectMethodAccessor<R> internal constructor(
         args.putIfAbsent(instanceParameter, instance)
 
         return function.callSuspendBy(args)
+    }
+
+    override fun call(args: Map<KParameter, Any?>): R {
+        if (function.isSuspend) throw IllegalSuspendCallException()
+
+        val args = args.toMutableMap()
+        args.putIfAbsent(instanceParameter, instance)
+
+        return function.callBy(args)
     }
 }

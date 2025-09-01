@@ -1,14 +1,18 @@
 package dev.freya02.botcommands.method.accessors
 
 import dev.freya02.botcommands.method.accessors.internal.ClassFileMethodAccessorFactory
+import dev.freya02.botcommands.method.accessors.internal.exceptions.IllegalSuspendCallException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.argumentSet
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
+import kotlin.test.Test
 import kotlin.time.Duration.Companion.milliseconds
 
 interface TestInterface {
@@ -93,6 +97,23 @@ object ClassFileMethodAccessorGeneratorTest {
                     this[function.valueParameters[index]] = arg
                 }
             })
+        }
+    }
+
+    @Test
+    fun `'call' throws on non-suspend functions`() {
+        assertThrows<IllegalSuspendCallException> {
+            val instance = TestClass()
+            val function = TestClass::coRun
+            val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
+            methodAccessor.call(mapOf())
+        }
+
+        assertDoesNotThrow {
+            val instance = TestClass()
+            val function = TestClass::run
+            val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
+            methodAccessor.call(mapOf())
         }
     }
 

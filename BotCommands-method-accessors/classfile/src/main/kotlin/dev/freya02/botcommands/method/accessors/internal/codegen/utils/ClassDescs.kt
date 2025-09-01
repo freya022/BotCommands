@@ -2,6 +2,7 @@ package dev.freya02.botcommands.method.accessors.internal.codegen.utils
 
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessorContinuation
+import dev.freya02.botcommands.method.accessors.internal.exceptions.IllegalSuspendCallException
 import java.lang.constant.ClassDesc
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KCallable
@@ -22,3 +23,4 @@ internal val CD_DebugProbesKt = ClassDesc.of("kotlin.coroutines.jvm.internal.Deb
 
 internal val CD_MethodAccessor = ClassDesc.of(MethodAccessor::class.java.name)
 internal val CD_MethodAccessorContinuation = ClassDesc.of(MethodAccessorContinuation::class.java.name)
+internal val CD_IllegalSuspendCallException = ClassDesc.of(IllegalSuspendCallException::class.java.name)

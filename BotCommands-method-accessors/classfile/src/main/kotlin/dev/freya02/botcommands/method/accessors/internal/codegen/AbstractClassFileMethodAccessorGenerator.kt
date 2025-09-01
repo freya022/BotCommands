@@ -6,6 +6,7 @@ import dev.freya02.botcommands.method.accessors.internal.codegen.invoker.direct.
 import dev.freya02.botcommands.method.accessors.internal.codegen.modality.BlockingInvokerGenerator
 import dev.freya02.botcommands.method.accessors.internal.codegen.modality.SuspendingInvokerGenerator
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_Continuation
+import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_IllegalSuspendCallException
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
 import java.lang.classfile.ClassBuilder
@@ -13,8 +14,7 @@ import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_FINAL
 import java.lang.classfile.ClassFile.ACC_PUBLIC
 import java.lang.constant.ClassDesc
-import java.lang.constant.ConstantDescs.CD_Map
-import java.lang.constant.ConstantDescs.CD_Object
+import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
@@ -59,6 +59,24 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
                         else -> DirectInvokerGenerator
                     }
                     generate(invokerGenerator, codeBuilder)
+                }
+            }
+
+            classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+                if (function.isSuspend) {
+                    // throw new IllegalSuspendCallException()
+                    codeBuilder.new_(CD_IllegalSuspendCallException)
+                    codeBuilder.dup() // so we can throw it
+                    codeBuilder.invokespecial(CD_IllegalSuspendCallException, INIT_NAME, MethodTypeDesc.of(CD_void))
+                    codeBuilder.athrow()
+                } else {
+                    with(BlockingInvokerGenerator) {
+                        val invokerGenerator = when {
+                            function.parameters.any { it.isOptional } -> DefaultInvokerGenerator
+                            else -> DirectInvokerGenerator
+                        }
+                        generate(invokerGenerator, codeBuilder)
+                    }
                 }
             }
         }
