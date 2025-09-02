@@ -25,7 +25,7 @@ class UsedComponentSet(private val componentsService: Components, private val cl
         message = "Replaced with setComponent(ComponentTree), if you have a message, you should get the ComponentTree directly from it",
         replaceWith = ReplaceWith(
             expression = "setComponents(components.toList().toDefaultComponentTree())",
-            imports = arrayOf("dev.minn.jda.ktx.interactions.components.toDefaultComponentTree")
+            imports = arrayOf("dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree")
         )
     )
     fun setComponents(components: Iterable<Component>) {
