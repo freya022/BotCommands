@@ -14,7 +14,7 @@ internal object MethodAccessorFactoryProvider {
     private var logged = false
 
     private val kotlinReflectAccessorFactory: MethodAccessorFactory = KotlinReflectMethodAccessorFactory()
-    private val classFileAccessorFactory: MethodAccessorFactory? by lazy {
+    private val classFileAccessorFactory by lazy<MethodAccessorFactory?> {
         if (Runtime.version().feature() >= 24) {
             ClassFileMethodAccessorFactory()
         } else {
