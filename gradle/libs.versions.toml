@@ -30,7 +30,7 @@ mockk = "1.14.4"
 postgresql = "42.7.7"
 slf4j-api = "2.0.16"
 spring-boot = "3.5.3"
-stacktrace-decoroutinator = "2.4.8"
+stacktrace-decoroutinator = "2.5.7"
 trove4j-core = "3.1.0"
 
 [plugins]
