@@ -29,7 +29,6 @@ internal object DefaultMethodInvokerGenerator : AbstractDefaultInvokerGenerator(
         val thisSlot = codeBuilder.receiverSlot()
         val argsSlot = codeBuilder.parameterSlot(0)
 
-        val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
         val maskSlot = codeBuilder.allocateLocal(TypeKind.INT)
 
         // maskSlot = 0
@@ -41,7 +40,7 @@ internal object DefaultMethodInvokerGenerator : AbstractDefaultInvokerGenerator(
             codeBuilder.aload(thisSlot)
             codeBuilder.getfield(thisClass, "instance", instanceDesc)
         }
-        loadDefaultParameters(thisSlot, parameterSlot, argsSlot, maskSlot, continuationSlot, codeBuilder)
+        loadDefaultParameters(argsSlot, maskSlot, continuationSlot, codeBuilder)
         codeBuilder.invokestatic(instanceDesc, $$"$${executable.name}$default", methodTypeDesc)
     }
 }

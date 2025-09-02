@@ -23,10 +23,8 @@ internal object DefaultConstructorInvokerGenerator : AbstractDefaultInvokerGener
             MethodTypeDesc.of(CD_void, effectiveParameters)
         }
 
-        val thisSlot = codeBuilder.receiverSlot()
         val argsSlot = codeBuilder.parameterSlot(0)
 
-        val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
         val maskSlot = codeBuilder.allocateLocal(TypeKind.INT)
 
         // maskSlot = 0
@@ -38,7 +36,7 @@ internal object DefaultConstructorInvokerGenerator : AbstractDefaultInvokerGener
         codeBuilder.dup() // So we can return it
 
         // <instance>."<init>"([params], mask, null)
-        loadDefaultParameters(thisSlot, parameterSlot, argsSlot, maskSlot, continuationSlot, codeBuilder)
+        loadDefaultParameters(argsSlot, maskSlot, continuationSlot, codeBuilder)
         codeBuilder.invokespecial(instanceDesc, INIT_NAME, methodTypeDesc)
     }
 }

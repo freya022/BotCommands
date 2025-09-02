@@ -5,7 +5,6 @@ import kotlin.reflect.KFunction
 
 internal sealed class Function<R>(boundFunction: KFunction<R>) {
     internal val kFunction = boundFunction.reflectReference()
-    internal val parametersSize = kFunction.parameters.size
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -13,8 +13,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.valueParameters
 
 private val logger = KotlinLogging.logger { }
 
@@ -97,15 +95,8 @@ internal class EventDispatcherImpl internal constructor(
         try {
             val classPathFunction = eventHandlerFunction.classPathFunction
             val methodAccessor = classPathFunction.methodAccessor
-            val args: Map<KParameter, Any?> = buildMap {
-                classPathFunction.function.valueParameters.forEachIndexed { index, param ->
-                    if (index == 0) {
-                        this[param] = event
-                    } else {
-                        this[param] = eventHandlerFunction.parameters[index - 1]
-                    }
-                }
-            }
+            val args = eventHandlerFunction.cloneBaseArgs()
+            args[0] = event
 
             val timeout = eventHandlerFunction.timeout
             if (timeout != null) {

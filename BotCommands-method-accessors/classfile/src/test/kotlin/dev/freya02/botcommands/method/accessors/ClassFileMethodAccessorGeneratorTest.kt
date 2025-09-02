@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.argumentSet
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.valueParameters
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -92,11 +91,11 @@ object ClassFileMethodAccessorGeneratorTest {
     fun `Generate method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
         runBlocking {
             val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
-            methodAccessor.callSuspend(buildMap {
-                args.forEachIndexed { index, arg ->
-                    this[function.valueParameters[index]] = arg
-                }
-            })
+            val args = methodAccessor.createBlankArguments().also {
+                args.forEach { arg -> it.push(arg) }
+            }
+
+            methodAccessor.callSuspend(args)
         }
     }
 
@@ -106,14 +105,14 @@ object ClassFileMethodAccessorGeneratorTest {
             val instance = TestClass()
             val function = TestClass::coRun
             val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
-            methodAccessor.call(mapOf())
+            methodAccessor.call(methodAccessor.createBlankArguments())
         }
 
         assertDoesNotThrow {
             val instance = TestClass()
             val function = TestClass::run
             val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
-            methodAccessor.call(mapOf())
+            methodAccessor.call(methodAccessor.createBlankArguments())
         }
     }
 

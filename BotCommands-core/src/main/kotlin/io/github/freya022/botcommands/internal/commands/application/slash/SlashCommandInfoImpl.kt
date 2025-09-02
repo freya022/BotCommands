@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash
 
+import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -32,7 +33,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
-import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
@@ -89,7 +89,7 @@ internal sealed class SlashCommandInfoImpl(
 internal suspend fun <T> ExecutableMixin.getSlashOptions(
     event: T,
     parameters: List<AggregatedParameterMixin>
-): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
+): MethodArguments? where T : CommandInteractionPayload, T : Event {
     val optionValues = parameters.mapOptions { option ->
         if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
             return null

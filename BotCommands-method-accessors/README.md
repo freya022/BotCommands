@@ -28,10 +28,17 @@ note that this will only have an effect if your bot runs on Java 24+.
 
 ### Performance comparison
 
-Performance numbers from [MethodAccessorBenchmark](./classfile/src/jmh/kotlin/dev/freya02/botcommands/method/accessors/MethodAccessorBenchmark.kt)
+Performance numbers from [MethodAccessorBenchmark](./classfile/src/jmh/kotlin/dev/freya02/botcommands/method/accessors/MethodAccessorBenchmark.kt), baseline is a direct call:
 
-| Function type                                                   | Baseline    | ClassFile   | kotlin-reflect |
-|-----------------------------------------------------------------|-------------|-------------|----------------|
-| () -> String                                                    | 0.110 µs/op | 0.115 µs/op | 0.227 µs/op    |
-| (a: String, b: Int = 42, c: Double = 3.14159) -> String         | 0.177 µs/op | 0.287 µs/op | 0.514 µs/op    |
-| suspend (a: String, b: Int = 42, c: Double = 3.14159) -> String | 0.180 µs/op | 0.288 µs/op | 0.535 µs/op    |
+| Function type                                                   |         Baseline         |         ClassFile         |      kotlin-reflect       |
+|-----------------------------------------------------------------|:------------------------:|:-------------------------:|:-------------------------:|
+| () -> String                                                    | 0.114 µs/op<br/> ± 0,003 | 0.115 µs/op<br/>  ± 0,003 | 0.244 µs/op<br/>  ± 0,056 |
+| (a: String, b: Int = 42, c: Double = 3.14159) -> String         | 0.179 µs/op<br/> ± 0,007 | 0.184 µs/op<br/>  ± 0,010 | 0.525 µs/op<br/>  ± 0,039 |
+| suspend (a: String, b: Int = 42, c: Double = 3.14159) -> String | 0.183 µs/op<br/> ± 0,006 | 0.179 µs/op<br/>  ± 0,007 | 0.531 µs/op<br/>  ± 0,030 |
+
+Note that each benchmark only use one accessor instance, in the real world there would be many more accessors,
+meaning that each virtual call becomes non-trivial (see [megamorphic virtual calls](https://shipilev.net/jvm/anatomy-quarks/16-megamorphic-virtual-calls/)) and thus slower,
+therefore this benchmark only shows:
+
+- The custom classes can be as fast as direct calls, but it depends how many implementations there are, among other profiling data
+- The overhead of kotlin-reflect

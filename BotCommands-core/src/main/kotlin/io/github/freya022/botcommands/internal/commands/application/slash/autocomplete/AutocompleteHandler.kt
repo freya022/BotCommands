@@ -96,7 +96,7 @@ internal class AutocompleteHandler(
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
-        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.eventFunction.methodAccessor.callSuspend(objects))
+        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.methodAccessor.callSuspend(objects))
         val autoCompleteQuery = event.focusedOption
 
         //If something is typed but there are no choices, don't display user input

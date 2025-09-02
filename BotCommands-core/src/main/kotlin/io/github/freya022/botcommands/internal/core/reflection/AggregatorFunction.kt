@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.reflection
 
+import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.isConstructor
 import io.github.freya022.botcommands.api.core.utils.isStatic
@@ -12,7 +13,6 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.freya022.botcommands.internal.utils.checkAt
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
 internal class AggregatorFunction private constructor(
@@ -47,9 +47,9 @@ internal class AggregatorFunction private constructor(
         firstParamType: KClass<*>
     ) : this(aggregator, context.serviceContainer.getFunctionServiceOrNull(aggregator), firstParamType)
 
-    internal suspend fun aggregate(firstParam: Any, aggregatorArguments: MutableMap<KParameter, Any?>): Any? {
+    internal suspend fun aggregate(firstParam: Any, aggregatorArguments: MethodArguments): Any? {
         if (eventParameter != null) {
-            aggregatorArguments[eventParameter] = firstParam
+            aggregatorArguments[eventParameter.index] = firstParam
         }
 
         return methodAccessor.callSuspend(aggregatorArguments)

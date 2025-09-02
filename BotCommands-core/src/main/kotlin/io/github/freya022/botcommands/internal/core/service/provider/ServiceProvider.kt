@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
@@ -17,8 +18,8 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
@@ -266,23 +267,37 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceC
 }
 
 internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-    val params: MutableMap<KParameter, Any?> = hashMapOf()
-    this.nonInstanceParameters.forEach {
+    val instance: Any? = when (val instanceParameter = this.instanceParameter) {
+        null -> null
+        else -> {
+            val instanceErasure = instanceParameter.type.jvmErasure
+            instanceErasure.objectInstance
+                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
+                    throwArgument(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
+                }
+        }
+    }
+
+    val accessor = MethodAccessorFactoryProvider.getAccessorFactory().create(instance, this)
+    val args = accessor.createBlankArguments()
+    this.valueParameters.forEachIndexed { index, parameter ->
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
-        val dependencyResult = serviceContainer.tryGetWrappedService(it)
-        params[it] = dependencyResult.service ?: when {
-            it.type.isMarkedNullable -> null
-            it.isOptional -> return@forEach
-            else -> throw ServiceException(ErrorType.UNAVAILABLE_PARAMETER.toError(
-                "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
-                failedFunction = this,
-                nestedError = dependencyResult.serviceError
-            ))
+        val dependencyResult = serviceContainer.tryGetWrappedService(parameter)
+        args[index] = dependencyResult.service ?: when {
+            parameter.type.isMarkedNullable -> null
+            parameter.isOptional -> return@forEachIndexed
+            else -> throw ServiceException(
+                ErrorType.UNAVAILABLE_PARAMETER.toError(
+                    "Cannot get service for parameter '${parameter.bestName}' (${parameter.type.jvmErasure.simpleNestedName})",
+                    failedFunction = this,
+                    nestedError = dependencyResult.serviceError
+                )
+            )
         }
     }
 
     return measureTimedInstantiation {
-        this.callStatic(serviceContainer, params)
+        this.callStatic(serviceContainer, args)
             ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
                 errorMessage = "Service factory returned null",
                 failedFunction = this
@@ -290,7 +305,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceCo
     }
 }
 
-internal fun <R> KFunction<R>.callStatic(serviceContainer: BCServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
+internal fun <R> KFunction<R>.callStatic(serviceContainer: BCServiceContainerImpl, args: MethodArguments): R {
     if (this.isSuspend) {
         throwArgument(this, "Suspending functions are not supported in this context")
     }

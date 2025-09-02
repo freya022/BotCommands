@@ -31,6 +31,7 @@ internal object Singletons {
             "Constructor of ${clazz.shortQualifiedName} must be effectively public (internal is allowed)"
         }
 
-        return MethodAccessorFactoryProvider.getStaticAccessor(constructor).call(mapOf())
+        val accessor = MethodAccessorFactoryProvider.getStaticAccessor(constructor)
+        return accessor.call(accessor.createBlankArguments())
     }
 }

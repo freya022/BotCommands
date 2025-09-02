@@ -1,10 +1,18 @@
 package dev.freya02.botcommands.method.accessors.internal
 
-import kotlin.reflect.KParameter
-
 interface MethodAccessor<R> {
 
-    suspend fun callSuspend(args: Map<KParameter, Any?>): R
+    /**
+     * `true` if this method requires an instance parameter
+     *
+     * This is mostly used to offset the argument indexes in [MethodArguments],
+     * as the instance is already inserted by the accessor
+     */
+    fun hasInstance(): Boolean
 
-    fun call(args: Map<KParameter, Any?>): R
+    suspend fun callSuspend(args: MethodArguments): R
+
+    fun call(args: MethodArguments): R
+
+    fun createBlankArguments(): MethodArguments
 }

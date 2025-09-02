@@ -10,6 +10,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
+// TODO move this to BotCommands-method-accessors
 @Suppress("FunctionName")
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -20,9 +21,9 @@ open class MethodAccessorBenchmark {
 
     private lateinit var instance: MyClass
 
-    private lateinit var simpleMethodAccessor: MethodAccessor<*>
-    private lateinit var methodWithDefaultsAccessor: MethodAccessor<*>
-    private lateinit var suspendingMethodWithDefaultsAccessor: MethodAccessor<*>
+    private lateinit var simpleMethodAccessorClassFile: MethodAccessor<*>
+    private lateinit var methodWithDefaultsAccessorClassFile: MethodAccessor<*>
+    private lateinit var suspendingMethodWithDefaultsAccessorClassFile: MethodAccessor<*>
 
     private lateinit var simpleMethodKotlin: KFunction<*>
     private lateinit var methodWithDefaultsKotlin: KFunction<*>
@@ -40,9 +41,9 @@ open class MethodAccessorBenchmark {
         methodWithDefaultsKotlin = MyClass::methodWithDefaults
         suspendingMethodWithDefaultsKotlin = MyClass::suspendingMethodWithDefaults
 
-        simpleMethodAccessor = ClassFileMethodAccessorFactory().create(instance, MyClass::simpleMethod)
-        methodWithDefaultsAccessor = ClassFileMethodAccessorFactory().create(instance, MyClass::methodWithDefaults)
-        suspendingMethodWithDefaultsAccessor = ClassFileMethodAccessorFactory().create(instance, MyClass::suspendingMethodWithDefaults)
+        simpleMethodAccessorClassFile = ClassFileMethodAccessorFactory().create(instance, MyClass::simpleMethod)
+        methodWithDefaultsAccessorClassFile = ClassFileMethodAccessorFactory().create(instance, MyClass::methodWithDefaults)
+        suspendingMethodWithDefaultsAccessorClassFile = ClassFileMethodAccessorFactory().create(instance, MyClass::suspendingMethodWithDefaults)
     }
 
     @Benchmark
@@ -61,18 +62,23 @@ open class MethodAccessorBenchmark {
     }
 
     @Benchmark
-    fun simpleMethod_Accessor(): String = runBlocking {
-        simpleMethodAccessor.call(mapOf()) as String
+    fun simpleMethod_Accessor_ClassFile(): String = runBlocking {
+        val args = simpleMethodAccessorClassFile.createBlankArguments()
+        simpleMethodAccessorClassFile.callSuspend(args) as String
     }
 
     @Benchmark
-    fun methodWithDefaults_Accessor(): String = runBlocking {
-        methodWithDefaultsAccessor.call(mapOf(methodWithDefaultsKotlin.valueParameters[0] to sampleString)) as String
+    fun methodWithDefaults_Accessor_ClassFile(): String = runBlocking {
+        val args = methodWithDefaultsAccessorClassFile.createBlankArguments()
+        args[0] = sampleString
+        methodWithDefaultsAccessorClassFile.callSuspend(args) as String
     }
 
     @Benchmark
-    fun suspendingMethodWithDefaults_Accessor(): String = runBlocking {
-        suspendingMethodWithDefaultsAccessor.call(mapOf(suspendingMethodWithDefaultsKotlin.valueParameters[0] to sampleString)) as String
+    fun suspendingMethodWithDefaults_Accessor_ClassFile(): String = runBlocking {
+        val args = suspendingMethodWithDefaultsAccessorClassFile.createBlankArguments()
+        args[0] = sampleString
+        suspendingMethodWithDefaultsAccessorClassFile.callSuspend(args) as String
     }
 
     @Benchmark

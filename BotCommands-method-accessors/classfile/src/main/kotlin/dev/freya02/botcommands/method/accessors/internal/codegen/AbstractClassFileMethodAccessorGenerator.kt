@@ -8,6 +8,7 @@ import dev.freya02.botcommands.method.accessors.internal.codegen.modality.Suspen
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_Continuation
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_IllegalSuspendCallException
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_MethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_MethodArguments
 import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
@@ -18,9 +19,11 @@ import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
+import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 
 internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
     internal val instance: Any?,
@@ -43,12 +46,24 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
             classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
             classBuilder.withInterfaceSymbols(CD_MethodAccessor)
 
+            classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
+            classBuilder.withInterfaceSymbols(CD_MethodAccessor)
+
             // TODO replace with class data of hidden class
             addFields(classBuilder)
 
             addConstructor(classBuilder)
 
-            classBuilder.withMethodBody("callSuspend", MethodTypeDesc.of(CD_Object, CD_Map, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+            classBuilder.withMethodBody("hasInstance", MethodTypeDesc.of(CD_boolean), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+                if (isStatic || executable is Constructor<*>) {
+                    codeBuilder.iconst_0() // false, does not have instance parameter
+                } else {
+                    codeBuilder.iconst_1() // true, has instance parameter
+                }
+                codeBuilder.ireturn()
+            }
+
+            classBuilder.withMethodBody("callSuspend", MethodTypeDesc.of(CD_Object, CD_MethodArguments, CD_Continuation), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
                 val modalityGenerator = when {
                     function.isSuspend -> SuspendingInvokerGenerator
                     else -> BlockingInvokerGenerator
@@ -62,7 +77,7 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
                 }
             }
 
-            classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_Map), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+            classBuilder.withMethodBody("call", MethodTypeDesc.of(CD_Object, CD_MethodArguments), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
                 if (function.isSuspend) {
                     // throw new IllegalSuspendCallException()
                     codeBuilder.new_(CD_IllegalSuspendCallException)
@@ -78,6 +93,15 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
                         generate(invokerGenerator, codeBuilder)
                     }
                 }
+            }
+
+            classBuilder.withMethodBody("createBlankArguments", MethodTypeDesc.of(CD_MethodArguments), ACC_PUBLIC or ACC_FINAL) { codeBuilder ->
+                // return new MethodArguments([parameterCount])
+                codeBuilder.new_(CD_MethodArguments)
+                codeBuilder.dup()
+                codeBuilder.loadConstant(function.parameters.count { it.kind != KParameter.Kind.INSTANCE })
+                codeBuilder.invokespecial(CD_MethodArguments, INIT_NAME, MethodTypeDesc.of(CD_void, CD_int))
+                codeBuilder.areturn()
             }
         }
 

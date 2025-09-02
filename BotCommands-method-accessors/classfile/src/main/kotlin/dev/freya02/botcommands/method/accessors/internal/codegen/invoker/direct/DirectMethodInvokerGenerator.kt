@@ -2,7 +2,6 @@ package dev.freya02.botcommands.method.accessors.internal.codegen.invoker.direct
 
 import dev.freya02.botcommands.method.accessors.internal.codegen.AbstractClassFileMethodAccessorGenerator
 import java.lang.classfile.CodeBuilder
-import java.lang.classfile.TypeKind
 import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
 
@@ -23,14 +22,12 @@ internal object DirectMethodInvokerGenerator : AbstractDirectInvokerGenerator() 
         val thisSlot = codeBuilder.receiverSlot()
         val argsSlot = codeBuilder.parameterSlot(0)
 
-        val parameterSlot = codeBuilder.allocateLocal(TypeKind.REFERENCE)
-
         // this.instance.[methodName]([params])
         if (!isStatic) {
             codeBuilder.aload(thisSlot)
             codeBuilder.getfield(thisClass, "instance", instanceDesc)
         }
-        loadParameters(thisSlot, parameterSlot, argsSlot, codeBuilder)
+        loadParameters(argsSlot, codeBuilder)
         if (continuationSlot != null) codeBuilder.aload(continuationSlot)
         if (isStatic) {
             codeBuilder.invokestatic(instanceDesc, executable.name, methodTypeDesc)
