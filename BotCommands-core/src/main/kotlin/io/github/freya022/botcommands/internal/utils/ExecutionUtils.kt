@@ -4,9 +4,8 @@ import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
-import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
-import kotlin.reflect.KParameter
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
 internal enum class InsertOptionResult {
@@ -66,7 +65,6 @@ internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
 //    we are keeping track of parameter indexes, which are offset if there is an instance parameter, very ugly.
 //  We should be using MethodArguments#push instead, so we don't worry about indexes,
 //    however this requires arguments to be set in the right order.
-context(executable: ExecutableMixin)
 private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MethodArguments, optionValues: Map<out OptionImpl, Any?>, parameter: AggregatedParameterMixin) {
     val aggregator = parameter.aggregator
 
@@ -83,11 +81,7 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MethodAr
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings
             if (option in optionValues) {
-                if (aggregator.methodAccessor.hasInstance()) {
-                    aggregatorArguments[option.index - 1] = optionValues[option]
-                } else {
-                    aggregatorArguments[option.index] = optionValues[option]
-                }
+                aggregatorArguments[option] = optionValues[option]
                 addedOption = true
             }
         }
@@ -120,9 +114,8 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MethodAr
     }
 }
 
-context(executable: ExecutableMixin)
-private operator fun MethodArguments.set(parameter: MethodParameterMixin, obj: Any?): Any? = obj.also {
-    if (executable.methodAccessor.hasInstance()) {
+private operator fun MethodArguments.set(parameter: AggregatedParameterMixin, obj: Any?): Any? = obj.also {
+    if (parameter.executableParameter.function.instanceParameter != null) {
         this[parameter.executableParameter.index - 1] = obj
     } else {
         this[parameter.executableParameter.index] = obj
@@ -130,12 +123,21 @@ private operator fun MethodArguments.set(parameter: MethodParameterMixin, obj: A
 }
 
 @Suppress("UNCHECKED_CAST")
-private operator fun MutableMap<KParameter, Any?>.set(option: OptionImpl, obj: Any?): Any? = obj.also {
+private operator fun MethodArguments.set(option: OptionImpl, obj: Any?) {
+    val index = when {
+        (option.parent as AggregatedParameterMixin).aggregator.methodAccessor.hasInstance() -> option.executableParameter.index - 1
+        else -> option.executableParameter.index
+    }
+
     if (option.isVararg) {
-        (this.getOrPut(option.executableParameter) {
-            arrayListOf<Any?>()
-        } as MutableList<Any?>).add(obj)
+        val list = run {
+            val obj = get(index)
+            if (obj == MethodArguments.NO_VALUE)
+                return@run arrayListOf<Any?>().also { set(index, it) }
+            obj!! as MutableList<Any?>
+        }
+        list.add(obj)
     } else {
-        this[option.executableParameter] = obj
+        set(index, obj)
     }
 }
