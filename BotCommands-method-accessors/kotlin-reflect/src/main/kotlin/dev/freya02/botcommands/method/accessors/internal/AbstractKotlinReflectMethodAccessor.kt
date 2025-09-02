@@ -19,7 +19,10 @@ internal abstract class AbstractKotlinReflectMethodAccessor<R>(
         return buildMap(args.size()) {
             block()
             parameters.forEachIndexed { index, parameter ->
-                this[parameter] = args[index]
+                val arg = args[index]
+                if (arg != MethodArguments.NO_VALUE) {
+                    this[parameter] = arg
+                }
             }
         }
     }
