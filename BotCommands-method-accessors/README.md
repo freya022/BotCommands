@@ -40,5 +40,7 @@ Note that each benchmark only use one accessor instance, in the real world there
 meaning that each virtual call becomes non-trivial (see [megamorphic virtual calls](https://shipilev.net/jvm/anatomy-quarks/16-megamorphic-virtual-calls/)) and thus slower,
 therefore this benchmark only shows:
 
-- The custom classes can be as fast as direct calls, but it depends how many implementations there are, among other profiling data
+- The custom classes can be as fast as direct calls*
 - The overhead of kotlin-reflect
+
+*Only if the JVM can accurately figure out which accessor implementation is called, as our use case call many different handlers, it cannot be optimized so well, this caveat applies equally to virtual calls and reflection calls
