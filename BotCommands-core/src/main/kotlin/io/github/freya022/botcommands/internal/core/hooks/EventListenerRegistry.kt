@@ -120,15 +120,16 @@ internal class EventListenerRegistry internal constructor(
                     serviceContainer.getParameters(eventParametersErasures).toTypedArray()
                 })
 
+            val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure
             classPathFunc.function.declaringClass.java.let { clazz ->
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
-                (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
+                allEventTypes.forEach {
                     instanceMap.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
                 }
             }
 
-            (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
+            allEventTypes.forEach {
                 map.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
             }
         }
