@@ -43,4 +43,4 @@ therefore this benchmark only shows:
 - The custom classes can be as fast as direct calls*
 - The overhead of kotlin-reflect
 
-*Only if the JVM can accurately figure out which accessor implementation is called, as our use case call many different handlers, it cannot be optimized so well, this caveat applies equally to virtual calls and reflection calls
+*Only if the JVM can accurately figure out which accessor implementation is called, as our use case can call many different handlers, it cannot be optimized so well, this caveat applies equally to virtual calls and reflection calls
