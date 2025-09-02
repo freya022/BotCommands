@@ -14,7 +14,4 @@ interface StringSelectMenu : JDAStringSelectMenu,
     override fun withUniqueId(uniqueId: Int): StringSelectMenu
 
     override fun withDisabled(disabled: Boolean): StringSelectMenu
-
-    @Deprecated("Replaced with getCustomId()", ReplaceWith("getCustomId()"))
-    override fun getId(): String = customId
 }
