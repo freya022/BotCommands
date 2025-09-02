@@ -1,3 +1,4 @@
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -18,6 +19,10 @@ kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_24
     }
+}
+
+tasks.withType<DokkaTask> {
+    enabled = false
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-method-accessors-classfile")
