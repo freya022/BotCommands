@@ -3,7 +3,6 @@ package dev.freya02.botcommands.method.accessors.internal
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
-// TODO create more subclasses which are optimized for certain cases (direct/with defaults)
 internal abstract class AbstractKotlinReflectMethodAccessor<R>(
     protected val function: KFunction<R>,
 ) : MethodAccessor<R> {

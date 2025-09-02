@@ -49,7 +49,6 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
             classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
             classBuilder.withInterfaceSymbols(CD_MethodAccessor)
 
-            // TODO replace with class data of hidden class
             addFields(classBuilder)
 
             addConstructor(classBuilder)
