@@ -80,6 +80,7 @@ internal class EventListenerRegistry internal constructor(
     private fun Collection<ClassPathFunction>.addAsEventListeners() = this
         .requiredFilter(FunctionFilter.nonStatic())
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BGenericEvent::class))
+        .requiredFilter(FunctionFilter.noOptional())
         .forEach { classPathFunc ->
             val function = classPathFunc.function
             val annotation = function.findAnnotationRecursive<BEventListener>()

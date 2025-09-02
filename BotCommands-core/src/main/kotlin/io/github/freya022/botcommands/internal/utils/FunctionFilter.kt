@@ -99,6 +99,13 @@ internal abstract class FunctionFilter {
 
             override fun filter(function: Function): Boolean = function.hasAnnotationRecursive<A>()
         }
+
+        fun noOptional() = object : FunctionFilter() {
+            override val errorMessage: String
+                get() = "Function must have no optional parameter"
+
+            override fun filter(function: Function): Boolean = function.parameters.none { it.isOptional }
+        }
     }
 }
 
