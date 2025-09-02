@@ -1,5 +1,9 @@
 package dev.freya02.botcommands.method.accessors.internal
 
+import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinReflectDefaultMethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinReflectDefaultStaticMethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectMethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectStaticMethodAccessor
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 
@@ -12,9 +16,17 @@ class KotlinReflectMethodAccessorFactory : MethodAccessorFactory {
         return if (function.instanceParameter != null) {
             requireNotNull(instance)
 
-            KotlinReflectMethodAccessor(instance, function)
+            if (function.parameters.any { it.isOptional }) {
+                KotlinReflectDefaultMethodAccessor(instance, function)
+            } else {
+                KotlinReflectDirectMethodAccessor(instance, function)
+            }
         } else {
-            KotlinReflectStaticMethodAccessor(function)
+            if (function.parameters.any { it.isOptional }) {
+                KotlinReflectDefaultStaticMethodAccessor(function)
+            } else {
+                KotlinReflectDirectStaticMethodAccessor(function)
+            }
         }
     }
 }
