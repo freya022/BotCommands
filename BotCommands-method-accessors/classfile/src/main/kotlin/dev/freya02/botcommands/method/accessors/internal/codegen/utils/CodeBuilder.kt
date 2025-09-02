@@ -6,26 +6,6 @@ import java.lang.constant.MethodTypeDesc
 import kotlin.reflect.KClass
 
 /**
- * Consumes the top stack value
- */
-internal fun CodeBuilder.ifNull(onNull: () -> Unit, onNonNull: () -> Unit) {
-    val ifNullLabel = newLabel()
-    val resumeLabel = newLabel()
-
-    // If stack top value is null then jump
-    ifnull(ifNullLabel)
-    // At this point the value is non-null
-    onNonNull()
-    goto_(resumeLabel) // Skip null case
-
-    labelBinding(ifNullLabel)
-    // At this point the value is null
-    onNull()
-
-    labelBinding(resumeLabel)
-}
-
-/**
  * NOTE: [target] != [kotlinErasure].java due to value classes, do not pass KClass.java
  */
 internal fun CodeBuilder.unboxOrCastTo(target: Class<*>, kotlinErasure: KClass<*>) {
