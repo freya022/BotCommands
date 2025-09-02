@@ -34,7 +34,8 @@ internal class AggregatorFunction private constructor(
         }
     }
 
-    private val eventParameter = aggregator.nonInstanceParameters.first().takeIf { it.type.jvmErasure.isSubclassOf(firstParamType) }
+    private val hasEventParameter =
+        aggregator.nonInstanceParameters.first().type.jvmErasure.isSubclassOf(firstParamType)
 
     internal val methodAccessor = MethodAccessorFactoryProvider.getAccessorFactory().create(aggregatorInstance, kFunction)
     internal val aggregator get() = this.kFunction
@@ -48,8 +49,8 @@ internal class AggregatorFunction private constructor(
     ) : this(aggregator, context.serviceContainer.getFunctionServiceOrNull(aggregator), firstParamType)
 
     internal suspend fun aggregate(firstParam: Any, aggregatorArguments: MethodArguments): Any? {
-        if (eventParameter != null) {
-            aggregatorArguments[eventParameter.index] = firstParam
+        if (hasEventParameter) {
+            aggregatorArguments[0] = firstParam
         }
 
         return methodAccessor.callSuspend(aggregatorArguments)
