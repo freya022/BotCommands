@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.botCommandsMethodAccessors.core)
+    api(projects.botCommandsMethodAccessors.core)
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-method-accessors-kotlin-reflect")
