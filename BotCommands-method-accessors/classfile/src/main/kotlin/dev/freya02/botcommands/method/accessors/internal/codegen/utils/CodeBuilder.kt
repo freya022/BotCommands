@@ -3,6 +3,7 @@ package dev.freya02.botcommands.method.accessors.internal.codegen.utils
 import java.lang.classfile.CodeBuilder
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
+import kotlin.reflect.KClass
 
 /**
  * Consumes the top stack value
@@ -24,7 +25,18 @@ internal fun CodeBuilder.ifNull(onNull: () -> Unit, onNonNull: () -> Unit) {
     labelBinding(resumeLabel)
 }
 
-internal fun CodeBuilder.unboxOrCastTo(target: Class<*>) {
+/**
+ * NOTE: [target] != [kotlinErasure].java due to value classes, do not pass KClass.java
+ */
+internal fun CodeBuilder.unboxOrCastTo(target: Class<*>, kotlinErasure: KClass<*>) {
+    if (kotlinErasure.isValue) {
+        val valuePropertyDesc = kotlinErasure.java.declaredFields[0].type.describeConstable().get()
+        val valueClassDesc = kotlinErasure.java.describeConstable().get()
+        checkcast(valueClassDesc)
+        invokevirtual(valueClassDesc, "unbox-impl", MethodTypeDesc.of(valuePropertyDesc))
+        return
+    }
+
     when (target) {
         Boolean::class.javaPrimitiveType -> {
             checkcast(CD_Boolean)

@@ -14,10 +14,13 @@ internal abstract class AbstractDirectInvokerGenerator : AbstractInvokerGenerato
         codeBuilder: CodeBuilder,
     ) {
         val nonInstanceParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+        val javaParameterTypes = executable.parameterTypes
         nonInstanceParameters.forEachIndexed { index, parameter ->
+            val javaParameterType = javaParameterTypes[index]
+
             // <parameter> = (<type>) args.get([index])
             codeBuilder.loadArg(argsSlot, index)
-            codeBuilder.unboxOrCastTo(parameter.type.jvmErasure.java)
+            codeBuilder.unboxOrCastTo(javaParameterType, parameter.type.jvmErasure)
         }
     }
 }

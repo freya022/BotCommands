@@ -6,11 +6,13 @@ import java.lang.classfile.CodeBuilder
 import java.lang.constant.ConstantDescs.CD_Object
 import java.lang.constant.ConstantDescs.CD_int
 import java.lang.constant.MethodTypeDesc
+import kotlin.reflect.KClass
 
 internal abstract class AbstractInvokerGenerator : InvokerGenerator {
 
     protected fun CodeBuilder.loadUnboxedOptional(
         type: Class<*>,
+        kotlinErasure: KClass<*>,
         argsSlot: Int,
         index: Int,
         maskSlot: Int,
@@ -29,7 +31,7 @@ internal abstract class AbstractInvokerGenerator : InvokerGenerator {
         run {
             // Key exists, unbox or cast
             // The value may be null, but null can always be cast to any object type
-            unboxOrCastTo(type)
+            unboxOrCastTo(type, kotlinErasure)
             goto_(endLabel)
         }
 

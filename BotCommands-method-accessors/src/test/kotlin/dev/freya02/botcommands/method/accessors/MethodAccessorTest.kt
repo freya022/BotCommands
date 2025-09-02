@@ -47,16 +47,23 @@ object MethodAccessorTest {
         Arguments.argumentSet("0-arg method", TestClass(), TestClass::run, listOf<Any?>()),
         Arguments.argumentSet("1-arg method", TestClass(), TestClass::runWithArgs, listOf<Any?>("foobar")),
         Arguments.argumentSet("1-arg constructor", null, ::TestConstructor, listOf<Any?>(1)),
+        Arguments.argumentSet("Inline class arg", TestClass(), TestClass::runWithInlineClassArg, listOf<Any?>(InlineDouble(3.14159))),
+        Arguments.argumentSet("Nested inline class arg", TestClass(), TestClass::runWithNestedInlineClassArg, listOf<Any?>(NestedInlineDouble(InlineDouble(3.14159)))),
         Arguments.argumentSet("Constructor with defaults", null, ::TestConstructorWithDefaults, listOf<Any?>()),
         Arguments.argumentSet("Unboxing", TestClass(), TestClass::runWithUnboxing, listOf<Any?>(true, 1.toByte(), 1.toChar(), 1.toShort(), 1, 1.toLong(), 1.toFloat(), 1.toDouble())),
         Arguments.argumentSet("From interface", object : TestInterface {}, TestInterface::run, listOf<Any?>()),
         Arguments.argumentSet("With return type", TestClass(), TestClass::runWithReturnType, listOf<Any?>()),
+        Arguments.argumentSet("With inline class return type", TestClass(), TestClass::runWithInlineClassReturnType, listOf<Any?>()),
+        Arguments.argumentSet("With nested inline class return type", TestClass(), TestClass::runWithNestedInlineClassReturnType, listOf<Any?>()),
         Arguments.argumentSet("With static modifier", null, TestStatic::run, listOf<Any?>()),
         Arguments.argumentSet("With static modifier and instance", TestStatic, TestStatic::run, listOf<Any?>()),
         Arguments.argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
+        Arguments.argumentSet("With inline class default", TestClass(), TestClass::runWithDefaultInlineClassArg, listOf<Any?>()),
+        Arguments.argumentSet("With nested inline class default", TestClass(), TestClass::runWithDefaultNestedInlineClassArg, listOf<Any?>()),
         Arguments.argumentSet("With more defaults", TestClass(), TestClass::runWithMoreDefaults, listOf<Any?>("foobar")),
         Arguments.argumentSet("With overridden defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>(3)),
         Arguments.argumentSet("With optional parameter set to null", TestClass(), TestClass::runWithNullOptional, listOf<Any?>(null)),
+
         Arguments.argumentSet("0-arg suspend method", TestClass(), TestClass::coRun, listOf<Any?>()),
         Arguments.argumentSet("Suspend with defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>()),
         Arguments.argumentSet("Suspend with overridden defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>(3)),
@@ -137,16 +144,37 @@ class TestClass {
         return 1
     }
 
-    fun runWithReturnTypeWithDefaults(arg: Int = 2): Int {
-        return arg
+    fun runWithInlineClassArg(arg: InlineDouble) {
+
+    }
+
+    fun runWithNestedInlineClassArg(arg: NestedInlineDouble) {
+
+    }
+
+    fun runWithDefaultInlineClassArg(arg: InlineDouble = InlineDouble(2.0)) {
+
+    }
+
+    fun runWithDefaultNestedInlineClassArg(arg: NestedInlineDouble = NestedInlineDouble(InlineDouble(2.0))) {
+
+    }
+
+    fun runWithInlineClassReturnType(): InlineDouble {
+        return InlineDouble(2.0)
+    }
+
+    fun runWithNestedInlineClassReturnType(): NestedInlineDouble {
+        return NestedInlineDouble(InlineDouble(2.0))
     }
 
     suspend fun coRun() {
-
+        delay(10.milliseconds)
     }
 
-    suspend fun coRunWithDefaults(int: Int = 2) {
-
+    suspend fun coRunWithDefaults(int: Int = 2): Int {
+        delay(10.milliseconds)
+        return int
     }
 
     suspend fun coRunWithSuspensionPoints(a: Int, b: Int): Int {
@@ -157,3 +185,9 @@ class TestClass {
         return c
     }
 }
+
+@JvmInline
+value class NestedInlineDouble(val value: InlineDouble)
+
+@JvmInline
+value class InlineDouble(val value: Double)

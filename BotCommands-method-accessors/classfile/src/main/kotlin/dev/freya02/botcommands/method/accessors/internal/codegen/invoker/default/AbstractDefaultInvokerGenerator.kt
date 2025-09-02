@@ -17,15 +17,16 @@ internal abstract class AbstractDefaultInvokerGenerator : AbstractInvokerGenerat
     ) {
         var valueParameterIndex = 0 // Used for mask calculation
         val nonInstanceParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+        val javaParameterTypes = executable.parameterTypes
         nonInstanceParameters.forEachIndexed { index, parameter ->
-            val paramJavaType = parameter.type.jvmErasure.java
+            val javaParameterType = javaParameterTypes[index]
 
             if (parameter.isOptional) {
-                codeBuilder.loadUnboxedOptional(paramJavaType, argsSlot, index, maskSlot, valueParameterIndex)
+                codeBuilder.loadUnboxedOptional(javaParameterType, parameter.type.jvmErasure, argsSlot, index, maskSlot, valueParameterIndex)
             } else {
                 // <parameter> = args.get([index])
                 codeBuilder.loadArg(argsSlot, index)
-                codeBuilder.unboxOrCastTo(paramJavaType)
+                codeBuilder.unboxOrCastTo(javaParameterType, parameter.type.jvmErasure)
             }
 
             valueParameterIndex++
