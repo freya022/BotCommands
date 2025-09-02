@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.utils
 
+import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
-import io.github.freya022.botcommands.internal.core.reflection.buildParameters
 import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.MethodParameterMixin
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
@@ -48,16 +48,26 @@ context(executable: ExecutableMixin)
 internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
-) = buildParameters(executable.eventFunction.kFunction) {
-    this[executable.eventFunction.instanceParameter] = executable.instance
-    this[executable.eventFunction.firstParameter] = firstParam
+): MethodArguments {
+    val args = executable.methodAccessor.createBlankArguments()
+    args[0] = firstParam
 
     for (parameter in this@mapFinalParameters) {
-        insertAggregate(firstParam, this, optionValues, parameter)
+        insertAggregate(firstParam, args, optionValues, parameter)
     }
+
+    return args
 }
 
-private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<out OptionImpl, Any?>, parameter: AggregatedParameterMixin) {
+// TODO the whole thing with parameters, aggregates and options needs to be refactored
+//  This isn't even an utility, this is literally the whole logic
+//  Options and aggregates are set out-of-order, this wasn't a problem when we assigned a Map<KParameter, Any?>,
+//    but now that we use a glorified array to pass our arguments,
+//    we are keeping track of parameter indexes, which are offset if there is an instance parameter, very ugly.
+//  We should be using MethodArguments#push instead, so we don't worry about indexes,
+//    however this requires arguments to be set in the right order.
+context(executable: ExecutableMixin)
+private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MethodArguments, optionValues: Map<out OptionImpl, Any?>, parameter: AggregatedParameterMixin) {
     val aggregator = parameter.aggregator
 
     if (aggregator.isSingleAggregator) {
@@ -68,18 +78,26 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
             aggregatedObjects[parameter] = optionValues[option]
         }
     } else {
-        val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parametersSize)
+        val aggregatorArguments = aggregator.methodAccessor.createBlankArguments()
         var addedOption = false
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings
             if (option in optionValues) {
-                aggregatorArguments[option] = optionValues[option]
+                if (aggregator.methodAccessor.hasInstance()) {
+                    aggregatorArguments[option.index - 1] = optionValues[option]
+                } else {
+                    aggregatorArguments[option.index] = optionValues[option]
+                }
                 addedOption = true
             }
         }
         // If this is not a vararg, it should throw later when calling the aggregator
         if (!addedOption && parameter.isVararg) {
-            aggregatorArguments[parameter.aggregator.kFunction.valueParameters.last()] = emptyList<Any?>()
+            if (aggregator.methodAccessor.hasInstance()) {
+                aggregatorArguments[aggregator.kFunction.valueParameters.last().index - 1] = emptyList<Any?>()
+            } else {
+                aggregatorArguments[aggregator.kFunction.valueParameters.last().index] = emptyList<Any?>()
+            }
         }
 
         for (nestedAggregatedParameter in parameter.nestedAggregatedParameters) {
@@ -102,8 +120,13 @@ private suspend fun insertAggregate(firstParam: Any, aggregatedObjects: MutableM
     }
 }
 
-private operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameterMixin, obj: Any?): Any? = obj.also {
-    this[parameter.executableParameter] = obj
+context(executable: ExecutableMixin)
+private operator fun MethodArguments.set(parameter: MethodParameterMixin, obj: Any?): Any? = obj.also {
+    if (executable.methodAccessor.hasInstance()) {
+        this[parameter.executableParameter.index - 1] = obj
+    } else {
+        this[parameter.executableParameter.index] = obj
+    }
 }
 
 @Suppress("UNCHECKED_CAST")

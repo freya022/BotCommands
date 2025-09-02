@@ -37,6 +37,7 @@ trove4j-core = "3.1.0"
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
+jmh = "me.champeau.jmh:0.7.3"
 
 [libraries]
 bucket4j-jdk17-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j" }

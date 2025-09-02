@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.core
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import io.github.freya022.botcommands.api.core.service.lazy
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.asKFunction
 import java.lang.reflect.Method
@@ -14,6 +16,7 @@ internal sealed class ClassPathFunction {
     abstract val instance: Any
 
     abstract val function: KFunction<*>
+    abstract val methodAccessor: MethodAccessor<*>
 
     operator fun component1() = instance
     operator fun component2() = function
@@ -37,6 +40,7 @@ internal class LazyClassPathFunction internal constructor(
 ) : ClassPathFunction() {
     override val function: KFunction<*> by lazy { method.asKFunction() }
     override val instance by context.serviceContainer.lazy(clazz)
+    override val methodAccessor: MethodAccessor<*> by lazy { MethodAccessorFactoryProvider.getAccessorFactory().create(instance, function) }
 }
 
 internal fun ClassPathFunction(context: BContextImpl, clazz: KClass<*>, function: Method): ClassPathFunction {
@@ -48,6 +52,7 @@ internal class InstanceClassPathFunction internal constructor(
     override val function: KFunction<*>
 ) : ClassPathFunction() {
     override val clazz: KClass<*> get() = instance::class
+    override val methodAccessor = MethodAccessorFactoryProvider.getAccessorFactory().create(instance, function)
 }
 
 internal fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }

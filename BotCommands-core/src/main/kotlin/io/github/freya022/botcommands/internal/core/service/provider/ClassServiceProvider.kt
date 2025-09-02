@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -25,7 +26,7 @@ internal class ClassServiceProvider internal constructor(
     private val clazz: KClass<*>
 ) : ServiceProvider {
     init {
-        require(!clazz.isAbstract) {
+        require(!Modifier.isAbstract(clazz.java.modifiers) && !clazz.java.isInterface) {
             "Abstract class '${clazz.simpleNestedName}' cannot be constructed"
         }
     }

@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 /**
@@ -97,7 +96,7 @@ internal class AutocompleteHandler(
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
-        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.function.callSuspendBy(objects))
+        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.methodAccessor.callSuspend(objects))
         val autoCompleteQuery = event.focusedOption
 
         //If something is typed but there are no choices, don't display user input

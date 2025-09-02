@@ -39,6 +39,7 @@ internal class ServiceProviders : ClassGraphProcessor {
         isService: Boolean
     ) {
         if (!isService) return
+        if (classInfo.isAnnotation) return
 
         putServiceProvider(ClassServiceProvider(kClass))
     }

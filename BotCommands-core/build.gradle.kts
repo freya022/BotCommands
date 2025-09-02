@@ -33,6 +33,10 @@ dependencies {
     // Classpath scanning
     api(libs.classgraph)
 
+    api(projects.botCommandsMethodAccessors.core) // API due to opt-in annotation
+    implementation(projects.botCommandsMethodAccessors.kotlinReflect)
+    implementation(projects.botCommandsMethodAccessors.classfile)
+
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
     api(libs.kotlinx.datetime)
@@ -144,6 +148,12 @@ dokka {
         suppressedFiles.from("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
         suppressGeneratedFiles = false
     }
+}
+
+java {
+    // ClassFile-based method accessors require Java 24+
+    // but the class is conditionally loaded
+    disableAutoTargetJvm()
 }
 
 kotlin {

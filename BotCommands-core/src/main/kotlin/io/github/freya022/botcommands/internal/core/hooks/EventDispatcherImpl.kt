@@ -13,7 +13,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.full.callSuspend
 
 private val logger = KotlinLogging.logger { }
 
@@ -94,19 +93,22 @@ internal class EventDispatcherImpl internal constructor(
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val (instance, function) = eventHandlerFunction.classPathFunction
+            val classPathFunction = eventHandlerFunction.classPathFunction
+            val methodAccessor = classPathFunction.methodAccessor
+            val args = eventHandlerFunction.cloneBaseArgs()
+            args[0] = event
 
             val timeout = eventHandlerFunction.timeout
             if (timeout != null) {
                 // Timeout only works when the continuations implement a cancellation handler
                 val result = withTimeoutOrNull(timeout) {
-                    function.callSuspend(instance, event, *eventHandlerFunction.parameters)
+                    methodAccessor.callSuspend(args)
                 }
                 if (result == null) {
-                    logger.debug { "Event listener ${function.shortSignatureNoSrc} timed out" }
+                    logger.debug { "Event listener ${classPathFunction.function.shortSignatureNoSrc} timed out" }
                 }
             } else {
-                function.callSuspend(instance, event, *eventHandlerFunction.parameters)
+                methodAccessor.callSuspend(args)
             }
         } catch (e: InvocationTargetException) {
             if (event is InitializationEvent) {
