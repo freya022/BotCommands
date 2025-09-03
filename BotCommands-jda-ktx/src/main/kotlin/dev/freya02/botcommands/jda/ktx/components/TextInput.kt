@@ -1,7 +1,5 @@
-package io.github.freya022.botcommands.api.modals
+package dev.freya02.botcommands.jda.ktx.components
 
-import dev.freya02.botcommands.jda.ktx.components.InlineComponent
-import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
@@ -78,8 +76,8 @@ class InlineTextInput(
 /**
  * Discord text input, see [TextInput][net.dv8tion.jda.api.components.textinput.TextInput].
  *
- * @param customId    The custom ID of the input, to retrieve this input with [@ModalInput][ModalInput], you must match against it
- * @param style       Style of text input
+ * @param customId    The custom ID of the input, see [TextInput.Builder.setId]
+ * @param style       Style of text input, see [TextInput.Builder.setStyle]
  * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
  * @param range       Minimum and maximum required length of this TextInput, see [TextInput.Builder.setRequiredRange]
  * @param value       Pre-populated text for this TextInput field, see [TextInput.Builder.setValue]

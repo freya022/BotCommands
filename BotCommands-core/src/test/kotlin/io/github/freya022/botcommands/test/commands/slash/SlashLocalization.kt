@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.components.SelectOption
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.durations.before
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
@@ -18,7 +19,6 @@ import io.github.freya022.botcommands.api.localization.context.localizeGuild
 import io.github.freya022.botcommands.api.localization.context.localizeUser
 import io.github.freya022.botcommands.api.localization.interaction.*
 import io.github.freya022.botcommands.api.modals.Modals
-import io.github.freya022.botcommands.api.modals.TextInput
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
