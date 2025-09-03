@@ -131,22 +131,16 @@ val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
     outputs.upToDateWhen { false }
 }
 
-ksp {
-    excludedSources.from(generateInfo)
-}
-
 sourceSets {
     main {
-        java {
+        resources {
             srcDir(generateInfo)
-            exclude("**/\$BCInfo.java")
         }
     }
 }
 
 dokka {
     dokkaSourceSets.configureEach {
-        suppressedFiles.from("src/main/java/io/github/freya022/botcommands/api/\$BCInfo.java")
         suppressGeneratedFiles = false
     }
 }
