@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwState
-import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.attribute.ICustomId
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
@@ -47,7 +47,7 @@ internal class ModalBuilderImpl internal constructor(
         //Extract input data into this map
         val inputDataMap: TLongObjectMap<InputData> = TLongObjectHashMap()
         components.toDefaultComponentTree()
-            .findAll<ActionComponent>()
+            .findAll<ICustomId>()
             .forEach { actionComponent ->
                 val id = actionComponent.customId ?: return@forEach
                 val internalId = ModalMaps.parseInputId(id)

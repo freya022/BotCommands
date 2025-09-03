@@ -19,8 +19,8 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import kotlin.time.Duration.Companion.seconds
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
@@ -33,7 +33,9 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
-            shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
+            label("Sample text") {
+                child = TextInput(SLASH_MODAL_TEXT_INPUT, TextInputStyle.SHORT)
+            }
 
             bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420, null)
 

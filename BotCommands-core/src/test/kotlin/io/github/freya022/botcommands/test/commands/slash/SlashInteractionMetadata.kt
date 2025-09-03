@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.InteractionHook
 import kotlin.time.Duration.Companion.minutes
 
@@ -41,8 +41,8 @@ class SlashInteractionMetadata(
         val modal = modals.create("Interaction metadata") {
             timeout(1.minutes)
 
-            shortTextInput("input name", "Text") {
-                value = "Sample text"
+            label("Text") {
+                child = TextInput("input name", TextInputStyle.SHORT, value = "Sample text")
             }
         }
         buttonEvent.replyModal(modal).queue()

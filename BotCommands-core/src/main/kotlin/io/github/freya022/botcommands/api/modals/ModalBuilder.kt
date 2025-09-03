@@ -1,8 +1,17 @@
 package io.github.freya022.botcommands.api.modals
 
+import dev.freya02.botcommands.jda.ktx.components.InlineLabel
+import dev.freya02.botcommands.jda.ktx.components.Label
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.internal.modals.ModalDSL
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.ModalTopLevelComponent
+import net.dv8tion.jda.api.components.label.Label
+import net.dv8tion.jda.api.components.label.LabelChildComponent
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal as JDAModal
 import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
@@ -127,4 +136,130 @@ abstract class ModalBuilder protected constructor(
 
     @CheckReturnValue
     abstract override fun build(): Modal
+}
+
+@ModalDSL
+class InlineModal(val builder: ModalBuilder) {
+
+    val components: MutableList<ModalTopLevelComponent> = arrayListOf()
+
+    operator fun ModalTopLevelComponent.unaryPlus() {
+        components += this
+    }
+
+    operator fun Collection<ModalTopLevelComponent>.unaryPlus() {
+        components += this
+    }
+
+    /** Title of this Modal, see [Modal.Builder.setTitle] */
+    var title: String
+        get() = builder.title
+        set(value) {
+            builder.title = value
+        }
+
+    /**
+     * Component that contains a label, an optional description,
+     * and a [child component][LabelChildComponent], see [Label][net.dv8tion.jda.api.components.label.Label].
+     *
+     * @param label       Label of the Label, see [Label.withLabel]
+     * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
+     * @param description The description of this Label, see [Label.withDescription]
+     * @param child       The child contained by this Label, see [Label.withChild]
+     * @param block       Lambda allowing further configuration
+     */
+    inline fun label(
+        label: String?,
+        uniqueId: Int = -1,
+        description: String? = null,
+        child: LabelChildComponent? = null,
+        block: InlineLabel.() -> Unit = {},
+    ) {
+        builder.addComponents(Label(label, uniqueId, description, child, block))
+    }
+
+    /**
+     * Discord text input, see [TextInput][net.dv8tion.jda.api.components.textinput.TextInput].
+     *
+     * @param inputName   The name of the input, set in [@ModalInput][ModalInput]
+     * @param style       Style of text input
+     * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
+     * @param range       Minimum and maximum required length of this TextInput, see [TextInputBuilder.setRequiredRange]
+     * @param value       Pre-populated text for this TextInput field, see [TextInputBuilder.setValue]
+     * @param placeholder Short hint that describes the expected value of the input field, see [TextInputBuilder.setPlaceholder]
+     * @param block       Lambda allowing further configuration
+     */
+    inline fun TextInput(
+        inputName: String,
+        style: TextInputStyle,
+        uniqueId: Int = -1,
+        isRequired: Boolean = true,
+        range: IntRange? = null,
+        value: String? = null,
+        placeholder: String? = null,
+        block: InlineTextInput.() -> Unit = {},
+    ): TextInput {
+        return builder.modals
+            .createTextInput(inputName, style)
+            .let(::InlineTextInput)
+            .apply {
+                if (uniqueId != -1)
+                    this.uniqueId = uniqueId
+                if (!isRequired)
+                    this.isRequired = false
+                if (range != null)
+                    this.range = range
+                if (value != null)
+                    this.value = value
+                if (placeholder != null)
+                    this.placeholder = placeholder
+                block()
+            }
+            .build()
+    }
+
+    /**
+     * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
+     * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
+     */
+    fun bindTo(handlerName: String, userData: List<Any?>) {
+        builder.bindTo(handlerName, userData)
+    }
+
+    /**
+     * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
+     * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
+     */
+    fun bindTo(handlerName: String, vararg userData: Any?) = builder.bindTo(handlerName, *userData)
+
+    /**
+     * Binds the action to the closure.
+     *
+     * @param handler The modal handler to run when the modal is used
+     */
+    fun bindTo(handler: suspend (ModalEvent) -> Unit) {
+        builder.bindTo(handler)
+    }
+
+    /**
+     * Sets the timeout for this modal, invalidating the modal after expiration,
+     * and running the given timeout handler.
+     *
+     * If unset, the timeout is set to [Modals.defaultTimeout].
+     *
+     * @param timeout   The amount of time before the modal is removed
+     * @param onTimeout The function to run when the timeout has been reached
+     */
+    @JvmSynthetic // Mute Java Duration test
+    fun timeout(timeout: Duration, onTimeout: (suspend () -> Unit)? = null) {
+        builder.timeout(timeout, onTimeout)
+    }
+
+    fun build(): Modal {
+        return builder.build()
+    }
 }

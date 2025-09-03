@@ -6,9 +6,11 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 @ModalDSL
 abstract class TextInputBuilder internal constructor(
-    label: String?,
-    style: TextInputStyle?
-) : TextInput.Builder("0", label, style) {
+    style: TextInputStyle
+) : TextInput.Builder("0", style) {
+
+    override fun setUniqueId(uniqueId: Int): TextInputBuilder = apply { super.setUniqueId(uniqueId) }
+
     @Deprecated("Cannot set an ID on text inputs managed by the framework", level = DeprecationLevel.ERROR)
     override fun setId(customId: String): TextInputBuilder = this.apply {
         if (customId == "0") return@apply // Super constructor call
@@ -18,8 +20,6 @@ abstract class TextInputBuilder internal constructor(
     protected fun internetSetId(customId: String) {
         super.setId(customId)
     }
-
-    override fun setLabel(label: String): TextInputBuilder = this.apply { super.setLabel(label) }
 
     override fun setStyle(style: TextInputStyle): TextInputBuilder = this.apply { super.setStyle(style) }
 
