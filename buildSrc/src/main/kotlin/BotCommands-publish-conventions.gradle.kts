@@ -31,7 +31,7 @@ version = Version(
     major = "3",
     minor = "0",
     revision = "0",
-    classifier = "beta.4",
+    classifier = "beta.5",
     // isRelease = isCi || canPublish
     isDev = !GitUtils.isCI(providers) && !canPublish
 )
