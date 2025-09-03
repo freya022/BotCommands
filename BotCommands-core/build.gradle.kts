@@ -35,7 +35,6 @@ dependencies {
 
     api(projects.botCommandsMethodAccessors.core) // API due to opt-in annotation
     implementation(projects.botCommandsMethodAccessors.kotlinReflect)
-    implementation(projects.botCommandsMethodAccessors.classfile)
 
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
@@ -123,6 +122,8 @@ dependencies {
     // but we need to make sure the main module works without it
     testImplementation(libs.spring.boot)
     testImplementation(libs.spring.boot.autoconfigure)
+
+    testImplementation(projects.botCommandsMethodAccessors.classfile)
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {

@@ -35,7 +35,8 @@ object BotCommands {
      * - No [InvocationTargetExceptions][java.lang.reflect.InvocationTargetException]
      * - Better performance
      *
-     * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
+     * This feature requires adding the `BotCommands-method-accessors-classfile` dependency
+     * and *running* on Java 24+, if your bot doesn't fulfill these conditions, this method has no effect.
      */
     @ExperimentalMethodAccessorsApi
     @get:JvmStatic
@@ -49,7 +50,8 @@ object BotCommands {
      * - No [InvocationTargetExceptions][java.lang.reflect.InvocationTargetException]
      * - Better performance
      *
-     * This feature requires *running* on Java 24+, if your bot doesn't, this method has no effect.
+     * This feature requires adding the `BotCommands-method-accessors-classfile` dependency
+     * and *running* on Java 24+, if your bot doesn't fulfill these conditions, this method has no effect.
      */
     @JvmStatic
     @ExperimentalMethodAccessorsApi

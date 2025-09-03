@@ -1,5 +1,39 @@
+[bc-module-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-method-accessors-classfile?label=Maven%20central&logo=apachemaven&versionPrefix=3
+[bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-method-accessors-classfile
+
 # BotCommands module - Method accessors
-This module provides abstractions to call user methods, it should not be included manually.
+This module provides abstractions to call user methods.
+
+## Installation
+[![BotCommands-method-accessors-classfile on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
+
+You can optionally install this dependency,
+it requires Java 24+ and can be enabled with `BotCommand.preferClassFileAccessors()`.
+
+### Maven
+```xml
+<dependencies>
+  <dependency>
+    <groupId>io.github.freya022</groupId>
+    <artifactId>BotCommands-method-accessors-classfile</artifactId>
+    <version>VERSION</version>
+  </dependency>
+</dependencies>
+```
+
+### Gradle
+```gradle
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.freya022:BotCommands-method-accessors-classfile:VERSION")
+}
+```
+
+Alternatively, you can use Jitpack to use **snapshot** versions,
+you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
 
 ## Implementations
 
@@ -12,9 +46,6 @@ This newer implementation takes advantage of [hidden classes](https://www.baeldu
 which, for each function, generates a hidden class with instructions optimized to directly call the user method.
 
 This allows for shorter stack traces in exceptions and the debugger, no `InvocationTargetException`s, and better performance.
-
-This can be enabled before starting your bot, by calling `BotCommands.preferClassFileAccessors()`,
-note that this will only have an effect if your bot runs on Java 24+.
 
 ### Stack trace comparison
 

@@ -174,6 +174,7 @@ The base `BotCommands` artifact will include modules often used, while others ar
 
 ### Optional modules
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
+- [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): Improved alternative for this framework to call your functions
 
 ## Sample usage
 Here is how you would create a slash command that sends a message in a specified channel.
