@@ -1,11 +1,9 @@
 package io.github.freya022.botcommands.api.modals.annotations
 
-import io.github.freya022.botcommands.api.modals.Modals
-
 /**
  * Set this parameter as a modal input.
  *
- * The specified input name must be the same as the input name given in, for example, [Modals.createTextInput].
+ * The specified input custom ID must be the same as the custom ID of a component in that modal.
  *
  * @see ModalData @ModalData
  * @see ModalHandler @ModalHandler
@@ -14,8 +12,7 @@ import io.github.freya022.botcommands.api.modals.Modals
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ModalInput(
     /**
-     * The name of the modal input.<br>
-     * Must match the input name provided in, for example, [Modals.createTextInput].
+     * The custom ID this modal input will match against.
      */
-    @get:JvmName("value") val name: String
+    @get:JvmName("value") val customId: String
 )

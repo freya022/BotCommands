@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.modals
 
 import dev.freya02.botcommands.jda.ktx.components.InlineLabel
 import dev.freya02.botcommands.jda.ktx.components.Label
+import io.github.freya022.botcommands.api.modals.Modal as BCModal
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
@@ -10,8 +11,7 @@ import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.ModalTopLevelComponent
 import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.label.LabelChildComponent
-import net.dv8tion.jda.api.components.textinput.TextInput
-import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.modals.Modal as JDAModal
 import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
@@ -31,6 +31,9 @@ abstract class ModalBuilder protected constructor(
     /**
      * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
      *
+     * Each [@ModalInput][ModalInput] must match a component's custom ID,
+     * alternatively, you can always retrieve input values from the event.
+     *
      * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
      * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
      *
@@ -41,6 +44,9 @@ abstract class ModalBuilder protected constructor(
 
     /**
      * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * Each [@ModalInput][ModalInput] must match a component's custom ID,
+     * alternatively, you can always retrieve input values from the event.
      *
      * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
      * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
@@ -135,7 +141,7 @@ abstract class ModalBuilder protected constructor(
     }
 
     @CheckReturnValue
-    abstract override fun build(): Modal
+    abstract override fun build(): BCModal
 }
 
 @ModalDSL
@@ -179,47 +185,10 @@ class InlineModal(val builder: ModalBuilder) {
     }
 
     /**
-     * Discord text input, see [TextInput][net.dv8tion.jda.api.components.textinput.TextInput].
-     *
-     * @param inputName   The name of the input, set in [@ModalInput][ModalInput]
-     * @param style       Style of text input
-     * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
-     * @param range       Minimum and maximum required length of this TextInput, see [TextInputBuilder.setRequiredRange]
-     * @param value       Pre-populated text for this TextInput field, see [TextInputBuilder.setValue]
-     * @param placeholder Short hint that describes the expected value of the input field, see [TextInputBuilder.setPlaceholder]
-     * @param block       Lambda allowing further configuration
-     */
-    inline fun TextInput(
-        inputName: String,
-        style: TextInputStyle,
-        uniqueId: Int = -1,
-        isRequired: Boolean = true,
-        range: IntRange? = null,
-        value: String? = null,
-        placeholder: String? = null,
-        block: InlineTextInput.() -> Unit = {},
-    ): TextInput {
-        return builder.modals
-            .createTextInput(inputName, style)
-            .let(::InlineTextInput)
-            .apply {
-                if (uniqueId != -1)
-                    this.uniqueId = uniqueId
-                if (!isRequired)
-                    this.isRequired = false
-                if (range != null)
-                    this.range = range
-                if (value != null)
-                    this.value = value
-                if (placeholder != null)
-                    this.placeholder = placeholder
-                block()
-            }
-            .build()
-    }
-
-    /**
      * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * Each [@ModalInput][ModalInput] must match a component's custom ID,
+     * alternatively, you can always retrieve input values from the event.
      *
      * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
      * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
@@ -230,6 +199,9 @@ class InlineModal(val builder: ModalBuilder) {
 
     /**
      * Binds the action to a [@ModalHandler][ModalHandler] with its arguments.
+     *
+     * Each [@ModalInput][ModalInput] must match a component's custom ID,
+     * alternatively, you can always retrieve input values from the event.
      *
      * @param handlerName The name of the modal handler, which must be the same as your [@ModalHandler][ModalHandler]
      * @param userData    The optional user data to be passed to the modal handler via [@ModalData][ModalData]
@@ -259,7 +231,7 @@ class InlineModal(val builder: ModalBuilder) {
         builder.timeout(timeout, onTimeout)
     }
 
-    fun build(): Modal {
+    fun build(): BCModal {
         return builder.build()
     }
 }

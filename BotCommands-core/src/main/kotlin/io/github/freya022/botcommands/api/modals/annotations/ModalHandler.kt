@@ -22,7 +22,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
  * - Optionally: Have all your consecutive [@ModalData][ModalData], specified in [ModalBuilder.bindTo].
  *
  * ### Option types
- * - Input options: Uses [@ModalInput][ModalInput], the annotation's value must match the name given in [Modals.createTextInput],
+ * - Input options: Uses [@ModalInput][ModalInput], the annotation's value must match the Custom ID set in the input component,
  * supported types and modifiers are in [ParameterResolver],
  * additional types can be added by implementing [ModalParameterResolver].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].

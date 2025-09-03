@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.modals.TextInput
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
@@ -57,7 +58,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     suspend fun onModalSubmitted(
         event: ModalEvent,
         @ModalData dataStr: String,
-        @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
+        @ModalInput(customId = SLASH_MODAL_TEXT_INPUT) inputStr: String,
         @ModalData dataInt: Int,
         @ModalData definitelyNull: Any?,
         customObject: CustomObject

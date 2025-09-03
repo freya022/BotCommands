@@ -2,8 +2,6 @@ package io.github.freya022.botcommands.api.modals
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.Modals.Companion.defaultTimeout
-import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import java.time.Duration as JavaDuration
 import javax.annotation.CheckReturnValue
 import kotlin.contracts.ExperimentalContracts
@@ -22,6 +20,9 @@ interface Modals {
     /**
      * Creates a new modal.
      *
+     * You can add compatible JDA components in this builder,
+     * see [ModalTopLevelComponent][net.dv8tion.jda.api.components.ModalTopLevelComponent].
+     *
      * The modal expires after [a default timeout][defaultTimeout],
      * which can be overridden, or set by [ModalBuilder.timeout].
      *
@@ -29,15 +30,6 @@ interface Modals {
      */
     @CheckReturnValue
     fun create(title: String): ModalBuilder
-
-    /**
-     * Creates a new text input component.
-     *
-     * @param inputName The name of the input, set in [@ModalInput][ModalInput]
-     * @param style     The style of the text field
-     */
-    @CheckReturnValue
-    fun createTextInput(inputName: String, style: TextInputStyle): TextInputBuilder
 
     companion object {
         @JvmSynthetic
