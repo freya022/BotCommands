@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KFunction
+import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.milliseconds
 
 object MethodAccessorTest {
@@ -68,6 +69,9 @@ object MethodAccessorTest {
         Arguments.argumentSet("Suspend with defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>()),
         Arguments.argumentSet("Suspend with overridden defaults", TestClass(), TestClass::coRunWithDefaults, listOf<Any?>(3)),
         Arguments.argumentSet("Suspend with suspension points", TestClass(), TestClass::coRunWithSuspensionPoints, listOf<Any?>(1, 1)),
+        Arguments.argumentSet("Suspend with inline class arg", TestClass(), TestClass::coRunWithInlineClassArg, listOf<Any?>(InlineDouble(3.14159))),
+        Arguments.argumentSet("Suspend with nested inline class arg", TestClass(), TestClass::coRunWithNestedInlineClassArg, listOf<Any?>(NestedInlineDouble(InlineDouble(3.14159)))),
+        Arguments.argumentSet("Suspend and return inline class", TestClass(), TestClass::coRunWithInlineClassReturnType, listOf<Any?>()),
     )
 
     @MethodSource("factories")
@@ -86,6 +90,22 @@ object MethodAccessorTest {
             val methodAccessor = factory.create(instance, function)
             methodAccessor.call(methodAccessor.createBlankArguments())
         }
+    }
+
+    @MethodSource("factories")
+    @ParameterizedTest
+    fun `Return type of inline class returns an inline class instance`(factory: MethodAccessorFactory) {
+        val accessor = factory.create(TestClass(), TestClass::runWithInlineClassReturnType as KFunction<*>)
+        val result = accessor.call(accessor.createBlankArguments())
+        assertIs<InlineDouble>(result)
+    }
+
+    @MethodSource("factories")
+    @ParameterizedTest
+    fun `Coroutine return type of inline class returns an inline class instance`(factory: MethodAccessorFactory) = runBlocking {
+        val accessor = factory.create(TestClass(), TestClass::coRunWithInlineClassReturnType as KFunction<*>)
+        val result = accessor.callSuspend(accessor.createBlankArguments())
+        assertIs<InlineDouble>(result)
     }
 
     @JvmStatic
@@ -183,6 +203,18 @@ class TestClass {
         delay(10.milliseconds)
         println("$a + $b = $c")
         return c
+    }
+
+    suspend fun coRunWithInlineClassArg(arg: InlineDouble) {
+
+    }
+
+    suspend fun coRunWithNestedInlineClassArg(arg: NestedInlineDouble) {
+
+    }
+
+    suspend fun coRunWithInlineClassReturnType(): InlineDouble {
+        return InlineDouble(2.0)
     }
 }
 

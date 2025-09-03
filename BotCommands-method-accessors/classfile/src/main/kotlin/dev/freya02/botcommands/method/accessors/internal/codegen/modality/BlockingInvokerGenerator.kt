@@ -5,7 +5,9 @@ import dev.freya02.botcommands.method.accessors.internal.codegen.invoker.Invoker
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_Unit
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.boxIfPrimitive
 import java.lang.classfile.CodeBuilder
+import java.lang.constant.MethodTypeDesc
 import java.lang.reflect.Method
+import kotlin.reflect.jvm.jvmErasure
 
 internal object BlockingInvokerGenerator : ModalityAwareInvokerGenerator {
 
@@ -16,8 +18,12 @@ internal object BlockingInvokerGenerator : ModalityAwareInvokerGenerator {
         with(invokerGenerator) { generate(continuationSlot = null, codeBuilder) }
 
         if (executable is Method) {
-            // Return value as Object, or return Unit as the implemented method must return something
-            if (executable.returnType != Void.TYPE) {
+            // Return value as Object, or the value class box, or return Unit as the implemented method must return something
+            val returnErasure = function.returnType.jvmErasure
+            if (returnErasure.isValue) {
+                val valueClassDesc = returnErasure.java.describeConstable().get()
+                codeBuilder.invokestatic(valueClassDesc, "box-impl", MethodTypeDesc.of(valueClassDesc, executable.returnType.describeConstable().get()))
+            } else if (executable.returnType != Void.TYPE) {
                 codeBuilder.boxIfPrimitive(type = executable.returnType)
             } else {
                 codeBuilder.getstatic(CD_Unit, "INSTANCE", CD_Unit)

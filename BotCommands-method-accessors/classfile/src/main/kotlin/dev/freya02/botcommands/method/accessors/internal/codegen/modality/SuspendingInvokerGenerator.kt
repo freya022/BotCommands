@@ -53,6 +53,7 @@ internal object SuspendingInvokerGenerator : ModalityAwareInvokerGenerator {
         codeBuilder.putfield(CD_MethodAccessorContinuation, "label", CD_int)
 
         with(invokerGenerator) { generate(continuationSlot, codeBuilder) }
+        // Coroutines don't need to box the value of inline classes, the called suspending function already does
         codeBuilder.astore(callReturnValueSlot)
 
         // if (callReturnValue == IntrinsicsKt.getCOROUTINE_SUSPENDED()) { ... }
