@@ -28,9 +28,10 @@ class InlineFileDisplay(
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
- * @param uniqueId    Unique identifier of this component
- * @param spoiler     Hides the file until the user clicks on it
- * @param block       Lambda allowing further configuration
+ * @param file     The file to attach
+ * @param uniqueId Unique identifier of this component
+ * @param spoiler  Hides the file until the user clicks on it
+ * @param block    Lambda allowing further configuration
  */
 fun FileDisplay(file: FileUpload, uniqueId: Int = -1, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
     InlineFileDisplay(FileDisplay.fromFile(file))
@@ -48,9 +49,10 @@ fun FileDisplay(file: FileUpload, uniqueId: Int = -1, spoiler: Boolean = false, 
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
- * @param uniqueId    Unique identifier of this component
- * @param spoiler     Hides the file until the user clicks on it
- * @param block       Lambda allowing further configuration
+ * @param fileName Name of the file, you later have to add the file data with a matching name
+ * @param uniqueId Unique identifier of this component
+ * @param spoiler  Hides the file until the user clicks on it
+ * @param block    Lambda allowing further configuration
  */
 fun FileDisplay(fileName: String, uniqueId: Int = -1, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
     InlineFileDisplay(FileDisplay.fromFileName(fileName))

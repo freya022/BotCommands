@@ -32,6 +32,15 @@ class InlineSection : InlineComponentWithChildren<SectionContentComponent> {
 
     override val components = mutableListOf<SectionContentComponent>()
 
+    /**
+     * See [TextDisplay][net.dv8tion.jda.api.components.textdisplay.TextDisplay].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param content  The content displayed by this component
+     * @param uniqueId Unique identifier of this component
+     * @param block    Lambda allowing further configuration
+     */
     inline fun textDisplay(
         content: String? = null,
         uniqueId: Int = -1,

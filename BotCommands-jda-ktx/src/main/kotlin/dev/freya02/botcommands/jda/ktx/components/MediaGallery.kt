@@ -64,8 +64,8 @@ class InlineMediaGallery : InlineComponent {
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
- * @param uniqueId    Unique identifier of this component
- * @param block       Lambda allowing further configuration
+ * @param uniqueId Unique identifier of this component
+ * @param block    Lambda allowing further configuration
  */
 inline fun MediaGallery(uniqueId: Int = -1, block: InlineMediaGallery.() -> Unit): MediaGallery {
     return InlineMediaGallery()

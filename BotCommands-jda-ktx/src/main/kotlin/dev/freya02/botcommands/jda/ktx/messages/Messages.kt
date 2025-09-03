@@ -4,6 +4,9 @@ package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import dev.freya02.botcommands.jda.ktx.components.*
+import dev.freya02.botcommands.jda.ktx.hex
+import dev.freya02.botcommands.jda.ktx.hsb
+import dev.freya02.botcommands.jda.ktx.rgb
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
@@ -195,6 +198,15 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
 
     val components = Accumulator<MessageTopLevelComponent>()
 
+    /**
+     * See [ActionRow][net.dv8tion.jda.api.components.actionrow.ActionRow].
+     *
+     * @param components Components of this row
+     * @param uniqueId   Unique identifier of this component
+     * @param block      Lambda allowing further configuration
+     *
+     * @see ActionRowChildComponent
+     */
     inline fun actionRow(
         vararg components: ActionRowChildComponent,
         uniqueId: Int = -1,
@@ -206,6 +218,15 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [ActionRow][net.dv8tion.jda.api.components.actionrow.ActionRow].
+     *
+     * @param components Components of this row
+     * @param uniqueId   Unique identifier of this component
+     * @param block      Lambda allowing further configuration
+     *
+     * @see ActionRowChildComponent
+     */
     inline fun actionRow(
         components: Collection<ActionRowChildComponent> = emptyList(),
         uniqueId: Int = -1,
@@ -217,6 +238,19 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [Section][net.dv8tion.jda.api.components.section.Section].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param accessory  The accessory of this section
+     * @param components The components of this section
+     * @param uniqueId   Unique identifier of this component
+     * @param block      Lambda allowing further configuration
+     *
+     * @see SectionContentComponent
+     * @see SectionAccessoryComponent
+     */
     inline fun section(
         accessory: SectionAccessoryComponent? = null,
         vararg components: SectionContentComponent,
@@ -229,6 +263,19 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [Section][net.dv8tion.jda.api.components.section.Section].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param accessory  The accessory of this section
+     * @param components The components of this section
+     * @param uniqueId   Unique identifier of this component
+     * @param block      Lambda allowing further configuration
+     *
+     * @see SectionContentComponent
+     * @see SectionAccessoryComponent
+     */
     inline fun section(
         accessory: SectionAccessoryComponent? = null,
         components: Collection<SectionContentComponent> = emptyList(),
@@ -241,6 +288,15 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [TextDisplay][net.dv8tion.jda.api.components.textdisplay.TextDisplay].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param content  The content displayed by this component
+     * @param uniqueId Unique identifier of this component
+     * @param block    Lambda allowing further configuration
+     */
     inline fun textDisplay(
         content: String? = null,
         uniqueId: Int = -1,
@@ -249,6 +305,15 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         this.components += TextDisplay(content, uniqueId, block)
     }
 
+    /**
+     * See [MediaGallery][net.dv8tion.jda.api.components.mediagallery.MediaGallery].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param items    Items of this media gallery
+     * @param uniqueId Unique identifier of this component
+     * @param block    Lambda allowing further configuration
+     */
     inline fun mediaGallery(
         vararg items: MediaGalleryItem,
         uniqueId: Int = -1,
@@ -260,6 +325,15 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [MediaGallery][net.dv8tion.jda.api.components.mediagallery.MediaGallery].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param items    Items of this media gallery
+     * @param uniqueId Unique identifier of this component
+     * @param block    Lambda allowing further configuration
+     */
     inline fun mediaGallery(
         items: Collection<MediaGalleryItem> = emptyList(),
         uniqueId: Int = -1,
@@ -271,6 +345,16 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [Separator][net.dv8tion.jda.api.components.separator.Separator].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param uniqueId  Unique identifier of this component
+     * @param isDivider `true` if the separator should be visible
+     * @param spacing   The amount of spacing this separator should provide
+     * @param block     Lambda allowing further configuration
+     */
     inline fun separator(
         uniqueId: Int = -1,
         isDivider: Boolean = true,
@@ -280,6 +364,16 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         this.components += Separator(uniqueId, isDivider, spacing, block)
     }
 
+    /**
+     * See [FileDisplay.fromFile][net.dv8tion.jda.api.components.filedisplay.FileDisplay.fromFile].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param file     The file to attach
+     * @param uniqueId Unique identifier of this component
+     * @param spoiler  Hides the file until the user clicks on it
+     * @param block    Lambda allowing further configuration
+     */
     fun fileDisplay(
         file: FileUpload,
         uniqueId: Int = -1,
@@ -289,6 +383,16 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         this.components += FileDisplay(file, uniqueId, spoiler, block)
     }
 
+    /**
+     * See [FileDisplay.fromFileName][net.dv8tion.jda.api.components.filedisplay.FileDisplay.fromFileName].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param fileName Name of the file, you later have to add the file data with a matching name
+     * @param uniqueId Unique identifier of this component
+     * @param spoiler  Hides the file until the user clicks on it
+     * @param block    Lambda allowing further configuration
+     */
     fun fileDisplay(
         fileName: String,
         uniqueId: Int = -1,
@@ -298,6 +402,19 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         this.components += FileDisplay(fileName, uniqueId, spoiler, block)
     }
 
+    /**
+     * See [Container][net.dv8tion.jda.api.components.container.Container].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param components  The components of this container
+     * @param uniqueId    Unique identifier of this component
+     * @param accentColor Color of the container's left side, you can use [rgb], [hsb] or [hex] for it
+     * @param spoiler     Hides the file until the user clicks on it
+     * @param block       Lambda allowing further configuration
+     *
+     * @see ContainerChildComponent
+     */
     inline fun container(
         vararg components: ContainerChildComponent,
         uniqueId: Int = -1,
@@ -311,6 +428,19 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         }
     }
 
+    /**
+     * See [Container][net.dv8tion.jda.api.components.container.Container].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param components  The components of this container
+     * @param uniqueId    Unique identifier of this component
+     * @param accentColor Color of the container's left side, you can use [rgb], [hsb] or [hex] for it
+     * @param spoiler     Hides the file until the user clicks on it
+     * @param block       Lambda allowing further configuration
+     *
+     * @see ContainerChildComponent
+     */
     inline fun container(
         components: Collection<ContainerChildComponent> = emptyList(),
         uniqueId: Int = -1,
