@@ -8,8 +8,8 @@ import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.internal.utils.any
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.components.ActionComponent
 import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.attribute.ICustomId
 import net.dv8tion.jda.api.components.tree.ComponentTree
 import kotlin.reflect.KProperty
 
@@ -35,7 +35,7 @@ class UsedComponentSet(private val componentsService: Components, private val cl
     fun setComponents(componentTree: ComponentTree<*>) {
         val newIds = TIntHashSet().apply {
             componentTree
-                .findAll<ActionComponent>()
+                .findAll<ICustomId>()
                 .forEach { component ->
                     if (component.customId == null) return@forEach
 
