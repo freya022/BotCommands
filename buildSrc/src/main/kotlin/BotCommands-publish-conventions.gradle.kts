@@ -28,10 +28,10 @@ val canPublish = mavenCentralUsername != null && mavenCentralPassword != null &&
 
 group = "io.github.freya022"
 version = Version(
-    major = "3",
-    minor = "0",
-    revision = "0",
-    classifier = "beta.5",
+    major = property("version.major").toString(),
+    minor = property("version.minor").toString(),
+    revision = property("version.revision").toString(),
+    classifier = property("version.classifier").toString(),
     // isRelease = isCi || canPublish
     isDev = !GitUtils.isCI(providers) && !canPublish
 )
