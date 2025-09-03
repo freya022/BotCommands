@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.internal.localization.interaction.Localiza
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
 import io.github.freya022.botcommands.internal.utils.throwArgument
+import net.dv8tion.jda.api.components.ActionComponent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import java.util.*
 
@@ -47,7 +47,7 @@ class ModalEvent internal constructor(
             "Can only get modal mapping for modal-compatible components, provided: $component"
         }
 
-        return event.values.first { it.id == component.id }
+        return event.values.first { it.customId == component.customId }
             ?: throwArgument("No value found, you likely passed an input from another modal, or haven't attached it")
     }
 }

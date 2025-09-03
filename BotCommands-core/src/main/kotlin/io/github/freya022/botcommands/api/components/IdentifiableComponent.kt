@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.interactions.components.ActionComponent
+import net.dv8tion.jda.api.components.ActionComponent
 
 interface IdentifiableComponent {
     val internalId: Int
@@ -18,11 +18,11 @@ interface IdentifiableComponent {
 
         @JvmStatic
         fun fromComponent(component: ActionComponent): IdentifiableComponent =
-            fromId(component.id ?: throwArgument("This component has no ID"))
+            fromId(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic
         fun fromComponentOrNull(component: ActionComponent): IdentifiableComponent? =
-            fromIdOrNull(component.id ?: throwArgument("This component has no ID"))
+            fromIdOrNull(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic
         fun fromId(id: String): IdentifiableComponent {

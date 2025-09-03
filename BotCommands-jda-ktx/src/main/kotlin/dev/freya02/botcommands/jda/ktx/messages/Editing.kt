@@ -1,16 +1,17 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
 import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.messages.MessageRequest
 
 /**
  * Same as [IMessageEditCallback.editMessage].
@@ -29,11 +30,12 @@ import net.dv8tion.jda.api.utils.AttachedFile
 inline fun IMessageEditCallback.editMessage_(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditCallbackAction = editMessage(MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditCallbackAction = editMessage(MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [InteractionHook.editMessageById].
@@ -53,11 +55,12 @@ inline fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): WebhookMessageEditAction<Message> = editMessageById(id, MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): WebhookMessageEditAction<Message> = editMessageById(id, MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [MessageChannel.editMessageById].
@@ -77,11 +80,12 @@ inline fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditAction = editMessageById(id, MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditAction = editMessageById(id, MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))
 
 /**
  * Same as [Message.editMessage].
@@ -99,8 +103,9 @@ inline fun MessageChannel.editMessage(
 inline fun Message.edit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
     files: Collection<AttachedFile>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     replace: Boolean = false,
     block: InlineMessageEdit.() -> Unit = {},
-): MessageEditAction = editMessage(MessageEdit(content, embeds, components, files, mentions = null, replace, block))
+): MessageEditAction = editMessage(MessageEdit(content, embeds, components, useComponentsV2, files, mentions = null, replace, block))

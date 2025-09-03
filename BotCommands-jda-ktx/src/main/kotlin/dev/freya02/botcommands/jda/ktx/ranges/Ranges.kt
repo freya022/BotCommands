@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.jda.ktx.ranges
 
 import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
+import net.dv8tion.jda.api.components.selections.SelectMenu
 
 /**
  * The minimum and maximum amount of values a user can select.

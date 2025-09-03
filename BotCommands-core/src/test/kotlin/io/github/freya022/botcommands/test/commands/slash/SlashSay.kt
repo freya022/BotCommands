@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
@@ -41,7 +42,7 @@ class SlashSay(
             .queue()
 
         channel.sendMessage(content)
-            .addActionRow(deleteButton)
+            .addComponents(row(deleteButton))
             .await()
     }
 }
@@ -65,7 +66,7 @@ class SlashSayDsl(
             .queue()
 
         channel.sendMessage(content)
-            .addActionRow(deleteButton)
+            .addComponents(row(deleteButton))
             .await()
     }
 

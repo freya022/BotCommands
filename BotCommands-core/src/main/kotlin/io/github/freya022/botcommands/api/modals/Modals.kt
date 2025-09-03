@@ -2,11 +2,12 @@
 
 package io.github.freya022.botcommands.api.modals
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.modals.Modals.Companion.defaultTimeout
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import java.time.Duration as JavaDuration
 import javax.annotation.CheckReturnValue
 import kotlin.contracts.ExperimentalContracts
@@ -71,7 +72,7 @@ fun ModalBuilder.textInput(inputName: String, label: String, inputStyle: TextInp
     return modals.createTextInput(inputName, label, inputStyle)
         .apply(block)
         .build()
-        .also { addActionRow(it) }
+        .also { addComponents(row(it)) }
 }
 
 fun ModalBuilder.shortTextInput(inputName: String, label: String, block: TextInputBuilder.() -> Unit = {}): TextInput {

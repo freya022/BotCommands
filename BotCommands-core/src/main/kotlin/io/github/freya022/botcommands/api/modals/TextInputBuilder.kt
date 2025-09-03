@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.api.modals
 
 import io.github.freya022.botcommands.internal.modals.ModalDSL
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 @ModalDSL
 abstract class TextInputBuilder internal constructor(

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.pagination.nested
 
+import dev.freya02.botcommands.jda.ktx.components.row
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.api.components.utils.SelectContent
 import io.github.freya022.botcommands.api.core.BContext
@@ -7,8 +8,8 @@ import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.pagination.paginator.AbstractPaginator
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.internal.utils.Checks
 
@@ -117,6 +118,6 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
             super.putComponents(builder)
         }
 
-        builder.addActionRow(createSelectMenu())
+        builder.addComponents(row(createSelectMenu()))
     }
 }

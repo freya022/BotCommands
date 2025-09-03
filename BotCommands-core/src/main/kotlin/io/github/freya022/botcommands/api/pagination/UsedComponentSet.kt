@@ -1,12 +1,16 @@
 package io.github.freya022.botcommands.api.pagination
 
+import dev.freya02.botcommands.jda.ktx.components.findAll
+import dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree
 import gnu.trove.set.hash.TIntHashSet
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.IdentifiableComponent
 import io.github.freya022.botcommands.internal.utils.any
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.tree.ComponentTree
 import kotlin.reflect.KProperty
 
 private val logger = KotlinLogging.logger { }
@@ -17,18 +21,29 @@ private val logger = KotlinLogging.logger { }
 class UsedComponentSet(private val componentsService: Components, private val cleanAfterRefresh: Boolean) {
     private lateinit var currentIds: TIntHashSet
 
-    fun setComponents(components: Iterable<LayoutComponent>) {
+    @Deprecated(
+        message = "Replaced with setComponent(ComponentTree), if you have a message, you should get the ComponentTree directly from it",
+        replaceWith = ReplaceWith(
+            expression = "setComponents(components.toList().toDefaultComponentTree())",
+            imports = arrayOf("dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree")
+        )
+    )
+    fun setComponents(components: Iterable<Component>) {
+        return setComponents(components.toList().toDefaultComponentTree())
+    }
+
+    fun setComponents(componentTree: ComponentTree<*>) {
         val newIds = TIntHashSet().apply {
-            for (row in components) {
-                row.actionComponents.forEach { component ->
-                    if (component.id == null) return@forEach
+            componentTree
+                .findAll<ActionComponent>()
+                .forEach { component ->
+                    if (component.customId == null) return@forEach
 
                     val bcComponent = component as? IdentifiableComponent
-                        ?: return@forEach logger.warn { "Attempted to use a non-BC component, id: '${component.id}'" }
+                        ?: return@forEach logger.warn { "Attempted to use a non-BC component, id: '${component.customId}'" }
 
                     add(bcComponent.internalId)
                 }
-            }
         }
 
         if (::currentIds.isInitialized.not()) {

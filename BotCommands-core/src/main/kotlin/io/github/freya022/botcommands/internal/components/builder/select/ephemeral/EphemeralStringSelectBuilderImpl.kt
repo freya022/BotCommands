@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 @PublishedApi
 internal class EphemeralStringSelectBuilderImpl internal constructor(
@@ -45,6 +45,12 @@ internal class EphemeralStringSelectBuilderImpl internal constructor(
 
     @Suppress("OVERRIDE_DEPRECATION") // yup
     override fun setId(customId: String): JDAStringSelectMenu.Builder {
+        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        throwArgument("Cannot set an ID on components managed by the framework")
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION") // yup
+    override fun setCustomId(customId: String): JDAStringSelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }

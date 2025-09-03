@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components.builder.select.persistent
 
 import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.builder.*
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 abstract class PersistentStringSelectBuilder :
         JDAStringSelectMenu.Builder(""),
@@ -18,10 +18,13 @@ abstract class PersistentStringSelectBuilder :
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     abstract override fun setId(customId: String): JDAStringSelectMenu.Builder
 
+    @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
+    abstract override fun setCustomId(customId: String): JDAStringSelectMenu.Builder
+
     abstract override fun build(): StringSelectMenu
 
     protected fun jdaBuild(id: String): JDAStringSelectMenu {
-        super.setId(id)
+        super.setCustomId(id)
         return super.build()
     }
 }

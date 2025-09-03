@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.api.components.utils
 
 import io.github.freya022.botcommands.api.components.Button
 import io.github.freya022.botcommands.api.utils.EmojiUtils
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import javax.annotation.CheckReturnValue
 
 /**

@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.modals
 
+import dev.freya02.botcommands.jda.ktx.components.findAll
+import dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree
 import gnu.trove.map.TLongObjectMap
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.modals.Modal
@@ -8,8 +10,8 @@ import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
-import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.throwState
+import net.dv8tion.jda.api.components.ActionComponent
 import kotlin.time.Duration
 
 internal class ModalBuilderImpl internal constructor(
@@ -44,11 +46,10 @@ internal class ModalBuilderImpl internal constructor(
     override fun build(): Modal {
         //Extract input data into this map
         val inputDataMap: TLongObjectMap<InputData> = TLongObjectHashMap()
-        components
-            .flatMap { it.actionComponents }
-            .filter { it.id != null }
+        components.toDefaultComponentTree()
+            .findAll<ActionComponent>()
             .forEach { actionComponent ->
-                val id = actionComponent.id ?: throwInternal("Non identifiable components should have been filtered")
+                val id = actionComponent.customId ?: return@forEach
                 val internalId = ModalMaps.parseInputId(id)
 
                 val data = modalMaps.consumeInput(internalId)

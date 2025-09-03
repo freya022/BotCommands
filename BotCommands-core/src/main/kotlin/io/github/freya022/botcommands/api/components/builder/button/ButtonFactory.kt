@@ -8,9 +8,9 @@ import io.github.freya022.botcommands.internal.components.builder.InstanceRetrie
 import io.github.freya022.botcommands.internal.components.builder.button.EphemeralButtonBuilderImpl
 import io.github.freya022.botcommands.internal.components.builder.button.PersistentButtonBuilderImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
+import net.dv8tion.jda.api.components.buttons.Button as JDAButton
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import javax.annotation.CheckReturnValue
 

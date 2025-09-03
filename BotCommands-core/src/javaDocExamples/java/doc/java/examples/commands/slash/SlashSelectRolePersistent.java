@@ -10,8 +10,9 @@ import io.github.freya022.botcommands.api.components.SelectMenus;
 import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener;
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents;
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,7 +37,7 @@ public class SlashSelectRolePersistent extends ApplicationCommand {
                 .build();
 
         event.reply("This select menu always works")
-                .addActionRow(roleMenu)
+                .addComponents(ActionRow.of(roleMenu))
                 .queue();
     }
 

@@ -14,7 +14,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.impl.Uni
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 @PublishedApi
 internal class PersistentEntitySelectBuilderImpl internal constructor(
@@ -47,6 +47,12 @@ internal class PersistentEntitySelectBuilderImpl internal constructor(
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun setId(customId: String): JDAEntitySelectMenu.Builder {
+        if (customId.isEmpty()) return this //Empty ID is set by super constructor
+        throwArgument("Cannot set an ID on components managed by the framework")
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun setCustomId(customId: String): JDAEntitySelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwArgument("Cannot set an ID on components managed by the framework")
     }

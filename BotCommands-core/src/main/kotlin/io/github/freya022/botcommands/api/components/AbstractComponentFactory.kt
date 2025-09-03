@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.components
 
+import dev.freya02.botcommands.jda.ktx.components.findAll
+import dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.IUniqueComponent
@@ -8,8 +10,9 @@ import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.tree.ComponentTree
 import javax.annotation.CheckReturnValue
 
 abstract class AbstractComponentFactory internal constructor(
@@ -103,7 +106,7 @@ abstract class AbstractComponentFactory internal constructor(
     @JvmSynthetic
     suspend fun deleteJdaComponents(components: Collection<ActionComponent>) =
         components
-            .mapNotNull { it.id }
+            .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
 
@@ -116,7 +119,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmName("deleteRows")
-    fun deleteRowsJava(components: Collection<LayoutComponent>) = runBlocking { deleteRows(components) }
+    fun deleteRowsJava(components: Collection<MessageTopLevelComponent>) = runBlocking { deleteRows(components) }
 
     /**
      * Removes the component data stored by the framework of the provided components.
@@ -125,9 +128,23 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmSynthetic
-    suspend fun deleteRows(components: Collection<LayoutComponent>) =
-        components.flatMap { it.actionComponents }
-            .mapNotNull { it.id }
+    suspend fun deleteRows(components: Collection<MessageTopLevelComponent>) =
+        deleteTree(components.toDefaultComponentTree())
+
+
+    @JvmSynthetic
+    @JvmName("deleteRows")
+    suspend fun deleteTreeJava(tree: ComponentTree<*>) =
+        tree.findAll<ActionComponent>()
+            .mapNotNull { it.customId }
+            .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
+            .let { deleteComponents(it) }
+
+
+    @JvmSynthetic
+    suspend fun deleteTree(tree: ComponentTree<*>) =
+        tree.findAll<ActionComponent>()
+            .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
 

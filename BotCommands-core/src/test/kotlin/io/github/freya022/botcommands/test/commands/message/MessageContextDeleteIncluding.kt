@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.test.commands.message
 
-import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.editMessage
@@ -44,9 +43,8 @@ class MessageContextDeleteIncluding(
         event.hook.send {
             content = "This will delete ${messagesToDelete.size} messages up until ${messagesToDelete.last().jumpUrl}"
 
-            // TODO use CV2 DSL for the ActionRow
-            components += row(
-                buttons.danger("Delete").ephemeral {
+            actionRow {
+                +buttons.danger("Delete").ephemeral {
                     singleUse = true
 
                     bindTo { buttonEvent ->
@@ -65,7 +63,7 @@ class MessageContextDeleteIncluding(
                             .await()
                     }
                 }
-            )
+            }
         }.queue()
     }
 }

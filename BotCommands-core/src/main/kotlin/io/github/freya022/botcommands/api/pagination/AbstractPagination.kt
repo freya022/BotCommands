@@ -112,7 +112,7 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
     protected open fun postProcess(builder: MessageCreateBuilder) { }
 
     private fun saveUsedComponents(builder: MessageCreateBuilder) {
-        usedComponents.setComponents(builder.components)
+        usedComponents.setComponents(builder.componentTree)
     }
 
     /**
