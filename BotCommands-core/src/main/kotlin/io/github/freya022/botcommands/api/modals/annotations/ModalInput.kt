@@ -5,6 +5,10 @@ package io.github.freya022.botcommands.api.modals.annotations
  *
  * The specified input custom ID must be the same as the custom ID of a component in that modal.
  *
+ * Supported types for each component:
+ * - [TextInput][net.dv8tion.jda.api.components.textinput.TextInput]: `String`
+ * - [StringSelectMenu][net.dv8tion.jda.api.components.selections.StringSelectMenu]: `List<String>`
+ *
  * @see ModalData @ModalData
  * @see ModalHandler @ModalHandler
  */
