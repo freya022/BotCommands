@@ -1,6 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
-import dev.freya02.botcommands.jda.ktx.components.SelectOption
+import dev.freya02.botcommands.jda.ktx.components.StringSelectMenu
 import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 private const val codeInputId = "SlashModal: codeInput"
@@ -30,13 +29,10 @@ class SlashFormat(private val modals: Modals) : ApplicationCommand() {
             }
 
             label("Language") {
-                // TODO add InlineStringSelectMenu + others
-                child = StringSelectMenu.create(languageInputId)
-                    .addOptions(
-                        SelectOption("Kotlin", "kt"),
-                        SelectOption("Java", "java"),
-                    )
-                    .build()
+                child = StringSelectMenu(languageInputId) {
+                    option("Kotlin", "kt")
+                    option("Java", "java")
+                }
             }
         }
         event.replyModal(modal).queue()
