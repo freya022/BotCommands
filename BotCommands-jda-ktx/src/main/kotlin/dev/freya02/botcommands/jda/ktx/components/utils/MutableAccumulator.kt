@@ -15,6 +15,6 @@ class MutableAccumulator<T>(val collection: MutableCollection<T>) {
     }
 
     operator fun plusAssign(item: T) {
-        this.collection += collection
+        this.collection += item
     }
 }
