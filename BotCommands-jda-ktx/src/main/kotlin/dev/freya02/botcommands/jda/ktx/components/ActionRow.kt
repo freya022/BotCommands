@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 
 private val DUMMY_ROW = ActionRow.of(Button.success("id", "label"))
 
-class InlineActionRow : InlineComponentWithChildren<ActionRowChildComponent> {
+class InlineActionRow : InlineComponent {
 
     private var row = DUMMY_ROW
 
@@ -19,7 +19,7 @@ class InlineActionRow : InlineComponentWithChildren<ActionRowChildComponent> {
             row = row.withUniqueId(value)
         }
 
-    override val components = mutableListOf<ActionRowChildComponent>()
+    val components = mutableListOf<ActionRowChildComponent>()
 
     fun link(url: String, label: String? = null, emoji: Emoji? = null, disabled: Boolean = false) {
         components += Button.of(ButtonStyle.LINK, url, label, emoji).withDisabled(disabled)

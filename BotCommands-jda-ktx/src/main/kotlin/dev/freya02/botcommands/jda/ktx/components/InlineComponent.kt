@@ -10,16 +10,3 @@ internal interface InlineComponent {
     /** Unique identifier of this component, see [Component.withUniqueId] */
     var uniqueId: Int
 }
-
-internal interface InlineComponentWithChildren<T> : InlineComponent {
-
-    val components: MutableList<T>
-
-    operator fun T.unaryPlus() {
-        components += this
-    }
-
-    operator fun Collection<T>.unaryPlus() {
-        components += this
-    }
-}

@@ -44,7 +44,7 @@ class MessageContextDeleteIncluding(
             content = "This will delete ${messagesToDelete.size} messages up until ${messagesToDelete.last().jumpUrl}"
 
             actionRow {
-                +buttons.danger("Delete").ephemeral {
+                components += buttons.danger("Delete").ephemeral {
                     singleUse = true
 
                     bindTo { buttonEvent ->

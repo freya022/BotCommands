@@ -16,7 +16,7 @@ import java.awt.Color
 
 private val DUMMY_CONTAINER = Container.of(TextDisplay.of("a"))
 
-class InlineContainer : InlineComponentWithChildren<ContainerChildComponent> {
+class InlineContainer : InlineComponent {
 
     private var container = DUMMY_CONTAINER
 
@@ -47,7 +47,7 @@ class InlineContainer : InlineComponentWithChildren<ContainerChildComponent> {
             container = container.withSpoiler(value)
         }
 
-    override val components = mutableListOf<ContainerChildComponent>()
+    val components = mutableListOf<ContainerChildComponent>()
 
     inline fun actionRow(
         vararg components: ActionRowChildComponent,

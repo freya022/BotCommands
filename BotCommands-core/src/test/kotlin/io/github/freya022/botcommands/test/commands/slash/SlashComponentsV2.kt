@@ -83,17 +83,17 @@ class SlashComponentsV2(
                 +buttons.link("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
             }
             actionRow {
-                +selectMenus.stringSelectMenu().ephemeral {
+                components += selectMenus.stringSelectMenu().ephemeral {
                     options += SelectOption("foo", "bar")
                 }
             }
             actionRow {
-                +buttons.danger("Button").ephemeral {
+                components += buttons.danger("Button").ephemeral {
                     bindTo { buttonEvent ->
                         buttonEvent.reply_("My reference ID is ${buttonEvent.component.uniqueId}")
                     }
                 }
-                +buttons.success("No way... A second one").ephemeral {
+                components += buttons.success("No way... A second one").ephemeral {
                     bindTo { buttonEvent ->
                         buttonEvent.reply_("My reference ID is ${buttonEvent.component.uniqueId}", ephemeral = true).await()
                     }

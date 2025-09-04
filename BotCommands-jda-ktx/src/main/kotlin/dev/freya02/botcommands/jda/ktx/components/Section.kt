@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 
 private val DUMMY_SECTION = Section.of(Button.success("id", "label"), TextDisplay.of("a"))
 
-class InlineSection : InlineComponentWithChildren<SectionContentComponent> {
+class InlineSection : InlineComponent {
 
     private var section = DUMMY_SECTION
 
@@ -30,7 +30,7 @@ class InlineSection : InlineComponentWithChildren<SectionContentComponent> {
 
     val hasAccessory: Boolean get() = _accessory != null
 
-    override val components = mutableListOf<SectionContentComponent>()
+    val components = mutableListOf<SectionContentComponent>()
 
     /**
      * See [TextDisplay][net.dv8tion.jda.api.components.textdisplay.TextDisplay].
