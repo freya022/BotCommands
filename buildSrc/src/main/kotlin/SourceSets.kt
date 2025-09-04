@@ -17,10 +17,11 @@ fun Project.registerSourceSet(name: String, extendsTestDependencies: Boolean) {
     configurations["${name}Api"].extendsFrom(configurations["api"])
     configurations["${name}Implementation"].extendsFrom(configurations["implementation"])
     configurations["${name}CompileOnly"].extendsFrom(configurations["compileOnly"])
+    configurations["${name}RuntimeOnly"].extendsFrom(configurations["runtimeOnly"])
 
     if (extendsTestDependencies) {
         configurations["${name}Api"].extendsFrom(configurations["testApi"])
         configurations["${name}Implementation"].extendsFrom(configurations["testImplementation"])
-        configurations["${name}CompileOnly"].extendsFrom(configurations["testCompileOnly"])
+        configurations["${name}RuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
     }
 }
