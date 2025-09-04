@@ -21,7 +21,7 @@ class InlineActionRow : InlineComponent {
 
     val components = mutableListOf<ActionRowChildComponent>()
 
-    fun link(url: String, label: String? = null, emoji: Emoji? = null, disabled: Boolean = false) {
+    fun linkButton(url: String, label: String? = null, emoji: Emoji? = null, disabled: Boolean = false) {
         components += Button.of(ButtonStyle.LINK, url, label, emoji).withDisabled(disabled)
     }
 

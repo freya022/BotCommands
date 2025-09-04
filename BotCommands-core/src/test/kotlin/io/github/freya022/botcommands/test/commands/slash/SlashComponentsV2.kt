@@ -80,7 +80,7 @@ class SlashComponentsV2(
             }
 
             actionRow {
-                +buttons.link("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
+                linkButton("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
             }
             actionRow {
                 components += selectMenus.stringSelectMenu().ephemeral {

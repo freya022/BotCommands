@@ -103,7 +103,9 @@ you can see all utilities in [messages/Messages.kt](./src/main/kotlin/dev/freya0
 val message/*: MessageCreateData*/ = MessageCreate(mentions = Mentions.none()) {
     content = "Hello ${event.user.asMention}!"
   
-    components += row(buttons.link("Click me", "https://github.com/freya022/BotCommands"))
+    components += actionRow {
+        linkButton("Click me", "https://github.com/freya022/BotCommands")
+    }
 }
 ```
 
