@@ -18,18 +18,6 @@ class InlineMediaGallery : InlineComponent {
 
     val items = mutableListOf<MediaGalleryItem>()
 
-    operator fun MediaGalleryItem.unaryPlus() {
-        this@InlineMediaGallery.items += this
-    }
-
-    operator fun plusAssign(item: MediaGalleryItem) {
-        this.items += item
-    }
-
-    operator fun plusAssign(items: Collection<MediaGalleryItem>) {
-        this.items += items
-    }
-
     /**
      * Add an item to this gallery, see [MediaGalleryItem.fromUrl].
      *
