@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.ModalTopLevelComponent
 import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.label.LabelChildComponent
+import net.dv8tion.jda.api.components.tree.ComponentTree
 import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.modals.Modal as JDAModal
 import java.time.Duration as JavaDuration
@@ -128,6 +129,20 @@ abstract class ModalBuilder protected constructor(
      */
     @JvmSynthetic
     abstract fun timeout(timeout: Duration, onTimeout: (suspend () -> Unit)? = null): ModalBuilder
+
+    override fun setTitle(title: String): ModalBuilder = apply { super.setTitle(title) }
+
+    override fun addComponents(components: Collection<ModalTopLevelComponent?>): ModalBuilder = apply {
+        super.addComponents(components)
+    }
+
+    override fun addComponents(vararg components: ModalTopLevelComponent?): ModalBuilder = apply {
+        super.addComponents(*components)
+    }
+
+    override fun addComponents(tree: ComponentTree<out ModalTopLevelComponent?>): ModalBuilder = apply {
+        super.addComponents(tree)
+    }
 
     @Deprecated("Cannot set an ID on modals managed by the framework", level = DeprecationLevel.ERROR)
     abstract override fun setId(customId: String): ModalBuilder
