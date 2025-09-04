@@ -46,7 +46,7 @@ class SlashComponentsV2(
             section(
                 accessory = Thumbnail(kotlinIcon)
             ) {
-                textDisplay("kotlin")
+                text("kotlin")
             }
 
             fileDisplay(FileUpload.fromData("abc".encodeToByteArray(), "abc.txt"))
@@ -62,7 +62,7 @@ class SlashComponentsV2(
                     }
                 }
             ) {
-                textDisplay("""
+                text("""
                         # Yippie
                         This container is fancy.
                     """.trimIndent())
@@ -73,7 +73,7 @@ class SlashComponentsV2(
             section(
                 accessory = Thumbnail("https://cdn.discordapp.com/attachments/556235929443106828/1339901053813919764/wires.png")
             ) {
-                textDisplay("""
+                text("""
                         And another section with a totally-not-a-rickroll [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
                         -# *and a thumbnail from attachments*
                     """.trimIndent())

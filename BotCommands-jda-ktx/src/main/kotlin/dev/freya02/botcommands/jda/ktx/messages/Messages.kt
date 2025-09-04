@@ -297,7 +297,7 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
      * @param uniqueId Unique identifier of this component
      * @param block    Lambda allowing further configuration
      */
-    inline fun textDisplay(
+    inline fun text(
         content: String? = null,
         uniqueId: Int = -1,
         block: InlineTextDisplay.() -> Unit = {},
