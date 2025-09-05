@@ -42,7 +42,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
             }
 
             label("Select menu") {
-                child = StringSelectMenu(SLASH_MODAL_STRING_SELECT_INPUT) {
+                child = StringSelectMenu(SLASH_MODAL_STRING_SELECT_INPUT, required = false) {
                     option("Opt1", "opt1")
                     option("Opt2", "opt2", default = true)
                 }

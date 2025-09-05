@@ -5,13 +5,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
-class InlineStringSelectMenu(val builder: StringSelectMenu.Builder) : InlineComponent {
-
-    override var uniqueId: Int
-        get() = builder.uniqueId
-        set(value) {
-            builder.uniqueId = value
-        }
+class InlineStringSelectMenu(override val builder: StringSelectMenu.Builder) : InlineSelectMenu() {
 
     // TODO remove once JDA exposes getter
     private var _required: Boolean? = null
@@ -67,15 +61,24 @@ class InlineStringSelectMenu(val builder: StringSelectMenu.Builder) : InlineComp
 inline fun StringSelectMenu(
     customId: String,
     uniqueId: Int = -1,
+    placeholder: String? = null,
+    valueRange: IntRange? = null,
     required: Boolean? = null,
-    block: InlineStringSelectMenu.() -> Unit = {},
+    disabled: Boolean = false,
+    block: InlineStringSelectMenu.() -> Unit,
 ): StringSelectMenu {
     return InlineStringSelectMenu(StringSelectMenu.create(customId))
         .apply {
             if (uniqueId != -1)
                 this.uniqueId = uniqueId
+            if (placeholder != null)
+                this.placeholder = placeholder
+            if (valueRange != null)
+                this.valueRange = valueRange
             if (required != null)
                 this.required = required
+            if (disabled)
+                this.disabled = true
             block()
         }
         .build()
