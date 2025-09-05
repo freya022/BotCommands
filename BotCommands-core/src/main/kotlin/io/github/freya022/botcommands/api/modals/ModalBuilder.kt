@@ -132,15 +132,15 @@ abstract class ModalBuilder protected constructor(
 
     override fun setTitle(title: String): ModalBuilder = apply { super.setTitle(title) }
 
-    override fun addComponents(components: Collection<ModalTopLevelComponent?>): ModalBuilder = apply {
+    override fun addComponents(components: Collection<ModalTopLevelComponent>): ModalBuilder = apply {
         super.addComponents(components)
     }
 
-    override fun addComponents(vararg components: ModalTopLevelComponent?): ModalBuilder = apply {
+    override fun addComponents(vararg components: ModalTopLevelComponent): ModalBuilder = apply {
         super.addComponents(*components)
     }
 
-    override fun addComponents(tree: ComponentTree<out ModalTopLevelComponent?>): ModalBuilder = apply {
+    override fun addComponents(tree: ComponentTree<out ModalTopLevelComponent>): ModalBuilder = apply {
         super.addComponents(tree)
     }
 
