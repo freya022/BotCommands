@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.internal.modals
 
-import gnu.trove.map.TObjectLongMap
-import gnu.trove.map.hash.TObjectLongHashMap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
@@ -64,14 +62,6 @@ internal class ModalHandlerInfo internal constructor(
 
     internal suspend fun execute(modalData: ModalData, event: ModalEvent) {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
-
-        val inputDataMap = modalData.inputDataMap
-        val inputNameToInputIdMap: TObjectLongMap<String> = TObjectLongHashMap()
-        inputDataMap.forEachEntry { inputId: Long, inputData: InputData ->
-            inputNameToInputIdMap.put(inputData.inputName, inputId)
-            true
-        }
-
         val userDatas = handlerData.userData
 
         //Check if there's enough arguments to fit user data
@@ -85,7 +75,7 @@ internal class ModalHandlerInfo internal constructor(
 
         val userDataIterator = userDatas.iterator()
         val optionValues = parameters.mapOptions { option ->
-            if (tryInsertOption(event, option, inputNameToInputIdMap, userDataIterator, this) == InsertOptionResult.ABORT)
+            if (tryInsertOption(event, option, userDataIterator, this) == InsertOptionResult.ABORT)
                 throwInternal(::tryInsertOption, "Insertion function shouldn't have been aborted")
         }
 
@@ -95,7 +85,6 @@ internal class ModalHandlerInfo internal constructor(
     private suspend fun tryInsertOption(
         event: ModalEvent,
         option: OptionImpl,
-        inputNameToInputIdMap: TObjectLongMap<String>,
         userDataIterator: Iterator<Any?>,
         optionMap: MutableMap<OptionImpl, Any?>
     ): InsertOptionResult {
@@ -105,10 +94,8 @@ internal class ModalHandlerInfo internal constructor(
 
                 //We have the modal input's ID
                 // But we have a Map of input *name* -> InputData (contains input ID)
-                val inputId = inputNameToInputIdMap[option.inputName].takeIf { it != inputNameToInputIdMap.noEntryValue }
-                    ?: throwUser("Modal input named '${option.inputName}' was not found")
-                val modalMapping = event.getValue(ModalMaps.getInputId(inputId))
-                    ?: throwUser("Modal input ID '$inputId' was not found on the event")
+                val modalMapping = event.getValue(option.customId)
+                    ?: throwUser("Modal input with custom ID '${option.customId}' was not found on the event, available values: ${event.values.map { it.customId }}")
 
                 option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
                     // Technically not required, but provides additional info

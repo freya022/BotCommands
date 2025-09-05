@@ -13,5 +13,5 @@ internal class ModalHandlerInputOption(
 
     override val executable get() = parent.executable
 
-    val inputName: String = kParameter.findAnnotationRecursive<ModalInput>()!!.name
+    internal val customId: String = kParameter.findAnnotationRecursive<ModalInput>()!!.customId
 }

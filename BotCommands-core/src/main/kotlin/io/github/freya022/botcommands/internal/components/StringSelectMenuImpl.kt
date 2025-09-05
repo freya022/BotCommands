@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.StringSelectMenu
 import io.github.freya022.botcommands.api.components.event.StringSelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion
+import net.dv8tion.jda.api.components.label.LabelChildComponentUnion
 import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 internal class StringSelectMenuImpl internal constructor(
@@ -13,7 +14,8 @@ internal class StringSelectMenuImpl internal constructor(
 ) : AbstractAwaitableComponentImpl<StringSelectEvent>(componentController, selectMenu),
     StringSelectMenu,
     JDAStringSelectMenu by selectMenu,
-    ActionRowChildComponentUnion {
+    ActionRowChildComponentUnion,
+    LabelChildComponentUnion {
 
     override fun withUniqueId(uniqueId: Int): StringSelectMenuImpl {
         return StringSelectMenuImpl(componentController, internalId, selectMenu.withUniqueId(uniqueId))

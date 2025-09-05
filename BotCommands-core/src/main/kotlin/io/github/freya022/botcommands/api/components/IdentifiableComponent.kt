@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.components
 
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.attribute.ICustomId
 
 interface IdentifiableComponent {
     val internalId: Int
@@ -12,16 +12,16 @@ interface IdentifiableComponent {
         fun isCompatible(id: String): Boolean = ComponentController.isCompatibleComponent(id)
 
         @JvmSynthetic
-        fun ActionComponent.toIdentifiableComponent(): IdentifiableComponent = fromComponent(this)
+        fun ICustomId.toIdentifiableComponent(): IdentifiableComponent = fromComponent(this)
         @JvmSynthetic
-        fun ActionComponent.toIdentifiableComponentOrNull(): IdentifiableComponent? = fromComponentOrNull(this)
+        fun ICustomId.toIdentifiableComponentOrNull(): IdentifiableComponent? = fromComponentOrNull(this)
 
         @JvmStatic
-        fun fromComponent(component: ActionComponent): IdentifiableComponent =
+        fun fromComponent(component: ICustomId): IdentifiableComponent =
             fromId(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic
-        fun fromComponentOrNull(component: ActionComponent): IdentifiableComponent? =
+        fun fromComponentOrNull(component: ICustomId): IdentifiableComponent? =
             fromIdOrNull(component.customId ?: throwArgument("This component has no ID"))
 
         @JvmStatic

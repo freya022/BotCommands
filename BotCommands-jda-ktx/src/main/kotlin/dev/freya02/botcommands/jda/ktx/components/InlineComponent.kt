@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.components.Component
 internal annotation class InlineComponentDSL
 
 @InlineComponentDSL
-internal interface InlineComponent {
+interface InlineComponent {
     /** Unique identifier of this component, see [Component.withUniqueId] */
     var uniqueId: Int
 }

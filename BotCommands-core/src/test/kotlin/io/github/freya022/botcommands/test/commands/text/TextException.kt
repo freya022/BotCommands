@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.text
 
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
@@ -11,7 +12,7 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 @Command
 @RequiresModals
@@ -26,7 +27,9 @@ class TextException : TextCommand() {
             buttons.danger("Trigger modal and exception").ephemeral()
                 .bindTo {
                     val modal = modals.create("Exception modal") {
-                        shortTextInput("input name", "Sample text")
+                        label("Sample text") {
+                            child = TextInput("input name", TextInputStyle.SHORT)
+                        }
 
                         bindTo {
                             throw RuntimeException("Modal exception")

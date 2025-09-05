@@ -1,5 +1,7 @@
 package io.github.freya022.bot.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.StringSelectMenu
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
@@ -8,30 +10,43 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.paragraphTextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
-private const val codeInputName = "SlashModal: codeInput"
+private const val codeInputId = "SlashModal: codeInput"
+private const val languageInputId = "SlashModal: languageInput"
 
 @Command
 @RequiresModals
-class SlashModal(private val modals: Modals) : ApplicationCommand() {
+class SlashFormat(private val modals: Modals) : ApplicationCommand() {
+
     @JDASlashCommand(name = "format", description = "Formats your code")
     suspend fun onSlashFormat(event: GuildSlashEvent) {
         val modal = modals.create("Format your code") {
-            paragraphTextInput(codeInputName, "Code") {
-                minLength = 3
+            label("Code") {
+                child = TextInput(codeInputId, TextInputStyle.PARAGRAPH) {
+                    minLength = 3
+                }
+            }
+
+            label("Language") {
+                child = StringSelectMenu(languageInputId) {
+                    option("Kotlin", "kt")
+                    option("Java", "java")
+                }
             }
         }
         event.replyModal(modal).queue()
 
         val modalEvent = modal.await()
-        val code = modalEvent.values.first().asString
+        val code = modalEvent.values[0].asString
+        val language = modalEvent.values[1].asStringList[0]
 
-        modalEvent.reply_(
-            """
+        modalEvent.reply_(ephemeral = true) {
+            content = """
                 Here is your formatted code:
-                ```kt
+                ```$language
                 $code```
-            """.trimIndent(), ephemeral = true).queue()
+            """.trimIndent()
+        }.queue()
     }
 }

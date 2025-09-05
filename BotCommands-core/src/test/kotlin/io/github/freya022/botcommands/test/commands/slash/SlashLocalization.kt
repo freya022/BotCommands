@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.components.SelectOption
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.durations.before
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
@@ -20,7 +21,7 @@ import io.github.freya022.botcommands.api.localization.interaction.*
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.lang.management.ManagementFactory
@@ -93,7 +94,9 @@ class SlashLocalization : ApplicationCommand() {
             val modalButton = buttons.primary("Open modal").ephemeral {
                 bindTo { buttonEvent ->
                     val modal = modals.create("Sample title") {
-                        shortTextInput("name", "Sample label")
+                        label("Sample label") {
+                            child = TextInput("name", TextInputStyle.SHORT)
+                        }
                     }
 
                     buttonEvent.replyModal(modal).queue()

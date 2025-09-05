@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
@@ -23,8 +24,8 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -70,7 +71,9 @@ class SlashServiceOption : ApplicationCommand() {
 //        @LocalizationBundle("MyCommands") localizationContext: AppLocalizationContext,
     ) {
         val modal = modals.create("Title") {
-            shortTextInput("input", "Sample text")
+            label("Sample text") {
+                child = TextInput("input", TextInputStyle.SHORT)
+            }
 
             bindTo("SlashServiceOption: modal", slashInput, randomNum, Random.nextDouble())
         }

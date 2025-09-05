@@ -26,9 +26,6 @@ private val logger = KotlinLogging.logger { }
 private const val MODAL_PREFIX = "BotCommands-Modal-"
 private const val MODAL_PREFIX_LENGTH = MODAL_PREFIX.length
 
-private const val INPUT_PREFIX = "BotCommands-ModalInput-"
-private const val INPUT_PREFIX_LENGTH = INPUT_PREFIX.length
-
 private const val MAX_ID = Long.MAX_VALUE
 //Same amount of digits except every digit is 0 but the first one is 1
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
@@ -40,12 +37,7 @@ internal class ModalMaps(context: BContext) {
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val modalLock = ReentrantLock()
-    private val inputLock = ReentrantLock()
-
     private val modalMap: TLongObjectMap<ModalData> = TLongObjectHashMap()
-
-    //Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
-    private val inputMap: TLongObjectMap<InputData> = TLongObjectHashMap()
 
     fun insertModal(partialModalData: PartialModalData): String {
         return modalLock.withLock {
@@ -76,15 +68,6 @@ internal class ModalMaps(context: BContext) {
         exceptionHandler.handleException(null, e, "modal timeout handler", emptyMap())
     }
 
-    fun insertInput(inputData: InputData): String {
-        return inputLock.withLock {
-            val internalId: Long = generateId(inputMap)
-
-            inputMap.put(internalId, inputData)
-            getInputId(internalId)
-        }
-    }
-
     fun insertContinuation(modalId: Long, continuation: CancellableContinuation<ModalEvent>) {
         val data = modalMap[modalId] ?: throwInternal("Unable to find a modal with id '$modalId'")
         data.continuations.add(continuation)
@@ -97,10 +80,6 @@ internal class ModalMaps(context: BContext) {
 
     fun consumeModal(modalId: Long): ModalData? = modalLock.withLock {
        modalMap.remove(modalId)?.also { it.cancelTimeout() }
-    }
-
-    fun consumeInput(inputId: Long): InputData? {
-        inputLock.withLock { return inputMap.remove(inputId) }
     }
 
     private fun generateId(map: TLongObjectMap<*>): Long {
@@ -122,14 +101,5 @@ internal class ModalMaps(context: BContext) {
             return java.lang.Long.parseLong(id, MODAL_PREFIX_LENGTH, id.length, 10)
         }
         internal fun getModalId(internalId: Long): String = MODAL_PREFIX + internalId
-
-        internal fun isCompatibleInput(id: String): Boolean = id.startsWith(INPUT_PREFIX)
-        internal fun parseInputId(id: String): Long {
-            require(isCompatibleInput(id)) {
-                "Cannot use JDA modal inputs ($id), please use modal inputs from ${classRef<Modals>()}"
-            }
-            return java.lang.Long.parseLong(id, INPUT_PREFIX_LENGTH, id.length, 10)
-        }
-        internal fun getInputId(internalId: Long): String = INPUT_PREFIX + internalId
     }
 }

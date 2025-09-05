@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
  * | [Guild]                                                       | ✓                 | ✓ (as a String) |                    |                 | ✓          |        |
  * | [Message]                                                     |                   |                 | ✓ (target message) |                 |            |        |
  * | [Attachment]                                                  |                   | ✓               |                    |                 |            |        |
+ * | [List]<[String]>                                              |                   |                 |                    |                 |            | ✓      |
  *
  * 1. The channel types are set automatically depending on the type,
  * but a broader channel type can be used

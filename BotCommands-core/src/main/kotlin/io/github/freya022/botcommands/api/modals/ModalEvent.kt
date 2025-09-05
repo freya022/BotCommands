@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.localization.interaction.Localiza
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import net.dv8tion.jda.api.components.ActionComponent
+import net.dv8tion.jda.api.components.attribute.ICustomId
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import java.util.*
@@ -42,7 +42,7 @@ class ModalEvent internal constructor(
     override fun getRawData() = event.rawData
 
     @JvmName("getValue")
-    operator fun get(component: ActionComponent): ModalMapping {
+    operator fun get(component: ICustomId): ModalMapping {
         require(component.isModalCompatible) {
             "Can only get modal mapping for modal-compatible components, provided: $component"
         }

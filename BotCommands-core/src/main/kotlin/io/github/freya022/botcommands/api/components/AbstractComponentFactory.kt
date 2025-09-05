@@ -10,8 +10,8 @@ import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimi
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.components.ActionComponent
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.attribute.ICustomId
 import net.dv8tion.jda.api.components.tree.ComponentTree
 import javax.annotation.CheckReturnValue
 
@@ -77,7 +77,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmName("deleteJdaComponents")
-    fun deleteJdaComponentsJava(vararg components: ActionComponent) = deleteJdaComponentsJava(components.asList())
+    fun deleteJdaComponentsJava(vararg components: ICustomId) = deleteJdaComponentsJava(components.asList())
 
     /**
      * Removes the component data stored by the framework of the provided components.
@@ -86,7 +86,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmSynthetic
-    suspend fun deleteJdaComponents(vararg components: ActionComponent) = deleteJdaComponents(components.asList())
+    suspend fun deleteJdaComponents(vararg components: ICustomId) = deleteJdaComponents(components.asList())
 
     /**
      * Removes the component data stored by the framework of the provided components.
@@ -95,7 +95,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmName("deleteJdaComponents")
-    fun deleteJdaComponentsJava(components: Collection<ActionComponent>) = runBlocking { deleteJdaComponents(components) }
+    fun deleteJdaComponentsJava(components: Collection<ICustomId>) = runBlocking { deleteJdaComponents(components) }
 
     /**
      * Removes the component data stored by the framework of the provided components.
@@ -104,7 +104,7 @@ abstract class AbstractComponentFactory internal constructor(
      * and components from the same group will also be deleted according to the [timeout][ITimeoutableComponent.timeout] documentation.
      */
     @JvmSynthetic
-    suspend fun deleteJdaComponents(components: Collection<ActionComponent>) =
+    suspend fun deleteJdaComponents(components: Collection<ICustomId>) =
         components
             .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
@@ -135,7 +135,7 @@ abstract class AbstractComponentFactory internal constructor(
     @JvmSynthetic
     @JvmName("deleteRows")
     suspend fun deleteTreeJava(tree: ComponentTree<*>) =
-        tree.findAll<ActionComponent>()
+        tree.findAll<ICustomId>()
             .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }
@@ -143,7 +143,7 @@ abstract class AbstractComponentFactory internal constructor(
 
     @JvmSynthetic
     suspend fun deleteTree(tree: ComponentTree<*>) =
-        tree.findAll<ActionComponent>()
+        tree.findAll<ICustomId>()
             .mapNotNull { it.customId }
             .mapNotNull { IdentifiableComponent.fromIdOrNull(it) }
             .let { deleteComponents(it) }

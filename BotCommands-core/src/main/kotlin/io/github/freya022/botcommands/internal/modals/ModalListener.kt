@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import kotlin.coroutines.resume
@@ -28,12 +29,13 @@ internal class ModalListener(
     private val modalHandlerContainer: ModalHandlerContainer,
     private val modalMaps: ModalMaps,
 ) {
+
     private val scope = context.coroutineScopesConfig.modalScope
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
     suspend fun onModalEvent(jdaEvent: ModalInteractionEvent) {
-        logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.values.associate { it.uniqueId to it.asString }}" }
+        logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.allValuesAsString}" }
 
         scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
             if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
@@ -69,7 +71,7 @@ internal class ModalListener(
     private suspend fun handleException(e: Throwable, event: ModalInteractionEvent) {
         exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'", buildMap(2) {
             event.message?.let { put("Message", it.jumpUrl) }
-            put("Modal values", event.values.associate { it.uniqueId to it.asString })
+            put("Modal values", event.allValuesAsString)
         })
         if (e is InsufficientPermissionException) {
             event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
@@ -77,4 +79,13 @@ internal class ModalListener(
             event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
+
+    private val ModalInteractionEvent.allValuesAsString: String
+        get() = values.map { value ->
+            when (value.type) {
+                Component.Type.STRING_SELECT -> value.asStringList.toString()
+                Component.Type.TEXT_INPUT -> value.asString
+                else -> value.toString()
+            }
+        }.toString()
 }

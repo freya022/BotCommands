@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.test.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.StringSelectMenu
+import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.messages.send
@@ -19,12 +21,14 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
-import io.github.freya022.botcommands.api.modals.shortTextInput
 import io.github.freya022.botcommands.test.CustomObject
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.interactions.IntegrationType
 import kotlin.time.Duration.Companion.seconds
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
+private const val SLASH_MODAL_STRING_SELECT_INPUT = "SlashModal: stringSelect"
 
 @Command
 @RequiresModals
@@ -33,13 +37,22 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
-            shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
+            label("Sample text") {
+                child = TextInput(SLASH_MODAL_TEXT_INPUT, TextInputStyle.SHORT)
+            }
+
+            label("Select menu") {
+                child = StringSelectMenu(SLASH_MODAL_STRING_SELECT_INPUT, required = false) {
+                    option("Opt1", "opt1")
+                    option("Opt2", "opt2", default = true)
+                }
+            }
 
             bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420, null)
 
 //            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
-            timeout(5.seconds) {
+            timeout(15.seconds) {
                 event.hook.send("Timeout !", ephemeral = true).queue()
             }
         }
@@ -55,7 +68,8 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     suspend fun onModalSubmitted(
         event: ModalEvent,
         @ModalData dataStr: String,
-        @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
+        @ModalInput(customId = SLASH_MODAL_TEXT_INPUT) inputStr: String,
+        @ModalInput(customId = SLASH_MODAL_STRING_SELECT_INPUT) selectedStrings: List<String>,
         @ModalData dataInt: Int,
         @ModalData definitelyNull: Any?,
         customObject: CustomObject
@@ -66,6 +80,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
             dataStr: $dataStr
             dataInt: $dataInt
             inputStr: $inputStr
+            selectedStrings: $selectedStrings
             definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
@@ -84,6 +99,7 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("modal", function = ::onSlashModal) {
+            integrationTypes = IntegrationType.ALL
             serviceOption("modals")
         }
     }
