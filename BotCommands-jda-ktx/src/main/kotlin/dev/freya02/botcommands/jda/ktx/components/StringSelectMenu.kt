@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
-class InlineStringSelectMenu(var builder: StringSelectMenu.Builder) : InlineComponent {
+class InlineStringSelectMenu(val builder: StringSelectMenu.Builder) : InlineComponent {
 
     override var uniqueId: Int
         get() = builder.uniqueId
