@@ -28,6 +28,7 @@ dependencies {
 
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsSpring)
+    dokka(projects.botCommandsJdaKtx)
 }
 
 kotlin {
