@@ -1,0 +1,104 @@
+package dev.freya02.botcommands.bot.commands.slash
+
+import dev.freya02.botcommands.jda.ktx.components.TextInput
+import dev.freya02.botcommands.jda.ktx.components.into
+import dev.freya02.botcommands.jda.ktx.coroutines.await
+import dev.freya02.botcommands.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.components.Buttons
+import io.github.freya022.botcommands.api.components.annotations.*
+import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
+import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.core.service.LazyService
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
+import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
+import io.github.freya022.botcommands.api.modals.ModalEvent
+import io.github.freya022.botcommands.api.modals.Modals
+import io.github.freya022.botcommands.api.modals.annotations.ModalData
+import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.modals.annotations.ModalInput
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
+import io.github.freya022.botcommands.api.modals.create
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
+
+@Command
+@RequiresModals
+@RequiresComponents
+class SlashServiceOption : ApplicationCommand() {
+    @JDASlashCommand(name = "service_option")
+    suspend fun onSlashServiceOption(
+        event: GuildSlashEvent,
+        buttons: Buttons,
+        @SlashOption option: String,
+        @LocalizationBundle("MyCommands") localizationContext: AppLocalizationContext,
+    ) {
+        val button = buttons.primary("Click me").persistent {
+            timeout(5.seconds, "SlashServiceOption: button", Random.nextDouble())
+            bindTo("SlashServiceOption: button", option, 1)
+        }
+
+        event.reply_(components = button.into(), ephemeral = true).await()
+    }
+
+    @ComponentTimeoutHandler("SlashServiceOption: button")
+    fun onButtonTimeout(
+        data: ComponentTimeoutData,
+        @TimeoutData randomNumber: Double,
+        jda: LazyService<JDA>,
+    ) {
+        if (jda.canCreateService()) {
+            println("Deleting old components (not really tho)")
+        } else {
+            println("Missing JDA, cannot delete old components")
+        }
+    }
+
+    @JDAButtonListener("SlashServiceOption: button")
+    suspend fun onButtonClick(
+        event: ButtonEvent,
+        @ComponentData slashInput: String,
+        @ComponentData randomNum: Double,
+        modals: Modals,
+        // Not supported yet
+//        @LocalizationBundle("MyCommands") localizationContext: AppLocalizationContext,
+    ) {
+        val modal = modals.create("Title") {
+            label("Sample text") {
+                child = TextInput("input", TextInputStyle.SHORT)
+            }
+
+            bindTo("SlashServiceOption: modal", slashInput, randomNum, Random.nextDouble())
+        }
+
+        event.replyModal(modal).await()
+    }
+
+    @ModalHandler("SlashServiceOption: modal")
+    suspend fun onModalSubmit(
+        event: ModalEvent,
+        @ModalData slashInput: String,
+        @ModalData buttonRandomNum: Double,
+        @ModalData randomNum: Double,
+        @ModalInput("input") input: String,
+        service: ServiceContainer,
+        @LocalizationBundle("MyCommands") localizationContext: AppLocalizationContext,
+    ) {
+        event.reply_(
+            """
+                Slash command option: $slashInput
+                Button random number: $buttonRandomNum
+                Random number: $randomNum
+                Input: $input
+            """.trimIndent(),
+            ephemeral = true
+        ).await()
+    }
+}

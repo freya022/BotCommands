@@ -9,7 +9,7 @@ they should still be usable by Java users.
 
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
 
-You can also refer to the [examples](src/examples) and the [wiki](https://bc.freya02.dev/3.X)
+You can also refer to the [examples](BotCommands-core/src/examples) and the [wiki](https://bc.freya02.dev/3.X)
 to have an idea on how V3 is supposed to be used.
 
 ## Base package change
@@ -59,7 +59,7 @@ which enables this annotation to represent a custom condition for service creati
 
 You can also specify if failure of these annotations throws an exception.
 
-An example can be found [here](wiki/src/main/kotlin/io/github/freya022/wiki/switches/wiki/WikiLanguage.kt).
+[//]: # (An example can be found [here]&#40;wiki/src/main/kotlin/io/github/freya022/wiki/switches/wiki/WikiLanguage.kt&#41;.)
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>
@@ -70,7 +70,7 @@ For example, if you want to override the help command, you will need to make an 
 Most interfaces that were configurable in `CommandsBuilder` were replaced by interfaced services,
 such as command/component filters, `SettingsProvider`, `ExceptionHandler`, `AutocompleteTransformer`, etc...
 
-An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
+An example can be found [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
 
 ## Annotated command changes
 Annotated text and slash commands suffered from several issues, 
@@ -108,7 +108,7 @@ and also enables more features, such as [option aggregates](#option-aggregates).
 The DSL also enables you to declare commands with code, configure your names, descriptions, choices... everything by code, 
 so you are not limited to static values with annotations.
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
 see `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ## New option aggregates
@@ -122,7 +122,7 @@ You can still insert options without declaring an aggregate; these options will 
 
 **Note:** Option aggregates are only available with DSL declaration (and components and modal handlers by using `@Aggregate`).
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
 see `aggregate` in `SlashBanDetailedFront#declareGlobalApplicationCommands`.
 
 ### Vararg options
@@ -133,7 +133,7 @@ You can use these with `optionVararg`.
 
 **Note**: Aggregators can accept `List` parameters, but all the options must be under the same *declared* parameter name, so they can be all put in the list.
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashChoose.kt).
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashChoose.kt).
 
 ### Inline class options
 Kotlin's inline classes can also be used as options, 
@@ -141,7 +141,7 @@ you can use `inlineClassOption` to declare one in the DSL, they also automatical
 
 `inlineClassOptionVararg` can also be used for inline classes that accept a varargs.
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 with `SlashSentence.SentenceParts`.
 
 ## New rate limiting
@@ -186,7 +186,7 @@ even if the option is not being used by the autocomplete handler itself.
 
 The slash command DSL also let you configure autocomplete by using `SlashCommandOptionBuilder#autocomplete` (or `SlashCommandOptionBuilder#autocompleteReference` for handlers defined by annotation).
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 on `SlashSentence#onSentencePartAutocomplete`.
 
 ## Text command changes
@@ -204,7 +204,7 @@ You can also add per-variant usage and examples, both in annotations and in the 
 <details>
 <summary>Example</summary>
 
-For the [following commands](src/test/kotlin/io/github/freya022/botcommands/test/readme/TextBan.kt):
+For the [following commands](src/testBot/kotlin/dev/freya02/botcommands/bot/readme/TextBan.kt):
 
 ![Help content example](assets/command_help_embed_example.png)
 </details>
@@ -216,7 +216,7 @@ which lets you get your stuff started up before the bot goes fully online.
 
 Building JDA before the framework will result in an error, I strongly recommend that you use a service which implements `JDAService`.
 
-You can also refer to [the example JDA service](src/examples/kotlin/io/github/freya022/bot/Bot.kt).
+You can also refer to [the example JDA service](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/Bot.kt).
 
 ## Enhanced database support
 A `Database` service has been added, 
@@ -227,7 +227,7 @@ helping you get a decent abstraction for transactions and reading result rows wi
 While PostgreSQL is still strongly recommended, H2 is also supported, but requires the PostgreSQL compatibility mode.
 
 This allows you to run an in-memory database, or have it saved to a file, 
-see [`ConnectionSupplier`](src/main/kotlin/io/github/freya022/botcommands/api/core/db/ConnectionSupplier.kt) and [H2 Database connection modes](https://www.h2database.com/html/features.html#connection_modes) for more details.
+see [`ConnectionSupplier`](BotCommands-core/src/main/kotlin/io/github/freya022/botcommands/api/core/db/ConnectionSupplier.kt) and [H2 Database connection modes](https://www.h2database.com/html/features.html#connection_modes) for more details.
 
 ### Statement logging
 This service helps you create statements that are logged at the class that created the statement. 
@@ -236,7 +236,7 @@ That way, you can enable traces of some of your classes, without having everythi
 The logged statements are reconstructed from the parametrized SQL, and then filled with the parameters,
 giving you an executable query, which can be run in a console.
 
-See [`Database`](src/main/kotlin/io/github/freya022/botcommands/api/core/db/Database.kt) for more details.
+See [`Database`](BotCommands-core/src/main/kotlin/io/github/freya022/botcommands/api/core/db/Database.kt) for more details.
 
 ### Long transaction reporting
 Additionally, if `BDatabaseConfig#dumpLongTransactions` is enabled, 
@@ -261,7 +261,7 @@ As these handlers are optional, you can still handle them using coroutines, by u
 You can disable the timeout if necessary using `noTimeout()`, or if you plan on putting the component in a group.
 Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
-An example can be found [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
+An example can be found [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
 
 ## New modals
 Just like components, modals are now created using a DSL, while their handlers are still annotated. 
@@ -272,14 +272,12 @@ The DSL is very similar to the component's DSL, with your usual `bindTo` and `se
 You can disable the timeout if necessary using `noTimeout()`.
 Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt).
-
 ## New event handler
 
 `@BEventListener` can now be specified to be run asynchronously (within the parallelism limits of `BCoroutineScopesConfig#eventDispatcherScope`), 
 they can also have a priority assigned to them, as well as a timeout, used for suspending handlers.
 
-An example can be found [here](src/examples/kotlin/io/github/freya022/bot/ReadyListener.kt).
+An example can be found [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/ReadyListener.kt).
 
 ## Suspend resolvers & resolver factories
 `ParameterResolver` is now type safe and also supports coroutines.
@@ -307,12 +305,12 @@ while also (optionally) letting you transform a value into its displayed string.
 The API has been improved to allow a more detailed loading mechanism, 
 as to let you extend the API, such as adding support for new formats (like HOCON), or new file structures:
 
-| Name                                                                                                                                            | Function                                                                                                                                                                                                                                                                                                  |
-|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [LocalizationMapProvider](src/main/java/io/github/freya022/botcommands/api/localization/providers/LocalizationMapProvider.java)                 | Responsible for getting a `LocalizationMap` for a given base name and locale, using a broader locale is allowed. <br/>The provider can merge multiple maps as well as modify the base name. <br/>All providers can be found by using `LocalizationService#getMappingProviders`.                           |
-| [LocalizationMapReader](src/main/java/io/github/freya022/botcommands/api/localization/readers/LocalizationMapReader.java)                       | Responsible for reading a given localization map for a given bundle name (base name + locale). <br/>It is allowed to create any type of `LocalizationTemplate`, but is **not** allowed to use a different name or locale. <br/>All readers can be found by using `LocalizationService#getMappingReaders`. |
-| [LocalizationMapTemplate](src/main/kotlin/io/github/freya022/botcommands/api/localization/LocalizationTemplate.kt)                              | Represents a localization template, i.e., the entire string with parameters in it.                                                                                                                                                                                                                        |
-| [FormattableArgumentFactory](src/main/kotlin/io/github/freya022/botcommands/api/localization/arguments/factories/FormattableArgumentFactory.kt) | Responsible for creating `FormattableArgument`s based on an argument found in a template. <br/>All factories can be found by using `LocalizationService#getFormattableArgumentFactories`.                                                                                                                 |
+| Name                                                                                                                                                             | Function                                                                                                                                                                                                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [LocalizationMapProvider](BotCommands-core/src/main/java/io/github/freya022/botcommands/api/localization/providers/LocalizationMapProvider.java)                 | Responsible for getting a `LocalizationMap` for a given base name and locale, using a broader locale is allowed. <br/>The provider can merge multiple maps as well as modify the base name. <br/>All providers can be found by using `LocalizationService#getMappingProviders`.                           |
+| [LocalizationMapReader](BotCommands-core/src/main/java/io/github/freya022/botcommands/api/localization/readers/LocalizationMapReader.java)                       | Responsible for reading a given localization map for a given bundle name (base name + locale). <br/>It is allowed to create any type of `LocalizationTemplate`, but is **not** allowed to use a different name or locale. <br/>All readers can be found by using `LocalizationService#getMappingReaders`. |
+| [LocalizationMapTemplate](BotCommands-core/src/main/kotlin/io/github/freya022/botcommands/api/localization/LocalizationTemplate.kt)                              | Represents a localization template, i.e., the entire string with parameters in it.                                                                                                                                                                                                                        |
+| [FormattableArgumentFactory](BotCommands-core/src/main/kotlin/io/github/freya022/botcommands/api/localization/arguments/factories/FormattableArgumentFactory.kt) | Responsible for creating `FormattableArgument`s based on an argument found in a template. <br/>All factories can be found by using `LocalizationService#getFormattableArgumentFactories`.                                                                                                                 |
 
 The old `Localization` factory is now `LocalizationService`.
 
@@ -329,7 +327,7 @@ or use `switchBundle` which changes the target bundle and clears the prefix.
 
 In addition, `#localize[X]orNull` can help you return `null` in case the given localization path does not exist.
 
-You can find an example [here](src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
+You can find an example [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
 
 ## New pagination
 
@@ -366,10 +364,7 @@ All paginators were reworked with several improvements, here is a list of the ch
 Filters now support coroutines and are run right before their target should have been executed.
 
 ### Extension functions
-Several top-level and extension functions have been added, such as:
-- [Member retrieval, temporary message content warning suppressing, message/hook send/edit/replaceWith, overloads using Kotlin's Duration](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/JDA.kt)
-- [Error response handling/ignoring](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/ErrorResponses.kt)
-- [Resource reading, named coroutine scopes](src/main/kotlin/io/github/freya022/botcommands/api/core/utils/Utils.kt)
+Several top-level and extension functions have been added, see the [`BotCommands-jda-ktx`](BotCommands-jda-ktx) module.
 
 ### Input user parameters
 A `InputUser` interface, extending `User`, provides a way for you to get a Member (null if not available) 

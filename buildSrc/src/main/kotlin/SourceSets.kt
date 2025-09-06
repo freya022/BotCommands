@@ -4,7 +4,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.named
 
-fun Project.registerSourceSet(name: String, extendsTestDependencies: Boolean) {
+fun Project.registerSourceSet(name: String) {
     extensions.configure<SourceSetContainer>("sourceSets") {
         val mainSourceSet = named<SourceSet>("main").get()
 
@@ -18,10 +18,4 @@ fun Project.registerSourceSet(name: String, extendsTestDependencies: Boolean) {
     configurations["${name}Implementation"].extendsFrom(configurations["implementation"])
     configurations["${name}CompileOnly"].extendsFrom(configurations["compileOnly"])
     configurations["${name}RuntimeOnly"].extendsFrom(configurations["runtimeOnly"])
-
-    if (extendsTestDependencies) {
-        configurations["${name}Api"].extendsFrom(configurations["testApi"])
-        configurations["${name}Implementation"].extendsFrom(configurations["testImplementation"])
-        configurations["${name}RuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
-    }
 }

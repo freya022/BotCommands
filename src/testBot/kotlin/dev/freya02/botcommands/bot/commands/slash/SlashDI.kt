@@ -1,0 +1,52 @@
+package dev.freya02.botcommands.bot.commands.slash
+
+import dev.freya02.botcommands.bot.services.INamedService
+import dev.freya02.botcommands.bot.services.NamedService1
+import dev.freya02.botcommands.bot.services.UnusedInterfacedService
+import dev.freya02.botcommands.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
+import io.github.freya022.botcommands.api.core.db.BlockingDatabase
+import io.github.freya022.botcommands.api.core.service.LazyService
+import io.github.freya022.botcommands.api.core.service.annotations.RequiresDefaultInjection
+import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
+import net.dv8tion.jda.api.EmbedBuilder
+
+@Command
+@RequiresDefaultInjection
+class SlashDI internal constructor(
+    @ServiceName("modifiedNamedService") namedService: INamedService?,
+    @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() },
+    unusedInterfacedService: UnusedInterfacedService?,
+) : ApplicationCommand() {
+    init {
+        check(namedService is NamedService1)
+
+        println("Named service: $namedService")
+        println("Default embed supplier: $defaultService")
+        println("UnusedInterfacedService: $unusedInterfacedService")
+    }
+
+    @JDASlashCommand(name = "di")
+    internal fun onSlashDi(
+        event: GuildSlashEvent,
+        filters: List<ApplicationCommandFilter>,
+        databaseLazy: LazyService<BlockingDatabase>,
+        @ServiceName("firstReadyListenerNope") inexistantListener: Any?,
+        @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() }
+    ) {
+        event.reply_(
+            """
+                Filters: $filters
+                DB: ${databaseLazy.value}
+                inexistant listener: $inexistantListener
+                embed supplier: $defaultService
+            """.trimIndent(),
+            ephemeral = true
+        ).queue()
+    }
+}

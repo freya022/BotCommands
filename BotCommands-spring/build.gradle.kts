@@ -19,22 +19,10 @@ dependencies {
     // -------------------- ANNOTATION PROCESSORS --------------------
 
     ksp(projects.springPropertiesProcessor)
-
-    // -------------------- TEST DEPENDENCIES --------------------
-
-    // Take the same test dependencies as the main library
-    testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().compileClasspath)
-    testRuntimeOnly(project.project(projects.botCommandsCore.path).sourceSets.test.get().runtimeClasspath)
-    // Take the same test sources as the main library
-    testImplementation(project.project(projects.botCommandsCore.path).sourceSets.test.get().output)
-
-    // Spring Boot
-    testImplementation(libs.spring.boot.starter)
-    testRuntimeOnly(libs.spring.boot.devtools)
 }
 
 tasks.withType<Test> {
-    failOnNoDiscoveredTests = false // This module doesn't have unit tests yet
+    enabled = false // This module doesn't have unit tests yet
 }
 
 configurePublishedArtifact(artifactId = "BotCommands-spring")
