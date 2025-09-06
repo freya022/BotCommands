@@ -33,4 +33,18 @@ abstract class InlineSelectMenu : InlineComponent {
         set(value) {
             builder.setRequiredRange(value)
         }
+
+    /** The minimum amount of values a user can select, default to `1` */
+    var minValues: Int
+        get() = builder.minValues
+        set(value) {
+            builder.setMinValues(value)
+        }
+
+    /** The maximum amount of values a user can select, must not exceed the amount of options */
+    var maxValues: Int
+        get() = builder.maxValues
+        set(value) {
+            builder.setMaxValues(value)
+        }
 }
