@@ -21,6 +21,6 @@ class TypedParameterResolverFactoryTest {
     private fun javaStringListFunc(@Suppress("unused") list: java.util.List<String>) {}
     private object StringListResolver : IParameterResolver<StringListResolver>
     private object StringListResolverFactory : TypedParameterResolverFactory<StringListResolver>(StringListResolver::class, typeOf<List<String>>()) {
-        override fun get(request: ResolverRequest): StringListResolver = TODO("Not yet implemented")
+        override fun get(request: ResolverRequest): StringListResolver = StringListResolver
     }
 }
