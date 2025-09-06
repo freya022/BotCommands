@@ -130,4 +130,8 @@ internal class ResolverContainer internal constructor(
 
         return factory.get(request)
     }
+
+    internal fun clearCache() {
+        cache.clear()
+    }
 }
