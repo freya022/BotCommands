@@ -6,10 +6,10 @@ plugins {
 
 // Register other source sets
 // NOTE: Register them before dependencies, or you won't be able to add deps to them
-registerSourceSet(name = "examples", extendsTestDependencies = true)
+registerSourceSet(name = "examples")
 // Use different source sets so we can use the same class names without clashes
-registerSourceSet(name = "javaDocExamples", extendsTestDependencies = true)
-registerSourceSet(name = "kotlinDocExamples", extendsTestDependencies = true)
+registerSourceSet(name = "javaDocExamples")
+registerSourceSet(name = "kotlinDocExamples")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
@@ -87,6 +87,28 @@ dependencies {
 
     ksp(projects.springPropertiesProcessor)
 
+    // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
+
+    // YAML (de)serialization
+    "javaDocExamplesImplementation"(libs.jackson.dataformat.yaml)
+    "kotlinDocExamplesImplementation"(libs.jackson.dataformat.yaml)
+
+    // Persistent rate limiting
+    "javaDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
+    "kotlinDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
+
+    // -------------------- EXAMPLES DEPENDENCIES --------------------
+
+    // Logging
+    "examplesImplementation"(libs.logback.classic)
+
+    // Coroutines
+    "examplesImplementation"(libs.stacktrace.decoroutinator)
+
+    // Database
+    "examplesImplementation"(libs.h2)
+    "examplesImplementation"(libs.flyway.core)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     // Mocking
@@ -95,35 +117,13 @@ dependencies {
     // Logging
     testImplementation(libs.logback.classic)
 
-    // Coroutines
-    testImplementation(libs.stacktrace.decoroutinator)
-
     // Database
-    testRuntimeOnly(libs.postgresql)
-    testRuntimeOnly(libs.h2)
+    testImplementation(libs.h2)
     testImplementation(libs.flyway.core)
     testRuntimeOnly(libs.flyway.database.postgresql)
-    testImplementation(libs.hikaricp)
-
-    // Persistent rate limiting
-    testImplementation(libs.bucket4j.jdk17.postgresql)
-
-    // YAML (de)serialization
-    testImplementation(libs.jackson.dataformat.yaml)
-
-    // Upgrade because kotlinx-coroutines-debug somehow has an ANCIENT version
-    testRuntimeOnly(libs.bytebuddy)
-    testRuntimeOnly(libs.bytebuddy.agent)
 
     // Test stuff
     testImplementation(libs.kotlin.metadata)
-
-    // The Spring Boot module will include them at runtime,
-    // but we need to make sure the main module works without it
-    testImplementation(libs.spring.boot)
-    testImplementation(libs.spring.boot.autoconfigure)
-
-    testImplementation(projects.botCommandsMethodAccessors.classfile)
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
@@ -143,12 +143,6 @@ dokka {
     dokkaSourceSets.configureEach {
         suppressGeneratedFiles = false
     }
-}
-
-java {
-    // ClassFile-based method accessors require Java 24+
-    // but the class is conditionally loaded
-    disableAutoTargetJvm()
 }
 
 kotlin {

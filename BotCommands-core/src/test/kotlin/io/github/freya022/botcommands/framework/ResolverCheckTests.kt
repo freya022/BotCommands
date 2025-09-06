@@ -6,10 +6,10 @@ import ch.qos.logback.classic.LoggerContext
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.framework.config.Environment
 import io.github.freya022.botcommands.framework.utils.createTest
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactorySuperclass
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverSuperclass
-import io.github.freya022.botcommands.test.config.Environment
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

@@ -10,8 +10,8 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.tryGetService
+import io.github.freya022.botcommands.framework.config.Environment
 import io.github.freya022.botcommands.framework.utils.createTest
-import io.github.freya022.botcommands.test.config.Environment
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

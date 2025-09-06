@@ -1,8 +1,7 @@
 package io.github.freya022.botcommands.framework
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import io.github.freya022.botcommands.api.core.db.DBResult
+import io.github.freya022.botcommands.framework.db.TestH2Source
 import org.junit.jupiter.api.assertDoesNotThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,12 +10,9 @@ class DBResultTests {
 
     @Test
     fun `Use iterator`() {
-        val dataSource = HikariDataSource(HikariConfig().apply {
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
-            maximumPoolSize = 1
-        })
+        val source = TestH2Source()
 
-        dataSource.connection.use { connection ->
+        source.getConnection().use { connection ->
             connection.prepareStatement("CREATE TABLE test(data int)").use { statement -> statement.executeUpdate() }
 
             val expected = 4646923

@@ -1,0 +1,72 @@
+package dev.freya02.botcommands.bot.commands.slash
+
+import dev.freya02.botcommands.bot.CustomObject
+import dev.freya02.botcommands.jda.ktx.messages.reply_
+import io.github.freya022.botcommands.api.annotations.CommandMarker
+import io.github.freya022.botcommands.api.commands.annotations.Command
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
+import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
+import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOption
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+
+@Command
+class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProvider {
+    @JvmInline
+    value class MyInlineString(val yes: String)
+
+    //Upcast is required as these can be constructed with either a slash command, or autocomplete
+    data class MyAggregate(val string: String, val int: Int, val ints: List<Int>, val nestedAggregate: NestedAggregate)
+
+    data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
+
+    @CommandMarker
+    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, intFromAgg: Int?, inlineAutoStr: MyInlineString, customObject: CustomObject) {
+        event.reply_("$agg + $inlineAutoStr", ephemeral = true).queue()
+    }
+
+    fun intAgg(event: GuildSlashEvent): Int? = null
+
+    @CommandMarker
+    fun onInlineAutoStrAutocomplete(
+        event: CommandAutoCompleteInteractionEvent,
+        agg: MyAggregate,
+        customObject: CustomObject
+    ) = listOf(customObject) //return custom object, to test autocomplete transformers
+
+    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
+        manager.slashCommand("aggregate", function = ::onSlashAggregate) {
+            aggregate("agg", ::MyAggregate) {
+                option("string")
+                option("int")
+
+                optionVararg("ints", 2, 1, { "int_$it" })
+
+                aggregate("nestedAggregate", ::NestedAggregate) {
+                    option("nestedDouble")
+                    generatedOption("bool") { true }
+                }
+            }
+
+            aggregate("intFromAgg", ::intAgg)
+
+            inlineClassOption<MyInlineString>("inlineAutoStr") {
+                autocompleteByFunction(::onInlineAutoStrAutocomplete)
+            }
+
+            customOption("customObject")
+        }
+    }
+
+    override fun declareAutocomplete(manager: AutocompleteManager) {
+        manager.autocomplete(::onInlineAutoStrAutocomplete) {
+            this.showUserInput = false
+
+            cache {
+                compositeKeys = listOf("string", "nestedDouble")
+            }
+        }
+    }
+}
