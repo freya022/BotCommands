@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.annotations.RequiresDefaultInjection
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
-import io.github.freya022.botcommands.internal.core.service.annotations.RequiresDefaultInjection
 import kotlin.reflect.KClass
 
 /**
