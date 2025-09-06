@@ -1,14 +1,17 @@
 package io.github.freya022.botcommands.framework
 
-import io.github.freya022.botcommands.api.core.BotCommands
-import io.github.freya022.botcommands.api.core.service.getService
+import io.github.classgraph.ClassGraph
+import io.github.classgraph.Resource
+import io.github.classgraph.ResourceList
+import io.github.freya022.botcommands.api.core.config.BAppEmojisConfigBuilder
 import io.github.freya022.botcommands.api.emojis.AppEmojisRegistry
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
 import io.github.freya022.botcommands.api.emojis.exceptions.EmojiAlreadyExistsException
 import io.github.freya022.botcommands.api.emojis.exceptions.NoEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.NonUniqueEmojiResourceException
 import io.github.freya022.botcommands.api.emojis.exceptions.OutOfAppEmojisException
-import io.github.freya022.botcommands.framework.utils.createTest
+import io.github.freya022.botcommands.internal.emojis.AppEmojiContainerData
+import io.github.freya022.botcommands.internal.emojis.AppEmojiContainerProcessor
 import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader
 import io.mockk.*
 import net.dv8tion.jda.api.JDA
@@ -18,10 +21,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.io.ByteArrayInputStream
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import kotlin.reflect.KClass
+import kotlin.test.assertTrue
 
 private const val EXAMPLE_BASE_PATH = "/my_emojis"
 private const val EXAMPLE_BASE_PATH_2 = "/my_other_emojis"
@@ -61,13 +67,11 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Mixing eager and lazy app emojis throws IAE`() {
-        assertThrows<IllegalArgumentException> {
-            unwrapException<RuntimeException> {
-                BotCommands.createTest(appEmojis = true) {
-                    addClass<EagerLazyMix>()
-                }
-            }
+        AppEmojiContainerProcessor.emojiClasses += AppEmojiContainerData(EagerLazyMix::class, EagerLazyMix::class.java.getDeclaredAnnotation(AppEmojiContainer::class.java)!!)
+        val exception = assertThrows<IllegalArgumentException> {
+            AppEmojisLoader(BAppEmojisConfigBuilder().build())
         }
+        assertTrue(exception.message!!.startsWith("Cannot mix lazy and eager properties"))
     }
 
     @Test
@@ -120,16 +124,15 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Multiple resource candidates throws`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<MultipleCandidates>()
-        }
-        val loader = context.getService<AppEmojisLoader>()
+        val loader = createAppEmojisLoader(MultipleCandidates::class)
 
-        val jda = mockk<JDA> {
-            every { retrieveApplicationEmojis().complete() } returns emptyList()
-        }
-        assertThrows<NonUniqueEmojiResourceException> {
-            loader.loadEmojis(jda)
+        withScannedResources(createDefaultResources("emojis/**", n = 2)) {
+            val jda = mockk<JDA> {
+                every { retrieveApplicationEmojis().complete() } returns emptyList()
+            }
+            assertThrows<NonUniqueEmojiResourceException> {
+                loader.loadEmojis(jda)
+            }
         }
     }
 
@@ -140,16 +143,14 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `No resource candidates throws`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<NoCandidate>()
-        }
-        val loader = context.getService<AppEmojisLoader>()
-
-        val jda = mockk<JDA> {
-            every { retrieveApplicationEmojis().complete() } returns emptyList()
-        }
-        assertThrows<NoEmojiResourceException> {
-            loader.loadEmojis(jda)
+        val loader = createAppEmojisLoader(NoCandidate::class)
+        withScannedResources(createDefaultResources("emojis/blah", n = 0)) {
+            val jda = mockk<JDA> {
+                every { retrieveApplicationEmojis().complete() } returns emptyList()
+            }
+            assertThrows<NoEmojiResourceException> {
+                loader.loadEmojis(jda)
+            }
         }
     }
 
@@ -160,17 +161,15 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Single resource candidate`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<SingleCandidate>()
-        }
-        val loader = context.getService<AppEmojisLoader>()
-
-        val jda = mockk<JDA> {
-            every { retrieveApplicationEmojis().complete() } returns emptyList()
-            every { createApplicationEmoji(any(), any()).complete() } returns mockk()
-        }
-        assertDoesNotThrow {
-            loader.loadEmojis(jda)
+        val loader = createAppEmojisLoader(SingleCandidate::class)
+        withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+            val jda = mockk<JDA> {
+                every { retrieveApplicationEmojis().complete() } returns emptyList()
+                every { createApplicationEmoji(any(), any()).complete() } returns mockk()
+            }
+            assertDoesNotThrow {
+                loader.loadEmojis(jda)
+            }
         }
     }
 
@@ -193,14 +192,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<SingleAnnotatedCandidate>()
-
-            appEmojis {
-                deleteOnOutOfSlots = true
-            }
-        }
-        val loader = context.getService<AppEmojisLoader>()
+        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfigBuilder().apply { deleteOnOutOfSlots = true })
 
         val existingEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji"
@@ -215,7 +207,9 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         mockkObject(AppEmojisLoader.Companion) {
             every { AppEmojisLoader.maxAppEmojis } returns 1
 
-            assertDoesNotThrow { loader.loadEmojis(jda) }
+            withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+                assertDoesNotThrow { loader.loadEmojis(jda) }
+            }
         }
 
         // Make sure the emoji was attempted to be deleted
@@ -224,14 +218,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis, oldest first`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<SingleAnnotatedCandidate>()
-
-            appEmojis {
-                deleteOnOutOfSlots = true
-            }
-        }
-        val loader = context.getService<AppEmojisLoader>()
+        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfigBuilder().apply { deleteOnOutOfSlots = true })
 
         val oldestEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji-2"
@@ -257,7 +244,11 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         mockkObject(AppEmojisLoader.Companion) {
             every { AppEmojisLoader.maxAppEmojis } returns 2
 
-            assertDoesNotThrow { loader.loadEmojis(jda) }
+            assertDoesNotThrow {
+                withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+                    loader.loadEmojis(jda)
+                }
+            }
         }
 
         // Make sure only the oldest one is deleted
@@ -267,10 +258,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis, but not configured to`() {
-        val context = BotCommands.createTest(appEmojis = true) {
-            addClass<SingleAnnotatedCandidate>()
-        }
-        val loader = spyk(context.getService<AppEmojisLoader>())
+        val loader = spyk(createAppEmojisLoader(SingleAnnotatedCandidate::class))
 
         val existingEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji"
@@ -284,13 +272,57 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         mockkObject(AppEmojisLoader.Companion) {
             every { AppEmojisLoader.maxAppEmojis } returns 1
 
-            assertThrows<OutOfAppEmojisException> { loader.loadEmojis(jda) }
+            assertThrows<OutOfAppEmojisException> {
+                withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+                    loader.loadEmojis(jda)
+                }
+            }
         }
 
         // Make sure no emojis were attempted to be deleted
         verify(exactly = 0) { loader.getDeletableEmojis(any(), any()) }
         verify(exactly = 0) { existingEmoji.delete() }
     }
+
+    private fun createAppEmojisLoader(emojiContainer: KClass<*>, configBuilder: BAppEmojisConfigBuilder = BAppEmojisConfigBuilder()): AppEmojisLoader {
+        AppEmojiContainerProcessor.emojiClasses += AppEmojiContainerData(emojiContainer, emojiContainer.java.getDeclaredAnnotation(AppEmojiContainer::class.java)!!)
+        return AppEmojisLoader(configBuilder.build())
+    }
+
+    private fun withScannedResources(vararg resources: ClassGraphResource, block: () -> Unit) {
+        mockkConstructor(ClassGraph::class) {
+            every { anyConstructed<ClassGraph>().scan() } returns mockk {
+                every { close() } just runs
+
+                fun createResource(configurer: Resource.() -> Unit) = mockk<Resource> {
+                    every { pathRelativeToClasspathElement } returns "pathRelativeToClasspathElement"
+                    configurer()
+                }
+
+                resources.forEach { (wildcardStr, resourceConfigurers) ->
+                    every { getResourcesMatchingWildcard(wildcardStr) } returns ResourceList(resourceConfigurers.map(::createResource))
+                }
+            }
+
+            block()
+        }
+    }
+
+    private fun createDefaultResources(wildcard: String, n: Int): ClassGraphResource {
+        val configurers: Array<Resource.() -> Unit> = Array(n) {
+            {
+                every { open() } returns ByteArrayInputStream(byteArrayOf())
+            }
+        }
+
+        return createResources(wildcard, *configurers)
+    }
+
+    private fun createResources(wildcard: String, vararg resourceConfigurers: Resource.() -> Unit): ClassGraphResource {
+        return ClassGraphResource(wildcard, resourceConfigurers.asList())
+    }
+
+    private data class ClassGraphResource(val wildcard: String, val resourceConfigurers: List<Resource.() -> Unit>)
 }
 
 class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
@@ -307,14 +339,13 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
 
     @MethodSource("Base paths")
     @ParameterizedTest
-    fun `Base path optional override`(containerType: Class<*>, expectedBasePath: String) {
+    fun `Base path optional override`(initializer: () -> Unit, expectedBasePath: String) {
         mockkObject(AppEmojisLoader) {
             val basePath = slot<String>()
             every { AppEmojisLoader.register(capture(basePath), any(), any(), any()) } just runs
 
-            BotCommands.createTest(appEmojis = true) {
-                addClass(containerType)
-            }
+            // Trigger registration
+            initializer()
 
             assertEquals(expectedBasePath, basePath.captured)
         }
@@ -332,14 +363,13 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
 
     @MethodSource("Asset patterns")
     @ParameterizedTest
-    fun `Asset pattern optional override`(containerType: Class<*>, expectedAssetPattern: String) {
+    fun `Asset pattern optional override`(initializer: () -> Unit, expectedAssetPattern: String) {
         mockkObject(AppEmojisLoader) {
             val assetPattern = slot<String>()
             every { AppEmojisLoader.register(any(), capture(assetPattern), any(), any()) } just runs
 
-            BotCommands.createTest(appEmojis = true) {
-                addClass(containerType)
-            }
+            // Trigger registration
+            initializer()
 
             assertEquals(expectedAssetPattern, assetPattern.captured)
         }
@@ -357,14 +387,13 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
 
     @MethodSource("Emoji names")
     @ParameterizedTest
-    fun `Emoji name optional override`(containerType: Class<*>, expectedEmojiName: String) {
+    fun `Emoji name optional override`(initializer: () -> Unit, expectedEmojiName: String) {
         mockkObject(AppEmojisLoader) {
             val emojiName = slot<String>()
             every { AppEmojisLoader.register(any(), any(), capture(emojiName), any()) } just runs
 
-            BotCommands.createTest(appEmojis = true) {
-                addClass(containerType)
-            }
+            // Trigger registration
+            initializer()
 
             assertEquals(expectedEmojiName, emojiName.captured)
         }
@@ -373,20 +402,20 @@ class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
     companion object {
         @JvmStatic
         fun `Base paths`(): List<Arguments> = listOf(
-            Arguments.of(AnnotationBasePath::class.java, EXAMPLE_BASE_PATH),
-            Arguments.of(CustomBasePath::class.java, EXAMPLE_BASE_PATH_2),
+            Arguments.of({ AnnotationBasePath }, EXAMPLE_BASE_PATH),
+            Arguments.of({ CustomBasePath }, EXAMPLE_BASE_PATH_2),
         )
 
         @JvmStatic
         fun `Asset patterns`(): List<Arguments> = listOf(
-            Arguments.of(DefaultAssetPattern::class.java, "emoji1.**"),
-            Arguments.of(CustomAssetPattern::class.java, EXAMPLE_ASSET_PATTERN),
+            Arguments.of({ DefaultAssetPattern }, "emoji1.**"),
+            Arguments.of({ CustomAssetPattern }, EXAMPLE_ASSET_PATTERN),
         )
 
         @JvmStatic
         fun `Emoji names`(): List<Arguments> = listOf(
-            Arguments.of(DefaultEmojiName::class.java, "emoji1"),
-            Arguments.of(CustomEmojiName::class.java, EXAMPLE_EMOJI_NAME),
+            Arguments.of({ DefaultEmojiName }, "emoji1"),
+            Arguments.of({ CustomEmojiName }, EXAMPLE_EMOJI_NAME),
         )
     }
 }
