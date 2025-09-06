@@ -94,6 +94,18 @@ inline fun runIgnoringResponse(ignored: ErrorResponse, vararg ignoredResponses: 
 inline fun <R> runIgnoringResponseOrNull(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): R?
 ```
 
+### Components
+
+The [`components`](src/main/kotlin/dev/freya02/botcommands/jda/ktx/components) package contains DSLs
+for almost all components, including factory functions such as `Container(accentColor = hex("#FFFFFF")) { ... }`,
+and context-specific functions to insert components only where they can go, for example:
+
+```kt
+val container = Container {
+    text("Hello world!") // Equivalent to 'components += TextDisplay("Hello world!")'
+}
+```
+
 ### Building messages
 DSLs are also provided to build message, embeds as well as component trees,
 you can see all utilities in [messages/Messages.kt](./src/main/kotlin/dev/freya02/botcommands/jda/ktx/messages/Messages.kt).
@@ -108,8 +120,6 @@ val message/*: MessageCreateData*/ = MessageCreate(mentions = Mentions.none()) {
     }
 }
 ```
-
-[//]: # (TODO add CV2 example)
 
 #### Embeds
 ```kt
