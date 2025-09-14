@@ -35,12 +35,15 @@ class InlineStringSelectMenu(override val builder: StringSelectMenu.Builder) : I
 }
 
 /**
- * Represents a selection of options, see [StringSelectMenu][net.dv8tion.jda.api.components.selections.StringSelectMenu].
+ * Represents a selection of options, see [StringSelectMenu].
  *
- * @param customId Custom identifier of this component, see [StringSelectMenu.Builder.setCustomId]
- * @param uniqueId Unique identifier of this component, see [StringSelectMenu.Builder.setUniqueId]
- * @param required Whether the user must populate this select menu if inside a Modal, see [StringSelectMenu.Builder.setRequired]
- * @param block    Lambda allowing further configuration
+ * @param customId    Custom identifier of this component, see [StringSelectMenu.Builder.setCustomId]
+ * @param uniqueId    Unique identifier of this component, see [StringSelectMenu.Builder.setUniqueId]
+ * @param placeholder Displayed when no selections have been made yet, see [StringSelectMenu.Builder.setPlaceholder]
+ * @param valueRange  The minimum and maximum amount of values a user can select, must not exceed the amount of options
+ * @param required    Whether the user must populate this select menu if inside a Modal
+ * @param disabled    Whether this select menu should be disabled, cannot be `true` in modals
+ * @param block       Lambda allowing further configuration
  */
 inline fun StringSelectMenu(
     customId: String,

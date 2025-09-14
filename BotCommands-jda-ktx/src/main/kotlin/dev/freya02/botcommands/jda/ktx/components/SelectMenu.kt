@@ -13,7 +13,7 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.uniqueId = value
         }
 
-    /** Whether this select menu should be disabled, defaults to `false` */
+    /** Whether this select menu should be disabled, cannot be `true` in modals, defaults to `false` */
     var disabled: Boolean
         get() = builder.isDisabled
         set(value) {
@@ -33,7 +33,7 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.isRequired = value
         }
 
-    /** Displayed when no selections have been made yet, see [net.dv8tion.jda.api.components.selections.SelectMenu.Builder.placeholder] */
+    /** Displayed when no selections have been made yet, see [SelectMenu.Builder.setPlaceholder] */
     var placeholder: String?
         get() = builder.placeholder
         set(value) {
