@@ -194,7 +194,7 @@ class InlineModal(val builder: ModalBuilder) {
         uniqueId: Int = -1,
         description: String? = null,
         child: LabelChildComponent? = null,
-        block: InlineLabel.() -> Unit = {},
+        block: InlineLabel.() -> Unit,
     ) {
         builder.addComponents(Label(label, uniqueId, description, child, block))
     }
