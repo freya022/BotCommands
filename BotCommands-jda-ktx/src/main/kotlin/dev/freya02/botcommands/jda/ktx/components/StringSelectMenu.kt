@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 
 class InlineStringSelectMenu(override val builder: StringSelectMenu.Builder) : InlineSelectMenu() {
 
-    // TODO remove once JDA exposes getter
-    private var _required: Boolean? = null
     /**
      * Whether the user must populate this select menu if inside a Modal.
      *
@@ -17,10 +15,9 @@ class InlineStringSelectMenu(override val builder: StringSelectMenu.Builder) : I
      * See [StringSelectMenu.Builder.setRequired].
      */
     var required: Boolean?
-        get() = _required
+        get() = builder.isRequired
         set(value) {
-            builder.setRequired(value)
-            _required = value
+            builder.isRequired = value
         }
 
     /** Options of this select menu, see [StringSelectMenu.Builder.addOptions] */

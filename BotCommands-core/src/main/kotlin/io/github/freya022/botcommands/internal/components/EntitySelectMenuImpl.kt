@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.EntitySelectMenu
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion
+import net.dv8tion.jda.api.components.label.LabelChildComponentUnion
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
 internal class EntitySelectMenuImpl internal constructor(
@@ -13,7 +14,8 @@ internal class EntitySelectMenuImpl internal constructor(
 ) : AbstractAwaitableComponentImpl<EntitySelectEvent>(componentController, selectMenu),
     EntitySelectMenu,
     JDAEntitySelectMenu by selectMenu,
-    ActionRowChildComponentUnion {
+    ActionRowChildComponentUnion,
+    LabelChildComponentUnion {
 
     override fun withUniqueId(uniqueId: Int): EntitySelectMenuImpl {
         return EntitySelectMenuImpl(componentController, internalId, selectMenu.withUniqueId(uniqueId))

@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.components.label.LabelChildComponent
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
-private val DUMMY_LABEL = Label.of("label", TextInput.create("id", TextInputStyle.SHORT).build())
+private val DUMMY_LABEL = Label.of("label", TextInput.of("id", TextInputStyle.SHORT))
 
 class InlineLabel : InlineComponent {
 
