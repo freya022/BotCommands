@@ -1,7 +1,9 @@
 package io.github.freya022.botcommands.api.modals
 
 import dev.freya02.botcommands.jda.ktx.components.InlineLabel
+import dev.freya02.botcommands.jda.ktx.components.InlineTextDisplay
 import dev.freya02.botcommands.jda.ktx.components.Label
+import dev.freya02.botcommands.jda.ktx.components.TextDisplay
 import io.github.freya022.botcommands.api.modals.Modal as BCModal
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
@@ -197,6 +199,19 @@ class InlineModal(val builder: ModalBuilder) {
         block: InlineLabel.() -> Unit,
     ) {
         builder.addComponents(Label(label, uniqueId, description, child, block))
+    }
+
+    /**
+     * See [TextDisplay][net.dv8tion.jda.api.components.textdisplay.TextDisplay].
+     *
+     * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+     *
+     * @param content  The content displayed by this component
+     * @param uniqueId Unique identifier of this component
+     * @param block    Lambda allowing further configuration
+     */
+    inline fun text(content: String? = null, uniqueId: Int = -1, block: InlineTextDisplay.() -> Unit = {}) {
+        builder.addComponents(TextDisplay(content, uniqueId, block))
     }
 
     /**
