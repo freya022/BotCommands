@@ -20,6 +20,19 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.isDisabled = value
         }
 
+    /**
+     * Whether the user must populate this select menu if inside a Modal.
+     *
+     * This defaults to `true` when this is used in a Modal.
+     *
+     * See [SelectMenu.Builder.setRequired].
+     */
+    var required: Boolean?
+        get() = builder.isRequired
+        set(value) {
+            builder.isRequired = value
+        }
+
     /** Displayed when no selections have been made yet, see [net.dv8tion.jda.api.components.selections.SelectMenu.Builder.placeholder] */
     var placeholder: String?
         get() = builder.placeholder

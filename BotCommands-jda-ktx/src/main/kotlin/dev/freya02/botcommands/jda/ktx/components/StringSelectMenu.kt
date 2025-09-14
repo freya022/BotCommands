@@ -7,19 +7,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 
 class InlineStringSelectMenu(override val builder: StringSelectMenu.Builder) : InlineSelectMenu() {
 
-    /**
-     * Whether the user must populate this select menu if inside a Modal.
-     *
-     * This defaults to `true` when this is used in a Modal.
-     *
-     * See [StringSelectMenu.Builder.setRequired].
-     */
-    var required: Boolean?
-        get() = builder.isRequired
-        set(value) {
-            builder.isRequired = value
-        }
-
     /** Options of this select menu, see [StringSelectMenu.Builder.addOptions] */
     val options = MutableAccumulator(builder.options)
 
