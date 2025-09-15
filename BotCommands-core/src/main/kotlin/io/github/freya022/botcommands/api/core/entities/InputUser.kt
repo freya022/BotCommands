@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.entities
 
 import io.github.freya022.botcommands.internal.core.entities.InputUserImpl
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Mentions
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -57,3 +58,18 @@ val Message.inputUser: InputUser get() = InputUserImpl(author, member)
  * Gets the message's author as an [InputUser].
  */
 val MessageReceivedEvent.inputUser: InputUser get() = InputUserImpl(author, member)
+
+/**
+ * An immutable list of all mentioned users, associated with their member objects, if available.
+ *
+ * If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
+ * counts direct mentions of the user and not mentions through everyone mentions.
+ */
+val Mentions.inputUsers: List<InputUser>
+    get() {
+        val members = members
+        return users.map { user ->
+            val member = members.find { it.idLong == user.idLong }
+            member?.asInputUser() ?: user.asInputUser()
+        }
+    }
