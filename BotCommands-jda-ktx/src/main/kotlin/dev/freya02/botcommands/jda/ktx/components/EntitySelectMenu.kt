@@ -50,7 +50,7 @@ inline fun EntitySelectMenu(
     defaultValues: Collection<EntitySelectMenu.DefaultValue> = emptyList(),
     required: Boolean? = null,
     disabled: Boolean = false,
-    block: InlineEntitySelectMenu.() -> Unit,
+    block: InlineEntitySelectMenu.() -> Unit = {},
 ): EntitySelectMenu {
     return InlineEntitySelectMenu(EntitySelectMenu.create(customId, types), types)
         .apply {
@@ -97,7 +97,7 @@ inline fun EntitySelectMenu(
     defaultValues: Collection<EntitySelectMenu.DefaultValue> = emptyList(),
     required: Boolean? = null,
     disabled: Boolean = false,
-    block: InlineEntitySelectMenu.() -> Unit,
+    block: InlineEntitySelectMenu.() -> Unit = {},
 ): EntitySelectMenu {
     val types = types.toEnumSet()
     return EntitySelectMenu(customId, types, uniqueId, placeholder, valueRange, channelTypes, defaultValues, required, disabled, block)
