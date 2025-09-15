@@ -1,6 +1,7 @@
 package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.bot.CustomObject
+import dev.freya02.botcommands.jda.ktx.components.EntitySelectMenu
 import dev.freya02.botcommands.jda.ktx.components.StringSelectMenu
 import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
@@ -15,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalData
@@ -22,13 +24,19 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.entities.IMentionable
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.IntegrationType
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 
 private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 private const val SLASH_MODAL_STRING_SELECT_INPUT = "SlashModal: stringSelect"
+private const val SLASH_MODAL_ENTITY_SELECT_INPUT = "SlashModal: entitySelect"
+private const val SLASH_MODAL_CHANNEL_SELECT_INPUT = "SlashModal: channelSelect"
 
 @Command
 @RequiresModals
@@ -37,22 +45,37 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
+            text("This is a text display")
+
             label("Sample text") {
                 child = TextInput(SLASH_MODAL_TEXT_INPUT, TextInputStyle.SHORT)
             }
 
-            label("Select menu") {
+            label("String select menu") {
                 child = StringSelectMenu(SLASH_MODAL_STRING_SELECT_INPUT, required = false) {
                     option("Opt1", "opt1")
                     option("Opt2", "opt2", default = true)
                 }
             }
 
+            label("User and role select menu") {
+                child = EntitySelectMenu(SLASH_MODAL_ENTITY_SELECT_INPUT, SelectTarget.USER, SelectTarget.ROLE, required = false)
+            }
+
+            label("Channel select menu") {
+                child = EntitySelectMenu(
+                    SLASH_MODAL_CHANNEL_SELECT_INPUT,
+                    type = SelectTarget.CHANNEL,
+                    channelTypes = enumSetOf(ChannelType.CATEGORY),
+                    required = false
+                )
+            }
+
             bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420, null)
 
 //            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
-            timeout(15.seconds) {
+            timeout(1.minutes) {
                 event.hook.send("Timeout !", ephemeral = true).queue()
             }
         }
@@ -70,6 +93,8 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
         @ModalData dataStr: String,
         @ModalInput(customId = SLASH_MODAL_TEXT_INPUT) inputStr: String,
         @ModalInput(customId = SLASH_MODAL_STRING_SELECT_INPUT) selectedStrings: List<String>,
+        @ModalInput(customId = SLASH_MODAL_ENTITY_SELECT_INPUT) selectedEntities: List<IMentionable>,
+        @ModalInput(customId = SLASH_MODAL_CHANNEL_SELECT_INPUT) selectedChannels: List<GuildChannel>,
         @ModalData dataInt: Int,
         @ModalData definitelyNull: Any?,
         customObject: CustomObject
@@ -81,6 +106,8 @@ class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApp
             dataInt: $dataInt
             inputStr: $inputStr
             selectedStrings: $selectedStrings
+            selectedEntities: $selectedEntities
+            selectedChannels: $selectedChannels
             definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
