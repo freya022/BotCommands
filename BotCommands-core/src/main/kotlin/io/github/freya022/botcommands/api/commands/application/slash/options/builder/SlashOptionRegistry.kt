@@ -3,15 +3,15 @@ package io.github.freya022.botcommands.api.commands.application.slash.options.bu
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KClass
 
 interface SlashOptionRegistry : ApplicationOptionRegistry<SlashCommandOptionAggregateBuilder> {
     /**
-     * Declares an input option, supported types and modifiers are in [ParameterResolver],
-     * additional types can be added by implementing [SlashParameterResolver].
+     * Declares an input option.
+     *
+     * The designated parameter's type must be supported by a [SlashParameterResolver].
      *
      * @param declaredName Name of the declared parameter which receives the value
      * @param optionName   Name of the option on Discord,
@@ -22,10 +22,8 @@ interface SlashOptionRegistry : ApplicationOptionRegistry<SlashCommandOptionAggr
     /**
      * Declares multiple input options in a single parameter.
      *
-     * The parameter's type needs to be a [List],
-     * where the element type is supported by [ParameterResolver].
-     *
-     * Additional types can be added by implementing [SlashParameterResolver].
+     * The parameter's type must be a [List]
+     * where the element type is supported by a [SlashParameterResolver].
      *
      * @param declaredName       Name of the declared parameter which receives the value of the combined options
      * @param amount             How many options to generate
@@ -40,8 +38,7 @@ interface SlashOptionRegistry : ApplicationOptionRegistry<SlashCommandOptionAggr
 /**
  * Declares an input option encapsulated in an inline class.
  *
- * Supported types can be found in [ParameterResolver],
- * additional types can be added by implementing [SlashParameterResolver].
+ * The object contained by the inline class must be supported by a [SlashParameterResolver].
  *
  * @param declaredName Name of the declared parameter which receives the value class
  * @param optionName   Name of the option on Discord,
@@ -57,8 +54,7 @@ fun SlashOptionRegistry.inlineClassOption(declaredName: String, optionName: Stri
 /**
  * Declares an input option encapsulated in an inline class.
  *
- * Supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [SlashParameterResolver].
+ * The object contained by the inline class must be supported by a [SlashParameterResolver].
  *
  * @param declaredName Name of the declared parameter which receives the value class
  * @param optionName   Name of the option on Discord,
@@ -73,10 +69,8 @@ inline fun <reified T : Any> SlashOptionRegistry.inlineClassOption(declaredName:
 /**
  * Declares multiple input options encapsulated in an inline class.
  *
- * The property of the inline class needs to be a [List],
- * where the element type is supported by [ParameterResolver].
- *
- * Additional types can be added by implementing [SlashParameterResolver].
+ * The object contained by the inline class must be a [List]
+ * where the element type is supported by a [SlashParameterResolver].
  *
  * @param declaredName       Name of the declared parameter which receives the value class
  * @param clazz              The inline class type
@@ -95,10 +89,8 @@ fun SlashOptionRegistry.inlineClassOptionVararg(declaredName: String, clazz: KCl
 /**
  * Declares multiple input options encapsulated in an inline class.
  *
- * The property of the inline class needs to be a [List],
- * where the element type is supported by [ParameterResolver].
- *
- * Additional types can be added by implementing [SlashParameterResolver].
+ * The object contained by the inline class must be a [List]
+ * where the element type is supported by a [SlashParameterResolver].
  *
  * @param declaredName       Name of the declared parameter which receives the value class
  * @param amount             How many options to generate

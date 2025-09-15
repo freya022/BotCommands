@@ -9,8 +9,6 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.annotations.Handler
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 /**
@@ -46,10 +44,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  *  - They can only include parameters from the slash command itself, not from nested parameters (aka aggregates)
  *
  * **Note:** Parameters refers to method parameters, not Discord options.
- *
- * ## Registering more option types
- * Supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [SlashParameterResolver].
  *
  * @see SlashOption @SlashOption
  * @see JDASlashCommand @JDASlashCommand

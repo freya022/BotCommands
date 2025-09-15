@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable
 /**
  * Sets a parameter as a slash command option from Discord.
  *
+ * The supported data types can be seen in [SlashParameterResolver], more types can be supported by implementing it.
+ *
  * ### Display name
  * Option names can be inferred from the parameter's name,
  * see [the wiki](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)

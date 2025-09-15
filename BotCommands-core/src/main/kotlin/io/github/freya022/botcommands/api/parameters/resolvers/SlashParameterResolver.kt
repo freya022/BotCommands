@@ -1,14 +1,17 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
@@ -19,9 +22,28 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDASlashCommand][JDASlashCommand] and [@AutocompleteHandler][AutocompleteHandler].
+ * Resolver for slash command options, including referenced autocomplete parameters.
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [String]
+ * - [Boolean]
+ * - [Int]
+ * - [Long]
+ * - [Double]
+ * - [Emoji]
+ * - [IMentionable] (only when mentioned)
+ * - [List] of mentionable (see [@MentionsString][MentionsString])
+ * - [Role]
+ * - [UserSnowflake]
+ * - [User]
+ * - [Member]
+ * - [InputUser]
+ * - [GuildChannel] subtypes, the channel types are set automatically depending on the type,
+ * but a broader channel type can be used and restricted to multiple concrete types by using [@ChannelTypes][ChannelTypes]
+ * - [Guild] (input as a string)
+ * - [Message.Attachment]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

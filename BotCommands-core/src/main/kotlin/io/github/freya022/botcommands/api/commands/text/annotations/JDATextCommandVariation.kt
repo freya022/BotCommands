@@ -10,9 +10,7 @@ import io.github.freya022.botcommands.api.commands.text.provider.TextCommandMana
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import net.dv8tion.jda.internal.utils.Checks
 
 /**
@@ -41,8 +39,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
  *
  * ### Option types
- * - Input options: Uses [@TextOption][TextOption], supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [TextParameterResolver].
+ * - Input options: Uses [@TextOption][TextOption].
  * - [TextLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.

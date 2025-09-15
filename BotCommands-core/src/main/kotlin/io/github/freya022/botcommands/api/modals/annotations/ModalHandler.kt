@@ -8,9 +8,7 @@ import io.github.freya022.botcommands.api.localization.context.AppLocalizationCo
 import io.github.freya022.botcommands.api.modals.ModalBuilder
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 
 /**
  * Declares this function as a modal handler for the specified modal name.
@@ -22,9 +20,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
  * - Optionally: Have all your consecutive [@ModalData][ModalData], specified in [ModalBuilder.bindTo].
  *
  * ### Option types
- * - Input options: Uses [@ModalInput][ModalInput], the annotation's value must match the Custom ID set in the input component,
- * supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [ModalParameterResolver].
+ * - Input options: Uses [@ModalInput][ModalInput], the annotation's value must match the Custom ID set in the input component.
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.

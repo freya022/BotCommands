@@ -10,9 +10,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -32,9 +30,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - [GlobalMessageEvent] in other cases.
  *
  * ### Option types
- * - Input options: Uses [@ContextOption][ContextOption], supported types and modifiers are in [ParameterResolver],
- * but only the targeted [Message][GlobalMessageEvent.getTarget] is supported by default,
- * additional types can be added by implementing [MessageContextParameterResolver].
+ * - Input options: Uses [@ContextOption][ContextOption].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.

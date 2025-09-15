@@ -1,16 +1,19 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDAMessageCommand][JDAMessageCommand].
+ * Resolver for parameters of message context commands.
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [Message]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

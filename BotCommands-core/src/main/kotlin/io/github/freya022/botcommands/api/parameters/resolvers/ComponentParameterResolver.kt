@@ -1,21 +1,38 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
-import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
+import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableComponentData
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDAButtonListener][JDAButtonListener]
- * and [@JDASelectMenuListener][JDASelectMenuListener].
+ * Resolver for parameters annotated with [@ComponentData][ComponentData].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [String]
+ * - [Boolean]
+ * - [Int]
+ * - [Long]
+ * - [Double]
+ * - [Emoji]
+ * - [Role] (if available)
+ * - [UserSnowflake]
+ * - [User] (if available)
+ * - [Member] (if available)
+ * - [InputUser] (if available)
+ * - [GuildChannel] subtypes (if available)
+ * - [Guild] (if available)
  *
  * ### Use case - Supporting serializable objects
  * If you need to pass **serializable** objects to your components,

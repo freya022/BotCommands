@@ -2,14 +2,14 @@ package io.github.freya022.botcommands.api.commands.application.context.user.opt
 
 import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
 import kotlin.reflect.KClass
 
 interface UserCommandOptionRegistry : ApplicationOptionRegistry<UserCommandOptionAggregateBuilder> {
     /**
-     * Declares an input option, supported types and modifiers are in [ParameterResolver],
-     * additional types can be added by implementing [UserContextParameterResolver].
+     * Declares an input option.
+     *
+     * The designated parameter's type must be supported by a [UserContextParameterResolver].
      *
      * @param declaredName Name of the declared parameter which receives the value of the combined options
      */
@@ -19,8 +19,7 @@ interface UserCommandOptionRegistry : ApplicationOptionRegistry<UserCommandOptio
 /**
  * Declares an input option encapsulated in an inline class.
  *
- * Supported types can be found in [ParameterResolver],
- * additional types can be added by implementing [UserContextParameterResolver].
+ * The object contained by the inline class must be supported by a [UserContextParameterResolver].
  *
  * @param declaredName Name of the declared parameter which receives the value class
  * @param clazz        The inline class type
@@ -34,8 +33,7 @@ fun UserCommandOptionRegistry.inlineClassOption(declaredName: String, clazz: KCl
 /**
  * Declares an input option encapsulated in an inline class.
  *
- * Supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [UserContextParameterResolver].
+ * The object contained by the inline class must be supported by a [UserContextParameterResolver].
  *
  * @param declaredName Name of the declared parameter which receives the value class
  *

@@ -9,7 +9,6 @@ import io.github.freya022.botcommands.api.components.serialization.annotations.S
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
@@ -147,10 +146,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
@@ -185,10 +184,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The value of the timeout
      * @param timeoutUnit The unit of the timeout
@@ -223,10 +222,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the component expires,
@@ -260,10 +259,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the component expires,
@@ -297,10 +296,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the component expires,
@@ -333,10 +332,10 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+     * For objects supported by [TimeoutParameterResolver]s,
      * you must annotate your parameter with [@TimeoutData][TimeoutData].
      *
-     * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+     * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
      *
      * @param timeout The duration of the timeout
      * @param handlerName The name of the handler to run when the component expires,
@@ -458,10 +457,10 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: KSuspendFunction1<E, Unit>): C {
@@ -488,10 +487,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(dur
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: KFunction1<E, Unit>): C {
@@ -518,10 +517,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(dur
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: KSuspendFunction2<E, T1, Unit>, arg1: T1): C {
@@ -548,10 +547,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: KFunction2<E, T1, Unit>, arg1: T1): C {
@@ -578,10 +577,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: KSuspendFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -608,10 +607,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeout
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: KFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -638,10 +637,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeout
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: KSuspendFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -668,10 +667,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.tim
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: KFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -698,10 +697,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.tim
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: KSuspendFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -728,10 +727,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: KFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -758,10 +757,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: KSuspendFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -788,10 +787,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: KFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -818,10 +817,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: KSuspendFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -848,10 +847,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: KFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -878,10 +877,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: KSuspendFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -908,10 +907,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: KFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -938,10 +937,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: KSuspendFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -968,10 +967,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: KFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -998,10 +997,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: KSuspendFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -1028,10 +1027,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: KFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -1058,10 +1057,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallableSuspend")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: KSuspendFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -1088,10 +1087,10 @@ fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithBoundCallable")
 fun <C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: KFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -1122,10 +1121,10 @@ private fun <C : IPersistentTimeoutableComponent<C>> C.timeoutWithBoundCallable(
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: KSuspendFunction2<T, E, Unit>): C {
@@ -1152,10 +1151,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeou
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeoutWith(duration: Duration, func: KFunction2<T, E, Unit>): C {
@@ -1182,10 +1181,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData> C.timeou
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: KSuspendFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -1212,10 +1211,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.ti
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.timeoutWith(duration: Duration, func: KFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -1242,10 +1241,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1> C.ti
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: KSuspendFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -1272,10 +1271,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> C.timeoutWith(duration: Duration, func: KFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -1302,10 +1301,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2> 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: KSuspendFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -1332,10 +1331,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3> C.timeoutWith(duration: Duration, func: KFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -1362,10 +1361,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: KSuspendFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -1392,10 +1391,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4> C.timeoutWith(duration: Duration, func: KFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -1422,10 +1421,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: KSuspendFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -1452,10 +1451,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5> C.timeoutWith(duration: Duration, func: KFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -1482,10 +1481,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: KSuspendFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -1512,10 +1511,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6> C.timeoutWith(duration: Duration, func: KFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -1542,10 +1541,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: KSuspendFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -1572,10 +1571,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7> C.timeoutWith(duration: Duration, func: KFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -1602,10 +1601,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: KSuspendFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -1632,10 +1631,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8> C.timeoutWith(duration: Duration, func: KFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -1662,10 +1661,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: KSuspendFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -1692,10 +1691,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.timeoutWith(duration: Duration, func: KFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -1722,10 +1721,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallableSuspend")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: KSuspendFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -1752,10 +1751,10 @@ fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, 
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [TimeoutParameterResolver]s,
+ * For objects supported by [TimeoutParameterResolver]s,
  * you must annotate your parameter with [@TimeoutData][TimeoutData].
  *
- * For serializable objects, you can instead use [@SerializableTimeoutData][SerializableTimeoutData].
+ * For serializable objects, you must instead use [@SerializableTimeoutData][SerializableTimeoutData].
  */
 @JvmName("timeoutWithClassCallable")
 fun <T : Any, C : IPersistentTimeoutableComponent<C>, E : ITimeoutData, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.timeoutWith(duration: Duration, func: KFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {

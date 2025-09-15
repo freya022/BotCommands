@@ -13,9 +13,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Top
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
@@ -42,8 +40,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - [GlobalSlashEvent] in other cases.
  *
  * ### Option types
- * - Input options: Uses [@SlashOption][SlashOption], supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [SlashParameterResolver].
+ * - Input options: Uses [@SlashOption][SlashOption].
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.

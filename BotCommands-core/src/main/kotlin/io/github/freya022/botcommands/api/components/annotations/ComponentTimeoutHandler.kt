@@ -5,8 +5,6 @@ import io.github.freya022.botcommands.api.components.builder.timeoutWith
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import kotlin.reflect.KFunction
 
@@ -20,9 +18,7 @@ import kotlin.reflect.KFunction
  * - First parameter must be [ComponentTimeoutData].
  *
  * ### Option types
- * - User data: Uses [@TimeoutData][TimeoutData], the order must match the data passed when creating the select menu,
- * supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [TimeoutParameterResolver].
+ * - User data: Uses [@TimeoutData][TimeoutData], the order must match the data passed when creating the select menu.
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
  * @see IPersistentTimeoutableComponent.timeout

@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.components.annotations
 
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
-import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableComponentData
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 
 /**
@@ -10,12 +8,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
  *
  * The order and types of the passed data must match with the handler parameters.
  *
- * ### Requirements
- * A compatible [ComponentParameterResolver] must exist for the annotated parameter,
- * the default supported types can be seen in [ParameterResolver].
- *
- * If your parameter is a serializable object,
- * you can instead use [@SerializableComponentData][SerializableComponentData].
+ * The supported data types can be seen in [ComponentParameterResolver], more types can be supported by implementing it.
  *
  * @see JDAButtonListener @JDAButtonListener
  * @see JDASelectMenuListener @JDASelectMenuListener

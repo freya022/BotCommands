@@ -11,8 +11,6 @@ import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import kotlin.reflect.KFunction
@@ -27,9 +25,7 @@ import kotlin.reflect.KFunction
  * - First parameter must be [ButtonEvent].
  *
  * ### Option types
- * - User data: Uses [@ComponentData][ComponentData], the order must match the data passed when creating the button,
- * supported types and modifiers are in [ParameterResolver],
- * additional types can be added by implementing [ComponentParameterResolver].
+ * - User data: Uses [@ComponentData][ComponentData], the order must match the data passed when creating the button.
  * - [AppLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.

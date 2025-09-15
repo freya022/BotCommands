@@ -14,7 +14,6 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
@@ -101,10 +100,10 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+     * For objects supported by [ComponentParameterResolver]s,
      * you must annotate your parameter with [@ComponentData][ComponentData].
      *
-     * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+     * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -122,10 +121,10 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
      *
      * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
      *
-     * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+     * For objects supported by [ComponentParameterResolver]s,
      * you must annotate your parameter with [@ComponentData][ComponentData].
      *
-     * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+     * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
      *
      * @param handlerName The name of the handler to run when the button is clicked,
      * defined by either [JDAButtonListener] or [JDASelectMenuListener]
@@ -177,10 +176,10 @@ interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T, E>,
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -198,10 +197,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -219,10 +218,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  *
  * Remember the parameters need to be annotated with [@ComponentData][ComponentData].
  */
@@ -240,10 +239,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KFunction2<E, T1, Unit>, arg1: T1): C {
@@ -259,10 +258,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KSuspendFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -278,10 +277,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KFunction3<E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -297,10 +296,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KSuspendFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -316,10 +315,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KFunction4<E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -335,10 +334,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KSuspendFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -354,10 +353,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KFunction5<E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -373,10 +372,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KSuspendFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -392,10 +391,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KFunction6<E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -411,10 +410,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KSuspendFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -430,10 +429,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KFunction7<E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -449,10 +448,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KSuspendFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -468,10 +467,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KFunction8<E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -487,10 +486,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KSuspendFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -506,10 +505,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KFunction9<E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -525,10 +524,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KSuspendFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -544,10 +543,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KFunction10<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -563,10 +562,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallableSuspend")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KSuspendFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -582,10 +581,10 @@ fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreat
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithBoundCallable")
 fun <C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KFunction11<E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -605,10 +604,10 @@ private fun <C : IPersistentActionableComponent<C>> C.bindWithBoundCallable(func
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: KSuspendFunction2<T, E, Unit>): C {
@@ -624,10 +623,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent> C.bindWith(func: KFunction2<T, E, Unit>): C {
@@ -643,10 +642,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KSuspendFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -662,10 +661,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1> C.bindWith(func: KFunction3<T, E, T1, Unit>, arg1: T1): C {
@@ -681,10 +680,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KSuspendFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -700,10 +699,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2> C.bindWith(func: KFunction4<T, E, T1, T2, Unit>, arg1: T1, arg2: T2): C {
@@ -719,10 +718,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KSuspendFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -738,10 +737,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3> C.bindWith(func: KFunction5<T, E, T1, T2, T3, Unit>, arg1: T1, arg2: T2, arg3: T3): C {
@@ -757,10 +756,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KSuspendFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -776,10 +775,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> C.bindWith(func: KFunction6<T, E, T1, T2, T3, T4, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4): C {
@@ -795,10 +794,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KSuspendFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -814,10 +813,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> C.bindWith(func: KFunction7<T, E, T1, T2, T3, T4, T5, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5): C {
@@ -833,10 +832,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KSuspendFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -852,10 +851,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> C.bindWith(func: KFunction8<T, E, T1, T2, T3, T4, T5, T6, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6): C {
@@ -871,10 +870,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KSuspendFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -890,10 +889,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> C.bindWith(func: KFunction9<T, E, T1, T2, T3, T4, T5, T6, T7, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7): C {
@@ -909,10 +908,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KSuspendFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -928,10 +927,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> C.bindWith(func: KFunction10<T, E, T1, T2, T3, T4, T5, T6, T7, T8, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8): C {
@@ -947,10 +946,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KSuspendFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -966,10 +965,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> C.bindWith(func: KFunction11<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9): C {
@@ -985,10 +984,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallableSuspend")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KSuspendFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {
@@ -1004,10 +1003,10 @@ fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInterac
  *
  * Each passed object needs to correspond to a parameter of the function (in the declaration order, excluding non-data parameters).
  *
- * For objects supported by default (see [ParameterResolver]) and by other [ComponentParameterResolver]s,
+ * For objects supported by [ComponentParameterResolver]s,
  * you must annotate your parameter with [@ComponentData][ComponentData].
  *
- * For serializable objects, you can instead use [@SerializableComponentData][SerializableComponentData].
+ * For serializable objects, you must instead use [@SerializableComponentData][SerializableComponentData].
  */
 @JvmName("bindWithClassCallable")
 fun <T : Any, C : IPersistentActionableComponent<C>, E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> C.bindWith(func: KFunction12<T, E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Unit>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10): C {

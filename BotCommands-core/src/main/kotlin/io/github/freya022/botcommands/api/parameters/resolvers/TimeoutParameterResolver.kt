@@ -1,19 +1,27 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
-import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
+import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.components.builder.IPersistentTimeoutableComponent
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableTimeoutData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@ComponentTimeoutHandler][ComponentTimeoutHandler] and [@GroupTimeoutHandler][GroupTimeoutHandler].
+ * Resolver for parameters annotated with [@TimeoutData][TimeoutData].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [String]
+ * - [Boolean]
+ * - [Int]
+ * - [Long]
+ * - [Double]
+ * - [Emoji]
  *
  * ### Use case - Supporting serializable objects
  * If you need to pass **serializable** objects to your components,

@@ -1,11 +1,10 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import java.util.regex.Pattern
 
 /**
- * Parameter resolver for parameters of [@JDATextCommandVariation][JDATextCommandVariation].
+ * Resolver for text command options.
  *
  * This resolver is an extension of [TextParameterResolver], but the regex pattern is quoted to help command parsing.
  *

@@ -1,17 +1,29 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.modals.ModalEvent
-import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
+import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@ModalHandler][ModalHandler].
+ * Resolver for parameters annotated with [@ModalInput][ModalInput].
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [TextInput] : `String`
+ * - [StringSelectMenu] : `List<String>`
+ * - [EntitySelectMenu] : [Mentions], `T` and `List<T>` where `T` is one of:
+ * [IMentionable], [Role], [User], [InputUser], [Member], [GuildChannel]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

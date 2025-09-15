@@ -1,16 +1,25 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDAUserCommand][JDAUserCommand].
+ * Resolver for parameters of user context commands.
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * ### Types supported by default
+ * - [UserSnowflake]
+ * - [User]
+ * - [Member]
+ * - [InputUser]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects

@@ -3,16 +3,38 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
+import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 /**
- * Parameter resolver for parameters of [@JDATextCommandVariation][JDATextCommandVariation].
+ * Resolver for text command options.
  *
  * Needs to be implemented alongside a [ParameterResolver] subclass.
+ *
+ * **Note:** You may use [QuotableTextParameterResolver] in some situations to help with content parsing.
+ *
+ * ### Types supported by default
+ * - [String]
+ * - [Boolean]
+ * - [Int]
+ * - [Long]
+ * - [Double]
+ * - [Emoji]
+ * - [IMentionable] (only when mentioned)
+ * - [Role]
+ * - [UserSnowflake]
+ * - [User]
+ * - [Member]
+ * - [InputUser]
+ * - [GuildChannel] subtypes
+ * - [Guild]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
