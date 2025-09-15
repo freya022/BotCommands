@@ -12,9 +12,9 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.modals.resolvers.ModalIMentionableResolverFactory
 import io.github.freya022.botcommands.internal.modals.resolvers.ModalMentionsResolver
+import io.github.freya022.botcommands.internal.modals.resolvers.ModalStringListResolver
+import io.github.freya022.botcommands.internal.modals.resolvers.ModalStringResolver
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
-import io.github.freya022.botcommands.internal.parameters.resolvers.StringListResolver
-import io.github.freya022.botcommands.internal.parameters.resolvers.StringResolver
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -61,17 +61,17 @@ object ModalInputResolverTests {
         val serviceContainer = mockk<ServiceContainer> {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
-                "stringResolver",
-                "stringListResolver"
+                "modalStringResolver",
+                "modalStringListResolver"
             )
 
             every { findAnnotationOnService("modalMentionsResolver", Resolver::class) } returns Resolver(0)
-            every { findAnnotationOnService("stringResolver", Resolver::class) } returns Resolver(0)
-            every { findAnnotationOnService("stringListResolver", Resolver::class) } returns Resolver(0)
+            every { findAnnotationOnService("modalStringResolver", Resolver::class) } returns Resolver(0)
+            every { findAnnotationOnService("modalStringListResolver", Resolver::class) } returns Resolver(0)
 
             every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver
-            every { getService("stringResolver", ParameterResolver::class) } returns StringResolver()
-            every { getService("stringListResolver", ParameterResolver::class) } returns StringListResolver()
+            every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver
+            every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
 
