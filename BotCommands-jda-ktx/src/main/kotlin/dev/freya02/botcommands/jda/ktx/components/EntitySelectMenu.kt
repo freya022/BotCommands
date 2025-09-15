@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.jda.ktx.components
 
 import dev.freya02.botcommands.jda.ktx.components.utils.ObservableAccumulator
-import dev.freya02.botcommands.jda.ktx.components.utils.toEnumSet
+import dev.freya02.botcommands.jda.ktx.components.utils.enumSetOf
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.entities.channel.ChannelType
 
@@ -89,6 +89,7 @@ inline fun EntitySelectMenu(
  */
 inline fun EntitySelectMenu(
     customId: String,
+    type: EntitySelectMenu.SelectTarget,
     vararg types: EntitySelectMenu.SelectTarget,
     uniqueId: Int = -1,
     placeholder: String? = null,
@@ -99,6 +100,6 @@ inline fun EntitySelectMenu(
     disabled: Boolean = false,
     block: InlineEntitySelectMenu.() -> Unit = {},
 ): EntitySelectMenu {
-    val types = types.toEnumSet()
+    val types = enumSetOf(type, *types)
     return EntitySelectMenu(customId, types, uniqueId, placeholder, valueRange, channelTypes, defaultValues, required, disabled, block)
 }
