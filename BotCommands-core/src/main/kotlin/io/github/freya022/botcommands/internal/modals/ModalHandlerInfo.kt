@@ -18,6 +18,7 @@ import io.github.freya022.botcommands.internal.modals.options.ModalHandlerInputO
 import io.github.freya022.botcommands.internal.modals.options.ModalHandlerParameterImpl
 import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerDataOptionBuilderImpl
 import io.github.freya022.botcommands.internal.modals.options.builder.ModalHandlerInputOptionBuilderImpl
+import io.github.freya022.botcommands.internal.modals.utils.valueAsString
 import io.github.freya022.botcommands.internal.options.transformParameters
 import io.github.freya022.botcommands.internal.parameters.*
 import io.github.freya022.botcommands.internal.requireUser
@@ -100,7 +101,7 @@ internal class ModalHandlerInfo internal constructor(
                 option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
                     // Technically not required, but provides additional info
                     requireUser(obj != null || option.isOptionalOrNullable) {
-                        "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
+                        "The parameter '${option.declaredName}' from $modalMapping and value '${modalMapping.valueAsString}' is required but could not be resolved into a ${option.type.simpleNestedName}"
                     }
                 }
             }

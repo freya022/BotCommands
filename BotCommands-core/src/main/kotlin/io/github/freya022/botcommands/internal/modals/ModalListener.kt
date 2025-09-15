@@ -11,9 +11,9 @@ import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
+import io.github.freya022.botcommands.internal.modals.utils.allValuesAsString
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import kotlin.coroutines.resume
@@ -79,13 +79,4 @@ internal class ModalListener(
             event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
         }
     }
-
-    private val ModalInteractionEvent.allValuesAsString: String
-        get() = values.map { value ->
-            when (value.type) {
-                Component.Type.STRING_SELECT -> value.asStringList.toString()
-                Component.Type.TEXT_INPUT -> value.asString
-                else -> value.toString()
-            }
-        }.toString()
 }
