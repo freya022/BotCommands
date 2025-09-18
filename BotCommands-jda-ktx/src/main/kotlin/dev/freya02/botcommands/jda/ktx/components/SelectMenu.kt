@@ -13,6 +13,13 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.uniqueId = value
         }
 
+    /** The custom ID, it can be used to pass data, then be read from an interaction */
+    var customId: String
+        get() = builder.customId
+        set(value) {
+            builder.setCustomId(value)
+        }
+
     /** Whether this select menu should be disabled, cannot be `true` in modals, defaults to `false` */
     var disabled: Boolean
         get() = builder.isDisabled
