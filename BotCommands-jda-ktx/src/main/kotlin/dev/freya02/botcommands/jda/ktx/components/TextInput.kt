@@ -83,9 +83,10 @@ class InlineTextInput(
 /**
  * Discord text input, see [TextInput][net.dv8tion.jda.api.components.textinput.TextInput].
  *
- * @param customId    The custom ID of the input, see [TextInput.Builder.setId]
+ * @param customId    The custom ID of the input, see [TextInput.Builder.setCustomId]
  * @param style       Style of text input, see [TextInput.Builder.setStyle]
  * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
+ * @param isRequired  Whether the user is required to write in this TextInput, see [TextInput.Builder.setRequired]
  * @param range       Minimum and maximum required length of this TextInput, see [TextInput.Builder.setRequiredRange]
  * @param value       Pre-populated text for this TextInput field, see [TextInput.Builder.setValue]
  * @param placeholder Short hint that describes the expected value of the input field, see [TextInput.Builder.setPlaceholder]
