@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -24,6 +25,7 @@ import kotlin.reflect.KType
  * - [StringSelectMenu] : `List<String>`
  * - [EntitySelectMenu] : [Mentions], `T` and `List<T>` where `T` is one of:
  * [IMentionable], [Role], [User], [InputUser], [Member], [GuildChannel]
+ * - [AttachmentUpload] : `List` of [Message.Attachment]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
