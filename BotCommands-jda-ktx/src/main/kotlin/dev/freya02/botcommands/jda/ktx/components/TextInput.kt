@@ -14,6 +14,13 @@ class InlineTextInput(
             builder.setUniqueId(value)
         }
 
+    /** The custom ID, it can be used to pass data, then be read from an interaction */
+    var customId: String
+        get() = builder.customId
+        set(value) {
+            builder.setCustomId(value)
+        }
+
     /** Style for the text input, see [TextInput.Builder.setStyle] */
     var style: TextInputStyle
         get() = builder.style
