@@ -29,7 +29,7 @@ public class BCInfo {
     static {
         final Properties properties = loadProperties();
 
-        BUILD_TIME = Instant.ofEpochSecond(Long.parseLong(properties.getProperty("BUILD_TIME", "0")));
+        BUILD_TIME = Instant.ofEpochMilli(Long.parseLong(properties.getProperty("BUILD_TIME", "0")));
         VERSION_MAJOR = properties.getProperty("VERSION_MAJOR", "<major>");
         VERSION_MINOR = properties.getProperty("VERSION_MINOR", "<minor>");
         VERSION_REVISION = properties.getProperty("VERSION_REVISION", "<revision>");
