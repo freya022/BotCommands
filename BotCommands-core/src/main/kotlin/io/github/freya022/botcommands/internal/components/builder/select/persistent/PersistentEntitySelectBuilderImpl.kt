@@ -40,17 +40,6 @@ internal class PersistentEntitySelectBuilderImpl internal constructor(
         setEntityTypes(targets)
     }
 
-    @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun getId(): Nothing {
-        throwArgument("Cannot set an ID on components managed by the framework")
-    }
-
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun setId(customId: String): JDAEntitySelectMenu.Builder {
-        if (customId.isEmpty()) return this //Empty ID is set by super constructor
-        throwArgument("Cannot set an ID on components managed by the framework")
-    }
-
     @Suppress("OVERRIDE_DEPRECATION")
     override fun setCustomId(customId: String): JDAEntitySelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor

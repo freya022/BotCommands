@@ -12,12 +12,6 @@ abstract class PersistentStringSelectBuilder :
         IPersistentActionableComponent<PersistentStringSelectBuilder>,
         IPersistentTimeoutableComponent<PersistentStringSelectBuilder> {
 
-    @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    abstract override fun getId(): Nothing
-
-    @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    abstract override fun setId(customId: String): JDAStringSelectMenu.Builder
-
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     abstract override fun setCustomId(customId: String): JDAStringSelectMenu.Builder
 
