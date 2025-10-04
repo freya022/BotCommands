@@ -6,12 +6,16 @@ import io.github.freya022.botcommands.api.core.db.query.AbstractParametrizedQuer
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
+import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.sql.Array as SqlArray
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.PreparedStatement
 
+/**
+ * This lets pgjdbc fill out the parameters by itself,
+ * then we replace those it hasn't replaced.
+ */
 @Lazy
 @BService
 internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<PostgresParametrizedQueryFactory.PostgresParametrizedQuery> {
@@ -19,53 +23,77 @@ internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<Post
         preparedStatement: PreparedStatement,
         private val rawSql: String
     ) : AbstractParametrizedQuery(preparedStatement) {
-        private val values: TIntObjectMap<String> = TIntObjectHashMap()
+        private val values: TIntObjectMap<Any?> = TIntObjectHashMap()
 
         override fun clear() = values.clear()
 
-        // The PostgreSQL driver won't replace all parameters, such as arrays.
-        // Attempt to replace those with our own representation
         override fun addValue(index: Int, value: Any?) {
-            if (value == null) return
-            if (value is ByteArray) return
-            if (value.javaClass.isArray || value is SqlArray) {
-                values.put(index, formatParameter(value))
-            }
+            values.put(index, value)
         }
 
         override fun toSql(): String {
-            val cleanedStatement = removeCommentsAndInline(preparedStatement.toString())
             if (values.isEmpty)
-                return cleanedStatement
+                return removeCommentsAndInline(rawSql)
 
-            // If there is a logic error and the number of parameters doesn't match,
-            // such as a parameter type not handled by the driver, neither by us nor the driver,
-            // then the original query is used.
-            // #addValue would need to be fixed
-            val unresolvedParameterIndices = cleanedStatement.mapIndexedNotNull { index, c -> index.takeIf { c == '?' } }
-            if (values.size() != unresolvedParameterIndices.size) {
-                if (warnedQueries.add(rawSql))
-                    logger.warn { "Unresolvable parameter in query '$cleanedStatement'" }
-                return cleanedStatement
-            }
+            val queryParts = splitByQueryParameter(rawSql)
+            val postgresQuery = preparedStatement.toString()
 
-            // Convert parameter indexes to array indexes
-            val values = values.values(arrayOfNulls(values.size()))
-            val builder = StringBuilder(cleanedStatement)
-            // Traverse in reverse order so replaced values dont offset other values
-            for (i in unresolvedParameterIndices.size - 1 downTo 0) {
-                val indice = unresolvedParameterIndices[i]
-                val value = values[i] ?: "?"
+            // Rebuild the query using the split parts,
+            // but for each part, check if there is a '?' after it,
+            // if absent, it means postgres replaced it
+            return removeCommentsAndInline(buildString {
+                var lastIndex = 0
+                // Drop last part as it has no query parameter after it
+                for ((i, part) in queryParts.dropLast(1).withIndex()) {
+                    val partIndex = postgresQuery.indexOf(part, lastIndex)
+                    if (partIndex == -1) {
+                        logger.error { internalErrorMessage("Could not find part #$i '${part}' in '$postgresQuery'") }
+                        return removeCommentsAndInline(postgresQuery)
+                    }
 
-                builder.replace(indice, indice + 1, value)
-            }
+                    append(part)
+                    if (postgresQuery[partIndex + part.length] == '?') {
+                        // The driver did not replace the value, use our own replacement
+                        append(formatParameter(values[i + 1]))
+                        lastIndex = partIndex + part.length + 1
+                    } else {
+                        // The driver replaced the value, find where it stops based on the next part
+                        val nextPart = queryParts[i + 1]
+                        if (nextPart.isBlank()) { // When the query ends with a parameter, the last part is empty
+                            append(postgresQuery.substring(partIndex + part.length))
+                            break
+                        }
+                        val nextPartIndex = postgresQuery.indexOf(nextPart, partIndex)
+                        append(postgresQuery.substring(partIndex + part.length, nextPartIndex))
+                        lastIndex = nextPartIndex
+                    }
+                }
 
-            return builder.toString()
+                append(queryParts.last())
+            })
         }
 
-        companion object {
+        private fun splitByQueryParameter(query: String): List<String> = buildList {
+            val builder = StringBuilder()
+            var inComment = false
+            for ((index, char) in query.withIndex()) {
+                if (char == '?' && !inComment) {
+                    add(builder.toString())
+                    builder.clear()
+                } else {
+                    builder.append(char)
+                    if (char == '-' && query.getOrNull(index + 1) == '-') // -- comment
+                        inComment = true
+                    if (char == '\n')
+                        inComment = false
+                }
+            }
+            add(builder.toString())
+        }
+
+        private companion object {
+
             private val logger = KotlinLogging.logger { }
-            private val warnedQueries: MutableSet<String> = hashSetOf()
         }
     }
 
