@@ -20,6 +20,8 @@ dependencies {
 
     // ---------------------------- TEST DEPENDENCIES ---------------------------
 
+    testImplementation(libs.bundles.test)
+
     // Architecture tests
     testImplementation(libs.konsist)
     testImplementation(libs.kotlin.metadata)
@@ -29,6 +31,10 @@ dependencies {
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 kotlin {

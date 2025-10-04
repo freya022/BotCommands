@@ -14,11 +14,15 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
+    testImplementation(libs.bundles.test)
+
     testImplementation(libs.classgraph)
     testImplementation(libs.kotlin.reflect)
 }
 
 tasks.named<Test>("test") {
+    useJUnitPlatform()
+
     environment("KSP_OUTPUT", layout.buildDirectory.dir("generated/ksp").get().asFile.path)
 }
 

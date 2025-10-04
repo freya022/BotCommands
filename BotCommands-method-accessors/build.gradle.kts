@@ -9,6 +9,12 @@ plugins {
 dependencies {
     implementation(projects.botCommandsMethodAccessors.classfile)
     implementation(projects.botCommandsMethodAccessors.kotlinReflect)
+
+    testImplementation(libs.bundles.test)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 jmh {

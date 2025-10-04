@@ -21,8 +21,4 @@ dependencies {
     ksp(projects.springPropertiesProcessor)
 }
 
-tasks.withType<Test> {
-    enabled = false // This module doesn't have unit tests yet
-}
-
 configurePublishedArtifact(artifactId = "BotCommands-spring")

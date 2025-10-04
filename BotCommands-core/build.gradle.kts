@@ -111,6 +111,8 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
+    testImplementation(libs.bundles.test)
+
     // Mocking
     testImplementation(libs.mockk)
 
@@ -124,6 +126,10 @@ dependencies {
 
     // Test stuff
     testImplementation(libs.kotlin.metadata)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
