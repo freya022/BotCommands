@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentCo
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
+@PublishedApi
 internal class PersistentButtonBuilderImpl internal constructor(
     componentController: ComponentController,
     style: ButtonStyle,

@@ -39,6 +39,7 @@ value class RestResult<out T> @PublishedApi internal constructor(
         override fun hashCode(): Int = exception.hashCode()
     }
 
+    @PublishedApi
     internal class FatalFailure(exception: Throwable) : Failure(exception) {
         override fun toString(): String = "FatalFailure($exception)"
     }

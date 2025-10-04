@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import java.util.*
 
-internal class UsabilityImpl private constructor(override val unusableReasons: Set<UnusableReason>) : Usability {
+internal class UsabilityImpl internal constructor(override val unusableReasons: Set<UnusableReason>) : Usability {
     override val isUsable: Boolean
         get() = unusableReasons.isEmpty()
 

@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.IPersist
 import io.github.freya022.botcommands.internal.components.builder.mixin.impl.PersistentTimeoutableComponentImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 
+@PublishedApi
 internal class PersistentComponentGroupBuilderImpl internal constructor(
     componentController: ComponentController,
     components: Array<out IGroupHolder>,

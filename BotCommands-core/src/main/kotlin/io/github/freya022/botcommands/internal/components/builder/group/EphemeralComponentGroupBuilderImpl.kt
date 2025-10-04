@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.internal.components.builder.mixin.IEphemer
 import io.github.freya022.botcommands.internal.components.builder.mixin.impl.EphemeralTimeoutableComponentImpl
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 
+@PublishedApi
 internal class EphemeralComponentGroupBuilderImpl internal constructor(
     componentController: ComponentController,
     components: Array<out IGroupHolder>,
