@@ -26,14 +26,14 @@ class InlineContainer : InlineComponent {
             container = container.withUniqueId(value)
         }
 
-    /** Color of the container's left side, you can use [rgb], [hsb] or [hex] for it */
+    /** Raw integer color of the container's left side, you can use [rgb], [hsb] or [hex] for it */
     var accentColorRaw: Int?
         get() = container.accentColorRaw
         set(value) {
             container = container.withAccentColor(value)
         }
 
-    /** Color of the container's left side, you can use [rgb], [hsb] or [hex] for it */
+    /** Color of the container's left side */
     var accentColor: Color?
         get() = container.accentColor
         set(value) {
