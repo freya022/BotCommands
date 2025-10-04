@@ -17,7 +17,6 @@ import io.github.freya022.botcommands.internal.modals.resolvers.ModalStringResol
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
@@ -57,7 +56,7 @@ object ModalInputResolverTests {
 
     @MethodSource("modalInputs")
     @ParameterizedTest
-    fun `Modal input parameter can be resolved`(index: Int, expected: Any?) {
+    suspend fun `Modal input parameter can be resolved`(index: Int, expected: Any?) {
         val serviceContainer = mockk<ServiceContainer> {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
@@ -84,13 +83,11 @@ object ModalInputResolverTests {
             every { asMentions } returns mentions
         }
 
-        val value = runBlocking {
-            resolver.resolveSuspend(
-                mockk<ModalOption>(),
-                mockk<ModalEvent>(),
-                modalMapping,
-            )
-        }
+        val value = resolver.resolveSuspend(
+            mockk<ModalOption>(),
+            mockk<ModalEvent>(),
+            modalMapping,
+        )
 
         assertEquals(expected, value)
     }

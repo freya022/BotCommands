@@ -3,7 +3,6 @@ package dev.freya02.botcommands.jda.ktx
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.ignore
 import dev.freya02.botcommands.jda.ktx.requests.recover
-import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.Response
@@ -19,7 +18,7 @@ object RestResultTest {
     }
 
     @Test
-    fun `Recover error response`() = runBlocking {
+    suspend fun `Recover error response`() {
         val restResult = restException()
             .awaitCatching()
             .recover(ErrorResponse.ALREADY_CROSSPOSTED) {
@@ -33,7 +32,7 @@ object RestResultTest {
     }
 
     @Test
-    fun `Ignore error responses`() = runBlocking {
+    suspend fun `Ignore error responses`() {
         val restResult = restException()
             .awaitCatching()
             .ignore(ErrorResponse.ALREADY_CROSSPOSTED)
@@ -45,7 +44,7 @@ object RestResultTest {
     }
 
     @Test
-    fun `Handle error responses`() = runBlocking {
+    suspend fun `Handle error responses`() {
         val restResult = restException()
             .awaitCatching()
             .ignore(ErrorResponse.ALREADY_CROSSPOSTED)

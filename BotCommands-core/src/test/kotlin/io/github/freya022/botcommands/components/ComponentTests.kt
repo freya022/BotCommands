@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.helpers.config.Environment
 import io.github.freya022.botcommands.helpers.db.TestH2Source
 import io.github.freya022.botcommands.helpers.utils.createTest
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -36,7 +35,7 @@ object ComponentTests {
     }
 
     @Test
-    fun `Group delete results in owned components deleted`(): Unit = runBlocking {
+    suspend fun `Group delete results in owned components deleted`() {
         val button = buttons.primary("test").persistent { }
         val group = buttons.group(button).ephemeral { }
 
@@ -47,7 +46,7 @@ object ComponentTests {
     }
 
     @Test
-    fun `Component delete results in owner group deleted`(): Unit = runBlocking {
+    suspend fun `Component delete results in owner group deleted`() {
         val button = buttons.primary("test").persistent { }
         val group = buttons.group(button).ephemeral { }
 

@@ -5,7 +5,6 @@ import dev.freya02.botcommands.method.accessors.internal.KotlinReflectMethodAcce
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessorFactory
 import dev.freya02.botcommands.method.accessors.internal.exceptions.IllegalSuspendCallException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,28 +18,24 @@ object MethodAccessorTest {
 
     @MethodSource("testCallers")
     @ParameterizedTest
-    fun `Generate ClassFile method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
-        runBlocking {
-            val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
-            val args = methodAccessor.createBlankArguments().also {
-                args.forEach { arg -> it.push(arg) }
-            }
-
-            methodAccessor.callSuspend(args)
+    suspend fun `Generate ClassFile method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
+        val methodAccessor = ClassFileMethodAccessorFactory().create(instance, function)
+        val args = methodAccessor.createBlankArguments().also {
+            args.forEach { arg -> it.push(arg) }
         }
+
+        methodAccessor.callSuspend(args)
     }
 
     @MethodSource("testCallers")
     @ParameterizedTest
-    fun `Generate kotlin-reflect method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
-        runBlocking {
-            val methodAccessor = KotlinReflectMethodAccessorFactory().create(instance, function)
-            val args = methodAccessor.createBlankArguments().also {
-                args.forEach { arg -> it.push(arg) }
-            }
-
-            methodAccessor.callSuspend(args)
+    suspend fun `Generate kotlin-reflect method accessors and call them`(instance: Any?, function: KFunction<*>, args: List<Any?>) {
+        val methodAccessor = KotlinReflectMethodAccessorFactory().create(instance, function)
+        val args = methodAccessor.createBlankArguments().also {
+            args.forEach { arg -> it.push(arg) }
         }
+
+        methodAccessor.callSuspend(args)
     }
 
     @JvmStatic
@@ -102,7 +97,7 @@ object MethodAccessorTest {
 
     @MethodSource("factories")
     @ParameterizedTest
-    fun `Coroutine return type of inline class returns an inline class instance`(factory: MethodAccessorFactory) = runBlocking {
+    suspend fun `Coroutine return type of inline class returns an inline class instance`(factory: MethodAccessorFactory) {
         val accessor = factory.create(TestClass(), TestClass::coRunWithInlineClassReturnType as KFunction<*>)
         val result = accessor.callSuspend(accessor.createBlankArguments())
         assertIs<InlineDouble>(result)
