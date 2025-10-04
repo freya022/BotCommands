@@ -133,8 +133,7 @@ OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics b
 
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=21) installation
-* A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
-* (Only Java) Enable method parameters names, please refer to the [wiki page](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)
+* For languages other than Kotlin, enable method parameters names, please refer to the [wiki page](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)
 
 Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to get started,
 you can also check out the [examples](src/examples).
@@ -173,6 +172,7 @@ The base `BotCommands` artifact will include modules often used, while others ar
 - [`BotCommands-core`](./BotCommands-core): Root module which contains most features
 
 ### Optional modules
+- [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): provides a set of Kotlin extensions and top-level functions, similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
 - [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): Improved alternative for this framework to call your functions
 
@@ -330,7 +330,8 @@ the library could introduce breaking changes to allow quick adoption of newer fe
 While attempting to reduce breaking changes by using deprecation mechanisms,
 it is not always possible or practical to use deprecations.
 
-Breaking/deprecating changes should be noticed via an increase of the **minor** version. (`3.0.0` -> `3.1.0`)
+Small breaking/deprecating changes should be noticed via an increase of the **minor** version (`3.0.0` -> `3.1.0`),
+while larger breaking changes should be seing an increase of the **major** version (`3.Y.Z` -> `4.0.0`).
 
 ## Contributing
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
