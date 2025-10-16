@@ -70,7 +70,7 @@ inline fun Label(
     uniqueId: Int = -1,
     description: String? = null,
     child: LabelChildComponent? = null,
-    block: InlineLabel.() -> Unit,
+    block: InlineLabel.() -> Unit = {},
 ): Label {
     return InlineLabel()
         .apply {
