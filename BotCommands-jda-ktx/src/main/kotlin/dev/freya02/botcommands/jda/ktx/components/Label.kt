@@ -49,6 +49,7 @@ class InlineLabel : InlineComponent {
     val hasChild: Boolean get() = _child != null
 
     fun build(): Label {
+        label.checkInit()
         child.checkInit()
         return component
     }
