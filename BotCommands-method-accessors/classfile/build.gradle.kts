@@ -1,4 +1,4 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -21,7 +21,7 @@ kotlin {
     }
 }
 
-tasks.withType<DokkaTask> {
+tasks.withType<DokkaBaseTask> {
     enabled = false
 }
 

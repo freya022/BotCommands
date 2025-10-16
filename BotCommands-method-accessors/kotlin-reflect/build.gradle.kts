@@ -1,4 +1,4 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
 
 plugins {
     id("BotCommands-conventions")
@@ -9,7 +9,7 @@ dependencies {
     api(projects.botCommandsMethodAccessors.core)
 }
 
-tasks.withType<DokkaTask> {
+tasks.withType<DokkaBaseTask> {
     enabled = false
 }
 
