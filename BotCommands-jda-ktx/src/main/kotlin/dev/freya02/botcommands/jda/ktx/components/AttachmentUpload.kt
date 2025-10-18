@@ -55,7 +55,7 @@ class InlineAttachmentUpload(
 }
 
 /**
- * Discord text input, see [AttachmentUpload][net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload].
+ * Component accepting files from users, see [AttachmentUpload][net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload].
  *
  * @param customId The custom ID of the input, see [AttachmentUpload.Builder.setCustomId]
  * @param uniqueId Unique identifier of this component, see [Component.withUniqueId]
