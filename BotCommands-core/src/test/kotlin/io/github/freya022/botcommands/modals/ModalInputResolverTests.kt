@@ -10,10 +10,7 @@ import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
-import io.github.freya022.botcommands.internal.modals.resolvers.ModalIMentionableResolverFactory
-import io.github.freya022.botcommands.internal.modals.resolvers.ModalMentionsResolver
-import io.github.freya022.botcommands.internal.modals.resolvers.ModalStringListResolver
-import io.github.freya022.botcommands.internal.modals.resolvers.ModalStringResolver
+import io.github.freya022.botcommands.internal.modals.resolvers.*
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.mockk.every
 import io.mockk.mockk
@@ -53,6 +50,7 @@ object ModalInputResolverTests {
         every { channels } returns this@ModalInputResolverTests.channels
         every { getMentions() } returns this@ModalInputResolverTests.roles
     }
+    private val attachments = listOf<Message.Attachment>(mockk())
 
     @MethodSource("modalInputs")
     @ParameterizedTest
@@ -61,16 +59,19 @@ object ModalInputResolverTests {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
                 "modalStringResolver",
-                "modalStringListResolver"
+                "modalStringListResolver",
+                "modalAttachmentListResolver",
             )
 
             every { findAnnotationOnService("modalMentionsResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalStringResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalStringListResolver", Resolver::class) } returns Resolver(0)
+            every { findAnnotationOnService("modalAttachmentListResolver", Resolver::class) } returns Resolver(0)
 
             every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver
             every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver
             every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver
+            every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
 
@@ -81,6 +82,7 @@ object ModalInputResolverTests {
             every { asString } returns STRING
             every { asStringList } returns strings
             every { asMentions } returns mentions
+            every { asAttachmentList } returns attachments
         }
 
         val value = resolver.resolveSuspend(
@@ -110,6 +112,7 @@ object ModalInputResolverTests {
             arguments("Select menu channel", 12, channel),
             arguments("Select menu channels", 13, channels),
             arguments("Select menu mentions", 14, mentions),
+            arguments("Attachments", 15, attachments),
         )
         return listOf
     }
@@ -133,5 +136,6 @@ object ModalInputResolverTests {
         @Suppress("unused") selectedChannel: GuildChannel?,
         @Suppress("unused") selectedChannels: List<GuildChannel>,
         @Suppress("unused") selectedMentions: Mentions,
+        @Suppress("unused") attachments: List<Message.Attachment>,
     ) {}
 }

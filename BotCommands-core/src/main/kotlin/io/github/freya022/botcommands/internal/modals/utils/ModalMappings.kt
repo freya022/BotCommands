@@ -12,5 +12,6 @@ internal val ModalMapping.valueAsString: String
         STRING_SELECT -> asStringList.toString()
         TEXT_INPUT -> asString
         CHANNEL_SELECT, ROLE_SELECT, USER_SELECT, MENTIONABLE_SELECT -> asLongList.toString()
+        FILE_UPLOAD -> asAttachmentList.map { "${it.fileName} (${it.contentType}, ${it.size} B)" }.toString()
         else -> toString()
     }
