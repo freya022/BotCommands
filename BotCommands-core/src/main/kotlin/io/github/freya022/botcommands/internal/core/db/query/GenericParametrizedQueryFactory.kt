@@ -30,7 +30,7 @@ internal object GenericParametrizedQueryFactory : ParametrizedQueryFactory<Gener
                 val value = values[paramIndex] ?: "?"
 
                 builder.replace(builderIndex, builderIndex + 1, value)
-                builderIndex++ //as to not keep seeking the same character
+                builderIndex += value.length // Ensure we don't try to find characters in what we inserted
                 paramIndex++
             }
 
