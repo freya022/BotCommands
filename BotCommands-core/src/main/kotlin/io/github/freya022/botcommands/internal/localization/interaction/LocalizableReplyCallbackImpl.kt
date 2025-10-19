@@ -12,16 +12,16 @@ internal class LocalizableReplyCallbackImpl internal constructor(
 ) : LocalizableReplyCallback {
 
     override fun replyUser(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
-        replyCallback.reply(interaction.getUserMessage(localizationPath, *entries))
+        replyCallback.reply(interaction.getUserMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
-        replyCallback.reply(interaction.getGuildMessage(localizationPath, *entries))
+        replyCallback.reply(interaction.getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun replyLocalized(
         locale: Locale,
         localizationPath: String,
         vararg entries: Localization.Entry,
     ): ReplyCallbackAction {
-        return replyCallback.reply(interaction.getLocalizedMessage(locale, localizationPath, *entries))
+        return replyCallback.reply(interaction.getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 }

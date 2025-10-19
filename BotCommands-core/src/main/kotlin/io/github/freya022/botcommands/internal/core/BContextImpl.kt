@@ -62,7 +62,7 @@ internal class BContextImpl internal constructor(
                                 logger.warn { "Could not send exception DM to owner '${channel.user?.effectiveName}' ($ownerId)" }
                         }
 
-                        channel.sendMessage(content).queue(
+                        channel.sendMessage(content).useComponentsV2(false).queue(
                             null,
                             ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                                 onUserNotFound()

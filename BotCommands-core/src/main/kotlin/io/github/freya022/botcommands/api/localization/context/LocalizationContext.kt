@@ -285,7 +285,7 @@ fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries:
  * @see MessageChannel.sendMessage
  */
 fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageCreateAction =
-    sendMessage(context.localize(localizationPath, *entries))
+    sendMessage(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Sends a localized message to the event's channel.
@@ -321,7 +321,7 @@ fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPa
  * @see IReplyCallback.reply
  */
 fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): ReplyCallbackAction =
-    reply(context.localize(localizationPath, *entries))
+    reply(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Replies a localized ephemeral message to this interaction and acknowledges it.
@@ -333,7 +333,7 @@ fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath
  * @see IReplyCallback.reply
  */
 fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): ReplyCallbackAction =
-    reply(context.localize(localizationPath, *entries)).setEphemeral(true)
+    reply(context.localize(localizationPath, *entries)).useComponentsV2(false).setEphemeral(true)
 
 /**
  * Sends a localized followup message to this interaction hook.
@@ -348,7 +348,7 @@ fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localiz
  * @see InteractionHook.sendMessage
  */
 fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageCreateAction<Message> =
-    sendMessage(context.localize(localizationPath, *entries))
+    sendMessage(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Sends a localized ephemeral followup message to this interaction hook.
@@ -363,7 +363,7 @@ fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath
  * @see InteractionHook.sendMessage
  */
 fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageCreateAction<Message> =
-    sendMessage(context.localize(localizationPath, *entries)).setEphemeral(true)
+    sendMessage(context.localize(localizationPath, *entries)).useComponentsV2(false).setEphemeral(true)
 //endregion
 
 //region Localized edits
@@ -377,7 +377,7 @@ fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localiz
  * @see IMessageEditCallback.editMessage
  */
 fun IMessageEditCallback.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditCallbackAction =
-    editMessage(context.localize(localizationPath, *entries))
+    editMessage(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Replaces the entire original message with a localized message.
@@ -389,7 +389,7 @@ fun IMessageEditCallback.editLocalized(context: LocalizationContext, localizatio
  * @see IMessageEditCallback.editMessage
  */
 fun IMessageEditCallback.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditCallbackAction =
-    editMessage(context.localize(localizationPath, *entries)).setReplace(true)
+    editMessage(context.localize(localizationPath, *entries)).useComponentsV2(false).setReplace(true)
 
 /**
  * Edits the text content of the original message with a localized message.
@@ -401,7 +401,7 @@ fun IMessageEditCallback.replaceLocalized(context: LocalizationContext, localiza
  * @see InteractionHook.editOriginal
  */
 fun InteractionHook.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageEditAction<Message> =
-    editOriginal(context.localize(localizationPath, *entries))
+    editOriginal(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Replaces the entire original message with a localized message.
@@ -413,7 +413,7 @@ fun InteractionHook.editLocalized(context: LocalizationContext, localizationPath
  * @see InteractionHook.editOriginal
  */
 fun InteractionHook.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageEditAction<Message> =
-    editOriginal(context.localize(localizationPath, *entries)).setReplace(true)
+    editOriginal(context.localize(localizationPath, *entries)).useComponentsV2(false).setReplace(true)
 
 /**
  * Edits the text content of the message with a localized message.
@@ -425,7 +425,7 @@ fun InteractionHook.replaceLocalized(context: LocalizationContext, localizationP
  * @see Message.editMessage
  */
 fun Message.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditAction =
-    editMessage(context.localize(localizationPath, *entries))
+    editMessage(context.localize(localizationPath, *entries)).useComponentsV2(false)
 
 /**
  * Replaces the entire message with a localized message.
@@ -437,5 +437,5 @@ fun Message.editLocalized(context: LocalizationContext, localizationPath: String
  * @see Message.editMessage
  */
 fun Message.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditAction =
-    editMessage(context.localize(localizationPath, *entries)).setReplace(true)
+    editMessage(context.localize(localizationPath, *entries)).useComponentsV2(false).setReplace(true)
 //endregion
