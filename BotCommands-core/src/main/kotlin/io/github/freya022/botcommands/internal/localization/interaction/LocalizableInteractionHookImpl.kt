@@ -15,30 +15,30 @@ internal class LocalizableInteractionHookImpl internal constructor(
     InteractionHook by interactionHook {
 
     override fun sendUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        interactionHook.sendMessage(localizableInteraction.getUserMessage(localizationPath, *entries))
+        interactionHook.sendMessage(localizableInteraction.getUserMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun sendGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
-        interactionHook.sendMessage(localizableInteraction.getGuildMessage(localizationPath, *entries))
+        interactionHook.sendMessage(localizableInteraction.getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun sendLocalized(
         locale: Locale,
         localizationPath: String,
         vararg entries: Localization.Entry,
     ): WebhookMessageCreateAction<Message> {
-        return interactionHook.sendMessage(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries))
+        return interactionHook.sendMessage(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun editUser(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        interactionHook.editOriginal(localizableInteraction.getUserMessage(localizationPath, *entries))
+        interactionHook.editOriginal(localizableInteraction.getUserMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun editGuild(localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
-        interactionHook.editOriginal(localizableInteraction.getGuildMessage(localizationPath, *entries))
+        interactionHook.editOriginal(localizableInteraction.getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
 
     override fun editLocalized(
         locale: Locale,
         localizationPath: String,
         vararg entries: Localization.Entry
     ): WebhookMessageEditAction<Message> {
-        return interactionHook.editOriginal(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries))
+        return interactionHook.editOriginal(localizableInteraction.getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 }

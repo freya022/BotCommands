@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.utils.TimeFormat
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 import java.util.*
@@ -123,5 +124,9 @@ open class DefaultBotCommandsMessages(
         return template
     }
 
-    protected fun String.toMessage(): MessageCreateData = MessageCreateData.fromContent(this)
+    protected fun String.toMessage(): MessageCreateData =
+        MessageCreateBuilder()
+            .setContent(this)
+            .useComponentsV2(false)
+            .build()
 }

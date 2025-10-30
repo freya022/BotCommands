@@ -47,7 +47,7 @@ internal open class BaseCommandEventImpl(
     override fun getArgumentsStr(): String = argumentsStr
 
     override fun reportError(message: String, e: Throwable) {
-        channel.sendMessage(message).queue(null) { t: Throwable? -> logger.error(t) { "Could not send message to channel : $message" } }
+        channel.sendMessage(message).useComponentsV2(false).queue(null) { t: Throwable? -> logger.error(t) { "Could not send message to channel : $message" } }
         context.dispatchException(message, e)
     }
 
@@ -80,8 +80,8 @@ internal open class BaseCommandEventImpl(
         iconStream: InputStream?,
         embed: MessageEmbed
     ): RestAction<Message> = when {
-        iconStream != null -> channel.sendTyping().flatMap { channel.sendFiles(FileUpload.fromData(iconStream, "icon.jpg")).setEmbeds(embed) }
-        else -> channel.sendTyping().flatMap { channel.sendMessageEmbeds(embed) }
+        iconStream != null -> channel.sendTyping().flatMap { channel.sendFiles(FileUpload.fromData(iconStream, "icon.jpg")).setEmbeds(embed).useComponentsV2(false) }
+        else -> channel.sendTyping().flatMap { channel.sendMessageEmbeds(embed).useComponentsV2(false) }
     }
 
     @CheckReturnValue
@@ -90,39 +90,39 @@ internal open class BaseCommandEventImpl(
     @CheckReturnValue
     override fun reactError(): RestAction<Void> = channel.addReactionById(messageId, Emojis.X)
 
-    override fun respond(text: CharSequence): MessageCreateAction = channel.sendMessage(text)
+    override fun respond(text: CharSequence): MessageCreateAction = channel.sendMessage(text).useComponentsV2(false)
 
-    override fun respondFormat(format: String, vararg args: Any): MessageCreateAction = channel.sendMessageFormat(format, *args)
+    override fun respondFormat(format: String, vararg args: Any): MessageCreateAction = channel.sendMessageFormat(format, *args).useComponentsV2(false)
 
-    override fun respond(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = channel.sendMessageEmbeds(embed, *other)
+    override fun respond(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = channel.sendMessageEmbeds(embed, *other).useComponentsV2(false)
 
     override fun respondFile(vararg fileUploads: FileUpload): MessageCreateAction = channel.sendFiles(*fileUploads)
 
     @CheckReturnValue
-    override fun reply(text: CharSequence): MessageCreateAction = message.reply(text)
+    override fun reply(text: CharSequence): MessageCreateAction = message.reply(text).useComponentsV2(false)
 
     @CheckReturnValue
-    override fun replyFormat(format: String, vararg args: Any): MessageCreateAction = message.replyFormat(format, *args)
+    override fun replyFormat(format: String, vararg args: Any): MessageCreateAction = message.replyFormat(format, *args).useComponentsV2(false)
 
     @CheckReturnValue
-    override fun reply(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = message.replyEmbeds(embed, *other)
+    override fun reply(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = message.replyEmbeds(embed, *other).useComponentsV2(false)
 
     @CheckReturnValue
     override fun replyFile(vararg fileUploads: FileUpload): RestAction<Message> =
         channel.sendTyping().flatMap { message.replyFiles(*fileUploads) }
 
     override fun indicateError(text: CharSequence): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessage(text) }
-        else -> channel.sendMessage(text)
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessage(text).useComponentsV2(false) }
+        else -> channel.sendMessage(text).useComponentsV2(false)
     }
 
     override fun indicateErrorFormat(format: String, vararg args: Any): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageFormat(format, *args) }
-        else -> channel.sendMessageFormat(format, *args)
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageFormat(format, *args).useComponentsV2(false) }
+        else -> channel.sendMessageFormat(format, *args).useComponentsV2(false)
     }
 
     override fun indicateError(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = when {
-        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageEmbeds(embed, *other) }
-        else -> channel.sendMessageEmbeds(embed, *other)
+        guild.selfMember.hasPermission(guildChannel, MESSAGE_ADD_REACTION, MESSAGE_HISTORY) -> reactError().flatMap { channel.sendMessageEmbeds(embed, *other).useComponentsV2(false) }
+        else -> channel.sendMessageEmbeds(embed, *other).useComponentsV2(false)
     }
 }

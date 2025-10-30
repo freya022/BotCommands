@@ -52,11 +52,11 @@ internal class LocalizableTextCommandImpl internal constructor(
     }
 
     override fun respondGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.channel.sendMessage(getGuildMessage(localizationPath, *entries))
+        return event.channel.sendMessage(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.message.reply(getGuildMessage(localizationPath, *entries))
+        return event.message.reply(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun respondLocalized(
@@ -64,7 +64,7 @@ internal class LocalizableTextCommandImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): MessageCreateAction {
-        return event.channel.sendMessage(getLocalizedMessage(locale, localizationPath, *entries))
+        return event.channel.sendMessage(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun replyLocalized(
@@ -72,6 +72,6 @@ internal class LocalizableTextCommandImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): MessageCreateAction {
-        return event.message.reply(getLocalizedMessage(locale, localizationPath, *entries))
+        return event.message.reply(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 }
