@@ -111,6 +111,7 @@ abstract class AbstractNestedPaginator<T : AbstractNestedPaginator<T>> protected
         @Suppress("UNCHECKED_CAST")
         selectedItem.pageEditor.accept(this as T, builder, embedBuilder, page)
         builder.setEmbeds(embedBuilder.build())
+        builder.useComponentsV2(false)
     }
 
     override fun putComponents(builder: MessageCreateBuilder) {

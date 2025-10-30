@@ -37,6 +37,7 @@ class Paginator internal constructor(
         val embedBuilder = EmbedBuilder()
         editor.accept(this, builder, embedBuilder, page)
         builder.setEmbeds(embedBuilder.build())
+        builder.useComponentsV2(false)
     }
 
     object Defaults {

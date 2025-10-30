@@ -35,6 +35,7 @@ abstract class AbstractMenu<E, T : AbstractMenu<E, T>> protected constructor(
         editor?.accept(this as T, builder, embedBuilder, page)
 
         builder.setEmbeds(embedBuilder.build())
+        builder.useComponentsV2(false)
     }
 
     companion object {
