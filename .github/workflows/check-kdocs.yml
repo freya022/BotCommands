@@ -29,5 +29,27 @@ jobs:
         run: ./gradlew test
 
       - name: Build KDocs
+        # Run even if tests failed
         if: ${{ !cancelled() }}
         run: ./gradlew dokkaGenerate
+
+      - name: Upload JUnit XML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-xml-test-report
+          path: '**/build/test-results/test'
+
+      - name: Upload HTML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-html-test-report
+          path: '**/build/reports/tests/test'
+
+      - name: Annotate Failed Tests
+        uses: mikepenz/action-junit-report@v6.0.0
+        if: ${{ !cancelled() }}
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          annotate_only: 'true'
