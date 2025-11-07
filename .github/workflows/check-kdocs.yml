@@ -9,7 +9,7 @@ on:
       - 3.X
 
 jobs:
-  check-tests:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
