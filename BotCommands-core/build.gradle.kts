@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
@@ -124,8 +127,20 @@ dependencies {
     testImplementation(libs.flyway.core)
     testRuntimeOnly(libs.flyway.database.postgresql)
 
+    testImplementation(projects.botCommandsMethodAccessors.classfile)
+
     // Test stuff
     testImplementation(libs.kotlin.metadata)
+}
+
+tasks.named<JavaCompile>("compileTestJava") {
+    options.release = 24
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_24
+    }
 }
 
 tasks.withType<Test> {
