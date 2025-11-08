@@ -27,10 +27,10 @@ val canSign = mavenGpgKeyId != null && mavenGpgSecretKey != null
 val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
 
 version = Version(
-    major = property("version.major").toString(),
-    minor = property("version.minor").toString(),
-    revision = property("version.revision").toString(),
-    classifier = property("version.classifier").toString(),
+    major = providers.gradleProperty("version.major").get(),
+    minor = providers.gradleProperty("version.minor").get(),
+    revision = providers.gradleProperty("version.revision").get(),
+    classifier = providers.gradleProperty("version.classifier").get(),
     // isRelease = isCi || canPublish
     isDev = !GitUtils.isCI(providers) && !canPublish
 )
