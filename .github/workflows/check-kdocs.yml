@@ -29,8 +29,8 @@ jobs:
         run: ./gradlew test
 
       - name: Build KDocs
-        # Run even if tests failed
-        if: ${{ !cancelled() }}
+        # Run even if tests failed, but only on PRs
+        if: ${{ !cancelled() && github.event_name == "pull_request" }}
         run: ./gradlew dokkaGenerate
 
       - name: Upload JUnit XML Test Report
