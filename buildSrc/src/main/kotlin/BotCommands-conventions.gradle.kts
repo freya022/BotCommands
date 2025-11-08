@@ -10,12 +10,13 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
-
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.isIncremental = true
+
+    options.release = 17
     options.compilerArgs.add("-parameters")
 }
 

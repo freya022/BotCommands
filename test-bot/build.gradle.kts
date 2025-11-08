@@ -47,9 +47,8 @@ tasks.withType<Test> {
     enabled = false
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+tasks.withType<JavaCompile> {
+    options.release = 24
 }
 
 kotlin {

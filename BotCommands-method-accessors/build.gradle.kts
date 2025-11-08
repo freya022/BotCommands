@@ -24,9 +24,8 @@ jmh {
     resultsFile = project.file("reports/jmh/results.txt") // results file
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+tasks.withType<JavaCompile> {
+    options.release = 24
 }
 
 kotlin {
