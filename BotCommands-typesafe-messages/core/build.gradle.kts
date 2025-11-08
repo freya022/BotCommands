@@ -18,6 +18,8 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
+    testImplementation(libs.bundles.test)
+
     testImplementation(libs.mockk)
     testImplementation(libs.logback.classic)
 }
@@ -31,6 +33,10 @@ kotlin {
         jvmTarget = JvmTarget.JVM_24
         optIn.add("dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTypesafeMessagesApi")
     }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 configurePublishedArtifact("BotCommands-typesafe-messages-core")

@@ -6,10 +6,8 @@ import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageS
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.verify
+import io.mockk.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
@@ -28,6 +26,11 @@ class MessageSourceFactoryGeneratorTest {
     }
 
     abstract class SourceFactoryAsAbstractClass : IMessageSourceFactory<IMessageSource>
+
+    @AfterEach
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `Generate IMessageSourceFactory`() {
