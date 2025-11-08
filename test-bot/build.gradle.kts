@@ -33,6 +33,9 @@ dependencies {
 
     runtimeOnly(projects.botCommandsMethodAccessors.classfile)
 
+    implementation(projects.botCommandsTypesafeMessages.core)
+    runtimeOnly(projects.botCommandsTypesafeMessages.bc)
+
     // ---------------------------- SPRING TEST BOT DEPENDENCIES ---------------------------
 
     // Spring module
