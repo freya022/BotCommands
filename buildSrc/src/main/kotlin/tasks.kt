@@ -1,8 +1,9 @@
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.dokka.gradle.DokkaExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 private val configuredPublishedArtifacts = hashSetOf<String>()
 
@@ -33,7 +34,7 @@ fun Project.configurePublishedArtifact(artifactId: String, packaging: String? = 
     }
 
     extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
-        coordinates(artifactId = artifactId)
+        coordinates(groupId = "io.github.freya022", artifactId = artifactId)
 
         pom {
             // Sonatype requires
