@@ -174,10 +174,25 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aastore()
             }
 
+            fun callWithContextLocale() {
+                // return this.localizationContext.localize("<templateKey>", localizationArgs)
+                codeBuilder.aload(thisSlot)
+                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.ldc(annotation.templateKey)
+                codeBuilder.aload(localizationArgsSlot)
+                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.areturn()
+            }
+
             lineNumber.setAndIncrement()
             if (localeParameter != null) {
                 val localeSlot = codeBuilder.parameterSlot(localeParameter.index - 1 /* instance */)
+                val ifNullLocaleLabel = codeBuilder.newLabel()
 
+                // if (locale == null) goto ifNullLocaleLabel;
+                codeBuilder.aload(localeSlot)
+                codeBuilder.ifnull(ifNullLocaleLabel)
+                // Locale is not null
                 // return this.localizationContext.localize(locale, "<templateKey>", localizationArgs)
                 codeBuilder.aload(thisSlot)
                 codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
@@ -186,14 +201,12 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aload(localizationArgsSlot)
                 codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_DiscordLocale, CD_String, CD_Localization_Entry.arrayType()))
                 codeBuilder.areturn()
+
+                // Locale is null
+                codeBuilder.labelBinding(ifNullLocaleLabel)
+                callWithContextLocale()
             } else {
-                // return this.localizationContext.localize("<templateKey>", localizationArgs)
-                codeBuilder.aload(thisSlot)
-                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
-                codeBuilder.ldc(annotation.templateKey)
-                codeBuilder.aload(localizationArgsSlot)
-                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
-                codeBuilder.areturn()
+                callWithContextLocale()
             }
         }
     }

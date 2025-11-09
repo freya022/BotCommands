@@ -91,6 +91,12 @@ class MessageSourceGeneratorTest {
         fun test(locale: DiscordLocale): String
     }
 
+    interface SourceWithNullableDiscordLocale: IMessageSource {
+
+        @LocalizedContent("SourceWithNullableDiscordLocale.key")
+        fun test(locale: DiscordLocale?): String
+    }
+
     @Test
     fun `Cannot generate IMessageSource as abstract class`() {
         assertThrows<IllegalMessageSourceClassTypeException> {
@@ -200,6 +206,18 @@ class MessageSourceGeneratorTest {
         source.test(DiscordLocale.FRENCH)
 
         verify(exactly = 1) { localizationContext.localize(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key") }
+    }
+
+    @Test
+    fun `Have null DiscordLocale as first argument`() {
+        val localizationContext = mockk<LocalizationContext> {
+            every { localize(any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceWithNullableDiscordLocale::class, localizationContext)
+        source.test(null)
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { localizationContext.localize("SourceWithNullableDiscordLocale.key") }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(
