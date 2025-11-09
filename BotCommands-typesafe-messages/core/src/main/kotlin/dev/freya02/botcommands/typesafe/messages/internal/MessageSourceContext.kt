@@ -10,20 +10,18 @@ import java.util.*
 internal class MessageSourceContext(
     private val localizationService: LocalizationService,
     private val localizationBundle: String,
-    private val guildLocale: DiscordLocale,
-    private val userLocale: DiscordLocale?,
+    guildLocale: DiscordLocale,
+    userLocale: DiscordLocale?,
 ) {
+
+    private val guildLocale: Locale = guildLocale.toLocale()
+    private val userLocale: Locale? = userLocale?.toLocale()
 
     init {
         // At least the root bundle must exist
         requireNotNull(localizationService.getInstance(localizationBundle, Locale.ROOT)) {
             "A root localization bundle must exist for $localizationBundle"
         }
-    }
-
-    @DynamicCall
-    fun localizeWith(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
-        return localizeWith(locale.toLocale(), localizationPath, *entries)
     }
 
     @DynamicCall
@@ -34,6 +32,11 @@ internal class MessageSourceContext(
             ?: throwInternal("Found no localization template for '$localizationPath' (in bundle '$localizationBundle' with locale '${localization.effectiveLocale}'), a root template should have been checked")
 
         return template.localize(*entries)
+    }
+
+    @DynamicCall
+    fun localizeWith(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
+        return localizeWith(locale.toLocale(), localizationPath, *entries)
     }
 
     @DynamicCall
