@@ -140,7 +140,7 @@ internal object LocalizedContentFunctionGenerator {
             "Some parameters are not supported!\n${missedParameters.joinAsList()}"
         }
 
-        val preferredLocale = function.findAnnotation<PreferLocale>()?.scope
+        val preferredLocale = function.findAnnotation<PreferLocale>()?.scope ?: declaringClass.findAnnotation<PreferLocale>()?.scope
         if (preferredLocale != null && localeParameter?.type?.isMarkedNullable == false) {
             // If there is a preferred locale annotation, it makes no sense to also have a mandatory locale parameter
             val logger = LoggerFactory.getLogger(declaringClass.java)

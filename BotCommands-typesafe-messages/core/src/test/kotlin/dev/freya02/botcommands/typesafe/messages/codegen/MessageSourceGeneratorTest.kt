@@ -119,6 +119,13 @@ class MessageSourceGeneratorTest {
         fun test(): String
     }
 
+    @PreferLocale(LocaleScope.GUILD)
+    interface SourceUsingGuildLocaleFromClass: IMessageSource {
+
+        @LocalizedContent("SourceUsingGuildLocaleFromClass.key")
+        fun test(): String
+    }
+
     interface SourcePreferringGuildLocaleIsOverriddenByRequiredLocale: IMessageSource {
 
         @PreferLocale(LocaleScope.GUILD)
@@ -289,6 +296,18 @@ class MessageSourceGeneratorTest {
 
         // Check it calls the method which uses the best locale
         verify(exactly = 1) { messageSourceContext.localizeWithGuild("SourceUsingGuildLocale.key") }
+    }
+
+    @Test
+    fun `Prefer guild locale from class`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWithGuild(any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceUsingGuildLocaleFromClass::class, messageSourceContext)
+        source.test()
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { messageSourceContext.localizeWithGuild("SourceUsingGuildLocaleFromClass.key") }
     }
 
     @Test
