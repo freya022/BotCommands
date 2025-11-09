@@ -1,10 +1,10 @@
 # BotCommands module - Typesafe messages
 This module allows you to define functions which retrieves translated messages,
 without having to implement anything, alongside a few other benefits:
-- Checks if the template key exists in the root bundle
-- Checks if function parameters exists in your template's arguments
+- Checks if the template key exists in the root bundle, ensuring your content can always be displayed
+- Checks if function parameters exists in your template's arguments, so all arguments are mapped
 - Checks if parameters can be formatted (on a best effort)
-- Removes magic strings from your business logic
+- Removes the need for magic strings (for the arguments), improving type safety and making regressions appear immediately
 
 ## Example
 > [!NOTE]
@@ -12,7 +12,13 @@ without having to implement anything, alongside a few other benefits:
 
 ### Creating a localization bundle
 Let's start by creating a localization bundle at `src/main/resources/bc_localization/MyBotMessages.json`,
-for our example it will contain a single localization template where:
+for our example it will contain a single localization template
+
+```json
+{
+  "bot.info": "I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and I am up since {uptime_timestamp}."
+}
+```
 
 - The key is `bot.info`
 - The template is `I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and I am up since {uptime_timestamp}.`
@@ -21,20 +27,12 @@ for our example it will contain a single localization template where:
   - `0#guilds|1#guild|1<guilds` is a subformat pattern for [ChoiceFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/ChoiceFormat.html)
   - See [MessageFormat](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html) for more details
 
-```json
-{
-  "bot.info": "I am in {guild_count, number} {guild_count, choice, 0#guilds|1#guild|1<guilds} and I am up since {uptime_timestamp}."
-}
-```
+### Creating our message source
 
-### Base interfaces
-
-> [!NOTE]
-> None of the interfaces defined below need to be implemented, they will be implemented and registered automatically.
-
-#### Message source
-Create an interface which extends `IMessageSource`, each function annotated with `@LocalizedContent` needs to return `String`,
-in that annotation you will need to put the key present in your localization bundle:
+Create an interface which extends `IMessageSource`;
+it will contain functions annotated with `@LocalizedContent`,
+the annotation's value is the key present in your localization bundle,
+and the function needs to return a `String`.
 
 ```kt
 interface MyBotMessages : IMessageSource {
@@ -53,24 +51,24 @@ interface MyBotMessages : IMessageSource {
 }
 ```
 
+Instances of this interface cannot be injected and do not need any implementation.
+
 [//]: # (TODO use Duration instead of Long for the uptime, explain about converters)
 
-You can of course add more functions with different templates if necessary.
+### Creating a factory for our source
 
-#### Message source factory
+We then need a way to get instances of our source;
+create an interface extending `IMessageSourceFactory<MyBotMessages>`,
+and annotate it with `@MessageSourceFactory("MyBotMessages")`,
+the `MyBotMessages` string is the name of the bundle we added in the first step.
 
-Then, you need a way to get instances of `MyBotMessages`, create an interface extending `IMessageSourceFactory<MyBotMessages>`,
-and annotate it with `@MessageSourceFactory("MyBotMessages")`:
 ```kt
-// The base name of the localization bundles to look at,
-// which files it actually loads is based on the available LocalizationMapReader(s)
-// and the effective locale
 @MessageSourceFactory("MyBotMessages")
 interface MyBotMessagesFactory : IMessageSourceFactory<MyBotMessages>
 ```
 
-This interface will allow you to create `MyBotMessages` instances from different objects,
-such as `Interaction`.
+Instances of this interface can be injected like any other service,
+and will allow you to create `MyBotMessages` instances from an `Interaction`.
 
 [//]: # (TODO add more object types, probably Locale/DiscordLocale)
 
@@ -145,8 +143,14 @@ dependencies {
 <dependencies>
   <dependency>
     <groupId>io.github.freya022</groupId>
+    <artifactId>BotCommands-typesafe-messages-core</artifactId>
+    <version>VERSION</version>
+  </dependency>
+  <dependency>
+    <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands-typesafe-messages-spring</artifactId>
     <version>VERSION</version>
+    <scope>runtime</scope>
   </dependency>
 </dependencies>
 ```
@@ -158,7 +162,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.freya022:BotCommands-typesafe-messages-spring:VERSION")
+    implementation("io.github.freya022:BotCommands-typesafe-messages-core:VERSION")
+    runtimeOnly("io.github.freya022:BotCommands-typesafe-messages-spring:VERSION")
 }
 ```
 
