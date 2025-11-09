@@ -5,6 +5,7 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedConten
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
+import dev.freya02.botcommands.typesafe.messages.internal.exceptions.throwInternal
 import dev.freya02.botcommands.typesafe.messages.internal.utils.convertToCamelCase
 import dev.freya02.botcommands.typesafe.messages.internal.utils.isRequired
 import dev.freya02.botcommands.typesafe.messages.internal.utils.require
@@ -22,6 +23,7 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -186,6 +188,11 @@ internal object LocalizedContentFunctionGenerator {
 
             lineNumber.setAndIncrement()
             if (localeParameter != null) {
+                val localeDescriptor = when (val localeType = localeParameter.type.jvmErasure.java) {
+                    DiscordLocale::class.java -> CD_DiscordLocale
+                    Locale::class.java -> CD_Locale
+                    else -> throwInternal("Unsupported locale type: ${localeType.name}")
+                }
                 val localeSlot = codeBuilder.parameterSlot(localeParameter.index - 1 /* instance */)
                 val ifNullLocaleLabel = codeBuilder.newLabel()
 
@@ -199,7 +206,7 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aload(localeSlot)
                 codeBuilder.ldc(annotation.templateKey)
                 codeBuilder.aload(localizationArgsSlot)
-                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWith", MethodTypeDesc.of(CD_String, CD_DiscordLocale, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWith", MethodTypeDesc.of(CD_String, localeDescriptor, CD_String, CD_Localization_Entry.arrayType()))
                 codeBuilder.areturn()
 
                 // Locale is null
@@ -223,7 +230,10 @@ internal object LocalizedContentFunctionGenerator {
     }
 
     internal fun getLocaleParameter(function: KFunction<*>): KParameter? {
-        return function.valueParameters.firstOrNull()?.takeIf { it.type.jvmErasure.java == DiscordLocale::class.java }
+        return function.valueParameters.firstOrNull()?.takeIf {
+            val localeType = it.type.jvmErasure.java
+            localeType == DiscordLocale::class.java || localeType == Locale::class.java
+        }
     }
 
     internal fun getTemplateArgumentParameterName(parameter: KParameter): String? {

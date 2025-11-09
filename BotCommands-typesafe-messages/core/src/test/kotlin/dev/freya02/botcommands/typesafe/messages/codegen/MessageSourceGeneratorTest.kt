@@ -13,6 +13,7 @@ import io.mockk.verify
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -95,6 +96,18 @@ class MessageSourceGeneratorTest {
 
         @LocalizedContent("SourceWithNullableDiscordLocale.key")
         fun test(locale: DiscordLocale?): String
+    }
+
+    interface SourceWithLocale: IMessageSource {
+
+        @LocalizedContent("SourceWithLocale.key")
+        fun test(locale: Locale): String
+    }
+
+    interface SourceWithNullableLocale: IMessageSource {
+
+        @LocalizedContent("SourceWithNullableLocale.key")
+        fun test(locale: Locale?): String
     }
 
     @Test
@@ -218,6 +231,29 @@ class MessageSourceGeneratorTest {
 
         // Check it calls the method which uses the best locale
         verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableDiscordLocale.key") }
+    }
+
+    @Test
+    fun `Have Locale as first argument`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWith(Locale.FRENCH, any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceWithLocale::class, messageSourceContext)
+        source.test(Locale.FRENCH)
+
+        verify(exactly = 1) { messageSourceContext.localizeWith(Locale.FRENCH, "SourceWithLocale.key") }
+    }
+
+    @Test
+    fun `Have null Locale as first argument`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceWithNullableLocale::class, messageSourceContext)
+        source.test(null)
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableLocale.key") }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(

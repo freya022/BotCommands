@@ -26,6 +26,7 @@ internal class MessageSourceContext(
         return localizeWith(locale.toLocale(), localizationPath, *entries)
     }
 
+    @DynamicCall
     fun localizeWith(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String {
         val localization = localizationService.getInstance(localizationBundle, locale)
             ?: throwInternal("Found no localization instance for bundle '${localizationBundle}' and locale '${locale.toLanguageTag()}', the root bundle should have been checked")
