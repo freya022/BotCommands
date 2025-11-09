@@ -127,6 +127,12 @@ internal object LocalizedContentFunctionGenerator {
             }
         }
 
+        // Check for parameter unhandled by this generator
+        val missedParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE } - templateParameters
+        check(missedParameters.isEmpty()) {
+            "Some parameters are not supported!\n${missedParameters.joinAsList()}"
+        }
+
         classBuilder.withMethodBody(
             function.name,
             function.toMethodTypeDesc(),
