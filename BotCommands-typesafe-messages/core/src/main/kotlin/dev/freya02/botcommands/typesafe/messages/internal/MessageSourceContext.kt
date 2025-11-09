@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.typesafe.messages.internal
 
+import dev.freya02.botcommands.typesafe.messages.internal.annotations.DynamicCall
 import dev.freya02.botcommands.typesafe.messages.internal.exceptions.throwInternal
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -20,6 +21,7 @@ internal class MessageSourceContext(
         }
     }
 
+    @DynamicCall
     fun localizeWith(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
         return localizeWith(locale.toLocale(), localizationPath, *entries)
     }
@@ -33,6 +35,7 @@ internal class MessageSourceContext(
         return template.localize(*entries)
     }
 
+    @DynamicCall
     fun localizePreferringUser(localizationPath: String, vararg entries: Localization.Entry): String =
         localizeWith(userLocale ?: guildLocale, localizationPath, *entries)
 
