@@ -15,7 +15,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.localization.LocalizationService
-import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 import io.github.freya022.botcommands.internal.utils.superErasureAt
 import java.util.*
 import kotlin.reflect.KClass
@@ -49,7 +48,7 @@ internal object PostLoadValidator {
                     "No template key '$templateKey' exists in the root bundle '$bundleName' for ${function.getSignature(qualifiedClass = true, source = false)}"
                 }
 
-                val formattableArguments = template.arguments.filterIsInstance<FormattableArgument>()
+                val formattableArguments = template.arguments
                 LocalizedContentFunctionGenerator.getTemplateArgumentParameters(function).forEach { parameter ->
                     val expectedArgName = LocalizedContentFunctionGenerator.getTemplateArgumentParameterName(parameter)!!
                     require(formattableArguments.any { it.argumentName == expectedArgName }, ::NoSuchTemplateArgumentException) {
