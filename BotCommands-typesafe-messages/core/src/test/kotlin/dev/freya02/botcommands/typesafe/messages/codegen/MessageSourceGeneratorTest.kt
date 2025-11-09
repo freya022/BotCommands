@@ -1,7 +1,9 @@
 package dev.freya02.botcommands.typesafe.messages.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
+import dev.freya02.botcommands.typesafe.messages.api.LocaleScope
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
+import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
@@ -107,6 +109,27 @@ class MessageSourceGeneratorTest {
     interface SourceWithNullableLocale: IMessageSource {
 
         @LocalizedContent("SourceWithNullableLocale.key")
+        fun test(locale: Locale?): String
+    }
+
+    interface SourceUsingGuildLocale: IMessageSource {
+
+        @PreferLocale(LocaleScope.GUILD)
+        @LocalizedContent("SourceUsingGuildLocale.key")
+        fun test(): String
+    }
+
+    interface SourcePreferringGuildLocaleIsOverriddenByRequiredLocale: IMessageSource {
+
+        @PreferLocale(LocaleScope.GUILD)
+        @LocalizedContent("SourcePreferringGuildLocaleIsOverriddenByRequiredLocale.key")
+        fun test(locale: Locale): String
+    }
+
+    interface SourcePreferredGuildLocaleOverridesNullLocale: IMessageSource {
+
+        @PreferLocale(LocaleScope.GUILD)
+        @LocalizedContent("SourcePreferredGuildLocaleOverridesNullLocale.key")
         fun test(locale: Locale?): String
     }
 
@@ -254,6 +277,42 @@ class MessageSourceGeneratorTest {
 
         // Check it calls the method which uses the best locale
         verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableLocale.key") }
+    }
+
+    @Test
+    fun `Prefer guild locale`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWithGuild(any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceUsingGuildLocale::class, messageSourceContext)
+        source.test()
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { messageSourceContext.localizeWithGuild("SourceUsingGuildLocale.key") }
+    }
+
+    @Test
+    fun `Preferred locale is overridden by required locale`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWith(any<Locale>(), any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourcePreferringGuildLocaleIsOverriddenByRequiredLocale::class, messageSourceContext)
+        source.test(Locale.FRENCH)
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { messageSourceContext.localizeWith(Locale.FRENCH, "SourcePreferringGuildLocaleIsOverriddenByRequiredLocale.key") }
+    }
+
+    @Test
+    fun `Preferred locale overrides null locale`() {
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWithGuild(any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourcePreferredGuildLocaleOverridesNullLocale::class, messageSourceContext)
+        source.test(null)
+
+        // Check it calls the method which uses the best locale
+        verify(exactly = 1) { messageSourceContext.localizeWithGuild("SourcePreferredGuildLocaleOverridesNullLocale.key") }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(

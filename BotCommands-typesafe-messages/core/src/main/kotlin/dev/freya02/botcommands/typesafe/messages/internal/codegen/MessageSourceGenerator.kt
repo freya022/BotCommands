@@ -1,7 +1,9 @@
 package dev.freya02.botcommands.typesafe.messages.internal.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
+import dev.freya02.botcommands.typesafe.messages.api.LocaleScope
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
+import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
@@ -13,6 +15,7 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBina
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import org.slf4j.LoggerFactory
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.TypeKind
@@ -85,7 +88,7 @@ internal object MessageSourceGenerator {
             }
 
             toImplement.forEach { function ->
-                LocalizedContentFunctionGenerator.create(thisClass, classBuilder, function)
+                LocalizedContentFunctionGenerator.create(thisClass, classBuilder, sourceType, function)
             }
         }
 
@@ -109,7 +112,7 @@ internal object MessageSourceGenerator {
 
 internal object LocalizedContentFunctionGenerator {
 
-    internal fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, function: KFunction<*>) {
+    internal fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, declaringClass: KClass<out IMessageSource>, function: KFunction<*>) {
         require(!function.isSuspend, ::UnsupportedSuspendFunctionException) {
             "Suspend functions are not supported! ${function.getSignature(qualifiedClass = true, source = false)}"
         }
@@ -135,6 +138,13 @@ internal object LocalizedContentFunctionGenerator {
         val missedParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE } - templateParameters - localeParameter
         check(missedParameters.isEmpty()) {
             "Some parameters are not supported!\n${missedParameters.joinAsList()}"
+        }
+
+        val preferredLocale = function.findAnnotation<PreferLocale>()?.scope
+        if (preferredLocale != null && localeParameter?.type?.isMarkedNullable == false) {
+            // If there is a preferred locale annotation, it makes no sense to also have a mandatory locale parameter
+            val logger = LoggerFactory.getLogger(declaringClass.java)
+            logger.warn("@${PreferLocale::class.java.simpleName} is ignored on ${function.getSignature(source = false)} because it has a non-null ${localeParameter.type.jvmErasure.simpleName} parameter")
         }
 
         classBuilder.withMethodBody(
@@ -186,6 +196,27 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.areturn()
             }
 
+            fun callWithGuildLocale() {
+                // return this.messageSourceContext.localizeWithGuild("<templateKey>", localizationArgs)
+                codeBuilder.aload(thisSlot)
+                codeBuilder.getfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
+                codeBuilder.ldc(annotation.templateKey)
+                codeBuilder.aload(localizationArgsSlot)
+                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWithGuild", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.areturn()
+            }
+
+            fun callWith(localeDescriptor: ClassDesc, localeSlot: Int) {
+                // return this.messageSourceContext.localizeWith(locale, "<templateKey>", localizationArgs)
+                codeBuilder.aload(thisSlot)
+                codeBuilder.getfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
+                codeBuilder.aload(localeSlot)
+                codeBuilder.ldc(annotation.templateKey)
+                codeBuilder.aload(localizationArgsSlot)
+                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWith", MethodTypeDesc.of(CD_String, localeDescriptor, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.areturn()
+            }
+
             lineNumber.setAndIncrement()
             if (localeParameter != null) {
                 val localeDescriptor = when (val localeType = localeParameter.type.jvmErasure.java) {
@@ -200,20 +231,19 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aload(localeSlot)
                 codeBuilder.ifnull(ifNullLocaleLabel)
                 // Locale is not null
-                // return this.messageSourceContext.localizeWith(locale, "<templateKey>", localizationArgs)
-                codeBuilder.aload(thisSlot)
-                codeBuilder.getfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
-                codeBuilder.aload(localeSlot)
-                codeBuilder.ldc(annotation.templateKey)
-                codeBuilder.aload(localizationArgsSlot)
-                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWith", MethodTypeDesc.of(CD_String, localeDescriptor, CD_String, CD_Localization_Entry.arrayType()))
-                codeBuilder.areturn()
+                callWith(localeDescriptor, localeSlot)
 
                 // Locale is null
                 codeBuilder.labelBinding(ifNullLocaleLabel)
-                callWithContextLocale()
+                when (preferredLocale) {
+                    LocaleScope.PREFER_USER, null -> callWithContextLocale()
+                    LocaleScope.GUILD -> callWithGuildLocale()
+                }
             } else {
-                callWithContextLocale()
+                when (preferredLocale) {
+                    LocaleScope.PREFER_USER, null -> callWithContextLocale()
+                    LocaleScope.GUILD -> callWithGuildLocale()
+                }
             }
         }
     }
