@@ -1,7 +1,10 @@
 package dev.freya02.botcommands.typesafe.messages.api.annotations
 
 /**
- * Parameter name is converted to `camelCase`
+ * First parameter can be a [DiscordLocale][net.dv8tion.jda.api.interactions.DiscordLocale] or a [Locale][java.util.Locale],
+ * they can be nullable or optional, if it is `null`, then the context-specific locale is used.
+ *
+ * Parameter names are converted to `camelCase`
  *
  * Must return `String`
  */

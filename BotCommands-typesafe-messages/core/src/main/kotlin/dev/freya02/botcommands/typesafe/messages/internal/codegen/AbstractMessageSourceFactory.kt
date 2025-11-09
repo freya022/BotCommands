@@ -2,8 +2,8 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
+import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import io.github.freya022.botcommands.api.localization.LocalizationService
-import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.Interaction
@@ -18,15 +18,14 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> int
     override fun create(interaction: Interaction): T {
         val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
 
-        val localizationContext = LocalizationContext.create(
+        val messageSourceContext = MessageSourceContext(
             localizationService = localizationService,
             localizationBundle = bundle,
-            localizationPrefix = null,
             guildLocale = guildLocaleProvider.getDiscordLocale(interaction),
             userLocale = userLocaleProvider.getDiscordLocale(interaction),
         )
 
-        return MessageSourceGenerator.instantiate(sourceHandle, localizationContext)
+        return MessageSourceGenerator.instantiate(sourceHandle, messageSourceContext)
     }
 
     internal data class Params(

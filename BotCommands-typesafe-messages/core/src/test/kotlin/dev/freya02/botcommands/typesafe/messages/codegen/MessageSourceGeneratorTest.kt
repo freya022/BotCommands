@@ -3,10 +3,10 @@ package dev.freya02.botcommands.typesafe.messages.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
+import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
 import io.github.freya022.botcommands.api.localization.Localization
-import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -106,35 +106,35 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Generate IMessageSource without params`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(any<String>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithoutArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithoutArgs::class, messageSourceContext)
 
         source.test()
-        verify(exactly = 1) { localizationContext.localize("SourceWithoutArgs.key") }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithoutArgs.key") }
     }
 
     @Test
     fun `Generate IMessageSource with params`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithArgs::class, messageSourceContext)
 
         source.test("42")
-        verify(exactly = 1) { localizationContext.localize("SourceWithArgs.key", Localization.Entry("string", "42")) }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithArgs.key", Localization.Entry("string", "42")) }
     }
 
     @Test
     fun `Generate IMessageSource with primitive params`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithPrimitiveArgs::class, localizationContext)
+        val source = createAndInstantiate(SourceWithPrimitiveArgs::class, messageSourceContext)
 
         source.test(42)
-        verify(exactly = 1) { localizationContext.localize("SourceWithPrimitiveArgs.key", Localization.Entry("integer", 42)) }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithPrimitiveArgs.key", Localization.Entry("integer", 42)) }
     }
 
     @Test
@@ -146,8 +146,8 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Generate IMessageSource without annotation on concrete method`() {
-        val localizationContext = mockk<LocalizationContext>()
-        val source = createAndInstantiate(SourceWithoutAnnotationOnConcrete::class, localizationContext)
+        val messageSourceContext = mockk<MessageSourceContext>()
+        val source = createAndInstantiate(SourceWithoutAnnotationOnConcrete::class, messageSourceContext)
         assertEquals("test", source.test())
     }
 
@@ -167,13 +167,13 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Generate IMessageSource with camelCase param converts to snake_case`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(any<String>(), any<Localization.Entry>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithCamelCaseArg::class, localizationContext)
+        val source = createAndInstantiate(SourceWithCamelCaseArg::class, messageSourceContext)
         source.test("arg")
 
-        verify(exactly = 1) { localizationContext.localize("SourceWithCamelCaseArg.key", Localization.Entry("my_arg", "arg")) }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithCamelCaseArg.key", Localization.Entry("my_arg", "arg")) }
     }
 
     @Test
@@ -199,31 +199,31 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Have DiscordLocale as first argument`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(DiscordLocale.FRENCH, any<String>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizeWith(DiscordLocale.FRENCH, any<String>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithDiscordLocale::class, localizationContext)
+        val source = createAndInstantiate(SourceWithDiscordLocale::class, messageSourceContext)
         source.test(DiscordLocale.FRENCH)
 
-        verify(exactly = 1) { localizationContext.localize(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizeWith(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key") }
     }
 
     @Test
     fun `Have null DiscordLocale as first argument`() {
-        val localizationContext = mockk<LocalizationContext> {
-            every { localize(any<String>()) } returns "expected"
+        val messageSourceContext = mockk<MessageSourceContext> {
+            every { localizePreferringUser(any<String>()) } returns "expected"
         }
-        val source = createAndInstantiate(SourceWithNullableDiscordLocale::class, localizationContext)
+        val source = createAndInstantiate(SourceWithNullableDiscordLocale::class, messageSourceContext)
         source.test(null)
 
         // Check it calls the method which uses the best locale
-        verify(exactly = 1) { localizationContext.localize("SourceWithNullableDiscordLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableDiscordLocale.key") }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(
         sourceType: KClass<T>,
-        localizationContext: LocalizationContext,
+        messageSourceContext: MessageSourceContext,
     ): T {
-        return instantiate(MessageSourceGenerator.create(sourceType), localizationContext)
+        return instantiate(MessageSourceGenerator.create(sourceType), messageSourceContext)
     }
 }

@@ -3,6 +3,7 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
+import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
 import dev.freya02.botcommands.typesafe.messages.internal.utils.convertToCamelCase
 import dev.freya02.botcommands.typesafe.messages.internal.utils.isRequired
@@ -10,7 +11,6 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
@@ -55,28 +55,28 @@ internal object MessageSourceGenerator {
             classBuilder.withFlags(AccessFlag.PUBLIC, AccessFlag.FINAL)
             classBuilder.withInterfaceSymbols(ClassDesc.of(sourceType.jvmName))
 
-            classBuilder.withField("localizationContext", CD_LocalizationContext, ClassFile.ACC_PRIVATE or ClassFile.ACC_FINAL)
+            classBuilder.withField("messageSourceContext", CD_MessageSourceContext, ClassFile.ACC_PRIVATE or ClassFile.ACC_FINAL)
 
             classBuilder.withMethodBody(
                 INIT_NAME,
-                MethodTypeDesc.of(CD_void, CD_LocalizationContext),
+                MethodTypeDesc.of(CD_void, CD_MessageSourceContext),
                 ClassFile.ACC_PUBLIC
             ) { codeBuilder ->
                 val lineNumber = LineNumber(codeBuilder)
 
                 val thisSlot = codeBuilder.receiverSlot()
-                val localizationContextSlot = codeBuilder.parameterSlot(0)
+                val messageSourceContextSlot = codeBuilder.parameterSlot(0)
 
                 // this.super()
                 lineNumber.setAndIncrement()
                 codeBuilder.aload(thisSlot)
                 codeBuilder.invokespecial(CD_Object, INIT_NAME, MethodTypeDesc.of(CD_void))
 
-                // this.localizationContext = localizationContext
+                // this.messageSourceContext = messageSourceContext
                 lineNumber.setAndIncrement()
                 codeBuilder.aload(thisSlot)
-                codeBuilder.aload(localizationContextSlot)
-                codeBuilder.putfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.aload(messageSourceContextSlot)
+                codeBuilder.putfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
 
                 // Required
                 codeBuilder.return_()
@@ -89,7 +89,7 @@ internal object MessageSourceGenerator {
 
         val lookup = MethodHandles.lookup()
         return lookup.defineClass(sourceBytes)
-            .getConstructor(LocalizationContext::class.java)
+            .getConstructor(MessageSourceContext::class.java)
             .let(lookup::unreflectConstructor)
     }
 
@@ -100,8 +100,8 @@ internal object MessageSourceGenerator {
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <T : IMessageSource> instantiate(handle: MethodHandle, localizationContext: LocalizationContext): T {
-        return handle.invoke(localizationContext) as T
+    internal fun <T : IMessageSource> instantiate(handle: MethodHandle, messageSourceContext: MessageSourceContext): T {
+        return handle.invoke(messageSourceContext) as T
     }
 }
 
@@ -175,12 +175,12 @@ internal object LocalizedContentFunctionGenerator {
             }
 
             fun callWithContextLocale() {
-                // return this.localizationContext.localize("<templateKey>", localizationArgs)
+                // return this.messageSourceContext.localizePreferringUser("<templateKey>", localizationArgs)
                 codeBuilder.aload(thisSlot)
-                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.getfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
                 codeBuilder.ldc(annotation.templateKey)
                 codeBuilder.aload(localizationArgsSlot)
-                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizePreferringUser", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
                 codeBuilder.areturn()
             }
 
@@ -193,13 +193,13 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aload(localeSlot)
                 codeBuilder.ifnull(ifNullLocaleLabel)
                 // Locale is not null
-                // return this.localizationContext.localize(locale, "<templateKey>", localizationArgs)
+                // return this.messageSourceContext.localizeWith(locale, "<templateKey>", localizationArgs)
                 codeBuilder.aload(thisSlot)
-                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.getfield(thisClass, "messageSourceContext", CD_MessageSourceContext)
                 codeBuilder.aload(localeSlot)
                 codeBuilder.ldc(annotation.templateKey)
                 codeBuilder.aload(localizationArgsSlot)
-                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_DiscordLocale, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.invokevirtual(CD_MessageSourceContext, "localizeWith", MethodTypeDesc.of(CD_String, CD_DiscordLocale, CD_String, CD_Localization_Entry.arrayType()))
                 codeBuilder.areturn()
 
                 // Locale is null
