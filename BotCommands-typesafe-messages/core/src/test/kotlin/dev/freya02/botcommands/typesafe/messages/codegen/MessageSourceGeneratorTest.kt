@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.localization.context.LocalizationConte
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.reflect.KClass
@@ -82,6 +83,12 @@ class MessageSourceGeneratorTest {
 
         @LocalizedContent("SourceWithNullableArg.key")
         fun test(arg: String?): String
+    }
+
+    interface SourceWithDiscordLocale: IMessageSource {
+
+        @LocalizedContent("SourceWithDiscordLocale.key")
+        fun test(locale: DiscordLocale): String
     }
 
     @Test
@@ -182,6 +189,17 @@ class MessageSourceGeneratorTest {
         assertThrows<UnsupportedNullableParameterException> {
             MessageSourceGenerator.create(SourceWithNullableArg::class)
         }
+    }
+
+    @Test
+    fun `Have DiscordLocale as first argument`() {
+        val localizationContext = mockk<LocalizationContext> {
+            every { localize(DiscordLocale.FRENCH, any<String>()) } returns "expected"
+        }
+        val source = createAndInstantiate(SourceWithDiscordLocale::class, localizationContext)
+        source.test(DiscordLocale.FRENCH)
+
+        verify(exactly = 1) { localizationContext.localize(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key") }
     }
 
     private fun <T : IMessageSource> createAndInstantiate(

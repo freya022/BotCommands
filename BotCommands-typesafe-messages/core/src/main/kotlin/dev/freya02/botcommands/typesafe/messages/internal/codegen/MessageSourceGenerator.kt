@@ -11,6 +11,7 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBina
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.TypeKind
@@ -126,9 +127,10 @@ internal object LocalizedContentFunctionGenerator {
                 "Nullable parameters are not allowed! $parameter"
             }
         }
+        val localeParameter = getLocaleParameter(function)
 
         // Check for parameter unhandled by this generator
-        val missedParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE } - templateParameters
+        val missedParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE } - templateParameters - localeParameter
         check(missedParameters.isEmpty()) {
             "Some parameters are not supported!\n${missedParameters.joinAsList()}"
         }
@@ -172,19 +174,43 @@ internal object LocalizedContentFunctionGenerator {
                 codeBuilder.aastore()
             }
 
-            // return this.localizationContext.localize("<templateKey>", localizationArgs)
             lineNumber.setAndIncrement()
-            codeBuilder.aload(thisSlot)
-            codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
-            codeBuilder.ldc(annotation.templateKey)
-            codeBuilder.aload(localizationArgsSlot)
-            codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
-            codeBuilder.areturn()
+            if (localeParameter != null) {
+                val localeSlot = codeBuilder.parameterSlot(localeParameter.index - 1 /* instance */)
+
+                // return this.localizationContext.localize(locale, "<templateKey>", localizationArgs)
+                codeBuilder.aload(thisSlot)
+                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.aload(localeSlot)
+                codeBuilder.ldc(annotation.templateKey)
+                codeBuilder.aload(localizationArgsSlot)
+                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_DiscordLocale, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.areturn()
+            } else {
+                // return this.localizationContext.localize("<templateKey>", localizationArgs)
+                codeBuilder.aload(thisSlot)
+                codeBuilder.getfield(thisClass, "localizationContext", CD_LocalizationContext)
+                codeBuilder.ldc(annotation.templateKey)
+                codeBuilder.aload(localizationArgsSlot)
+                codeBuilder.invokeinterface(CD_LocalizationContext, "localize", MethodTypeDesc.of(CD_String, CD_String, CD_Localization_Entry.arrayType()))
+                codeBuilder.areturn()
+            }
         }
     }
 
     internal fun getTemplateArgumentParameters(function: KFunction<*>): List<KParameter> {
-        return function.valueParameters
+        var parameters = function.valueParameters
+
+        // Exclude locale parameter
+        val localeParameter = getLocaleParameter(function)
+        if (localeParameter != null)
+            parameters = parameters - localeParameter
+
+        return parameters
+    }
+
+    internal fun getLocaleParameter(function: KFunction<*>): KParameter? {
+        return function.valueParameters.firstOrNull()?.takeIf { it.type.jvmErasure.java == DiscordLocale::class.java }
     }
 
     internal fun getTemplateArgumentParameterName(parameter: KParameter): String? {
