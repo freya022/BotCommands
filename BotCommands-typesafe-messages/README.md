@@ -76,18 +76,13 @@ and will allow you to create `MyBotMessages` instances from an `Interaction`.
 
 ```kt
 @Command
-class SlashInfo(
-    // Inject our factory, instances of it are created automatically
-    private val botMessagesFactory: MyBotMessagesFactory,
-) : ApplicationCommand() {
+class SlashInfo : ApplicationCommand() {
 
     @JDASlashCommand(
         name = "info",
         description = "Sends info about the bot",
     )
-    fun onSlashInfo(event: GuildSlashEvent) {
-        // Create an instance from the current interaction
-        val botMessages = botMessagesFactory.create(event)
+    fun onSlashInfo(event: GuildSlashEvent, botMessages: MyBotMessages) {
         val response = botMessages.botInfo(
             // Use named parameters to make the arguments clearer!
             guildCount = event.jda.guildCache.size(),
@@ -100,6 +95,10 @@ class SlashInfo(
     }
 }
 ```
+
+> [!INFO]
+> Injecting the `MyBotMessages` instance in the slash command function
+> is the same as injecting `MyBotMessagesFactory` in your class then using it in your command to create instances of `MyBotMessages`.
 
 Try out `/info`!
 
