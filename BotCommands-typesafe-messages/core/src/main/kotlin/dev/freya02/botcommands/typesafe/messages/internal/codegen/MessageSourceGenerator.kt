@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.typesafe.messages.internal.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
-import dev.freya02.botcommands.typesafe.messages.api.LocaleScope
+import dev.freya02.botcommands.typesafe.messages.api.LocalePreference
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
@@ -140,7 +140,7 @@ internal object LocalizedContentFunctionGenerator {
             "Some parameters are not supported!\n${missedParameters.joinAsList()}"
         }
 
-        val preferredLocale = function.findAnnotation<PreferLocale>()?.scope ?: declaringClass.findAnnotation<PreferLocale>()?.scope
+        val preferredLocale = function.findAnnotation<PreferLocale>()?.preference ?: declaringClass.findAnnotation<PreferLocale>()?.preference
         if (preferredLocale != null && localeParameter?.type?.isMarkedNullable == false) {
             // If there is a preferred locale annotation, it makes no sense to also have a mandatory locale parameter
             val logger = LoggerFactory.getLogger(declaringClass.java)
@@ -236,13 +236,13 @@ internal object LocalizedContentFunctionGenerator {
                 // Locale is null
                 codeBuilder.labelBinding(ifNullLocaleLabel)
                 when (preferredLocale) {
-                    LocaleScope.PREFER_USER, null -> callWithContextLocale()
-                    LocaleScope.GUILD -> callWithGuildLocale()
+                    LocalePreference.PREFER_USER, null -> callWithContextLocale()
+                    LocalePreference.GUILD -> callWithGuildLocale()
                 }
             } else {
                 when (preferredLocale) {
-                    LocaleScope.PREFER_USER, null -> callWithContextLocale()
-                    LocaleScope.GUILD -> callWithGuildLocale()
+                    LocalePreference.PREFER_USER, null -> callWithContextLocale()
+                    LocalePreference.GUILD -> callWithGuildLocale()
                 }
             }
         }

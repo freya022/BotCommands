@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.typesafe.messages.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
-import dev.freya02.botcommands.typesafe.messages.api.LocaleScope
+import dev.freya02.botcommands.typesafe.messages.api.LocalePreference
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
@@ -114,12 +114,12 @@ class MessageSourceGeneratorTest {
 
     interface SourceUsingGuildLocale: IMessageSource {
 
-        @PreferLocale(LocaleScope.GUILD)
+        @PreferLocale(LocalePreference.GUILD)
         @LocalizedContent("SourceUsingGuildLocale.key")
         fun test(): String
     }
 
-    @PreferLocale(LocaleScope.GUILD)
+    @PreferLocale(LocalePreference.GUILD)
     interface SourceUsingGuildLocaleFromClass: IMessageSource {
 
         @LocalizedContent("SourceUsingGuildLocaleFromClass.key")
@@ -128,14 +128,14 @@ class MessageSourceGeneratorTest {
 
     interface SourcePreferringGuildLocaleIsOverriddenByRequiredLocale: IMessageSource {
 
-        @PreferLocale(LocaleScope.GUILD)
+        @PreferLocale(LocalePreference.GUILD)
         @LocalizedContent("SourcePreferringGuildLocaleIsOverriddenByRequiredLocale.key")
         fun test(locale: Locale): String
     }
 
     interface SourcePreferredGuildLocaleOverridesNullLocale: IMessageSource {
 
-        @PreferLocale(LocaleScope.GUILD)
+        @PreferLocale(LocalePreference.GUILD)
         @LocalizedContent("SourcePreferredGuildLocaleOverridesNullLocale.key")
         fun test(locale: Locale?): String
     }

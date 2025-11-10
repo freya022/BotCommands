@@ -1,6 +1,6 @@
 package dev.freya02.botcommands.typesafe.messages.api.annotations
 
-import dev.freya02.botcommands.typesafe.messages.api.LocaleScope
+import dev.freya02.botcommands.typesafe.messages.api.LocalePreference
 
 /**
  * Allows changing the default locale with another preferred locale,
@@ -18,5 +18,5 @@ annotation class PreferLocale(
     /**
      * The locale to prefer.
      */
-    val scope: LocaleScope
+    val preference: LocalePreference
 )

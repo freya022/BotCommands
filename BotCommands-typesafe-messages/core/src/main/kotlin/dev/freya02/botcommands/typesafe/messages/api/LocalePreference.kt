@@ -6,7 +6,7 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTyp
  * Enumeration of locale preferences.
  */
 @ExperimentalTypesafeMessagesApi
-enum class LocaleScope {
+enum class LocalePreference {
 
     /**
      * Prefers using the user locale, falls back to [GUILD] if unavailable.
