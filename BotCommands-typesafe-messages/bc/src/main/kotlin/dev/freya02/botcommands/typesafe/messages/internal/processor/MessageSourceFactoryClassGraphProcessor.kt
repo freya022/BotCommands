@@ -29,7 +29,10 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
             annotation.bundleName,
             messageSourceFactoryType,
         )
-        serviceContainer.putSuppliedService(ServiceSupplier(messageSourceFactoryType) { context ->
+        serviceContainer.putSuppliedService(ServiceSupplier(
+            primaryType = messageSourceFactoryType,
+            additionalTypes = setOf(IMessageSourceFactory::class)
+        ) { context ->
             sourceFactoryProvider.get(context)
         })
     }
