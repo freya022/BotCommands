@@ -115,8 +115,14 @@ There are different dependencies based on what dependency injection you use:
 <dependencies>
   <dependency>
     <groupId>io.github.freya022</groupId>
+    <artifactId>BotCommands-typesafe-messages-core</artifactId>
+    <version>VERSION</version>
+  </dependency>
+  <dependency>
+    <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands-typesafe-messages-bc</artifactId>
     <version>VERSION</version>
+    <scope>runtime</scope>
   </dependency>
 </dependencies>
 ```
@@ -128,7 +134,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.freya022:BotCommands-typesafe-messages-bc:VERSION")
+    implementation("io.github.freya022:BotCommands-typesafe-messages-core:VERSION")
+    runtimeOnly("io.github.freya022:BotCommands-typesafe-messages-bc:VERSION")
 }
 ```
 
