@@ -96,7 +96,7 @@ class SlashInfo : ApplicationCommand() {
 }
 ```
 
-> [!INFO]
+> [!TIP]
 > Injecting the `MyBotMessages` instance in the slash command function
 > is the same as injecting `MyBotMessagesFactory` in your class then using it in your command to create instances of `MyBotMessages`.
 
