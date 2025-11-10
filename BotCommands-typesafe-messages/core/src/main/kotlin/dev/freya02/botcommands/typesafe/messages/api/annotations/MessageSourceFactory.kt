@@ -19,5 +19,6 @@ annotation class MessageSourceFactory(
      *
      * The bundles will be searched using the accessible [localization map providers][LocalizationMapProvider].
      */
+    @get:JvmName("value")
     val bundleName: String
 )

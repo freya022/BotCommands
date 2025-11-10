@@ -18,5 +18,6 @@ annotation class PreferLocale(
     /**
      * The locale to prefer.
      */
+    @get:JvmName("value")
     val preference: LocalePreference
 )

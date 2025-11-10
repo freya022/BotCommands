@@ -31,5 +31,6 @@ annotation class LocalizedContent(
     /**
      * The key to the localizable template, in the bundle specified by [@MessageSourceFactory][MessageSourceFactory].
      */
+    @get:JvmName("value")
     val templateKey: String
 )
