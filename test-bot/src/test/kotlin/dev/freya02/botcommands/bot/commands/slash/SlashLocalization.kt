@@ -1,6 +1,6 @@
 package dev.freya02.botcommands.bot.commands.slash
 
-import dev.freya02.botcommands.bot.messages.TestBotMessagesFactory
+import dev.freya02.botcommands.bot.messages.TestBotMessages
 import dev.freya02.botcommands.jda.ktx.components.SelectOption
 import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
@@ -30,9 +30,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Command
 @RequiresModals
-class SlashLocalization(
-    private val messagesFactory: TestBotMessagesFactory,
-) : ApplicationCommand() {
+class SlashLocalization : ApplicationCommand() {
 
     @JDASlashCommand(name = "localization")
     fun onSlashLocalization(
@@ -66,9 +64,7 @@ class SlashLocalization(
     }
 
     @JDASlashCommand(name = "type_safe_localization")
-    fun onSlashTypeSafeLocalization(event: GuildSlashEvent) {
-        val messages = messagesFactory.create(event)
-
+    fun onSlashTypeSafeLocalization(event: GuildSlashEvent, messages: TestBotMessages) {
         val content = """
             Default localized: ${messages.response(guildUsers = event.guild.memberCount, uptime = 3.14159)}
         """.trimIndent()
