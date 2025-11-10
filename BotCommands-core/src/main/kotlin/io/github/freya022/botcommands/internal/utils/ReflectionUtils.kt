@@ -17,7 +17,7 @@ import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.*
 import kotlin.reflect.jvm.internal.impl.descriptors.ClassKind
 
-internal object ReflectionUtils {
+object ReflectionUtils {
     private val lock = ReentrantLock()
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
@@ -102,7 +102,7 @@ internal object ReflectionUtils {
             }
         }
 
-    internal val KParameter.function: KFunction<*>
+    val KParameter.function: KFunction<*>
         get() {
             val callable = ReflectionMetadataAccessor.getParameterCallable(this)
             return callable as? KFunction<*>
