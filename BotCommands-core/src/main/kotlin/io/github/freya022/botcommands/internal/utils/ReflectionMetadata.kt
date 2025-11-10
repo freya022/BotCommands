@@ -29,6 +29,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
+import kotlin.streams.asSequence
 
 private typealias IsNullableAnnotated = Boolean
 
@@ -116,12 +117,15 @@ private class ReflectionMetadataScanner private constructor(
         if (classes.isNotEmpty())
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
+        val libPackages = ReflectionMetadataScanner::class.java.classLoader
+            .resources("META-INF/bc.packages")
+            .asSequence()
+            .flatMap { it.readText().trim().lineSequence() }
+            .toList()
+
         ClassGraph()
-            .acceptPackages(
-                "io.github.freya022.botcommands.api",
-                "io.github.freya022.botcommands.internal",
-                *packages.toTypedArray()
-            )
+            .acceptPackages(*libPackages.toTypedArray())
+            .acceptPackages(*packages.toTypedArray())
             .acceptClasses(*classes.mapToArray { it.name })
             .enableClassInfo()
             .enableMethodInfo()
@@ -129,7 +133,7 @@ private class ReflectionMetadataScanner private constructor(
             .disableModuleScanning()
             .scan()
             .use { scan ->
-                val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib() }
+                val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib(libPackages) }
                 libClasses
                     .filterLibraryClasses()
                     .filterClasses()
@@ -152,8 +156,10 @@ private class ReflectionMetadataScanner private constructor(
             }
     }
 
-    private fun ClassInfo.isFromLib() =
-        packageName.startsWith("io.github.freya022.botcommands.api") || packageName.startsWith("io.github.freya022.botcommands.internal")
+    private fun ClassInfo.isFromLib(libPackages: List<String>): Boolean {
+        val pkgName = packageName
+        return libPackages.any { pkgName.startsWith(it) }
+    }
 
     private fun List<ClassInfo>.filterLibraryClasses(): List<ClassInfo> {
         // Get types referenced by factories so we get metadata from those as well
