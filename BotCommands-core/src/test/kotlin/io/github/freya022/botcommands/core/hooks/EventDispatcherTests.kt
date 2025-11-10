@@ -48,7 +48,7 @@ object EventDispatcherTests {
                         priority = 0,
                         runMode = BEventListener.RunMode.BLOCKING,
                         timeout = null,
-                        parametersBlock = { emptyArray() }
+                        parametersBlock = { emptyList() }
                     )
                 )
             }

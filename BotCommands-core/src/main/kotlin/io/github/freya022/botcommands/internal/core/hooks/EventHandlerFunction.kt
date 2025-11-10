@@ -10,7 +10,7 @@ internal class EventHandlerFunction(
     val priority: Int,
     val runMode: BEventListener.RunMode,
     val timeout: Duration?,
-    private val parametersBlock: () -> Array<Any>
+    private val parametersBlock: () -> List<Any>
 ) {
     private val baseArgs: MethodArguments by lazy {
         val args = classPathFunction.methodAccessor.createBlankArguments()

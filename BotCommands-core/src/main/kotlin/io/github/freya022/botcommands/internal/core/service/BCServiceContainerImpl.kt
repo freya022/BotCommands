@@ -371,12 +371,6 @@ internal fun ServiceContainer.getFunctionServiceOrNull(function: KFunction<*>): 
     else -> tryGetService(function.declaringClass).getOrNull()
 }
 
-internal fun ServiceContainer.getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
-    return types.map {
-        map[it] ?: getService(it)
-    }
-}
-
 /**
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.

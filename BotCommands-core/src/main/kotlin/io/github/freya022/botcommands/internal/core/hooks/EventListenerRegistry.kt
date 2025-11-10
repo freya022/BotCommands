@@ -12,7 +12,8 @@ import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
-import io.github.freya022.botcommands.internal.core.service.getParameters
+import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
+import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.core.toClassPathFunctions
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -100,11 +101,12 @@ internal class EventListenerRegistry internal constructor(
                 // Cannot check for RawGatewayEvent as JDA is not present yet and there is no config for it
             }
 
-            val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
+            val eventParameters = parameters.drop(1)
                 // The main risk was with injected services, as they may not be available at that point,
                 // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
+                // In the worst case, users can request lazy services
                 .onEach {
-                    serviceContainer.canCreateService(it)?.let { serviceError ->
+                    serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
                         throwArgument(
                             classPathFunc.function,
                             "Unable to register event listener due to an unavailable service: ${serviceError.toSimpleString()}"
@@ -117,7 +119,7 @@ internal class EventListenerRegistry internal constructor(
                 priority = annotation.priority,
                 parametersBlock = {
                     //Getting services is delayed until execution, as to ensure late services can be used in listeners
-                    serviceContainer.getParameters(eventParametersErasures).toTypedArray()
+                    eventParameters.map { serviceContainer.tryGetWrappedService(it).getOrThrow() }
                 })
 
             val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure
