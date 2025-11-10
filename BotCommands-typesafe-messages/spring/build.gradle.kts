@@ -9,6 +9,7 @@ dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
     api(projects.botCommandsCore)
+    api(projects.botCommandsSpring)
     api(projects.botCommandsTypesafeMessages.core)
 
     // Logging
