@@ -3,13 +3,14 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
+import dev.freya02.botcommands.typesafe.messages.internal.annotations.DynamicCall
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.invoke.MethodHandle
 
-internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> internal constructor(
+internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @DynamicCall internal constructor(
     private val params: Params,
 ) : IMessageSourceFactory<T> {
 

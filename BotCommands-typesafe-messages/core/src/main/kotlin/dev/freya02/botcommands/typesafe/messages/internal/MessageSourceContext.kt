@@ -43,6 +43,7 @@ internal class MessageSourceContext(
     fun localizePreferringUser(localizationPath: String, vararg entries: Localization.Entry): String =
         localizeWith(userLocale ?: guildLocale, localizationPath, *entries)
 
+    @DynamicCall
     fun localizeWithGuild(localizationPath: String, vararg entries: Localization.Entry): String =
         localizeWith(guildLocale, localizationPath, *entries)
 }
