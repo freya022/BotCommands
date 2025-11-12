@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import net.dv8tion.jda.api.interactions.Interaction
 
 /**
- * A factory of [IMessageSource], interfaces extending this are required to be annotated with [@MessageSourceFactory][MessageSourceFactory].
+ * A factory of [IMessageSource], interfaces extending this should be annotated with [@MessageSourceFactory][MessageSourceFactory].
  *
  * No implementation required for interfaces extending this, they will be generated at runtime.
  *
