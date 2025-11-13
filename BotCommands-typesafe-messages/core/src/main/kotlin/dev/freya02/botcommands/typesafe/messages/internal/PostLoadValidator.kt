@@ -4,8 +4,9 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchBundleException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateKeyException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnmappedParameterException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnmappedTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.LocalizedContentFunctionGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.utils.require
@@ -49,10 +50,21 @@ internal object PostLoadValidator {
                 }
 
                 val formattableArguments = template.arguments
-                LocalizedContentFunctionGenerator.getTemplateArgumentParameters(function).forEach { parameter ->
+                // Check all template arguments are present in parameters
+                val templateArgumentParameters = LocalizedContentFunctionGenerator.getTemplateArgumentParameters(function)
+                templateArgumentParameters.forEach { parameter ->
                     val expectedArgName = LocalizedContentFunctionGenerator.getTemplateArgumentParameterName(parameter)!!
-                    require(formattableArguments.any { it.argumentName == expectedArgName }, ::NoSuchTemplateArgumentException) {
+                    require(formattableArguments.any { it.argumentName == expectedArgName }, ::UnmappedParameterException) {
                         "Template key '$templateKey' is missing argument '$expectedArgName' required by ${function.getSignature(qualifiedClass = true, source = false)}"
+                    }
+                }
+
+                // Check all parameters maps to a template argument
+                formattableArguments.forEach { argument ->
+                    val expectedParameterName = LocalizedContentFunctionGenerator.getParameterTemplateArgumentName(argument)
+                    val hasParameter = templateArgumentParameters.any { it.name == expectedParameterName }
+                    require(hasParameter, ::UnmappedTemplateArgumentException) {
+                        "Template key '$templateKey' expects a parameter named '$expectedParameterName' in ${function.getSignature(qualifiedClass = true, source = false)}"
                     }
                 }
             }

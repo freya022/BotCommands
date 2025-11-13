@@ -4,8 +4,9 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchBundleException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.NoSuchTemplateKeyException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnmappedParameterException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnmappedTemplateArgumentException
 import dev.freya02.botcommands.typesafe.messages.internal.PostLoadValidator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import io.github.freya022.botcommands.api.core.BContext
@@ -34,12 +35,21 @@ class PostLoadValidatorTest {
         }
     }
 
-    interface FactoryWithSourceWithUnknownArgName : IMessageSourceFactory<FactoryWithSourceWithUnknownArgName.Source> {
+    interface FactoryWithSourceWithUnknownParameter : IMessageSourceFactory<FactoryWithSourceWithUnknownParameter.Source> {
 
         interface Source : IMessageSource {
 
             @LocalizedContent("factory.source.key")
             fun test(unknownArg: String): String
+        }
+    }
+
+    interface FactoryWithSourceWithUnknownTemplateArg : IMessageSourceFactory<FactoryWithSourceWithUnknownTemplateArg.Source> {
+
+        interface Source : IMessageSource {
+
+            @LocalizedContent("factory.source.key")
+            fun test(): String
         }
     }
 
@@ -91,7 +101,7 @@ class PostLoadValidatorTest {
     }
 
     @Test
-    fun `Validates root bundle template has parameters`() {
+    fun `Validates parameters matches root bundle template arguments`() {
         val event = mockk<PostLoadEvent>()
         val localizationService = mockk<LocalizationService> {
             every { getInstance("bundle", Locale.ROOT)!!["factory.source.key"]!!.arguments } returns emptyList()
@@ -102,10 +112,32 @@ class PostLoadValidatorTest {
             every { getService<UserLocaleProvider>() } returns mockk()
         }
         val factories = listOf<IMessageSourceFactory<*>>(
-            MessageSourceFactoryGenerator.createProvider("bundle", FactoryWithSourceWithUnknownArgName::class).get(context)
+            MessageSourceFactoryGenerator.createProvider("bundle", FactoryWithSourceWithUnknownParameter::class).get(context)
         )
 
-        assertThrows<NoSuchTemplateArgumentException> {
+        assertThrows<UnmappedParameterException> {
+            PostLoadValidator.onPostLoad(event, localizationService, factories)
+        }
+
+        verify(exactly = 1) { localizationService.getInstance("bundle", Locale.ROOT)!!["factory.source.key"]!!.arguments }
+    }
+
+    @Test
+    fun `Validates root bundle template arguments matches parameters`() {
+        val event = mockk<PostLoadEvent>()
+        val localizationService = mockk<LocalizationService> {
+            every { getInstance("bundle", Locale.ROOT)!!["factory.source.key"]!!.arguments } returns listOf(mockk { every { argumentName } returns "arg_name"})
+        }
+        val context = mockk<BContext> {
+            every { getService<LocalizationService>() } returns localizationService
+            every { getService<GuildLocaleProvider>() } returns mockk()
+            every { getService<UserLocaleProvider>() } returns mockk()
+        }
+        val factories = listOf<IMessageSourceFactory<*>>(
+            MessageSourceFactoryGenerator.createProvider("bundle", FactoryWithSourceWithUnknownTemplateArg::class).get(context)
+        )
+
+        assertThrows<UnmappedTemplateArgumentException> {
             PostLoadValidator.onPostLoad(event, localizationService, factories)
         }
 

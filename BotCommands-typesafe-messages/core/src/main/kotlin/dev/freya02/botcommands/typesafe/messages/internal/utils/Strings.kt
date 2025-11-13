@@ -11,3 +11,19 @@ internal fun String.convertToCamelCase(): String {
     }
     return builder.toString()
 }
+
+internal fun String.convertToSnakeCase(): String {
+    val builder = StringBuilder(this.length)
+    var nextIsUppercase = false
+    for (char in this) {
+        if (char == '_') {
+            nextIsUppercase = true
+        } else if (nextIsUppercase) {
+            builder.append(char.uppercaseChar())
+            nextIsUppercase = false
+        } else {
+            builder.append(char)
+        }
+    }
+    return builder.toString()
+}

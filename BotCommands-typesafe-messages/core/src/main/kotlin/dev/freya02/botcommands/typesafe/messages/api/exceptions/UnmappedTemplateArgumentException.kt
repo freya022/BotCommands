@@ -4,6 +4,6 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedConten
 
 /**
  * Exception when a function annotated with [@LocalizedContent][LocalizedContent]
- * has a parameter which's name, after transformation, doesn't exist as a template argument.
+ * has a template argument which's name, after transformation, doesn't exist as a parameter.
  */
-class NoSuchTemplateArgumentException internal constructor(message: String) : IllegalArgumentException(message)
+class UnmappedTemplateArgumentException internal constructor(message: String) : IllegalArgumentException(message)

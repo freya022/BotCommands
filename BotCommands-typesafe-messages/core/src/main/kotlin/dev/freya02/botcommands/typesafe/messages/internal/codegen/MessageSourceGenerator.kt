@@ -8,12 +8,10 @@ import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
 import dev.freya02.botcommands.typesafe.messages.internal.exceptions.throwInternal
-import dev.freya02.botcommands.typesafe.messages.internal.utils.convertToCamelCase
-import dev.freya02.botcommands.typesafe.messages.internal.utils.isRequired
-import dev.freya02.botcommands.typesafe.messages.internal.utils.require
-import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
+import dev.freya02.botcommands.typesafe.messages.internal.utils.*
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.slf4j.LoggerFactory
 import java.lang.classfile.ClassBuilder
@@ -268,5 +266,9 @@ internal object LocalizedContentFunctionGenerator {
 
     internal fun getTemplateArgumentParameterName(parameter: KParameter): String? {
         return parameter.name?.convertToCamelCase()
+    }
+
+    internal fun getParameterTemplateArgumentName(argument: FormattableArgument): String {
+        return argument.argumentName.convertToSnakeCase()
     }
 }
