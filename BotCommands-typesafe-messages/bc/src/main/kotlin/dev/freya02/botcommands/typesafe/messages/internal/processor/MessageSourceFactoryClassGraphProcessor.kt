@@ -25,10 +25,7 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
 
         val messageSourceFactoryType = kClass as KClass<IMessageSourceFactory<*>>
 
-        val sourceFactoryProvider = MessageSourceFactoryGenerator.createProvider(
-            annotation.bundleName,
-            messageSourceFactoryType,
-        )
+        val sourceFactoryProvider = MessageSourceFactoryGenerator.createProvider(annotation, messageSourceFactoryType)
         serviceContainer.putSuppliedService(ServiceSupplier(
             primaryType = messageSourceFactoryType,
             additionalTypes = setOf(IMessageSourceFactory::class)

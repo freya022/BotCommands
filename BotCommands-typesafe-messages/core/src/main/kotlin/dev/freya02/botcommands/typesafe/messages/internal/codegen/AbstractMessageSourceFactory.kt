@@ -9,15 +9,17 @@ import io.github.freya022.botcommands.api.localization.interaction.GuildLocalePr
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.invoke.MethodHandle
+import java.util.*
 
 internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @DynamicCall internal constructor(
     private val params: Params,
 ) : IMessageSourceFactory<T> {
 
     override val bundleName: String get() = params.bundle
+    override val locales: Set<Locale> = params.locales
 
     override fun create(interaction: Interaction): T {
-        val (localizationService, bundle, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
+        val (localizationService, bundle, _, guildLocaleProvider, userLocaleProvider, sourceHandle) = params
 
         val messageSourceContext = MessageSourceContext(
             localizationService = localizationService,
@@ -32,6 +34,7 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
     internal data class Params(
         internal val localizationService: LocalizationService,
         internal val bundle: String,
+        internal val locales: Set<Locale>,
         internal val guildLocaleProvider: GuildLocaleProvider,
         internal val userLocaleProvider: UserLocaleProvider,
         internal val sourceHandle: MethodHandle,

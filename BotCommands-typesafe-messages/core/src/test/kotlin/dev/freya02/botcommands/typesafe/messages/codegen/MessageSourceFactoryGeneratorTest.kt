@@ -39,6 +39,9 @@ class MessageSourceFactoryGeneratorTest {
 
         MessageSourceFactoryGenerator.createProvider(
             bundleName = "testBundle",
+            discordLocales = emptySet(),
+            locales = emptySet(),
+            ignoreEmptyLocales = true,
             sourceFactoryType = Factory::class,
         )
 
@@ -54,6 +57,9 @@ class MessageSourceFactoryGeneratorTest {
         assertThrows<AbstractMessageSourceFactoryMethodException> {
             MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
+                discordLocales = emptySet(),
+                locales = emptySet(),
+                ignoreEmptyLocales = true,
                 sourceFactoryType = FactoryWithoutAnnotationOnAbstract::class,
             )
         }
@@ -66,6 +72,9 @@ class MessageSourceFactoryGeneratorTest {
 
         MessageSourceFactoryGenerator.createProvider(
             bundleName = "testBundle",
+            discordLocales = emptySet(),
+            locales = emptySet(),
+            ignoreEmptyLocales = true,
             sourceFactoryType = FactoryWithoutAnnotationOnConcrete::class,
         )
     }
@@ -78,6 +87,9 @@ class MessageSourceFactoryGeneratorTest {
         assertThrows<IllegalMessageSourceFactoryClassTypeException> {
             MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
+                discordLocales = emptySet(),
+                locales = emptySet(),
+                ignoreEmptyLocales = true,
                 sourceFactoryType = SourceFactoryAsAbstractClass::class,
             )
         }

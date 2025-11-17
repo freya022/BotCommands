@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.interactions.Interaction
 import org.junit.jupiter.api.assertDoesNotThrow
+import java.util.*
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.test.Test
@@ -25,6 +26,7 @@ class MessageSourceResolverFactoryTest {
         val resolverFactory = MessageSourceResolverFactory(
             listOf(object : MyMessageSourceFactory {
                 override val bundleName get() = TODO("Not yet implemented")
+                override val locales: Set<Locale> get() = TODO()
 
                 override fun create(interaction: Interaction) = TODO("Not yet implemented")
             })

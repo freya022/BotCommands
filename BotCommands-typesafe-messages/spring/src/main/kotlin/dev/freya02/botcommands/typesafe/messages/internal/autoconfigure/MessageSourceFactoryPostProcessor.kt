@@ -42,10 +42,8 @@ internal class MessageSourceFactoryPostProcessor internal constructor(
                     "${messageSourceFactoryType.shortQualifiedName} must implement ${IMessageSourceFactory::class.simpleName}"
                 }
 
-                val sourceFactoryProvider = MessageSourceFactoryGenerator.createProvider(
-                    annotation.bundleName,
-                    messageSourceFactoryType,
-                )
+                val sourceFactoryProvider =
+                    MessageSourceFactoryGenerator.createProvider(annotation, messageSourceFactoryType)
                 registry.registerBeanDefinition(
                     messageSourceFactoryType.java.simpleName.replaceFirstChar { it.lowercaseChar() },
                     BeanDefinitionBuilder.genericBeanDefinition(messageSourceFactoryType.java) {
