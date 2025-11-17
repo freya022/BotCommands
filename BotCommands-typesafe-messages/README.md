@@ -1,9 +1,9 @@
 # BotCommands module - Typesafe messages
 This module allows you to define functions which retrieves translated messages,
 without having to implement anything, alongside a few other benefits:
-- Checks if the template key exists in the root bundle, ensuring your content can always be displayed
-- Checks if function parameters exists in your template's arguments, so all arguments are mapped
-- Checks if parameters can be formatted (on a best effort)
+- Checks if the templates exists in your bundles, ensuring your content can always be displayed
+- Checks if function parameters exists in your template's arguments, meaning all parameters map to an argument
+- Checks if template arguments map to function parameters, so all arguments have values
 - Removes the need for magic strings (for the arguments), improving type safety and making regressions appear immediately
 
 ## Example
@@ -51,14 +51,18 @@ interface MyBotMessages : IMessageSource {
 }
 ```
 
-Instances of this interface cannot be injected and do not need any implementation.
+> [!NOTE]
+> You do not need to implement this interface.
+
+> [!TIP]
+> You can inject instances of this interface in any interaction handler such as application commands, components and modals.
 
 [//]: # (TODO use Duration instead of Long for the uptime, explain about converters)
 
 ### Creating a factory for our source
 
 We then need a way to get instances of our source;
-create an interface extending `IMessageSourceFactory<MyBotMessages>`,
+create an interface extending `IMessageSourceFactory<MyBotMessages>`
 and annotate it with `@MessageSourceFactory("MyBotMessages")`,
 the `MyBotMessages` string is the name of the bundle we added in the first step.
 
@@ -69,6 +73,9 @@ interface MyBotMessagesFactory : IMessageSourceFactory<MyBotMessages>
 
 Instances of this interface can be injected like any other service,
 and will allow you to create `MyBotMessages` instances from an `Interaction`.
+
+> [!NOTE]
+> You do not need to implement this interface.
 
 [//]: # (TODO add more object types, probably Locale/DiscordLocale)
 
@@ -177,3 +184,6 @@ dependencies {
 
 Alternatively, you can use Jitpack to use **snapshot** versions,
 you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
+
+> [!NOTE]
+> As this is a submodule, the group ID is `io.github.freya022.BotCommands`.
