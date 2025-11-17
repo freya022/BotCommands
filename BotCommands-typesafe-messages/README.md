@@ -40,12 +40,9 @@ interface MyBotMessages : IMessageSource {
     // The function can have any name you want
     @LocalizedContent("bot.info")
     fun botInfo(
-      // Parameter names are converted to snake_case for use in the template
+      // Parameter names are converted to snake_case for use in the template, here it's 'guild_count'
       guildCount: Int, 
-      // For simplicity this is a String,
-      // but you could define an "ArgumentFormatter"
-      // so you can pass a Timestamp, a Long, an Instant or anything you want
-      // and have it converted.
+      // You could also pass a Timestamp as it has a proper `toString()`
       uptimeTimestamp: String
     ): String
 }
@@ -57,7 +54,8 @@ interface MyBotMessages : IMessageSource {
 > [!TIP]
 > You can inject instances of this interface in any interaction handler such as application commands, components and modals.
 
-[//]: # (TODO use Duration instead of Long for the uptime, explain about converters)
+> [!TIP]
+> You can override the locale using `@PreferLocale` or by passing a `DiscordLocale` or a `Locale` in the first parameter.
 
 ### Creating a factory for our source
 
@@ -76,8 +74,6 @@ and will allow you to create `MyBotMessages` instances from an `Interaction`.
 
 > [!NOTE]
 > You do not need to implement this interface.
-
-[//]: # (TODO add more object types, probably Locale/DiscordLocale)
 
 ### Usage
 
@@ -181,6 +177,8 @@ dependencies {
 ```
 
 </details>
+
+### Snapshots
 
 Alternatively, you can use Jitpack to use **snapshot** versions,
 you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
