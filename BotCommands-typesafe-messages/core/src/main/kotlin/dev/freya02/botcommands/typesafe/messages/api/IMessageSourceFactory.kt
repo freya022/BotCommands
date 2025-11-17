@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
 /**
- * A factory of [IMessageSource], interfaces extending this should be annotated with [@MessageSourceFactory][MessageSourceFactory].
+ * A factory of [IMessageSource], this **must** be extended by an interface annotated with [@MessageSourceFactory][MessageSourceFactory].
+ *
+ * An exception will be thrown if any additional *abstract* (i.e. without a default) method is found.
  *
  * No implementation required for interfaces extending this, they will be generated at runtime.
  *

@@ -3,8 +3,7 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceFactoryMethodException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceFactoryException
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceFactoryProvider
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
@@ -64,7 +63,7 @@ object MessageSourceFactoryGenerator {
         ignoreEmptyLocales: Boolean,
         sourceFactoryType: KClass<T>,
     ): MessageSourceFactoryProvider<T> {
-        require(sourceFactoryType.java.isInterface, ::IllegalMessageSourceFactoryClassTypeException) {
+        require(sourceFactoryType.java.isInterface, ::InvalidSourceFactoryException) {
             "${sourceFactoryType.jvmName} must be an interface!"
         }
 
@@ -77,7 +76,7 @@ object MessageSourceFactoryGenerator {
             .filterNot { it.name == "getBundleName" && it.parameterTypes.isEmpty() }
             .filterNot { it.name == "getLocales" && it.parameterTypes.isEmpty() }
             .also { unimplementedMethods ->
-                require(unimplementedMethods.isEmpty(), ::AbstractMessageSourceFactoryMethodException) {
+                require(unimplementedMethods.isEmpty(), ::InvalidSourceFactoryException) {
                     "${sourceFactoryType.jvmName} cannot contain abstract methods:\n${unimplementedMethods.joinAsList()}"
                 }
             }

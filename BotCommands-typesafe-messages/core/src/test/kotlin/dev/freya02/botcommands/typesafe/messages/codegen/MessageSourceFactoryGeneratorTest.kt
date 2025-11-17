@@ -2,14 +2,14 @@ package dev.freya02.botcommands.typesafe.messages.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.AbstractMessageSourceFactoryMethodException
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.IllegalMessageSourceFactoryClassTypeException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceFactoryException
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class MessageSourceFactoryGeneratorTest {
 
@@ -54,7 +54,7 @@ class MessageSourceFactoryGeneratorTest {
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
-        assertThrows<AbstractMessageSourceFactoryMethodException> {
+        val exception = assertThrows<InvalidSourceFactoryException> {
             MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
                 discordLocales = emptySet(),
@@ -63,6 +63,8 @@ class MessageSourceFactoryGeneratorTest {
                 sourceFactoryType = FactoryWithoutAnnotationOnAbstract::class,
             )
         }
+
+        assertTrue("cannot contain abstract methods" in exception.message!!)
     }
 
     @Test
@@ -84,7 +86,7 @@ class MessageSourceFactoryGeneratorTest {
         mockkObject(MessageSourceGenerator)
         every { MessageSourceGenerator.create(any()) } returns mockk()
 
-        assertThrows<IllegalMessageSourceFactoryClassTypeException> {
+        val exception = assertThrows<InvalidSourceFactoryException> {
             MessageSourceFactoryGenerator.createProvider(
                 bundleName = "testBundle",
                 discordLocales = emptySet(),
@@ -93,5 +95,7 @@ class MessageSourceFactoryGeneratorTest {
                 sourceFactoryType = SourceFactoryAsAbstractClass::class,
             )
         }
+
+        assertTrue("must be an interface!" in exception.message!!)
     }
 }

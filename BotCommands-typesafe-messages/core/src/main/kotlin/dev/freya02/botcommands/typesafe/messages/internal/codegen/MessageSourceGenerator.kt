@@ -4,7 +4,9 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.LocalePreference
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedFunctionException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedParameterException
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.*
 import dev.freya02.botcommands.typesafe.messages.internal.exceptions.throwInternal
@@ -38,7 +40,7 @@ import kotlin.reflect.jvm.jvmName
 internal object MessageSourceGenerator {
 
     internal fun create(sourceType: KClass<out IMessageSource>): MethodHandle {
-        require(sourceType.java.isInterface, ::IllegalMessageSourceClassTypeException) {
+        require(sourceType.java.isInterface, ::InvalidSourceException) {
             "${sourceType.jvmName} must be an interface!"
         }
 
@@ -46,7 +48,7 @@ internal object MessageSourceGenerator {
         val toImplement = getImplementableFunctions(sourceType)
 
         (abstractMethods - toImplement).also { unimplementedMethods ->
-            require(unimplementedMethods.isEmpty(), ::AbstractMessageSourceMethodException) {
+            require(unimplementedMethods.isEmpty(), ::InvalidSourceException) {
                 "Abstract methods in ${sourceType.jvmName} can only be implemented if annotated with @${LocalizedContent::class.java.simpleName}:\n${unimplementedMethods.joinAsList()}"
             }
         }
@@ -111,22 +113,22 @@ internal object MessageSourceGenerator {
 internal object LocalizedContentFunctionGenerator {
 
     internal fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, declaringClass: KClass<out IMessageSource>, function: KFunction<*>) {
-        require(!function.isSuspend, ::UnsupportedSuspendFunctionException) {
+        require(!function.isSuspend, ::UnsupportedFunctionException) {
             "Suspend functions are not supported! ${function.getSignature(qualifiedClass = true, source = false)}"
         }
 
-        require(function.returnType.jvmErasure == String::class, ::IllegalMessageSourceReturnTypeException) {
+        require(function.returnType.jvmErasure == String::class, ::UnsupportedFunctionException) {
             "Function must return a String: ${function.getSignature(qualifiedClass = true, source = false)}"
         }
 
         val annotation = function.findAnnotation<LocalizedContent>()
             ?: error("Function was to be implemented but annotation is absent")
         val templateParameters = getTemplateArgumentParameters(function).onEach { parameter ->
-            require(parameter.isRequired, ::UnsupportedOptionalParameterException) {
+            require(parameter.isRequired, ::UnsupportedParameterException) {
                 "Optional parameters are not supported! $parameter"
             }
 
-            require(!parameter.type.isMarkedNullable, ::UnsupportedNullableParameterException) {
+            require(!parameter.type.isMarkedNullable, ::UnsupportedParameterException) {
                 "Nullable parameters are not allowed! $parameter"
             }
         }

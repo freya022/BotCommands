@@ -4,7 +4,9 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.LocalePreference
 import dev.freya02.botcommands.typesafe.messages.api.annotations.LocalizedContent
 import dev.freya02.botcommands.typesafe.messages.api.annotations.PreferLocale
-import dev.freya02.botcommands.typesafe.messages.api.exceptions.*
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedFunctionException
+import dev.freya02.botcommands.typesafe.messages.api.exceptions.UnsupportedParameterException
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceGenerator.instantiate
@@ -19,6 +21,7 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MessageSourceGeneratorTest {
 
@@ -142,9 +145,11 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource as abstract class`() {
-        assertThrows<IllegalMessageSourceClassTypeException> {
+        val exception = assertThrows<InvalidSourceException> {
             MessageSourceGenerator.create(SourceAsAbstractClass::class)
         }
+
+        assertTrue("must be an interface!" in exception.message!!)
     }
 
     @Test
@@ -182,9 +187,11 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource without annotation on abstract method`() {
-        assertThrows<AbstractMessageSourceMethodException> {
+        val exception = assertThrows<InvalidSourceException> {
             MessageSourceGenerator.create(SourceWithoutAnnotationOnAbstract::class)
         }
+
+        assertTrue("Abstract methods in" in exception.message!!)
     }
 
     @Test
@@ -196,9 +203,11 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource with abstract method returning non-String`() {
-        assertThrows<IllegalMessageSourceReturnTypeException> {
+        val exception = assertThrows<UnsupportedFunctionException> {
             MessageSourceGenerator.create(SourceWithAbstractWithDiffReturnType::class)
         }
+
+        assertTrue("Function must return a String" in exception.message!!)
     }
 
     @Test
@@ -221,23 +230,27 @@ class MessageSourceGeneratorTest {
 
     @Test
     fun `Cannot generate IMessageSource with optional parameters`() {
-        assertThrows<UnsupportedOptionalParameterException> {
+        val exception = assertThrows<UnsupportedParameterException> {
             MessageSourceGenerator.create(SourceWithOptionalArg::class)
         }
+
+        assertTrue("Optional parameters are not supported!" in exception.message!!)
     }
 
     @Test
     fun `Cannot generate IMessageSource with suspend functions`() {
-        assertThrows<UnsupportedSuspendFunctionException> {
+        assertThrows<UnsupportedFunctionException> {
             MessageSourceGenerator.create(SourceWithSuspendFunction::class)
         }
     }
 
     @Test
     fun `Cannot generate IMessageSource with nullable parameters`() {
-        assertThrows<UnsupportedNullableParameterException> {
+        val exception = assertThrows<UnsupportedParameterException> {
             MessageSourceGenerator.create(SourceWithNullableArg::class)
         }
+
+        assertTrue("Nullable parameters are not allowed!" in exception.message!!)
     }
 
     @Test
