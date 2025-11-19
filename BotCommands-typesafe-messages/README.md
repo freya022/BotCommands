@@ -35,7 +35,7 @@ the annotation's value is the key present in your localization bundle,
 and the function needs to return a `String`.
 
 ```kt
-interface MyBotMessages : IMessageSource {
+interface CommandReplies : IMessageSource {
 
     // The function can have any name you want
     @LocalizedContent("bot.info")
@@ -60,17 +60,17 @@ interface MyBotMessages : IMessageSource {
 ### Creating a factory for our source
 
 We then need a way to get instances of our source;
-create an interface extending `IMessageSourceFactory<MyBotMessages>`
+create an interface extending `IMessageSourceFactory<CommandReplies>`
 and annotate it with `@MessageSourceFactory("MyBotMessages")`,
 the `MyBotMessages` string is the name of the bundle we added in the first step.
 
 ```kt
 @MessageSourceFactory("MyBotMessages")
-interface MyBotMessagesFactory : IMessageSourceFactory<MyBotMessages>
+interface CommandRepliesFactory : IMessageSourceFactory<CommandReplies>
 ```
 
 Instances of this interface can be injected like any other service,
-and will allow you to create `MyBotMessages` instances from an `Interaction`.
+and will allow you to create `CommandReplies` instances from an `Interaction`.
 
 > [!NOTE]
 > You do not need to implement this interface.
@@ -85,8 +85,8 @@ class SlashInfo : ApplicationCommand() {
         name = "info",
         description = "Sends info about the bot",
     )
-    fun onSlashInfo(event: GuildSlashEvent, botMessages: MyBotMessages) {
-        val response = botMessages.botInfo(
+    fun onSlashInfo(event: GuildSlashEvent, replies: CommandReplies) {
+        val response = replies.botInfo(
             // Use named parameters to make the arguments clearer!
             guildCount = event.jda.guildCache.size(),
             uptimeTimestamp = TimeFormat.RELATIVE.format(ManagementFactory.getRuntimeMXBean().startTime),
@@ -100,8 +100,8 @@ class SlashInfo : ApplicationCommand() {
 ```
 
 > [!TIP]
-> Injecting the `MyBotMessages` instance in the slash command function
-> is the same as injecting `MyBotMessagesFactory` in your class then using it in your command to create instances of `MyBotMessages`.
+> Injecting the `CommandReplies` instance in the slash command function
+> is the same as injecting `CommandRepliesFactory` in your class then using it in your command to create instances of `CommandReplies`.
 
 Try out `/info`!
 
