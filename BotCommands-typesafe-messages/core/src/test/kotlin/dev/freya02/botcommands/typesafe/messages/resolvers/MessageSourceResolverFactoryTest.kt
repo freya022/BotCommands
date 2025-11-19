@@ -25,10 +25,9 @@ class MessageSourceResolverFactoryTest {
     fun `Resolve message sources from interaction handlers`() {
         val resolverFactory = MessageSourceResolverFactory(
             listOf(object : MyMessageSourceFactory {
-                override val bundleName get() = TODO("Not yet implemented")
-                override val locales: Set<Locale> get() = TODO()
-
-                override fun create(interaction: Interaction) = TODO("Not yet implemented")
+                override val bundleName get() = throw UnsupportedOperationException()
+                override val locales: Set<Locale> get() = throw UnsupportedOperationException()
+                override fun create(interaction: Interaction) = throw UnsupportedOperationException()
             })
         )
 
