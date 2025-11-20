@@ -17,7 +17,7 @@ import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.*
 import kotlin.reflect.jvm.internal.impl.descriptors.ClassKind
 
-internal object ReflectionUtils {
+object ReflectionUtils {
     private val lock = ReentrantLock()
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
@@ -102,7 +102,7 @@ internal object ReflectionUtils {
             }
         }
 
-    internal val KParameter.function: KFunction<*>
+    val KParameter.function: KFunction<*>
         get() {
             val callable = ReflectionMetadataAccessor.getParameterCallable(this)
             return callable as? KFunction<*>
@@ -167,8 +167,7 @@ internal fun KParameter.findDeclarationName(): String =
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
-@PublishedApi
-internal inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
+inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)
 
 @PublishedApi
 internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType {

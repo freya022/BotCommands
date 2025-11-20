@@ -1,0 +1,36 @@
+package dev.freya02.botcommands.typesafe.messages.internal.processor
+
+import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
+import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
+import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
+import io.github.classgraph.ClassInfo
+import io.github.freya022.botcommands.api.core.service.BCServiceContainer
+import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.ServiceSupplier
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import kotlin.reflect.KClass
+
+internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun processClass(serviceContainer: ServiceContainer, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+        if (serviceContainer !is BCServiceContainer) return
+
+        val annotation = classInfo.getAnnotationInfo(MessageSourceFactory::class.java)?.loadClassAndInstantiate() as MessageSourceFactory? ?: return
+
+        require(classInfo.implementsInterface(IMessageSourceFactory::class.java)) {
+            "${classInfo.shortQualifiedName} must implement ${IMessageSourceFactory::class.simpleName}"
+        }
+
+        val messageSourceFactoryType = kClass as KClass<IMessageSourceFactory<*>>
+
+        val sourceFactoryProvider = MessageSourceFactoryGenerator.createProvider(annotation, messageSourceFactoryType)
+        serviceContainer.putSuppliedService(ServiceSupplier(
+            primaryType = messageSourceFactoryType,
+            additionalTypes = setOf(IMessageSourceFactory::class)
+        ) { context ->
+            sourceFactoryProvider.get(context)
+        })
+    }
+}

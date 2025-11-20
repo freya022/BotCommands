@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Low-level interface for localization.
@@ -20,6 +21,12 @@ import java.util.Locale;
  */
 public interface Localization extends LocalizationMap {
     record Entry(@NotNull String argumentName, @NotNull Object value) {
+
+        public Entry {
+            Objects.requireNonNull(argumentName, "Argument name must not be null");
+            Objects.requireNonNull(value, "Value must not be null");
+        }
+
         /**
          * Create a new localization entry,
          * this binds a {@link LocalizationTemplate localization template} argument with the value.
