@@ -174,6 +174,7 @@ The base `BotCommands` artifact will include modules often used, while others ar
 ### Optional modules
 - [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): provides a set of Kotlin extensions and top-level functions, similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
+- [`BotCommands-typesafe-messages`](./BotCommands-typesafe-messages): Allows defining functions to retrieve text content from your bundles, providing better ergonomics and safety with load-time validation
 - [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): Improved alternative for this framework to call your functions
 
 ## Sample usage
