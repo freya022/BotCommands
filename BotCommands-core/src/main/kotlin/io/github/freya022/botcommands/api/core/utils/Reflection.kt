@@ -110,11 +110,11 @@ val KType.shortQualifiedName: String
 val Class<*>.shortQualifiedName
     get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
 
-val KClass<*>.shortQualifiedName
+inline val KClass<*>.shortQualifiedName
     get() = this.java.shortQualifiedName
 
-val KClass<*>.simpleNestedName: String
-    inline get() = this.java.simpleNestedName
+inline val KClass<*>.simpleNestedName: String
+    get() = this.java.simpleNestedName
 
 val Class<*>.simpleNestedName: String
     get() = when {

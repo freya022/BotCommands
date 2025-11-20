@@ -10,7 +10,7 @@ internal fun Method.isAbstract(): Boolean {
     return (modifiers and Modifier.ABSTRACT) == Modifier.ABSTRACT
 }
 
-internal val KClass<*>.simpleNestedBinaryName: String
+internal inline val KClass<*>.simpleNestedBinaryName: String
     get() = simpleNestedName.replace('.', '$')
 
 internal val KParameter.isRequired
