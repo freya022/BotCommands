@@ -162,6 +162,8 @@ dependencies {
 }
 ```
 
+### Snapshots
+
 Alternatively, you can use Jitpack to use **snapshot** versions, 
 you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
 
