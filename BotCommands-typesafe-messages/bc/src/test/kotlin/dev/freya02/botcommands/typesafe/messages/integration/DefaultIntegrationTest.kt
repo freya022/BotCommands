@@ -85,6 +85,6 @@ class DefaultIntegrationTest {
         fun whatsTheFoxDoing(action: String): String
     }
 
-    @MessageSourceFactory("myBundle")
+    @MessageSourceFactory(bundleName = "myBundle", ignoreEmptyLocales = true)
     interface MyMessageSourceFactory : IMessageSourceFactory<MyMessageSource>
 }
