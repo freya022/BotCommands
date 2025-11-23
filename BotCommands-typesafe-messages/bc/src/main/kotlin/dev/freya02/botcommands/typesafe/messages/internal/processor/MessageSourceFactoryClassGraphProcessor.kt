@@ -28,7 +28,8 @@ internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
         val sourceFactoryProvider = MessageSourceFactoryGenerator.createProvider(annotation, messageSourceFactoryType)
         serviceContainer.putSuppliedService(ServiceSupplier(
             primaryType = messageSourceFactoryType,
-            additionalTypes = setOf(IMessageSourceFactory::class)
+            additionalTypes = setOf(IMessageSourceFactory::class),
+            annotations = messageSourceFactoryType.annotations,
         ) { context ->
             sourceFactoryProvider.get(context)
         })
