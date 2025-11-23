@@ -27,7 +27,7 @@ internal class SuppliedServiceProvider internal constructor(
     override val priority = serviceSupplier.priority
 
     override fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
-        return null
+        return commonCanInstantiate(serviceContainer, clazz, clazz)
     }
 
     override fun createInstance(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
