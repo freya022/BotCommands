@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.events.PostLoadEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -97,7 +98,7 @@ internal object PostLoadValidator {
         val bundleName = factory.bundleName
         val localization = localizationService.getInstance(bundleName, Locale.ROOT)
         require(localization != null, ::NoSuchBundleException) {
-            val factoryTypeStr = factory::class.shortQualifiedName
+            val factoryTypeStr = factory.interfaceType.shortQualifiedName
             "No root localization bundle named '$bundleName' exists for $factoryTypeStr"
         }
 
@@ -112,7 +113,7 @@ internal object PostLoadValidator {
             val localizedBundle = localizationService.getInstance(factory.bundleName, locale)
             require(localizedBundle != null, ::NoSuchBundleException) {
                 val languageTag = locale.toLanguageTag()
-                val factoryTypeStr = factory::class.shortQualifiedName
+                val factoryTypeStr = factory.interfaceType.shortQualifiedName
                 "No localized bundle named '${factory.bundleName}' with locale '${languageTag}' exists for $factoryTypeStr"
             }
             localeBundles[locale] = localizedBundle
@@ -120,4 +121,9 @@ internal object PostLoadValidator {
 
         return localeBundles
     }
+
+    @Suppress("UNCHECKED_CAST")
+    private val IMessageSourceFactory<*>.interfaceType: Class<out IMessageSourceFactory<*>>
+        get() = this.javaClass.interfaces.find { it.isSubclassOf<IMessageSourceFactory<*>>() } as Class<out IMessageSourceFactory<*>>?
+            ?: throwInternal("Unable to find a superinterface of ${this.javaClass.shortQualifiedName} extending IMessageSourceFactory")
 }
