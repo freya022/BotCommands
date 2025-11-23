@@ -164,7 +164,8 @@ internal object LocalizedContentFunctionGenerator {
             codeBuilder.anewarray(CD_Localization_Entry)
             codeBuilder.astore(localizationArgsSlot)
 
-            templateParameters.withIndex().forEachIndexed { arrayIndex, (parameterIndex, parameter) ->
+            templateParameters.forEachIndexed { arrayIndex, parameter ->
+                val parameterIndex = parameter.index - 1 // 1st is instance parameter
                 val templateVarName = getTemplateArgumentParameterName(parameter)
                     ?: error("Parameter names are absent from $function ; see https://bc.freya02.dev/3.X/using-botcommands/parameter-names/")
 

@@ -94,25 +94,25 @@ class MessageSourceGeneratorTest {
     interface SourceWithDiscordLocale: IMessageSource {
 
         @LocalizedContent("SourceWithDiscordLocale.key")
-        fun test(locale: DiscordLocale): String
+        fun test(locale: DiscordLocale, arg: String): String
     }
 
     interface SourceWithNullableDiscordLocale: IMessageSource {
 
         @LocalizedContent("SourceWithNullableDiscordLocale.key")
-        fun test(locale: DiscordLocale?): String
+        fun test(locale: DiscordLocale?, arg: String): String
     }
 
     interface SourceWithLocale: IMessageSource {
 
         @LocalizedContent("SourceWithLocale.key")
-        fun test(locale: Locale): String
+        fun test(locale: Locale, arg: String): String
     }
 
     interface SourceWithNullableLocale: IMessageSource {
 
         @LocalizedContent("SourceWithNullableLocale.key")
-        fun test(locale: Locale?): String
+        fun test(locale: Locale?, arg: String): String
     }
 
     interface SourceUsingGuildLocale: IMessageSource {
@@ -256,47 +256,47 @@ class MessageSourceGeneratorTest {
     @Test
     fun `Have DiscordLocale as first argument`() {
         val messageSourceContext = mockk<MessageSourceContext> {
-            every { localizeWith(DiscordLocale.FRENCH, any<String>()) } returns "expected"
+            every { localizeWith(DiscordLocale.FRENCH, any<String>(), any<Localization.Entry>()) } returns "expected"
         }
         val source = createAndInstantiate(SourceWithDiscordLocale::class, messageSourceContext)
-        source.test(DiscordLocale.FRENCH)
+        source.test(DiscordLocale.FRENCH, "val")
 
-        verify(exactly = 1) { messageSourceContext.localizeWith(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizeWith(DiscordLocale.FRENCH, "SourceWithDiscordLocale.key", Localization.Entry("arg", "val")) }
     }
 
     @Test
     fun `Have null DiscordLocale as first argument`() {
         val messageSourceContext = mockk<MessageSourceContext> {
-            every { localizePreferringUser(any<String>()) } returns "expected"
+            every { localizePreferringUser(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
         val source = createAndInstantiate(SourceWithNullableDiscordLocale::class, messageSourceContext)
-        source.test(null)
+        source.test(null, "val")
 
         // Check it calls the method which uses the best locale
-        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableDiscordLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableDiscordLocale.key", Localization.Entry("arg", "val")) }
     }
 
     @Test
     fun `Have Locale as first argument`() {
         val messageSourceContext = mockk<MessageSourceContext> {
-            every { localizeWith(Locale.FRENCH, any<String>()) } returns "expected"
+            every { localizeWith(Locale.FRENCH, any<String>(), any<Localization.Entry>()) } returns "expected"
         }
         val source = createAndInstantiate(SourceWithLocale::class, messageSourceContext)
-        source.test(Locale.FRENCH)
+        source.test(Locale.FRENCH, "val")
 
-        verify(exactly = 1) { messageSourceContext.localizeWith(Locale.FRENCH, "SourceWithLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizeWith(Locale.FRENCH, "SourceWithLocale.key", Localization.Entry("arg", "val")) }
     }
 
     @Test
     fun `Have null Locale as first argument`() {
         val messageSourceContext = mockk<MessageSourceContext> {
-            every { localizePreferringUser(any<String>()) } returns "expected"
+            every { localizePreferringUser(any<String>(), any<Localization.Entry>()) } returns "expected"
         }
         val source = createAndInstantiate(SourceWithNullableLocale::class, messageSourceContext)
-        source.test(null)
+        source.test(null, "val")
 
         // Check it calls the method which uses the best locale
-        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableLocale.key") }
+        verify(exactly = 1) { messageSourceContext.localizePreferringUser("SourceWithNullableLocale.key", Localization.Entry("arg", "val")) }
     }
 
     @Test
