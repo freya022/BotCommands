@@ -30,8 +30,10 @@ maven-publish-plugin = "0.34.0"
 mockk = "1.14.4"
 postgresql = "42.7.7"
 slf4j-api = "2.0.16"
-spring = "6.2.8"
-spring-boot = "3.5.3"
+# @pin For compatibility with Spring Boot 3
+spring = "6.2.14"
+# @pin Our code is compatible with Spring Boot 4, don't upgrade dependencies to avoid unexpected breakages
+spring-boot = "3.5.8"
 stacktrace-decoroutinator = "2.5.7"
 trove4j-core = "3.1.0"
 
