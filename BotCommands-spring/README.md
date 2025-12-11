@@ -4,6 +4,9 @@
 # BotCommands module - Spring Boot support
 This module enables you to use Spring Boot with this framework.
 
+> [!NOTE]
+> While this is built against Spring Boot 3, Spring Boot 4 is supported.
+
 ## Installation
 [![BotCommands-spring on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 ### Maven
