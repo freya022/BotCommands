@@ -87,8 +87,8 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "spring-boot" }
 spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot" }
-spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
-spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot" }
+spring-boot-devtools = "org.springframework.boot:spring-boot-devtools:4.0.0"
+spring-boot-starter = "org.springframework.boot:spring-boot-starter:4.0.0"
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 stacktrace-decoroutinator = { module = "dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm", version.ref = "stacktrace-decoroutinator" }
