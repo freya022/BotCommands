@@ -1,12 +1,10 @@
 package io.github.freya022.botcommands.api.commands.application.annotations
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
-
 /**
  * Sets a **unique** command ID on an **annotated** application command function.
  *
- * **Note:** This only applies to top-level commands, for slash commands,
- * this means the annotation needs to be used alongside [@TopLevelSlashCommandData][TopLevelSlashCommandData].
+ * This can be used to disambiguate some commands,
+ * and can be applied to any application command, top-level or not.
  *
  * @see DeclarationFilter @DeclarationFilter
  */
