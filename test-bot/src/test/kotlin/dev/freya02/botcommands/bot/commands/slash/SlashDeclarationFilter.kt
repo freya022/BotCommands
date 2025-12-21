@@ -39,15 +39,15 @@ class SlashDeclarationFilter : ApplicationCommand() {
         event.reply_("Works, guild members: ${event.guild.memberCount}", ephemeral = true).await()
     }
 
+    @DeclarationFilter(ImpossibleDeclarationFilter::class)
     @JDASlashCommand(name = "declaration_filter_subcommand", subcommand = "subcommand")
     @TopLevelSlashCommandData(scope = CommandScope.GUILD)
-    suspend fun onSlashDeclarationFilterSubcommand(event: GuildSlashEvent) {
-        event.reply_("Works", ephemeral = true).await()
+    fun onSlashDeclarationFilterSubcommand(event: GuildSlashEvent) {
+        throw AssertionError("Cannot run")
     }
 
-    @DeclarationFilter(ImpossibleDeclarationFilter::class)
     @JDASlashCommand(name = "declaration_filter_subcommand", group = "group", subcommand = "subcommand")
-    fun onSlashDeclarationFilterSubcommandGroupSubcommand(event: GuildSlashEvent) {
-        throw AssertionError("Cannot run")
+    suspend fun onSlashDeclarationFilterSubcommandGroupSubcommand(event: GuildSlashEvent) {
+        event.reply_("Works", ephemeral = true).await()
     }
 }

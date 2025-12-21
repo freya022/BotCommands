@@ -53,7 +53,6 @@ internal fun runFiltered(
     block: () -> Unit
 ) {
     val path = applicationFunctionMetadata.path
-    val commandId = applicationFunctionMetadata.commandId
     val func = applicationFunctionMetadata.func
 
     // On global manager, do not register any command if forceGuildCommands is enabled,
@@ -69,9 +68,6 @@ internal fun runFiltered(
         }
         if (requiredScope != scope) return
     }
-
-    if (!checkDeclarationFilter(manager, func, path, commandId))
-        return // Already logged
 
     val testState = checkTestCommand(manager, func, scope, manager.context)
     if (scope == CommandScope.GLOBAL && testState != TestState.NO_ANNOTATION)

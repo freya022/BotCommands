@@ -74,11 +74,15 @@ internal class UserContextCommandAutoBuilder(
         }
     }
 
+    context(_: SkipLogger)
     private fun processUserCommand(manager: AbstractApplicationCommandManager, metadata: UserContextFunctionMetadata) {
         val func = metadata.func
         val instance = metadata.instance
         val path = metadata.path
         val commandId = metadata.commandId
+
+        if (!checkDeclarationFilter(manager, metadata.func, path, metadata.commandId))
+            return // Already logged
 
         val annotation = metadata.annotation
         manager.userCommand(path.name, func.castFunction()) {

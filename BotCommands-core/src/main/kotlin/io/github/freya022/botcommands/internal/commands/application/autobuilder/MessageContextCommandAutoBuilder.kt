@@ -74,11 +74,15 @@ internal class MessageContextCommandAutoBuilder(
         }
     }
 
+    context(_: SkipLogger)
     private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
         val func = metadata.func
         val instance = metadata.instance
         val path = metadata.path
         val commandId = metadata.commandId
+
+        if (!checkDeclarationFilter(manager, metadata.func, path, metadata.commandId))
+            return // Already logged
 
         val annotation = metadata.annotation
         manager.messageCommand(path.name, func.castFunction()) {

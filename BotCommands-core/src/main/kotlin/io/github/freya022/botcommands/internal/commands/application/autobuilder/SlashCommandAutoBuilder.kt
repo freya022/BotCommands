@@ -242,6 +242,11 @@ internal class SlashCommandAutoBuilder(
         val subcommandsMetadata = topLevelMetadata.subcommands
         val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
         val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
+
+        // Check we don't have subcommands before filtering, else it would filter out all of them
+        if (isTopLevelOnly && !checkDeclarationFilter(manager, metadata.func, path, metadata.commandId))
+            return // Already logged
+
         manager.slashCommand(name, if (isTopLevelOnly) metadata.func.castFunction() else null) {
             contexts = if (forceGuildCommands) {
                 setOf(InteractionContextType.GUILD)
