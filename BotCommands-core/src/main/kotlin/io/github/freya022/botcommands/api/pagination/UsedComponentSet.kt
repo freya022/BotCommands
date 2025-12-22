@@ -39,8 +39,7 @@ class UsedComponentSet(private val componentsService: Components, private val cl
                 .forEach { component ->
                     if (component.customId == null) return@forEach
 
-                    val bcComponent = component as? IdentifiableComponent
-                        ?: return@forEach logger.warn { "Attempted to use a non-BC component, id: '${component.customId}'" }
+                    val bcComponent = component as? IdentifiableComponent ?: return@forEach
 
                     add(bcComponent.internalId)
                 }
