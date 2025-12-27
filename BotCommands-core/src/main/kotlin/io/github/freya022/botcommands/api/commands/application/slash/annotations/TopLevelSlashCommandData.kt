@@ -103,7 +103,7 @@ annotation class TopLevelSlashCommandData(
      *
      * This can be localized, see [LocalizationFunction] on how commands are mapped, example: `ban.description`.
      *
-     * **Note:** A description cannot be set here and on [@JDASlashCommand][JDASlashCommand] at the same time.
+     * **Note:** This takes precedence over [@JDASlashCommand][JDASlashCommand]'s description.
      *
      * @see LocalizationFunction
      *

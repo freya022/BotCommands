@@ -257,13 +257,6 @@ internal class SlashCommandAutoBuilder(
             isDefaultLocked = topLevelMetadata.annotation.defaultLocked
             nsfw = topLevelMetadata.annotation.nsfw
 
-            // On top-level only commands, the description can be set on either of the annotations, but not both
-            if (isTopLevelOnly) {
-                // One of them needs to not be set
-                require(topLevelMetadata.annotation.description.isBlank() || annotation.description.isBlank()) {
-                    "Slash command annotated with ${annotationRef<TopLevelSlashCommandData>()} must only have a description set once"
-                }
-            }
             // Prioritize [[TopLevelSlashCommandData]] as this is top level
             description = topLevelMetadata.annotation.description.nullIfBlank() ?: annotation.description.nullIfBlank()
 
