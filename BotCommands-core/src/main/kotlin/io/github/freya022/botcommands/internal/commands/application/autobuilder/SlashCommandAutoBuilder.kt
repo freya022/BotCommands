@@ -179,7 +179,7 @@ internal class SlashCommandAutoBuilder(
             } else if (metadata.path.nameCount == 3) {
                 topLevelMetadata
                     .subcommandGroups
-                    .getOrPut(metadata.path.group!!) { metadata.toSubcommandGroupMetadata() }
+                    .getOrPut(metadata.path.group!!) { SlashSubcommandGroupMetadata(metadata.path.group!!) }
                     .subcommands
                     .getOrPut(metadata.path.subname!!) { arrayListOf() }
                     .add(metadata)
@@ -206,8 +206,6 @@ internal class SlashCommandAutoBuilder(
             }
         }
     }
-
-    private fun SlashFunctionMetadata.toSubcommandGroupMetadata() = SlashSubcommandGroupMetadata(path.group!!)
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) = declare(manager)
 
