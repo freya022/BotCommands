@@ -72,7 +72,7 @@ internal class SlashCommandAutoBuilder(
 
         lateinit var properties: Properties
 
-        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
+        val subcommands: MutableList<SlashFunctionMetadata> = arrayListOf()
     }
 
     override val optionAnnotation: KClass<out Annotation> = SlashOption::class
@@ -181,7 +181,6 @@ internal class SlashCommandAutoBuilder(
                     .subcommandGroups
                     .getOrPut(metadata.path.group!!) { SlashSubcommandGroupMetadata(metadata.path.group!!) }
                     .subcommands
-                    .getOrPut(metadata.path.subname!!) { arrayListOf() }
                     .add(metadata)
             }
         }
@@ -189,7 +188,7 @@ internal class SlashCommandAutoBuilder(
         // For each subcommand group, find the SlashCommandGroupData from its subcommands
         topLevelMetadata.values.forEach { topLevelSlashCommandMetadata ->
             topLevelSlashCommandMetadata.subcommandGroups.values.forEach { slashSubcommandGroupMetadata ->
-                val groupSubcommands = slashSubcommandGroupMetadata.subcommands.values.flatten()
+                val groupSubcommands = slashSubcommandGroupMetadata.subcommands
                 val annotation = groupSubcommands
                     .mapNotNull { metadata -> metadata.func.findAnnotationRecursive<SlashCommandGroupData>() }
                     .also { annotations ->
@@ -237,15 +236,33 @@ internal class SlashCommandAutoBuilder(
         val path = metadata.path
 
         val name = path.name
-        val subcommandsMetadata = topLevelMetadata.subcommands
-        val subcommandGroupsMetadata = topLevelMetadata.subcommandGroups
-        val isTopLevelOnly = subcommandsMetadata.isEmpty() && subcommandGroupsMetadata.isEmpty()
+        val filteredSubcommands = topLevelMetadata.subcommands.filter { subMetadata ->
+            checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, subMetadata.commandId)
+        }
+        // Filter subcommands from groups
+        topLevelMetadata.subcommandGroups.values.forEach { subGroupMetadata ->
+            subGroupMetadata.subcommands.removeIf { subMetadata ->
+                !checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, subMetadata.commandId)
+            }
+        }
+        // Remove groups with no subcommands
+        val filteredSubcommandGroups = topLevelMetadata.subcommandGroups.values.filter { it.subcommands.isNotEmpty() }
 
-        // Check we don't have subcommands before filtering, else it would filter out all of them
-        if (isTopLevelOnly && !checkDeclarationFilter(manager, metadata.func, path, metadata.commandId))
-            return // Already logged
+        val isTopLevelOnly = topLevelMetadata.subcommands.isEmpty() && topLevelMetadata.subcommandGroups.isEmpty()
+        // If we don't have a top level command and no subcommands then abort
+        if (!isTopLevelOnly && filteredSubcommands.isEmpty() && filteredSubcommandGroups.isEmpty())
+            return
 
-        manager.slashCommand(name, if (isTopLevelOnly) metadata.func.castFunction() else null) {
+        // The top level command may not be executable, but it may still be declared for its subcommands
+        val topLevelFunction = when {
+            // Top level is filtered but has subcommands
+            !checkDeclarationFilter(manager, metadata.func, path, metadata.commandId) -> null
+            // Has no top-level declaration but has subcommands
+            !isTopLevelOnly -> null
+            // Not filtered, has top-level declaration and possibly subcommands
+            else -> metadata.func.castFunction()
+        }
+        manager.slashCommand(name, topLevelFunction) {
             contexts = if (forceGuildCommands) {
                 setOf(InteractionContextType.GUILD)
             } else {
@@ -258,13 +275,13 @@ internal class SlashCommandAutoBuilder(
             // Prioritize [[TopLevelSlashCommandData]] as this is top level
             description = topLevelMetadata.annotation.description.nullIfBlank() ?: annotation.description.nullIfBlank()
 
-            addSubcommands(manager, subcommandsMetadata, metadata.commandId)
+            addSubcommands(manager, filteredSubcommands)
 
-            addSubcommandGroups(manager, subcommandGroupsMetadata, metadata.commandId)
+            addSubcommandGroups(manager, filteredSubcommandGroups)
 
             configureBuilder(metadata)
 
-            if (isTopLevelOnly) {
+            if (topLevelFunction != null) {
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata)
             }
         }
@@ -273,21 +290,15 @@ internal class SlashCommandAutoBuilder(
     context(_: SkipLogger)
     private fun TopLevelSlashCommandBuilder.addSubcommandGroups(
         manager: AbstractApplicationCommandManager,
-        subcommandGroupsMetadata: MutableMap<String, SlashSubcommandGroupMetadata>,
-        commandId: String?,
+        subcommandGroupsMetadata: Collection<SlashSubcommandGroupMetadata>,
     ) {
-        subcommandGroupsMetadata.values.forEach { groupMetadata ->
+        subcommandGroupsMetadata.forEach { groupMetadata ->
             subcommandGroup(groupMetadata.name) {
                 description = groupMetadata.properties.description.nullIfBlank()
 
-                groupMetadata.subcommands.forEach { (subname, metadataList) ->
-                    metadataList.forEach subcommandLoop@{ subMetadata ->
-                        if (!checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, commandId))
-                            return@subcommandLoop // Already logged
-
-                        subcommand(subname, subMetadata.func.castFunction()) {
-                            configureSubcommand(manager, subMetadata)
-                        }
+                groupMetadata.subcommands.forEach { subMetadata ->
+                    subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
+                        configureSubcommand(manager, subMetadata)
                     }
                 }
             }
@@ -297,13 +308,9 @@ internal class SlashCommandAutoBuilder(
     context(_: SkipLogger)
     private fun TopLevelSlashCommandBuilder.addSubcommands(
         manager: AbstractApplicationCommandManager,
-        subcommandsMetadata: MutableList<SlashFunctionMetadata>,
-        commandId: String?,
+        subcommandsMetadata: List<SlashFunctionMetadata>,
     ) {
         subcommandsMetadata.forEach { subMetadata ->
-            if (!checkDeclarationFilter(manager, subMetadata.func, subMetadata.path, commandId))
-                return@forEach // Already logged
-
             subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
                 configureSubcommand(manager, subMetadata)
             }
