@@ -49,10 +49,13 @@ internal class FunctionAnnotationsMap(
     internal inline fun <reified A : Annotation> get(): Collection<ClassPathFunction> =
         get(A::class)
 
-    internal inline fun <reified CLASS_A : Annotation, reified FUNCTION_A : Annotation> getWithClassAnnotation(): List<ClassPathFunction> {
-        val classes = classAnnotationsMap.getOrNull<CLASS_A>() ?: return emptyList()
-        val functions = get<FUNCTION_A>()
+    internal fun <CLASS_A : Annotation, FUNCTION_A : Annotation> getWithClassAnnotation(classAnnotation: KClass<CLASS_A>, functionAnnotation: KClass<FUNCTION_A>): List<ClassPathFunction> {
+        val classes = classAnnotationsMap.getOrNull(classAnnotation) ?: return emptyList()
+        val functions = get(functionAnnotation)
 
         return functions.filter { it.clazz in classes }
     }
+
+    internal inline fun <reified CLASS_A : Annotation, reified FUNCTION_A : Annotation> getWithClassAnnotation() =
+        getWithClassAnnotation(CLASS_A::class, FUNCTION_A::class)
 }
