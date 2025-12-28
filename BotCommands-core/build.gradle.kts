@@ -14,6 +14,8 @@ registerSourceSet(name = "examples")
 registerSourceSet(name = "javaDocExamples")
 registerSourceSet(name = "kotlinDocExamples")
 
+val byteBuddyAgent: Configuration by configurations.creating
+
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
@@ -118,6 +120,7 @@ dependencies {
 
     // Mocking
     testImplementation(libs.mockk)
+    byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 
     // Logging
     testImplementation(libs.logback.classic)
@@ -145,6 +148,8 @@ tasks.named<KotlinCompile>("compileTestKotlin") {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
 }
 
 val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
