@@ -66,6 +66,7 @@ internal class ReflectionMetadata(
         private var _instance: ReflectionMetadata? = null
         internal val instance: ReflectionMetadata
             get() = _instance ?: throwInternal("Tried to access reflection metadata but they haven't been scanned yet")
+        internal val instanceOrNull: ReflectionMetadata? get() = _instance
 
         internal fun runScan(config: BConfig, bootstrap: BotCommandsBootstrap) {
             _instance = ReflectionMetadataScanner.scan(config, bootstrap)
@@ -329,7 +330,7 @@ internal val Class<*>.sourceFile: String
     get() = ReflectionMetadata.instance.getClassMetadata(this).sourceFile
 
 internal val Class<*>.sourceFileOrNull: String?
-    get() = ReflectionMetadata.instance.getClassMetadataOrNull(this)?.sourceFile
+    get() = ReflectionMetadata.instanceOrNull?.getClassMetadataOrNull(this)?.sourceFile
 
 internal val KClass<*>.sourceFile: String
     get() = this.java.sourceFile
@@ -347,4 +348,4 @@ internal val KFunction<*>.lineNumber: Int
     get() = ReflectionMetadata.instance.getMethodMetadata(this).line
 
 internal val KFunction<*>.lineNumberOrNull: Int?
-    get() = ReflectionMetadata.instance.getMethodMetadataOrNull(this)?.line
+    get() = ReflectionMetadata.instanceOrNull?.getMethodMetadataOrNull(this)?.line
