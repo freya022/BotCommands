@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -82,6 +82,7 @@ import java.sql.SQLException;
  * @see Database
  * @see ParametrizedQueryFactory
  */
+@NullMarked
 @Lazy
 @BService
 @RequiresDatabase
@@ -107,7 +108,6 @@ public class BlockingDatabase {
      * @see #withTransaction(boolean, TransactionFunction)
      * @see #withStatement(String, StatementFunction)
      */
-    @NotNull
     public Connection fetchConnection() throws SQLException {
         return DatabaseKt.fetchConnectionJava(database);
     }
@@ -129,7 +129,6 @@ public class BlockingDatabase {
      * @see #withTransaction(boolean, TransactionFunction)
      * @see #withStatement(String, boolean, StatementFunction)
      */
-    @NotNull
     public Connection fetchConnection(boolean readOnly) throws SQLException {
         return DatabaseKt.fetchConnectionJava(database, readOnly);
     }
@@ -155,7 +154,7 @@ public class BlockingDatabase {
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withTransaction(@NotNull TransactionFunction<R, E> transactionFunction) throws SQLException, E {
+    public <R, E extends Exception> R withTransaction(TransactionFunction<R, E> transactionFunction) throws SQLException, E {
         return DatabaseKt.withTransactionJava(database, transactionFunction);
     }
 
@@ -182,7 +181,7 @@ public class BlockingDatabase {
      * @see ConnectionSupplier#getMaxTransactionDuration()
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withTransaction(boolean readOnly, @NotNull TransactionFunction<R, E> transactionFunction) throws SQLException, E {
+    public <R, E extends Exception> R withTransaction(boolean readOnly, TransactionFunction<R, E> transactionFunction) throws SQLException, E {
         return DatabaseKt.withTransactionJava(database, readOnly, transactionFunction);
     }
 
@@ -209,8 +208,8 @@ public class BlockingDatabase {
      * @see #withTransaction(TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, statementFunction);
     }
 
@@ -236,9 +235,9 @@ public class BlockingDatabase {
      * @see #withTransaction(boolean, TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
                                                     boolean readOnly,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, readOnly, statementFunction);
     }
 
@@ -265,9 +264,9 @@ public class BlockingDatabase {
      * @see #withTransaction(TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
-                                                    int @NotNull [] columnIndexes,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    int[] columnIndexes,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, columnIndexes, statementFunction);
     }
 
@@ -296,10 +295,10 @@ public class BlockingDatabase {
      * @see #withTransaction(boolean, TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
                                                     boolean readOnly,
-                                                    int @NotNull [] columnIndexes,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+                                                    int[] columnIndexes,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, readOnly, columnIndexes, statementFunction);
     }
 
@@ -326,9 +325,9 @@ public class BlockingDatabase {
      * @see #withTransaction(TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
-                                                    @NotNull String @NotNull [] columnNames,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    String[] columnNames,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, columnNames, statementFunction);
     }
 
@@ -357,10 +356,10 @@ public class BlockingDatabase {
      * @see #withTransaction(boolean, TransactionFunction)
      */
     @SuppressWarnings("RedundantThrows") // Hack so checked exceptions in the lambda are thrown by this method instead
-    public <R, E extends Exception> R withStatement(@NotNull @Language("PostgreSQL") String sql,
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
                                                     boolean readOnly,
-                                                    @NotNull String @NotNull [] columnNames,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+                                                    String[] columnNames,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         return DatabaseKt.withStatementJava(database, sql, readOnly, columnNames, statementFunction);
     }
 }

@@ -42,18 +42,19 @@ import java.io.InputStream
  *
  * #### Java
  * ```java
+ * @NullMarked
  * public class YamlLocalizationMapReader extends AbstractJacksonLocalizationMapReader {
  *
  *     private final String folderName;
  *
- *     public YamlLocalizationMapReader(@NotNull LocalizationTemplateFunction templateFunction, @NotNull String folderName) {
+ *     public YamlLocalizationMapReader(LocalizationTemplateFunction templateFunction, String folderName) {
  *         super(new ObjectMapper(new YAMLFactory()), templateFunction);
  *         this.folderName = folderName;
  *     }
  *
  *     @Nullable
  *     @Override
- *     public InputStream getInputStream(@NotNull LocalizationMapRequest request) {
+ *     public InputStream getInputStream(LocalizationMapRequest request) {
  *         final InputStream stream = getClass().getResourceAsStream("/%s/%s.yml".formatted(folderName, request.bundleName()));
  *         if (stream != null) return stream;
  *

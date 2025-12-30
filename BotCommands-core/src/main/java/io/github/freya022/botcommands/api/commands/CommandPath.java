@@ -2,8 +2,8 @@ package io.github.freya022.botcommands.api.commands;
 
 import io.github.freya022.botcommands.internal.commands.CommandPathImpl;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,34 +13,29 @@ import java.util.List;
  * <br>The different components are name, group and subcommand.
  * <br>This is mainly a utility class to avoid manipulating strings
  */
+@NullMarked
 public interface CommandPath extends Comparable<CommandPath> {
-    @NotNull
-    static CommandPath of(@NotNull String name, @Nullable String group, @Nullable String subname) {
+    static CommandPath of(String name, @Nullable String group, @Nullable String subname) {
         return new CommandPathImpl(name, group, subname);
     }
 
-    @NotNull
-    static CommandPath of(@NotNull String name, @Nullable String subname) {
+    static CommandPath of(String name, @Nullable String subname) {
         return new CommandPathImpl(name, null, subname);
     }
 
-    @NotNull
-    static CommandPath ofName(@NotNull String name) {
+    static CommandPath ofName(String name) {
         return new CommandPathImpl(name, null, null);
     }
 
-    @NotNull
-    static CommandPath of(@NotNull String path) {
+    static CommandPath of(String path) {
         return of(Arrays.asList(path.split(" ")));
     }
 
-    @NotNull
-    static CommandPath of(@NotNull String @NotNull ... components) {
+    static CommandPath of(String... components) {
         return of(Arrays.asList(components));
     }
 
-    @NotNull
-    static CommandPath of(@NotNull List<@NotNull String> components) {
+    static CommandPath of(List<String> components) {
         if (components.size() == 1) {
             return new CommandPathImpl(components.get(0), null, null);
         } else if (components.size() == 2) {
@@ -58,7 +53,6 @@ public interface CommandPath extends Comparable<CommandPath> {
      *
      * @return Top level name of this command path
      */
-    @NotNull
     String getName();
 
     /**
@@ -108,7 +102,6 @@ public interface CommandPath extends Comparable<CommandPath> {
      *
      * @return The full encoded path of this command path
      */
-    @NotNull
     String getFullPath();
 
     /**
@@ -118,7 +111,6 @@ public interface CommandPath extends Comparable<CommandPath> {
      *
      * @return The full path with the specified separator
      */
-    @NotNull
     String getFullPath(char separator);
 
     /**
@@ -127,7 +119,6 @@ public interface CommandPath extends Comparable<CommandPath> {
      *
      * @return The right-most name of this command path
      */
-    @NotNull
     String getLastName();
 
     /**
@@ -145,7 +136,6 @@ public interface CommandPath extends Comparable<CommandPath> {
      *
      * @return The command path with space in between each component
      */
-    @NotNull
     String toString();
 
     /**
@@ -168,7 +158,7 @@ public interface CommandPath extends Comparable<CommandPath> {
     boolean equals(Object o);
 
     @Override
-    default int compareTo(@NotNull CommandPath o) {
+    default int compareTo(CommandPath o) {
         if (this.getNameCount() == o.getNameCount()) {
             if (this.equals(o)) {
                 return 0;

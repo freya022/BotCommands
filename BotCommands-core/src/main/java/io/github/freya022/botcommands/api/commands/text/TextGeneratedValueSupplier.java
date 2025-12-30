@@ -1,10 +1,11 @@
 package io.github.freya022.botcommands.api.commands.text;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @FunctionalInterface
 public interface TextGeneratedValueSupplier {
     @Nullable
-    Object getDefaultValue(@NotNull BaseCommandEvent event);
+    Object getDefaultValue(BaseCommandEvent event);
 }

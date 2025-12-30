@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
-import org.jetbrains.annotations.Nullable
+import org.jspecify.annotations.Nullable
 
 /**
  * Marks an option ([@SlashOption][SlashOption] or [@TextOption][TextOption]) as being optional.

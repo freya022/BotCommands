@@ -11,11 +11,12 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager;
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Duration;
 
 @Command
+@NullMarked
 public class SlashSkip implements RateLimitProvider {
     private static final String SKIP_RATE_LIMIT_NAME = "SlashSkip: skip";
 
@@ -26,7 +27,7 @@ public class SlashSkip implements RateLimitProvider {
     }
 
     @Override
-    public void declareRateLimit(@NotNull RateLimitManager manager) {
+    public void declareRateLimit(RateLimitManager manager) {
         final var bucketFactory = Buckets.createSpikeProtected(
                 /* Capacity */ 5,
                 /* Duration */ Duration.ofMinutes(1),

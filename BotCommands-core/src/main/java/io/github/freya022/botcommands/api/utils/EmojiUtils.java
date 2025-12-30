@@ -5,14 +5,15 @@ import dev.freya02.jda.emojis.unicode.UnicodeEmojis;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.fellbaum.jemoji.EmojiManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 
 /**
  * Utility class to resolve alias emojis into unicode, and getting an {@link UnicodeEmoji} out of them.
  */
+@NullMarked
 public class EmojiUtils {
     private static final int REGIONAL_INDICATOR_A_CODEPOINT = 127462;
     private static final int REGIONAL_INDICATOR_Z_CODEPOINT = 127487;
@@ -31,8 +32,7 @@ public class EmojiUtils {
      * @throws NoSuchElementException if no emoji alias or unicode matches
      * @see #resolveJDAEmoji(String)
      */
-    @NotNull
-    public static String resolveEmoji(@NotNull String input) {
+    public static String resolveEmoji(String input) {
         final var emoji = resolveEmojiOrNull(input);
         if (emoji == null) throw new NoSuchElementException("No emoji for input: " + input);
         return emoji;
@@ -52,7 +52,7 @@ public class EmojiUtils {
      * @see #resolveJDAEmojiOrNull(String)
      */
     @Nullable
-    public static String resolveEmojiOrNull(@NotNull String input) {
+    public static String resolveEmojiOrNull(String input) {
         var emoji = EmojiManager.getByDiscordAlias(input);
 
         if (emoji.isEmpty()) emoji = EmojiManager.getEmoji(input);
@@ -76,8 +76,7 @@ public class EmojiUtils {
         return emoji.get().getEmoji();
     }
 
-    @NotNull
-    private static String removeColonFromAlias(@NotNull final String alias) {
+    private static String removeColonFromAlias(final String alias) {
         return alias.startsWith(":") && alias.endsWith(":") ? alias.substring(1, alias.length() - 1) : alias;
     }
 
@@ -95,8 +94,7 @@ public class EmojiUtils {
      * @throws NoSuchElementException if no emoji alias or unicode matches
      * @see #resolveEmoji(String)
      */
-    @NotNull
-    public static UnicodeEmoji resolveJDAEmoji(@NotNull String input) {
+    public static UnicodeEmoji resolveJDAEmoji(String input) {
         return Emoji.fromUnicode(resolveEmoji(input));
     }
 
@@ -114,7 +112,7 @@ public class EmojiUtils {
      * @see #resolveEmoji(String)
      */
     @Nullable
-    public static UnicodeEmoji resolveJDAEmojiOrNull(@NotNull String input) {
+    public static UnicodeEmoji resolveJDAEmojiOrNull(String input) {
         final String unicode = resolveEmojiOrNull(input);
         if (unicode == null) return null;
         return Emoji.fromUnicode(unicode);
@@ -132,8 +130,7 @@ public class EmojiUtils {
      *
      * @return {@link Emoji} as a JDA {@link UnicodeEmoji}
      */
-    @NotNull
-    public static UnicodeEmoji asUnicodeEmoji(@NotNull net.fellbaum.jemoji.Emoji emoji) {
+    public static UnicodeEmoji asUnicodeEmoji(net.fellbaum.jemoji.Emoji emoji) {
         return Emoji.fromUnicode(emoji.getEmoji());
     }
 }

@@ -9,16 +9,17 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Adapter class for {@link GlobalExceptionHandler}.
  *
  * @see GlobalExceptionHandler
  */
+@NullMarked
 public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHandler {
-    public final void onException(@Nullable Event event, @NotNull Throwable throwable) {
+    public final void onException(@Nullable Event event, Throwable throwable) {
         if (event instanceof MessageReceivedEvent e) {
             handle(e, throwable);
         } else if (event instanceof SlashCommandInteractionEvent e) {
@@ -40,30 +41,30 @@ public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHa
         handle(event, throwable);
     }
 
-    public void handle(@Nullable Event event, @NotNull Throwable throwable) {
+    public void handle(@Nullable Event event, Throwable throwable) {
     }
 
-    public void handle(@NotNull MessageReceivedEvent event, @NotNull Throwable throwable) {
+    public void handle(MessageReceivedEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull SlashCommandInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(SlashCommandInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull MessageContextInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(MessageContextInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull UserContextInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(UserContextInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull ModalInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(ModalInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull ButtonInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(ButtonInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull StringSelectInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(StringSelectInteractionEvent event, Throwable throwable) {
     }
 
-    public void handle(@NotNull EntitySelectInteractionEvent event, @NotNull Throwable throwable) {
+    public void handle(EntitySelectInteractionEvent event, Throwable throwable) {
     }
 }

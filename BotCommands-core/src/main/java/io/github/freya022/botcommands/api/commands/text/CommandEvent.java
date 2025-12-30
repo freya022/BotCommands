@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -37,6 +37,7 @@ import java.util.NoSuchElementException;
  * you can also return the bucket token with {@link #cancelRateLimit()}
  * if you want to avoid consuming bandwidth in certain conditions.
  */
+@NullMarked
 public abstract class CommandEvent extends BaseCommandEventImpl {
     public CommandEvent(BContext context, MessageReceivedEvent event, String args, CancellableRateLimit cancellableRateLimit, LocalizableTextCommand localizableTextCommand) {
         super(context, event, args, cancellableRateLimit, localizableTextCommand);
@@ -71,7 +72,6 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
      *
      * @throws NoSuchElementException In case there is no more arguments to be read
      */
-    @NotNull
     public abstract <T> T nextArgument(Class<T> clazz);
 
     /**
@@ -86,6 +86,5 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
      * @throws NoIdException          In case there is no ID / IMentionable in the message
      * @throws NoSuchElementException In case there is no more arguments to be read, or the type isn't the same
      */
-    @NotNull
     public abstract <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException;
 }

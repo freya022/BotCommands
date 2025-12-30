@@ -1,10 +1,11 @@
 package io.github.freya022.botcommands.api.localization;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Locale;
 
-public record LocalizationMapRequest(@NotNull String baseName, @NotNull Locale requestedLocale,
-                                     @NotNull String bundleName) {
+@NullMarked
+public record LocalizationMapRequest(String baseName, Locale requestedLocale,
+                                     String bundleName) {
 
 }

@@ -1,14 +1,15 @@
 package io.github.freya022.botcommands.api;
 
 import io.github.freya022.botcommands.api.core.Logging;
+import org.jspecify.annotations.NullMarked;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.Properties;
 
+@NullMarked
 public class BCInfo {
 
     public static final Instant BUILD_TIME;
@@ -42,7 +43,6 @@ public class BCInfo {
                 COMMIT_HASH.equals("null") ? "" : "_" + COMMIT_HASH);
     }
 
-    @Nonnull
     private static Properties loadProperties() {
         final Properties properties = new Properties(8);
         try (InputStream stream = BCInfo.class.getResourceAsStream("/BCInfo.properties")) {

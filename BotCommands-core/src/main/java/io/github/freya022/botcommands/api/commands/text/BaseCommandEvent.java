@@ -18,8 +18,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
@@ -43,15 +43,15 @@ import java.util.function.Consumer;
  * you can also return the bucket token with {@link #cancelRateLimit()}
  * if you want to avoid consuming bandwidth in certain conditions.
  */
+@NullMarked
 public abstract class BaseCommandEvent
         extends MessageReceivedEvent
         implements CancellableRateLimit, LocalizableTextCommand {
 
-    public BaseCommandEvent(@NotNull JDA api, long responseNumber, @NotNull Message message) {
+    public BaseCommandEvent(JDA api, long responseNumber, Message message) {
         super(api, responseNumber, message);
     }
 
-    @NotNull
     public abstract BContext getContext();
 
     /**
@@ -101,7 +101,6 @@ public abstract class BaseCommandEvent
      * @return The Author of the Message as Member object.
      */
     @SuppressWarnings("ConstantConditions")
-    @NotNull
     @Override
     public Member getMember() {
         return super.getMember();
@@ -112,7 +111,6 @@ public abstract class BaseCommandEvent
      *
      * @return Default embed of the bot
      */
-    @NotNull
     public abstract EmbedBuilder getDefaultEmbed();
 
     /**
@@ -160,7 +158,7 @@ public abstract class BaseCommandEvent
      * @see DefaultEmbedFooterIconSupplier
      */
     @CheckReturnValue
-    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed);
+    public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, @Nullable InputStream iconStream, MessageEmbed embed);
 
     /**
      * Add a :white_check_mark: reaction on the event message to indicate command success
@@ -188,8 +186,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessage(CharSequence)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction respond(@NotNull CharSequence text);
+    public abstract MessageCreateAction respond(CharSequence text);
 
     /**
      * Sends a response in the event's channel
@@ -202,8 +199,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageFormat(String, Object...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction respondFormat(@NotNull String format, @NotNull Object... args);
+    public abstract MessageCreateAction respondFormat(String format, Object... args);
 
     /**
      * Sends a response in the event's channel
@@ -216,8 +212,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+    public abstract MessageCreateAction respond(MessageEmbed embed, MessageEmbed... other);
 
     /**
      * Sends a file as a response in the event's channel
@@ -229,8 +224,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendFiles(FileUpload...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction respondFile(@NotNull FileUpload... fileUploads);
+    public abstract MessageCreateAction respondFile(FileUpload... fileUploads);
 
     /**
      * Sends a reply in the event's channel
@@ -242,8 +236,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessage(CharSequence)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction reply(@NotNull CharSequence text);
+    public abstract MessageCreateAction reply(CharSequence text);
 
     /**
      * Sends a reply in the event's channel
@@ -256,8 +249,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageFormat(String, Object...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction replyFormat(@NotNull String format, @NotNull Object... args);
+    public abstract MessageCreateAction replyFormat(String format, Object... args);
 
     /**
      * Sends a reply in the event's channel
@@ -270,8 +262,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract MessageCreateAction reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+    public abstract MessageCreateAction reply(MessageEmbed embed, MessageEmbed... other);
 
     /**
      * Sends a file as a reply in the event's channel
@@ -283,8 +274,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendFiles(FileUpload...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract RestAction<Message> replyFile(@NotNull FileUpload... fileUploads);
+    public abstract RestAction<Message> replyFile(FileUpload... fileUploads);
 
     /**
      * Sends an error reply in the event's channel
@@ -296,8 +286,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessage(CharSequence)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract RestAction<Message> indicateError(@NotNull CharSequence text);
+    public abstract RestAction<Message> indicateError(CharSequence text);
 
     /**
      * Sends an error reply in the event's channel
@@ -310,8 +299,7 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageFormat(String, Object...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract RestAction<Message> indicateErrorFormat(@NotNull String format, @NotNull Object... args);
+    public abstract RestAction<Message> indicateErrorFormat(String format, Object... args);
 
     /**
      * Sends an error reply in the event's channel
@@ -324,6 +312,5 @@ public abstract class BaseCommandEvent
      * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
      */
     @CheckReturnValue
-    @NotNull
-    public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+    public abstract RestAction<Message> indicateError(MessageEmbed embed, MessageEmbed... other);
 }

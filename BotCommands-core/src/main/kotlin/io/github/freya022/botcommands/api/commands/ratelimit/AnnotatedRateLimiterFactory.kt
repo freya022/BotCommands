@@ -30,6 +30,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  *
  * ```java
  * @BService
+ * @NullMarked
  * public class AnnotatedProxiedRateLimiterFactory implements AnnotatedRateLimiterFactory {
  *     private final ProxyManager<String> proxyManager;
  *
@@ -37,9 +38,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  *         this.proxyManager = proxyManager;
  *     }
  *
- *     @NotNull
  *     @Override
- *     public RateLimiter create(@NotNull RateLimitScope scope, @NotNull BucketConfigurationSupplier configurationSupplier, boolean deleteOnRefill) {
+ *     public RateLimiter create(RateLimitScope scope, BucketConfigurationSupplier configurationSupplier, boolean deleteOnRefill) {
  *         return RateLimiter.createDefaultProxied(scope, proxyManager, configurationSupplier, deleteOnRefill);
  *     }
  * }

@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuild
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -19,6 +19,7 @@ import java.util.function.Consumer;
  *
  * @see JDATextCommandVariation @JDATextCommandVariation
  */
+@NullMarked
 public abstract class TextCommand {
     /**
      * <p>Returns a detailed embed of what the command is, it is used by the internal {@code help} command</p>
@@ -47,10 +48,9 @@ public abstract class TextCommand {
      *
      * @return A {@link TextGeneratedValueSupplier} to generate the option on command execution
      */
-    @NotNull
-    public TextGeneratedValueSupplier getGeneratedValueSupplier(@NotNull CommandPath commandPath,
-                                                                @NotNull String optionName,
-                                                                @NotNull ParameterType parameterType) {
+    public TextGeneratedValueSupplier getGeneratedValueSupplier(CommandPath commandPath,
+                                                                String optionName,
+                                                                ParameterType parameterType) {
         throw new IllegalArgumentException("Option '%s' in command path '%s' is a generated option but no generated value supplier has been given".formatted(optionName, commandPath.getFullPath()));
     }
 }

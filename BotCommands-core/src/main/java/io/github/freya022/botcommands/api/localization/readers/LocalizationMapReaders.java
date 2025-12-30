@@ -5,9 +5,9 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapRequest;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -20,19 +20,20 @@ import java.util.ResourceBundle;
  * <br>This is mainly used by the localization map providers.
  */
 @BService
+@NullMarked
 public final class LocalizationMapReaders {
     private static final Logger LOGGER = Logging.getLogger();
     private static final ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
 
     private final ServiceContainer serviceContainer;
 
+    @Nullable
     private Collection<LocalizationMapReader> readers = null;
 
     public LocalizationMapReaders(ServiceContainer serviceContainer) {
         this.serviceContainer = serviceContainer;
     }
 
-    @NotNull
     @Unmodifiable
     public Collection<LocalizationMapReader> getReaders() {
         if (readers == null)
@@ -50,7 +51,7 @@ public final class LocalizationMapReaders {
      * @return non-null mappings if a reader returned one, {@code null} otherwise
      */
     @Nullable
-    public LocalizationMap cycleReaders(@NotNull String baseName, @NotNull Locale locale) {
+    public LocalizationMap cycleReaders(String baseName, Locale locale) {
         final LocalizationMapRequest request = new LocalizationMapRequest(baseName, locale, CONTROL.toBundleName(baseName, locale));
         for (LocalizationMapReader reader : getReaders()) {
             try {

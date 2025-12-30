@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.api.commands.text;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A consumer that's called when a help embed is about to be sent.
@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
  * @see InterfacedService @InterfacedService
  */
+@NullMarked
 @InterfacedService(acceptMultiple = false)
 public interface HelpBuilderConsumer {
     /**
@@ -27,5 +28,5 @@ public interface HelpBuilderConsumer {
      * @param commandInfo The text command to retrieve the help from
      *                    <br>Will be null if {@code isGlobal} is {@code true}
      */
-    void accept(@NotNull EmbedBuilder builder, boolean isGlobal, @Nullable TextCommandInfo commandInfo);
+    void accept(EmbedBuilder builder, boolean isGlobal, @Nullable TextCommandInfo commandInfo);
 }

@@ -5,9 +5,9 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationService;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -21,18 +21,19 @@ import java.util.Locale;
  * until one returns a valid {@link LocalizationMap}.
  */
 @BService
+@NullMarked
 public final class LocalizationMapProviders {
     private static final Logger LOGGER = Logging.getLogger();
 
     private final ServiceContainer serviceContainer;
 
+    @Nullable
     private Collection<LocalizationMapProvider> providers = null;
 
     public LocalizationMapProviders(ServiceContainer serviceContainer) {
         this.serviceContainer = serviceContainer;
     }
 
-    @NotNull
     @Unmodifiable
     public Collection<LocalizationMapProvider> getProviders() {
         if (providers == null)
@@ -54,7 +55,7 @@ public final class LocalizationMapProviders {
      * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
      */
     @Nullable
-    public LocalizationMap cycleProvidersWithParents(@NotNull String baseName, @NotNull Locale locale) {
+    public LocalizationMap cycleProvidersWithParents(String baseName, Locale locale) {
         for (LocalizationMapProvider provider : getProviders()) {
             try {
                 final LocalizationMap bundle = provider.fromBundleOrParent(baseName, locale);
@@ -84,7 +85,7 @@ public final class LocalizationMapProviders {
      * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
      */
     @Nullable
-    public LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
+    public LocalizationMap cycleProviders(String baseName, Locale locale) {
         for (LocalizationMapProvider provider : getProviders()) {
             try {
                 final LocalizationMap bundle = provider.fromBundle(baseName, locale);

@@ -87,6 +87,7 @@ dependencies {
 
     api(libs.jsr305)
     compileOnly(libs.jetbrains.annotations)
+    api(libs.jspecify)
 
     // -------------------- ANNOTATION PROCESSORS --------------------
 

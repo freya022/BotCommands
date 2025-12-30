@@ -12,7 +12,7 @@ import io.github.freya022.botcommands.api.core.service.LazyService;
 import io.github.freya022.botcommands.api.core.service.annotations.RequiresDefaultInjection;
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName;
 import io.github.freya022.botcommands.internal.core.ReadyListener;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

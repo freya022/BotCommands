@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
  * @see DefaultLocalizationMapProvider
  * @see InterfacedService @InterfacedService
  */
+@NullMarked
 @InterfacedService(acceptMultiple = true)
 public interface LocalizationMapProvider {
     ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
@@ -37,7 +38,7 @@ public interface LocalizationMapProvider {
      * or {@code null} if no bundle could be read, or a (logged) exception happened.
      */
     @Nullable
-    LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale);
+    LocalizationMap fromBundleOrParent(String baseName, Locale requestedLocale);
 
     /**
      * Loads a localization map with the requested name and requested locale.
@@ -53,5 +54,5 @@ public interface LocalizationMapProvider {
      * or {@code null} if no bundle could be read, or a (logged) exception happened.
      */
     @Nullable
-    LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale requestedLocale);
+    LocalizationMap fromBundle(String baseName, Locale requestedLocale);
 }

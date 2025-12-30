@@ -19,8 +19,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -29,6 +29,7 @@ import java.util.List;
 import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
 @Command
+@NullMarked
 public class SlashMyJavaCommand extends ApplicationCommand {
 	@RateLimit(
 			scope = RateLimitScope.USER, bandwidths = {
@@ -36,12 +37,11 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 			@Bandwidth(capacity = 2, refill = @Refill(type = RefillType.INTERVAL, tokens = 2, period = 5, periodUnit = ChronoUnit.SECONDS))
 	})
 	@Override
-	@NotNull
-	public ApplicationGeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
+    public ApplicationGeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
 	                                                                   @Nullable String commandId,
-	                                                                   @NotNull CommandPath commandPath,
-	                                                                   @NotNull String optionName,
-	                                                                   @NotNull ParameterType parameterType) {
+	                                                                   CommandPath commandPath,
+	                                                                   String optionName,
+	                                                                   ParameterType parameterType) {
 		if (optionName.equals("guild_name")) {
 			return event -> event.getGuild().getName();
 		}
@@ -50,8 +50,7 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 	}
 
 	@Override
-	@NotNull
-	public List<Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
+    public List<Choice> getOptionChoices(@Nullable Guild guild, CommandPath commandPath, String optionName) {
 		if (optionName.equals("string_option") || optionName.equals("string_annotated")) {
 			return List.of(new Choice("a", "a"), new Choice("b", "b"), new Choice("c", "c"));
 		} else if (optionName.equals("int_option") || optionName.equals("int_annotated")) {

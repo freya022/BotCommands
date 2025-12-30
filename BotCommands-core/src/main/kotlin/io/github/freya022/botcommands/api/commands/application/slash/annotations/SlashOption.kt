@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
-import org.jetbrains.annotations.Nullable
+import org.jspecify.annotations.Nullable
 
 /**
  * Sets a parameter as a slash command option from Discord.

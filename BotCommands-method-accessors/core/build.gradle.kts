@@ -6,6 +6,8 @@ plugins {
 dependencies {
     api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines.core)
+
+    api(libs.jspecify)
 }
 
 configurePublishedJarArtifact(

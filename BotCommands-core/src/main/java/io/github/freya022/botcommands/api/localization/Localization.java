@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.localization;
 
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -19,8 +19,9 @@ import java.util.Objects;
  * @see LocalizationMapReader
  * @see LocalizationTemplate
  */
+@NullMarked
 public interface Localization extends LocalizationMap {
-    record Entry(@NotNull String argumentName, @NotNull Object value) {
+    record Entry(String argumentName, Object value) {
 
         public Entry {
             Objects.requireNonNull(argumentName, "Argument name must not be null");
@@ -36,8 +37,7 @@ public interface Localization extends LocalizationMap {
          * @param argumentName The name of the argument from the templated string
          * @param value        The value to assign it to
          */
-        @NotNull
-        public static Entry entry(@NotNull String argumentName, @NotNull Object value) {
+        public static Entry entry(String argumentName, Object value) {
             return new Entry(argumentName, value);
         }
     }

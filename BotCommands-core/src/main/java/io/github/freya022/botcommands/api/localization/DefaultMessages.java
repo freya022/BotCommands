@@ -2,13 +2,13 @@ package io.github.freya022.botcommands.api.localization;
 
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader;
-import io.github.freya022.botcommands.internal.utils.ExceptionsKt;
+import io.github.freya022.botcommands.internal.core.exceptions.InternalException;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.Timestamp;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Set;
@@ -45,6 +45,7 @@ import static io.github.freya022.botcommands.api.localization.Localization.Entry
  *
  * @deprecated This has been replaced by {@link io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessages DefaultBotCommandsMessages}
  */
+@NullMarked
 @Deprecated(since = "3.1.0-beta.1", forRemoval = true)
 public final class DefaultMessages {
     private final Localization localization;
@@ -53,35 +54,33 @@ public final class DefaultMessages {
      * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
      */
     @ApiStatus.Internal
-    public DefaultMessages(@NotNull LocalizationService localizationService, @NotNull Locale locale) {
-        this.localization = localizationService.getInstance("DefaultMessages", locale);
-        if (this.localization == null) {
+    public DefaultMessages(LocalizationService localizationService, Locale locale) {
+        var localization = localizationService.getInstance("DefaultMessages", locale);
+        if (localization == null) {
             final var mappingProviders = localizationService.getMappingProviders();
             final var mappingReaders = localizationService.getMappingReaders();
-            ExceptionsKt.throwInternal("Could not load DefaultMessages, providers: " + mappingProviders + ", readers: " + mappingReaders);
+            throw new InternalException("Could not load DefaultMessages, providers: " + mappingProviders + ", readers: " + mappingReaders);
         }
+        this.localization = localization;
     }
 
-    @NotNull
-    private LocalizationTemplate getLocalizationTemplate(@NotNull String path) {
+    private LocalizationTemplate getLocalizationTemplate(String path) {
         final LocalizationTemplate template = getLocalizationTemplateOrNull(path);
         if (template == null) {
-            ExceptionsKt.throwInternal("Localization template for default messages '" + path + "' could not be found, available keys: " + localization.getKeys());
-            throw new AssertionError();
+            throw new InternalException("Localization template for default messages '" + path + "' could not be found, available keys: " + localization.getKeys());
         }
 
         return template;
     }
 
     @Nullable
-    private LocalizationTemplate getLocalizationTemplateOrNull(@NotNull String path) {
+    private LocalizationTemplate getLocalizationTemplateOrNull(String path) {
         return localization.get(path);
     }
 
     /**
      * @return The localized permission, or {@link Permission#getName()} if the translation is missing.
      */
-    @NotNull
     public String getPermission(Permission permission) {
         final LocalizationTemplate localizationTemplate = getLocalizationTemplateOrNull("permissions." + permission.name());
         return localizationTemplate != null ? localizationTemplate.localize() : permission.getName();

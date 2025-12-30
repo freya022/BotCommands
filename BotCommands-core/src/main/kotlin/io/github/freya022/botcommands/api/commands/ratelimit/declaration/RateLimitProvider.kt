@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * ### Example
  * ```java
  * @Command
+ * @NullMarked
  * public class SlashSkip implements RateLimitProvider {
  *     private static final String SKIP_RATE_LIMIT_NAME = "SlashSkip: skip";
  *
@@ -22,8 +23,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  *     }
  *
  *     @Override
- *     public void declareRateLimit(@NotNull RateLimitManager manager) {
- *         final var bucketFactory = Buckets.spikeProtected(
+ *     public void declareRateLimit(RateLimitManager manager) {
+ *         final var bucketFactory = Buckets.createSpikeProtected(
  *                 /* Capacity */ 5,
  *                 /* Duration */ Duration.ofMinutes(1),
  *                 /* Spike capacity */ 2,

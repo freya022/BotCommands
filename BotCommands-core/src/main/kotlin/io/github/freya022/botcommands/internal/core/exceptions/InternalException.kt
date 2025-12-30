@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.core.exceptions
 import io.github.freya022.botcommands.api.BCInfo
 import net.dv8tion.jda.api.JDAInfo
 
-internal class InternalException internal constructor(
+internal class InternalException @JvmOverloads internal constructor(
     message: String,
     throwable: Throwable? = null,
 ) : RuntimeException(internalErrorMessage(message), throwable)

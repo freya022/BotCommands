@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.core.db;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.sql.SQLException;
 
@@ -14,5 +14,5 @@ import java.sql.SQLException;
  */
 @FunctionalInterface
 public interface StatementFunction<R, E extends Exception> {
-    R apply(@NotNull BlockingPreparedStatement statement) throws SQLException, E;
+    R apply(@NonNull BlockingPreparedStatement statement) throws SQLException, E;
 }

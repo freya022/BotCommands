@@ -2,14 +2,15 @@ package io.github.freya022.botcommands.api.core.db;
 
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 @SuppressWarnings("SqlSourceToSinkFlow")
+@NullMarked
 @IgnoreStackFrame // Due to TracedConnection
-public record BlockingTransaction(@NotNull Connection connection) {
+public record BlockingTransaction(Connection connection) {
     /**
      * Creates a statement from the given SQL statement.
      *
@@ -17,8 +18,7 @@ public record BlockingTransaction(@NotNull Connection connection) {
      *
      * @param sql An SQL statement that may contain one or more '?' IN parameter placeholders
      */
-    @NotNull
-    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") @NotNull String sql) throws SQLException {
+    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") String sql) throws SQLException {
         return new BlockingPreparedStatement(connection.prepareStatement(sql));
     }
 
@@ -30,9 +30,8 @@ public record BlockingTransaction(@NotNull Connection connection) {
      * @param sql           An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param columnIndexes An array of column indexes indicating the columns that should be returned from the inserted row or rows
      */
-    @NotNull
-    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") @NotNull String sql,
-                                                       int @NotNull [] columnIndexes) throws SQLException {
+    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") String sql,
+                                                       int[] columnIndexes) throws SQLException {
         return new BlockingPreparedStatement(connection.prepareStatement(sql, columnIndexes));
     }
 
@@ -44,9 +43,8 @@ public record BlockingTransaction(@NotNull Connection connection) {
      * @param sql         An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param columnNames An array of column names indicating the columns that should be returned from the inserted row or rows
      */
-    @NotNull
-    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") @NotNull String sql,
-                                                       @NotNull String @NotNull [] columnNames) throws SQLException {
+    public BlockingPreparedStatement preparedStatement(@Language("PostgreSQL") String sql,
+                                                       String[] columnNames) throws SQLException {
         return new BlockingPreparedStatement(connection.prepareStatement(sql, columnNames));
     }
 
@@ -56,8 +54,8 @@ public record BlockingTransaction(@NotNull Connection connection) {
      * @param sql               An SQL statement that may contain one or more '?' IN parameter placeholders
      * @param statementFunction The function to run with the prepared statement
      */
-    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         try (final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql))) {
             return statementFunction.apply(statement);
         }
@@ -70,9 +68,9 @@ public record BlockingTransaction(@NotNull Connection connection) {
      * @param columnIndexes     An array of column indexes indicating the columns that should be returned from the inserted row or rows
      * @param statementFunction The function to run with the prepared statement
      */
-    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql,
-                                                    int @NotNull [] columnIndexes,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    int[] columnIndexes,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         try (final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql, columnIndexes))) {
             return statementFunction.apply(statement);
         }
@@ -85,9 +83,9 @@ public record BlockingTransaction(@NotNull Connection connection) {
      * @param columnNames       An array of column names indicating the columns that should be returned from the inserted row or rows
      * @param statementFunction The function to run with the prepared statement
      */
-    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") @NotNull String sql,
-                                                    @NotNull String @NotNull [] columnNames,
-                                                    @NotNull StatementFunction<R, E> statementFunction) throws SQLException, E {
+    public <R, E extends Exception> R withStatement(@Language("PostgreSQL") String sql,
+                                                    String[] columnNames,
+                                                    StatementFunction<R, E> statementFunction) throws SQLException, E {
         try (final BlockingPreparedStatement statement = new BlockingPreparedStatement(connection.prepareStatement(sql, columnNames))) {
             return statementFunction.apply(statement);
         }

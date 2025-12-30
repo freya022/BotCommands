@@ -4,10 +4,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapRequest;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -20,6 +19,7 @@ import java.io.IOException;
  * @see JacksonLocalizationMapReader
  * @see InterfacedService @InterfacedService
  */
+@NullMarked
 @InterfacedService(acceptMultiple = true)
 public interface LocalizationMapReader {
     /**
@@ -30,8 +30,7 @@ public interface LocalizationMapReader {
      *
      * @return The new path
      */
-    @Nonnull
-    default String appendPath(@Nonnull String path, @Nonnull String other) {
+    default String appendPath(String path, String other) {
         if (path.isBlank()) return other;
 
         return path + '.' + other;
@@ -43,5 +42,5 @@ public interface LocalizationMapReader {
      * <p>This should not read parent bundles, only this specific one.
      */
     @Nullable
-    LocalizationMap readLocalizationMap(@NotNull LocalizationMapRequest request) throws IOException;
+    LocalizationMap readLocalizationMap(LocalizationMapRequest request) throws IOException;
 }

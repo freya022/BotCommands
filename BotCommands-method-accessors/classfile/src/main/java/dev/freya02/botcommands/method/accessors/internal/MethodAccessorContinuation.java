@@ -2,12 +2,14 @@ package dev.freya02.botcommands.method.accessors.internal;
 
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.jvm.internal.ContinuationImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class MethodAccessorContinuation extends ContinuationImpl {
     private final MethodAccessor<?> methodAccessor;
 
+    @Nullable
     public Object result;
     public int label;
 
@@ -24,7 +26,7 @@ public class MethodAccessorContinuation extends ContinuationImpl {
     @Nullable
     @Override
     @SuppressWarnings("DataFlowIssue") // The next continuation label does not need any data, it will only return the result
-    protected Object invokeSuspend(@NotNull Object result) {
+    protected Object invokeSuspend(Object result) {
         this.result = result;
         this.label |= Integer.MIN_VALUE;
         return methodAccessor.callSuspend(null, this);

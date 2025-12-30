@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface with a method called everytime the framework catches an uncaught exception.
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * @see GlobalExceptionHandlerAdapter
  * @see InterfacedService @InterfacedService
  */
+@NullMarked
 @InterfacedService(acceptMultiple = false)
 public interface GlobalExceptionHandler {
     /**
@@ -32,5 +33,5 @@ public interface GlobalExceptionHandler {
      * @param event     The event which triggered this exception
      * @param throwable The throwable which got threw
      */
-    void onException(@Nullable Event event, @NotNull Throwable throwable);
+    void onException(@Nullable Event event, Throwable throwable);
 }

@@ -55,6 +55,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *
  * ```java
  * @BService
+ * @NullMarked
  * public class MyApplicationCommandFilter implements ApplicationCommandFilter {
  *
  *     @Override
@@ -64,7 +65,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *
  *     @Nullable
  *     @Override
- *     public String check(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
+ *     public String check(GenericCommandInteractionEvent event, ApplicationCommandInfo commandInfo) {
  *         if (event.getChannel().getIdLong() != 722891685755093076L) {
  *             event.reply("Can only run commands in <#722891685755093076>").setEphemeral(true).queue();
  *             return "Not the right channel";

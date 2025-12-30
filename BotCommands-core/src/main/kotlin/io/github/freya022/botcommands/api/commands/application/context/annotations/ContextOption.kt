@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.context.message.o
 import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionRegistry
 import io.github.freya022.botcommands.api.parameters.resolvers.MessageContextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
-import org.jetbrains.annotations.Nullable
+import org.jspecify.annotations.Nullable
 
 /**
  * Sets a parameter as a context command option.

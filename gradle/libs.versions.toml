@@ -65,6 +65,7 @@ jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
 jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
+jspecify = "org.jspecify:jspecify:1.0.0"
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }

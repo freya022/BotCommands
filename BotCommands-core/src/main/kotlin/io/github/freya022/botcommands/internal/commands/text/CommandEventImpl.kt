@@ -38,7 +38,7 @@ internal class CommandEventImpl private constructor(
 ) : CommandEvent(context, event, argumentsStr, cancellableRateLimit, localizableTextCommand) {
     override fun getArguments(): List<Any> = arguments
 
-    override fun <T> hasNext(clazz: Class<T>): Boolean {
+    override fun <T : Any> hasNext(clazz: Class<T>): Boolean {
         if (arguments.isEmpty()) return false
 
         val o = arguments.first()
@@ -46,7 +46,7 @@ internal class CommandEventImpl private constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> peekArgument(clazz: Class<T>): T {
+    override fun <T : Any> peekArgument(clazz: Class<T>): T {
         if (arguments.isEmpty()) throw NoSuchElementException()
 
         val o = arguments.first()

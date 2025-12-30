@@ -56,6 +56,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * ```java
  * @BService
+ * @NullMarked
  * public class MyTextCommandFilter implements TextCommandFilter {
  *
  *     @Override
@@ -65,7 +66,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  *     @Nullable
  *     @Override
- *     public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
+ *     public String check(MessageReceivedEvent event, TextCommandVariation commandVariation, String args) {
  *         if (event.getChannel().getIdLong() != 722891685755093076L) {
  *             event.getMessage().reply("Can only run commands in <#722891685755093076>").queue();
  *             return "Wrong channel";

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.utils;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 import net.fellbaum.jemoji.IndexedEmoji;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -46,7 +45,7 @@ public class RichTextFinder {
      * @param getEmojis         Whether to take Unicode/shortcode emojis
      * @param getUrls           Whether to take URLs
      */
-    public RichTextFinder(@NotNull String input, boolean getIMentionable, boolean getGlobalMentions, boolean getEmojis, boolean getUrls) {
+    public RichTextFinder(String input, boolean getIMentionable, boolean getGlobalMentions, boolean getEmojis, boolean getUrls) {
         this.input = input.replace("\uFE0F", "");
         this.matcher = EMPTY_PATTERN.matcher(this.input);
 

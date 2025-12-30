@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import org.jetbrains.annotations.Nullable
+import org.jspecify.annotations.Nullable
 
 /**
  * Sets a parameter as a text command option from the Discord message.

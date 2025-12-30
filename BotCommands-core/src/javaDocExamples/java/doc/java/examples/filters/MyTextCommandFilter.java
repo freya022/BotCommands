@@ -4,10 +4,11 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter;
 import io.github.freya022.botcommands.api.commands.text.TextCommandVariation;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @BService
+@NullMarked
 public class MyTextCommandFilter implements TextCommandFilter {
 
     @Override
@@ -17,7 +18,7 @@ public class MyTextCommandFilter implements TextCommandFilter {
 
     @Nullable
     @Override
-    public String check(@NotNull MessageReceivedEvent event, @NotNull TextCommandVariation commandVariation, @NotNull String args) {
+    public String check(MessageReceivedEvent event, TextCommandVariation commandVariation, String args) {
         if (event.getChannel().getIdLong() != 722891685755093076L) {
             event.getMessage().reply("Can only run commands in <#722891685755093076>").queue();
             return "Wrong channel";

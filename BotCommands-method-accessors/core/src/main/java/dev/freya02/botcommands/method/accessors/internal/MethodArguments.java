@@ -1,15 +1,16 @@
 package dev.freya02.botcommands.method.accessors.internal;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 
+@NullMarked
 public class MethodArguments implements Cloneable {
 
     public static final Object NO_VALUE = new Object();
 
-    private final Object[] args;
+    private final @Nullable Object[] args;
     private int cursor = 0;
 
     // Built by the accessor
@@ -46,8 +47,7 @@ public class MethodArguments implements Cloneable {
         return args[index];
     }
 
-    @NotNull
-    public Object[] getArgs() {
+    public @Nullable Object[] getArgs() {
         return args;
     }
 

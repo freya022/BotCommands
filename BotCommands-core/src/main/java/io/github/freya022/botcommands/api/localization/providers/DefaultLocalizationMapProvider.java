@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapKt;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +24,7 @@ import java.util.Locale;
  * such as {@code DefaultMessage-default_fr_FR}.
  */
 @BService
+@NullMarked
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
     private final LocalizationMapProviders localizationMapProviders;
     private final LocalizationMapReaders localizationMapReaders;
@@ -35,14 +36,14 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 
     @Nullable
     @Override
-    public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale) {
+    public LocalizationMap fromBundleOrParent(String baseName, Locale requestedLocale) {
         final LocalizationMap localizationMap = fromBundle(baseName, requestedLocale);
         return withParentBundles(baseName, requestedLocale, localizationMap);
     }
 
     @Nullable
     @Override
-    public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale requestedLocale) {
+    public LocalizationMap fromBundle(String baseName, Locale requestedLocale) {
         final LocalizationMap localizationMap = localizationMapReaders.cycleReaders(baseName, requestedLocale);
         final LocalizationMap defaultLocalizationMap = localizationMapReaders.cycleReaders(baseName + "-default", requestedLocale);
         if (defaultLocalizationMap != null) {
@@ -52,7 +53,7 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
     }
 
     @Nullable
-    private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable LocalizationMap localizationMap) {
+    private LocalizationMap withParentBundles(String baseName, Locale effectiveLocale, @Nullable LocalizationMap localizationMap) {
         //Need to get parent bundles
         final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
 
