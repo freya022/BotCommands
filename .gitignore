@@ -2,7 +2,6 @@
 /.idea/workspace.xml
 
 *.iml
-.idea
 build
 .gradle
 .kotlin
