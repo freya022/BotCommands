@@ -1,7 +1,5 @@
 [bc-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?label=Maven%20central&logo=apachemaven&versionPrefix=3
 [bc-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands
-[bc-jitpack-shield]: https://img.shields.io/badge/Snapshots-blue?logo=jitpack
-[bc-jitpack-link]: https://jitpack.io/#freya022/BotCommands
 [bc-releases]: #installation
 [jda-version]: https://img.shields.io/badge/JDA-6.1.0+-important?logo=data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAAGNbWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAsaWxvYwAAAABEAAACAAEAAAABAAADhgAAAH0AAgAAAAEAAAG1AAAB0QAAAEJpaW5mAAAAAAACAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAAAaaW5mZQIAAAAAAgAAYXYwMUFscGhhAAAAABppcmVmAAAAAAAAAA5hdXhsAAIAAQABAAAAw2lwcnAAAACdaXBjbwAAABRpc3BlAAAAAAAAAEAAAAAvAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAMAAAAABNjb2xybmNseAACAAIABoAAAAAOcGl4aQAAAAABCAAAAAxhdjFDgQAcAAAAADhhdXhDAAAAAHVybjptcGVnOm1wZWdCOmNpY3A6c3lzdGVtczphdXhpbGlhcnk6YWxwaGEAAAAAHmlwbWEAAAAAAAAAAgABBAECgwQAAgQBBYYHAAACVm1kYXQSAAoGGBV/u5VAMsQDGYBFcWjRfnvfQGK2RVRDm3mQHZYdniSAnTNueRTnA3322BUI8WYH8cbvaJOI7TYzDcxEhAtictt8XAknV+wzOYbYlbmBjrZ02hI+g5duvTHq4dfV1flM3q1qLS61XIEjnbRVOSSZ0AR0h5bgz3E4HaAMaRwHoEYHgGBkMUeWaz2KAGGLGgDvjrkadbwaS9gRwg1QvRm1s1XHO8shLVjZPy9Ec184Y8sYV1HKkMZMkU4t3sd0BMWj+8n00jkc1ncfPh+iVzu+W79Zq+HfFOgwRxWbyI8QWVP7ucZZMqrSaIIfN38e1giSADDizzWkDcIVWid2p4o4IOD+4vb3rwp9KuXIRT/xOW46I5OBN9pdoj1wPNcxU8nYooaa+WiFolKPUJmQomZLAuRrF1ghg3M9u+j3/MqAzXpPnJqxNLArxR7mTC3n/IgNbdlBJJpyFnmeDOhIIU5rQ0meBq4UwZoY6qjk/JDjkACRc/S8sT5Fp3ylStsDh24N8YuOjX7Blr41x4XZFuGOL/LJ9w5r1BvYKn4bxQ8zSekBnw5bHrhB3GidNP9ebWAIfvbRGftqMYjQtFrgWjeunLb88NjtaZU96bxBsNASAAoJGBV/u5IEBA0IMm5GYAAAEBCsBSQWO/F/+CLxcHCegywscOJVmyRW5DGFKOGjkgNf6igltcnWSK0aL8l8S3ThyMIgH8UZV/JWbWRztUFGUQjxZoVbuFffuH13zdQjN9V4E1lJ88XVLBQ3oMG4wfljykFslOwhdeD56Q==
 [jda-releases]: https://github.com/discord-jda/JDA/releases
@@ -16,15 +14,15 @@
 
 [![BotCommands version][bc-maven-central-shield]][bc-releases]
 [![JDA version][jda-version]][jda-releases]
-[![Snapshots][bc-jitpack-shield]][bc-jitpack-link]
 
 [![Discord invite][discord-shield]][discord-invite]
 [![Wiki home][wiki-shield]][wiki-link]
 [![Documentation][kdoc-shield]][kdoc-link]
 
 # BotCommands
-A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
-using the [JDA](https://github.com/discord-jda/JDA) library.
+A framework for [JDA](https://github.com/discord-jda/JDA) with everything you need to make a modern bot! 
+
+It supports Java 17+ and provides first-class Kotlin support, meaning you get full language support and a few extras!
 
 ## Features
 The framework being built around events and dependency injection,
@@ -33,7 +31,7 @@ while also easily being able to use services provided by the framework.
 
 ### Commands
 * Automatic registration of commands, resolvers, services, etc... with full dependency injection
-* Can be used with annotations or with code (in Kotlin)
+* Can be used with annotations (or with a Kotlin DSL)
 
 ### Application commands
 * Slash commands with automatic & customizable argument processing
