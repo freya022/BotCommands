@@ -34,7 +34,13 @@ fun Project.configurePublishedArtifact(artifactId: String, packaging: String? = 
     }
 
     extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
-        coordinates(groupId = "io.github.freya022", artifactId = artifactId)
+        val groupId = if (GitUtils.isJitpack(providers)) {
+            providers.environmentVariable("GROUP").get()
+        } else {
+            "io.github.freya022"
+        }
+
+        coordinates(groupId = groupId, artifactId = artifactId)
 
         pom {
             // Sonatype requires

@@ -7,11 +7,10 @@ data class Version(
     val minor: String,
     val revision: String,
     val classifier: String?,
-    val isDev: Boolean,
 ) : Serializable {
 
     override fun toString(): String {
-        return "$major.$minor.$revision-$classifier" + let { if (isDev) "_DEV" else "" }
+        return "$major.$minor.$revision-$classifier"
     }
 
     private fun writeObject(out: ObjectOutputStream) {

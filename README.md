@@ -164,8 +164,7 @@ dependencies {
 
 ### Snapshots
 
-Alternatively, you can use Jitpack to use **snapshot** versions, 
-you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
+To use the latest, unreleased changes, see [SNAPSHOTS.md](SNAPSHOTS.md).
 
 ## Modules
 The base `BotCommands` artifact will include modules often used, while others are optional.

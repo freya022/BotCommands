@@ -180,8 +180,4 @@ dependencies {
 
 ### Snapshots
 
-Alternatively, you can use Jitpack to use **snapshot** versions,
-you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information.
-
-> [!NOTE]
-> As this is a submodule, the group ID is `io.github.freya022.BotCommands`.
+To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
