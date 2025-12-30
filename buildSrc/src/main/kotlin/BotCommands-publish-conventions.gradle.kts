@@ -23,16 +23,18 @@ val mavenCentralPassword: String? by project
 val mavenGpgKeyId: String? by project
 val mavenGpgSecretKey: String? by project
 
+val reposiliteUsername: String? by project
+val reposilitePassword: String? by project
+
 val canSign = mavenGpgKeyId != null && mavenGpgSecretKey != null
 val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
+val canPublishSnapshot = reposiliteUsername?.isNotBlank() == true && reposilitePassword?.isNotBlank() == true && canSign
 
 version = Version(
     major = providers.gradleProperty("version.major").get(),
     minor = providers.gradleProperty("version.minor").get(),
     revision = providers.gradleProperty("version.revision").get(),
     classifier = providers.gradleProperty("version.classifier").get(),
-    // isRelease = isCi || canPublish
-    isDev = !GitUtils.isCI(providers) && !canPublish
 )
 
 val effectiveTag = if (canPublish) {
@@ -83,17 +85,46 @@ dokka {
 }
 
 signing {
-    isRequired = canPublish
+    isRequired = canPublish || canPublishSnapshot
 
     useInMemoryPgpKeys(mavenGpgKeyId, mavenGpgSecretKey, "")
+}
+
+publishing {
+    if (canPublishSnapshot) {
+        repositories {
+            maven("https://repo.freya02.dev/snapshots") {
+                name = "Reposilite"
+
+                credentials {
+                    username = reposiliteUsername
+                    password = reposilitePassword
+                }
+            }
+        }
+    }
 }
 
 mavenPublishing {
     if (canPublish) {
         publishToMavenCentral(automaticRelease = true)
+    }
 
+    if (canPublish || canPublishSnapshot) {
         signAllPublications()
     }
+
+    val pomVersion = if (GitUtils.isJitpack(providers)) {
+        providers.environmentVariable("VERSION").get()
+    } else if (canPublishSnapshot) {
+        "${GitUtils.getCommitHash(logger, providers, projectDir.absolutePath)}-SNAPSHOT"
+    } else if (canPublish) {
+        version.toString()
+    } else {
+        "${version}_DEV"
+    }
+
+    coordinates(version = pomVersion)
 
     pom {
         description = "A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake, using the JDA library."

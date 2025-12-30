@@ -1,19 +1,11 @@
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.file.Directory
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.ProviderFactory
-import java.io.IOException
 
 object GitUtils {
 
-    fun isCI(providers: ProviderFactory): Boolean {
-        return (providers.systemProperty("BUILD_NUMBER").isPresent // Jenkins
-                || providers.environmentVariable("BUILD_NUMBER").isPresent
-                || providers.systemProperty("GIT_COMMIT").isPresent // Jitpack
+    fun isJitpack(providers: ProviderFactory): Boolean {
+        return providers.systemProperty("GIT_COMMIT").isPresent
                 || providers.environmentVariable("GIT_COMMIT").isPresent
-                || providers.systemProperty("GITHUB_ACTIONS").isPresent // GitHub Actions
-                || providers.environmentVariable("GITHUB_ACTIONS").isPresent)
     }
 
     fun getCommitBranch(logger: Logger, providers: ProviderFactory, directory: String): String? {
