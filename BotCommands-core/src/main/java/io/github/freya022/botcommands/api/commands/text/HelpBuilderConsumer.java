@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * A consumer that's called when a help embed is about to be sent.
  * <br>That embed can be for the command list as well as individual commands.
@@ -13,7 +15,8 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * <b>Usage</b>: Register your instance as a service with {@link BService}.
  *
- * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
+ * @see #acceptGlobal(EmbedBuilder)
+ * @see #acceptCommand(EmbedBuilder, TextCommandInfo)
  * @see InterfacedService @InterfacedService
  */
 @NullMarked
@@ -27,6 +30,34 @@ public interface HelpBuilderConsumer {
      *                    {@code false} if the embed is for a specific command
      * @param commandInfo The text command to retrieve the help from
      *                    <br>Will be null if {@code isGlobal} is {@code true}
+     *
+     * @deprecated Replaced by {@link #acceptGlobal(EmbedBuilder)} and {@link #acceptCommand(EmbedBuilder, TextCommandInfo)}
      */
-    void accept(EmbedBuilder builder, boolean isGlobal, @Nullable TextCommandInfo commandInfo);
+    @Deprecated(forRemoval = true)
+    default void accept(EmbedBuilder builder, boolean isGlobal, @Nullable TextCommandInfo commandInfo) {
+        if (isGlobal) {
+            acceptGlobal(builder);
+        } else {
+            acceptCommand(builder, Objects.requireNonNull(commandInfo));
+        }
+    }
+
+    /**
+     * Customizes the given {@link EmbedBuilder} when showing help for all commands.
+     *
+     * @param builder The embed to customize
+     */
+    default void acceptGlobal(EmbedBuilder builder) {
+        accept(builder, true, null);
+    }
+
+    /**
+     * Customizes the given {@link EmbedBuilder} when showing help for a specific command.
+     *
+     * @param builder     The embed to customize
+     * @param commandInfo The command to customize the embed for
+     */
+    default void acceptCommand(EmbedBuilder builder, TextCommandInfo commandInfo) {
+        accept(builder, false, commandInfo);
+    }
 }

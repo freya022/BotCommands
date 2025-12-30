@@ -111,7 +111,7 @@ internal class DefaultHelpCommand internal constructor(
                 builder.addField(category, commandListStr, false)
             }
 
-        helpBuilderConsumer?.accept(builder, true, null)
+        helpBuilderConsumer?.acceptGlobal(builder)
 
         return builder
     }
@@ -121,7 +121,7 @@ internal class DefaultHelpCommand internal constructor(
         builder.setTimestamp(Instant.now())
         builder.setColor(event.member.colorRaw)
 
-        helpBuilderConsumer?.accept(builder, false, commandInfo)
+        helpBuilderConsumer?.acceptCommand(builder, commandInfo)
 
         return builder
     }
