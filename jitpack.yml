@@ -1,3 +1,7 @@
 before_install:
   - sdk install java 25-tem
   - sdk use java 25-tem
+# Override the command as JitPack otherwise forces a group ID on all modules,
+# which effectively rolls back https://github.com/freya022/BotCommands/commit/021a3ea42f5a013ce58052b6a68d9d9047b468ab
+install:
+  ./gradlew -xtest assemble publishToMavenLocal --no-configuration-cache
