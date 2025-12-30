@@ -297,8 +297,11 @@ private class ReflectionMetadataScanner private constructor(
 
     private fun getMethodParameterNullabilities(methodInfo: MethodInfo, method: Executable): List<Boolean> {
         val nullabilities = methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
-            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
-                    || parameterInfo.hasAnnotation(Optional::class.java)
+            if (parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }) return@map true
+            if (parameterInfo.typeSignatureOrTypeDescriptor.typeAnnotationInfo?.any { it.name.endsWith("Nullable") } == true) return@map true
+            if (parameterInfo.hasAnnotation(Optional::class.java)) return@map true
+
+            false
         }
 
         return when {
