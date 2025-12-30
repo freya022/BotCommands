@@ -13,4 +13,8 @@ tasks.withType<DokkaBaseTask> {
     enabled = false
 }
 
-configurePublishedArtifact(artifactId = "BotCommands-method-accessors-kotlin-reflect")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-method-accessors-kotlin-reflect",
+    description = "Provides support to call methods reflectively, using kotlin-reflect.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/kotlin-reflect",
+)

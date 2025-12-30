@@ -48,4 +48,9 @@ kotlin {
     }
 }
 
-configurePublishedArtifact(artifactId = "BotCommands", packaging = "pom")
+configurePublishedArtifact(
+    artifactId = "BotCommands",
+    packaging = "pom",
+    description = "JDA framework with everything you need for a modern bot!",
+    url = "https://github.com/freya022/BotCommands",
+)

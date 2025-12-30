@@ -26,4 +26,8 @@ tasks.named<Test>("test") {
     environment("KSP_OUTPUT", layout.buildDirectory.dir("generated/ksp").get().asFile.path)
 }
 
-configurePublishedArtifact(artifactId = "BotCommands-jda-ktx")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-jda-ktx",
+    description = "Kotlin extensions for JDA. This is recommended when using Kotlin for a more idiomatic usage.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-jda-ktx",
+)

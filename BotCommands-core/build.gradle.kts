@@ -183,4 +183,8 @@ kotlin {
     }
 }
 
-configurePublishedArtifact(artifactId = "BotCommands-core")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-core",
+    description = "Includes a core set of features bots typically need.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-core",
+)

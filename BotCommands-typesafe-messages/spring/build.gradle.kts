@@ -44,4 +44,8 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-configurePublishedArtifact("BotCommands-typesafe-messages-spring")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-typesafe-messages-spring",
+    description = "Easily define functions to retrieve (localized) messages, improving safety and convenience. Spring version.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-typesafe-messages/spring",
+)

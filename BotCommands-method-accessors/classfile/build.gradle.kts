@@ -24,4 +24,8 @@ tasks.withType<DokkaBaseTask> {
     enabled = false
 }
 
-configurePublishedArtifact(artifactId = "BotCommands-method-accessors-classfile")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-method-accessors-classfile",
+    description = "Provides support to call methods reflectively, using generated accessors.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/classfile",
+)

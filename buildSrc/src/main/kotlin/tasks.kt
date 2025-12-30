@@ -12,7 +12,14 @@ fun isPublishedArtifactConfigured(project: Project) = project.path in configured
 /**
  * Sets the provided [artifactId] as the Kotlin module name, Dokka module name & path, and Maven artifact ID.
  */
-fun Project.configurePublishedArtifact(artifactId: String, packaging: String? = null) {
+fun Project.configurePublishedJarArtifact(artifactId: String, description: String, url: String, block: MavenPublishBaseExtension.() -> Unit = {}) {
+    return configurePublishedArtifact(artifactId, "jar", description, url, block)
+}
+
+/**
+ * Sets the provided [artifactId] as the Kotlin module name, Dokka module name & path, and Maven artifact ID.
+ */
+fun Project.configurePublishedArtifact(artifactId: String, packaging: String, description: String, url: String, block: MavenPublishBaseExtension.() -> Unit = {}) {
     check(artifactId.startsWith("BotCommands")) {
         "Artifact ID must start with 'BotCommands'"
     }
@@ -46,6 +53,11 @@ fun Project.configurePublishedArtifact(artifactId: String, packaging: String? = 
             // Sonatype requires
             this.name = artifactId
             this.packaging = packaging
+
+            this.description = description
+            this.url = url
         }
+
+        block()
     }
 }

@@ -21,4 +21,8 @@ dependencies {
     ksp(projects.springPropertiesProcessor)
 }
 
-configurePublishedArtifact(artifactId = "BotCommands-spring")
+configurePublishedJarArtifact(
+    artifactId = "BotCommands-spring",
+    description = "Provides support for Spring Boot 3 and 4.",
+    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-spring",
+)
