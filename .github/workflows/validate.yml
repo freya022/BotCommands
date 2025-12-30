@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew dokkaGenerate
 
       - name: Publish snapshot
-        if: ${{ github.event_name == push }}
+        if: ${{ success() && github.event_name == 'push' }}
         run: ./gradlew publishAllPublicationsToReposilite
         env:
           ORG_GRADLE_PROJECT_reposiliteUsername: ${{ secrets.REPOSILITE_USERNAME }}
