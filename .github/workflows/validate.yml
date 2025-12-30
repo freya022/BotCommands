@@ -34,7 +34,8 @@ jobs:
         run: ./gradlew dokkaGenerate
 
       - name: Publish snapshot
-        if: ${{ success() && github.event_name == 'push' }}
+        # Workflow dispatch, push or pull request from the original repo
+        if: ${{ success() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.id == github.repository_id)) }}
         run: ./gradlew publishAllPublicationsToReposilite
         env:
           ORG_GRADLE_PROJECT_reposiliteUsername: ${{ secrets.REPOSILITE_USERNAME }}
