@@ -55,7 +55,8 @@ dependencies {
 
 ## Using JitPack
 
-Alternatively, you can use JitPack to use builds of any commit hash.
+Alternatively, you can use JitPack to use builds of any commit hash,
+the version uses the 10 first characters of the commit hash.
 
 ### Maven
 
