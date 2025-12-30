@@ -100,7 +100,7 @@ internal class DefaultHelpCommand internal constructor(
     private fun generateGlobalHelp(member: Member, channel: GuildMessageChannel): EmbedBuilder {
         val builder = textCommandsContext.defaultEmbedSupplier.get()
         builder.setTimestamp(Instant.now())
-        builder.setColor(member.colorRaw)
+        builder.setColor(member.colors.primaryRaw)
 
         textCommandsContext.rootCommands
             .filter { it.getUsability(member, channel).isVisible }
@@ -119,7 +119,7 @@ internal class DefaultHelpCommand internal constructor(
     private fun generateCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo): EmbedBuilder {
         val builder = TextUtils.generateCommandHelp(commandInfo, event)
         builder.setTimestamp(Instant.now())
-        builder.setColor(event.member.colorRaw)
+        builder.setColor(event.member.colors.primaryRaw)
 
         helpBuilderConsumer?.acceptCommand(builder, commandInfo)
 

@@ -41,6 +41,7 @@ class RetrieveOrNullExtensionsPresenceTest {
         "net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent.retrieveMember()",
         "net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent.retrieveMessage()",
         "net.dv8tion.jda.api.sharding.ShardManager.retrieveApplicationInfo()",
+        "net.dv8tion.jda.api.entities.Guild.retrieveRoleMemberCounts()",
         // Pointless
         "net.dv8tion.jda.api.JDA.retrieveCommandById(java.lang.String)",
         "net.dv8tion.jda.api.JDA.retrieveCommandById(long)",
