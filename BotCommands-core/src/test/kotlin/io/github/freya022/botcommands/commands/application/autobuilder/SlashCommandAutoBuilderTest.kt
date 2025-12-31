@@ -18,7 +18,6 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashSubcommandGroupBuilderImpl
-import io.github.freya022.botcommands.internal.commands.autobuilder.checkDeclarationFilter
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
@@ -258,17 +257,15 @@ class SlashCommandAutoBuilderTest {
                 )
             }
 
-            mockkStatic("io.github.freya022.botcommands.internal.commands.autobuilder.AutoBuilderUtilsKt") {
-                val autoBuilder = SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap)
-                val manager = mockk<GuildApplicationCommandManager> {
-                    every { guild } returns mockk()
-                    every { context } returns mockk()
-                }
-                autoBuilder.declareGuildApplicationCommands(manager)
-
-                verify(exactly = 1) { context(autoBuilder, any<SkipLogger>()) { checkDeclarationFilter(manager, any(), any(), any()) } }
-                verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
+            val autoBuilder = spyk(SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap))
+            val manager = mockk<GuildApplicationCommandManager> {
+                every { guild } returns mockk()
+                every { context } returns mockk()
             }
+            autoBuilder.declareGuildApplicationCommands(manager)
+
+            verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
+            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
         }
 
         @Test
@@ -280,17 +277,15 @@ class SlashCommandAutoBuilderTest {
                 )
             }
 
-            mockkStatic("io.github.freya022.botcommands.internal.commands.autobuilder.AutoBuilderUtilsKt") {
-                val autoBuilder = SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap)
-                val manager = mockk<GuildApplicationCommandManager> {
-                    every { guild } returns mockk()
-                    every { context } returns mockk()
-                }
-                autoBuilder.declareGuildApplicationCommands(manager)
-
-                verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
-                verify(exactly = 1) { context(autoBuilder, any<SkipLogger>()) { checkDeclarationFilter(manager, any(), any(), any()) } }
+            val autoBuilder = spyk(SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap))
+            val manager = mockk<GuildApplicationCommandManager> {
+                every { guild } returns mockk()
+                every { context } returns mockk()
             }
+            autoBuilder.declareGuildApplicationCommands(manager)
+
+            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
+            verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
         }
 
         @Test
@@ -302,19 +297,17 @@ class SlashCommandAutoBuilderTest {
                 )
             }
 
-            val autoBuilder = SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap)
+            val autoBuilder = spyk(SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap))
 
             val manager = mockk<GuildApplicationCommandManager> {
                 every { guild } returns mockk()
                 every { context } returns mockk()
             }
 
-            mockkStatic("io.github.freya022.botcommands.internal.commands.autobuilder.AutoBuilderUtilsKt") {
-                autoBuilder.declareGuildApplicationCommands(manager)
+            autoBuilder.declareGuildApplicationCommands(manager)
 
-                verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
-                verify(exactly = 1) { context(autoBuilder, any<SkipLogger>()) { checkDeclarationFilter(manager, any(), any(), any()) } }
-            }
+            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
+            verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
         }
 
         @Test

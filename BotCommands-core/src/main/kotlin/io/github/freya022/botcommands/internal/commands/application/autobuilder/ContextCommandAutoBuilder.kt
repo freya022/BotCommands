@@ -8,16 +8,13 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.context.user.options.builder.UserCommandOptionRegistry
 import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationOptionRegistry
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggregate
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.RootAnnotatedApplicationCommand
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
-import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
-import io.github.freya022.botcommands.internal.commands.autobuilder.requireServiceOptionOrOptional
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
@@ -26,16 +23,14 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-internal sealed class ContextCommandAutoBuilder(
+internal sealed class ContextCommandAutoBuilder<T : RootAnnotatedApplicationCommand>(
     override val serviceContainer: ServiceContainer,
     applicationConfig: BApplicationConfig,
     private val resolverContainer: ResolverContainer
-) : CommandAutoBuilder, GlobalApplicationCommandProvider, GuildApplicationCommandProvider {
+) : ApplicationCommandAutoBuilder<T>(applicationConfig) {
 
     protected abstract val commandAnnotation: KClass<out Annotation>
     override val optionAnnotation: KClass<out Annotation> = ContextOption::class
-
-    protected val forceGuildCommands = applicationConfig.forceGuildCommands
 
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
