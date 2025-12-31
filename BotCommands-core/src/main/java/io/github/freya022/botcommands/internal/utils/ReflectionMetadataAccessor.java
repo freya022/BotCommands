@@ -1,25 +1,63 @@
 package io.github.freya022.botcommands.internal.utils;
 
+import kotlin.KotlinVersion;
 import kotlin.jvm.internal.PropertyReference;
 import kotlin.reflect.*;
 import kotlin.reflect.jvm.internal.KClassImpl;
-import kotlin.reflect.jvm.internal.KParameterImpl;
-import kotlin.reflect.jvm.internal.KPropertyImpl;
+import kotlin.reflect.jvm.internal.KDeclarationContainerImpl;
 import kotlin.reflect.jvm.internal.impl.descriptors.ClassKind;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 @NullMarked
-@SuppressWarnings("KotlinInternalInJava")
 class ReflectionMetadataAccessor {
+    private static final Class<?> kPropertyClass;
+    private static final MethodHandle getCallable, getContainer;
+
+    // TODO Move to 2.3 types when 2.3.10 gets released
+    //  with the fix for https://youtrack.jetbrains.com/issue/KT-83361/KotlinReflectionInternalError-Type-parameter-not-found-0-on-super-types-with-Kotlin-2.3.0
+    static {
+        try {
+            var lookup = MethodHandles.publicLookup();
+            Class<?> kParameter;
+            Class<?> kCallableClass;
+            if (KotlinVersion.CURRENT.isAtLeast(2, 3)) {
+                kParameter = Class.forName("kotlin.reflect.jvm.internal.ReflectKParameter");
+                kPropertyClass = Class.forName("kotlin.reflect.jvm.internal.ReflectKProperty");
+                kCallableClass = Class.forName("kotlin.reflect.jvm.internal.ReflectKCallable");
+            } else {
+                kParameter = Class.forName("kotlin.reflect.jvm.internal.KParameterImpl");
+                kPropertyClass = Class.forName("kotlin.reflect.jvm.internal.KPropertyImpl");
+                kCallableClass = Class.forName("kotlin.reflect.jvm.internal.KCallableImpl");
+            }
+
+            getCallable = lookup.findVirtual(kParameter, "getCallable", MethodType.methodType(kCallableClass));
+            getContainer = lookup.findVirtual(kPropertyClass, "getContainer", MethodType.methodType(KDeclarationContainerImpl.class));
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     static KCallable<?> getParameterCallable(KParameter parameter) {
-        return ((KParameterImpl) parameter).getCallable();
+        try {
+            return (KCallable<?>) getCallable.invoke(parameter);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Nullable
     static KDeclarationContainer getDeclaringClass(KProperty<?> property) {
-        if (property instanceof KPropertyImpl) {
-            return ((KPropertyImpl<?>) property).getContainer();
+        if (kPropertyClass.isInstance(property)) {
+            try {
+                return (KDeclarationContainer) getContainer.invoke(property);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         } else if (property instanceof PropertyReference) {
             return ((PropertyReference) property).getOwner();
         } else {
