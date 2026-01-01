@@ -34,6 +34,9 @@ object GitUtils {
             val jitpackCommit = providers.environmentVariable("GIT_COMMIT").getOrNull()
             if (jitpackCommit != null) return jitpackCommit
 
+            val githubCommit = providers.environmentVariable("PR_HEAD_SHA").getOrNull()
+            if (githubCommit != null && githubCommit.isNotBlank()) return githubCommit
+
             val output = providers.exec {
                 commandLine("git", "rev-parse", "--verify", "HEAD")
                 workingDir(directory)

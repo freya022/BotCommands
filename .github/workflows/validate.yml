@@ -38,6 +38,7 @@ jobs:
         if: ${{ success() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.id == github.repository_id)) }}
         run: ./gradlew publishAllPublicationsToReposilite
         env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           ORG_GRADLE_PROJECT_reposiliteUsername: ${{ secrets.REPOSILITE_USERNAME }}
           ORG_GRADLE_PROJECT_reposilitePassword: ${{ secrets.REPOSILITE_PASSWORD }}
           ORG_GRADLE_PROJECT_mavenGpgSecretKey: ${{ secrets.GPG_SECRET_KEY }}
