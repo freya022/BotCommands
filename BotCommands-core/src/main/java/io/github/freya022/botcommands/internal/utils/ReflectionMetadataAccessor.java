@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.utils;
 
-import kotlin.KotlinVersion;
 import kotlin.jvm.internal.PropertyReference;
 import kotlin.reflect.*;
 import kotlin.reflect.jvm.internal.KClassImpl;
@@ -24,17 +23,20 @@ class ReflectionMetadataAccessor {
         try {
             var lookup = MethodHandles.publicLookup();
             Class<?> kParameter;
+            Class<?> tmpKPropertyClass;
             Class<?> kCallableClass;
-            if (KotlinVersion.CURRENT.isAtLeast(2, 3)) {
+
+            try {
                 kParameter = Class.forName("kotlin.reflect.jvm.internal.ReflectKParameter");
-                kPropertyClass = Class.forName("kotlin.reflect.jvm.internal.ReflectKProperty");
+                tmpKPropertyClass = Class.forName("kotlin.reflect.jvm.internal.ReflectKProperty");
                 kCallableClass = Class.forName("kotlin.reflect.jvm.internal.ReflectKCallable");
-            } else {
+            } catch (ClassNotFoundException e) {
                 kParameter = Class.forName("kotlin.reflect.jvm.internal.KParameterImpl");
-                kPropertyClass = Class.forName("kotlin.reflect.jvm.internal.KPropertyImpl");
+                tmpKPropertyClass = Class.forName("kotlin.reflect.jvm.internal.KPropertyImpl");
                 kCallableClass = Class.forName("kotlin.reflect.jvm.internal.KCallableImpl");
             }
 
+            kPropertyClass = tmpKPropertyClass;
             getCallable = lookup.findVirtual(kParameter, "getCallable", MethodType.methodType(kCallableClass));
             getContainer = lookup.findVirtual(kPropertyClass, "getContainer", MethodType.methodType(KDeclarationContainerImpl.class));
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
