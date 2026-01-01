@@ -8,6 +8,9 @@ on:
     branches: 
       - 3.X
 
+concurrency:
+  group: "validate"
+
 jobs:
   check:
     runs-on: ubuntu-latest
