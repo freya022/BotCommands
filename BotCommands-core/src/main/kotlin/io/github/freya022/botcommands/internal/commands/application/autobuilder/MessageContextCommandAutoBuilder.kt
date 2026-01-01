@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Requi
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -15,19 +14,16 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.internal.commands.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
-import io.github.freya022.botcommands.internal.commands.autobuilder.*
+import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 import kotlin.reflect.KClass
-
-private val logger = KotlinLogging.logger { }
 
 @BService
 @RequiresApplicationCommands
@@ -36,56 +32,37 @@ internal class MessageContextCommandAutoBuilder(
     resolverContainer: ResolverContainer,
     functionAnnotationsMap: FunctionAnnotationsMap,
     serviceContainer: ServiceContainer
-) : ContextCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer) {
+) : ContextCommandAutoBuilder<MessageContextFunctionMetadata>(serviceContainer, applicationConfig, resolverContainer) {
+
     override val commandAnnotation: KClass<out Annotation> get() = JDAMessageCommand::class
+    override val commandType: CommandType
+        get() = CommandType.MESSAGE
 
-    private val messageFunctions: List<MessageContextFunctionMetadata>
+    override val rootAnnotatedCommands = functionAnnotationsMap
+        .getWithClassAnnotation<Command, JDAMessageCommand>()
+        .requiredFilter(FunctionFilter.nonStatic())
+        .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
+        .map {
+            val func = it.function
+            val annotation = func.findAnnotationRecursive<JDAMessageCommand>() ?: throwInternal("${annotationRef<JDAMessageCommand>()} should be present")
+            val path = CommandPath.ofName(annotation.name)
+            val commandId = func.findAnnotationRecursive<CommandId>()?.value
 
-    init {
-        messageFunctions = functionAnnotationsMap
-            .getWithClassAnnotation<Command, JDAMessageCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
-            .map {
-                val func = it.function
-                val annotation = func.findAnnotationRecursive<JDAMessageCommand>() ?: throwInternal("${annotationRef<JDAMessageCommand>()} should be present")
-                val path = CommandPath.ofName(annotation.name)
-                val commandId = func.findAnnotationRecursive<CommandId>()?.value
-
-                MessageContextFunctionMetadata(it, annotation, path, commandId)
-            }
-    }
-
-    //Separated functions so global command errors don't prevent guild commands from being registered
-    override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) = declareMessage(manager)
-    override fun declareGuildApplicationCommands(manager: GuildApplicationCommandManager) = declareMessage(manager)
-
-    private fun declareMessage(manager: AbstractApplicationCommandManager) {
-        with(SkipLogger(logger)) {
-            messageFunctions.forEachWithDelayedExceptions { metadata ->
-                runFiltered(
-                    manager,
-                    forceGuildCommands,
-                    metadata,
-                    metadata.annotation.scope
-                ) { processMessageCommand(manager, metadata) }
-            }
-            log((manager as? GuildApplicationCommandManager)?.guild, CommandType.MESSAGE)
+            MessageContextFunctionMetadata(it, annotation, path, commandId)
         }
-    }
 
-    context(_: SkipLogger)
-    private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
-        val func = metadata.func
-        val instance = metadata.instance
-        val path = metadata.path
-        val commandId = metadata.commandId
+    context(logger: SkipLogger)
+    override fun declareTopLevel(
+        manager: AbstractApplicationCommandManager,
+        rootCommand: MessageContextFunctionMetadata,
+    ) {
+        val func = rootCommand.func
 
-        if (!checkDeclarationFilter(manager, metadata.func, path, metadata.commandId))
+        if (!checkDeclarationFilter(manager, rootCommand))
             return // Already logged
 
-        val annotation = metadata.annotation
-        manager.messageCommand(path.name, func.castFunction()) {
+        val annotation = rootCommand.annotation
+        manager.messageCommand(rootCommand.path.name, func.castFunction()) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
 
@@ -98,7 +75,7 @@ internal class MessageContextCommandAutoBuilder(
             isDefaultLocked = annotation.defaultLocked
             nsfw = annotation.nsfw
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, rootCommand.instance, rootCommand.commandId)
         }
     }
 }
