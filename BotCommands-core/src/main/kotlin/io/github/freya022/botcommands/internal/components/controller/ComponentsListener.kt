@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
 import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
@@ -11,7 +10,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
-import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -21,7 +19,10 @@ import io.github.freya022.botcommands.internal.components.data.PersistentCompone
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerExecutor
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
-import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.launchCatching
+import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
@@ -54,9 +55,9 @@ internal class ComponentsListener(
 
         scope.launchCatching({ handleException(event, it) }) launch@{
             val componentId = event.componentId.let { id ->
-                if (!ComponentController.isCompatibleComponent(id))
-                    return@launch logger.error { "Received an interaction for an external component format: '${event.componentId}', " +
-                            "please only use ${classRef<Components>()} to make components or disable ${BComponentsConfigBuilder::enable.reference}" }
+                if (!ComponentController.isCompatibleComponent(id)) {
+                    return@launch logger.debug { "Ignoring an interaction for an external component format: '${event.componentId}'" }
+                }
                 ComponentController.parseComponentId(id)
             }
             val component = componentController.getActiveComponent(componentId)
