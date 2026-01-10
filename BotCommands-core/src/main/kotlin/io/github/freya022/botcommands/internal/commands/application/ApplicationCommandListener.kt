@@ -263,7 +263,7 @@ internal class ApplicationCommandListener internal constructor(
                 if (event.isAcknowledged) {
                     logger.trace { "${filter.description} rejected application command '${event.commandString}' by user ${event.user.id}: $rejectionReason" }
                 } else {
-                    logger.error { "${filter.description} rejected application command '${event.commandString}' by user ${event.user.id} but did not acknowledge the interaction: $rejectionReason" }
+                    logger.warn { "${filter.description} rejected application command '${event.commandString}' by user ${event.user.id} but did not acknowledge the interaction: $rejectionReason" }
                 }
                 return false
             }

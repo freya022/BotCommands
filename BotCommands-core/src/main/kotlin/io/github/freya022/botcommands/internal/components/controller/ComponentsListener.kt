@@ -111,7 +111,7 @@ internal class ComponentsListener(
                 if (event.isAcknowledged) {
                     logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}): $rejectionReason" }
                 } else {
-                    logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}) but did not acknowledge the interaction: $rejectionReason" }
+                    logger.warn { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}) but did not acknowledge the interaction: $rejectionReason" }
                 }
                 return false
             }
