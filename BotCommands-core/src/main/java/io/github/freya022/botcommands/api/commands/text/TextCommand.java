@@ -17,8 +17,11 @@ import java.util.function.Consumer;
  * <p>You are not required to use this if you use {@link TextCommandProvider}
  *
  * @see JDATextCommandVariation @JDATextCommandVariation
+ *
+ * @deprecated This superclass is no longer mandatory, if you override methods from it, implement them using their respective interfaces
  */
 @NullMarked
+@Deprecated
 public abstract class TextCommand implements TextCommandHelpConsumer, TextGeneratedValueSupplierProvider {
     /**
      * <p>Returns a detailed embed of what the command is, it is used by the internal {@code help} command</p>

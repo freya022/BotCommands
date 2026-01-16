@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 
 @Command
-class TextTest : TextCommand(), TextCommandProvider {
+class TextTest : TextCommandProvider, TextGeneratedValueSupplierProvider {
     override fun getGeneratedValueSupplier(
         commandPath: CommandPath,
         optionName: String,
@@ -28,7 +28,7 @@ class TextTest : TextCommand(), TextCommandProvider {
             }
         }
 
-        return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
+        error("Unsupported generated option: $optionName")
     }
 
     @JDATextCommandVariation(path = ["test_annotated"], description = "Fallback variation description")

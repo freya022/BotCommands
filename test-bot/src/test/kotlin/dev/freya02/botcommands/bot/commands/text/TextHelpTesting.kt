@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.text
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
 import net.dv8tion.jda.api.entities.Guild
@@ -12,7 +11,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 @Command
-class TextHelpTesting : TextCommand() {
+class TextHelpTesting {
     @JDATextCommandVariation(path = ["help_testing"])
     fun onTextHelpTesting(event: BaseCommandEvent,
                           @TextOption boolean: Boolean,

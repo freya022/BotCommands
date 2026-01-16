@@ -78,7 +78,7 @@ class SlashBan {
 
 ```kt
 @Command
-class TextBan : TextCommand() {
+class TextBan {
     @JDATextCommandVariation(path = ["ban"], description = "Bans the mentioned user")
     suspend fun onTextBan(
         event: BaseCommandEvent,

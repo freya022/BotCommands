@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
@@ -17,7 +16,7 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle
 @Command
 @RequiresModals
 @RequiresComponents
-class TextException : TextCommand() {
+class TextException {
     @JDATextCommandVariation(path = ["exception"])
     suspend fun onTextException(event: BaseCommandEvent, buttons: Buttons, modals: Modals) {
         event.context.dispatchException("test no throwable", null)

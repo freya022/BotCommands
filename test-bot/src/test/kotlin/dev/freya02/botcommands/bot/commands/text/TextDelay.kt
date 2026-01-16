@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.text
 import dev.freya02.botcommands.jda.ktx.components.row
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -15,7 +14,7 @@ import kotlin.system.measureTimeMillis
 
 @Command
 @RequiresComponents
-class TextDelay : TextCommand() {
+class TextDelay {
     @JDATextCommandVariation(path = ["delay"])
     suspend fun runDelay(event: BaseCommandEvent, buttons: Buttons) {
         val millis = measureTimeMillis {

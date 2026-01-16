@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.text
 import dev.freya02.botcommands.bot.services.Disabled
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
@@ -37,7 +36,7 @@ class TextAttachmentResolver :
  */
 @Command
 @Disabled
-class TextAttachmentParameters : TextCommand() {
+class TextAttachmentParameters {
 
     @JvmInline
     value class MyAttachment(val attachment: Attachment)
