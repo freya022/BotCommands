@@ -2,14 +2,14 @@ package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplierProvider
 
 /**
  * Marks a parameter as being a generated option.
  *
  * ## For text commands
- * You will have to override [TextCommand.getGeneratedValueSupplier]
+ * You will have to implement [TextGeneratedValueSupplierProvider]
  * and return, on the correct command path/option name,
  * an appropriate [TextGeneratedValueSupplier] that will generate an object of the correct type.
  *

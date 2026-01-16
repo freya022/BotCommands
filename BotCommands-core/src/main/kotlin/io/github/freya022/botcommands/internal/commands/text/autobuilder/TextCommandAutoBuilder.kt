@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextCommandHelpConsumer
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.text.annotations.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
@@ -214,7 +216,9 @@ internal class TextCommandAutoBuilder(
 
         nsfw = variationFunctions.singlePresentAnnotationOfVariants<NSFW>()
 
-        detailedDescription = instance.detailedDescription
+        if (instance is TextCommandHelpConsumer) {
+            detailedDescription = instance::accept
+        }
     }
 
     private fun TextCommandVariationBuilder.processOptions(metadata: TextFunctionMetadata) {
@@ -250,6 +254,10 @@ internal class TextCommandAutoBuilder(
                 }
             }
         } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            checkAt(instance is TextGeneratedValueSupplierProvider, func) {
+                "Declaring class must extend ${classRef<TextGeneratedValueSupplierProvider>()}"
+            }
+
             val valueSupplier = instance.getGeneratedValueSupplier(path, parameter.discordName, parameter.actualType)
             registry.generatedOption(parameterName, valueSupplier)
         } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {

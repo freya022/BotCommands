@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.builder.CommandBuilderImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
-import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
 internal abstract class TextCommandBuilderImpl internal constructor(
@@ -36,7 +35,7 @@ internal abstract class TextCommandBuilderImpl internal constructor(
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
     }
 
-    final override var detailedDescription: Consumer<EmbedBuilder>? = null
+    final override var detailedDescription: ((EmbedBuilder) -> Unit)? = null
 
     final override fun subcommand(name: String, block: TextCommandBuilder.() -> Unit) {
         subcommands += TextSubcommandBuilderImpl(context, name, this)
