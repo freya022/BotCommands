@@ -31,7 +31,7 @@ public class SlashSayJava {
             @SlashOption(description = "Channel to send the message in") TextChannel channel,
             @SlashOption(description = "What to say") String content
     ) {
-        final Button deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral()
+        Button deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();
