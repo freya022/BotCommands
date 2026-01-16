@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
@@ -29,7 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class SlashDelayedSelectMenu(
     private val buttons: Buttons,
     private val selectMenus: SelectMenus
-) : ApplicationCommand() {
+) {
     private class Choices {
         var values: List<String> = emptyList()
             private set

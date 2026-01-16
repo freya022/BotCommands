@@ -18,7 +18,7 @@ import javax.annotation.CheckReturnValue
  * ### Persistent button (Kotlin)
  * ```kt
  * @Command
- * class SlashSayAgainPersistent : ApplicationCommand() {
+ * class SlashSayAgainPersistent {
  *     @JDASlashCommand(name = "say_again", subcommand = "persistent", description = "Sends a button to send a message again")
  *     suspend fun onSlashSayAgain(
  *         event: GuildSlashEvent,
@@ -50,7 +50,7 @@ import javax.annotation.CheckReturnValue
  * ### Ephemeral button (Kotlin)
  * ```kt
  * @Command
- * class SlashSayAgainEphemeral : ApplicationCommand() {
+ * class SlashSayAgainEphemeral {
  *     @JDASlashCommand(name = "say_again", subcommand = "ephemeral", description = "Sends a button to send a message again")
  *     suspend fun onSlashSayAgain(
  *         event: GuildSlashEvent,
@@ -84,7 +84,7 @@ import javax.annotation.CheckReturnValue
  * ### Persistent button (Java)
  * ```java
  * @Command
- * public class SlashSayAgainPersistent extends ApplicationCommand {
+ * public class SlashSayAgainPersistent {
  *     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgainPersistent: saySentenceButton";
  *
  *     @JDASlashCommand(name = "say_again", subcommand = "persistent", description = "Sends a button to send a message again")
@@ -117,7 +117,7 @@ import javax.annotation.CheckReturnValue
  * ### Ephemeral button (Java)
  * ```java
  * @Command
- * public class SlashSayAgainEphemeral extends ApplicationCommand {
+ * public class SlashSayAgainEphemeral {
  *     @JDASlashCommand(name = "say_again", subcommand = "ephemeral", description = "Sends a button to send a message again")
  *     public void onSlashSayAgain(
  *             GuildSlashEvent event,

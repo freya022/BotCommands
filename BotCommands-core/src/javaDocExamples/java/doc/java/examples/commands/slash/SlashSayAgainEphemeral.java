@@ -1,7 +1,6 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length;
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Command
 @RequiresComponents
-public class SlashSayAgainEphemeral extends ApplicationCommand {
+public class SlashSayAgainEphemeral {
     @JDASlashCommand(name = "say_again", subcommand = "ephemeral", description = "Sends a button to send a message again")
     public void onSlashSayAgain(
             GuildSlashEvent event,

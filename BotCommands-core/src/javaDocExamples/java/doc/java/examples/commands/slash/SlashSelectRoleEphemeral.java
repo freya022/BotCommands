@@ -1,7 +1,6 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.components.EntitySelectMenu;
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Command
 @RequiresComponents
-public class SlashSelectRoleEphemeral extends ApplicationCommand {
+public class SlashSelectRoleEphemeral {
     @JDASlashCommand(name = "select_role", subcommand = "ephemeral", description = "Sends a menu to choose a role from")
     public void onSlashSelectRole(
             GuildSlashEvent event,

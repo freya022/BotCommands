@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 @Command
 @RequiresComponents
-class SlashTimeUnit(private val buttons: Buttons) : ApplicationCommand() {
+class SlashTimeUnit(private val buttons: Buttons) {
     @JDASlashCommand(name = "time_unit")
     suspend fun onSlashTimeUnit(
         event: GuildSlashEvent,

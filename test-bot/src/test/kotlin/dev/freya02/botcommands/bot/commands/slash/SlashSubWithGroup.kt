@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -10,7 +9,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 
 @Command
-class SlashSubWithGroup : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashSubWithGroup : GlobalApplicationCommandProvider {
     @TopLevelSlashCommandData
     @JDASlashCommand(name = "tag_annotated", subcommand = "send")
     fun onSlashSubWithGroup(event: GuildSlashEvent) {

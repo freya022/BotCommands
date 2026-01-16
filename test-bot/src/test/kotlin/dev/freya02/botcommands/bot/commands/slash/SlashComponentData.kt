@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.jda.emojis.unicode.Emojis
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
@@ -31,7 +30,7 @@ data class MyComponentData(
 @Command
 class SlashComponentData(
     private val buttons: Buttons,
-) : ApplicationCommand() {
+) {
 
     @JDASlashCommand(name = "component_data")
     suspend fun onSlashComponentData(event: GuildSlashEvent) {

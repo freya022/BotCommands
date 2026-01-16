@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash.userapps
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -12,7 +11,7 @@ import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 
 @Command
-class SlashStealChannel : ApplicationCommand() {
+class SlashStealChannel {
 
     @TopLevelSlashCommandData(integrationTypes = [IntegrationType.USER_INSTALL], contexts = [InteractionContextType.GUILD])
     @JDASlashCommand(name = "steal_channel")

@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
@@ -17,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 private val logger = KotlinLogging.logger { }
 
 @Command
-class SlashEventWaiter(private val eventWaiter: EventWaiter) : ApplicationCommand() {
+class SlashEventWaiter(private val eventWaiter: EventWaiter) {
     @JDASlashCommand(name = "waiter")
     suspend fun onSlashWaiter(event: GuildSlashEvent) {
         event.reply_("Send a message in 5 seconds", ephemeral = true).queue()

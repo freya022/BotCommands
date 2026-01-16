@@ -6,7 +6,6 @@ import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
 import io.github.bucket4j.postgresql.Bucket4jPostgreSQL
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -33,7 +32,7 @@ private const val commandRateLimitGroup = "SlashRateLimit: my_rate_limit"
 class SlashRateLimit(
     private val buttons: Buttons,
     hikariSourceSupplier: HikariSourceSupplier
-) : ApplicationCommand(), GlobalApplicationCommandProvider, RateLimitProvider {
+) : GlobalApplicationCommandProvider, RateLimitProvider {
     private val proxyManager = Bucket4jPostgreSQL.selectForUpdateBasedBuilder(hikariSourceSupplier.source)
         .expirationAfterWrite(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(1.minutes.toJavaDuration()))
         .primaryKeyMapper(PreparedStatement::setString)

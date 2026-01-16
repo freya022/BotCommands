@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length
@@ -20,7 +19,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 
 @Command
 @RequiresComponents
-class SlashSayAgainPersistent : ApplicationCommand() {
+class SlashSayAgainPersistent {
     @TopLevelSlashCommandData
     @JDASlashCommand(name = "say_again", subcommand = "persistent", description = "Sends a button to send a message again")
     suspend fun onSlashSayAgain(

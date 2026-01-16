@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash.userapps
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.interactions.IntegrationType.*
 import net.dv8tion.jda.api.interactions.InteractionContextType.GUILD
 
 @Command
-class SlashDetachedPermissions : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashDetachedPermissions : GlobalApplicationCommandProvider {
     @JDASlashCommand("detached_permissions_annotated")
     @TopLevelSlashCommandData(
         contexts = [GUILD],

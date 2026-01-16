@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.durations.after
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
@@ -19,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Command
 @RequiresComponents
-class SlashSelectRoleEphemeral : ApplicationCommand() {
+class SlashSelectRoleEphemeral {
     @JDASlashCommand(name = "select_role", subcommand = "ephemeral", description = "Sends a menu to choose a role from")
     suspend fun onSlashSelectRole(event: GuildSlashEvent, selectMenus: SelectMenus) {
         val randomNumber = Random.nextLong()

@@ -35,7 +35,7 @@ import kotlin.reflect.KFunction
  * in this case you don't need to set the listener name:
  * ```kt
  * @Command
- * class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() {
+ * class SlashTypeSafeButtons(private val buttons: Buttons) {
  *     @JDASlashCommand(name = "type_safe_buttons", description = "Demo of Kotlin type-safe bindings")
  *     suspend fun onSlashTypeSafeButtons(event: GuildSlashEvent, @SlashOption argument: String) {
  *         val button = buttons.primary("Click me").persistent {

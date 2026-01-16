@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
@@ -12,7 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 
 @Command
-class SlashLength : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashLength : GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "length_annotated")
     fun onSlashLength(
         event: GuildSlashEvent,

@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -40,7 +39,7 @@ class SlashChooseDetailedFront : GlobalApplicationCommandProvider {
 
 @Command
 @KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
-class SlashChooseSimplifiedFront(private val slashChoose: SlashChoose) : ApplicationCommand() {
+class SlashChooseSimplifiedFront(private val slashChoose: SlashChoose) {
     @JDASlashCommand(name = "choose", description = "Randomly choose a value")
     fun onSlashBan(
         event: GuildSlashEvent,

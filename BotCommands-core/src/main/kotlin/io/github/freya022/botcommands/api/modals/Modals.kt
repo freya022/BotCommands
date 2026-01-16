@@ -79,7 +79,7 @@ import kotlin.time.toKotlinDuration
  * ### Java example
  * ```java
  * @Command
- * public class SlashRequestRole extends ApplicationCommand {
+ * public class SlashRequestRole {
  *
  *     private static final String MODAL_NAME = "request role";
  *     private static final String INPUT_ROLE = "role";

@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
@@ -19,7 +18,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference
 
 @Command
-class SlashMentionsString : ApplicationCommand() {
+class SlashMentionsString {
     @TopLevelSlashCommandData
     @JDASlashCommand(name = "mentions_string", subcommand = "any")
     suspend fun onSlashMentionsStringAny(

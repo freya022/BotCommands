@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash;
 
 import dev.freya02.jda.emojis.unicode.Emojis;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -13,7 +12,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 @Command
-public class SlashEmojis extends ApplicationCommand {
+public class SlashEmojis {
 
     @JDASlashCommand(name = "emojis")
     public void onSlashEmojis(GuildSlashEvent event) {

@@ -45,7 +45,7 @@ while also easily being able to use services provided by the framework.
 
 ```kt
 @Command
-class SlashBan : ApplicationCommand() {
+class SlashBan {
     @JDASlashCommand(name = "ban", description = "Bans an user")
     suspend fun onSlashBan(
         event: GuildSlashEvent,
@@ -186,7 +186,7 @@ Here is how you would create a slash command that sends a message in a specified
 @RequiresComponents // (Optional) Disables the command if components are not enabled
 class SlashSay(
     private val buttons: Buttons // Factory for buttons
-) : ApplicationCommand() {
+) {
 
     // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
@@ -268,7 +268,7 @@ class SlashSay(
 ```java
 @Command
 @RequiresComponents // (Optional) Disables the command if components are not enabled
-public class SlashSayJava extends ApplicationCommand {
+public class SlashSayJava {
 
     private final Buttons buttons; // Factory for buttons
 

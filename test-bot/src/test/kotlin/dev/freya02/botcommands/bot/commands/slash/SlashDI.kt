@@ -5,7 +5,6 @@ import dev.freya02.botcommands.bot.services.NamedService1
 import dev.freya02.botcommands.bot.services.UnusedInterfacedService
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -22,7 +21,7 @@ class SlashDI internal constructor(
     @ServiceName("modifiedNamedService") namedService: INamedService?,
     @ServiceName("fakeDefaultEmbedSupplier") defaultService: DefaultEmbedSupplier = DefaultEmbedSupplier { EmbedBuilder() },
     unusedInterfacedService: UnusedInterfacedService?,
-) : ApplicationCommand() {
+) {
     init {
         check(namedService is NamedService1)
 

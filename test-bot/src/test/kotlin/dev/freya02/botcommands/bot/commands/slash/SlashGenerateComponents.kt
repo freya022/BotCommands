@@ -1,7 +1,6 @@
 package dev.freya02.botcommands.bot.commands.slash
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
@@ -17,7 +16,7 @@ private const val amount = 5000
 
 @Command
 @RequiresComponents
-class SlashGenerateComponents(private val buttons: Buttons) : ApplicationCommand() {
+class SlashGenerateComponents(private val buttons: Buttons) {
     @JDASlashCommand(name = "generate_components")
     suspend fun onSlashGenerateComponents(event: GuildSlashEvent) {
         event.deferReply(true).queue()

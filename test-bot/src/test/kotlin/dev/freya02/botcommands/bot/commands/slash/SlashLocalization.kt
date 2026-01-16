@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.durations.before
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Buttons
@@ -30,7 +29,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Command
 @RequiresModals
-class SlashLocalization : ApplicationCommand() {
+class SlashLocalization {
 
     @JDASlashCommand(name = "localization")
     fun onSlashLocalization(

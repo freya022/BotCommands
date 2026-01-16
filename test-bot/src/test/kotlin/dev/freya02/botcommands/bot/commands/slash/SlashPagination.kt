@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -35,7 +34,7 @@ private val logger = KotlinLogging.logger { }
 
 @Command
 @RequiresComponents
-class SlashPagination(private val paginators: Paginators, private val buttons: Buttons) : ApplicationCommand() {
+class SlashPagination(private val paginators: Paginators, private val buttons: Buttons) {
     private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
 
     init {

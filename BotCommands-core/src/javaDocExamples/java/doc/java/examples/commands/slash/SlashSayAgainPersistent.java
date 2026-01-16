@@ -1,7 +1,6 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length;
@@ -16,7 +15,7 @@ import net.dv8tion.jda.api.components.buttons.Button;
 
 @Command
 @RequiresComponents
-public class SlashSayAgainPersistent extends ApplicationCommand {
+public class SlashSayAgainPersistent {
     private static final String SAY_SENTENCE_HANDLER_NAME = "SlashSayAgainPersistent: saySentenceButton";
 
     @TopLevelSlashCommandData

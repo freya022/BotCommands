@@ -7,7 +7,6 @@ import dev.freya02.botcommands.jda.ktx.messages.InlineMessage
 import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import dev.freya02.botcommands.jda.ktx.messages.MessageEdit
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
@@ -40,7 +39,7 @@ class ReactionRoleService {
 @Disabled
 @RequiresComponents
 class MessageContextAddReactionRole(private val selectMenus: SelectMenus,
-                                    private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
+                                    private val reactionRoleService: ReactionRoleService) {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)
     suspend fun onMessageContextAddReactionRole(event: GuildMessageEvent,
                                                 @ContextOption message: Message) {

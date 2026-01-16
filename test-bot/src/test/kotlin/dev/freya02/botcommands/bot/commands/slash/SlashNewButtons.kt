@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.Button
@@ -33,7 +32,7 @@ import kotlin.time.Duration.Companion.seconds
 @RequiresComponents
 class SlashNewButtons(
     private val buttons: Buttons
-) : ApplicationCommand() {
+) {
     @JDASlashCommand(name = "new_buttons")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton = persistentGroupTest(event)

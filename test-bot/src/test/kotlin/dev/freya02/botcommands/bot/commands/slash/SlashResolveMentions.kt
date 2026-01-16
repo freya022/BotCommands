@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -20,7 +19,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 
 @Command
 @RequiresComponents
-class SlashResolveMentions(private val buttons: Buttons) : ApplicationCommand() {
+class SlashResolveMentions(private val buttons: Buttons) {
     @JDASlashCommand(name = "resolve_mentions")
     suspend fun onSlashResolveMentions(
         event: GuildSlashEvent,

@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
@@ -22,7 +21,7 @@ import kotlin.time.Duration.Companion.minutes
 class SlashInteractionMetadata(
     private val buttons: Buttons,
     private val modals: Modals,
-) : ApplicationCommand() {
+) {
 
     @JDASlashCommand("interaction_metadata")
     suspend fun onSlashInteractionMetadata(event: GuildSlashEvent) {

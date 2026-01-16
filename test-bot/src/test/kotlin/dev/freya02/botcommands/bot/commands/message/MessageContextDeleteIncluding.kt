@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
@@ -24,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 @Command
 class MessageContextDeleteIncluding(
     private val buttons: Buttons,
-) : ApplicationCommand() {
+) {
 
     @BotPermissions(Permission.MESSAGE_MANAGE)
     @UserPermissions(Permission.MESSAGE_MANAGE)

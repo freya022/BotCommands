@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -13,7 +12,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import net.dv8tion.jda.api.Permission
 
 @Command
-class SlashPermissions : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashPermissions : GlobalApplicationCommandProvider {
     @BotPermissions(Permission.MANAGE_EVENTS)
     @UserPermissions(Permission.MANAGE_SERVER, Permission.ADMINISTRATOR)
     @JDASlashCommand(name = "permissions_annotated")

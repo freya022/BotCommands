@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.durations.after
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.Length
@@ -18,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Command
 @RequiresComponents
-class SlashSayAgainEphemeral : ApplicationCommand() {
+class SlashSayAgainEphemeral {
     @JDASlashCommand(name = "say_again", subcommand = "ephemeral", description = "Sends a button to send a message again")
     suspend fun onSlashSayAgain(
         event: GuildSlashEvent,

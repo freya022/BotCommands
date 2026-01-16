@@ -16,7 +16,7 @@ import javax.annotation.CheckReturnValue
  * ### Persistent select menus (Kotlin)
  * ```kt
  * @Command
- * class SlashSelectRolePersistent : ApplicationCommand() {
+ * class SlashSelectRolePersistent {
  *     @JDASlashCommand(name = "select_role", subcommand = "persistent", description = "Sends a menu to choose a role from")
  *     suspend fun onSlashSelectRole(event: GuildSlashEvent, selectMenus: SelectMenus) {
  *         val randomNumber = Random.nextLong()
@@ -47,7 +47,7 @@ import javax.annotation.CheckReturnValue
  * ### Ephemeral select menus (Kotlin)
  * ```kt
  * @Command
- * class SlashSelectRoleEphemeral : ApplicationCommand() {
+ * class SlashSelectRoleEphemeral {
  *     @JDASlashCommand(name = "select_role", subcommand = "ephemeral", description = "Sends a menu to choose a role from")
  *     suspend fun onSlashSelectRole(event: GuildSlashEvent, selectMenus: SelectMenus) {
  *         val randomNumber = Random.nextLong()
@@ -83,7 +83,7 @@ import javax.annotation.CheckReturnValue
  * ### Persistent select menus (Java)
  * ```java
  * @Command
- * public class SlashSelectRolePersistent extends ApplicationCommand {
+ * public class SlashSelectRolePersistent {
  *     private static final String ROLE_MENU_HANDLER_NAME = "SlashSelectRolePersistent: roleMenu";
  *
  *     @JDASlashCommand(name = "select_role", subcommand = "persistent", description = "Sends a menu to choose a role from")
@@ -118,7 +118,7 @@ import javax.annotation.CheckReturnValue
  * ### Ephemeral select menus (Java)
  * ```java
  * @Command
- * public class SlashSelectRoleEphemeral extends ApplicationCommand {
+ * public class SlashSelectRoleEphemeral {
  *     @JDASlashCommand(name = "select_role", subcommand = "ephemeral", description = "Sends a menu to choose a role from")
  *     public void onSlashSelectRole(
  *             GuildSlashEvent event,

@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash;
 
 import dev.freya02.jda.emojis.unicode.UnicodeEmojis;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
@@ -17,7 +16,7 @@ import java.time.Duration;
 
 @Command
 @RequiresComponents // (Optional) Disables the command if components are not enabled
-public class SlashSayJava extends ApplicationCommand {
+public class SlashSayJava {
 
     private final Buttons buttons; // Factory for buttons
 

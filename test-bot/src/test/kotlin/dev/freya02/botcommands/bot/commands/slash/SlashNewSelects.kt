@@ -7,7 +7,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.components.EntitySelectMenu
@@ -32,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 @RequiresComponents
 class SlashNewSelects(
     private val selectMenus: SelectMenus
-) : ApplicationCommand() {
+) {
     @JDASlashCommand(name = "new_selects")
     suspend fun onSlashNewSelects(event: GuildSlashEvent) {
         val persistentSelect = persistentGroupTest(event)

@@ -4,8 +4,8 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 private const val guildNicknameAutocompleteName = "NewSlashTest: guildNickname"
 
 @Command
-class SlashTest : ApplicationCommand(), GuildApplicationCommandProvider {
+class SlashTest : GuildApplicationCommandProvider, ApplicationGeneratedValueSupplierProvider {
     override fun getGeneratedValueSupplier(
         guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,
@@ -32,7 +32,7 @@ class SlashTest : ApplicationCommand(), GuildApplicationCommandProvider {
             return ApplicationGeneratedValueSupplier { it.guild!!.name }
         }
 
-        return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
+        error("Unsupported generated option: $optionName")
     }
 
     @JDASlashCommand(name = "test_annotated")

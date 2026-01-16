@@ -36,7 +36,7 @@ import kotlin.reflect.KFunction
  * in this case you don't need to set the listener name:
  * ```kt
  * @Command
- * class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : ApplicationCommand() {
+ * class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) {
  *     @JDASlashCommand(name = "type_safe_select_menus", description = "Demo of Kotlin type-safe bindings")
  *     suspend fun onSlashTypeSafeSelectMenus(event: GuildSlashEvent, @SlashOption argument: String) {
  *         val selectMenu = selectMenus.entitySelectMenu(EntitySelectMenu.SelectTarget.ROLE).persistent {

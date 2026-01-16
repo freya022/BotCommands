@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash;
 import dev.freya02.botcommands.bot.services.INamedService;
 import dev.freya02.botcommands.bot.services.UnusedInterfacedService;
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @Command
 @RequiresDefaultInjection
-public class SlashDIJava extends ApplicationCommand {
+public class SlashDIJava {
     public SlashDIJava(@ServiceName("modifiedNamedService") INamedService namedService,
                        @javax.annotation.Nullable UnusedInterfacedService unusedInterfacedService) {
         System.out.println("Named service: " + namedService);

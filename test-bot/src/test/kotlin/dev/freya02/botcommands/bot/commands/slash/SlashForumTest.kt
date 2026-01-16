@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -12,7 +11,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @Command
-class SlashForumTest : ApplicationCommand() {
+class SlashForumTest {
     @JDASlashCommand(name = "forum_test")
     suspend fun execute(event: GuildSlashEvent, @SlashOption forumChannel: ForumChannel) {
         event.reply_("OK", ephemeral = true).queue()
