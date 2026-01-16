@@ -6,10 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Comma
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -22,26 +19,11 @@ import net.dv8tion.jda.api.interactions.commands.Command
  * @see JDASlashCommand @JDASlashCommand
  * @see JDAMessageCommand @JDAMessageCommand
  * @see JDAUserCommand @JDAUserCommand
+ *
+ * @see SlashOptionChoiceProvider
  */
-abstract class ApplicationCommand {
-    /**
-     * Returns the choices available for this command path,
-     * on the specific [optionName].
-     *
-     * The choices returned by this method will have their name localized
-     * if they are present in the [localization bundles][BApplicationConfigBuilder.addLocalizations].
-     *
-     * @param guild       The [Guild] in which the command is, might be `null` for global commands with choices
-     * @param commandPath The [CommandPath] of the command, this is composed of it's name and optionally of its group and subcommand name
-     * @param optionName  The option name, not the same as the parameter name, this is the same name that appears on Discord
-     *
-     * @return The list of choices for this slash command's options
-     *
-     * @see SlashParameterResolver.getPredefinedChoices
-     *
-     * @see SlashCommandOptionBuilder.choices DSL equivalent
-     */
-    open fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Command.Choice> {
+abstract class ApplicationCommand : SlashOptionChoiceProvider {
+    override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Command.Choice> {
         return emptyList()
     }
 
