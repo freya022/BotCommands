@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application
 
 import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -22,25 +20,12 @@ import net.dv8tion.jda.api.interactions.commands.Command
  *
  * @see SlashOptionChoiceProvider
  */
-abstract class ApplicationCommand : SlashOptionChoiceProvider {
+abstract class ApplicationCommand : SlashOptionChoiceProvider, ApplicationGeneratedValueSupplierProvider {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Command.Choice> {
         return emptyList()
     }
 
-    /**
-     * Returns the generated value supplier of a [@GeneratedOption][GeneratedOption].
-     *
-     * This function will only be called once per command option per guild.
-     *
-     * @param guild         The [Guild] in which to add the default value, `null` if the scope is **not** [CommandScope.GUILD]
-     * @param commandId     The ID of the command, as optionally set in [@CommandId][CommandId], might be `null`
-     * @param commandPath   The path of the command, as set in [@JDASlashCommand][JDASlashCommand]
-     * @param optionName    The option name, not the same as the parameter name, this is the same name that appears on Discord
-     * @param parameterType The **boxed** type of the command option
-     *
-     * @return A [ApplicationGeneratedValueSupplier] to generate the option on command execution
-     */
-    open fun getGeneratedValueSupplier(
+    override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?, commandPath: CommandPath,
         optionName: String, parameterType: ParameterType
