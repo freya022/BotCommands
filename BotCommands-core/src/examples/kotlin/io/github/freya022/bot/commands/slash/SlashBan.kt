@@ -8,7 +8,6 @@ import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -156,7 +155,7 @@ class SlashBanDetailedFront : GlobalApplicationCommandProvider {
 
 @Command
 @KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
-class SlashBanSimplifiedFront(private val banImpl: SlashBan) : ApplicationCommand() {
+class SlashBanSimplifiedFront(private val banImpl: SlashBan) {
     @UserPermissions(Permission.BAN_MEMBERS)
     @BotPermissions(Permission.BAN_MEMBERS)
     @JDASlashCommand(name = "ban", description = "Ban any user from this guild")

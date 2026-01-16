@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.requests.awaitUnit
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -17,7 +16,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.data.DataPath
 
 @Command
-class MessageContextGetJson : ApplicationCommand() {
+class MessageContextGetJson {
 
     @JDAMessageCommand(
         name = "Get raw JSON",

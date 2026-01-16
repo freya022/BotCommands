@@ -2,12 +2,11 @@ package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 
 @Command
-class SlashVoiceState : ApplicationCommand() {
+class SlashVoiceState {
 
     @JDASlashCommand(name = "voice_state")
     fun onSlashVoiceState(event: GuildSlashEvent) {

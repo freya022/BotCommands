@@ -34,7 +34,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * ```kt
          * @Command
-         * class SlashInMemoryRateLimit : ApplicationCommand(), GlobalApplicationCommandProvider {
+         * class SlashInMemoryRateLimit : GlobalApplicationCommandProvider {
          *     fun onSlashInMemoryRateLimit(event: GuildSlashEvent) {
          *         event.reply_("Hi", ephemeral = true).queue()
          *     }
@@ -113,7 +113,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
          *
          * ```kt
          * @Command
-         * class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : ApplicationCommand(), GlobalApplicationCommandProvider {
+         * class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : GlobalApplicationCommandProvider {
          *     fun onSlashPersistentRateLimit(event: GuildSlashEvent) {
          *         event.reply_("Hi", ephemeral = true).queue()
          *     }

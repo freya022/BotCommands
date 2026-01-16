@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.Embed
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +13,7 @@ import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
 @Command
-class SlashUploadStream : ApplicationCommand() {
+class SlashUploadStream {
     @JDASlashCommand(name = "upload_stream")
     suspend fun execute(event: GuildSlashEvent) {
         event.deferReply(true).queue()

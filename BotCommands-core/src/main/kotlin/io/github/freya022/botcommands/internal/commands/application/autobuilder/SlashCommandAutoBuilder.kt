@@ -4,7 +4,9 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.application.LengthRange
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.annotations.CommandId
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
@@ -337,6 +339,10 @@ internal class SlashCommandAutoBuilder(
                 }
             }
         } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            checkAt(instance is ApplicationGeneratedValueSupplierProvider, func) {
+                "Declaring class must extend ${classRef<ApplicationGeneratedValueSupplierProvider>()}"
+            }
+
             val valueSupplier = instance.getGeneratedValueSupplier(guild, commandId, path, parameter.discordName, parameter.actualType)
             registry.generatedOption(parameter.declaredName, valueSupplier)
         } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {
@@ -348,6 +354,8 @@ internal class SlashCommandAutoBuilder(
     }
 
     private fun SlashCommandOptionBuilder.configureOption(metadata: SlashFunctionMetadata, guild: Guild?, parameter: ParameterAdapter, optionAnnotation: SlashOption) {
+        val instance = metadata.instance
+
         description = optionAnnotation.description.nullIfBlank()
 
         parameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
@@ -357,9 +365,11 @@ internal class SlashCommandAutoBuilder(
         processAutocomplete(optionAnnotation)
 
         usePredefinedChoices = optionAnnotation.usePredefinedChoices
-        val optionChoices = metadata.instance.getOptionChoices(guild, metadata.path, optionName)
-        if (optionChoices.isNotEmpty())
-            choices = optionChoices
+        if (instance is SlashOptionChoiceProvider) {
+            val optionChoices = instance.getOptionChoices(guild, metadata.path, optionName)
+            if (optionChoices.isNotEmpty())
+                choices = optionChoices
+        }
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: SlashOption) {

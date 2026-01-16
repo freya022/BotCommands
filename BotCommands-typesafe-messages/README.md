@@ -79,7 +79,7 @@ and will allow you to create `CommandReplies` instances from an `Interaction`.
 
 ```kt
 @Command
-class SlashInfo : ApplicationCommand() {
+class SlashInfo {
 
     @JDASlashCommand(
         name = "info",

@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.user
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
@@ -16,7 +15,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.InteractionContextType.*
 
 @Command
-class UserContextTest : ApplicationCommand(), GlobalApplicationCommandProvider {
+class UserContextTest : GlobalApplicationCommandProvider {
     @JDAUserCommand(
         name = "test user (annotated)",
         contexts = [GUILD, BOT_DM, PRIVATE_CHANNEL],

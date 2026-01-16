@@ -45,7 +45,7 @@ while also easily being able to use services provided by the framework.
 
 ```kt
 @Command
-class SlashBan : ApplicationCommand() {
+class SlashBan {
     @JDASlashCommand(name = "ban", description = "Bans an user")
     suspend fun onSlashBan(
         event: GuildSlashEvent,
@@ -78,7 +78,7 @@ class SlashBan : ApplicationCommand() {
 
 ```kt
 @Command
-class TextBan : TextCommand() {
+class TextBan {
     @JDATextCommandVariation(path = ["ban"], description = "Bans the mentioned user")
     suspend fun onTextBan(
         event: BaseCommandEvent,
@@ -186,7 +186,7 @@ Here is how you would create a slash command that sends a message in a specified
 @RequiresComponents // (Optional) Disables the command if components are not enabled
 class SlashSay(
     private val buttons: Buttons // Factory for buttons
-) : ApplicationCommand() {
+) {
 
     // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")
@@ -268,7 +268,7 @@ class SlashSay(
 ```java
 @Command
 @RequiresComponents // (Optional) Disables the command if components are not enabled
-public class SlashSayJava extends ApplicationCommand {
+public class SlashSay {
 
     private final Buttons buttons; // Factory for buttons
 
@@ -283,7 +283,7 @@ public class SlashSayJava extends ApplicationCommand {
             @SlashOption(description = "Channel to send the message in") TextChannel channel,
             @SlashOption(description = "What to say") String content
     ) {
-        final Button deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral()
+        Button deleteButton = buttons.danger(UnicodeEmojis.WASTEBASKET).ephemeral()
                 .bindTo(buttonEvent -> {
                     buttonEvent.deferEdit().queue();
                     buttonEvent.getHook().deleteOriginal().queue();

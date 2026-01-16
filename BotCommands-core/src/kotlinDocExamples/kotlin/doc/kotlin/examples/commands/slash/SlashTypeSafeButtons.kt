@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -17,7 +16,7 @@ import io.github.freya022.botcommands.api.components.event.ButtonEvent
 
 @Command
 @RequiresComponents
-class SlashTypeSafeButtons(private val buttons: Buttons) : ApplicationCommand() {
+class SlashTypeSafeButtons(private val buttons: Buttons) {
     @JDASlashCommand(name = "type_safe_buttons", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeButtons(event: GuildSlashEvent, @SlashOption argument: String) {
         val button = buttons.primary("Click me").persistent {

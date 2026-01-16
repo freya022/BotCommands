@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -20,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 @Command
-class SlashButton(private val buttons: Buttons) : ApplicationCommand() {
+class SlashButton(private val buttons: Buttons) {
     @TopLevelSlashCommandData(scope = CommandScope.GLOBAL)
     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
     suspend fun onSlashButton(event: GlobalSlashEvent) {

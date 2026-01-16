@@ -1,7 +1,6 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData;
@@ -18,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Command
 @RequiresComponents
-public class SlashSelectRolePersistent extends ApplicationCommand {
+public class SlashSelectRolePersistent {
     private static final String ROLE_MENU_HANDLER_NAME = "SlashSelectRolePersistent: roleMenu";
 
     @TopLevelSlashCommandData

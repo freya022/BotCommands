@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.hex
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
@@ -24,7 +23,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 class SlashComponentsV2(
     private val buttons: Buttons,
     private val selectMenus: SelectMenus,
-) : ApplicationCommand() {
+) {
 
     private val kotlinIcon = FileUpload.fromData(readResource("/emojis/kotlin.png"), "kotlin.png")
     private val rustAnimation = FileUpload.fromData(readResource("/rust.webp"), "rust.webp")

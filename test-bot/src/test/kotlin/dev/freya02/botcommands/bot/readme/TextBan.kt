@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 @Command
-class TextBan : TextCommand() {
+class TextBan {
     // Applies to all variations with this path
     @TextCommandData(path = ["ban"], description = "Bans an user")
     // Applies to this variation

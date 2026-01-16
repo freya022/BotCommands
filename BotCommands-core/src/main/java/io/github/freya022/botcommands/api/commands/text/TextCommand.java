@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.text;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
-import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation;
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder;
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider;
@@ -18,9 +17,12 @@ import java.util.function.Consumer;
  * <p>You are not required to use this if you use {@link TextCommandProvider}
  *
  * @see JDATextCommandVariation @JDATextCommandVariation
+ *
+ * @deprecated This superclass is no longer mandatory, if you override methods from it, implement them using their respective interfaces
  */
 @NullMarked
-public abstract class TextCommand {
+@Deprecated
+public abstract class TextCommand implements TextCommandHelpConsumer, TextGeneratedValueSupplierProvider {
     /**
      * <p>Returns a detailed embed of what the command is, it is used by the internal {@code help} command</p>
      * <p>The {@code help} command will automatically set the embed title to be {@code Command '[command_name]'} but can be overridden</p>
@@ -28,26 +30,22 @@ public abstract class TextCommand {
      *
      * @return The EmbedBuilder to use as a detailed description
      *
-     * @see TextCommandBuilder#setDetailedDescription(Consumer) DSL equivalent
+     * @see TextCommandBuilder#setDetailedDescription(kotlin.jvm.functions.Function1) DSL equivalent
      */
     @Nullable
     public Consumer<EmbedBuilder> getDetailedDescription() {
         return null;
     }
 
-    /**
-     * Returns the generated value supplier of an {@link GeneratedOption @GeneratedOption},
-     * if the method doesn't return a generated value supplier, the framework will throw.
-     * <br>This method is called only if your option is annotated with {@link GeneratedOption @GeneratedOption}
-     *
-     * <p>This method will only be called once per command option per guild
-     *
-     * @param commandPath   The path of the command, as set in {@link JDATextCommandVariation}
-     * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
-     * @param parameterType The <b>boxed</b> type of the command option
-     *
-     * @return A {@link TextGeneratedValueSupplier} to generate the option on command execution
-     */
+    @Override
+    public final void accept(EmbedBuilder builder) {
+        Consumer<EmbedBuilder> consumer = getDetailedDescription();
+        if (consumer != null) {
+            consumer.accept(builder);
+        }
+    }
+
+    @Override
     public TextGeneratedValueSupplier getGeneratedValueSupplier(CommandPath commandPath,
                                                                 String optionName,
                                                                 ParameterType parameterType) {

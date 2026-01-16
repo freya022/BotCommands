@@ -6,7 +6,6 @@ import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.jda.emojis.unicode.UnicodeEmojis
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -21,7 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 @RequiresComponents // (Optional) Disables the command if components are not enabled
 class SlashSay(
     private val buttons: Buttons // Factory for buttons
-) : ApplicationCommand() {
+) {
 
     // The descriptions can also be moved to localization files, reducing noise
     @JDASlashCommand(name = "say", description = "Sends a message in a channel")

@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.messages.MessageCreate
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.messages.toEditData
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -19,7 +18,7 @@ private class Series(val name: String)
 @Command
 class StateExample(
     private val buttons: Buttons,
-) : ApplicationCommand() {
+) {
 
     private val states: MutableMap<Long, SeriesState> = hashMapOf()
 

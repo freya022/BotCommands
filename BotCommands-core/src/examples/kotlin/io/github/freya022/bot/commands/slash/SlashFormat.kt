@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.StringSelectMenu
 import dev.freya02.botcommands.jda.ktx.components.TextInput
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.modals.Modals
@@ -17,7 +16,7 @@ private const val languageInputId = "SlashModal: languageInput"
 
 @Command
 @RequiresModals
-class SlashFormat(private val modals: Modals) : ApplicationCommand() {
+class SlashFormat(private val modals: Modals) {
 
     @JDASlashCommand(name = "format", description = "Formats your code")
     suspend fun onSlashFormat(event: GuildSlashEvent) {

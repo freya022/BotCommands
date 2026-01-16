@@ -2,7 +2,6 @@ package io.github.freya022.bot.commands.text
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
@@ -13,7 +12,7 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger { }
 
 @Command
-class TextExit : TextCommand() {
+class TextExit {
     @Hidden
     @RequireOwner
     @JDATextCommandVariation(path = ["exit"])

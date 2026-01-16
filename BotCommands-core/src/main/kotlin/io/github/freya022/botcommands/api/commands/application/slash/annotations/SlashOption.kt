@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 
 import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable
  *
  * ### Choices
  * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
- * or the [application command itself][ApplicationCommand.getOptionChoices].
+ * or by the application command itself from implementing [SlashOptionChoiceProvider].
  *
  * @see Optional @Optional
  * @see Nullable @Nullable
@@ -86,7 +86,7 @@ annotation class SlashOption(
     /**
      * Enables using choices from [SlashParameterResolver.getPredefinedChoices].
      *
-     * **Note:** Predefined choices can still be overridden by [ApplicationCommand.getOptionChoices].
+     * **Note:** Predefined choices can still be overridden by the [SlashOptionChoiceProvider].
      *
      * @return `true` to enable using choices from [SlashParameterResolver.getPredefinedChoices].
      *

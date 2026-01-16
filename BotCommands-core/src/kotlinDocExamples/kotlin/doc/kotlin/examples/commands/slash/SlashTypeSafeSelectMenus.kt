@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 
 @Command
 @RequiresComponents
-class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) : ApplicationCommand() {
+class SlashTypeSafeSelectMenus(private val selectMenus: SelectMenus) {
     @JDASlashCommand(name = "type_safe_select_menus", description = "Demo of Kotlin type-safe bindings")
     suspend fun onSlashTypeSafeSelectMenus(event: GuildSlashEvent, @SlashOption argument: String) {
         val selectMenu = selectMenus.entitySelectMenu(EntitySelectMenu.SelectTarget.ROLE).persistent {

@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.onErrorResponse
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
@@ -14,7 +13,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.requests.ErrorResponse
 
 @Command
-class SlashMaxFollowupTest : ApplicationCommand() {
+class SlashMaxFollowupTest {
     @TopLevelSlashCommandData(contexts = [InteractionContextType.GUILD], integrationTypes = [IntegrationType.USER_INSTALL])
     @JDASlashCommand(name = "max_follow_up", description = "Follow up go brr")
     suspend fun onSlashMaxFollowUp(event: GuildSlashEvent) {

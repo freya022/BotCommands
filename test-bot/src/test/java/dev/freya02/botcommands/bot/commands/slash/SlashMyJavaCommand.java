@@ -2,8 +2,9 @@ package dev.freya02.botcommands.bot.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
 import io.github.freya022.botcommands.api.commands.annotations.*;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier;
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider;
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
@@ -30,7 +31,7 @@ import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
 @Command
 @NullMarked
-public class SlashMyJavaCommand extends ApplicationCommand {
+public class SlashMyJavaCommand implements ApplicationGeneratedValueSupplierProvider, SlashOptionChoiceProvider {
 	@RateLimit(
 			scope = RateLimitScope.USER, bandwidths = {
 			@Bandwidth(capacity = 5, refill = @Refill(type = RefillType.GREEDY, tokens = 5, period = 1, periodUnit = ChronoUnit.MINUTES)),
@@ -46,7 +47,7 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 			return event -> event.getGuild().getName();
 		}
 
-		return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType);
+		throw new IllegalArgumentException("Unsupported generated option: " + optionName);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 			return List.of(new Choice("1", 1L), new Choice("2", 2L));
 		}
 
-		return super.getOptionChoices(guild, commandPath, optionName);
+		return List.of();
 	}
 
 	@CacheAutocomplete

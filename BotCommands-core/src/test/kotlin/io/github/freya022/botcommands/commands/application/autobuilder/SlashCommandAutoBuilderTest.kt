@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.commands.application.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
@@ -47,7 +46,7 @@ class SlashCommandAutoBuilderTest {
     }
 
     @Nested
-    inner class CommandsWithSamePath : ApplicationCommand() {
+    inner class CommandsWithSamePath {
         @JDASlashCommand(name = "test_command")
         fun command1(event: GlobalSlashEvent) { consume(event) }
 
@@ -72,7 +71,7 @@ class SlashCommandAutoBuilderTest {
     }
 
     @Nested
-    inner class CommandAnnotations : ApplicationCommand() {
+    inner class CommandAnnotations {
         @JDASlashCommand(name = "test_command", subcommand = "sub1")
         fun subcommand1(event: GlobalSlashEvent) { consume(event) }
 
@@ -140,7 +139,7 @@ class SlashCommandAutoBuilderTest {
     }
 
     @Nested
-    inner class CommandsWithMixedPathLengths : ApplicationCommand() {
+    inner class CommandsWithMixedPathLengths {
         @JDASlashCommand(name = "test_command")
         fun topLevel(event: GlobalSlashEvent) { consume(event) }
 
@@ -217,7 +216,7 @@ class SlashCommandAutoBuilderTest {
     }
 
     @Nested
-    inner class CommandsWithDeclarationFilters : ApplicationCommand() {
+    inner class CommandsWithDeclarationFilters {
         // TODO test that DeclarationFilter only works on guild commands (throw otherwise)
 
         inner class DoNotDeclare : CommandDeclarationFilter {

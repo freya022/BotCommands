@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -12,7 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
 
 @Command
-class SlashInlineClassVararg : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashInlineClassVararg : GlobalApplicationCommandProvider {
     @JvmInline
     value class MyInlineList(val args: List<String>)
 

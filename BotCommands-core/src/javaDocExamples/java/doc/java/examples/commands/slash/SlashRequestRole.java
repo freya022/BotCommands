@@ -1,7 +1,6 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.modals.ModalEvent;
@@ -20,7 +19,7 @@ import net.dv8tion.jda.api.entities.Role;
 import java.util.List;
 
 @Command
-public class SlashRequestRole extends ApplicationCommand {
+public class SlashRequestRole {
 
     private static final String MODAL_NAME = "request role";
     private static final String INPUT_ROLE = "role";

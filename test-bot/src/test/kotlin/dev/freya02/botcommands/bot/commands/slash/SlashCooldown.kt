@@ -3,7 +3,6 @@ package dev.freya02.botcommands.bot.commands.slash
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.Cooldown
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -14,7 +13,7 @@ import java.time.temporal.ChronoUnit
 import kotlin.time.Duration.Companion.seconds
 
 @Command
-class SlashCooldown : GlobalApplicationCommandProvider, ApplicationCommand() {
+class SlashCooldown : GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "cooldown_annotated")
     @Cooldown(cooldown = 5, unit = ChronoUnit.SECONDS, scope = RateLimitScope.GUILD)
     fun onSlashCooldown(event: GuildSlashEvent) {

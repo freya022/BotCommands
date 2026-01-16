@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -61,7 +61,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
      * Returns a constant list of [choices][Choice] for this slash parameter resolver.
      *
      * This will be applied to all command parameters of this type,
-     * but can still be overridden if there are choices set in [ApplicationCommand.getOptionChoices].
+     * but can still be overridden if there are choices set by [SlashOptionChoiceProvider].
      *
      * This could be useful for, say, an enum resolver, or anything where the choices do not change between commands.
      *

@@ -3,8 +3,9 @@ package dev.freya02.botcommands.bot.commands.slash
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.ValueRange.Companion.range
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
@@ -23,7 +24,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @Command
-class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, AutocompleteHandlerProvider {
+class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvider, ApplicationGeneratedValueSupplierProvider, AutocompleteHandlerProvider {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
         if (optionName == "string_option" || optionName == "string_annotated") {
             return listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
@@ -31,7 +32,7 @@ class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, A
             return listOf(Choice("1", 1L), Choice("2", 2L))
         }
 
-        return super.getOptionChoices(guild, commandPath, optionName)
+        return emptyList()
     }
 
     override fun getGeneratedValueSupplier(
@@ -47,7 +48,7 @@ class SlashMyCommand : ApplicationCommand(), GlobalApplicationCommandProvider, A
             }
         }
 
-        return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
+        error("Unknown generated option: $optionName")
     }
 
     @TopLevelSlashCommandData

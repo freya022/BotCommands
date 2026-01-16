@@ -4,8 +4,8 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 @Command
-class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandProvider {
+class MessageContextRaw : GuildApplicationCommandProvider, ApplicationGeneratedValueSupplierProvider {
     override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?,
@@ -35,7 +35,7 @@ class MessageContextRaw : ApplicationCommand(), GuildApplicationCommandProvider 
             }
         }
 
-        return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
+        error("Unsupported generated value: $optionName")
     }
 
     @JDAMessageCommand(scope = CommandScope.GUILD, name = "Raw content (annotated)")

@@ -3,7 +3,6 @@ package doc.kotlin.examples.commands.slash
 import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
@@ -19,7 +18,7 @@ import kotlin.random.Random
 
 @Command
 @RequiresComponents
-class SlashSelectRolePersistent : ApplicationCommand() {
+class SlashSelectRolePersistent {
     @TopLevelSlashCommandData
     @JDASlashCommand(name = "select_role", subcommand = "persistent", description = "Sends a menu to choose a role from")
     suspend fun onSlashSelectRole(event: GuildSlashEvent, selectMenus: SelectMenus) {

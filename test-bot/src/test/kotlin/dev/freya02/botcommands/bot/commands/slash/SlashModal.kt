@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.components.row
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import dev.freya02.botcommands.jda.ktx.messages.send
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -42,7 +41,7 @@ private const val SLASH_MODAL_ATTACHMENT_INPUT = "SlashModal: attachment"
 @Command
 @RequiresModals
 @RequiresComponents
-class SlashModal(private val buttons: Buttons) : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashModal(private val buttons: Buttons) : GlobalApplicationCommandProvider {
     @JDASlashCommand(name = "modal_annotated")
     suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {

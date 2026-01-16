@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.context.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.builder.TopLevelApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -22,7 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * for more details.
  *
  * ### Requirements
- * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
+ * - The declaring class must be annotated with [@Command][Command] .
  *
  * The first parameter must be:
  * - [GuildMessageEvent] if the [interaction context][contexts]

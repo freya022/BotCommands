@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.AbstractApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
@@ -29,7 +28,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * Additional data can be set once **per subcommand group** with [@SlashCommandGroupData][SlashCommandGroupData].
  *
  * ### Requirements
- * - The declaring class must be annotated with [@Command][Command] and extend [ApplicationCommand].
+ * - The declaring class must be annotated with [@Command][Command].
  * - If you have subcommands,
  * [@TopLevelSlashCommandData][TopLevelSlashCommandData] must be used **once per top-level name**,
  * e.g., if you have `/tag create` and `/tag edit`, you can annotate at most one of them.

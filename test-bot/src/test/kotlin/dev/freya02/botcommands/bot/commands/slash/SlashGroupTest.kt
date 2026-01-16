@@ -1,14 +1,13 @@
 package dev.freya02.botcommands.bot.commands.slash
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashCommandGroupData
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.TopLevelSlashCommandData
 
 @Command
-class SlashGroupTest : ApplicationCommand() {
+class SlashGroupTest {
     @TopLevelSlashCommandData
     @SlashCommandGroupData(description = "group desc")
     @JDASlashCommand(name = "group_test", group = "group1", subcommand = "sub")

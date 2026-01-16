@@ -36,7 +36,8 @@ internal sealed class TextCommandInfoImpl(
     final override val isOwnerRequired: Boolean = builder.ownerRequired
     final override val hidden: Boolean = builder.hidden
 
-    final override val detailedDescription: Consumer<EmbedBuilder>? = builder.detailedDescription
+    final override val detailedDescription: Consumer<EmbedBuilder>? =
+        builder.detailedDescription?.let { detailedDescription -> Consumer { detailedDescription(it) } }
 
     init {
         subcommands = buildMap(builder.subcommands.size + builder.subcommands.sumOf { it.aliases.size }) {

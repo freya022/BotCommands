@@ -3,7 +3,6 @@ package doc.kotlin.examples.commands.slash
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -14,7 +13,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
 import kotlin.time.Duration.Companion.hours
 
 @Command
-class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashPersistentRateLimit(private val proxyManager: ProxyManager<String>) : GlobalApplicationCommandProvider {
     fun onSlashPersistentRateLimit(event: GuildSlashEvent) {
         event.reply_("Hi", ephemeral = true).queue()
     }

@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommand
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
@@ -35,7 +34,7 @@ import net.dv8tion.jda.internal.utils.Checks
  * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
  *
  * ### Requirements
- * - The declaring class must be annotated with [@Command][Command] and extend [TextCommand]
+ * - The declaring class must be annotated with [@Command][Command]
  * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
  *
  * ### Option types

@@ -8,7 +8,6 @@ import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.Filter
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.and
 import io.github.freya022.botcommands.api.commands.application.builder.filter
 import io.github.freya022.botcommands.api.commands.application.or
@@ -19,7 +18,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 @Command
 @TestService
-class SlashFilter : ApplicationCommand(), GlobalApplicationCommandProvider {
+class SlashFilter : GlobalApplicationCommandProvider {
     @Filter(InVoiceChannel::class)
     @JDASlashCommand(name = "filter_annotated")
     suspend fun onSlashFilter(event: GuildSlashEvent) {

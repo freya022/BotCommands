@@ -4,7 +4,6 @@ import dev.freya02.botcommands.bot.services.Disabled
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
@@ -17,7 +16,7 @@ import io.github.freya022.botcommands.api.core.entities.InputUser
 
 @Disabled
 @Command
-class SlashBanManual : ApplicationCommand(), GuildApplicationCommandProvider {
+class SlashBanManual : GuildApplicationCommandProvider {
     @Test(722891685755093072)
     @JDASlashCommand(name = "ban_annotated")
     @TopLevelSlashCommandData(defaultLocked = true, scope = CommandScope.GUILD)

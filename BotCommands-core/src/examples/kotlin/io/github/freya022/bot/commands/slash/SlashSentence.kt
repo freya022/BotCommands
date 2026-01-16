@@ -4,7 +4,6 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.bot.switches.KotlinDetailProfile
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -74,7 +73,7 @@ class SlashSentenceDetailedFront : GlobalApplicationCommandProvider {
 
 @Command
 @KotlinDetailProfile(KotlinDetailProfile.Profile.KOTLIN)
-class SlashSentenceSimplifiedFront(private val slashSentence: SlashSentence) : ApplicationCommand() {
+class SlashSentenceSimplifiedFront(private val slashSentence: SlashSentence) {
     @JDASlashCommand(name = "sentence", description = "Make a sentence")
     fun onSlashSentence(
         event: GuildSlashEvent,

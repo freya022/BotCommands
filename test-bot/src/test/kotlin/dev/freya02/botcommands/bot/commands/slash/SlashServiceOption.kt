@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.components.into
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
@@ -32,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 @Command
 @RequiresModals
 @RequiresComponents
-class SlashServiceOption : ApplicationCommand() {
+class SlashServiceOption {
     @JDASlashCommand(name = "service_option")
     suspend fun onSlashServiceOption(
         event: GuildSlashEvent,

@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandHelpConsumer
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandD
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
 import net.dv8tion.jda.api.EmbedBuilder
-import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
 interface TextCommandBuilder : CommandBuilder {
@@ -69,9 +68,9 @@ interface TextCommandBuilder : CommandBuilder {
      *
      * @return The EmbedBuilder to use as a detailed description
      *
-     * @see TextCommand.getDetailedDescription
+     * @see TextCommandHelpConsumer
      */
-    var detailedDescription: Consumer<EmbedBuilder>?
+    var detailedDescription: ((EmbedBuilder) -> Unit)?
 
     //TODO docs
     fun subcommand(name: String, block: TextCommandBuilder.() -> Unit)
