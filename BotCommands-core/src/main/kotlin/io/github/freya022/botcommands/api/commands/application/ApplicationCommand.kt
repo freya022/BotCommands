@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
  *
  * @see SlashOptionChoiceProvider
  */
+@Deprecated(message = "This superclass is no longer mandatory, if you override methods from it, implement them using their respective interfaces")
 abstract class ApplicationCommand : SlashOptionChoiceProvider, ApplicationGeneratedValueSupplierProvider {
     override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Command.Choice> {
         return emptyList()
