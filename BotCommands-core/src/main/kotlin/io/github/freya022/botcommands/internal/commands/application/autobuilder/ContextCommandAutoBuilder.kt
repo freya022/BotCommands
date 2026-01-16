@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
+import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import io.github.freya022.botcommands.api.commands.application.context.annotations.ContextOption
 import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionRegistry
@@ -17,6 +17,8 @@ import io.github.freya022.botcommands.internal.commands.application.autobuilder.
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import io.github.freya022.botcommands.internal.utils.checkAt
+import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KClass
@@ -35,7 +37,7 @@ internal sealed class ContextCommandAutoBuilder<T : RootAnnotatedApplicationComm
     protected fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
-        instance: ApplicationCommand,
+        instance: Any,
         commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
@@ -54,7 +56,7 @@ internal sealed class ContextCommandAutoBuilder<T : RootAnnotatedApplicationComm
         registry: ApplicationOptionRegistry<*>,
         guild: Guild?,
         func: KFunction<*>,
-        instance: ApplicationCommand,
+        instance: Any,
         path: CommandPath,
         commandId: String?,
         parameter: ParameterAdapter
@@ -66,6 +68,10 @@ internal sealed class ContextCommandAutoBuilder<T : RootAnnotatedApplicationComm
                 is MessageCommandOptionRegistry -> registry.option(parameter.declaredName)
             }
         } else if (parameter.hasAnnotation<GeneratedOption>()) {
+            checkAt(instance is ApplicationGeneratedValueSupplierProvider, func) {
+                "Declaring class must extend ${classRef<ApplicationGeneratedValueSupplierProvider>()}"
+            }
+
             val valueSupplier = instance.getGeneratedValueSupplier(guild, commandId, path, parameter.discordName, parameter.actualType)
             registry.generatedOption(parameter.declaredName, valueSupplier)
         } else if (resolverContainer.hasResolverOfType<ICustomResolver<*, *>>(parameter.valueParameter.wrap())) {

@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.commands.application.slash.options.builder
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommand
 import io.github.freya022.botcommands.api.commands.application.LengthRange
+import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.options.builder.ApplicationCommandOptionBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.DoubleRange
@@ -56,11 +56,10 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * The choices returned by this method will have their name localized
      * if they are present in the [localization bundles][BApplicationConfigBuilder.addLocalizations].
      *
-     * @see SlashParameterResolver.getPredefinedChoices
-     *
      * @throws IllegalStateException If [usePredefinedChoices] is enabled.
      *
-     * @see ApplicationCommand.getOptionChoices
+     * @see SlashParameterResolver.getPredefinedChoices
+     * @see SlashOptionChoiceProvider
      */
     var choices: List<Choice>?
 
