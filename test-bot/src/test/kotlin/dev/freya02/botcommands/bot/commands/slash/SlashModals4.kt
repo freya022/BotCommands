@@ -1,5 +1,8 @@
 package dev.freya02.botcommands.bot.commands.slash
 
+import dev.freya02.botcommands.jda.ktx.components.Checkbox
+import dev.freya02.botcommands.jda.ktx.components.CheckboxGroup
+import dev.freya02.botcommands.jda.ktx.components.RadioGroup
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -9,9 +12,6 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.create
-import net.dv8tion.jda.api.components.checkbox.Checkbox
-import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup
-import net.dv8tion.jda.api.components.radiogroup.RadioGroup
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 
@@ -30,24 +30,24 @@ class SlashModals4(private val modals: Modals) {
     fun onSlashModals4(event: GuildSlashEvent) {
         val modal = modals.create("Modal") {
             label("I like checking boxes") {
-                child = Checkbox.create(CHECKBOX_ID, true)
+                child = Checkbox(CHECKBOX_ID, isDefault = true)
             }
 
             label("Which Discord client do you use?") {
-                child = RadioGroup.create(RADIO_GROUP_ID)
-                    .addOption("Discord (Stable)", "stable", "The vanilla option", true)
-                    .addOption("Discord PTB", "ptb", "A peek into the future")
-                    .addOption("Discord Canary", "canary", "Living on the edge")
-                    .build()
+                child = RadioGroup(RADIO_GROUP_ID) {
+                    option("Discord (Stable)", "stable", "The vanilla option", default = true)
+                    option("Discord PTB", "ptb", "A peek into the future")
+                    option("Discord Canary", "canary", "Living on the edge")
+                }
             }
 
             label("Which modal components do you use?") {
-                child = CheckboxGroup.create(CHECKBOX_GROUP_ID)
-                    .addOption("Text Inputs", "textinputs")
-                    .addOption("Select Menus", "selectmenus")
-                    .addOption("File Uploads", "fileuploads")
-                    .addOption("Checkbox groups", "checkboxgroups", null, true)
-                    .build()
+                child = CheckboxGroup(CHECKBOX_GROUP_ID) {
+                    option("Text Inputs", "textinputs")
+                    option("Select Menus", "selectmenus")
+                    option("File Uploads", "fileuploads")
+                    option("Checkbox groups", "checkboxgroups", default = true)
+                }
             }
 
             bindTo(MODAL_NAME)
