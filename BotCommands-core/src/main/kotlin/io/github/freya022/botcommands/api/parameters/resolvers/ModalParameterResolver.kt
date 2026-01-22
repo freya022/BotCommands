@@ -6,6 +6,9 @@ import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload
+import net.dv8tion.jda.api.components.checkbox.Checkbox
+import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup
+import net.dv8tion.jda.api.components.radiogroup.RadioGroup
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -26,6 +29,9 @@ import kotlin.reflect.KType
  * - [EntitySelectMenu] : [Mentions], `T` and `List<T>` where `T` is one of:
  * [IMentionable], [Role], [User], [InputUser], [Member], [GuildChannel]
  * - [AttachmentUpload] : `List` of [Message.Attachment], [Message.Attachment]
+ * - [RadioGroup] : `String`
+ * - [CheckboxGroup] : `List<String>`
+ * - [Checkbox] : `Boolean`
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
