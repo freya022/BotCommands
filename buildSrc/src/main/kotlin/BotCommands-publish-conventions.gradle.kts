@@ -37,11 +37,7 @@ version = Version(
     classifier = providers.gradleProperty("version.classifier").get(),
 )
 
-val effectiveTag = if (canPublish) {
-    GitUtils.getHeadTag(logger, providers, projectDir.absolutePath) ?: error("Attempted to publish on a non-release commit")
-} else {
-    "3.X"
-}
+val effectiveTag = if (canPublish) "v${version}" else "3.X"
 
 java {
     withSourcesJar()
