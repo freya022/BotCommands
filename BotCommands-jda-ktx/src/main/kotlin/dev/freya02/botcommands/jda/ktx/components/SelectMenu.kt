@@ -47,7 +47,7 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.placeholder = value
         }
 
-    /** The minimum and maximum amount of values a user can select, must not exceed the amount of options */
+    /** The minimum and maximum amount of values a user can select, must not exceed [SelectMenu.OPTIONS_MAX_AMOUNT] */
     var valueRange: IntRange
         get() = builder.minValues..builder.maxValues
         set(value) {
@@ -61,7 +61,7 @@ abstract class InlineSelectMenu : InlineComponent {
             builder.setMinValues(value)
         }
 
-    /** The maximum amount of values a user can select, must not exceed the amount of options */
+    /** The maximum amount of values a user can select, must not exceed [SelectMenu.OPTIONS_MAX_AMOUNT] */
     var maxValues: Int
         get() = builder.maxValues
         set(value) {

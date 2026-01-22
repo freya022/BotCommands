@@ -19,8 +19,8 @@ class InlineLabel : InlineComponent {
             component = component.withUniqueId(value)
         }
 
-    /** The label of this Label, see [Label.withLabel] */
     private var _label: String? = null
+    /** The label of this Label, see [Label.withLabel] */
     var label: String
         get() = _label.checkInit("label content")
         set(value) {
