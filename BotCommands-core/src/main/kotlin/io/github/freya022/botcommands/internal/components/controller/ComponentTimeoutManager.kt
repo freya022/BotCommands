@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.exceptions.ComponentTimeoutException
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -8,7 +9,6 @@ import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.internal.components.handler.ComponentTimeoutExecutor
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -66,13 +66,11 @@ internal class ComponentTimeoutManager(
         if (continuations.isEmpty()) return
 
         // Continuations must be canceled
-        if (throwTimeouts) {
-            val timeoutException = TimeoutExceptionAccessor.createComponentTimeoutException()
-            continuations.forEach { it.cancel(timeoutException) }
-        } else {
-            val cancellationException = CancellationException("Component was deleted")
-            continuations.forEach { it.cancel(cancellationException) }
+        val exception = when {
+            throwTimeouts -> ComponentTimeoutException("Timed out waiting for component")
+            else -> CancellationException("Component was deleted")
         }
+        continuations.forEach { it.cancel(exception) }
     }
 
     internal fun cancelTimeout(componentId: Int) {
