@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
+import io.github.freya022.botcommands.api.modals.exceptions.ModalTimeoutException
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -62,7 +62,7 @@ internal class ModalMaps(context: BContext) {
             val data = modalLock.withLock { modalMap.remove(internalId) }
             if (data != null) { //If the timeout was reached without the modal being used
                 if (data.continuations.isNotEmpty()) {
-                    val timeoutException = TimeoutExceptionAccessor.createModalTimeoutException()
+                    val timeoutException = ModalTimeoutException("Timed out waiting for modal")
                     for (continuation in data.continuations) {
                         continuation.cancel(timeoutException)
                     }
