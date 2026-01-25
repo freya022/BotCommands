@@ -14,9 +14,6 @@ dependencies {
     // Logging
     implementation(libs.logback.classic)
 
-    // Coroutines
-    implementation(libs.stacktrace.decoroutinator)
-
     // Database
     runtimeOnly(libs.postgresql)
     runtimeOnly(libs.h2)

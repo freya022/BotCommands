@@ -19,9 +19,5 @@ fun main(args: Array<String>) {
     System.setProperty("logging.config", Environment.logbackConfigPath.absolutePathString())
     logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
-    // No need to install stacktrace-decoroutinator
-    // The stack traces are already enhanced in debug mode by the Java agent provided by IntelliJ
-    // The IntelliJ debug agent also doesn't cause errors when exceptions happen after transforming reloaded classes
-
     runApplication<SpringMain>(*args)
 }

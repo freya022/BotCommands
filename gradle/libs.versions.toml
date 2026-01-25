@@ -34,7 +34,6 @@ slf4j-api = "2.0.16"
 spring = "6.2.14"
 # @pin Our code is compatible with Spring Boot 4, don't upgrade dependencies to avoid unexpected breakages
 spring-boot = "3.5.8"
-stacktrace-decoroutinator = "2.5.7"
 trove4j-core = "3.1.0"
 
 [plugins]
@@ -92,7 +91,6 @@ spring-boot-devtools = "org.springframework.boot:spring-boot-devtools:4.0.0"
 spring-boot-starter = "org.springframework.boot:spring-boot-starter:4.0.0"
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
-stacktrace-decoroutinator = { module = "dev.reformator.stacktracedecoroutinator:stacktrace-decoroutinator-jvm", version.ref = "stacktrace-decoroutinator" }
 trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
 
 [bundles]

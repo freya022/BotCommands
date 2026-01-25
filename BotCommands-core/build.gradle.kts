@@ -108,9 +108,6 @@ dependencies {
     // Logging
     "examplesImplementation"(libs.logback.classic)
 
-    // Coroutines
-    "examplesImplementation"(libs.stacktrace.decoroutinator)
-
     // Database
     "examplesImplementation"(libs.h2)
     "examplesImplementation"(libs.flyway.core)
