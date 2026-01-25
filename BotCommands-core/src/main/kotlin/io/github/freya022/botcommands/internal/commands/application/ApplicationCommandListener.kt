@@ -64,7 +64,7 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${event.commandString}" }
 
-        scope.launchCatching({ handleException(it, event) }) launch@{
+        scope.launchCatching({ handleException(it, event, CommandType.SLASH, emptyMap()) }) launch@{
             val slashCommand = context.applicationCommandsContext
                 .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
                 ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
@@ -88,7 +88,7 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${event.name}" }
 
-        scope.launchCatching({ handleException(it, event) }) launch@{
+        scope.launchCatching({ handleException(it, event, CommandType.USER_CONTEXT, mapOf("User" to event.target.asMention)) }) launch@{
             val userCommand = context.applicationCommandsContext
                 .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
                 ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
@@ -112,7 +112,7 @@ internal class ApplicationCommandListener internal constructor(
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${event.name}" }
 
-        scope.launchCatching({ handleException(it, event) }) launch@{
+        scope.launchCatching({ handleException(it, event, CommandType.MESSAGE_CONTEXT, mapOf("Message" to event.target.jumpUrl)) }) launch@{
             val messageCommand = context.applicationCommandsContext
                 .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
                 ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
@@ -150,7 +150,7 @@ internal class ApplicationCommandListener internal constructor(
         }
 
         //This is done so warnings are printed after the exception
-        handleException(IllegalArgumentException(message), event)
+        handleException(IllegalArgumentException(message), event, CommandType.APPLICATION, emptyMap())
         printAvailableCommands(event)
         logger.warn {
             if (context.getService<ApplicationCommandsCacheFactory>().cacheConfig.checkOnline) {
@@ -216,7 +216,7 @@ internal class ApplicationCommandListener internal constructor(
         }
     }
 
-    private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
+    private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent, cmdType: CommandType, context: Map<String, Any?>) {
         val logLevel = if (e is OptionNotFoundException) {
             logger.warn { createCommandMismatchMessage("An option could not be found, commands will be force updated.") }
             forceUpdateCommands(event.guild)
@@ -225,7 +225,7 @@ internal class ApplicationCommandListener internal constructor(
             Level.ERROR
         }
 
-        exceptionHandler.handleException(event, e, "application command '${event.commandString}'", emptyMap(), logLevel)
+        exceptionHandler.handleException(event, e, "${cmdType.asString} '${event.commandString}'", context, logLevel)
         if (e is InsufficientPermissionException) {
             event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
         } else {
@@ -282,5 +282,12 @@ internal class ApplicationCommandListener internal constructor(
 
     private inline fun fromMessages(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
         return messagesFactory.get(event).run(block)
+    }
+
+    private enum class CommandType(val asString: String) {
+        APPLICATION("application"),
+        SLASH("slash"),
+        MESSAGE_CONTEXT("message context"),
+        USER_CONTEXT("user context"),
     }
 }
