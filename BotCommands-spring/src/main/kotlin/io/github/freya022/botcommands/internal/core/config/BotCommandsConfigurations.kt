@@ -128,7 +128,8 @@ internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLo
 @ConfigurationProperties(prefix = "botcommands.application", ignoreUnknownFields = true)
 internal class BotCommandsApplicationConfiguration(
     override val enable: Boolean = true,
-    override val slashGuildIds: List<Long> = emptyList(),
+    slashGuildIds: List<Long> = emptyList(),
+    guildsToUpdate: List<Long> = emptyList(),
     override val testGuildIds: List<Long> = emptyList(),
     override val disableAutocompleteCache: Boolean = false,
     override val forceGuildCommands: Boolean = false,
@@ -138,6 +139,11 @@ internal class BotCommandsApplicationConfiguration(
     internal val springCache: Cache = Cache(),
 ) : BApplicationConfig {
     override val cache: Nothing get() = unusable()
+
+    override val guildsToUpdate: List<Long> = when {
+        guildsToUpdate.isNotEmpty() -> guildsToUpdate
+        else -> slashGuildIds
+    }
 
     class Cache(
         /**
@@ -179,7 +185,7 @@ internal class BotCommandsApplicationConfiguration(
 @OptIn(DevConfig::class)
 internal fun BApplicationConfigBuilder.applyConfig(configuration: BotCommandsApplicationConfiguration) = apply {
     enable = configuration.enable
-    slashGuildIds += configuration.slashGuildIds
+    guildsToUpdate += configuration.guildsToUpdate
     testGuildIds += configuration.testGuildIds
     disableAutocompleteCache = configuration.disableAutocompleteCache
     configureCache(configuration)

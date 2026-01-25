@@ -109,10 +109,10 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
-        val slashGuildIds = context.applicationConfig.slashGuildIds
-        if (slashGuildIds.isNotEmpty()) {
-            if (guild.idLong !in slashGuildIds) {
-                logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::slashGuildIds.reference}" }
+        val guildsToUpdate = context.applicationConfig.guildsToUpdate
+        if (guildsToUpdate.isNotEmpty()) {
+            if (guild.idLong !in guildsToUpdate) {
+                logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::guildsToUpdate.reference}" }
                 firstGuildUpdates.add(guild.idLong)
                 return CommandUpdateResult(guild, false, listOf())
             }

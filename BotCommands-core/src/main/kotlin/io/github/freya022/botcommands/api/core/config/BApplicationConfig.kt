@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.api.localization.readers.JacksonLocalizati
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.lazyWritable
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -50,8 +51,20 @@ interface BApplicationConfig {
      *
      * Spring property: `botcommands.application.slashGuildIds`
      */
+    @Deprecated("Replaced by 'guildsToUpdate'", replaceWith = ReplaceWith("guildToUpdate"))
+    @DeprecatedValue("Replaced by 'guildsToUpdate'", replacement = "botcommands.application.slashGuildIds")
     @ConfigurationValue(path = "botcommands.application.slashGuildIds")
-    val slashGuildIds: List<Long>
+    val slashGuildIds: List<Long> get() = guildsToUpdate
+
+    /**
+     * If not empty, application commands will only be updated in these guilds.
+     *
+     * Existing commands won't be removed in other guilds, global commands will still be updated.
+     *
+     * Spring property: `botcommands.application.guildsToUpdate`
+     */
+    @ConfigurationValue(path = "botcommands.application.guildsToUpdate")
+    val guildsToUpdate: List<Long>
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
@@ -147,7 +160,9 @@ interface BApplicationConfig {
 class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
     @set:JvmName("enable")
     override var enable: Boolean = true
-    override val slashGuildIds: MutableList<Long> = mutableListOf()
+    @Deprecated("Replaced by 'guildsToUpdate'", replaceWith = ReplaceWith("guildToUpdate"))
+    override val slashGuildIds: MutableList<Long> get() = guildsToUpdate
+    override val guildsToUpdate: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
@@ -345,7 +360,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
 
         return object : BApplicationConfig {
             override val enable = this@BApplicationConfigBuilder.enable
-            override val slashGuildIds = this@BApplicationConfigBuilder.slashGuildIds.toImmutableList()
+            override val guildsToUpdate = this@BApplicationConfigBuilder.guildsToUpdate.toImmutableList()
             override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
             override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
             override val cache = this@BApplicationConfigBuilder.cache?.build()
