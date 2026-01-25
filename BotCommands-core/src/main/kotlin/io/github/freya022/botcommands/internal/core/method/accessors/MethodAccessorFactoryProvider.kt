@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.core.method.accessors
 
+import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import dev.freya02.botcommands.method.accessors.internal.KotlinReflectMethodAccessorFactory
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessorFactory
-import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KFunction
 
@@ -27,7 +27,7 @@ internal object MethodAccessorFactoryProvider {
 
     @OptIn(ExperimentalMethodAccessorsApi::class)
     private fun loadAccessorFactory(): MethodAccessorFactory {
-        if (BotCommands.preferClassFileAccessors) {
+        if (MethodAccessorsConfig.preferClassFileAccessors) {
             val accessorFactory = tryLoadClassFileAccessor()
             if (accessorFactory != null) return accessorFactory
         }

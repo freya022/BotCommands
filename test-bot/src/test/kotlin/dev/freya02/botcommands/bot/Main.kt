@@ -2,6 +2,7 @@ package dev.freya02.botcommands.bot
 
 import ch.qos.logback.classic.ClassicConstants
 import dev.freya02.botcommands.bot.config.Environment
+import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
@@ -23,7 +24,7 @@ object Main {
             logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
 
             @OptIn(ExperimentalMethodAccessorsApi::class)
-            BotCommands.preferClassFileAccessors()
+            MethodAccessorsConfig.preferClassFileAccessors()
 
             BotCommands.create {
                 disableExceptionsInDMs = true
