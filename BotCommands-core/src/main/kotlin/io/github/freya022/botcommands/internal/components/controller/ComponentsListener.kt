@@ -53,13 +53,12 @@ internal class ComponentsListener(
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
         logger.trace { "Received ${event.componentType} interaction: ${event.component}" }
 
+        if (!ComponentController.isCompatibleComponent(event.componentId)) {
+            return logger.debug { "Ignoring an interaction for an external component format: '${event.componentId}'" }
+        }
+
         scope.launchCatching({ handleException(event, it) }) launch@{
-            val componentId = event.componentId.let { id ->
-                if (!ComponentController.isCompatibleComponent(id)) {
-                    return@launch logger.debug { "Ignoring an interaction for an external component format: '${event.componentId}'" }
-                }
-                ComponentController.parseComponentId(id)
-            }
+            val componentId = ComponentController.parseComponentId(event.componentId)
             val component = componentController.getActiveComponent(componentId)
                 ?: return@launch event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
 
