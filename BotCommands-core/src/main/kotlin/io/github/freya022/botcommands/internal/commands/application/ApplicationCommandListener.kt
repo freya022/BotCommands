@@ -29,11 +29,12 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLi
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
-import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.Level
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -61,73 +62,97 @@ internal class ApplicationCommandListener internal constructor(
     private val globalFilters = filters.filter { it.global }
 
     @BEventListener
-    suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
+    fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${event.commandString}" }
 
-        scope.launchCatching({ handleException(it, event, CommandType.SLASH, emptyMap()) }) launch@{
-            val slashCommand = context.applicationCommandsContext
-                .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
-                ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
+        scope.launch {
+            try {
+                handleSlashCommand(event)
+            } catch (e: Exception) {
+                handleException(e, event, CommandType.SLASH, emptyMap())
+            }
+        }
+    }
 
-            rateLimitHandler.tryRun(slashCommand, event) { cancellableRateLimit ->
-                if (!canRun(event, slashCommand)) {
-                    false
-                } else {
-                    val localizableInteraction = localizableInteractionFactory.create(event)
-                    val bcEvent = when {
-                        slashCommand.topLevelInstance.isGuildOnly -> GuildSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
-                        else -> GlobalSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
-                    }
-                    slashCommand.execute(bcEvent)
+    private suspend fun handleSlashCommand(event: SlashCommandInteractionEvent) {
+        val slashCommand = context.applicationCommandsContext
+            .getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
+            ?: return onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
+
+        rateLimitHandler.tryRun(slashCommand, event) { cancellableRateLimit ->
+            if (!canRun(event, slashCommand)) {
+                false
+            } else {
+                val localizableInteraction = localizableInteractionFactory.create(event)
+                val bcEvent = when {
+                    slashCommand.topLevelInstance.isGuildOnly -> GuildSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    else -> GlobalSlashEvent(context, event, cancellableRateLimit, localizableInteraction)
                 }
+                slashCommand.execute(bcEvent)
             }
         }
     }
 
     @BEventListener
-    suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
+    fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${event.name}" }
 
-        scope.launchCatching({ handleException(it, event, CommandType.USER_CONTEXT, mapOf("User" to event.target.asMention)) }) launch@{
-            val userCommand = context.applicationCommandsContext
-                .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
-                ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
+        scope.launch {
+            try {
+                handleUserContextCommand(event)
+            } catch (e: Exception) {
+                handleException(e, event, CommandType.USER_CONTEXT, mapOf("User" to event.target.asMention))
+            }
+        }
+    }
 
-            rateLimitHandler.tryRun(userCommand, event) { cancellableRateLimit ->
-                if (!canRun(event, userCommand)) {
-                    false
-                } else {
-                    val localizableInteraction = localizableInteractionFactory.create(event)
-                    val bcEvent = when {
-                        userCommand.isGuildOnly -> GuildUserEvent(context, event, cancellableRateLimit, localizableInteraction)
-                        else -> GlobalUserEvent(context, event, cancellableRateLimit, localizableInteraction)
-                    }
-                    userCommand.execute(bcEvent)
+    private suspend fun handleUserContextCommand(event: UserContextInteractionEvent) {
+        val userCommand = context.applicationCommandsContext
+            .getApplicationCommandById<UserCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+            ?: return onCommandNotFound(event, "A user context command could not be found: ${event.name}")
+
+        rateLimitHandler.tryRun(userCommand, event) { cancellableRateLimit ->
+            if (!canRun(event, userCommand)) {
+                false
+            } else {
+                val localizableInteraction = localizableInteractionFactory.create(event)
+                val bcEvent = when {
+                    userCommand.isGuildOnly -> GuildUserEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    else -> GlobalUserEvent(context, event, cancellableRateLimit, localizableInteraction)
                 }
+                userCommand.execute(bcEvent)
             }
         }
     }
 
     @BEventListener
-    suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
+    fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${event.name}" }
 
-        scope.launchCatching({ handleException(it, event, CommandType.MESSAGE_CONTEXT, mapOf("Message" to event.target.jumpUrl)) }) launch@{
-            val messageCommand = context.applicationCommandsContext
-                .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
-                ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
+        scope.launch {
+            try {
+                handleMessageContextCommand(event)
+            } catch (e: Exception) {
+                handleException(e, event, CommandType.MESSAGE_CONTEXT, mapOf("Message" to event.target.jumpUrl))
+            }
+        }
+    }
 
-            rateLimitHandler.tryRun(messageCommand, event) { cancellableRateLimit ->
-                if (!canRun(event, messageCommand)) {
-                    false
-                } else {
-                    val localizableInteraction = localizableInteractionFactory.create(event)
-                    val bcEvent = when {
-                        messageCommand.isGuildOnly -> GuildMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
-                        else -> GlobalMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
-                    }
-                    messageCommand.execute(bcEvent)
+    private suspend fun handleMessageContextCommand(event: MessageContextInteractionEvent) {
+        val messageCommand = context.applicationCommandsContext
+            .getApplicationCommandById<MessageCommandInfoImpl>(event.commandIdLong, group = null, subcommand = null)
+            ?: return onCommandNotFound(event, "A message context command could not be found: ${event.name}")
+
+        rateLimitHandler.tryRun(messageCommand, event) { cancellableRateLimit ->
+            if (!canRun(event, messageCommand)) {
+                false
+            } else {
+                val localizableInteraction = localizableInteractionFactory.create(event)
+                val bcEvent = when {
+                    messageCommand.isGuildOnly -> GuildMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
+                    else -> GlobalMessageEvent(context, event, cancellableRateLimit, localizableInteraction)
                 }
+                messageCommand.execute(bcEvent)
             }
         }
     }
@@ -217,6 +242,9 @@ internal class ApplicationCommandListener internal constructor(
     }
 
     private suspend fun handleException(e: Throwable, event: GenericCommandInteractionEvent, cmdType: CommandType, context: Map<String, Any?>) {
+        if (e is CancellationException)
+            return logger.trace(e) { "${cmdType.asString.replaceFirstChar { it.uppercase() }} '${event.commandString}' was cancelled" }
+
         val logLevel = if (e is OptionNotFoundException) {
             logger.warn { createCommandMismatchMessage("An option could not be found, commands will be force updated.") }
             forceUpdateCommands(event.guild)

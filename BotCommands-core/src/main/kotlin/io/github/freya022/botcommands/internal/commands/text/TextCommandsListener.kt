@@ -27,17 +27,18 @@ import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLi
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.text.LocalizableTextCommandFactory
-import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import kotlin.coroutines.cancellation.CancellationException
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -64,8 +65,8 @@ internal class TextCommandsListener internal constructor(
     private val globalFilters = filters.filter { it.global }
 
     @BEventListener(ignoreIntents = true)
-    suspend fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.author.isBot || event.isWebhookMessage) return
+    fun onMessageReceived(event: MessageReceivedEvent) {
+        if (event.author.isBot || event.isWebhookMessage || event.message.type.isSystem) return
 
         if (!event.isFromGuild) return
 
@@ -76,23 +77,31 @@ internal class TextCommandsListener internal constructor(
 
         logger.trace { "Received text command: $msg" }
 
-        scope.launchCatching({ handleException(event, it, msg) }) launch@{
-            val isNotOwner = event.author !in context.botOwners
-            val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
-                // At this point no top level command was found,
-                // if a subcommand wasn't matched, it would simply appear in the args
-                onCommandNotFound(event, content.substringBefore(' '))
-                return@launch
+        scope.launch {
+            try {
+                handleTextCommands(event, content)
+            } catch (e: Exception) {
+                handleException(event, e, msg)
             }
+        }
+    }
 
-            logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
+    private suspend fun handleTextCommands(event: MessageReceivedEvent, content: String) {
+        val isNotOwner = event.author !in context.botOwners
+        val (commandInfo: TextCommandInfoImpl, args: String) = findCommandWithArgs(content, isNotOwner) ?: let {
+            // At this point no top level command was found,
+            // if a subcommand wasn't matched, it would simply appear in the args
+            onCommandNotFound(event, content.substringBefore(' '))
+            return
+        }
 
-            rateLimitHandler.tryRun(commandInfo, event) { cancellableRateLimit ->
-                if (!canRun(event, commandInfo)) {
-                    false
-                } else {
-                    tryVariations(event, commandInfo, content, args, cancellableRateLimit)
-                }
+        logger.trace { "Detected text command '${commandInfo.path}' with args '$args'" }
+
+        rateLimitHandler.tryRun(commandInfo, event) { cancellableRateLimit ->
+            if (!canRun(event, commandInfo)) {
+                false
+            } else {
+                tryVariations(event, commandInfo, content, args, cancellableRateLimit)
             }
         }
     }
@@ -136,6 +145,9 @@ internal class TextCommandsListener internal constructor(
     }
 
     private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Text command '$msg' was cancelled" }
+
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         if (e is InsufficientPermissionException) {
             replyError(event, messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))

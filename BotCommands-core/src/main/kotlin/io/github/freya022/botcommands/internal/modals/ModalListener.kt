@@ -11,10 +11,11 @@ import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
 import io.github.freya022.botcommands.internal.modals.utils.allValuesAsString
 import io.github.freya022.botcommands.internal.utils.annotationRef
-import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import kotlin.coroutines.resume
@@ -35,40 +36,51 @@ internal class ModalListener(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
-    suspend fun onModalEvent(jdaEvent: ModalInteractionEvent) {
+    fun onModalEvent(jdaEvent: ModalInteractionEvent) {
         logger.trace { "Received modal interaction '${jdaEvent.modalId}' with ${jdaEvent.allValuesAsString}" }
 
-        scope.launchCatching({ handleException(it, jdaEvent) }) launch@{
-            if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
-                return@launch logger.debug { "Ignoring an interaction for an external modal format: '${jdaEvent.modalId}'" }
+        if (!ModalMaps.isCompatibleModal(jdaEvent.modalId)) {
+            return logger.debug { "Ignoring an interaction for an external modal format: '${jdaEvent.modalId}'" }
+        }
+
+        scope.launch {
+            try {
+                handleModal(jdaEvent)
+            } catch (e: Exception) {
+                handleException(e, jdaEvent)
             }
+        }
+    }
 
-            val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))
-            if (modalData == null) { //Probably the modal expired
-                jdaEvent.reply(messagesFactory.get(jdaEvent).modalExpired(jdaEvent)).setEphemeral(true).queue()
-                return@launch
-            }
+    private suspend fun handleModal(jdaEvent: ModalInteractionEvent) {
+        val modalData = modalMaps.consumeModal(ModalMaps.parseModalId(jdaEvent.modalId))
+        if (modalData == null) { //Probably the modal expired
+            jdaEvent.reply(messagesFactory.get(jdaEvent).modalExpired(jdaEvent)).setEphemeral(true).queue()
+            return
+        }
 
-            val localizableInteraction = localizableInteractionFactory.create(jdaEvent)
-            val event = ModalEvent(context, jdaEvent, localizableInteraction)
-            for (continuation in modalData.continuations) {
-                continuation.resume(event)
-            }
+        val localizableInteraction = localizableInteractionFactory.create(jdaEvent)
+        val event = ModalEvent(context, jdaEvent, localizableInteraction)
+        for (continuation in modalData.continuations) {
+            continuation.resume(event)
+        }
 
-            val handlerData = modalData.handlerData ?: return@launch
-            when (handlerData) {
-                is EphemeralModalHandlerData -> handlerData.handler(event)
-                is PersistentModalHandlerData -> {
-                    val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
-                        ?: throwArgument("Missing ${annotationRef<ModalHandler>()} named '${handlerData.handlerName}'")
+        val handlerData = modalData.handlerData ?: return
+        when (handlerData) {
+            is EphemeralModalHandlerData -> handlerData.handler(event)
+            is PersistentModalHandlerData -> {
+                val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
+                    ?: throwArgument("Missing ${annotationRef<ModalHandler>()} named '${handlerData.handlerName}'")
 
-                    modalHandler.execute(modalData, event)
-                }
+                modalHandler.execute(modalData, event)
             }
         }
     }
 
     private suspend fun handleException(e: Throwable, event: ModalInteractionEvent) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Modal handler of ID '${event.modalId}' was cancelled" }
+
         exceptionHandler.handleException(event, e, "modal handler, ID: '${event.modalId}'", buildMap(2) {
             event.message?.let { put("Message", it.jumpUrl) }
             put("Modal values", event.allValuesAsString)

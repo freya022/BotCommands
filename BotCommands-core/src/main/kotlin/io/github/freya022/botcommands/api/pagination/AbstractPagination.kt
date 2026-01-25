@@ -6,18 +6,16 @@ import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.SelectMenus
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * @param T Type of the implementor
@@ -26,6 +24,8 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
     val context: BContext,
     builder: AbstractPaginationBuilder<*, T>
 ) {
+    protected val logger by lazy { this@AbstractPagination.objectLogger() }
+
     protected val componentsService: Components get() = context.getService()
     protected val buttons: Buttons = context.getService()
     protected val selectMenus: SelectMenus get() = context.getService()
@@ -92,17 +92,29 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
                 timeoutJob.cancel()
             }
 
-            timeoutJob = paginationTimeoutScope.launchCatchingDelayed(timeout.timeout, { onTimeoutHandlerException(it) }) {
-                timeoutPassed = true
-                runCatching { cleanup() }.onFailure(::onTimeoutHandlerException)
-                @Suppress("UNCHECKED_CAST")
-                timeout.onTimeout?.invoke(this@AbstractPagination as T)
+            timeoutJob = paginationTimeoutScope.launch {
+                delay(timeout.timeout)
+                onTimeout(timeout)
             }
         }
     }
 
+    private suspend fun onTimeout(timeout: TimeoutInfo<T>) {
+        try {
+            timeoutPassed = true
+            runCatching { cleanup() }.onFailure(::onTimeoutHandlerException)
+            @Suppress("UNCHECKED_CAST")
+            timeout.onTimeout?.invoke(this as T)
+        } catch (e: Exception) {
+            onTimeoutHandlerException(e)
+        }
+    }
+
     private fun onTimeoutHandlerException(e: Throwable) {
-        ExceptionHandler(context, KotlinLogging.logger { }).handleException(null, e, "timeout handler", emptyMap())
+        if (e is CancellationException)
+            return logger.trace(e) { "Pagination timeout handler was cancelled" }
+
+        ExceptionHandler(context, logger).handleException(null, e, "timeout handler", emptyMap())
     }
 
     protected open fun preProcess(builder: MessageCreateBuilder) { }

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
@@ -64,37 +63,6 @@ internal inline fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V,
     val existingValue = this[key]
     if(existingValue != null) throw IllegalStateException(messageSupplier(existingValue))
     this[key] = value
-}
-
-internal inline fun CoroutineScope.launchCatching(
-    crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
-    crossinline block: suspend CoroutineScope.() -> Unit
-): Job = launch {
-    runCatching(catchBlock, block)
-}
-
-internal inline fun CoroutineScope.launchCatchingDelayed(
-    delay: Duration,
-    crossinline catchBlock: suspend CoroutineScope.(Throwable) -> Unit,
-    crossinline block: suspend CoroutineScope.() -> Unit
-): Job = launch {
-    delay(delay)
-    runCatching(catchBlock, block)
-}
-
-private suspend inline fun CoroutineScope.runCatching(
-    crossinline catchBlock: suspend (CoroutineScope, Throwable) -> Unit,
-    crossinline block: suspend (CoroutineScope) -> Unit
-) {
-    try {
-        block(this)
-    } catch (e: CancellationException) {
-        // Pass cancellation exceptions back,
-        // at worst JobSupport#cancelParent makes the exception ignored
-        throw e
-    } catch (e: Throwable) {
-        catchBlock(this, e)
-    }
 }
 
 internal fun Duration.toTimestampIfFinite(): Instant? =

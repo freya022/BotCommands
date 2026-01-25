@@ -19,11 +19,12 @@ import io.github.freya022.botcommands.internal.components.data.PersistentCompone
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerExecutor
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
-import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -57,28 +58,36 @@ internal class ComponentsListener(
             return logger.debug { "Ignoring an interaction for an external component format: '${event.componentId}'" }
         }
 
-        scope.launchCatching({ handleException(event, it) }) launch@{
-            val componentId = ComponentController.parseComponentId(event.componentId)
-            val component = componentController.getActiveComponent(componentId)
-                ?: return@launch event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
-
-            if (component !is ActionComponentData)
-                throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
-
-            if (component.filters === ComponentFilters.INVALID_FILTERS) {
-                return@launch event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+        scope.launch {
+            try {
+                handleComponent(event)
+            } catch (e: Exception) {
+                handleException(event, e)
             }
+        }
+    }
 
-            component.filters.onEach { filter ->
-                require(!filter.global) {
-                    "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
-                }
-            }
+    private suspend fun handleComponent(event: GenericComponentInteractionCreateEvent) {
+        val componentId = ComponentController.parseComponentId(event.componentId)
+        val component = componentController.getActiveComponent(componentId)
+            ?: return event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
 
-            rateLimitHandler.tryRun(component, event) { cancellableRateLimit ->
-                val enhancedEvent = transformEvent(event, cancellableRateLimit)
-                onComponentUse(enhancedEvent, component)
+        if (component !is ActionComponentData)
+            throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
+
+        if (component.filters === ComponentFilters.INVALID_FILTERS) {
+            return event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+        }
+
+        component.filters.onEach { filter ->
+            require(!filter.global) {
+                "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
             }
+        }
+
+        rateLimitHandler.tryRun(component, event) { cancellableRateLimit ->
+            val enhancedEvent = transformEvent(event, cancellableRateLimit)
+            onComponentUse(enhancedEvent, component)
         }
     }
 
@@ -133,6 +142,9 @@ internal class ComponentsListener(
     }
 
     private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Components handler of ID '${event.componentId}' was cancelled" }
+
         exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
             "Message" to event.message.jumpUrl,
             "Component" to event.component

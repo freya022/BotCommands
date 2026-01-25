@@ -10,9 +10,10 @@ import io.github.freya022.botcommands.internal.commands.application.slash.SlashC
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.utils.launchCatching
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -30,25 +31,33 @@ internal class AutocompleteListener(
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
-    internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
+    internal fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
         logger.trace { "Received autocomplete interaction for '${event.focusedOption.name}' on '${event.commandString}'" }
 
-        scope.launchCatching({ handleException(it, event) }) launch@{
-            val slashCommand = applicationContext.getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
-                // Ignore, if the user tries to use a command we don't know,
-                // it's going to be handled by the slash command handler
-                ?: return@launch onCommandNotFound(event)
+        scope.launch {
+            try {
+                handleAutocomplete(event)
+            } catch (e: Exception) {
+                handleException(e, event)
+            }
+        }
+    }
 
-            for (option in slashCommand.parameters.flatMap { it.allOptions }) {
-                if (option.optionType != OptionType.OPTION) continue
-                option as SlashCommandOptionImpl
+    private suspend fun handleAutocomplete(event: CommandAutoCompleteInteractionEvent) {
+        val slashCommand = applicationContext.getApplicationCommandById<SlashCommandInfoImpl>(event.commandIdLong, event.subcommandGroup, event.subcommandName)
+            // Ignore, if the user tries to use a command we don't know,
+            // it's going to be handled by the slash command handler
+            ?: return onCommandNotFound(event)
 
-                if (option.discordName == event.focusedOption.name) {
-                    val autocompleteHandler = option.autocompleteHandler
-                        ?: throwArgument(option.typeCheckingFunction, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+        for (option in slashCommand.parameters.flatMap { it.allOptions }) {
+            if (option.optionType != OptionType.OPTION) continue
+            option as SlashCommandOptionImpl
 
-                    return@launch event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
-                }
+            if (option.discordName == event.focusedOption.name) {
+                val autocompleteHandler = option.autocompleteHandler
+                    ?: throwArgument(option.typeCheckingFunction, "Autocomplete handler was not found on parameter '${option.declaredName}'")
+
+                return event.replyChoices(autocompleteHandler.handle(event)).queue(null) { onReplyException(event, it) }
             }
         }
     }
@@ -78,6 +87,9 @@ internal class AutocompleteListener(
     }
 
     private fun handleException(e: Throwable, event: CommandAutoCompleteInteractionEvent) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Autocomplete in '${event.commandString}' for '${event.focusedOption.name}' with value '${event.focusedOption.value}' was cancelled" }
+
         exceptionHandler.handleException(event, e, "autocomplete in '${event.commandString}' for '${event.focusedOption.name}' with value '${event.focusedOption.value}'", emptyMap())
     }
 }

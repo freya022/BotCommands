@@ -9,10 +9,11 @@ import io.github.freya022.botcommands.internal.components.handler.ComponentTimeo
 import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
-import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -33,25 +34,28 @@ internal class ComponentTimeoutManager(
 
     internal fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
         val delay = expirationTimestamp - Clock.System.now()
-        timeoutMap[id] = context.coroutineScopesConfig.componentTimeoutScope.launchCatchingDelayed(
-            delay,
-            { handleTimeoutException(id, it) },
-            { onTimeout(id) }
-        )
+        timeoutMap[id] = context.coroutineScopesConfig.componentTimeoutScope.launch {
+            delay(delay)
+            onTimeout(id)
+        }
     }
 
     private suspend fun onTimeout(id: Int) {
-        //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
-        timeoutMap.remove(id)
+        try {
+            //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
+            timeoutMap.remove(id)
 
-        val component = componentRepository.getComponent(id)
-            ?: return logger.warn { "Component $id was still timeout scheduled after being deleted" }
+            val component = componentRepository.getComponent(id)
+                ?: return logger.warn { "Component $id was still timeout scheduled after being deleted" }
 
-        //Will also cancel timeouts of related components
-        componentController.deleteComponent(component, throwTimeouts = true)
+            //Will also cancel timeouts of related components
+            componentController.deleteComponent(component, throwTimeouts = true)
 
-        // Run user code
-        componentTimeoutExecutor.handleTimeout(component)
+            // Run user code
+            componentTimeoutExecutor.handleTimeout(component)
+        } catch (e: Exception) {
+            handleTimeoutException(id, e)
+        }
     }
 
     internal fun removeTimeouts(componentId: Int, throwTimeouts: Boolean) {
@@ -76,6 +80,9 @@ internal class ComponentTimeoutManager(
     }
 
     private fun handleTimeoutException(id: Int, e: Throwable) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Component timeout handler of ID $id was cancelled" }
+
         exceptionHandler.handleException(null, e, "component timeout handler", mapOf("Component ID" to id))
     }
 }

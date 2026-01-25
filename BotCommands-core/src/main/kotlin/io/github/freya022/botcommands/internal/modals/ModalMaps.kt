@@ -10,10 +10,12 @@ import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.utils.TimeoutExceptionAccessor
 import io.github.freya022.botcommands.internal.utils.classRef
-import io.github.freya022.botcommands.internal.utils.launchCatchingDelayed
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -44,18 +46,9 @@ internal class ModalMaps(context: BContext) {
             val internalId: Long = generateId(modalMap)
 
             val job = partialModalData.timeoutInfo?.let { timeoutInfo ->
-                // Run timeout user code on the modal scope again
-                timeoutScope.launchCatchingDelayed(timeoutInfo.timeout, { handleTimeoutException(it) }) {
-                    val data = modalLock.withLock { modalMap.remove(internalId) }
-                    if (data != null) { //If the timeout was reached without the modal being used
-                        if (data.continuations.isNotEmpty()) {
-                            val timeoutException = TimeoutExceptionAccessor.createModalTimeoutException()
-                            for (continuation in data.continuations) {
-                                continuation.cancel(timeoutException)
-                            }
-                        }
-                        timeoutInfo.onTimeout?.invoke()
-                    }
+                timeoutScope.launch {
+                    delay(timeoutInfo.timeout)
+                    onTimeout(internalId, timeoutInfo)
                 }
             }
 
@@ -64,7 +57,27 @@ internal class ModalMaps(context: BContext) {
         }
     }
 
+    private suspend fun onTimeout(internalId: Long, timeoutInfo: ModalTimeoutInfo) {
+        try {
+            val data = modalLock.withLock { modalMap.remove(internalId) }
+            if (data != null) { //If the timeout was reached without the modal being used
+                if (data.continuations.isNotEmpty()) {
+                    val timeoutException = TimeoutExceptionAccessor.createModalTimeoutException()
+                    for (continuation in data.continuations) {
+                        continuation.cancel(timeoutException)
+                    }
+                }
+                timeoutInfo.onTimeout?.invoke()
+            }
+        } catch (e: Exception) {
+            handleTimeoutException(e)
+        }
+    }
+
     private fun handleTimeoutException(e: Throwable) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Modal timeout handler was cancelled" }
+
         exceptionHandler.handleException(null, e, "modal timeout handler", emptyMap())
     }
 
