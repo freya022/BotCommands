@@ -36,7 +36,7 @@ internal class SerializableComponentDataResolverFactory(
     internal class Resolver(
         private val parameter: ParameterWrapper,
         private val globalSerializer: GlobalComponentDataSerializer,
-    ) : ClassParameterResolver<Resolver, Any>(Resolver::class),
+    ) : ClassParameterResolver<Resolver, Any>(Any::class),
         ComponentParameterResolver<Resolver, Any>,
         TimeoutParameterResolver<Resolver, Any> {
 
