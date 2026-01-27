@@ -34,7 +34,7 @@ class SlashModals4(private val modals: Modals) {
             }
 
             label("Which Discord client do you use?") {
-                child = RadioGroup(RADIO_GROUP_ID) {
+                child = RadioGroup(RADIO_GROUP_ID, required = false) {
                     option("Discord (Stable)", "stable", "The vanilla option", default = true)
                     option("Discord PTB", "ptb", "A peek into the future")
                     option("Discord Canary", "canary", "Living on the edge")
@@ -60,7 +60,7 @@ class SlashModals4(private val modals: Modals) {
     fun onModal(
         event: ModalEvent,
         @ModalInput(CHECKBOX_ID) doTheyLikeCheckingBoxes: Boolean,
-        @ModalInput(RADIO_GROUP_ID) client: String,
+        @ModalInput(RADIO_GROUP_ID) client: String = "<unspecified>",
         @ModalInput(CHECKBOX_GROUP_ID) features: List<String>,
     ) {
         event.reply("""
