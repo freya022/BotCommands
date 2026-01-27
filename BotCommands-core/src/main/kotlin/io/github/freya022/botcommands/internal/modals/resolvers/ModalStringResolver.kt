@@ -25,7 +25,10 @@ internal object ModalStringResolver :
                     error("Cannot get a String from a string select menu with more than a single value")
                 values.firstOrNull()
             }
-            Component.Type.TEXT_INPUT -> modalMapping.asString
+            Component.Type.TEXT_INPUT, Component.Type.RADIO_GROUP -> when {
+                option.isRequired -> modalMapping.asString
+                else -> modalMapping.asOptionalString
+            }
             else -> error("Cannot get a String from a ${modalMapping.type} input")
         }
     }
