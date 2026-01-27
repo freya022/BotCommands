@@ -24,14 +24,14 @@ import kotlin.reflect.KType
  * Needs to be implemented alongside a [ParameterResolver] subclass.
  *
  * ### Types supported by default
- * - [TextInput] : `String`
- * - [StringSelectMenu] : `List<String>`, `String`
- * - [EntitySelectMenu] : [Mentions], `T` and `List<T>` where `T` is one of:
+ * - [TextInput] : `String`, when not filled by the user, empty or `null` if the parameter is explicitly nullable
+ * - [StringSelectMenu] : `String` (can be `null`), `List<String>` (can be empty)
+ * - [EntitySelectMenu] : [Mentions], `T` (can be `null`) and `List<T>` (can be empty) where `T` is one of:
  * [IMentionable], [Role], [User], [InputUser], [Member], [GuildChannel]
- * - [AttachmentUpload] : `List` of [Message.Attachment], [Message.Attachment]
- * - [RadioGroup] : `String`
- * - [CheckboxGroup] : `List<String>`
- * - [Checkbox] : `Boolean`
+ * - [AttachmentUpload] : `List` of [Message.Attachment], can be empty, [Message.Attachment]
+ * - [RadioGroup] : `String`, `null` when none selected
+ * - [CheckboxGroup] : `List<String>`, can be empty
+ * - [Checkbox] : (primitive)`Boolean`
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
