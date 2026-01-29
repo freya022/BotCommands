@@ -25,7 +25,8 @@ internal class ReadyListener {
     @BEventListener(priority = Int.MAX_VALUE, mode = RunMode.BLOCKING)
     internal suspend fun onConnectEvent(event: StatusChangeEvent, context: BContext) {
         // At this point, JDA should be usable
-        if (!connected && event.newStatus == JDA.Status.CONNECTING_TO_WEBSOCKET) {
+        // Use >= because any event beyond this point is a valid JDA instance
+        if (!connected && event.newStatus >= JDA.Status.CONNECTING_TO_WEBSOCKET) {
             lock.withLock {
                 if (connected) return
                 connected = true
