@@ -10,8 +10,11 @@ import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
 @InjectedService
-interface BEventManagerConfig {
+interface BEventManagerConfig : IConfig, BEventManagerConfigProps {
+    override val configType get() = BEventManagerConfig::class.java
+}
 
+interface BEventManagerConfigProps {
     /**
      * The time applied to all event listeners by default before their coroutine is cancelled.
      *
@@ -42,8 +45,7 @@ interface BEventManagerConfig {
 }
 
 @ConfigDSL
-class BEventManagerConfigBuilder internal constructor() : BEventManagerConfig {
-
+class BEventManagerConfigBuilder internal constructor() : BEventManagerConfigProps {
     @set:JvmSynthetic
     override var defaultTimeout: Duration? = null
 

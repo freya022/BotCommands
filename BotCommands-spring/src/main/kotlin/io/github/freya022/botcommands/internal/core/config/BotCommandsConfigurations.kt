@@ -25,18 +25,8 @@ internal class BotCommandsCoreConfiguration(
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
     override val ignoreRestRateLimiter: Boolean = false,
-) : BConfig {
+) : BConfigProps {
     override val classGraphProcessors: Nothing get() = unusable()
-    override val eventManagerConfig: Nothing get() = unusable()
-    override val serviceConfig: Nothing get() = unusable()
-    override val databaseConfig: Nothing get() = unusable()
-    override val localizationConfig: Nothing get() = unusable()
-    override val appEmojisConfig: Nothing get() = unusable()
-    override val textConfig: Nothing get() = unusable()
-    override val applicationConfig: Nothing get() = unusable()
-    override val modalsConfig: Nothing get() = unusable()
-    override val componentsConfig: Nothing get() = unusable()
-    override val coroutineScopesConfig: Nothing get() = unusable()
 }
 
 internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfiguration) = apply {
@@ -53,7 +43,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
 @ConfigurationProperties(prefix = "botcommands.event.manager", ignoreUnknownFields = false)
 internal class BotCommandsEventManagerConfiguration(
     defaultTimeout: JavaDuration? = null,
-) : BEventManagerConfig {
+) : BEventManagerConfigProps {
 
     override val defaultTimeout = defaultTimeout?.toKotlinDuration()
 }
@@ -69,7 +59,7 @@ internal class BotCommandsDatabaseConfiguration(
     override val logQueries: Boolean = false,
     override val logQueryParameters: Boolean = true,
     queryLogThreshold: JavaDuration? = null
-) : BDatabaseConfig {
+) : BDatabaseConfigProps {
     override val queryLogThreshold: Duration = queryLogThreshold?.toKotlinDuration() ?: Duration.INFINITE
 }
 
@@ -85,7 +75,7 @@ internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDataba
 internal class BotCommandsAppEmojisConfiguration(
     override val enable: Boolean = false,
     override val deleteOnOutOfSlots: Boolean = false,
-) : BAppEmojisConfig {
+) : BAppEmojisConfigProps {
 
 }
 
@@ -103,7 +93,7 @@ internal class BotCommandsTextConfiguration(
     override val showSuggestions: Boolean = true,
     @param:Name("dmClosedEmoji")
     internal val dmClosedEmojiString: String? = null
-) : BTextConfig {
+) : BTextConfigProps {
     override val dmClosedEmoji: Nothing get() = unusable()
 }
 
@@ -119,7 +109,7 @@ internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfig
 @ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)
 internal class BotCommandsLocalizationConfiguration(
     override val responseBundles: Set<String> = emptySet(),
-) : BLocalizationConfig
+) : BLocalizationConfigProps
 
 internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLocalizationConfiguration) = apply {
     responseBundles += configuration.responseBundles
@@ -137,7 +127,7 @@ internal class BotCommandsApplicationConfiguration(
     override val logMissingLocalizationKeys: Boolean = false,
     @param:Name("cache")
     internal val springCache: Cache = Cache(),
-) : BApplicationConfig {
+) : BApplicationConfigProps {
     override val cache: Nothing get() = unusable()
 
     override val guildsToUpdate: List<Long> = when {
@@ -223,7 +213,7 @@ private fun BApplicationConfigBuilder.configureCache(configuration: BotCommandsA
 @ConfigurationProperties(prefix = "botcommands.modals", ignoreUnknownFields = true)
 internal class BotCommandsModalsConfiguration(
     override val enable: Boolean = true,
-) : BModalsConfig {
+) : BModalsConfigProps {
 
 }
 
@@ -234,7 +224,7 @@ internal fun BModalsConfigBuilder.applyConfig(configuration: BotCommandsModalsCo
 @ConfigurationProperties(prefix = "botcommands.components", ignoreUnknownFields = false)
 internal class BotCommandsComponentsConfiguration(
     override val enable: Boolean = false
-) : BComponentsConfig
+) : BComponentsConfigProps
 
 internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComponentsConfiguration) = apply {
     enable = configuration.enable

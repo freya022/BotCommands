@@ -6,7 +6,11 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
-interface BAppEmojisConfig {
+interface BAppEmojisConfig : IConfig, BAppEmojisConfigProps {
+    override val configType get() = BAppEmojisConfig::class.java
+}
+
+interface BAppEmojisConfigProps {
     /**
      * Allows uploading application emojis at startup, and retrieving them from [AppEmojisRegistry].
      *
@@ -32,7 +36,7 @@ interface BAppEmojisConfig {
 }
 
 @ConfigDSL
-class BAppEmojisConfigBuilder internal constructor() : BAppEmojisConfig {
+class BAppEmojisConfigBuilder internal constructor() : BAppEmojisConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = false
 

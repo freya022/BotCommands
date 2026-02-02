@@ -30,7 +30,11 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 
 @InjectedService
-interface BApplicationConfig {
+interface BApplicationConfig : IConfig, BApplicationConfigProps {
+    override val configType get() = BApplicationConfig::class.java
+}
+
+interface BApplicationConfigProps {
     /**
      * Whether application commands should be listened for.
      *
@@ -157,7 +161,7 @@ interface BApplicationConfig {
 }
 
 @ConfigDSL
-class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
+class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = true
     @Deprecated("Replaced by 'guildsToUpdate'", replaceWith = ReplaceWith("guildToUpdate"))

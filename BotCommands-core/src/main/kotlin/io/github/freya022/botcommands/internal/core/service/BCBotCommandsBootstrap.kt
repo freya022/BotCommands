@@ -3,8 +3,12 @@ package io.github.freya022.botcommands.internal.core.service
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.BCInfo
-import io.github.freya022.botcommands.api.core.config.*
-import io.github.freya022.botcommands.api.core.service.*
+import io.github.freya022.botcommands.api.core.config.BConfig
+import io.github.freya022.botcommands.api.core.config.BServiceConfig
+import io.github.freya022.botcommands.api.core.service.BCServiceContainer
+import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.putServiceWithTypeAlias
 import io.github.freya022.botcommands.internal.core.Version
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import net.dv8tion.jda.api.JDAInfo
@@ -34,17 +38,7 @@ internal class BCBotCommandsBootstrap internal constructor(
         serviceContainer.putService(serviceContainer, serviceContainer::class, typeAliases = setOf(BCServiceContainer::class, ServiceContainer::class))
         serviceContainer.putService(serviceProviders)
 
-        serviceContainer.putServiceAs<BConfig>(config)
-        serviceContainer.putServiceAs<BEventManagerConfig>(config.eventManagerConfig)
-        serviceContainer.putServiceAs<BServiceConfig>(config.serviceConfig)
-        serviceContainer.putServiceAs<BDatabaseConfig>(config.databaseConfig)
-        serviceContainer.putServiceAs<BLocalizationConfig>(config.localizationConfig)
-        serviceContainer.putServiceAs<BAppEmojisConfig>(config.appEmojisConfig)
-        serviceContainer.putServiceAs<BApplicationConfig>(config.applicationConfig)
-        serviceContainer.putServiceAs<BModalsConfig>(config.modalsConfig)
-        serviceContainer.putServiceAs<BComponentsConfig>(config.componentsConfig)
-        serviceContainer.putServiceAs<BCoroutineScopesConfig>(config.coroutineScopesConfig)
-        serviceContainer.putServiceAs<BTextConfig>(config.textConfig)
+        config.configs.forEach { serviceContainer.putServiceAs(it, it.configType) }
 
         serviceContainer.loadServices()
     }

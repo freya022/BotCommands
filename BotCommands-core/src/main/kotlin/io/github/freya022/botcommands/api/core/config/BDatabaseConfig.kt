@@ -11,7 +11,11 @@ import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
 @InjectedService
-interface BDatabaseConfig {
+interface BDatabaseConfig : IConfig, BDatabaseConfigProps {
+    override val configType get() = BDatabaseConfig::class.java
+}
+
+interface BDatabaseConfigProps {
     /**
      * Whether transactions should trigger a coroutine dump & thread dump
      * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
@@ -67,7 +71,7 @@ interface BDatabaseConfig {
 }
 
 @ConfigDSL
-class BDatabaseConfigBuilder internal constructor() : BDatabaseConfig {
+class BDatabaseConfigBuilder internal constructor() : BDatabaseConfigProps {
     @set:DevConfig
     @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false

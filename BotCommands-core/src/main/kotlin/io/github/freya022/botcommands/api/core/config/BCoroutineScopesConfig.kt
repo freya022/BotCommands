@@ -5,12 +5,15 @@ import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
-import io.github.freya022.botcommands.internal.utils.throwState
 import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.Executor
 
 @InjectedService
-interface BCoroutineScopesConfig {
+interface BCoroutineScopesConfig : IConfig, BCoroutineScopesConfigProps {
+    override val configType get() = BCoroutineScopesConfig::class.java
+}
+
+interface BCoroutineScopesConfigProps {
     val eventManagerScope: CoroutineScope           //Used by [[CoroutineEventManagerImpl]]
     val commandUpdateScope: CoroutineScope          //Not used much
     /**
@@ -32,18 +35,7 @@ fun interface CoroutineScopeFactory {
 }
 
 @ConfigDSL
-class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
-    override val eventManagerScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val commandUpdateScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val eventDispatcherScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val textCommandsScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val applicationCommandsScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val componentScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val componentTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val modalScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val modalTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-    override val paginationTimeoutScope: Nothing get() = throwState("Cannot get a coroutine scope from the builder")
-
+class BCoroutineScopesConfigBuilder internal constructor() {
     var eventManagerScopeFactory: CoroutineScopeFactory = defaultFactory("Event manager", 4)
     var commandUpdateScopeFactory: CoroutineScopeFactory = defaultFactory("Command updater", 1)
     var eventDispatcherScopeFactory: CoroutineScopeFactory = defaultFactory("Event dispatcher", 4)
