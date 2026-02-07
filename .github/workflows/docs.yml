@@ -31,7 +31,7 @@ jobs:
           cache-read-only: true
 
       - name: Generate KDocs
-        run: ./gradlew dokkaGenerate
+        run: ./gradlew :dokkaGenerate
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

@@ -34,7 +34,7 @@ jobs:
       - name: Build KDocs
         # Run even if tests failed, but only on PRs
         if: ${{ !cancelled() && github.event_name == 'pull_request' }}
-        run: ./gradlew dokkaGenerate
+        run: ./gradlew :dokkaGenerate
 
       - name: Publish snapshot
         # Workflow dispatch, push or pull request from the original repo
