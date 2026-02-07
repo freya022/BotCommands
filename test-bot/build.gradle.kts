@@ -34,6 +34,8 @@ dependencies {
     testRuntimeOnly(projects.botCommandsTypesafeMessages.bc)
     testRuntimeOnly(projects.botCommandsTypesafeMessages.spring)
 
+    implementation(projects.botCommandsRestarter)
+
     // ---------------------------- SPRING TEST BOT DEPENDENCIES ---------------------------
 
     // Spring module
