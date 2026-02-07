@@ -11,6 +11,9 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
+import java.time.Duration as JavaDuration
+import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
 
 /**
  * Main context for BotCommands framework.
@@ -43,7 +46,21 @@ interface BContext {
          *
          * Fires [BReadyEvent].
          */
-        READY
+        READY,
+
+        /**
+         * The shutdown sequence has been initiated.
+         *
+         * A [BStatusChangeEvent] if fired, but no dedicated event.
+         */
+        SHUTTING_DOWN,
+
+        /**
+         * The instance has been completely shutdown alongside the underlying JDA instance(s)
+         *
+         * Fires [BShutdownEvent].
+         */
+        SHUTDOWN,
     }
 
     //region Configs
@@ -99,7 +116,7 @@ interface BContext {
     val jda: JDA get() = getService<JDA>()
 
     /**
-     * Returns the initialization status of the framework.
+     * Returns the status of the framework.
      *
      * @see Status
      */
@@ -145,6 +162,59 @@ interface BContext {
      * @param extraContext Additional context of the exception; can be empty
      */
     fun getExceptionContent(message: String, t: Throwable?, extraContext: Map<String, Any?>): String
+
+    /**
+     * Shuts down this instance of BotCommands, shutting down JDA in the process, then shutting down all executors.
+     *
+     * All currently running tasks will not be interrupted, unless [shutdownNow] is called.
+     *
+     * @see JDA.shutdown
+     * @see shutdownNow
+     */
+    fun shutdown()
+
+    /**
+     * Immediately shuts down this instance of BotCommands, shutting down JDA in the process, then shutting down all executors.
+     *
+     * All currently running tasks will be interrupted, and all coroutine scopes are canceled.
+     *
+     * @see JDA.shutdownNow
+     */
+    fun shutdownNow()
+
+    /**
+     * Blocks the current thread until the [status] is set to [SHUTDOWN][BContext.Status.SHUTDOWN].
+     *
+     * This will wait indefinitely, specify a duration if you want a timeout.
+     *
+     * Unless [shutdownNow] has been used, the shutdown time depends on the amount of requests queued in JDA,
+     * and the amount of tasks submitted to the various executors.
+     *
+     * @return Always `true`
+     */
+    fun awaitShutdown(): Boolean = awaitShutdown(Duration.INFINITE)
+
+    /**
+     * Blocks the current thread until the [status] is set to [SHUTDOWN][BContext.Status.SHUTDOWN],
+     * or until the timeout has been reached.
+     *
+     * Unless [shutdownNow] has been used, the shutdown time depends on the amount of requests queued in JDA,
+     * and the amount of tasks submitted to the various executors.
+     *
+     * @return `true` if the shutdown finished before the timeout, `false` if the timeout was reached
+     */
+    fun awaitShutdown(timeout: JavaDuration): Boolean = awaitShutdown(timeout.toKotlinDuration())
+
+    /**
+     * Blocks the current thread until the [status] is set to [SHUTDOWN][BContext.Status.SHUTDOWN],
+     * or until the timeout has been reached.
+     *
+     * Unless [shutdownNow] has been used, the shutdown time depends on the amount of requests queued in JDA,
+     * and the amount of tasks submitted to the various executors.
+     *
+     * @return `true` if the shutdown finished before the timeout, `false` if the timeout was reached
+     */
+    fun awaitShutdown(timeout: Duration): Boolean
 
     /**
      * Returns the [TextCommandsContext] service.

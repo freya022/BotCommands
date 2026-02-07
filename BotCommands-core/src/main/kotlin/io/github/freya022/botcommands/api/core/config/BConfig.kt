@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
@@ -133,6 +134,18 @@ interface BConfigProps {
     val ignoreRestRateLimiter: Boolean
 
     val classGraphProcessors: List<ClassGraphProcessor>
+
+    /**
+     * Whether to use a [shutdown hook][Runtime.addShutdownHook] to call [BContext.shutdownNow] when the JVM is exiting **gracefully**.
+     *
+     * If disabled you'll have to shut it down yourself.
+     *
+     * Default: `true`
+     *
+     * Spring property: `botcommands.core.enableShutdownHook`
+     */
+    @ConfigurationValue("botcommands.core.enableShutdownHook", defaultValue = "true")
+    val enableShutdownHook: Boolean
 }
 
 /**
@@ -168,6 +181,8 @@ class BConfigBuilder : BConfigProps {
     override var ignoreRestRateLimiter: Boolean = false
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
+
+    override var enableShutdownHook: Boolean = true
 
     private val _configs: MutableMap<Class<out IConfig>, IConfig> = hashMapOf()
 
@@ -338,6 +353,7 @@ class BConfigBuilder : BConfigProps {
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
             override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter
             override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
+            override val enableShutdownHook = this@BConfigBuilder.enableShutdownHook
             override val eventManagerConfig = this@BConfigBuilder.eventManagerConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.freya022.botcommands.internal.core.config.IgnoreDefaultValue
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -37,10 +38,13 @@ class JDAConfiguration internal constructor(
     @IgnoreDefaultValue
     @ConfigurationValue("jda.cacheFlags")
     val cacheFlags: Set<CacheFlag> = emptySet(),
+    @Suppress("DEPRECATION")
     @param:Name("devtools")
+    @Deprecated("For removal")
     val devTools: DevTools = DevTools(),
 ) {
 
+    @Deprecated("For removal")
     class DevTools internal constructor(
         /**
          * When Spring devtools are enabled,
@@ -52,6 +56,8 @@ class JDAConfiguration internal constructor(
          * Default: `true`
          */
         @ConfigurationValue("jda.devtools.enabled", defaultValue = "true")
+        @Deprecated("Replaced by the built-in shutdown hook")
+        @DeprecatedValue("Replaced by the built-in shutdown hook", replacement = "botcommands.core.enableShutdownHook")
         val enabled: Boolean = true,
         shutdownTimeout: JavaDuration = JavaDuration.ofSeconds(10),
     ) {
@@ -59,6 +65,8 @@ class JDAConfiguration internal constructor(
          * Time to wait until JDA needs to be forcefully shut down,
          * in other words, this is the allowed time for a graceful shutdown.
          */
+        @Deprecated("For removal, shutdown is always forced")
+        @DeprecatedValue("For removal, shutdown is always forced")
         @ConfigurationValue("jda.devtools.shutdownTimeout", type = "java.time.Duration", defaultValue = "10s")
         val shutdownTimeout: Duration = shutdownTimeout.toKotlinDuration()
     }
