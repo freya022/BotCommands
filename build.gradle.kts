@@ -39,6 +39,7 @@ dependencies {
     dokka(projects.botCommandsTypesafeMessages.bc)
     dokka(projects.botCommandsTypesafeMessages.spring)
     dokka(projects.botCommandsRestarter)
+    dokka(projects.botCommandsJdaKeepalive)
 }
 
 tasks.withType<Test> {

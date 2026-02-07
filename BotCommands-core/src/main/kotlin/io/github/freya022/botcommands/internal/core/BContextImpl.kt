@@ -204,6 +204,9 @@ internal class BContextImpl internal constructor(
             shutdownCoroutineScopes()
         }
 
+        // TODO this never fires shutdown events when the keep alive is used, as JDA is not shutdown
+        //  do we send fake shutdowns?
+        //  do we transform this method to directly run 'signalShutdown'? maybe this can be an internal hoop api instead of a transform
         val shards = jda.shardManager?.shards ?: listOf(jda)
         val countdown = AtomicInteger(shards.size)
         shards.forEach {

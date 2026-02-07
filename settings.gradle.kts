@@ -20,4 +20,5 @@ include(
     ":BotCommands-typesafe-messages:spring",
 )
 include(":BotCommands-restarter")
+include(":BotCommands-jda-keepalive")
 include(":test-bot")
