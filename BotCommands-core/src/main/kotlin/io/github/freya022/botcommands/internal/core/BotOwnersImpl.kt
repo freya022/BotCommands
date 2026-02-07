@@ -44,7 +44,7 @@ internal class BotOwnersImpl internal constructor(
 
     override fun isOwner(user: UserSnowflake): Boolean = user.idLong in owners
 
-    @BEventListener
+    @BEventListener(mode = BEventListener.RunMode.ASYNC)
     internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
         if (ownerWriter.isInitialized()) return
 
