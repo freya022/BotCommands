@@ -33,6 +33,7 @@ dependencies {
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)
+    dokka(projects.botCommandsMethodAccessors.core)
     dokka(projects.botCommandsTypesafeMessages.core)
     dokka(projects.botCommandsTypesafeMessages.bc)
     dokka(projects.botCommandsTypesafeMessages.spring)
