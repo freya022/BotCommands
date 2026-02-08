@@ -169,6 +169,9 @@ sourceSets {
 dokka {
     dokkaSourceSets.configureEach {
         suppressGeneratedFiles = false
+
+        registerBucket4JDocs()
+        registerJetbrainsAnnotationsDocs()
     }
 }
 

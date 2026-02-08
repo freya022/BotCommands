@@ -24,9 +24,6 @@ dokka {
         }
 
         registerJDADocs()
-        registerJetbrainsAnnotationsDocs()
-        registerSpringFrameworkDocs()
-        registerBucket4JDocs()
     }
 }
 

@@ -25,6 +25,12 @@ dependencies {
     ksp(projects.springPropertiesProcessor)
 }
 
+dokka {
+    dokkaSourceSets.configureEach {
+        registerSpringFrameworkDocs()
+    }
+}
+
 publishedProjectEnvironment {
     configureJarArtifact(
         artifactId = "BotCommands-spring",
