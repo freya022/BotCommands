@@ -26,15 +26,19 @@ abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : Bot
     fun loadContext() = runBlocking {
         measure("Completed BotCommands loading events") {
             serviceContainer.getService<BContextImpl>().apply {
+                if (status == BContext.Status.SHUTTING_DOWN || status == BContext.Status.SHUTDOWN) return@runBlocking
                 setStatus(BContext.Status.PRE_LOAD)
                 eventDispatcher.dispatchEvent(PreLoadEvent(this))
 
+                if (status == BContext.Status.SHUTTING_DOWN || status == BContext.Status.SHUTDOWN) return@runBlocking
                 setStatus(BContext.Status.LOAD)
                 eventDispatcher.dispatchEvent(LoadEvent(this))
 
+                if (status == BContext.Status.SHUTTING_DOWN || status == BContext.Status.SHUTDOWN) return@runBlocking
                 setStatus(BContext.Status.POST_LOAD)
                 eventDispatcher.dispatchEvent(PostLoadEvent(this))
 
+                if (status == BContext.Status.SHUTTING_DOWN || status == BContext.Status.SHUTDOWN) return@runBlocking
                 setStatus(BContext.Status.READY)
                 eventDispatcher.dispatchEvent(BReadyEvent(this))
             }

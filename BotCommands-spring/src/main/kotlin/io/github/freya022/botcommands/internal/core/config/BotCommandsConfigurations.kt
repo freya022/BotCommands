@@ -25,6 +25,7 @@ internal class BotCommandsCoreConfiguration(
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
     override val ignoreRestRateLimiter: Boolean = false,
+    override val enableShutdownHook: Boolean = true,
 ) : BConfigProps {
     override val classGraphProcessors: Nothing get() = unusable()
 }

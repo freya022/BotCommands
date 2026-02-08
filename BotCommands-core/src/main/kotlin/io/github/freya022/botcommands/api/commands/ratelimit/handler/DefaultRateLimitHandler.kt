@@ -29,7 +29,7 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 
-private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
+private val deleteScope = namedDefaultScope("Rate limit message delete", 1, isDaemon = true)
 
 /**
  * Default [RateLimitHandler] implementation based on [rate limit scopes][RateLimitScope].

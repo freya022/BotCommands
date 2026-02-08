@@ -75,6 +75,7 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
  *
  * @param name         The base name of the threads and coroutines, will be prefixed by the number if [corePoolSize] > 1
  * @param corePoolSize The number of threads to keep in the pool, even if they are idle, must not be negative
+ * @param isDaemon     If the new threads are daemons, useful for background tasks that should not prevent the JVM from exiting.
  * @param job          The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
  * @param errorHandler The [CoroutineExceptionHandler] used for handling uncaught exceptions,
  * uses a logging handler which cancels the parent job on [Error] by default
@@ -83,6 +84,7 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
 fun namedDefaultScope(
     name: String,
     corePoolSize: Int,
+    isDaemon: Boolean = false,
     job: Job? = null,
     errorHandler: CoroutineExceptionHandler? = null,
     context: CoroutineContext = EmptyCoroutineContext
@@ -99,6 +101,8 @@ fun namedDefaultScope(
             } else {
                 this.name = "$name ${count.getAndIncrement()}"
             }
+
+            this.isDaemon = isDaemon
         }
     }
 

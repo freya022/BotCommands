@@ -166,7 +166,7 @@ internal fun <R> Database.withStatementJava(sql: String, readOnly: Boolean = fal
     }
 
 @PublishedApi
-internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1)
+internal val dbLeakScope = namedDefaultScope("Connection leak watcher", 1, isDaemon = true)
 
 private val currentTransaction = ThreadLocal<Transaction>()
 
