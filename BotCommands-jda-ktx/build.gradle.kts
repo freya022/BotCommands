@@ -1,6 +1,8 @@
 plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
+    id("dokka-conventions")
+
     alias(libs.plugins.ksp)
 }
 

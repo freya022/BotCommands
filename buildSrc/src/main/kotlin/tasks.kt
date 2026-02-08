@@ -33,12 +33,13 @@ fun Project.configurePublishedArtifact(artifactId: String, packaging: String, de
         }
     }
 
-    extensions.configure<DokkaExtension>("dokka") {
-        // For display in the nav sidebar
-        moduleName = artifactId
-        // For URLs consistent with the Kotlin module name
-        modulePath = artifactId
-    }
+    // TODO move to dokka-conventions, check the method is called too
+//    extensions.configure<DokkaExtension>("dokka") {
+//        // For display in the nav sidebar
+//        moduleName = artifactId
+//        // For URLs consistent with the Kotlin module name
+//        modulePath = artifactId
+//    }
 
     extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
         val groupId = if (GitUtils.isJitpack(providers)) {

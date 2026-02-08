@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
+    id("dokka-conventions")
 }
 
 dependencies {

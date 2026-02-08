@@ -4,6 +4,8 @@ plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
 
+    id("org.jetbrains.dokka")
+
     alias(libs.plugins.version.catalog.update)
 }
 

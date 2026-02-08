@@ -1,4 +1,3 @@
-import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -18,10 +17,6 @@ kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_24
     }
-}
-
-tasks.withType<DokkaBaseTask> {
-    enabled = false
 }
 
 configurePublishedJarArtifact(
