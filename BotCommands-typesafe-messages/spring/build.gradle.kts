@@ -1,3 +1,4 @@
+import dev.freya02.botcommands.plugins.configureJarArtifact
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -44,8 +45,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-typesafe-messages-spring",
-    description = "Easily define functions to retrieve (localized) messages, improving safety and convenience. Spring version.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-typesafe-messages/spring",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-typesafe-messages-spring",
+        description = "Easily define functions to retrieve (localized) messages, improving safety and convenience. Spring version.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-typesafe-messages/spring",
+    )
+}

@@ -91,7 +91,7 @@ mavenPublishing {
 }
 
 afterEvaluate {
-    check(isPublishedArtifactConfigured(project)) {
+    check(environment.isConfigured) {
         "Project '${project.path}' did not call 'configurePublishedArtifact'"
     }
 }

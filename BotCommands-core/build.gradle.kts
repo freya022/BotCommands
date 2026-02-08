@@ -1,3 +1,4 @@
+import dev.freya02.botcommands.plugins.configureJarArtifact
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -183,8 +184,10 @@ kotlin {
     }
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-core",
-    description = "Includes a core set of features bots typically need.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-core",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-core",
+        description = "Includes a core set of features bots typically need.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-core",
+    )
+}

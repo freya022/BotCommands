@@ -1,3 +1,5 @@
+import dev.freya02.botcommands.plugins.configureJarArtifact
+
 plugins {
     id("BotCommands-conventions")
     id("BotCommands-publish-conventions")
@@ -28,8 +30,10 @@ tasks.named<Test>("test") {
     environment("KSP_OUTPUT", layout.buildDirectory.dir("generated/ksp").get().asFile.path)
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-jda-ktx",
-    description = "Kotlin extensions for JDA. This is recommended when using Kotlin for a more idiomatic usage.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-jda-ktx",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-jda-ktx",
+        description = "Kotlin extensions for JDA. This is recommended when using Kotlin for a more idiomatic usage.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-jda-ktx",
+    )
+}

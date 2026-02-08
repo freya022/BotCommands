@@ -1,14 +1,26 @@
 package dev.freya02.botcommands.plugins
 
+import GitUtils
 import Version
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 abstract class PublishedProjectEnvironmentConfig(
     val project: Project
 ) {
     abstract val version: Property<Version>
+
+    var isConfigured: Boolean = false
+        private set
 
     val mavenCentralUsername: String? by project
     val mavenCentralPassword: String? by project
@@ -36,4 +48,76 @@ abstract class PublishedProjectEnvironmentConfig(
     val canPublishSnapshot = reposiliteUsername?.isNotBlank() == true && reposilitePassword?.isNotBlank() == true && canSign
 
     val effectiveTag = if (canPublish) "v${version}" else "3.X"
+
+    /**
+     * Sets the provided [artifactId] as the Kotlin module name, Dokka module name & path, and Maven artifact ID.
+     */
+    fun configureArtifact(
+        artifactId: String,
+        packaging: String,
+        description: String,
+        url: String,
+        block: MavenPublishBaseExtension.() -> Unit = {},
+    ) {
+        check(artifactId.startsWith("BotCommands")) {
+            "Artifact ID must start with 'BotCommands'"
+        }
+
+        isConfigured = true
+
+        project.tasks.withType<KotlinCompile> {
+            compilerOptions {
+                // Match up with Dokka's module path, as the wiki reconstructs wiki links with the module name
+                moduleName = artifactId
+            }
+        }
+
+        val dokkaExtension = project.extensions.findByType<DokkaExtension>()
+        if (dokkaExtension != null) {
+            dokkaExtension.apply {
+                // For display in the nav sidebar
+                moduleName = artifactId
+                // For URLs consistent with the Kotlin module name
+                modulePath = artifactId
+            }
+        }
+
+        project.extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
+            // Publish empty JAR if the project has no API, and thus no docs
+            if (dokkaExtension == null) {
+                configure(KotlinJvm(javadocJar = JavadocJar.Empty()))
+            }
+
+            val groupId = if (GitUtils.isJitpack(project.providers)) {
+                project.providers.environmentVariable("GROUP").get()
+            } else {
+                "io.github.freya022"
+            }
+
+            coordinates(groupId = groupId, artifactId = artifactId)
+
+            pom {
+                // Sonatype requires
+                this.name = artifactId
+                this.packaging = packaging
+
+                this.description = description
+                this.url = url
+            }
+
+            block()
+        }
+    }
+}
+
+/**
+ * Sets the provided [artifactId] as the Kotlin module name, Dokka module name & path, and Maven artifact ID.
+ */
+fun PublishedProjectEnvironmentConfig.configureJarArtifact(
+    artifactId: String,
+    description: String,
+    url: String,
+    block: MavenPublishBaseExtension.() -> Unit = {},
+) {
+    configureArtifact(artifactId, "jar", description, url, block)
 }
