@@ -13,7 +13,11 @@ import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import kotlin.reflect.KClass
 
 @InjectedService
-interface BServiceConfig {
+interface BServiceConfig : IConfig, BServiceConfigProps {
+    override val configType get() = BServiceConfig::class.java
+}
+
+interface BServiceConfigProps {
     /**
      * Enables debugging of service loading.
      *
@@ -25,7 +29,7 @@ interface BServiceConfig {
 }
 
 @ConfigDSL
-class BServiceConfigBuilder internal constructor() : BServiceConfig {
+class BServiceConfigBuilder internal constructor() : BServiceConfigProps {
     override var debug: Boolean = false
 
     private val _serviceSuppliers: MutableMap<KClass<*>, ServiceSupplier<*>> = hashMapOf()

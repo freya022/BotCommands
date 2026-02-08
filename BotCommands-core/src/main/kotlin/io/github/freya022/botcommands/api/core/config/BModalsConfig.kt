@@ -6,7 +6,11 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
-interface BModalsConfig {
+interface BModalsConfig : IConfig, BModalsConfigProps {
+    override val configType get() = BModalsConfig::class.java
+}
+
+interface BModalsConfigProps {
     /**
      * Whether modal interactions should be listened for.
      *
@@ -21,7 +25,7 @@ interface BModalsConfig {
 }
 
 @ConfigDSL
-class BModalsConfigBuilder internal constructor() : BModalsConfig {
+class BModalsConfigBuilder internal constructor() : BModalsConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = true
 

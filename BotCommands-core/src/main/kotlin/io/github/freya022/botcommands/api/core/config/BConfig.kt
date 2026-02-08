@@ -7,22 +7,49 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.api.core.utils.loggerOf
-import io.github.freya022.botcommands.api.core.utils.toImmutableList
-import io.github.freya022.botcommands.api.core.utils.toImmutableSet
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.RestRateLimiter
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import org.intellij.lang.annotations.Language
+import kotlin.reflect.KClass
 
 @InjectedService
-interface BConfig {
+interface BConfig : IConfig, BConfigProps {
+    override val configType get() = BConfig::class.java
+
+    val eventManagerConfig: BEventManagerConfig
+    val serviceConfig: BServiceConfig
+    val databaseConfig: BDatabaseConfig
+    val localizationConfig: BLocalizationConfig
+    val appEmojisConfig: BAppEmojisConfig
+    val textConfig: BTextConfig
+    val applicationConfig: BApplicationConfig
+    val modalsConfig: BModalsConfig
+    val componentsConfig: BComponentsConfig
+    val coroutineScopesConfig: BCoroutineScopesConfig
+
+    /**
+     * An immutable collection of all [registered][BConfigBuilder.withConfig] configuration objects.
+     */
+    val configs: Collection<IConfig>
+
+    /**
+     * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+     *
+     * @param type The type of configuration to get, based on [configType].
+     */
+    fun <T : IConfig> getConfigOrNull(type: Class<T>): T?
+}
+
+interface BConfigProps {
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
      * and having [hidden commands][Hidden] shown.
@@ -106,21 +133,24 @@ interface BConfig {
     val ignoreRestRateLimiter: Boolean
 
     val classGraphProcessors: List<ClassGraphProcessor>
-
-    val eventManagerConfig: BEventManagerConfig
-    val serviceConfig: BServiceConfig
-    val databaseConfig: BDatabaseConfig
-    val localizationConfig: BLocalizationConfig
-    val appEmojisConfig: BAppEmojisConfig
-    val textConfig: BTextConfig
-    val applicationConfig: BApplicationConfig
-    val modalsConfig: BModalsConfig
-    val componentsConfig: BComponentsConfig
-    val coroutineScopesConfig: BCoroutineScopesConfig
 }
 
+/**
+ * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+ *
+ * @param type The type of configuration to get, based on [configType][BConfig.configType].
+ */
+fun <T : IConfig> BConfig.getConfigOrNull(type: KClass<T>): T? = getConfigOrNull(type.java)
+
+/**
+ * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+ *
+ * @param T The type of configuration to get, based on [configType][BConfig.configType].
+ */
+inline fun <reified T : IConfig> BConfig.getConfigOrNull(): T? = getConfigOrNull(T::class.java)
+
 @ConfigDSL
-class BConfigBuilder : BConfig {
+class BConfigBuilder : BConfigProps {
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
 
@@ -139,16 +169,18 @@ class BConfigBuilder : BConfig {
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
-    override val eventManagerConfig = BEventManagerConfigBuilder()
-    override val serviceConfig = BServiceConfigBuilder()
-    override val databaseConfig = BDatabaseConfigBuilder()
-    override val localizationConfig = BLocalizationConfigBuilder()
-    override val appEmojisConfig = BAppEmojisConfigBuilder()
-    override val textConfig = BTextConfigBuilder()
-    override val applicationConfig = BApplicationConfigBuilder()
-    override val modalsConfig = BModalsConfigBuilder()
-    override val componentsConfig = BComponentsConfigBuilder()
-    override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
+    private val _configs: MutableMap<Class<out IConfig>, IConfig> = hashMapOf()
+
+    val eventManagerConfig = BEventManagerConfigBuilder()
+    val serviceConfig = BServiceConfigBuilder()
+    val databaseConfig = BDatabaseConfigBuilder()
+    val localizationConfig = BLocalizationConfigBuilder()
+    val appEmojisConfig = BAppEmojisConfigBuilder()
+    val textConfig = BTextConfigBuilder()
+    val applicationConfig = BApplicationConfigBuilder()
+    val modalsConfig = BModalsConfigBuilder()
+    val componentsConfig = BComponentsConfigBuilder()
+    val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
@@ -278,6 +310,19 @@ class BConfigBuilder : BConfig {
         componentsConfig.apply(block)
     }
 
+    /**
+     * Registers the provided configuration, once configured, it cannot be modified or overwritten.
+     *
+     * @param newConfig The new configuration
+     *
+     * @throws IllegalStateException If a config of the same type was already registered
+     */
+    fun withConfig(newConfig: IConfig) {
+        _configs.putIfAbsentOrThrow(newConfig.configType, newConfig) { _ ->
+            "Cannot reassign configuration of ${newConfig.configType.simpleNestedName}, please configure it entirely then assign once"
+        }
+    }
+
     fun build(): BConfig {
         val logger = KotlinLogging.loggerOf<BConfig>()
         if (disableExceptionsInDMs)
@@ -303,6 +348,29 @@ class BConfigBuilder : BConfig {
             override val modalsConfig = this@BConfigBuilder.modalsConfig.build()
             override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
+            private val _configs = (this@BConfigBuilder._configs + mapOf(
+                this.configType to this,
+                eventManagerConfig.configType to eventManagerConfig,
+                serviceConfig.configType to serviceConfig,
+                databaseConfig.configType to databaseConfig,
+                localizationConfig.configType to localizationConfig,
+                appEmojisConfig.configType to appEmojisConfig,
+                textConfig.configType to textConfig,
+                applicationConfig.configType to applicationConfig,
+                modalsConfig.configType to modalsConfig,
+                componentsConfig.configType to componentsConfig,
+                coroutineScopesConfig.configType to coroutineScopesConfig,
+            )).unmodifiableView()
+            override val configs get() = _configs.values
+
+            override fun <T : IConfig> getConfigOrNull(type: Class<T>): T? {
+                val config = _configs[type] ?: return null
+                if (!type.isInstance(config)) {
+                    throwInternal("$config (${config.javaClass.name}) is not an instance of ${type.name}")
+                }
+
+                return type.cast(config)
+            }
         }
     }
 }

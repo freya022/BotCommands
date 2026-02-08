@@ -9,7 +9,11 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
-interface BLocalizationConfig {
+interface BLocalizationConfig : IConfig, BLocalizationConfigProps {
+    override val configType get() = BLocalizationConfig::class.java
+}
+
+interface BLocalizationConfigProps {
     /**
      * Localization bundles available for localizing interaction responses, with [LocalizableInteraction],
      * not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations].
@@ -30,7 +34,7 @@ interface BLocalizationConfig {
 }
 
 @ConfigDSL
-class BLocalizationConfigBuilder internal constructor() : BLocalizationConfig {
+class BLocalizationConfigBuilder internal constructor() : BLocalizationConfigProps {
     override val responseBundles: MutableSet<String> = hashSetOf()
 
     /**

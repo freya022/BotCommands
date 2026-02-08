@@ -9,7 +9,11 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
-interface BComponentsConfig {
+interface BComponentsConfig : IConfig, BComponentsConfigProps {
+    override val configType get() = BComponentsConfig::class.java
+}
+
+interface BComponentsConfigProps {
     /**
      * Allows loading component services,
      * such as [Components], [Buttons] and [SelectMenus].
@@ -27,7 +31,7 @@ interface BComponentsConfig {
 }
 
 @ConfigDSL
-class BComponentsConfigBuilder internal constructor() : BComponentsConfig {
+class BComponentsConfigBuilder internal constructor() : BComponentsConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = false
 

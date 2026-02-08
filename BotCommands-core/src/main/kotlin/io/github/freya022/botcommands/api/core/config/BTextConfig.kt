@@ -12,7 +12,11 @@ import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 @InjectedService
-interface BTextConfig {
+interface BTextConfig : IConfig, BTextConfigProps {
+    override val configType get() = BTextConfig::class.java
+}
+
+interface BTextConfigProps {
     /**
      * Whether text commands should be listened for.
      *
@@ -89,7 +93,7 @@ interface BTextConfig {
 }
 
 @ConfigDSL
-class BTextConfigBuilder internal constructor() : BTextConfig {
+class BTextConfigBuilder internal constructor() : BTextConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = true
     @set:JvmName("usePingAsPrefix")
