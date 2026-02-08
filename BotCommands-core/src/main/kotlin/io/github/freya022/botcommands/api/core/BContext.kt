@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import net.dv8tion.jda.api.JDA
 import java.time.Duration as JavaDuration
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 
@@ -215,6 +216,18 @@ interface BContext {
      * @return `true` if the shutdown finished before the timeout, `false` if the timeout was reached
      */
     fun awaitShutdown(timeout: Duration): Boolean
+
+    /**
+     * Blocks the current thread until the [status] is set to [SHUTDOWN][BContext.Status.SHUTDOWN],
+     * or until the timeout has been reached.
+     *
+     * Unless [shutdownNow] has been used, the shutdown time depends on the amount of requests queued in JDA,
+     * and the amount of tasks submitted to the various executors.
+     *
+     * @return `true` if the shutdown finished before the timeout, `false` if the timeout was reached
+     */
+    fun awaitShutdown(timeout: Long, unit: TimeUnit): Boolean =
+        awaitShutdown(JavaDuration.of(timeout, unit.toChronoUnit()))
 
     /**
      * Returns the [TextCommandsContext] service.
