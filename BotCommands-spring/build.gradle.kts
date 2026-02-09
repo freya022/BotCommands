@@ -1,6 +1,12 @@
+import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.registerSpringFrameworkDocs
+
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
+    id("dokka-conventions")
+
     alias(libs.plugins.ksp)
 }
 
@@ -21,8 +27,16 @@ dependencies {
     ksp(projects.springPropertiesProcessor)
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-spring",
-    description = "Provides support for Spring Boot 3 and 4.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-spring",
-)
+dokka {
+    dokkaSourceSets.configureEach {
+        registerSpringFrameworkDocs()
+    }
+}
+
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-spring",
+        description = "Provides support for Spring Boot 3 and 4.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-spring",
+    )
+}

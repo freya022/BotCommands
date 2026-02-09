@@ -1,8 +1,11 @@
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
+
+    id("org.jetbrains.dokka")
 
     alias(libs.plugins.version.catalog.update)
 }
@@ -31,6 +34,7 @@ dependencies {
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)
+    dokka(projects.botCommandsMethodAccessors.core)
     dokka(projects.botCommandsTypesafeMessages.core)
     dokka(projects.botCommandsTypesafeMessages.bc)
     dokka(projects.botCommandsTypesafeMessages.spring)
@@ -48,9 +52,11 @@ kotlin {
     }
 }
 
-configurePublishedArtifact(
-    artifactId = "BotCommands",
-    packaging = "pom",
-    description = "JDA framework with everything you need for a modern bot!",
-    url = "https://github.com/freya022/BotCommands",
-)
+publishedProjectEnvironment {
+    configureArtifact(
+        artifactId = "BotCommands",
+        packaging = "pom",
+        description = "JDA framework with everything you need for a modern bot!",
+        url = "https://github.com/freya022/BotCommands",
+    )
+}

@@ -1,3 +1,7 @@
+package dev.freya02.botcommands.tasks
+
+import dev.freya02.botcommands.utils.GitUtils
+import dev.freya02.botcommands.utils.Version
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input

@@ -1,9 +1,15 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.tasks.GenerateBCInfoTask
+import dev.freya02.botcommands.utils.registerBucket4JDocs
+import dev.freya02.botcommands.utils.registerJetbrainsAnnotationsDocs
+import dev.freya02.botcommands.utils.registerSourceSet
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
+    id("dokka-conventions")
+
     alias(libs.plugins.ksp)
 }
 
@@ -134,16 +140,6 @@ dependencies {
     testImplementation(libs.kotlin.metadata)
 }
 
-tasks.named<JavaCompile>("compileTestJava") {
-    options.release = 24
-}
-
-tasks.named<KotlinCompile>("compileTestKotlin") {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
-    }
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
 
@@ -166,6 +162,9 @@ sourceSets {
 dokka {
     dokkaSourceSets.configureEach {
         suppressGeneratedFiles = false
+
+        registerBucket4JDocs()
+        registerJetbrainsAnnotationsDocs()
     }
 }
 
@@ -181,8 +180,10 @@ kotlin {
     }
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-core",
-    description = "Includes a core set of features bots typically need.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-core",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-core",
+        description = "Includes a core set of features bots typically need.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-core",
+    )
+}

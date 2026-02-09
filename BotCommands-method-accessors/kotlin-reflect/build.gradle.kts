@@ -1,20 +1,20 @@
-import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
+import dev.freya02.botcommands.plugins.configureJarArtifact
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
 }
 
 dependencies {
     api(projects.botCommandsMethodAccessors.core)
 }
 
-tasks.withType<DokkaBaseTask> {
-    enabled = false
-}
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-method-accessors-kotlin-reflect",
-    description = "Provides support to call methods reflectively, using kotlin-reflect.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/kotlin-reflect",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-method-accessors-kotlin-reflect",
+        description = "Provides support to call methods reflectively, using kotlin-reflect.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/kotlin-reflect",
+    )
+}

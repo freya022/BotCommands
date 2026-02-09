@@ -1,8 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.setMainJvmTarget
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
+    id("dokka-conventions")
 }
 
 dependencies {
@@ -24,13 +27,10 @@ dependencies {
     testImplementation(libs.logback.classic)
 }
 
-tasks.withType<JavaCompile> {
-    options.release = 24
-}
+setMainJvmTarget(target = 24)
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
         optIn.add("dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTypesafeMessagesApi")
         freeCompilerArgs.addAll(
             "-Xcontext-parameters",
@@ -42,8 +42,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-typesafe-messages-core",
-    description = "Easily define functions to retrieve (localized) messages, improving safety and convenience.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-typesafe-messages/core",
-)
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-typesafe-messages-core",
+        description = "Easily define functions to retrieve (localized) messages, improving safety and convenience.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-typesafe-messages/core",
+    )
+}

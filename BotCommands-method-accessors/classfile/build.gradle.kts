@@ -1,31 +1,22 @@
-import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.setMainJvmTarget
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
 }
 
 dependencies {
     api(projects.botCommandsMethodAccessors.core)
 }
 
-tasks.withType<JavaCompile> {
-    options.release = 24
-}
+setMainJvmTarget(target = 24)
 
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
-    }
+publishedProjectEnvironment {
+    configureJarArtifact(
+        artifactId = "BotCommands-method-accessors-classfile",
+        description = "Provides support to call methods reflectively, using generated accessors.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/classfile",
+    )
 }
-
-tasks.withType<DokkaBaseTask> {
-    enabled = false
-}
-
-configurePublishedJarArtifact(
-    artifactId = "BotCommands-method-accessors-classfile",
-    description = "Provides support to call methods reflectively, using generated accessors.",
-    url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-method-accessors/classfile",
-)

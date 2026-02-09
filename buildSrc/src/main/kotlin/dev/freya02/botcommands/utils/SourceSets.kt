@@ -1,3 +1,5 @@
+package dev.freya02.botcommands.utils
+
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
