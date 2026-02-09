@@ -1,61 +1,50 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id("BotCommands-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
 }
 
 // The root project script is used to produce an aggregated POM
 
 dependencies {
-    implementation(projects.botCommandsCore)
-    implementation(libs.kotlin.logging)
-    implementation(projects.botCommandsJdaKtx)
+    testImplementation(projects.botCommandsCore)
+    testImplementation(libs.kotlin.logging)
+    testImplementation(projects.botCommandsJdaKtx)
 
     // Logging
-    implementation(libs.logback.classic)
+    testImplementation(libs.logback.classic)
 
     // Database
-    runtimeOnly(libs.postgresql)
-    runtimeOnly(libs.h2)
-    implementation(libs.flyway.core)
-    runtimeOnly(libs.flyway.database.postgresql)
-    implementation(libs.hikaricp)
+    testRuntimeOnly(libs.postgresql)
+    testRuntimeOnly(libs.h2)
+    testImplementation(libs.flyway.core)
+    testRuntimeOnly(libs.flyway.database.postgresql)
+    testImplementation(libs.hikaricp)
 
     // Persistent rate limiting
-    implementation(libs.bucket4j.jdk17.postgresql)
+    testImplementation(libs.bucket4j.jdk17.postgresql)
 
     // Upgrade because kotlinx-coroutines-debug somehow has an ANCIENT version
-    runtimeOnly(libs.bytebuddy)
-    runtimeOnly(libs.bytebuddy.agent)
+    testRuntimeOnly(libs.bytebuddy)
+    testRuntimeOnly(libs.bytebuddy.agent)
 
-    runtimeOnly(projects.botCommandsMethodAccessors.classfile)
+    testRuntimeOnly(projects.botCommandsMethodAccessors.classfile)
 
-    implementation(projects.botCommandsTypesafeMessages.core)
-    runtimeOnly(projects.botCommandsTypesafeMessages.bc)
-    runtimeOnly(projects.botCommandsTypesafeMessages.spring)
+    testImplementation(projects.botCommandsTypesafeMessages.core)
+    testRuntimeOnly(projects.botCommandsTypesafeMessages.bc)
+    testRuntimeOnly(projects.botCommandsTypesafeMessages.spring)
 
     // ---------------------------- SPRING TEST BOT DEPENDENCIES ---------------------------
 
     // Spring module
-    implementation(projects.botCommandsSpring)
+    testImplementation(projects.botCommandsSpring)
 
     // Spring Boot
-    implementation(libs.spring.boot.starter)
-    runtimeOnly(libs.spring.boot.devtools)
+    testImplementation(libs.spring.boot.starter)
+    testRuntimeOnly(libs.spring.boot.devtools)
 }
 
 tasks.withType<Test> {
     enabled = false
-}
-
-tasks.withType<JavaCompile> {
-    options.release = 24
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
-    }
 }
 
 kotlin {

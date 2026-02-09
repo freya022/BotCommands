@@ -1,8 +1,9 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
 }
 
 dependencies {

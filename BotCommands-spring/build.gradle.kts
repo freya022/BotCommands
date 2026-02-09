@@ -1,8 +1,10 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.registerSpringFrameworkDocs
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
     id("dokka-conventions")
 
     alias(libs.plugins.ksp)

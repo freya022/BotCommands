@@ -1,3 +1,5 @@
+package dev.freya02.botcommands.utils
+
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.ProviderFactory
 

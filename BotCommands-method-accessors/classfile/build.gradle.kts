@@ -1,24 +1,17 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import dev.freya02.botcommands.utils.setMainJvmTarget
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
 }
 
 dependencies {
     api(projects.botCommandsMethodAccessors.core)
 }
 
-tasks.withType<JavaCompile> {
-    options.release = 24
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
-    }
-}
+setMainJvmTarget(target = 24)
 
 publishedProjectEnvironment {
     configureJarArtifact(

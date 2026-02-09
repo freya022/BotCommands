@@ -1,4 +1,5 @@
 import dev.freya02.botcommands.plugins.PublishedProjectEnvironmentConfig
+import dev.freya02.botcommands.utils.registerJDADocs
 
 plugins {
     id("org.jetbrains.dokka")

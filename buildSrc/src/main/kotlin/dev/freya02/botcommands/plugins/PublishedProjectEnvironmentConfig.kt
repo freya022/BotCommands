@@ -1,10 +1,10 @@
 package dev.freya02.botcommands.plugins
 
-import GitUtils
-import Version
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import dev.freya02.botcommands.utils.GitUtils
+import dev.freya02.botcommands.utils.Version
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.assign
@@ -47,6 +47,8 @@ abstract class PublishedProjectEnvironmentConfig(
     val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
     val canPublishSnapshot = reposiliteUsername?.isNotBlank() == true && reposilitePassword?.isNotBlank() == true && canSign
 
+    val isJitpack = GitUtils.isJitpack(project.providers)
+
     val effectiveTag = if (canPublish) "v${version}" else "3.X"
 
     /**
@@ -88,7 +90,7 @@ abstract class PublishedProjectEnvironmentConfig(
                 configure(KotlinJvm(javadocJar = JavadocJar.Empty()))
             }
 
-            val groupId = if (GitUtils.isJitpack(project.providers)) {
+            val groupId = if (isJitpack) {
                 project.providers.environmentVariable("GROUP").get()
             } else {
                 "io.github.freya022"

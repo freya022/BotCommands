@@ -1,4 +1,6 @@
 import dev.freya02.botcommands.plugins.PublishedProjectEnvironmentConfig
+import dev.freya02.botcommands.utils.GitUtils
+import dev.freya02.botcommands.utils.Version
 
 plugins {
     `java-library`
@@ -50,7 +52,7 @@ mavenPublishing {
         signAllPublications()
     }
 
-    val pomVersion = if (GitUtils.isJitpack(providers)) {
+    val pomVersion = if (environment.isJitpack) {
         providers.environmentVariable("VERSION").get()
     } else if (environment.canPublishSnapshot) {
         "${GitUtils.getCommitHash(logger, providers, projectDir.absolutePath)}-SNAPSHOT"

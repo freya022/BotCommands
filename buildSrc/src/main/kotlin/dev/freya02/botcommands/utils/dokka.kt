@@ -1,3 +1,5 @@
+package dev.freya02.botcommands.utils
+
 import org.jetbrains.dokka.gradle.engine.parameters.DokkaSourceSetSpec
 
 fun DokkaSourceSetSpec.registerJDADocs() {

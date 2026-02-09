@@ -1,8 +1,9 @@
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
 
     id("org.jetbrains.dokka")
 

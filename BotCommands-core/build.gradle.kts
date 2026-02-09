@@ -1,10 +1,13 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import dev.freya02.botcommands.tasks.GenerateBCInfoTask
+import dev.freya02.botcommands.utils.registerBucket4JDocs
+import dev.freya02.botcommands.utils.registerJetbrainsAnnotationsDocs
+import dev.freya02.botcommands.utils.registerSourceSet
 
 plugins {
-    id("BotCommands-conventions")
-    id("BotCommands-publish-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
+    id("publish-conventions")
     id("dokka-conventions")
 
     alias(libs.plugins.ksp)
@@ -135,16 +138,6 @@ dependencies {
 
     // Test stuff
     testImplementation(libs.kotlin.metadata)
-}
-
-tasks.named<JavaCompile>("compileTestJava") {
-    options.release = 24
-}
-
-tasks.named<KotlinCompile>("compileTestKotlin") {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_24
-    }
 }
 
 tasks.withType<Test> {

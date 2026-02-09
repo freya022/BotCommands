@@ -1,5 +1,6 @@
 plugins {
-    id("BotCommands-conventions")
+    id("repositories-conventions")
+    id("kotlin-conventions")
 }
 
 dependencies {
