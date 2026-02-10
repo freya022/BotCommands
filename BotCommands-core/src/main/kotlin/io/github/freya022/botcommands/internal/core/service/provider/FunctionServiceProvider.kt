@@ -7,10 +7,7 @@ import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
-import io.github.freya022.botcommands.internal.utils.isObject
-import io.github.freya022.botcommands.internal.utils.shortSignature
-import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
-import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.instanceParameter
@@ -33,6 +30,12 @@ internal class FunctionServiceProvider(
      * If not the sentinel value, the service was attempted to be created.
      */
     private var serviceError: ServiceError? = ServiceProvider.nullServiceError
+
+    init {
+        if (function.isSuspend) {
+            throwArgument(function, "Service factories do not support coroutines")
+        }
+    }
 
     override fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one

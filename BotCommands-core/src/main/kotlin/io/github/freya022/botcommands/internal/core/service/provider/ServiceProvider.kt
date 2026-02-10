@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
@@ -297,29 +296,10 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceCo
     }
 
     return measureTimedInstantiation {
-        this.callStatic(serviceContainer, args)
+        accessor.call(args)
             ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
                 errorMessage = "Service factory returned null",
                 failedFunction = this
             ))
-    }
-}
-
-internal fun <R> KFunction<R>.callStatic(serviceContainer: BCServiceContainerImpl, args: MethodArguments): R {
-    if (this.isSuspend) {
-        throwArgument(this, "Suspending functions are not supported in this context")
-    }
-
-    return when (val instanceParameter = this.instanceParameter) {
-        null -> MethodAccessorFactoryProvider.getStaticAccessor(this).call(args)
-        else -> {
-            val instanceErasure = instanceParameter.type.jvmErasure
-            val instance = instanceErasure.objectInstance
-                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
-                    throwArgument(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
-                }
-
-            MethodAccessorFactoryProvider.getAccessorFactory().create(instance, this).call(args)
-        }
     }
 }
