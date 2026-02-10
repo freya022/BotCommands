@@ -37,4 +37,8 @@ internal class RestartClassLoader internal constructor(
     override fun findClass(name: String): Class<*> {
         return super.findClass(name)
     }
+
+    internal fun publicDefineClass(name: String, bytes: ByteArray): Class<*> {
+        return defineClass(name, bytes, 0, bytes.size)
+    }
 }
