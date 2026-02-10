@@ -1,6 +1,8 @@
 package dev.freya02.botcommands.bot
 
 import dev.freya02.botcommands.bot.config.Environment
+import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
+import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -18,6 +20,9 @@ private val logger by lazy { KotlinLogging.logger { } }
 fun main(args: Array<String>) {
     System.setProperty("logging.config", Environment.logbackConfigPath.absolutePathString())
     logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+
+    @OptIn(ExperimentalMethodAccessorsApi::class)
+    MethodAccessorsConfig.preferClassFileAccessors()
 
     runApplication<SpringMain>(*args)
 }
