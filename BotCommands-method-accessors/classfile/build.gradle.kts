@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     api(projects.botCommandsMethodAccessors.core)
+    implementation(projects.botCommandsCore)
 }
 
 setMainJvmTarget(target = 24)

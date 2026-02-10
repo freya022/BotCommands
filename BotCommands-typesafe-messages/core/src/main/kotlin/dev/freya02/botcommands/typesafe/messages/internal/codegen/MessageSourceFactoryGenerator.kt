@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import io.github.freya022.botcommands.internal.utils.superErasureAt
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
@@ -30,6 +31,7 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.CD_void
 import java.lang.constant.ConstantDescs.INIT_NAME
 import java.lang.constant.MethodTypeDesc
+import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
 import java.util.*
@@ -127,10 +129,22 @@ object MessageSourceFactoryGenerator {
             }
         }
 
-        val lookup = MethodHandles.lookup()
-        val factoryHandle = lookup.defineClass(factoryBytes)
-            .declaredConstructors.single()
-            .let(lookup::unreflectConstructor)
+        val factoryHandle: MethodHandle = when (val restartLoader = RestartClassLoaderAdapter.wrapOrNull(sourceFactoryType.java.classLoader)) {
+            null -> {
+                val lookup = MethodHandles.lookup()
+                lookup.defineClass(factoryBytes)
+                    .declaredConstructors.single()
+                    .let(lookup::unreflectConstructor)
+            }
+
+            else -> {
+                val lookup = MethodHandles.publicLookup()
+                restartLoader.publicDefineClass("${thisClass.packageName()}.${thisClass.displayName()}", factoryBytes)
+                    .declaredConstructors.single()
+                    .let(lookup::unreflectConstructor)
+            }
+        }
+
         // Create it outside the factory to prevent duplicates and also validate early
         val sourceHandle = MessageSourceGenerator.create(sourceType)
 

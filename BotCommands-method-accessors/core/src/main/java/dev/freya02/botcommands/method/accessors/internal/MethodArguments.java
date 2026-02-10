@@ -14,7 +14,7 @@ public class MethodArguments implements Cloneable {
     private int cursor = 0;
 
     // Built by the accessor
-    MethodArguments(int size) {
+    public MethodArguments(int size) {
         final var args = new Object[size];
         Arrays.fill(args, NO_VALUE);
         this.args = args;

@@ -14,6 +14,7 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.*
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
+import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.slf4j.LoggerFactory
 import java.lang.classfile.ClassBuilder
@@ -92,10 +93,21 @@ internal object MessageSourceGenerator {
             }
         }
 
-        val lookup = MethodHandles.lookup()
-        return lookup.defineClass(sourceBytes)
-            .getConstructor(MessageSourceContext::class.java)
-            .let(lookup::unreflectConstructor)
+        return when (val restartLoader = RestartClassLoaderAdapter.wrapOrNull(sourceType.java.classLoader)) {
+            null -> {
+                val lookup = MethodHandles.lookup()
+                lookup.defineClass(sourceBytes)
+                    .getConstructor(MessageSourceContext::class.java)
+                    .let(lookup::unreflectConstructor)
+            }
+
+            else -> {
+                val lookup = MethodHandles.publicLookup()
+                restartLoader.publicDefineClass("${thisClass.packageName()}.${thisClass.displayName()}", sourceBytes)
+                    .declaredConstructors.single()
+                    .let(lookup::unreflectConstructor)
+            }
+        }
     }
 
     internal fun getImplementableFunctions(sourceType: KClass<out IMessageSource>): List<KFunction<*>> {

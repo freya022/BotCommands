@@ -10,6 +10,7 @@ import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_Illega
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_MethodArguments
 import dev.freya02.botcommands.method.accessors.internal.utils.javaExecutable
+import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import java.lang.classfile.ClassBuilder
 import java.lang.classfile.ClassFile
 import java.lang.classfile.ClassFile.ACC_FINAL
@@ -18,10 +19,7 @@ import java.lang.constant.ClassDesc
 import java.lang.constant.ConstantDescs.*
 import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandles
-import java.lang.reflect.AccessFlag
-import java.lang.reflect.Constructor
-import java.lang.reflect.Executable
-import java.lang.reflect.Modifier
+import java.lang.reflect.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
@@ -37,7 +35,21 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
     internal val instanceDesc: ClassDesc = instanceClass.describeConstable().get()
     internal val isStatic: Boolean = Modifier.isStatic(executable.modifiers)
 
-    internal val thisClass: ClassDesc = ClassDesc.of("${lookup.lookupClass().packageName}.ClassFileMethodAccessor")
+    internal val thisClass: ClassDesc = run {
+        val className = buildString {
+            append("ClassFileMethodAccessor")
+            append('$')
+            append(instanceClass.name.substring(instanceClass.packageName.length + 1).replace('.', '$'))
+            append('$')
+            val executableName = when (executable) {
+                is Constructor<*> -> "<init>"
+                is Method -> executable.name
+            }
+            append(executableName)
+        }
+
+        ClassDesc.of(lookup.lookupClass().packageName, className)
+    }
 
     // The class must be unique per function, which is why we don't cache the class
     // Also "duplicate" definitions are allowed for hidden classes
@@ -104,9 +116,10 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
             }
         }
 
-        val clazz = lookup
-            .defineHiddenClass(bytes, true)
-            .lookupClass()
+        val clazz: Class<*> = when (val restartLoader = RestartClassLoaderAdapter.wrapOrNull(instanceClass.classLoader)) {
+            null -> lookup.defineHiddenClass(bytes, true).lookupClass()
+            else -> restartLoader.publicDefineClass("${thisClass.packageName()}.${thisClass.displayName()}", bytes)
+        }
 
         @Suppress("UNCHECKED_CAST")
         return createInstance(clazz) as MethodAccessor<R>

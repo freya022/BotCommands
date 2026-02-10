@@ -22,6 +22,8 @@ dependencies {
     api(libs.spring.boot)
     api(libs.spring.boot.autoconfigure)
 
+    compileOnly(libs.spring.boot.devtools)
+
     // -------------------- ANNOTATION PROCESSORS --------------------
 
     ksp(projects.springPropertiesProcessor)
