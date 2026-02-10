@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.core.method.accessors
 
 import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
+import dev.freya02.botcommands.method.accessors.internal.CachingMethodAccessorFactory
 import dev.freya02.botcommands.method.accessors.internal.KotlinReflectMethodAccessorFactory
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.MethodAccessorFactory
@@ -19,7 +20,7 @@ internal object MethodAccessorFactoryProvider {
         synchronized(this) {
             if (::accessorFactory.isInitialized) return accessorFactory
 
-            accessorFactory = loadAccessorFactory()
+            accessorFactory = CachingMethodAccessorFactory(loadAccessorFactory())
         }
 
         return accessorFactory
