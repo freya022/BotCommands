@@ -1,28 +1,14 @@
 package io.github.freya022.botcommands.commands.application.diff
 
-import ch.qos.logback.classic.ClassicConstants
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.readResource
-import io.github.freya022.botcommands.helpers.config.Environment
-import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLoggerImpl
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.slf4j.LoggerFactory
-import kotlin.io.path.absolutePathString
 
 object JsonDiffTest {
-    @JvmStatic
-    @BeforeAll
-    fun setup() {
-        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
-        (LoggerFactory.getLogger(DiffLogger::class.java) as Logger).level = Level.TRACE
-    }
 
     @ParameterizedTest
     @EnumSource(DiffEngine::class)

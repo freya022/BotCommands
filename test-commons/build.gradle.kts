@@ -12,5 +12,5 @@ dependencies {
     api(libs.mockk)
 
     // Logging
-    api(libs.logback.classic)
+    runtimeOnly(libs.logback.classic)
 }

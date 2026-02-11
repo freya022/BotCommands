@@ -6,9 +6,16 @@
         </encoder>
     </appender>
 
+    <!-- BotCommands -->
+    <logger name="io.github.freya022.botcommands" level="debug"/>
+
+    <!-- Application command diff logs -->
+    <logger name="io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger" level="trace"/>
+
     <logger name="dev.freya02.botcommands.typesafe.messages" level="trace"/>
 
-    <root level="debug">
+    <!-- Other logs -->
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
