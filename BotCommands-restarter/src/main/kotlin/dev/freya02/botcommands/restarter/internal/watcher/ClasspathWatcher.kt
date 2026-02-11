@@ -28,7 +28,6 @@ import kotlin.time.Duration
 
 private val logger = KotlinLogging.logger { }
 
-// Lightweight, singleton version of [[SourceDirectories]] + [[ClasspathListener]]
 internal class ClasspathWatcher private constructor(
     settings: Settings,
 ) {
